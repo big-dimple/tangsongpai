@@ -1,0 +1,124 @@
+{
+  "base": "ee3023e66b081757353e2ace98619c5ca1971163",
+  "branch": "dev/hero-balance-20261018",
+  "tests": {
+    "success": true,
+    "files": 21,
+    "passed": 170,
+    "failed": 0,
+    "results": [
+      {
+        "name": "ai-hand-candidates.test.ts",
+        "status": "passed",
+        "tests": 13
+      },
+      {
+        "name": "amo-exile-ui.test.ts",
+        "status": "passed",
+        "tests": 1
+      },
+      {
+        "name": "amo-exile.test.ts",
+        "status": "passed",
+        "tests": 12
+      },
+      {
+        "name": "amo-launch.test.ts",
+        "status": "passed",
+        "tests": 9
+      },
+      {
+        "name": "hand-rule-order.test.ts",
+        "status": "passed",
+        "tests": 10
+      },
+      {
+        "name": "hero-ability-cue.test.ts",
+        "status": "passed",
+        "tests": 7
+      },
+      {
+        "name": "hero-balance.test.ts",
+        "status": "passed",
+        "tests": 11
+      },
+      {
+        "name": "hero-explanation.test.ts",
+        "status": "passed",
+        "tests": 2
+      },
+      {
+        "name": "hero-opening-copy.test.ts",
+        "status": "passed",
+        "tests": 2
+      },
+      {
+        "name": "hero-review-copy.test.ts",
+        "status": "passed",
+        "tests": 8
+      },
+      {
+        "name": "hero-skill-draft-lifecycle.test.ts",
+        "status": "passed",
+        "tests": 5
+      },
+      {
+        "name": "hero-skill-guide.test.ts",
+        "status": "passed",
+        "tests": 4
+      },
+      {
+        "name": "hero-stage-continuity.test.ts",
+        "status": "passed",
+        "tests": 15
+      },
+      {
+        "name": "hero-text-contract.test.ts",
+        "status": "passed",
+        "tests": 4
+      },
+      {
+        "name": "opening-play-sample.test.ts",
+        "status": "passed",
+        "tests": 6
+      },
+      {
+        "name": "p1a-active-mult.test.ts",
+        "status": "passed",
+        "tests": 19
+      },
+      {
+        "name": "s04-finish.test.ts",
+        "status": "passed",
+        "tests": 17
+      },
+      {
+        "name": "score-review.test.ts",
+        "status": "passed",
+        "tests": 7
+      },
+      {
+        "name": "tangsong-identity.test.ts",
+        "status": "passed",
+        "tests": 4
+      },
+      {
+        "name": "xiemu-burn.test.ts",
+        "status": "passed",
+        "tests": 11
+      },
+      {
+        "name": "xiemu-cash-choice.test.ts",
+        "status": "passed",
+        "tests": 3
+      }
+    ]
+  },
+  "typecheck": "PASS",
+  "browser": "NOT_RUN by user instruction",
+  "fullSuite": "NOT_RUN",
+  "productionBuild": "NOT_RUN; typecheck and targeted modules verified",
+  "naturalWinRate": "NOT_MEASURED",
+  "sourceTargetsAndOtherFourHeroes": "unchanged",
+  "legacyIdentity": "preserved; no migration"
+}

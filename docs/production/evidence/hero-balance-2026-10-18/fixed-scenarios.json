@@ -1,0 +1,578 @@
+{
+  "sourceBase": "ee3023e66b081757353e2ace98619c5ca1971163",
+  "kind": "controlled-score-panels-not-natural-runs",
+  "assumptions": [
+    "Four independent fixed score panels; their remaining-card zones are not claimed to be a continuous deck.",
+    "Full four-play capacity, ignoring early clear; actual clear may stop sooner.",
+    "Use each once-per-stage skill on final panel; Liu E transfers its10-point J; Qin branch assumes one legal successful refill reaches the target.",
+    "Xin has the same fixed panels here; its extra candidate selection value is separate, not zero.",
+    "All scenarios are exact scorer calculations, not natural win rates or human acceptance."
+  ],
+  "panels": [
+    {
+      "hand": [
+        "hearts-14",
+        "spades-14",
+        "clubs-2",
+        "diamonds-2",
+        "hearts-3",
+        "diamonds-5",
+        "clubs-8",
+        "spades-13"
+      ],
+      "selectedCount": 4,
+      "type": "two-pair"
+    },
+    {
+      "hand": [
+        "hearts-9",
+        "spades-9",
+        "clubs-9",
+        "hearts-2",
+        "diamonds-4",
+        "clubs-6",
+        "spades-11",
+        "diamonds-14"
+      ],
+      "selectedCount": 3,
+      "type": "three-kind"
+    },
+    {
+      "hand": [
+        "hearts-4",
+        "spades-5",
+        "clubs-6",
+        "diamonds-7",
+        "hearts-8",
+        "spades-2",
+        "clubs-11",
+        "diamonds-14"
+      ],
+      "selectedCount": 5,
+      "type": "straight"
+    },
+    {
+      "hand": [
+        "hearts-2",
+        "hearts-5",
+        "hearts-8",
+        "hearts-11",
+        "hearts-13",
+        "spades-9",
+        "clubs-9",
+        "clubs-3"
+      ],
+      "selectedCount": 5,
+      "type": "flush"
+    }
+  ],
+  "groups": [
+    {
+      "phase": "early",
+      "level": 1,
+      "clears": 0,
+      "gold": 6,
+      "sharedJoker": {
+        "id": "c06",
+        "growth": 0
+      },
+      "target": "400",
+      "rows": [
+        {
+          "hero": "neutral",
+          "scores": [
+            "182",
+            "351",
+            "620",
+            "700"
+          ],
+          "total": "1853"
+        },
+        {
+          "hero": "amo",
+          "scores": [
+            "182",
+            "351",
+            "620",
+            "2100"
+          ],
+          "total": "3253"
+        },
+        {
+          "hero": "touye",
+          "scores": [
+            "209",
+            "403",
+            "713",
+            "1400"
+          ],
+          "total": "2725"
+        },
+        {
+          "hero": "erxiang",
+          "scores": [
+            "182",
+            "351",
+            "620",
+            "2310"
+          ],
+          "total": "3463"
+        },
+        {
+          "hero": "azao",
+          "scores": [
+            "182",
+            "351",
+            "620",
+            "2800"
+          ],
+          "total": "3953"
+        },
+        {
+          "hero": "laohuan",
+          "scores": [
+            "182",
+            "351",
+            "620",
+            "700"
+          ],
+          "total": "1853"
+        },
+        {
+          "hero": "xiemu",
+          "scores": [
+            "182",
+            "351",
+            "620",
+            "1050"
+          ],
+          "total": "2203"
+        }
+      ]
+    },
+    {
+      "phase": "middle",
+      "level": 2,
+      "clears": 6,
+      "gold": 25,
+      "sharedJoker": {
+        "id": "c06",
+        "growth": 1
+      },
+      "target": "1800",
+      "rows": [
+        {
+          "hero": "neutral",
+          "scores": [
+            "955",
+            "1572",
+            "2867",
+            "2477"
+          ],
+          "total": "7871"
+        },
+        {
+          "hero": "amo",
+          "scores": [
+            "955",
+            "1572",
+            "2867",
+            "7431"
+          ],
+          "total": "12825"
+        },
+        {
+          "hero": "touye",
+          "scores": [
+            "1058",
+            "1755",
+            "3219",
+            "4954"
+          ],
+          "total": "10986"
+        },
+        {
+          "hero": "erxiang",
+          "scores": [
+            "955",
+            "1572",
+            "2867",
+            "6640"
+          ],
+          "total": "12034"
+        },
+        {
+          "hero": "azao",
+          "scores": [
+            "955",
+            "1572",
+            "2867",
+            "9908"
+          ],
+          "total": "15302"
+        },
+        {
+          "hero": "laohuan",
+          "scores": [
+            "955",
+            "1572",
+            "2867",
+            "2477"
+          ],
+          "total": "7871"
+        },
+        {
+          "hero": "xiemu",
+          "scores": [
+            "955",
+            "1572",
+            "2867",
+            "7431"
+          ],
+          "total": "12825"
+        }
+      ]
+    },
+    {
+      "phase": "late",
+      "level": 4,
+      "clears": 18,
+      "gold": 60,
+      "sharedJoker": {
+        "id": "c06",
+        "growth": 3
+      },
+      "target": "14000",
+      "rows": [
+        {
+          "hero": "neutral",
+          "scores": [
+            "3926",
+            "5760",
+            "8840",
+            "9010"
+          ],
+          "total": "27536"
+        },
+        {
+          "hero": "amo",
+          "scores": [
+            "3926",
+            "5760",
+            "8840",
+            "27030"
+          ],
+          "total": "45556"
+        },
+        {
+          "hero": "touye",
+          "scores": [
+            "4243",
+            "6278",
+            "9698",
+            "18020"
+          ],
+          "total": "38239"
+        },
+        {
+          "hero": "erxiang",
+          "scores": [
+            "3926",
+            "5760",
+            "8840",
+            "18870"
+          ],
+          "total": "37396"
+        },
+        {
+          "hero": "azao",
+          "scores": [
+            "3926",
+            "5760",
+            "8840",
+            "36040"
+          ],
+          "total": "54566"
+        },
+        {
+          "hero": "laohuan",
+          "scores": [
+            "3926",
+            "5760",
+            "8840",
+            "9010"
+          ],
+          "total": "27536"
+        },
+        {
+          "hero": "xiemu",
+          "scores": [
+            "3926",
+            "5760",
+            "8840",
+            "27030"
+          ],
+          "total": "45556"
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "hero": "amo",
+      "name": "bare",
+      "gold": 40,
+      "jokers": [],
+      "edition": "none",
+      "old": {
+        "ordinary": "700",
+        "score": "2800",
+        "cost": 0
+      },
+      "new": {
+        "ordinary": "700",
+        "score": "2100",
+        "cost": 0
+      }
+    },
+    {
+      "hero": "amo",
+      "name": "five",
+      "gold": 40,
+      "jokers": [
+        "f06",
+        "f09",
+        "e08",
+        "c06",
+        "e03"
+      ],
+      "edition": "none",
+      "old": {
+        "ordinary": "5076",
+        "score": "20304",
+        "cost": 0
+      },
+      "new": {
+        "ordinary": "5076",
+        "score": "15228",
+        "cost": 0
+      }
+    },
+    {
+      "hero": "amo",
+      "name": "five-holographic",
+      "gold": 40,
+      "jokers": [
+        "f06",
+        "f09",
+        "e08",
+        "c06",
+        "e03"
+      ],
+      "edition": "holographic",
+      "old": {
+        "ordinary": "8601",
+        "score": "34404",
+        "cost": 0
+      },
+      "new": {
+        "ordinary": "8601",
+        "score": "25803",
+        "cost": 0
+      }
+    },
+    {
+      "hero": "amo",
+      "name": "five-polychrome",
+      "gold": 40,
+      "jokers": [
+        "f06",
+        "f09",
+        "e08",
+        "c06",
+        "e03"
+      ],
+      "edition": "polychrome",
+      "old": {
+        "ordinary": "38545",
+        "score": "154180",
+        "cost": 0
+      },
+      "new": {
+        "ordinary": "38545",
+        "score": "115635",
+        "cost": 0
+      }
+    },
+    {
+      "hero": "xiemu",
+      "name": "bare",
+      "gold": 40,
+      "jokers": [],
+      "edition": "none",
+      "old": {
+        "ordinary": "700",
+        "score": "2800",
+        "cost": 30
+      },
+      "new": {
+        "ordinary": "700",
+        "score": "2100",
+        "cost": 20
+      },
+      "oldBest": {
+        "cost": 30,
+        "score": "2800"
+      }
+    },
+    {
+      "hero": "xiemu",
+      "name": "five",
+      "gold": 40,
+      "jokers": [
+        "f06",
+        "f09",
+        "e08",
+        "c06",
+        "e03"
+      ],
+      "edition": "none",
+      "old": {
+        "ordinary": "5076",
+        "score": "9360",
+        "cost": 30
+      },
+      "new": {
+        "ordinary": "5076",
+        "score": "13932",
+        "cost": 20
+      },
+      "oldBest": {
+        "cost": 20,
+        "score": "13932"
+      }
+    },
+    {
+      "hero": "xiemu",
+      "name": "five-holographic",
+      "gold": 40,
+      "jokers": [
+        "f06",
+        "f09",
+        "e08",
+        "c06",
+        "e03"
+      ],
+      "edition": "holographic",
+      "old": {
+        "ordinary": "8601",
+        "score": "17940",
+        "cost": 30
+      },
+      "new": {
+        "ordinary": "8601",
+        "score": "23607",
+        "cost": 20
+      },
+      "oldBest": {
+        "cost": 20,
+        "score": "23607"
+      }
+    },
+    {
+      "hero": "xiemu",
+      "name": "five-polychrome",
+      "gold": 40,
+      "jokers": [
+        "f06",
+        "f09",
+        "e08",
+        "c06",
+        "e03"
+      ],
+      "edition": "polychrome",
+      "old": {
+        "ordinary": "38545",
+        "score": "71077",
+        "cost": 30
+      },
+      "new": {
+        "ordinary": "38545",
+        "score": "105796",
+        "cost": 20
+      },
+      "oldBest": {
+        "cost": 20,
+        "score": "105796"
+      }
+    },
+    {
+      "hero": "amo",
+      "name": "five-foil",
+      "gold": 40,
+      "jokers": [
+        "f06",
+        "f09",
+        "e08",
+        "c06",
+        "e03"
+      ],
+      "edition": "foil",
+      "old": {
+        "ordinary": "7776",
+        "score": "31104",
+        "cost": 0
+      },
+      "new": {
+        "ordinary": "7776",
+        "score": "23328",
+        "cost": 0
+      }
+    },
+    {
+      "hero": "xiemu",
+      "name": "five-foil",
+      "gold": 40,
+      "jokers": [
+        "f06",
+        "f09",
+        "e08",
+        "c06",
+        "e03"
+      ],
+      "edition": "foil",
+      "old": {
+        "ordinary": "7776",
+        "score": "15360",
+        "cost": 30
+      },
+      "new": {
+        "ordinary": "7776",
+        "score": "22032",
+        "cost": 20
+      },
+      "oldBest": {
+        "cost": 20,
+        "score": "22032"
+      }
+    }
+  ],
+  "D0Targets": [
+    "400",
+    "600",
+    "800",
+    "900",
+    "1350",
+    "1800"
+  ],
+  "newIdentities": {
+    "amo": {
+      "contentVersion": "quality-r2-amo-exile-v2",
+      "contentHash": "json-fnv-v1:db11f4b55b8dabb9"
+    },
+    "xiemu": {
+      "contentVersion": "quality-r2-xiemu-burn-v2",
+      "contentHash": "json-fnv-v1:6b70f550e44bf564"
+    }
+  }
+}

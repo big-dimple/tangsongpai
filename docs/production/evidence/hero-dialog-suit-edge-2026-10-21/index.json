@@ -1,0 +1,170 @@
+{
+  "base": "9abedd0195881c64c730f13e26b66c54f94b3716",
+  "productionCommit": "818d8e5cc2f73b7bac8ae20a91b2b4b664ff9c81",
+  "branch": "fix/hero-dialog-suit-edge-20261021",
+  "browser": "report.json",
+  "browserCases": 14,
+  "unitDistinctPassed": 101,
+  "unitFiles": 11,
+  "unitCaveat": "One guide test exceeded 5s under concurrent load; complete file isolated rerun 4/4 PASS. Raw initial fake-DOM and contention failures preserved.",
+  "build": "build.log",
+  "heroes": [
+    {
+      "width": 1366,
+      "hero": "amo",
+      "collapsedHeight": 293.19,
+      "expandedHeight": 400.38,
+      "contentScrollTop": 0,
+      "status": "PASS"
+    },
+    {
+      "width": 1366,
+      "hero": "erxiang",
+      "collapsedHeight": 662.97,
+      "expandedHeight": 774.56,
+      "contentScrollTop": 0,
+      "status": "PASS"
+    },
+    {
+      "width": 1366,
+      "hero": "laohuan",
+      "collapsedHeight": 506.12,
+      "expandedHeight": 876,
+      "contentScrollTop": 5,
+      "status": "PASS"
+    },
+    {
+      "width": 1366,
+      "hero": "azao",
+      "collapsedHeight": 502.59,
+      "expandedHeight": 828.36,
+      "contentScrollTop": 0,
+      "status": "PASS"
+    },
+    {
+      "width": 1366,
+      "hero": "xiemu",
+      "collapsedHeight": 662.97,
+      "expandedHeight": 876,
+      "contentScrollTop": 156,
+      "status": "PASS"
+    },
+    {
+      "width": 1366,
+      "hero": "touye",
+      "collapsedHeight": 521.78,
+      "expandedHeight": 521.78,
+      "contentScrollTop": 0,
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "hero": "amo",
+      "collapsedHeight": 322.88,
+      "expandedHeight": 525.25,
+      "contentScrollTop": 0,
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "hero": "erxiang",
+      "collapsedHeight": 716,
+      "expandedHeight": 716,
+      "contentScrollTop": 156,
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "hero": "laohuan",
+      "collapsedHeight": 480.12,
+      "expandedHeight": 716,
+      "contentScrollTop": 165,
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "hero": "azao",
+      "collapsedHeight": 504.59,
+      "expandedHeight": 716,
+      "contentScrollTop": 161,
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "hero": "xiemu",
+      "collapsedHeight": 682.16,
+      "expandedHeight": 716,
+      "contentScrollTop": 505,
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "hero": "touye",
+      "collapsedHeight": 519.78,
+      "expandedHeight": 519.78,
+      "contentScrollTop": 0,
+      "status": "PASS"
+    }
+  ],
+  "gameSceneChangedMethods": [
+    "inspectAmoExile",
+    "inspectHeroExplanation",
+    "sortHand"
+  ],
+  "gameSceneAddedFields": [
+    "suitSortTarget",
+    "suitSortRunId"
+  ],
+  "notRun": [
+    "physical device",
+    "GPU/WebGL",
+    "audio",
+    "full CI/smoke",
+    "six real skill-consuming plays"
+  ],
+  "integrationItem": "smoke-suit-target-owner.patch is supplied for owner; not applied to shared harness or exercised here.",
+  "artifacts": {
+    "1366-touye-collapsed.png": "5ef5e27ca8464bd3b381169b7e9f1356ec7c0ffbdf3b3fad6f6ae8e4dbf2e722",
+    "1366-azao-collapsed.png": "fbef50b8a5affdec608f5fc4b5eae0f18251f9418d1f0bd0941299ed2ca21444",
+    "before-390-touye.png": "06b7feac9ef955bd2eb76aa0abb9b8e056de63a037073ad167379d36aa4ccb13",
+    "before-discard-height-fix.json": "396a555e27ed921d27168ce459eb7d446fb72668dc443377d06058d50bb10ac4",
+    "1366-erxiang-collapsed.png": "cf959b21301f99e82dd672d8871d0ef403899ee868d97b9c8221babd228195e9",
+    "1366-xiemu-collapsed.png": "6647de5b15d8184844704d8e51a108572034d17e3bbe3bd6d4512abba084b771",
+    "cold-boot-navigation-timeout.json": "eb578187a790e9040b4d8652b889f3f8b3f77e7b6462e655ab15c42d0cce66e7",
+    "390-xiemu-expanded.png": "814d8c45ebebf65911db08e9b8adb2f5b0e0a3625934541bbec494bb118ab2ac",
+    "build.log": "6a2c98e4046d7fbda7d32ea0cffef1b51493b715a9fcbc0f710159c977b6e449",
+    "overstrict-gap-check-failure.json": "fa2946950af6f9d9295cb88eaab3e1b26530d7dadb1f88d8de77edcb042e97b1",
+    "390-azao-collapsed.png": "3e380c23884bcda924e828d0a401f2b8d457a35ffed01e9ee005fcaa24ad2637",
+    "initial-harness-setup-failure.json": "668031912e06cbde53d6050adf82b92f54ad49df740a9e54f8a19eb5979fe532",
+    "1366-xiemu-expanded.png": "00d178aa455d92edbe9efb99257c9967d44634af92cdb52f373d543a0c8013c2",
+    "1366-amo-collapsed.png": "b0e7bfdd8af265286f83fcd7b0171b703d13a05308b2b6c7bf6fba7f16c69941",
+    "390-erxiang-expanded.png": "65f4f32f8aa6b11b51ff3f87d3e48c21979040aa5051c47aaf4ec837cb1d96d3",
+    "390-touye-confirm.png": "b1a5dedef9c7fbd27028e2f6a2b07abb9dadf8ca3cf257061eb39b2a850613b3",
+    "initial-unit-dom-fake-failure.log": "f8a3b44a108bb6ff7a447a3115ac799ded9851e41f76bd8632ffc525c1510519",
+    "390-laohuan-expanded.png": "0b7cb10fe87b8fabd8c9de423db0ae930315bd28188cf2294f016c6b86f4da1c",
+    "1366-touye-confirm.png": "5d494a86071ecaa98457c937729a91fd3d369f8ae8d1a90bf415e80112b12a7e",
+    "1366-laohuan-expanded.png": "05b50a57d9a4c27541d4cdecd0ed446b4e656e240deaacda44e5e58c4fb12e2c",
+    "README.md": "9c695623a2fb5a18bd59f27f9eb58638467c261f90f215b822677739202b1d60",
+    "unit-contention-timeout.log": "2b0240daf58354b2722afb30600fc86b4440bc31aed674bc6aceaaf20818eb36",
+    "guide-isolated-pass.log": "f68d01e012aa84382ff732a017fa1f4c145b15e1ea67d2e4ad52651c55fd9001",
+    "1366-amo-expanded.png": "f14985e8f868609c32288d713a4b63dde8616ea256376efbbebb2d8041cd4a5d",
+    "390-suit-edge-sweep.png": "3b2ccf51ac8d763f7ad63fda2989eb611e91827d5b7f55ad9be3d4bf786e742d",
+    "1366-suit-edge-sweep.png": "e73f220426901d75b153895568b804ec930358483cd4297a3a81cd9c05d31954",
+    "390-amo-expanded.png": "d0e20d10f616f4d54b3c87cb82560c9d32ad0c0cbb5c1f98de1a463a8d85a27f",
+    "1366-laohuan-passive.png": "a531bcf25375d75cb7e3e725d2b6e2605ee8910b14aa41a7de54c4fe3b8b9be3",
+    "390-laohuan-passive.png": "1b357b3718b0a59d25ceb88719a284798c6bb7de85449d0c96aa644dece11612",
+    "390-touye-collapsed.png": "e811cbc6b7058f1a3d0cc42f151130b4490b42850539d9d12605974e7d129d9d",
+    "fixture-king-condition-failure.json": "c2949941fe1f1e4a992f311574ca9688f19949aefe0ee752086a1581da17a104",
+    "1366-azao-expanded.png": "7a12c422bd195ee41c697e6593667504c81a56fd3e5bb1462299f7f646a4b504",
+    "report.json": "fea5336aa1e5cc03019bead0608a5346de6d727638e4c56a81eeff19813cd4d0",
+    "390-erxiang-collapsed.png": "44ee4b03e13a16c570ae9b5b677755265a90018a072090c5da3094ca6770f7de",
+    "390-xiemu-collapsed.png": "ab474e20f649682e5068e5baa39d25b85520354b100b431ef354cd185f991043",
+    "1366-erxiang-expanded.png": "64fb04c571b7f01781f967df74f0386f85ff988eab27c92041f5dd2df6abd949",
+    "compatibility-pass.log": "f58d2d671333c3f675384621f0386dbe36a8ad1a19fabc3cd0d6a594c9e6b713",
+    "390-amo-collapsed.png": "d488c610ffe3caa9cd5b3e25ea693d593d34f6b5571731587fe38c1bf121f649",
+    "smoke-suit-target-owner.patch": "d44265e29bab2823ca752ac843db141ee3a5984f30a1a06bdd77b970dbd15c27",
+    "390-azao-expanded.png": "b695c66f6e8c66fdacbcf26a69a09b8cdffe9c8795ab15d306f1a14a80cc5f74"
+  },
+  "sharedSmokePatchCheck": "git apply --check PASS; not applied or executed",
+  "services": "Vite5583 and browser closed; no listener on5583"
+}

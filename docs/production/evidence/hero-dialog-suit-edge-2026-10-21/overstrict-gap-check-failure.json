@@ -1,0 +1,200 @@
+{
+  "scope": "1366x900 mouse and 390x740 touch; Linux Chromium Canvas. Controlled current identities installed via validated session.importJSON as fixture setup; subsequent interactions are native mouse/touch. Bounded table interactions only. Physical devices, GPU, audio and aesthetics acceptance NOT_RUN.",
+  "source": {
+    "src/game/GameScene.ts": "a4508924a3a135871c00fbc928aa7e4ba2ddc91f86b759bea8aa2a0227f83494",
+    "src/game/HeroSkillDialog.ts": "eb6f1373994d637536f805d77493169bbc44cedfd1db7a63e762d4169962e3be",
+    "src/game/HeroSkillDialog.css": "501d8c392a01c07eef5ffa3147967ce61679ce147e50537b7f8ee54af97a260d",
+    "src/game/HeroSkillGuide.ts": "914b848a71dd31c26352e4e611503201571dce04772baaf1c6f25d898ea5aba7",
+    "src/game/HeroDiscardChoice.ts": "f219b65f77b0b40828a70f29175276c9cb06f1559fbf69763979d6d3a1d1282b",
+    "src/game/AssistChoiceDialog.ts": "72ee3dc2b05627016033783c4863a1326db5c5b6ed3f9333bd769c2876a308a8",
+    "src/game/HandSuitSort.ts": "9006cb6e7c903960b1f35355edaaa094f78af1c5de0dccc1ea64ab17b7aac10e"
+  },
+  "cases": [
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "hero": "amo",
+      "explanation": {
+        "illustrated": true,
+        "inner": {
+          "x": 604.03125,
+          "y": 261.8125,
+          "width": 381.96875,
+          "height": 362.875,
+          "bottom": 624.6875,
+          "right": 986
+        },
+        "dialog": {
+          "x": 363,
+          "y": 185.3125,
+          "width": 640,
+          "height": 529.375,
+          "bottom": 714.6875,
+          "right": 1003
+        },
+        "content": {
+          "x": 364,
+          "y": 245.8125,
+          "width": 638,
+          "height": 394.875,
+          "bottom": 640.6875,
+          "right": 1002,
+          "clientHeight": 395,
+          "scrollHeight": 395,
+          "scrollTop": 0
+        },
+        "buttons": [
+          {
+            "label": "返回牌桌",
+            "primary": false,
+            "close": true,
+            "x": 384,
+            "y": 653.6875,
+            "width": 295,
+            "height": 48,
+            "bottom": 701.6875,
+            "right": 679
+          },
+          {
+            "label": "查看本场技能操作",
+            "primary": false,
+            "close": false,
+            "x": 687,
+            "y": 653.6875,
+            "width": 295,
+            "height": 48,
+            "bottom": 701.6875,
+            "right": 982
+          }
+        ],
+        "viewport": {
+          "width": 1366,
+          "height": 900
+        }
+      },
+      "collapsed": {
+        "illustrated": false,
+        "inner": {
+          "x": 380,
+          "y": 379.90625,
+          "width": 606,
+          "height": 126.6875,
+          "bottom": 506.59375,
+          "right": 986
+        },
+        "dialog": {
+          "x": 363,
+          "y": 303.40625,
+          "width": 640,
+          "height": 293.1875,
+          "bottom": 596.59375,
+          "right": 1003
+        },
+        "content": {
+          "x": 364,
+          "y": 363.90625,
+          "width": 638,
+          "height": 158.6875,
+          "bottom": 522.59375,
+          "right": 1002,
+          "clientHeight": 159,
+          "scrollHeight": 159,
+          "scrollTop": 0
+        },
+        "buttons": [
+          {
+            "label": "返回选牌",
+            "primary": false,
+            "close": true,
+            "x": 384,
+            "y": 535.59375,
+            "width": 295,
+            "height": 48,
+            "bottom": 583.59375,
+            "right": 679
+          },
+          {
+            "label": "本手使用贬谪 ×3",
+            "primary": true,
+            "close": false,
+            "x": 687,
+            "y": 535.59375,
+            "width": 295,
+            "height": 48,
+            "bottom": 583.59375,
+            "right": 982
+          }
+        ],
+        "viewport": {
+          "width": 1366,
+          "height": 900
+        }
+      },
+      "collapsedShot": "1366-amo-collapsed.png",
+      "expanded": {
+        "illustrated": false,
+        "inner": {
+          "x": 380,
+          "y": 326.3125,
+          "width": 606,
+          "height": 221.875,
+          "bottom": 548.1875,
+          "right": 986
+        },
+        "dialog": {
+          "x": 363,
+          "y": 249.8125,
+          "width": 640,
+          "height": 400.375,
+          "bottom": 650.1875,
+          "right": 1003
+        },
+        "content": {
+          "x": 364,
+          "y": 310.3125,
+          "width": 638,
+          "height": 265.875,
+          "bottom": 576.1875,
+          "right": 1002,
+          "clientHeight": 266,
+          "scrollHeight": 266,
+          "scrollTop": 0
+        },
+        "buttons": [
+          {
+            "label": "返回选牌",
+            "primary": false,
+            "close": true,
+            "x": 384,
+            "y": 589.1875,
+            "width": 295,
+            "height": 48,
+            "bottom": 637.1875,
+            "right": 679
+          },
+          {
+            "label": "本手使用贬谪 ×3",
+            "primary": true,
+            "close": false,
+            "x": 687,
+            "y": 589.1875,
+            "width": 295,
+            "height": 48,
+            "bottom": 637.1875,
+            "right": 982
+          }
+        ],
+        "viewport": {
+          "width": 1366,
+          "height": 900
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "browser": "151.0.7922.173",
+  "status": "FAIL",
+  "error": "AssertionError [ERR_ASSERTION]: short content must not leave a stretched empty workspace: {\"illustrated\":false,\"inner\":{\"x\":380,\"y\":326.3125,\"width\":606,\"height\":221.875,\"bottom\":548.1875,\"right\":986},\"dialog\":{\"x\":363,\"y\":249.8125,\"width\":640,\"height\":400.375,\"bottom\":650.1875,\"right\":1003},\"content\":{\"x\":364,\"y\":310.3125,\"width\":638,\"height\":265.875,\"bottom\":576.1875,\"right\":1002,\"clientHeight\":266,\"scrollHeight\":266,\"scrollTop\":0},\"buttons\":[{\"label\":\"返回选牌\",\"primary\":false,\"close\":true,\"x\":384,\"y\":589.1875,\"width\":295,\"height\":48,\"bottom\":637.1875,\"right\":679},{\"label\":\"本手使用贬谪 ×3\",\"primary\":true,\"close\":false,\"x\":687,\"y\":589.1875,\"width\":295,\"height\":48,\"bottom\":637.1875,\"right\":982}],\"viewport\":{\"width\":1366,\"height\":900}}\n    at reachable (file:///workspace/tangsongpai/harness/hero-dialog-suit-edge.mjs:34:98)\n    at file:///workspace/tangsongpai/harness/hero-dialog-suit-edge.mjs:58:34"
+}

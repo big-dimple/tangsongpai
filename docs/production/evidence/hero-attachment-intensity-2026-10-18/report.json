@@ -1,0 +1,5152 @@
+{
+  "status": "PASS_SOFTWARE_SCOPE_ONLY",
+  "base": "9fe60fc581227829df6caadc712a5bd0fed74bc4",
+  "product": "5b9dd206771bc27f29ac7be2a24058441f0bc83c",
+  "runtimeHead": "9fe60fc581227829df6caadc712a5bd0fed74bc4",
+  "browser": "153.0.8010.12",
+  "speed": 1,
+  "scope": "Current-main six-hero atmosphere batch at ordinary speed1. Current Su Shi exile uses native main selection and ability shortcut; other heroes use controlled legal Scene drafts and actual saved commands. All use the same production GameScene queue unchanged. No subjective aesthetic, natural acquisition or physical-device acceptance",
+  "acceptance": {
+    "aesthetic": "PENDING_REVIEW",
+    "remoteDotSameVersion": "NOT_RUN_ROOT_COORDINATION_REQUIRED",
+    "physicalDevice": "NOT_RUN",
+    "userGoalComplete": false,
+    "localBrowserRunsAfterStopInstruction": 0,
+    "suShiDirection": "SUPERSEDED_DISCARDED_INSTANCE_SOURCE_REQUIRED_NOT_FINAL",
+    "otherFive": "CANDIDATES_RETAINED",
+    "nextSuShi": "Prepare isolated discarded-instance dissolution and trace-to-score flow; await confirmed quantity and lifecycle contract before wiring"
+  },
+  "checks": {
+    "unitFiles": 4,
+    "unitTests": 26,
+    "typecheck": "PASS",
+    "build": "PASS",
+    "buildModules": 361
+  },
+  "budget": {
+    "maxVisibleTargets": 5,
+    "maxOrbitAndCostMotes": 30,
+    "maxSourceHeads": 2,
+    "desktopHz": 30,
+    "drawingLayers": 2,
+    "newArtAssets": 0,
+    "configuredNarrowLogicalWidthHz": 20,
+    "maxCadenceHz": 30,
+    "observedMobileCadenceHz": [
+      30
+    ],
+    "observedDesktopCadenceHz": [
+      30
+    ]
+  },
+  "cases": [
+    {
+      "key": "1366-amo",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "status": "PASS",
+      "checks": [
+        ">=3.3 seconds continuous idle flow without input; actual exterior pixels change; state/journal/storage unchanged; exact instances only; labels avoid controls",
+        "actual print/art and all normal cards protected; 0 overlay on/off pixel changes in protected regions",
+        "reduced motion keeps semantic static edges; no flowing phase or exterior pixel changes",
+        "hidden removes visuals; return resumes idle without replaying travel",
+        "cancel removes exact pending target; fresh deliberate draft can reattach",
+        "actual command saved once; canonical state equals domain result; release follows actual source impact; completed presentation removes all edges"
+      ],
+      "expectedEvent": {
+        "id": "controlled/attachment/exile/hand/controlled/attachment/exile/command/4/event/4",
+        "reason": "amo.exile",
+        "targetIds": [
+          "spades-8",
+          "hearts-8"
+        ]
+      },
+      "pending": [
+        {
+          "targetId": "group/spades-8",
+          "kind": "group",
+          "members": [
+            "spades-8",
+            "hearts-8"
+          ],
+          "phase": "idle",
+          "flow": 0.27042499999999964
+        }
+      ],
+      "labels": [
+        {
+          "text": "本手×4",
+          "bounds": {
+            "type": 5,
+            "x": 388,
+            "y": 500.2239995117187,
+            "width": 50,
+            "height": 18
+          },
+          "intersectsControl": false
+        }
+      ],
+      "protectedPrintPixels": 0,
+      "changedExteriorPixels": 2005,
+      "reducedExteriorPixels": 0,
+      "reducedStats": {
+        "particles": 0,
+        "segments": 0,
+        "markers": 7,
+        "costParticles": 0,
+        "targets": 2,
+        "style": "exile",
+        "full": false
+      },
+      "cleanup": true,
+      "style": [
+        "exile"
+      ],
+      "maxOrbitAndCostMotes": 15,
+      "originKinds": [
+        "portrait"
+      ],
+      "maxSourceHeads": 2,
+      "phases": [
+        {
+          "at": 2849.9000000059605,
+          "atmosphere": {
+            "stats": {
+              "particles": 5,
+              "segments": 80,
+              "markers": 0,
+              "costParticles": 6,
+              "targets": 2,
+              "style": "exile",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8"
+            ],
+            "costIds": [
+              "clubs-7",
+              "diamonds-7",
+              "spades-13",
+              "hearts-13",
+              "clubs-2",
+              "diamonds-4"
+            ],
+            "phase": "travel",
+            "clock": 0,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 103,
+              "heads": 2
+            },
+            "sourceKind": "portrait",
+            "progress": 0
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8"
+              ],
+              "phase": "travel",
+              "labelText": "本手×4"
+            }
+          ]
+        },
+        {
+          "at": 3033.800000011921,
+          "atmosphere": {
+            "stats": {
+              "particles": 5,
+              "segments": 78,
+              "markers": 0,
+              "costParticles": 6,
+              "targets": 2,
+              "style": "exile",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8"
+            ],
+            "costIds": [
+              "clubs-7",
+              "diamonds-7",
+              "spades-13",
+              "hearts-13",
+              "clubs-2",
+              "diamonds-4"
+            ],
+            "phase": "idle",
+            "clock": 199.68666666666647,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 33,
+              "heads": 0
+            },
+            "sourceKind": "portrait",
+            "progress": 0.2773425925925923
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8"
+              ],
+              "phase": "idle",
+              "labelText": "本手×4"
+            }
+          ]
+        },
+        {
+          "at": 8751.90000000596,
+          "atmosphere": {
+            "stats": {
+              "particles": 6,
+              "segments": 85,
+              "markers": 0,
+              "costParticles": 6,
+              "targets": 2,
+              "style": "exile",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8"
+            ],
+            "costIds": [
+              "clubs-7",
+              "diamonds-7",
+              "spades-13",
+              "hearts-13",
+              "clubs-2",
+              "diamonds-4"
+            ],
+            "phase": "committed",
+            "clock": 99.8266666666667,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8"
+              ],
+              "phase": "committed",
+              "eventId": "controlled/attachment/exile/hand/controlled/attachment/exile/command/4/event/4",
+              "labelText": "待兑现"
+            }
+          ]
+        },
+        {
+          "at": 11560,
+          "atmosphere": {
+            "stats": {
+              "particles": 1,
+              "segments": 109,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 2,
+              "style": "exile",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 2896.956666666654,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/exile/hand/controlled/attachment/exile/command/4/event/4",
+              "labelText": "已×4"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/exile/hand/controlled/attachment/exile/command/4/event/4",
+          "scorePhase": "impact"
+        }
+      ],
+      "firstOrigin": {
+        "at": 2849.9000000059605,
+        "atmosphere": {
+          "stats": {
+            "particles": 5,
+            "segments": 80,
+            "markers": 0,
+            "costParticles": 6,
+            "targets": 2,
+            "style": "exile",
+            "full": true
+          },
+          "members": [
+            "spades-8",
+            "hearts-8"
+          ],
+          "costIds": [
+            "clubs-7",
+            "diamonds-7",
+            "spades-13",
+            "hearts-13",
+            "clubs-2",
+            "diamonds-4"
+          ],
+          "phase": "travel",
+          "clock": 0,
+          "cadenceHz": 30,
+          "sourceKind": "portrait"
+        },
+        "stream": {
+          "stats": {
+            "segments": 103,
+            "heads": 2
+          },
+          "sourceKind": "portrait",
+          "progress": 0
+        },
+        "edges": [
+          {
+            "targetId": "group/spades-8",
+            "members": [
+              "spades-8",
+              "hearts-8"
+            ],
+            "phase": "travel",
+            "labelText": "本手×4"
+          }
+        ]
+      },
+      "release": [
+        {
+          "at": 11560,
+          "atmosphere": {
+            "stats": {
+              "particles": 1,
+              "segments": 109,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 2,
+              "style": "exile",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 2896.956666666654,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/exile/hand/controlled/attachment/exile/command/4/event/4",
+              "labelText": "已×4"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/exile/hand/controlled/attachment/exile/command/4/event/4",
+          "scorePhase": "impact"
+        },
+        {
+          "at": 11578.10000000894,
+          "atmosphere": {
+            "stats": {
+              "particles": 0,
+              "segments": 106,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 2,
+              "style": "exile",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 2930.286666666654,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/exile/hand/controlled/attachment/exile/command/4/event/4",
+              "labelText": "已×4"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/exile/hand/controlled/attachment/exile/command/4/event/4",
+          "scorePhase": "impact"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "key": "1366-erxiang",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "status": "PASS",
+      "checks": [
+        ">=3.3 seconds continuous idle flow without input; actual exterior pixels change; state/journal/storage unchanged; exact instances only; labels avoid controls",
+        "actual print/art and all normal cards protected; 0 overlay on/off pixel changes in protected regions",
+        "reduced motion keeps semantic static edges; no flowing phase or exterior pixel changes",
+        "hidden removes visuals; return resumes idle without replaying travel",
+        "cancel removes exact pending target; fresh deliberate draft can reattach",
+        "actual command saved once; canonical state equals domain result; release follows actual source impact; completed presentation removes all edges"
+      ],
+      "expectedEvent": {
+        "id": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/2",
+        "reason": "erxiang.handoff",
+        "targetIds": [
+          "spades-8"
+        ]
+      },
+      "pending": [
+        {
+          "targetId": "spades-8",
+          "kind": "card",
+          "members": [
+            "spades-8"
+          ],
+          "phase": "idle",
+          "flow": 0.22885416666666647
+        }
+      ],
+      "labels": [
+        {
+          "text": "待转",
+          "bounds": {
+            "type": 5,
+            "x": 303.63999755859373,
+            "y": 661.9999995117188,
+            "width": 32,
+            "height": 18
+          },
+          "intersectsControl": false
+        }
+      ],
+      "protectedPrintPixels": 0,
+      "changedExteriorPixels": 1377,
+      "reducedExteriorPixels": 0,
+      "reducedStats": {
+        "particles": 0,
+        "segments": 0,
+        "markers": 4,
+        "costParticles": 0,
+        "targets": 1,
+        "style": "handoff",
+        "full": false
+      },
+      "cleanup": true,
+      "style": [
+        "handoff"
+      ],
+      "maxOrbitAndCostMotes": 4,
+      "originKinds": [
+        "portrait"
+      ],
+      "maxSourceHeads": 1,
+      "phases": [
+        {
+          "at": 1567.7000000029802,
+          "atmosphere": {
+            "stats": {
+              "particles": 1,
+              "segments": 54,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 1,
+              "style": "handoff",
+              "full": true
+            },
+            "members": [
+              "spades-8"
+            ],
+            "costIds": [],
+            "phase": "travel",
+            "clock": 0,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 55,
+              "heads": 1
+            },
+            "sourceKind": "portrait",
+            "progress": 0
+          },
+          "edges": [
+            {
+              "targetId": "spades-8",
+              "members": [
+                "spades-8"
+              ],
+              "phase": "travel",
+              "labelText": "待转"
+            }
+          ]
+        },
+        {
+          "at": 1753.9000000059605,
+          "atmosphere": {
+            "stats": {
+              "particles": 2,
+              "segments": 51,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 1,
+              "style": "handoff",
+              "full": true
+            },
+            "members": [
+              "spades-8"
+            ],
+            "costIds": [],
+            "phase": "idle",
+            "clock": 199.72666666666657,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 36,
+              "heads": 0
+            },
+            "sourceKind": "portrait",
+            "progress": 0.277398148148148
+          },
+          "edges": [
+            {
+              "targetId": "spades-8",
+              "members": [
+                "spades-8"
+              ],
+              "phase": "idle",
+              "labelText": "待转"
+            }
+          ]
+        },
+        {
+          "at": 7476,
+          "atmosphere": {
+            "stats": {
+              "particles": 1,
+              "segments": 52,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 1,
+              "style": "handoff",
+              "full": true
+            },
+            "members": [
+              "spades-8"
+            ],
+            "costIds": [],
+            "phase": "committed",
+            "clock": 16.639999999999965,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "spades-8",
+              "members": [
+                "spades-8"
+              ],
+              "phase": "committed",
+              "eventId": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/2",
+              "labelText": "待转"
+            }
+          ]
+        },
+        {
+          "at": 8663.90000000596,
+          "atmosphere": {
+            "stats": {
+              "particles": 1,
+              "segments": 38,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 1,
+              "style": "handoff",
+              "full": true
+            },
+            "members": [
+              "spades-8"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 1214.7866666666714,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "spades-8",
+              "members": [
+                "spades-8"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/2",
+              "labelText": "已转"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/2",
+          "scorePhase": "impact"
+        }
+      ],
+      "firstOrigin": {
+        "at": 1567.7000000029802,
+        "atmosphere": {
+          "stats": {
+            "particles": 1,
+            "segments": 54,
+            "markers": 0,
+            "costParticles": 0,
+            "targets": 1,
+            "style": "handoff",
+            "full": true
+          },
+          "members": [
+            "spades-8"
+          ],
+          "costIds": [],
+          "phase": "travel",
+          "clock": 0,
+          "cadenceHz": 30,
+          "sourceKind": "portrait"
+        },
+        "stream": {
+          "stats": {
+            "segments": 55,
+            "heads": 1
+          },
+          "sourceKind": "portrait",
+          "progress": 0
+        },
+        "edges": [
+          {
+            "targetId": "spades-8",
+            "members": [
+              "spades-8"
+            ],
+            "phase": "travel",
+            "labelText": "待转"
+          }
+        ]
+      },
+      "release": [
+        {
+          "at": 8663.90000000596,
+          "atmosphere": {
+            "stats": {
+              "particles": 1,
+              "segments": 38,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 1,
+              "style": "handoff",
+              "full": true
+            },
+            "members": [
+              "spades-8"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 1214.7866666666714,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "spades-8",
+              "members": [
+                "spades-8"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/2",
+              "labelText": "已转"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/2",
+          "scorePhase": "impact"
+        },
+        {
+          "at": 8681.70000000298,
+          "atmosphere": {
+            "stats": {
+              "particles": 1,
+              "segments": 40,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 1,
+              "style": "handoff",
+              "full": true
+            },
+            "members": [
+              "spades-8"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 1248.060000000005,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "spades-8",
+              "members": [
+                "spades-8"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/2",
+              "labelText": "已转"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/2",
+          "scorePhase": "impact"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "key": "1366-azao",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "status": "PASS",
+      "checks": [
+        ">=3.3 seconds continuous idle flow without input; actual exterior pixels change; state/journal/storage unchanged; exact instances only; labels avoid controls",
+        "actual print/art and all normal cards protected; 0 overlay on/off pixel changes in protected regions",
+        "reduced motion keeps semantic static edges; no flowing phase or exterior pixel changes",
+        "hidden removes visuals; return resumes idle without replaying travel",
+        "actual command saved once; canonical state equals domain result; release follows actual source impact; completed presentation removes all edges"
+      ],
+      "expectedEvent": {
+        "id": "controlled/attachment/azao/hand/controlled/attachment/azao/command/5/event/6",
+        "reason": "azao.multiply-multiplier",
+        "targetIds": [
+          "spades-8",
+          "hearts-8",
+          "clubs-7",
+          "diamonds-7"
+        ]
+      },
+      "pending": [
+        {
+          "targetId": "group/spades-8",
+          "kind": "group",
+          "members": [
+            "spades-8",
+            "hearts-8",
+            "clubs-7",
+            "diamonds-7"
+          ],
+          "phase": "idle",
+          "flow": 0.20805000000000032
+        }
+      ],
+      "labels": [
+        {
+          "text": "本手待放",
+          "bounds": {
+            "type": 5,
+            "x": 484.32000732421875,
+            "y": 500.2239995117187,
+            "width": 58,
+            "height": 18
+          },
+          "intersectsControl": false
+        }
+      ],
+      "protectedPrintPixels": 0,
+      "changedExteriorPixels": 5664,
+      "reducedExteriorPixels": 0,
+      "reducedStats": {
+        "particles": 0,
+        "segments": 0,
+        "markers": 15,
+        "costParticles": 0,
+        "targets": 4,
+        "style": "charge",
+        "full": false
+      },
+      "cleanup": true,
+      "style": [
+        "charge"
+      ],
+      "maxOrbitAndCostMotes": 18,
+      "originKinds": [
+        "portrait"
+      ],
+      "maxSourceHeads": 2,
+      "phases": [
+        {
+          "at": 1574.2000000029802,
+          "atmosphere": {
+            "stats": {
+              "particles": 10,
+              "segments": 213,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "charge",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "travel",
+            "clock": 0,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 112,
+              "heads": 2
+            },
+            "sourceKind": "portrait",
+            "progress": 0
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "travel",
+              "labelText": "本手待放"
+            }
+          ]
+        },
+        {
+          "at": 1769.5999999940395,
+          "atmosphere": {
+            "stats": {
+              "particles": 10,
+              "segments": 202,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "charge",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "idle",
+            "clock": 199.73333333333375,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 37,
+              "heads": 0
+            },
+            "sourceKind": "portrait",
+            "progress": 0.277407407407408
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "idle",
+              "labelText": "本手待放"
+            }
+          ]
+        },
+        {
+          "at": 7471.20000000298,
+          "atmosphere": {
+            "stats": {
+              "particles": 17,
+              "segments": 215,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "charge",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "committed",
+            "clock": 5097.506666666665,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "committed",
+              "eventId": "controlled/attachment/azao/hand/controlled/attachment/azao/command/5/event/6",
+              "labelText": "待兑现"
+            }
+          ]
+        },
+        {
+          "at": 10977.40000000596,
+          "atmosphere": {
+            "stats": {
+              "particles": 9,
+              "segments": 213,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "charge",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 8594.563333333332,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/azao/hand/controlled/attachment/azao/command/5/event/6",
+              "labelText": "已释放"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/azao/hand/controlled/attachment/azao/command/5/event/6",
+          "scorePhase": "impact"
+        }
+      ],
+      "firstOrigin": {
+        "at": 1574.2000000029802,
+        "atmosphere": {
+          "stats": {
+            "particles": 10,
+            "segments": 213,
+            "markers": 0,
+            "costParticles": 0,
+            "targets": 4,
+            "style": "charge",
+            "full": true
+          },
+          "members": [
+            "spades-8",
+            "hearts-8",
+            "clubs-7",
+            "diamonds-7"
+          ],
+          "costIds": [],
+          "phase": "travel",
+          "clock": 0,
+          "cadenceHz": 30,
+          "sourceKind": "portrait"
+        },
+        "stream": {
+          "stats": {
+            "segments": 112,
+            "heads": 2
+          },
+          "sourceKind": "portrait",
+          "progress": 0
+        },
+        "edges": [
+          {
+            "targetId": "group/spades-8",
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "phase": "travel",
+            "labelText": "本手待放"
+          }
+        ]
+      },
+      "release": [
+        {
+          "at": 10977.40000000596,
+          "atmosphere": {
+            "stats": {
+              "particles": 9,
+              "segments": 213,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "charge",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 8594.563333333332,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/azao/hand/controlled/attachment/azao/command/5/event/6",
+              "labelText": "已释放"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/azao/hand/controlled/attachment/azao/command/5/event/6",
+          "scorePhase": "impact"
+        },
+        {
+          "at": 10996,
+          "atmosphere": {
+            "stats": {
+              "particles": 8,
+              "segments": 213,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "charge",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 8627.883333333331,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/azao/hand/controlled/attachment/azao/command/5/event/6",
+              "labelText": "已释放"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/azao/hand/controlled/attachment/azao/command/5/event/6",
+          "scorePhase": "impact"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "key": "1366-xiemu",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "status": "PASS",
+      "checks": [
+        ">=3.3 seconds continuous idle flow without input; actual exterior pixels change; state/journal/storage unchanged; exact instances only; labels avoid controls",
+        "actual print/art and all normal cards protected; 0 overlay on/off pixel changes in protected regions",
+        "reduced motion keeps semantic static edges; no flowing phase or exterior pixel changes",
+        "hidden removes visuals; return resumes idle without replaying travel",
+        "actual command saved once; canonical state equals domain result; release follows actual source impact; completed presentation removes all edges"
+      ],
+      "expectedEvent": {
+        "id": "controlled/attachment/xiemu/hand/controlled/attachment/xiemu/command/4/event/6",
+        "reason": "xiemu.multiply-multiplier",
+        "targetIds": [
+          "spades-8",
+          "hearts-8",
+          "clubs-7",
+          "diamonds-7"
+        ]
+      },
+      "pending": [
+        {
+          "targetId": "group/spades-8",
+          "kind": "group",
+          "members": [
+            "spades-8",
+            "hearts-8",
+            "clubs-7",
+            "diamonds-7"
+          ],
+          "phase": "idle",
+          "flow": 0.21842499999999976
+        }
+      ],
+      "labels": [
+        {
+          "text": "待付10",
+          "bounds": {
+            "type": 5,
+            "x": 488.82000732421875,
+            "y": 500.2239995117187,
+            "width": 49,
+            "height": 18
+          },
+          "intersectsControl": false
+        }
+      ],
+      "protectedPrintPixels": 0,
+      "changedExteriorPixels": 6548,
+      "reducedExteriorPixels": 0,
+      "reducedStats": {
+        "particles": 0,
+        "segments": 0,
+        "markers": 15,
+        "costParticles": 0,
+        "targets": 4,
+        "style": "burn",
+        "full": false
+      },
+      "cleanup": true,
+      "style": [
+        "burn"
+      ],
+      "maxOrbitAndCostMotes": 18,
+      "originKinds": [
+        "portrait"
+      ],
+      "maxSourceHeads": 2,
+      "phases": [
+        {
+          "at": 1293.199999988079,
+          "atmosphere": {
+            "stats": {
+              "particles": 11,
+              "segments": 207,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "burn",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "travel",
+            "clock": 16.653333333333315,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 112,
+              "heads": 1
+            },
+            "sourceKind": "portrait",
+            "progress": 0.023129629629629604
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "travel",
+              "labelText": "待付10"
+            }
+          ]
+        },
+        {
+          "at": 1495,
+          "atmosphere": {
+            "stats": {
+              "particles": 10,
+              "segments": 207,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "burn",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "idle",
+            "clock": 216.3333333333331,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 35,
+              "heads": 0
+            },
+            "sourceKind": "portrait",
+            "progress": 0.3004629629629626
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "idle",
+              "labelText": "待付10"
+            }
+          ]
+        },
+        {
+          "at": 7139.5,
+          "atmosphere": {
+            "stats": {
+              "particles": 14,
+              "segments": 226,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "burn",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "committed",
+            "clock": 5032.49000000596,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "committed",
+              "eventId": "controlled/attachment/xiemu/hand/controlled/attachment/xiemu/command/4/event/6",
+              "labelText": "已付10·待算"
+            }
+          ]
+        },
+        {
+          "at": 10658.5,
+          "atmosphere": {
+            "stats": {
+              "particles": 8,
+              "segments": 206,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "burn",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 8563.263333339282,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/xiemu/hand/controlled/attachment/xiemu/command/4/event/6",
+              "labelText": "已付10"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/xiemu/hand/controlled/attachment/xiemu/command/4/event/6",
+          "scorePhase": "impact"
+        }
+      ],
+      "firstOrigin": {
+        "at": 1293.199999988079,
+        "atmosphere": {
+          "stats": {
+            "particles": 11,
+            "segments": 207,
+            "markers": 0,
+            "costParticles": 0,
+            "targets": 4,
+            "style": "burn",
+            "full": true
+          },
+          "members": [
+            "spades-8",
+            "hearts-8",
+            "clubs-7",
+            "diamonds-7"
+          ],
+          "costIds": [],
+          "phase": "travel",
+          "clock": 16.653333333333315,
+          "cadenceHz": 30,
+          "sourceKind": "portrait"
+        },
+        "stream": {
+          "stats": {
+            "segments": 112,
+            "heads": 1
+          },
+          "sourceKind": "portrait",
+          "progress": 0.023129629629629604
+        },
+        "edges": [
+          {
+            "targetId": "group/spades-8",
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "phase": "travel",
+            "labelText": "待付10"
+          }
+        ]
+      },
+      "release": [
+        {
+          "at": 10658.5,
+          "atmosphere": {
+            "stats": {
+              "particles": 8,
+              "segments": 206,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "burn",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 8563.263333339282,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/xiemu/hand/controlled/attachment/xiemu/command/4/event/6",
+              "labelText": "已付10"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/xiemu/hand/controlled/attachment/xiemu/command/4/event/6",
+          "scorePhase": "impact"
+        },
+        {
+          "at": 10676.199999988079,
+          "atmosphere": {
+            "stats": {
+              "particles": 8,
+              "segments": 206,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "burn",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 8563.263333339282,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/xiemu/hand/controlled/attachment/xiemu/command/4/event/6",
+              "labelText": "已付10"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/xiemu/hand/controlled/attachment/xiemu/command/4/event/6",
+          "scorePhase": "impact"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "key": "1366-touye",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "status": "PASS",
+      "checks": [
+        ">=3.3 seconds continuous idle flow without input; actual exterior pixels change; state/journal/storage unchanged; exact instances only; labels avoid controls",
+        "actual print/art and all normal cards protected; 0 overlay on/off pixel changes in protected regions",
+        "reduced motion keeps semantic static edges; no flowing phase or exterior pixel changes",
+        "hidden removes visuals; return resumes idle without replaying travel",
+        "actual command saved once; canonical state equals domain result; release follows actual source impact; completed presentation removes all edges"
+      ],
+      "expectedEvent": {
+        "id": "controlled/attachment/touye/hand/controlled/attachment/touye/command/5/event/5",
+        "reason": "touye.won.three-kind",
+        "targetIds": [
+          "clubs-8"
+        ]
+      },
+      "pending": [
+        {
+          "targetId": "clubs-8",
+          "kind": "wager",
+          "members": [
+            "clubs-8",
+            "diamonds-6"
+          ],
+          "phase": "idle",
+          "flow": 0.32246250000000026
+        },
+        {
+          "targetId": "diamonds-6",
+          "kind": "wager",
+          "members": [
+            "clubs-8",
+            "diamonds-6"
+          ],
+          "phase": "idle",
+          "flow": 0.32246250000000026
+        }
+      ],
+      "labels": [
+        {
+          "text": "新·待判",
+          "bounds": {
+            "type": 5,
+            "x": 950.6799755859375,
+            "y": 661.9999995117188,
+            "width": 51,
+            "height": 18
+          },
+          "intersectsControl": false
+        },
+        {
+          "text": "新·待判",
+          "bounds": {
+            "type": 5,
+            "x": 1058.51994140625,
+            "y": 677.9999995117188,
+            "width": 51,
+            "height": 18
+          },
+          "intersectsControl": false
+        }
+      ],
+      "protectedPrintPixels": 0,
+      "changedExteriorPixels": 2283,
+      "reducedExteriorPixels": 0,
+      "reducedStats": {
+        "particles": 0,
+        "segments": 0,
+        "markers": 8,
+        "costParticles": 0,
+        "targets": 2,
+        "style": "wager",
+        "full": false
+      },
+      "cleanup": true,
+      "style": [
+        "wager"
+      ],
+      "maxOrbitAndCostMotes": 12,
+      "originKinds": [
+        "portrait"
+      ],
+      "maxSourceHeads": 2,
+      "phases": [
+        {
+          "at": 1274.9000000059605,
+          "atmosphere": {
+            "stats": {
+              "particles": 8,
+              "segments": 89,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 2,
+              "style": "wager",
+              "full": true
+            },
+            "members": [
+              "clubs-8",
+              "diamonds-6"
+            ],
+            "costIds": [],
+            "phase": "idle",
+            "clock": 149.7866666666666,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "clubs-8",
+              "members": [
+                "clubs-8",
+                "diamonds-6"
+              ],
+              "phase": "idle",
+              "labelText": "新·待判"
+            },
+            {
+              "targetId": "diamonds-6",
+              "members": [
+                "clubs-8",
+                "diamonds-6"
+              ],
+              "phase": "idle",
+              "labelText": "新·待判"
+            }
+          ]
+        },
+        {
+          "at": 7088.29999999702,
+          "atmosphere": {
+            "stats": {
+              "particles": 6,
+              "segments": 33,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 1,
+              "style": "wager",
+              "full": true
+            },
+            "members": [
+              "clubs-8"
+            ],
+            "costIds": [],
+            "phase": "committed",
+            "clock": 5216.149999999991,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "clubs-8",
+              "members": [
+                "clubs-8"
+              ],
+              "phase": "committed",
+              "eventId": "controlled/attachment/touye/hand/controlled/attachment/touye/command/5/event/5",
+              "labelText": "新·待判"
+            }
+          ]
+        },
+        {
+          "at": 10096.20000000298,
+          "atmosphere": {
+            "stats": {
+              "particles": 3,
+              "segments": 44,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 1,
+              "style": "wager",
+              "full": true
+            },
+            "members": [
+              "clubs-8"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 8213.306666666647,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "clubs-8",
+              "members": [
+                "clubs-8"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/touye/hand/controlled/attachment/touye/command/5/event/5",
+              "labelText": "已参与"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/touye/hand/controlled/attachment/touye/command/5/event/5",
+          "scorePhase": "impact"
+        }
+      ],
+      "firstOrigin": {
+        "at": 2948.7999999970198,
+        "atmosphere": {
+          "stats": {
+            "particles": 11,
+            "segments": 93,
+            "markers": 0,
+            "costParticles": 0,
+            "targets": 2,
+            "style": "wager",
+            "full": true
+          },
+          "members": [
+            "clubs-8",
+            "diamonds-6"
+          ],
+          "costIds": [],
+          "phase": "idle",
+          "clock": 1814.3099999999965,
+          "cadenceHz": 30,
+          "sourceKind": "portrait"
+        },
+        "stream": {
+          "stats": {
+            "segments": 107,
+            "heads": 0
+          },
+          "sourceKind": "portrait",
+          "progress": 0.019874999999995188
+        },
+        "edges": [
+          {
+            "targetId": "clubs-8",
+            "members": [
+              "clubs-8",
+              "diamonds-6"
+            ],
+            "phase": "idle",
+            "labelText": "新·待判"
+          },
+          {
+            "targetId": "diamonds-6",
+            "members": [
+              "clubs-8",
+              "diamonds-6"
+            ],
+            "phase": "idle",
+            "labelText": "新·待判"
+          }
+        ]
+      },
+      "release": [
+        {
+          "at": 10096.20000000298,
+          "atmosphere": {
+            "stats": {
+              "particles": 3,
+              "segments": 44,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 1,
+              "style": "wager",
+              "full": true
+            },
+            "members": [
+              "clubs-8"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 8213.306666666647,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "clubs-8",
+              "members": [
+                "clubs-8"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/touye/hand/controlled/attachment/touye/command/5/event/5",
+              "labelText": "已参与"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/touye/hand/controlled/attachment/touye/command/5/event/5",
+          "scorePhase": "impact"
+        },
+        {
+          "at": 10113.70000000298,
+          "atmosphere": {
+            "stats": {
+              "particles": 2,
+              "segments": 47,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 1,
+              "style": "wager",
+              "full": true
+            },
+            "members": [
+              "clubs-8"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 8246.636666666647,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "clubs-8",
+              "members": [
+                "clubs-8"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/touye/hand/controlled/attachment/touye/command/5/event/5",
+              "labelText": "已参与"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/touye/hand/controlled/attachment/touye/command/5/event/5",
+          "scorePhase": "impact"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "key": "1366-laohuan",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "status": "PASS",
+      "checks": [
+        ">=3.3 seconds continuous idle flow without input; actual exterior pixels change; state/journal/storage unchanged; exact instances only; labels avoid controls",
+        "actual print/art and all normal cards protected; 0 overlay on/off pixel changes in protected regions",
+        "reduced motion keeps semantic static edges; no flowing phase or exterior pixel changes",
+        "hidden removes visuals; return resumes idle without replaying travel",
+        "actual command saved once; canonical state equals domain result; release follows actual source impact; completed presentation removes all edges"
+      ],
+      "expectedEvent": {
+        "kind": "saved ChooseRefill receipt, no ScoreEvent",
+        "targetIds": [
+          "diamonds-14",
+          "diamonds-13",
+          "diamonds-12",
+          "diamonds-11",
+          "diamonds-10"
+        ]
+      },
+      "pending": [
+        {
+          "targetId": "diamonds-14",
+          "kind": "candidate",
+          "members": [
+            "diamonds-14",
+            "diamonds-13",
+            "diamonds-12",
+            "diamonds-11",
+            "diamonds-10"
+          ],
+          "phase": "idle",
+          "flow": 0.22878749999999967
+        },
+        {
+          "targetId": "diamonds-13",
+          "kind": "candidate",
+          "members": [
+            "diamonds-14",
+            "diamonds-13",
+            "diamonds-12",
+            "diamonds-11",
+            "diamonds-10"
+          ],
+          "phase": "idle",
+          "flow": 0.22878749999999967
+        },
+        {
+          "targetId": "diamonds-12",
+          "kind": "candidate",
+          "members": [
+            "diamonds-14",
+            "diamonds-13",
+            "diamonds-12",
+            "diamonds-11",
+            "diamonds-10"
+          ],
+          "phase": "idle",
+          "flow": 0.22878749999999967
+        },
+        {
+          "targetId": "diamonds-11",
+          "kind": "candidate",
+          "members": [
+            "diamonds-14",
+            "diamonds-13",
+            "diamonds-12",
+            "diamonds-11",
+            "diamonds-10"
+          ],
+          "phase": "idle",
+          "flow": 0.22878749999999967
+        },
+        {
+          "targetId": "diamonds-10",
+          "kind": "candidate",
+          "members": [
+            "diamonds-14",
+            "diamonds-13",
+            "diamonds-12",
+            "diamonds-11",
+            "diamonds-10"
+          ],
+          "phase": "idle",
+          "flow": 0.22878749999999967
+        }
+      ],
+      "labels": [
+        {
+          "text": "待留",
+          "bounds": {
+            "type": 5,
+            "x": 357.5600109863281,
+            "y": 661.9999995117188,
+            "width": 32,
+            "height": 18
+          },
+          "intersectsControl": false
+        },
+        {
+          "text": "待留",
+          "bounds": {
+            "type": 5,
+            "x": 465.40000732421873,
+            "y": 661.9999995117188,
+            "width": 32,
+            "height": 18
+          },
+          "intersectsControl": false
+        },
+        {
+          "text": "待留",
+          "bounds": {
+            "type": 5,
+            "x": 573.2399731445313,
+            "y": 661.9999995117188,
+            "width": 32,
+            "height": 18
+          },
+          "intersectsControl": false
+        },
+        {
+          "text": "待留",
+          "bounds": {
+            "type": 5,
+            "x": 681.08,
+            "y": 661.9999995117188,
+            "width": 32,
+            "height": 18
+          },
+          "intersectsControl": false
+        },
+        {
+          "text": "待留",
+          "bounds": {
+            "type": 5,
+            "x": 788.9200268554688,
+            "y": 661.9999995117188,
+            "width": 32,
+            "height": 18
+          },
+          "intersectsControl": false
+        }
+      ],
+      "protectedPrintPixels": 0,
+      "changedExteriorPixels": 6050,
+      "reducedExteriorPixels": 0,
+      "reducedStats": {
+        "particles": 0,
+        "segments": 0,
+        "markers": 20,
+        "costParticles": 0,
+        "targets": 5,
+        "style": "retain",
+        "full": false
+      },
+      "cleanup": true,
+      "style": [
+        "retain"
+      ],
+      "maxOrbitAndCostMotes": 25,
+      "originKinds": [
+        "portrait"
+      ],
+      "maxSourceHeads": 2,
+      "phases": [
+        {
+          "at": 1269.5,
+          "atmosphere": {
+            "stats": {
+              "particles": 19,
+              "segments": 245,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 5,
+              "style": "retain",
+              "full": true
+            },
+            "members": [
+              "diamonds-14",
+              "diamonds-13",
+              "diamonds-12",
+              "diamonds-11",
+              "diamonds-10"
+            ],
+            "costIds": [],
+            "phase": "travel",
+            "clock": 0,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 117,
+              "heads": 2
+            },
+            "sourceKind": "portrait",
+            "progress": 0
+          },
+          "edges": [
+            {
+              "targetId": "diamonds-14",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "travel",
+              "labelText": "待留"
+            },
+            {
+              "targetId": "diamonds-13",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "travel",
+              "labelText": "待留"
+            },
+            {
+              "targetId": "diamonds-12",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "travel",
+              "labelText": "待留"
+            },
+            {
+              "targetId": "diamonds-11",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "travel",
+              "labelText": "待留"
+            },
+            {
+              "targetId": "diamonds-10",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "travel",
+              "labelText": "待留"
+            }
+          ]
+        },
+        {
+          "at": 1454.5,
+          "atmosphere": {
+            "stats": {
+              "particles": 18,
+              "segments": 256,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 5,
+              "style": "retain",
+              "full": true
+            },
+            "members": [
+              "diamonds-14",
+              "diamonds-13",
+              "diamonds-12",
+              "diamonds-11",
+              "diamonds-10"
+            ],
+            "costIds": [],
+            "phase": "idle",
+            "clock": 199.67999999999967,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 37,
+              "heads": 1
+            },
+            "sourceKind": "portrait",
+            "progress": 0.2773333333333329
+          },
+          "edges": [
+            {
+              "targetId": "diamonds-14",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "idle",
+              "labelText": "待留"
+            },
+            {
+              "targetId": "diamonds-13",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "idle",
+              "labelText": "待留"
+            },
+            {
+              "targetId": "diamonds-12",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "idle",
+              "labelText": "待留"
+            },
+            {
+              "targetId": "diamonds-11",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "idle",
+              "labelText": "待留"
+            },
+            {
+              "targetId": "diamonds-10",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "idle",
+              "labelText": "待留"
+            }
+          ]
+        },
+        {
+          "at": 6791.29999999702,
+          "atmosphere": {
+            "stats": {
+              "particles": 20,
+              "segments": 219,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 5,
+              "style": "retain",
+              "full": true
+            },
+            "members": [
+              "diamonds-14",
+              "diamonds-13",
+              "diamonds-12",
+              "diamonds-11",
+              "diamonds-10"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 16.64666666666678,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 104,
+              "heads": 0
+            },
+            "sourceKind": "portrait",
+            "progress": 0.023120370370370527
+          },
+          "edges": [
+            {
+              "targetId": "diamonds-14",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-13",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-12",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-11",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-10",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            }
+          ]
+        }
+      ],
+      "firstOrigin": {
+        "at": 1269.5,
+        "atmosphere": {
+          "stats": {
+            "particles": 19,
+            "segments": 245,
+            "markers": 0,
+            "costParticles": 0,
+            "targets": 5,
+            "style": "retain",
+            "full": true
+          },
+          "members": [
+            "diamonds-14",
+            "diamonds-13",
+            "diamonds-12",
+            "diamonds-11",
+            "diamonds-10"
+          ],
+          "costIds": [],
+          "phase": "travel",
+          "clock": 0,
+          "cadenceHz": 30,
+          "sourceKind": "portrait"
+        },
+        "stream": {
+          "stats": {
+            "segments": 117,
+            "heads": 2
+          },
+          "sourceKind": "portrait",
+          "progress": 0
+        },
+        "edges": [
+          {
+            "targetId": "diamonds-14",
+            "members": [
+              "diamonds-14",
+              "diamonds-13",
+              "diamonds-12",
+              "diamonds-11",
+              "diamonds-10"
+            ],
+            "phase": "travel",
+            "labelText": "待留"
+          },
+          {
+            "targetId": "diamonds-13",
+            "members": [
+              "diamonds-14",
+              "diamonds-13",
+              "diamonds-12",
+              "diamonds-11",
+              "diamonds-10"
+            ],
+            "phase": "travel",
+            "labelText": "待留"
+          },
+          {
+            "targetId": "diamonds-12",
+            "members": [
+              "diamonds-14",
+              "diamonds-13",
+              "diamonds-12",
+              "diamonds-11",
+              "diamonds-10"
+            ],
+            "phase": "travel",
+            "labelText": "待留"
+          },
+          {
+            "targetId": "diamonds-11",
+            "members": [
+              "diamonds-14",
+              "diamonds-13",
+              "diamonds-12",
+              "diamonds-11",
+              "diamonds-10"
+            ],
+            "phase": "travel",
+            "labelText": "待留"
+          },
+          {
+            "targetId": "diamonds-10",
+            "members": [
+              "diamonds-14",
+              "diamonds-13",
+              "diamonds-12",
+              "diamonds-11",
+              "diamonds-10"
+            ],
+            "phase": "travel",
+            "labelText": "待留"
+          }
+        ]
+      },
+      "release": [
+        {
+          "at": 6791.29999999702,
+          "atmosphere": {
+            "stats": {
+              "particles": 20,
+              "segments": 219,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 5,
+              "style": "retain",
+              "full": true
+            },
+            "members": [
+              "diamonds-14",
+              "diamonds-13",
+              "diamonds-12",
+              "diamonds-11",
+              "diamonds-10"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 16.64666666666678,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 104,
+              "heads": 0
+            },
+            "sourceKind": "portrait",
+            "progress": 0.023120370370370527
+          },
+          "edges": [
+            {
+              "targetId": "diamonds-14",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-13",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-12",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-11",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-10",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            }
+          ]
+        },
+        {
+          "at": 6806.9000000059605,
+          "atmosphere": {
+            "stats": {
+              "particles": 20,
+              "segments": 219,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 5,
+              "style": "retain",
+              "full": true
+            },
+            "members": [
+              "diamonds-14",
+              "diamonds-13",
+              "diamonds-12",
+              "diamonds-11",
+              "diamonds-10"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 16.64666666666678,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 104,
+              "heads": 0
+            },
+            "sourceKind": "portrait",
+            "progress": 0.023120370370370527
+          },
+          "edges": [
+            {
+              "targetId": "diamonds-14",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-13",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-12",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-11",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-10",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            }
+          ]
+        }
+      ],
+      "errors": []
+    },
+    {
+      "key": "390-amo",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "PASS",
+      "checks": [
+        ">=3.3 seconds continuous idle flow without input; actual exterior pixels change; state/journal/storage unchanged; exact instances only; labels avoid controls",
+        "actual print/art and all normal cards protected; 0 overlay on/off pixel changes in protected regions",
+        "reduced motion keeps semantic static edges; no flowing phase or exterior pixel changes",
+        "hidden removes visuals; return resumes idle without replaying travel",
+        "cancel removes exact pending target; fresh deliberate draft can reattach",
+        "actual command saved once; canonical state equals domain result; release follows actual source impact; completed presentation removes all edges"
+      ],
+      "expectedEvent": {
+        "id": "controlled/attachment/exile/hand/controlled/attachment/exile/command/4/event/4",
+        "reason": "amo.exile",
+        "targetIds": [
+          "spades-8",
+          "hearts-8"
+        ]
+      },
+      "pending": [
+        {
+          "targetId": "group/spades-8",
+          "kind": "group",
+          "members": [
+            "spades-8",
+            "hearts-8"
+          ],
+          "phase": "idle",
+          "flow": 0.29127083333333337
+        }
+      ],
+      "labels": [
+        {
+          "text": "本手×4",
+          "bounds": {
+            "type": 5,
+            "x": 330,
+            "y": 599.5999877929687,
+            "width": 50,
+            "height": 18
+          },
+          "intersectsControl": false
+        }
+      ],
+      "protectedPrintPixels": 0,
+      "changedExteriorPixels": 1091,
+      "reducedExteriorPixels": 0,
+      "reducedStats": {
+        "particles": 0,
+        "segments": 0,
+        "markers": 8,
+        "costParticles": 0,
+        "targets": 2,
+        "style": "exile",
+        "full": false
+      },
+      "cleanup": true,
+      "style": [
+        "exile"
+      ],
+      "maxOrbitAndCostMotes": 10,
+      "originKinds": [
+        "portrait"
+      ],
+      "maxSourceHeads": 2,
+      "phases": [
+        {
+          "at": 1946.0999999940395,
+          "atmosphere": {
+            "stats": {
+              "particles": 2,
+              "segments": 50,
+              "markers": 0,
+              "costParticles": 5,
+              "targets": 2,
+              "style": "exile",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8"
+            ],
+            "costIds": [
+              "clubs-7",
+              "diamonds-7",
+              "spades-13",
+              "hearts-13",
+              "clubs-2",
+              "diamonds-4"
+            ],
+            "phase": "travel",
+            "clock": 0,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 82,
+              "heads": 0
+            },
+            "sourceKind": "portrait",
+            "progress": 0
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8"
+              ],
+              "phase": "travel",
+              "labelText": "本手×4"
+            }
+          ]
+        },
+        {
+          "at": 2151,
+          "atmosphere": {
+            "stats": {
+              "particles": 3,
+              "segments": 76,
+              "markers": 0,
+              "costParticles": 5,
+              "targets": 2,
+              "style": "exile",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8"
+            ],
+            "costIds": [
+              "clubs-7",
+              "diamonds-7",
+              "spades-13",
+              "hearts-13",
+              "clubs-2",
+              "diamonds-4"
+            ],
+            "phase": "idle",
+            "clock": 199.7599999999998,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 48,
+              "heads": 0
+            },
+            "sourceKind": "portrait",
+            "progress": 0.27744444444444416
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8"
+              ],
+              "phase": "idle",
+              "labelText": "本手×4"
+            }
+          ]
+        },
+        {
+          "at": 7976,
+          "atmosphere": {
+            "stats": {
+              "particles": 3,
+              "segments": 74,
+              "markers": 0,
+              "costParticles": 5,
+              "targets": 2,
+              "style": "exile",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8"
+            ],
+            "costIds": [
+              "clubs-7",
+              "diamonds-7",
+              "spades-13",
+              "hearts-13",
+              "clubs-2",
+              "diamonds-4"
+            ],
+            "phase": "committed",
+            "clock": 149.85333333333293,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8"
+              ],
+              "phase": "committed",
+              "eventId": "controlled/attachment/exile/hand/controlled/attachment/exile/command/4/event/4",
+              "labelText": "待兑现"
+            }
+          ]
+        },
+        {
+          "at": 10763.40000000596,
+          "atmosphere": {
+            "stats": {
+              "particles": 1,
+              "segments": 111,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 2,
+              "style": "exile",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 2947.2233333333256,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/exile/hand/controlled/attachment/exile/command/4/event/4",
+              "labelText": "已×4"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/exile/hand/controlled/attachment/exile/command/4/event/4",
+          "scorePhase": "impact"
+        }
+      ],
+      "firstOrigin": {
+        "at": 1946.0999999940395,
+        "atmosphere": {
+          "stats": {
+            "particles": 2,
+            "segments": 50,
+            "markers": 0,
+            "costParticles": 5,
+            "targets": 2,
+            "style": "exile",
+            "full": true
+          },
+          "members": [
+            "spades-8",
+            "hearts-8"
+          ],
+          "costIds": [
+            "clubs-7",
+            "diamonds-7",
+            "spades-13",
+            "hearts-13",
+            "clubs-2",
+            "diamonds-4"
+          ],
+          "phase": "travel",
+          "clock": 0,
+          "cadenceHz": 30,
+          "sourceKind": "portrait"
+        },
+        "stream": {
+          "stats": {
+            "segments": 82,
+            "heads": 0
+          },
+          "sourceKind": "portrait",
+          "progress": 0
+        },
+        "edges": [
+          {
+            "targetId": "group/spades-8",
+            "members": [
+              "spades-8",
+              "hearts-8"
+            ],
+            "phase": "travel",
+            "labelText": "本手×4"
+          }
+        ]
+      },
+      "release": [
+        {
+          "at": 10763.40000000596,
+          "atmosphere": {
+            "stats": {
+              "particles": 1,
+              "segments": 111,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 2,
+              "style": "exile",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 2947.2233333333256,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/exile/hand/controlled/attachment/exile/command/4/event/4",
+              "labelText": "已×4"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/exile/hand/controlled/attachment/exile/command/4/event/4",
+          "scorePhase": "impact"
+        },
+        {
+          "at": 10781.90000000596,
+          "atmosphere": {
+            "stats": {
+              "particles": 1,
+              "segments": 111,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 2,
+              "style": "exile",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 2947.2233333333256,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/exile/hand/controlled/attachment/exile/command/4/event/4",
+              "labelText": "已×4"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/exile/hand/controlled/attachment/exile/command/4/event/4",
+          "scorePhase": "impact"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "key": "390-erxiang",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "PASS",
+      "checks": [
+        ">=3.3 seconds continuous idle flow without input; actual exterior pixels change; state/journal/storage unchanged; exact instances only; labels avoid controls",
+        "actual print/art and all normal cards protected; 0 overlay on/off pixel changes in protected regions",
+        "reduced motion keeps semantic static edges; no flowing phase or exterior pixel changes",
+        "hidden removes visuals; return resumes idle without replaying travel",
+        "cancel removes exact pending target; fresh deliberate draft can reattach",
+        "actual command saved once; canonical state equals domain result; release follows actual source impact; completed presentation removes all edges"
+      ],
+      "expectedEvent": {
+        "id": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/2",
+        "reason": "erxiang.handoff",
+        "targetIds": [
+          "spades-8"
+        ]
+      },
+      "pending": [
+        {
+          "targetId": "spades-8",
+          "kind": "card",
+          "members": [
+            "spades-8"
+          ],
+          "phase": "idle",
+          "flow": 0.2079708333333332
+        }
+      ],
+      "labels": [
+        {
+          "text": "待转",
+          "bounds": {
+            "type": 5,
+            "x": 14.000000000000007,
+            "y": 755.9999877929688,
+            "width": 32,
+            "height": 18
+          },
+          "intersectsControl": false
+        }
+      ],
+      "protectedPrintPixels": 0,
+      "changedExteriorPixels": 797,
+      "reducedExteriorPixels": 0,
+      "reducedStats": {
+        "particles": 0,
+        "segments": 0,
+        "markers": 4,
+        "costParticles": 0,
+        "targets": 1,
+        "style": "handoff",
+        "full": false
+      },
+      "cleanup": true,
+      "style": [
+        "handoff"
+      ],
+      "maxOrbitAndCostMotes": 4,
+      "originKinds": [
+        "portrait"
+      ],
+      "maxSourceHeads": 0,
+      "phases": [
+        {
+          "at": 1297,
+          "atmosphere": {
+            "stats": {
+              "particles": 1,
+              "segments": 35,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 1,
+              "style": "handoff",
+              "full": true
+            },
+            "members": [
+              "spades-8"
+            ],
+            "costIds": [],
+            "phase": "travel",
+            "clock": 0,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 43,
+              "heads": 0
+            },
+            "sourceKind": "portrait",
+            "progress": 0
+          },
+          "edges": [
+            {
+              "targetId": "spades-8",
+              "members": [
+                "spades-8"
+              ],
+              "phase": "travel",
+              "labelText": "待转"
+            }
+          ]
+        },
+        {
+          "at": 1501.4000000059605,
+          "atmosphere": {
+            "stats": {
+              "particles": 1,
+              "segments": 39,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 1,
+              "style": "handoff",
+              "full": true
+            },
+            "members": [
+              "spades-8"
+            ],
+            "costIds": [],
+            "phase": "idle",
+            "clock": 199.66,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 31,
+              "heads": 0
+            },
+            "sourceKind": "portrait",
+            "progress": 0.2773055555555555
+          },
+          "edges": [
+            {
+              "targetId": "spades-8",
+              "members": [
+                "spades-8"
+              ],
+              "phase": "idle",
+              "labelText": "待转"
+            }
+          ]
+        },
+        {
+          "at": 6610.5,
+          "atmosphere": {
+            "stats": {
+              "particles": 1,
+              "segments": 34,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 1,
+              "style": "handoff",
+              "full": true
+            },
+            "members": [
+              "spades-8"
+            ],
+            "costIds": [],
+            "phase": "committed",
+            "clock": 16.640000000000146,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "spades-8",
+              "members": [
+                "spades-8"
+              ],
+              "phase": "committed",
+              "eventId": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/2",
+              "labelText": "待转"
+            }
+          ]
+        },
+        {
+          "at": 7800.9000000059605,
+          "atmosphere": {
+            "stats": {
+              "particles": 2,
+              "segments": 42,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 1,
+              "style": "handoff",
+              "full": true
+            },
+            "members": [
+              "spades-8"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 1214.7466666666674,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "spades-8",
+              "members": [
+                "spades-8"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/2",
+              "labelText": "已转"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/2",
+          "scorePhase": "impact"
+        }
+      ],
+      "firstOrigin": {
+        "at": 1297,
+        "atmosphere": {
+          "stats": {
+            "particles": 1,
+            "segments": 35,
+            "markers": 0,
+            "costParticles": 0,
+            "targets": 1,
+            "style": "handoff",
+            "full": true
+          },
+          "members": [
+            "spades-8"
+          ],
+          "costIds": [],
+          "phase": "travel",
+          "clock": 0,
+          "cadenceHz": 30,
+          "sourceKind": "portrait"
+        },
+        "stream": {
+          "stats": {
+            "segments": 43,
+            "heads": 0
+          },
+          "sourceKind": "portrait",
+          "progress": 0
+        },
+        "edges": [
+          {
+            "targetId": "spades-8",
+            "members": [
+              "spades-8"
+            ],
+            "phase": "travel",
+            "labelText": "待转"
+          }
+        ]
+      },
+      "release": [
+        {
+          "at": 7800.9000000059605,
+          "atmosphere": {
+            "stats": {
+              "particles": 2,
+              "segments": 42,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 1,
+              "style": "handoff",
+              "full": true
+            },
+            "members": [
+              "spades-8"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 1214.7466666666674,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "spades-8",
+              "members": [
+                "spades-8"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/2",
+              "labelText": "已转"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/2",
+          "scorePhase": "impact"
+        },
+        {
+          "at": 7821.20000000298,
+          "atmosphere": {
+            "stats": {
+              "particles": 1,
+              "segments": 42,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 1,
+              "style": "handoff",
+              "full": true
+            },
+            "members": [
+              "spades-8"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 1248.0133333333338,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "spades-8",
+              "members": [
+                "spades-8"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/2",
+              "labelText": "已转"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/2",
+          "scorePhase": "impact"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "key": "390-azao",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "PASS",
+      "checks": [
+        ">=3.3 seconds continuous idle flow without input; actual exterior pixels change; state/journal/storage unchanged; exact instances only; labels avoid controls",
+        "actual print/art and all normal cards protected; 0 overlay on/off pixel changes in protected regions",
+        "reduced motion keeps semantic static edges; no flowing phase or exterior pixel changes",
+        "hidden removes visuals; return resumes idle without replaying travel",
+        "actual command saved once; canonical state equals domain result; release follows actual source impact; completed presentation removes all edges"
+      ],
+      "expectedEvent": {
+        "id": "controlled/attachment/azao/hand/controlled/attachment/azao/command/5/event/6",
+        "reason": "azao.multiply-multiplier",
+        "targetIds": [
+          "spades-8",
+          "hearts-8",
+          "clubs-7",
+          "diamonds-7"
+        ]
+      },
+      "pending": [
+        {
+          "targetId": "group/spades-8",
+          "kind": "group",
+          "members": [
+            "spades-8",
+            "hearts-8",
+            "clubs-7",
+            "diamonds-7"
+          ],
+          "phase": "idle",
+          "flow": 0.18729583333333338
+        }
+      ],
+      "labels": [
+        {
+          "text": "本手待放",
+          "bounds": {
+            "type": 5,
+            "x": 330,
+            "y": 599.5999877929687,
+            "width": 58,
+            "height": 18
+          },
+          "intersectsControl": false
+        }
+      ],
+      "protectedPrintPixels": 0,
+      "changedExteriorPixels": 2408,
+      "reducedExteriorPixels": 0,
+      "reducedStats": {
+        "particles": 0,
+        "segments": 0,
+        "markers": 16,
+        "costParticles": 0,
+        "targets": 4,
+        "style": "charge",
+        "full": false
+      },
+      "cleanup": true,
+      "style": [
+        "charge"
+      ],
+      "maxOrbitAndCostMotes": 11,
+      "originKinds": [
+        "portrait"
+      ],
+      "maxSourceHeads": 2,
+      "phases": [
+        {
+          "at": 1313.800000011921,
+          "atmosphere": {
+            "stats": {
+              "particles": 5,
+              "segments": 105,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "charge",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "travel",
+            "clock": 0,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 78,
+              "heads": 0
+            },
+            "sourceKind": "portrait",
+            "progress": 0
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "travel",
+              "labelText": "本手待放"
+            }
+          ]
+        },
+        {
+          "at": 1532.2000000029802,
+          "atmosphere": {
+            "stats": {
+              "particles": 6,
+              "segments": 99,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "charge",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "idle",
+            "clock": 199.8133333333335,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 26,
+              "heads": 0
+            },
+            "sourceKind": "portrait",
+            "progress": 0.2775185185185188
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "idle",
+              "labelText": "本手待放"
+            }
+          ]
+        },
+        {
+          "at": 6637.20000000298,
+          "atmosphere": {
+            "stats": {
+              "particles": 8,
+              "segments": 124,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "charge",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "committed",
+            "clock": 4497.819999991061,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "committed",
+              "eventId": "controlled/attachment/azao/hand/controlled/attachment/azao/command/5/event/6",
+              "labelText": "待兑现"
+            }
+          ]
+        },
+        {
+          "at": 10174.40000000596,
+          "atmosphere": {
+            "stats": {
+              "particles": 5,
+              "segments": 221,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "charge",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 8028.366666657735,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/azao/hand/controlled/attachment/azao/command/5/event/6",
+              "labelText": "已释放"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/azao/hand/controlled/attachment/azao/command/5/event/6",
+          "scorePhase": "impact"
+        }
+      ],
+      "firstOrigin": {
+        "at": 1313.800000011921,
+        "atmosphere": {
+          "stats": {
+            "particles": 5,
+            "segments": 105,
+            "markers": 0,
+            "costParticles": 0,
+            "targets": 4,
+            "style": "charge",
+            "full": true
+          },
+          "members": [
+            "spades-8",
+            "hearts-8",
+            "clubs-7",
+            "diamonds-7"
+          ],
+          "costIds": [],
+          "phase": "travel",
+          "clock": 0,
+          "cadenceHz": 30,
+          "sourceKind": "portrait"
+        },
+        "stream": {
+          "stats": {
+            "segments": 78,
+            "heads": 0
+          },
+          "sourceKind": "portrait",
+          "progress": 0
+        },
+        "edges": [
+          {
+            "targetId": "group/spades-8",
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "phase": "travel",
+            "labelText": "本手待放"
+          }
+        ]
+      },
+      "release": [
+        {
+          "at": 10174.40000000596,
+          "atmosphere": {
+            "stats": {
+              "particles": 5,
+              "segments": 221,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "charge",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 8028.366666657735,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/azao/hand/controlled/attachment/azao/command/5/event/6",
+              "labelText": "已释放"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/azao/hand/controlled/attachment/azao/command/5/event/6",
+          "scorePhase": "impact"
+        },
+        {
+          "at": 10196,
+          "atmosphere": {
+            "stats": {
+              "particles": 3,
+              "segments": 216,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "charge",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 8061.696666657735,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/azao/hand/controlled/attachment/azao/command/5/event/6",
+              "labelText": "已释放"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/azao/hand/controlled/attachment/azao/command/5/event/6",
+          "scorePhase": "impact"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "key": "390-xiemu",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "PASS",
+      "checks": [
+        ">=3.3 seconds continuous idle flow without input; actual exterior pixels change; state/journal/storage unchanged; exact instances only; labels avoid controls",
+        "actual print/art and all normal cards protected; 0 overlay on/off pixel changes in protected regions",
+        "reduced motion keeps semantic static edges; no flowing phase or exterior pixel changes",
+        "hidden removes visuals; return resumes idle without replaying travel",
+        "actual command saved once; canonical state equals domain result; release follows actual source impact; completed presentation removes all edges"
+      ],
+      "expectedEvent": {
+        "id": "controlled/attachment/xiemu/hand/controlled/attachment/xiemu/command/4/event/6",
+        "reason": "xiemu.multiply-multiplier",
+        "targetIds": [
+          "spades-8",
+          "hearts-8",
+          "clubs-7",
+          "diamonds-7"
+        ]
+      },
+      "pending": [
+        {
+          "targetId": "group/spades-8",
+          "kind": "group",
+          "members": [
+            "spades-8",
+            "hearts-8",
+            "clubs-7",
+            "diamonds-7"
+          ],
+          "phase": "idle",
+          "flow": 0.19768750000000004
+        }
+      ],
+      "labels": [
+        {
+          "text": "待付10",
+          "bounds": {
+            "type": 5,
+            "x": 330,
+            "y": 599.5999877929687,
+            "width": 49,
+            "height": 18
+          },
+          "intersectsControl": false
+        }
+      ],
+      "protectedPrintPixels": 0,
+      "changedExteriorPixels": 2470,
+      "reducedExteriorPixels": 0,
+      "reducedStats": {
+        "particles": 0,
+        "segments": 0,
+        "markers": 16,
+        "costParticles": 0,
+        "targets": 4,
+        "style": "burn",
+        "full": false
+      },
+      "cleanup": true,
+      "style": [
+        "burn"
+      ],
+      "maxOrbitAndCostMotes": 13,
+      "originKinds": [
+        "portrait"
+      ],
+      "maxSourceHeads": 2,
+      "phases": [
+        {
+          "at": 1297.7000000029802,
+          "atmosphere": {
+            "stats": {
+              "particles": 8,
+              "segments": 121,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "burn",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "travel",
+            "clock": 16.64666666666666,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 70,
+              "heads": 0
+            },
+            "sourceKind": "portrait",
+            "progress": 0.023120370370370364
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "travel",
+              "labelText": "待付10"
+            }
+          ]
+        },
+        {
+          "at": 1531.7000000029802,
+          "atmosphere": {
+            "stats": {
+              "particles": 8,
+              "segments": 113,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "burn",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "idle",
+            "clock": 216.41333333333327,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 22,
+              "heads": 0
+            },
+            "sourceKind": "portrait",
+            "progress": 0.300574074074074
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "idle",
+              "labelText": "待付10"
+            }
+          ]
+        },
+        {
+          "at": 6698.4000000059605,
+          "atmosphere": {
+            "stats": {
+              "particles": 8,
+              "segments": 109,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "burn",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "committed",
+            "clock": 4447.736666666662,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "committed",
+              "eventId": "controlled/attachment/xiemu/hand/controlled/attachment/xiemu/command/4/event/6",
+              "labelText": "已付10·待算"
+            }
+          ]
+        },
+        {
+          "at": 10231.60000000894,
+          "atmosphere": {
+            "stats": {
+              "particles": 8,
+              "segments": 213,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "burn",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 7978.09666666667,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/xiemu/hand/controlled/attachment/xiemu/command/4/event/6",
+              "labelText": "已付10"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/xiemu/hand/controlled/attachment/xiemu/command/4/event/6",
+          "scorePhase": "impact"
+        }
+      ],
+      "firstOrigin": {
+        "at": 1297.7000000029802,
+        "atmosphere": {
+          "stats": {
+            "particles": 8,
+            "segments": 121,
+            "markers": 0,
+            "costParticles": 0,
+            "targets": 4,
+            "style": "burn",
+            "full": true
+          },
+          "members": [
+            "spades-8",
+            "hearts-8",
+            "clubs-7",
+            "diamonds-7"
+          ],
+          "costIds": [],
+          "phase": "travel",
+          "clock": 16.64666666666666,
+          "cadenceHz": 30,
+          "sourceKind": "portrait"
+        },
+        "stream": {
+          "stats": {
+            "segments": 70,
+            "heads": 0
+          },
+          "sourceKind": "portrait",
+          "progress": 0.023120370370370364
+        },
+        "edges": [
+          {
+            "targetId": "group/spades-8",
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "phase": "travel",
+            "labelText": "待付10"
+          }
+        ]
+      },
+      "release": [
+        {
+          "at": 10231.60000000894,
+          "atmosphere": {
+            "stats": {
+              "particles": 8,
+              "segments": 213,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "burn",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 7978.09666666667,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/xiemu/hand/controlled/attachment/xiemu/command/4/event/6",
+              "labelText": "已付10"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/xiemu/hand/controlled/attachment/xiemu/command/4/event/6",
+          "scorePhase": "impact"
+        },
+        {
+          "at": 10255.60000000894,
+          "atmosphere": {
+            "stats": {
+              "particles": 8,
+              "segments": 205,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 4,
+              "style": "burn",
+              "full": true
+            },
+            "members": [
+              "spades-8",
+              "hearts-8",
+              "clubs-7",
+              "diamonds-7"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 8011.43666666667,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "group/spades-8",
+              "members": [
+                "spades-8",
+                "hearts-8",
+                "clubs-7",
+                "diamonds-7"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/xiemu/hand/controlled/attachment/xiemu/command/4/event/6",
+              "labelText": "已付10"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/xiemu/hand/controlled/attachment/xiemu/command/4/event/6",
+          "scorePhase": "impact"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "key": "390-touye",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "PASS",
+      "checks": [
+        ">=3.3 seconds continuous idle flow without input; actual exterior pixels change; state/journal/storage unchanged; exact instances only; labels avoid controls",
+        "actual print/art and all normal cards protected; 0 overlay on/off pixel changes in protected regions",
+        "reduced motion keeps semantic static edges; no flowing phase or exterior pixel changes",
+        "hidden removes visuals; return resumes idle without replaying travel",
+        "actual command saved once; canonical state equals domain result; release follows actual source impact; completed presentation removes all edges"
+      ],
+      "expectedEvent": {
+        "id": "controlled/attachment/touye/hand/controlled/attachment/touye/command/5/event/5",
+        "reason": "touye.won.three-kind",
+        "targetIds": [
+          "clubs-8"
+        ]
+      },
+      "pending": [
+        {
+          "targetId": "clubs-8",
+          "kind": "wager",
+          "members": [
+            "clubs-8",
+            "diamonds-6"
+          ],
+          "phase": "idle",
+          "flow": 0.2809749999999999
+        },
+        {
+          "targetId": "diamonds-6",
+          "kind": "wager",
+          "members": [
+            "clubs-8",
+            "diamonds-6"
+          ],
+          "phase": "idle",
+          "flow": 0.2809749999999999
+        }
+      ],
+      "labels": [
+        {
+          "text": "新?",
+          "bounds": {
+            "type": 5,
+            "x": 245.42855834960938,
+            "y": 755.9999877929688,
+            "width": 26,
+            "height": 18
+          },
+          "intersectsControl": false
+        },
+        {
+          "text": "新·待判",
+          "bounds": {
+            "type": 5,
+            "x": 284,
+            "y": 615.5999877929687,
+            "width": 51,
+            "height": 18
+          },
+          "intersectsControl": false
+        }
+      ],
+      "protectedPrintPixels": 0,
+      "changedExteriorPixels": 795,
+      "reducedExteriorPixels": 0,
+      "reducedStats": {
+        "particles": 0,
+        "segments": 0,
+        "markers": 6,
+        "costParticles": 0,
+        "targets": 2,
+        "style": "wager",
+        "full": false
+      },
+      "cleanup": true,
+      "style": [
+        "wager"
+      ],
+      "maxOrbitAndCostMotes": 6,
+      "originKinds": [
+        "portrait"
+      ],
+      "maxSourceHeads": 1,
+      "phases": [
+        {
+          "at": 1459,
+          "atmosphere": {
+            "stats": {
+              "particles": 4,
+              "segments": 47,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 2,
+              "style": "wager",
+              "full": true
+            },
+            "members": [
+              "clubs-8",
+              "diamonds-6"
+            ],
+            "costIds": [],
+            "phase": "idle",
+            "clock": 149.8133333333333,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "clubs-8",
+              "members": [
+                "clubs-8",
+                "diamonds-6"
+              ],
+              "phase": "idle",
+              "labelText": "新?"
+            },
+            {
+              "targetId": "diamonds-6",
+              "members": [
+                "clubs-8",
+                "diamonds-6"
+              ],
+              "phase": "idle",
+              "labelText": "新·待判"
+            }
+          ]
+        },
+        {
+          "at": 6792.5,
+          "atmosphere": {
+            "stats": {
+              "particles": 1,
+              "segments": 23,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 1,
+              "style": "wager",
+              "full": true
+            },
+            "members": [
+              "clubs-8"
+            ],
+            "costIds": [],
+            "phase": "committed",
+            "clock": 4631.189999991054,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "clubs-8",
+              "members": [
+                "clubs-8"
+              ],
+              "phase": "committed",
+              "eventId": "controlled/attachment/touye/hand/controlled/attachment/touye/command/5/event/5",
+              "labelText": "新?"
+            }
+          ]
+        },
+        {
+          "at": 9784.10000000894,
+          "atmosphere": {
+            "stats": {
+              "particles": 2,
+              "segments": 47,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 1,
+              "style": "wager",
+              "full": true
+            },
+            "members": [
+              "clubs-8"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 7628.496666657716,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "clubs-8",
+              "members": [
+                "clubs-8"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/touye/hand/controlled/attachment/touye/command/5/event/5",
+              "labelText": "已成"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/touye/hand/controlled/attachment/touye/command/5/event/5",
+          "scorePhase": "impact"
+        }
+      ],
+      "firstOrigin": {
+        "at": 3252.9000000059605,
+        "atmosphere": {
+          "stats": {
+            "particles": 5,
+            "segments": 43,
+            "markers": 0,
+            "costParticles": 0,
+            "targets": 2,
+            "style": "wager",
+            "full": true
+          },
+          "members": [
+            "clubs-8",
+            "diamonds-6"
+          ],
+          "costIds": [],
+          "phase": "idle",
+          "clock": 1814.5299999999984,
+          "cadenceHz": 30,
+          "sourceKind": "portrait"
+        },
+        "stream": {
+          "stats": {
+            "segments": 7,
+            "heads": 0
+          },
+          "sourceKind": "portrait",
+          "progress": 0.020180555555553308
+        },
+        "edges": [
+          {
+            "targetId": "clubs-8",
+            "members": [
+              "clubs-8",
+              "diamonds-6"
+            ],
+            "phase": "idle",
+            "labelText": "新?"
+          },
+          {
+            "targetId": "diamonds-6",
+            "members": [
+              "clubs-8",
+              "diamonds-6"
+            ],
+            "phase": "idle",
+            "labelText": "新·待判"
+          }
+        ]
+      },
+      "release": [
+        {
+          "at": 9784.10000000894,
+          "atmosphere": {
+            "stats": {
+              "particles": 2,
+              "segments": 47,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 1,
+              "style": "wager",
+              "full": true
+            },
+            "members": [
+              "clubs-8"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 7628.496666657716,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "clubs-8",
+              "members": [
+                "clubs-8"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/touye/hand/controlled/attachment/touye/command/5/event/5",
+              "labelText": "已成"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/touye/hand/controlled/attachment/touye/command/5/event/5",
+          "scorePhase": "impact"
+        },
+        {
+          "at": 9805.29999999702,
+          "atmosphere": {
+            "stats": {
+              "particles": 2,
+              "segments": 45,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 1,
+              "style": "wager",
+              "full": true
+            },
+            "members": [
+              "clubs-8"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 7661.826666657716,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "edges": [
+            {
+              "targetId": "clubs-8",
+              "members": [
+                "clubs-8"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/touye/hand/controlled/attachment/touye/command/5/event/5",
+              "labelText": "已成"
+            }
+          ],
+          "scoreEvent": "controlled/attachment/touye/hand/controlled/attachment/touye/command/5/event/5",
+          "scorePhase": "impact"
+        }
+      ],
+      "errors": []
+    },
+    {
+      "key": "390-laohuan",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "PASS",
+      "checks": [
+        ">=3.3 seconds continuous idle flow without input; actual exterior pixels change; state/journal/storage unchanged; exact instances only; labels avoid controls",
+        "actual print/art and all normal cards protected; 0 overlay on/off pixel changes in protected regions",
+        "reduced motion keeps semantic static edges; no flowing phase or exterior pixel changes",
+        "hidden removes visuals; return resumes idle without replaying travel",
+        "actual command saved once; canonical state equals domain result; release follows actual source impact; completed presentation removes all edges"
+      ],
+      "expectedEvent": {
+        "kind": "saved ChooseRefill receipt, no ScoreEvent",
+        "targetIds": [
+          "diamonds-14",
+          "diamonds-13",
+          "diamonds-12",
+          "diamonds-11",
+          "diamonds-10"
+        ]
+      },
+      "pending": [
+        {
+          "targetId": "diamonds-14",
+          "kind": "candidate",
+          "members": [
+            "diamonds-14",
+            "diamonds-13",
+            "diamonds-12",
+            "diamonds-11",
+            "diamonds-10"
+          ],
+          "phase": "idle",
+          "flow": 0.22887499999999997
+        },
+        {
+          "targetId": "diamonds-13",
+          "kind": "candidate",
+          "members": [
+            "diamonds-14",
+            "diamonds-13",
+            "diamonds-12",
+            "diamonds-11",
+            "diamonds-10"
+          ],
+          "phase": "idle",
+          "flow": 0.22887499999999997
+        },
+        {
+          "targetId": "diamonds-12",
+          "kind": "candidate",
+          "members": [
+            "diamonds-14",
+            "diamonds-13",
+            "diamonds-12",
+            "diamonds-11",
+            "diamonds-10"
+          ],
+          "phase": "idle",
+          "flow": 0.22887499999999997
+        },
+        {
+          "targetId": "diamonds-11",
+          "kind": "candidate",
+          "members": [
+            "diamonds-14",
+            "diamonds-13",
+            "diamonds-12",
+            "diamonds-11",
+            "diamonds-10"
+          ],
+          "phase": "idle",
+          "flow": 0.22887499999999997
+        },
+        {
+          "targetId": "diamonds-10",
+          "kind": "candidate",
+          "members": [
+            "diamonds-14",
+            "diamonds-13",
+            "diamonds-12",
+            "diamonds-11",
+            "diamonds-10"
+          ],
+          "phase": "idle",
+          "flow": 0.22887499999999997
+        }
+      ],
+      "labels": [
+        {
+          "text": "待留",
+          "bounds": {
+            "type": 5,
+            "x": 14.000000000000007,
+            "y": 755.9999877929688,
+            "width": 32,
+            "height": 18
+          },
+          "intersectsControl": false
+        },
+        {
+          "text": "待留",
+          "bounds": {
+            "type": 5,
+            "x": 59.00000000000001,
+            "y": 755.9999877929688,
+            "width": 31.999999999999993,
+            "height": 18
+          },
+          "intersectsControl": false
+        },
+        {
+          "text": "待留",
+          "bounds": {
+            "type": 5,
+            "x": 104,
+            "y": 755.9999877929688,
+            "width": 32,
+            "height": 18
+          },
+          "intersectsControl": false
+        },
+        {
+          "text": "待留",
+          "bounds": {
+            "type": 5,
+            "x": 149,
+            "y": 755.9999877929688,
+            "width": 32,
+            "height": 18
+          },
+          "intersectsControl": false
+        },
+        {
+          "text": "待留",
+          "bounds": {
+            "type": 5,
+            "x": 194,
+            "y": 755.9999877929688,
+            "width": 32,
+            "height": 18
+          },
+          "intersectsControl": false
+        }
+      ],
+      "protectedPrintPixels": 0,
+      "changedExteriorPixels": 1472,
+      "reducedExteriorPixels": 0,
+      "reducedStats": {
+        "particles": 0,
+        "segments": 0,
+        "markers": 12,
+        "costParticles": 0,
+        "targets": 5,
+        "style": "retain",
+        "full": false
+      },
+      "cleanup": true,
+      "style": [
+        "retain"
+      ],
+      "maxOrbitAndCostMotes": 7,
+      "originKinds": [
+        "portrait"
+      ],
+      "maxSourceHeads": 0,
+      "phases": [
+        {
+          "at": 1233.5999999940395,
+          "atmosphere": {
+            "stats": {
+              "particles": 4,
+              "segments": 86,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 5,
+              "style": "retain",
+              "full": true
+            },
+            "members": [
+              "diamonds-14",
+              "diamonds-13",
+              "diamonds-12",
+              "diamonds-11",
+              "diamonds-10"
+            ],
+            "costIds": [],
+            "phase": "travel",
+            "clock": 0,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 8,
+              "heads": 0
+            },
+            "sourceKind": "portrait",
+            "progress": 0
+          },
+          "edges": [
+            {
+              "targetId": "diamonds-14",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "travel",
+              "labelText": "待留"
+            },
+            {
+              "targetId": "diamonds-13",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "travel",
+              "labelText": "待留"
+            },
+            {
+              "targetId": "diamonds-12",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "travel",
+              "labelText": "待留"
+            },
+            {
+              "targetId": "diamonds-11",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "travel",
+              "labelText": "待留"
+            },
+            {
+              "targetId": "diamonds-10",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "travel",
+              "labelText": "待留"
+            }
+          ]
+        },
+        {
+          "at": 1416.2000000029802,
+          "atmosphere": {
+            "stats": {
+              "particles": 5,
+              "segments": 86,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 5,
+              "style": "retain",
+              "full": true
+            },
+            "members": [
+              "diamonds-14",
+              "diamonds-13",
+              "diamonds-12",
+              "diamonds-11",
+              "diamonds-10"
+            ],
+            "costIds": [],
+            "phase": "idle",
+            "clock": 199.7466666666664,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 8,
+              "heads": 0
+            },
+            "sourceKind": "portrait",
+            "progress": 0.2774259259259256
+          },
+          "edges": [
+            {
+              "targetId": "diamonds-14",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "idle",
+              "labelText": "待留"
+            },
+            {
+              "targetId": "diamonds-13",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "idle",
+              "labelText": "待留"
+            },
+            {
+              "targetId": "diamonds-12",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "idle",
+              "labelText": "待留"
+            },
+            {
+              "targetId": "diamonds-11",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "idle",
+              "labelText": "待留"
+            },
+            {
+              "targetId": "diamonds-10",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "idle",
+              "labelText": "待留"
+            }
+          ]
+        },
+        {
+          "at": 6246.5,
+          "atmosphere": {
+            "stats": {
+              "particles": 3,
+              "segments": 77,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 5,
+              "style": "retain",
+              "full": true
+            },
+            "members": [
+              "diamonds-14",
+              "diamonds-13",
+              "diamonds-12",
+              "diamonds-11",
+              "diamonds-10"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 0,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 12,
+              "heads": 0
+            },
+            "sourceKind": "portrait",
+            "progress": 0
+          },
+          "edges": [
+            {
+              "targetId": "diamonds-14",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-13",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-12",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-11",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-10",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            }
+          ]
+        }
+      ],
+      "firstOrigin": {
+        "at": 1233.5999999940395,
+        "atmosphere": {
+          "stats": {
+            "particles": 4,
+            "segments": 86,
+            "markers": 0,
+            "costParticles": 0,
+            "targets": 5,
+            "style": "retain",
+            "full": true
+          },
+          "members": [
+            "diamonds-14",
+            "diamonds-13",
+            "diamonds-12",
+            "diamonds-11",
+            "diamonds-10"
+          ],
+          "costIds": [],
+          "phase": "travel",
+          "clock": 0,
+          "cadenceHz": 30,
+          "sourceKind": "portrait"
+        },
+        "stream": {
+          "stats": {
+            "segments": 8,
+            "heads": 0
+          },
+          "sourceKind": "portrait",
+          "progress": 0
+        },
+        "edges": [
+          {
+            "targetId": "diamonds-14",
+            "members": [
+              "diamonds-14",
+              "diamonds-13",
+              "diamonds-12",
+              "diamonds-11",
+              "diamonds-10"
+            ],
+            "phase": "travel",
+            "labelText": "待留"
+          },
+          {
+            "targetId": "diamonds-13",
+            "members": [
+              "diamonds-14",
+              "diamonds-13",
+              "diamonds-12",
+              "diamonds-11",
+              "diamonds-10"
+            ],
+            "phase": "travel",
+            "labelText": "待留"
+          },
+          {
+            "targetId": "diamonds-12",
+            "members": [
+              "diamonds-14",
+              "diamonds-13",
+              "diamonds-12",
+              "diamonds-11",
+              "diamonds-10"
+            ],
+            "phase": "travel",
+            "labelText": "待留"
+          },
+          {
+            "targetId": "diamonds-11",
+            "members": [
+              "diamonds-14",
+              "diamonds-13",
+              "diamonds-12",
+              "diamonds-11",
+              "diamonds-10"
+            ],
+            "phase": "travel",
+            "labelText": "待留"
+          },
+          {
+            "targetId": "diamonds-10",
+            "members": [
+              "diamonds-14",
+              "diamonds-13",
+              "diamonds-12",
+              "diamonds-11",
+              "diamonds-10"
+            ],
+            "phase": "travel",
+            "labelText": "待留"
+          }
+        ]
+      },
+      "release": [
+        {
+          "at": 6246.5,
+          "atmosphere": {
+            "stats": {
+              "particles": 3,
+              "segments": 77,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 5,
+              "style": "retain",
+              "full": true
+            },
+            "members": [
+              "diamonds-14",
+              "diamonds-13",
+              "diamonds-12",
+              "diamonds-11",
+              "diamonds-10"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 0,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 12,
+              "heads": 0
+            },
+            "sourceKind": "portrait",
+            "progress": 0
+          },
+          "edges": [
+            {
+              "targetId": "diamonds-14",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-13",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-12",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-11",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-10",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            }
+          ]
+        },
+        {
+          "at": 6267.29999999702,
+          "atmosphere": {
+            "stats": {
+              "particles": 3,
+              "segments": 75,
+              "markers": 0,
+              "costParticles": 0,
+              "targets": 5,
+              "style": "retain",
+              "full": true
+            },
+            "members": [
+              "diamonds-14",
+              "diamonds-13",
+              "diamonds-12",
+              "diamonds-11",
+              "diamonds-10"
+            ],
+            "costIds": [],
+            "phase": "release",
+            "clock": 33.266666666666666,
+            "cadenceHz": 30,
+            "sourceKind": "portrait"
+          },
+          "stream": {
+            "stats": {
+              "segments": 12,
+              "heads": 0
+            },
+            "sourceKind": "portrait",
+            "progress": 0.046203703703703705
+          },
+          "edges": [
+            {
+              "targetId": "diamonds-14",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-13",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-12",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-11",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            },
+            {
+              "targetId": "diamonds-10",
+              "members": [
+                "diamonds-14",
+                "diamonds-13",
+                "diamonds-12",
+                "diamonds-11",
+                "diamonds-10"
+              ],
+              "phase": "release",
+              "eventId": "controlled/attachment/laohuan/command/5/laohuan-refill",
+              "labelText": "已留"
+            }
+          ]
+        }
+      ],
+      "errors": []
+    }
+  ]
+}
