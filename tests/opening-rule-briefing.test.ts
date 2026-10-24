@@ -9,12 +9,13 @@ const run=()=>createRun({seed:'opening-rules-17',runId:'opening-rules',character
 const names=(cards:ReturnType<typeof openingRuleBriefing>['cards'])=>cards.map(card=>card.title.replace(/^已选路线 · /,'').split(' · ')[0]);
 
 describe('opening rule briefing',()=>{
- it.each(BUILD_FOCUS)('teaches nine basic types in strength order and marks only the selected %s route',focus=>{
+ it.each(BUILD_FOCUS)('teaches eight primary types in strength order and marks only the selected %s route',focus=>{
   const state=run();chooseBuildFocus(state,focus);const before=JSON.stringify(state),model=openingRuleBriefing(state);
   expect(model.effectBody).toContain(OPENING_ROUTES[focus].title);expect(model.effectBody).toContain('仍可改玩其他牌型');
-  expect(model.body).toContain('1–5张');expect(model.body).toContain('初始商店');expect(model.title).toContain('9种基础牌型');
-  expect(OPENING_BASE_HAND_TYPES).toEqual(['straight-flush','four-kind','full-house','flush','straight','three-kind','two-pair','pair','high-card']);
-  expect(names(model.cards)).toEqual(['同花顺','四条','葫芦','同花','顺子','三条','两对','对子','高牌']);
+  expect(model.body).toContain('1–5张');expect(model.body).toContain('初始商店');expect(model.title).toContain('8种主要牌型');
+  expect(OPENING_BASE_HAND_TYPES).toEqual(['straight-flush','four-kind','full-house','flush','straight','three-kind','two-pair','pair']);
+  expect(names(model.cards)).toEqual(['同花顺','四条','葫芦','同花','顺子','三条','两对','对子']);
+  expect(names(model.cards)).not.toContain('高牌');
   const expected=focus==='group'?['对子','两对','三条']:focus==='straight'?['顺子']:['同花'];
   expect(names(model.cards.filter(card=>card.stat))).toEqual(expected);
   expect(model.cards.filter(card=>card.stat).every(card=>card.title.startsWith('已选路线 · ')&&card.stat==='当前路线：'+OPENING_ROUTES[focus].title)).toBe(true);
@@ -35,7 +36,7 @@ describe('opening rule briefing',()=>{
   const open=vi.fn((...args:Parameters<DetailDialog['open']>)=>{actions=args[2];options=args[3];return element;});
   const close=vi.fn(()=>options?.onClose?.()),enter=vi.fn(),dialog={open,close} as unknown as DetailDialog;
   expect(showOpeningRuleBriefing(dialog,state,enter)).toBe(element);
-  expect(options?.cards).toHaveLength(9);expect(options?.guideSteps).toEqual({labels:['选择路线','规则说明','初始商店'],current:1});
+  expect(options?.cards).toHaveLength(8);expect(options?.guideSteps).toEqual({labels:['选择路线','规则说明','初始商店'],current:1});
   actions[0].run();options?.onClose?.();
   expect(close).toHaveBeenCalledOnce();expect(enter).toHaveBeenCalledOnce();expect(element.classList.add).toHaveBeenCalledWith('opening-rule-briefing');
  });
