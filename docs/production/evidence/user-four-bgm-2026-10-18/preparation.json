@@ -1,0 +1,600 @@
+{
+  "referenceRepository": "https://github.com/big-dimple/board-race",
+  "referenceCommit": "ab72bf69cae445df466c9cd204dba9fda96ce5dc",
+  "referencePaths": [
+    "src/audio/audio.ts",
+    "src/assets/audio/LICENSES.md",
+    "src/assets/audio/board-race-rock.ogg",
+    "src/assets/audio/board-race-rock.mp3"
+  ],
+  "targetLufs": -16,
+  "truePeakCeilingDbTP": -2,
+  "edgeFadeMs": 8,
+  "preserveCompleteArrangement": true,
+  "tracks": [
+    {
+      "name": "tianhu-begin",
+      "source": {
+        "file": "tianhu-begin.mp3",
+        "sha256": "54f6e87347263b94955f36b7af55f04282279b15a7c486e935220b8df223de01",
+        "bytes": 2157757,
+        "codec": "mp3",
+        "sampleRate": 48000,
+        "channels": 2,
+        "containerDuration": 53.943925,
+        "decodedFrames": 2583936,
+        "decodedDuration": 53.832,
+        "integratedLufs": -7.87,
+        "truePeakDbTP": -0.32,
+        "loudnessRangeLU": 1.8,
+        "samplePeakDbFS": -0.4,
+        "fullDecodeExit": 0
+      },
+      "gainDb": -8.129999999999999,
+      "filter": "volume=-8.1300dB,afade=t=in:st=0:d=0.008,afade=t=out:st=53.82400000:d=0.008",
+      "outputs": [
+        {
+          "file": "tianhu-begin.ogg",
+          "bytes": 1080836,
+          "sha256": "27de1b3d69592b970f1ca6b2548a779b1d2b9ee4a03c7f2062e5d453117e2116",
+          "codec": "vorbis",
+          "sampleRate": 48000,
+          "channels": 2,
+          "containerDuration": 53.832,
+          "decodedFrames": 2583936,
+          "decodedDuration": 53.832,
+          "boundaryJumpDbFS": -61.56236338762934,
+          "completeSongWindows": [
+            {
+              "atFraction": 0.1,
+              "seconds": 1.0,
+              "correlation": 0.9993507400877976
+            },
+            {
+              "atFraction": 0.5,
+              "seconds": 1.0,
+              "correlation": 0.9994673070622063
+            },
+            {
+              "atFraction": 0.9,
+              "seconds": 1.0,
+              "correlation": 0.998507700746006
+            }
+          ],
+          "integratedLufs": -16.01,
+          "truePeakDbTP": -8.02,
+          "loudnessRangeLU": 1.8,
+          "samplePeakDbFS": -8.0,
+          "fullDecodeExit": 0,
+          "command": [
+            "ffmpeg",
+            "-v",
+            "error",
+            "-nostdin",
+            "-n",
+            "-i",
+            "tianhu-begin.mp3",
+            "-map",
+            "0:a:0",
+            "-vn",
+            "-map_metadata",
+            "-1",
+            "-ar",
+            "48000",
+            "-ac",
+            "2",
+            "-af",
+            "volume=-8.1300dB,afade=t=in:st=0:d=0.008,afade=t=out:st=53.82400000:d=0.008",
+            "-c:a",
+            "libvorbis",
+            "-b:a",
+            "160k",
+            "tianhu-begin.ogg"
+          ]
+        },
+        {
+          "file": "tianhu-begin.mp3",
+          "bytes": 1293165,
+          "sha256": "d9dbe1c025346c1b24b9f3d31cb0a26fe9602a334f7879e725f797b48ba68346",
+          "codec": "mp3",
+          "sampleRate": 48000,
+          "channels": 2,
+          "containerDuration": 53.856,
+          "decodedFrames": 2583936,
+          "decodedDuration": 53.832,
+          "boundaryJumpDbFS": -69.6480117344628,
+          "completeSongWindows": [
+            {
+              "atFraction": 0.1,
+              "seconds": 1.0,
+              "correlation": 0.9999232266396723
+            },
+            {
+              "atFraction": 0.5,
+              "seconds": 1.0,
+              "correlation": 0.9999213547615127
+            },
+            {
+              "atFraction": 0.9,
+              "seconds": 1.0,
+              "correlation": 0.9998698168542134
+            }
+          ],
+          "integratedLufs": -16.26,
+          "truePeakDbTP": -8.52,
+          "loudnessRangeLU": 1.8,
+          "samplePeakDbFS": -8.6,
+          "fullDecodeExit": 0,
+          "command": [
+            "ffmpeg",
+            "-v",
+            "error",
+            "-nostdin",
+            "-n",
+            "-i",
+            "tianhu-begin.mp3",
+            "-map",
+            "0:a:0",
+            "-vn",
+            "-map_metadata",
+            "-1",
+            "-ar",
+            "48000",
+            "-ac",
+            "2",
+            "-af",
+            "volume=-8.1300dB,afade=t=in:st=0:d=0.008,afade=t=out:st=53.82400000:d=0.008",
+            "-c:a",
+            "libmp3lame",
+            "-b:a",
+            "192k",
+            "-write_xing",
+            "1",
+            "-id3v2_version",
+            "3",
+            "tianhu-begin.mp3"
+          ]
+        }
+      ],
+      "sourceUnchanged": true
+    },
+    {
+      "name": "moon-shop",
+      "source": {
+        "file": "moon-shop.mp3",
+        "sha256": "03f02e33fa76ba8cec2355dc3aeea7de6ebeb5998f4e458a0564bfbd614e9755",
+        "bytes": 1861440,
+        "codec": "mp3",
+        "sampleRate": 48000,
+        "channels": 2,
+        "containerDuration": 46.536,
+        "decodedFrames": 2233728,
+        "decodedDuration": 46.536,
+        "integratedLufs": -7.49,
+        "truePeakDbTP": -0.44,
+        "loudnessRangeLU": 1.8,
+        "samplePeakDbFS": -0.5,
+        "fullDecodeExit": 0
+      },
+      "gainDb": -8.51,
+      "filter": "volume=-8.5100dB,afade=t=in:st=0:d=0.008,afade=t=out:st=46.52800000:d=0.008",
+      "outputs": [
+        {
+          "file": "moon-shop.ogg",
+          "bytes": 841256,
+          "sha256": "b7f6a11c21c4d6dcb99341b79e499dc57be2663ac661182bff943154322bf179",
+          "codec": "vorbis",
+          "sampleRate": 48000,
+          "channels": 2,
+          "containerDuration": 46.536,
+          "decodedFrames": 2233728,
+          "decodedDuration": 46.536,
+          "boundaryJumpDbFS": -52.65741072118502,
+          "completeSongWindows": [
+            {
+              "atFraction": 0.1,
+              "seconds": 1.0,
+              "correlation": 0.9990414695110629
+            },
+            {
+              "atFraction": 0.5,
+              "seconds": 1.0,
+              "correlation": 0.9996662642004527
+            },
+            {
+              "atFraction": 0.9,
+              "seconds": 1.0,
+              "correlation": 0.999152200446741
+            }
+          ],
+          "integratedLufs": -15.98,
+          "truePeakDbTP": -8.57,
+          "loudnessRangeLU": 1.8,
+          "samplePeakDbFS": -8.6,
+          "fullDecodeExit": 0,
+          "command": [
+            "ffmpeg",
+            "-v",
+            "error",
+            "-nostdin",
+            "-n",
+            "-i",
+            "moon-shop.mp3",
+            "-map",
+            "0:a:0",
+            "-vn",
+            "-map_metadata",
+            "-1",
+            "-ar",
+            "48000",
+            "-ac",
+            "2",
+            "-af",
+            "volume=-8.5100dB,afade=t=in:st=0:d=0.008,afade=t=out:st=46.52800000:d=0.008",
+            "-c:a",
+            "libvorbis",
+            "-b:a",
+            "160k",
+            "moon-shop.ogg"
+          ]
+        },
+        {
+          "file": "moon-shop.mp3",
+          "bytes": 1118061,
+          "sha256": "ff00399200ae04bf2dde38e15f0488f51e6342f8286689ad3bc5611597c351b0",
+          "codec": "mp3",
+          "sampleRate": 48000,
+          "channels": 2,
+          "containerDuration": 46.56,
+          "decodedFrames": 2233728,
+          "decodedDuration": 46.536,
+          "boundaryJumpDbFS": -71.35544841930566,
+          "completeSongWindows": [
+            {
+              "atFraction": 0.1,
+              "seconds": 1.0,
+              "correlation": 0.9999920013531088
+            },
+            {
+              "atFraction": 0.5,
+              "seconds": 1.0,
+              "correlation": 0.9999902460168848
+            },
+            {
+              "atFraction": 0.9,
+              "seconds": 1.0,
+              "correlation": 0.999975433454355
+            }
+          ],
+          "integratedLufs": -16.26,
+          "truePeakDbTP": -9.13,
+          "loudnessRangeLU": 1.8,
+          "samplePeakDbFS": -9.2,
+          "fullDecodeExit": 0,
+          "command": [
+            "ffmpeg",
+            "-v",
+            "error",
+            "-nostdin",
+            "-n",
+            "-i",
+            "moon-shop.mp3",
+            "-map",
+            "0:a:0",
+            "-vn",
+            "-map_metadata",
+            "-1",
+            "-ar",
+            "48000",
+            "-ac",
+            "2",
+            "-af",
+            "volume=-8.5100dB,afade=t=in:st=0:d=0.008,afade=t=out:st=46.52800000:d=0.008",
+            "-c:a",
+            "libmp3lame",
+            "-b:a",
+            "192k",
+            "-write_xing",
+            "1",
+            "-id3v2_version",
+            "3",
+            "moon-shop.mp3"
+          ]
+        }
+      ],
+      "sourceUnchanged": true
+    },
+    {
+      "name": "go-cake",
+      "source": {
+        "file": "go-cake.mp3",
+        "sha256": "8daea2ffcf52e5dc77eeb89975c4824eb504a7c6b8d547b0e26731e51e02c4b1",
+        "bytes": 2776256,
+        "codec": "mp3",
+        "sampleRate": 48000,
+        "channels": 2,
+        "containerDuration": 69.4064,
+        "decodedFrames": 3324672,
+        "decodedDuration": 69.264,
+        "integratedLufs": -7.03,
+        "truePeakDbTP": -0.19,
+        "loudnessRangeLU": 0.9,
+        "samplePeakDbFS": -0.3,
+        "fullDecodeExit": 0
+      },
+      "gainDb": -8.969999999999999,
+      "filter": "volume=-8.9700dB,afade=t=in:st=0:d=0.008,afade=t=out:st=69.25600000:d=0.008",
+      "outputs": [
+        {
+          "file": "go-cake.ogg",
+          "bytes": 1402264,
+          "sha256": "7fdba489a6d7e8c8033273d747446d93e0b0102faa9dd9567379ca9afc86fd42",
+          "codec": "vorbis",
+          "sampleRate": 48000,
+          "channels": 2,
+          "containerDuration": 69.264,
+          "decodedFrames": 3324672,
+          "decodedDuration": 69.264,
+          "boundaryJumpDbFS": -64.18267135851514,
+          "completeSongWindows": [
+            {
+              "atFraction": 0.1,
+              "seconds": 1.0,
+              "correlation": 0.9991219752952835
+            },
+            {
+              "atFraction": 0.5,
+              "seconds": 1.0,
+              "correlation": 0.9993543503407858
+            },
+            {
+              "atFraction": 0.9,
+              "seconds": 1.0,
+              "correlation": 0.9993306184926076
+            }
+          ],
+          "integratedLufs": -15.98,
+          "truePeakDbTP": -8.83,
+          "loudnessRangeLU": 0.9,
+          "samplePeakDbFS": -8.8,
+          "fullDecodeExit": 0,
+          "command": [
+            "ffmpeg",
+            "-v",
+            "error",
+            "-nostdin",
+            "-n",
+            "-i",
+            "go-cake.mp3",
+            "-map",
+            "0:a:0",
+            "-vn",
+            "-map_metadata",
+            "-1",
+            "-ar",
+            "48000",
+            "-ac",
+            "2",
+            "-af",
+            "volume=-8.9700dB,afade=t=in:st=0:d=0.008,afade=t=out:st=69.25600000:d=0.008",
+            "-c:a",
+            "libvorbis",
+            "-b:a",
+            "160k",
+            "go-cake.ogg"
+          ]
+        },
+        {
+          "file": "go-cake.mp3",
+          "bytes": 1663533,
+          "sha256": "aa186c94edaf63aa5a8a6fa5d2f2489fefd3b03337054ed58f09b3afa4d2c53b",
+          "codec": "mp3",
+          "sampleRate": 48000,
+          "channels": 2,
+          "containerDuration": 69.288,
+          "decodedFrames": 3324672,
+          "decodedDuration": 69.264,
+          "boundaryJumpDbFS": -54.15904177594298,
+          "completeSongWindows": [
+            {
+              "atFraction": 0.1,
+              "seconds": 1.0,
+              "correlation": 0.9996611529615589
+            },
+            {
+              "atFraction": 0.5,
+              "seconds": 1.0,
+              "correlation": 0.9998032406807844
+            },
+            {
+              "atFraction": 0.9,
+              "seconds": 1.0,
+              "correlation": 0.999818671388058
+            }
+          ],
+          "integratedLufs": -16.26,
+          "truePeakDbTP": -9.13,
+          "loudnessRangeLU": 0.8,
+          "samplePeakDbFS": -9.3,
+          "fullDecodeExit": 0,
+          "command": [
+            "ffmpeg",
+            "-v",
+            "error",
+            "-nostdin",
+            "-n",
+            "-i",
+            "go-cake.mp3",
+            "-map",
+            "0:a:0",
+            "-vn",
+            "-map_metadata",
+            "-1",
+            "-ar",
+            "48000",
+            "-ac",
+            "2",
+            "-af",
+            "volume=-8.9700dB,afade=t=in:st=0:d=0.008,afade=t=out:st=69.25600000:d=0.008",
+            "-c:a",
+            "libmp3lame",
+            "-b:a",
+            "192k",
+            "-write_xing",
+            "1",
+            "-id3v2_version",
+            "3",
+            "go-cake.mp3"
+          ]
+        }
+      ],
+      "sourceUnchanged": true
+    },
+    {
+      "name": "vsboss",
+      "source": {
+        "file": "vsboss.mp3",
+        "sha256": "420e2655fdbb51fb82697d144309503bdae152c73bf2865053aa27c50ee165f0",
+        "bytes": 2702046,
+        "codec": "mp3",
+        "sampleRate": 48000,
+        "channels": 2,
+        "containerDuration": 67.55115,
+        "decodedFrames": 3235968,
+        "decodedDuration": 67.416,
+        "integratedLufs": -8.66,
+        "truePeakDbTP": -0.39,
+        "loudnessRangeLU": 4.1,
+        "samplePeakDbFS": -0.4,
+        "fullDecodeExit": 0
+      },
+      "gainDb": -7.34,
+      "filter": "volume=-7.3400dB,afade=t=in:st=0:d=0.008,afade=t=out:st=67.40800000:d=0.008",
+      "outputs": [
+        {
+          "file": "vsboss.ogg",
+          "bytes": 1243497,
+          "sha256": "d211fbd67d8b3dec22c725dcbf76331aca375b8dfd660c0d43693ddccd8fea34",
+          "codec": "vorbis",
+          "sampleRate": 48000,
+          "channels": 2,
+          "containerDuration": 67.416,
+          "decodedFrames": 3235968,
+          "decodedDuration": 67.416,
+          "boundaryJumpDbFS": -40.21160722232791,
+          "completeSongWindows": [
+            {
+              "atFraction": 0.1,
+              "seconds": 1.0,
+              "correlation": 0.9964245370230298
+            },
+            {
+              "atFraction": 0.5,
+              "seconds": 1.0,
+              "correlation": 0.9968059770661253
+            },
+            {
+              "atFraction": 0.9,
+              "seconds": 1.0,
+              "correlation": 0.9981721062451353
+            }
+          ],
+          "integratedLufs": -16.05,
+          "truePeakDbTP": -7.29,
+          "loudnessRangeLU": 4.2,
+          "samplePeakDbFS": -7.3,
+          "fullDecodeExit": 0,
+          "command": [
+            "ffmpeg",
+            "-v",
+            "error",
+            "-nostdin",
+            "-n",
+            "-i",
+            "vsboss.mp3",
+            "-map",
+            "0:a:0",
+            "-vn",
+            "-map_metadata",
+            "-1",
+            "-ar",
+            "48000",
+            "-ac",
+            "2",
+            "-af",
+            "volume=-7.3400dB,afade=t=in:st=0:d=0.008,afade=t=out:st=67.40800000:d=0.008",
+            "-c:a",
+            "libvorbis",
+            "-b:a",
+            "160k",
+            "vsboss.ogg"
+          ]
+        },
+        {
+          "file": "vsboss.mp3",
+          "bytes": 1619181,
+          "sha256": "6412815ad81481a4bbf84c5ba94f57033528883b837a8c667a8a3c8133dc1073",
+          "codec": "mp3",
+          "sampleRate": 48000,
+          "channels": 2,
+          "containerDuration": 67.44,
+          "decodedFrames": 3235968,
+          "decodedDuration": 67.416,
+          "boundaryJumpDbFS": -75.30539075819776,
+          "completeSongWindows": [
+            {
+              "atFraction": 0.1,
+              "seconds": 1.0,
+              "correlation": 0.9995762359251656
+            },
+            {
+              "atFraction": 0.5,
+              "seconds": 1.0,
+              "correlation": 0.9996069074517941
+            },
+            {
+              "atFraction": 0.9,
+              "seconds": 1.0,
+              "correlation": 0.99977262259302
+            }
+          ],
+          "integratedLufs": -16.27,
+          "truePeakDbTP": -7.75,
+          "loudnessRangeLU": 4.1,
+          "samplePeakDbFS": -7.8,
+          "fullDecodeExit": 0,
+          "command": [
+            "ffmpeg",
+            "-v",
+            "error",
+            "-nostdin",
+            "-n",
+            "-i",
+            "vsboss.mp3",
+            "-map",
+            "0:a:0",
+            "-vn",
+            "-map_metadata",
+            "-1",
+            "-ar",
+            "48000",
+            "-ac",
+            "2",
+            "-af",
+            "volume=-7.3400dB,afade=t=in:st=0:d=0.008,afade=t=out:st=67.40800000:d=0.008",
+            "-c:a",
+            "libmp3lame",
+            "-b:a",
+            "192k",
+            "-write_xing",
+            "1",
+            "-id3v2_version",
+            "3",
+            "vsboss.mp3"
+          ]
+        }
+      ],
+      "sourceUnchanged": true
+    }
+  ]
+}

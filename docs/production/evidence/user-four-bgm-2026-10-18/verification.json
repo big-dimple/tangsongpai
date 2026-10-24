@@ -1,0 +1,94 @@
+{
+  "taskId": "user-four-bgm-20261018",
+  "testedCommit": "b693dc1383cd9091a181b8bccf7f24071722d982",
+  "baseCommit": "15cdc0532a2ef5656798bb2429a7a3b2810d8c1d",
+  "referenceCommit": "ab72bf69cae445df466c9cd204dba9fda96ce5dc",
+  "branch": "dev/user-four-bgm-20261018",
+  "environment": {
+    "os": "win32",
+    "node": "v22.20.0",
+    "ffmpeg": "6.1.1 Ubuntu-Dev WSL",
+    "browser": "NOT_RUN; user restriction",
+    "hearing": "NOT_RUN"
+  },
+  "checks": [
+    {
+      "name": "focused tests",
+      "status": "PASS",
+      "exitCode": 0,
+      "files": 14,
+      "total": 191,
+      "passed": 191,
+      "failed": 0,
+      "evidence": "tests.json"
+    },
+    {
+      "name": "TypeScript --noEmit",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "Vite production build",
+      "status": "PASS",
+      "exitCode": 0,
+      "modules": 383,
+      "evidence": "build-info.json",
+      "note": "Built exact source hashes before source commit; original build metadata preserves base SHA plus dirty."
+    },
+    {
+      "name": "four browser harness syntax checks",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "eight deliveries full decode, duration and loudness",
+      "status": "PASS",
+      "exitCode": 0,
+      "evidence": "preparation.json"
+    },
+    {
+      "name": "originals / thirty SFX / thin event and SFX code preserved",
+      "status": "PASS",
+      "exitCode": 0,
+      "evidence": "preservation.json"
+    },
+    {
+      "name": "git diff --check",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "native browser/network/physical device/hearing",
+      "status": "NOT_RUN"
+    }
+  ],
+  "sourceSha256LF": {
+    "art/sources/audio-gamefeel-rfc-20261017/upstream.json": "3b05ae2dc5657ee052828d54411bffe712186f305afde1aedb625d4ddb33401b",
+    "docs/production/evidence/user-four-bgm-2026-10-18/preparation.json": "6dbeb7efc953d90047e86cb5da1a9bc6e56e55bbbfafbff1e30a123b825af49c",
+    "docs/production/evidence/user-four-bgm-2026-10-18/retired-bgm.json": "9e904f033f145bd001cf786baca9e741aa36188866874cae160acdefcef26337",
+    "harness/hero-climax.mjs": "6da2fb7defa155a6b338a30c2cd72e15f0a0339fb5ed3e6740f8a45fbab24074",
+    "harness/music-filter-transition.mjs": "09df76aabc9c0baecfb48be6ba5defd0635f3890bfd47322f889b491b73c6913",
+    "harness/windows-experience-integration.mjs": "0dfb92c23bb460d48e78ee544b4762fb29da01c0fe4d8a18e18a1d9b6ec95f92",
+    "public/assets/audio/bgm/manifest.json": "46c4d477425fc4f0604a9fa90af92647e52dde18e1375780d0deb9d647cda252",
+    "public/assets/audio/gamefeel-rfc/sources.json": "f46ec2b296802d6ac8a7b21e0bab4f94205d36424363fb111696fa00225bb5f3",
+    "scripts/prepare-user-bgm.py": "ca2ddeb08a1de4e54a72ca81b1d47d7aed9e11f4d86c1a3bc55632c326515c96",
+    "src/audio/AudioEngine.ts": "137a4a8065ae0f5518e8acca9cdc6ca8fd0c8c4d6f0640f43c400ff800bcb00e",
+    "src/audio/MusicSourceFormats.ts": "69c3ec27423d979a1861bec5a4da92c45995b7f638bd6f121f14c35a9b54be2f",
+    "src/game/GameScene.ts": "9b24cbd967c7200ed066b4dcf641587ccf45a8d16f61bfe960242e31cce4696c",
+    "src/game/IntermissionScene.ts": "3e0c84e4d3cf5a2cd563fe1c7e86ceee68a94cc8e51051a0a8b19b84a5e6aad6",
+    "src/game/ShopScene.ts": "36fb1213eb4ab679278269916609bda29951ed72d88acc8121ec8ac7f7402c70",
+    "tests/audio-lifecycle.browser.mjs": "ca8111f2baaee6717918deaafbdcc8a2104804a03e52d24a1c7dc043757c993c",
+    "tests/audio-music-lifecycle.test.ts": "f06233e54f9b09e4be787405a72048865581533ec7317f3cb957df11c342ae3f",
+    "tests/bgm-scene.test.ts": "e6a1f388aedfcba9509304e3e6d28a406f3dede322c6aeade21ca494f571852a",
+    "tests/runtime-assets-retirement.test.ts": "44925274697343a6a3d8cbc56e0f6f08a6950f2c576cf66a894bb1cb27209705"
+  },
+  "humanReview": {
+    "status": "NOT_RUN"
+  },
+  "limits": [
+    "No actual browser or listening approval in this batch.",
+    "Native media implementation ultimately controls transfer buffering; real network concurrency awaits parent observation.",
+    "Reference source has no retained audio encoder script and no runtime-error format fallback; those differences are explicitly recorded.",
+    "Existing production chunk-size warning remains."
+  ]
+}

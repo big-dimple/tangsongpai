@@ -1,0 +1,74 @@
+{
+  "repository": "https://github.com/big-dimple/board-race",
+  "commit": "ab72bf69cae445df466c9cd204dba9fda96ce5dc",
+  "paths": [
+    {
+      "path": "src/audio/audio.ts",
+      "sha256LF": "6140e8245bee5c635d1ff3700aee7a11a844f36d634ec8660b85ef8e1c225dfe"
+    },
+    {
+      "path": "src/assets/audio/LICENSES.md",
+      "sha256LF": "2fbefff6544648d8178b06444c2207ebb1d84f462a81fb268a0cc5608bde4da7"
+    },
+    {
+      "path": "harness/audio.mjs",
+      "sha256LF": "928c095b58313766b2132b7a4e8495b2374ae8d5e919d551bf55400bd68f0149"
+    },
+    {
+      "path": "scripts/release-checked.sh",
+      "sha256LF": "2a72ff0ddb7609a16fb95dc622e7b81b4707967f6975717ed9c31706875376f2"
+    },
+    {
+      "path": "package.json",
+      "sha256LF": "ae63eb56ca2ca1ad6fdb4772e32513ab653352cd8f12a1e544100683a2c7cb07"
+    },
+    {
+      "path": "public/manifest.webmanifest",
+      "sha256LF": "3173eebfd3e33d6c9bc6baf34e91105f216a3f715c4154b8e4f12bbaf198b6a7"
+    }
+  ],
+  "actualPipeline": {
+    "preferred": "Ogg Vorbis",
+    "fallback": "MP3",
+    "capabilityProbe": "HTMLAudioElement.canPlayType(audio/ogg; codecs=\"vorbis\")",
+    "nativeMedia": true,
+    "completeSong": true,
+    "referenceMeasured": {
+      "ogg": {
+        "codec": "vorbis",
+        "sampleRate": 48000,
+        "channels": 2,
+        "nominalBitRate": 160000,
+        "bytes": 2367317,
+        "duration": 127.344
+      },
+      "mp3": {
+        "codec": "mp3",
+        "sampleRate": 48000,
+        "channels": 2,
+        "bitRate": 192000,
+        "bytes": 3057453,
+        "duration": 127.368
+      }
+    },
+    "retainedEncoderScript": false,
+    "versionedScripts": [
+      "scripts/release-checked.sh"
+    ],
+    "importantDistinction": "Source only chooses MP3 when capability probe is false; its error handler marks failed. This adaptation adds same-recording runtime decode/error fallback once, not copied source behavior."
+  },
+  "adopted": [
+    "48kHz stereo Vorbis preferred and MP3 compatibility alternative",
+    "native streamed media routed into the existing single context",
+    "full arrangement and fixed gain headroom",
+    "continuous position on same-track scene updates"
+  ],
+  "adapted": [
+    "per-track measured gain toward -16 LUFS instead of copying source -6dB blindly",
+    "8ms edge fades with identical complete decoded frame count",
+    "one runtime-error format fallback and bounded dual failure",
+    "current plus one paused next-track slot, primary readiness before speculative transfer",
+    "user-requested natural ended plus cancelable 3000ms rest replaces the reference native loop",
+    "all four actual scene mappings and cold-result restoration"
+  ]
+}

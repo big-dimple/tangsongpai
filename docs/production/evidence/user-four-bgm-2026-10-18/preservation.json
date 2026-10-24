@@ -1,0 +1,198 @@
+{
+  "baseCommit": "15cdc0532a2ef5656798bb2429a7a3b2810d8c1d",
+  "originals": [
+    {
+      "file": "tianhu-begin.mp3",
+      "sha256": "54f6e87347263b94955f36b7af55f04282279b15a7c486e935220b8df223de01",
+      "unchanged": true
+    },
+    {
+      "file": "moon-shop.mp3",
+      "sha256": "03f02e33fa76ba8cec2355dc3aeea7de6ebeb5998f4e458a0564bfbd614e9755",
+      "unchanged": true
+    },
+    {
+      "file": "go-cake.mp3",
+      "sha256": "8daea2ffcf52e5dc77eeb89975c4824eb504a7c6b8d547b0e26731e51e02c4b1",
+      "unchanged": true
+    },
+    {
+      "file": "vsboss.mp3",
+      "sha256": "420e2655fdbb51fb82697d144309503bdae152c73bf2865053aa27c50ee165f0",
+      "unchanged": true
+    }
+  ],
+  "protectedCode": [
+    {
+      "path": "src/audio/PerformanceAudio.ts",
+      "sha256LF": "5709505757df95dc9dc0b8e689de437429165123192ffc36526ce3a0cd88e27e",
+      "unchanged": true
+    },
+    {
+      "path": "src/audio/foley.ts",
+      "sha256LF": "101bc592094d8ab0f482db9c30e9d8bbb6ce6d88cb513e48cacfc016657e835c",
+      "unchanged": true
+    },
+    {
+      "path": "src/audio/mixPolicy.ts",
+      "sha256LF": "3abd98b483249c68703b4fa01dbaa2b54fd876b9e253c7d8a936476dafd74fdf",
+      "unchanged": true
+    }
+  ],
+  "scoreMethodsSha256LF": "d1593431e3947838981fec7ff376d2f958e71a76ce2383cf393b69cfb379f5fb",
+  "retainedSfxCount": 30,
+  "retainedSfx": [
+    {
+      "file": "public/assets/audio/foley-v1/card-fan-1.ogg",
+      "gitBlob": "2b22dc30ed9b4efd6d0c55a7f6904e64f76dfe24",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/foley-v1/card-place-1.ogg",
+      "gitBlob": "42bbfa8ea2daaadd237c48287388c7c931cc817e",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/foley-v1/card-place-2.ogg",
+      "gitBlob": "8424bec42ee7ec985dab817de07616628705f157",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/foley-v1/card-place-3.ogg",
+      "gitBlob": "69198d987e3d344da70dd567fd79b25efba91bd8",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/foley-v1/card-shove-1.ogg",
+      "gitBlob": "16bd63c6dd2f2b3f8a4791e7d3544d71a4c98ed6",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/foley-v1/card-shuffle.ogg",
+      "gitBlob": "8c734945211b45d74c6a2e8e953ce2489e2e6747",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/foley-v1/card-slide-1.ogg",
+      "gitBlob": "414b570c00179fc61db4251469b0b7e495832db9",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/foley-v1/card-slide-2.ogg",
+      "gitBlob": "bd6800a5e0ac8825250f79f8364e643d36d2c1e7",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/foley-v1/card-slide-3.ogg",
+      "gitBlob": "20623e49da5797b3d6bbdb679bffee28f03ed826",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/foley-v1/cards-pack-open-1.ogg",
+      "gitBlob": "435a1d4b85741b379d6de05b0d6548bc1bd26808",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/foley-v1/chip-lay-1.ogg",
+      "gitBlob": "50f077a60aea8acefb6d964659c5149e4be4f279",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/foley-v1/chip-lay-2.ogg",
+      "gitBlob": "2a78757b5faa31408835e15e11c68f3eb5418842",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/foley-v1/chips-collide-1.ogg",
+      "gitBlob": "d32d1505f788e480f5abef8a606553dbc00df17c",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/foley-v1/chips-stack-1.ogg",
+      "gitBlob": "98e610a5d03d4522a18f318a34b9337b69312107",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/foley-v1/impactBell_heavy_000.ogg",
+      "gitBlob": "20299c4ce77ffd2110cf6c768111afe787e3f043",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/foley-v1/impactBell_heavy_003.ogg",
+      "gitBlob": "13d3e60cb91012b0a1e6c5f298df7efb40902d12",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/foley-v1/impactGlass_heavy_002.ogg",
+      "gitBlob": "0d65bd0c5fee5ea783845a0963a03cc5d16084cf",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/foley-v1/impactSoft_heavy_000.ogg",
+      "gitBlob": "1c321ef698c367144d0d55b52d7a680a4b8e5958",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/foley-v1/impactSoft_medium_000.ogg",
+      "gitBlob": "bf1027b541bfe16cc80af24807ca9bce271c267a",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/foley-v1/impactWood_heavy_000.ogg",
+      "gitBlob": "30fb995aab49d70e51b0c3a226fa45301ad4f760",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/foley-v1/impactWood_light_000.ogg",
+      "gitBlob": "4bf6be62febf1de5f13b8bf33151118d8bb56c34",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/foley-v1/impactWood_light_001.ogg",
+      "gitBlob": "2184d0504732b25db5dd8b9c69867aaa36ab8f61",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/gamefeel-rfc/sfx-penta-1-gong.ogg",
+      "gitBlob": "1fa3e19c4c44730711c789ecc72fd662b345b278",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/gamefeel-rfc/sfx-penta-2-shang.ogg",
+      "gitBlob": "0794095021c449f4a36098dcf6012e343bac7461",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/gamefeel-rfc/sfx-penta-3-jiao.ogg",
+      "gitBlob": "8c6b8d8818451539c0f6bfac60d2848f4b5b51b9",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/gamefeel-rfc/sfx-penta-4-zhi.ogg",
+      "gitBlob": "a54906c4327e71c40222f62b266efd4cff928fed",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/gamefeel-rfc/sfx-penta-5-yu.ogg",
+      "gitBlob": "3459e3d864f1cd1ce4c0afebdbcdab48bdf7f7e2",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/gamefeel-rfc/sfx-temple-bell-victory.ogg",
+      "gitBlob": "a0732fa2f7d0b3d6ac480a7645c3525bbad713bc",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/gamefeel-rfc/sfx-wardrum-mult-hit.ogg",
+      "gitBlob": "8c2fd41bd97a166f36b59a98e6288bb98919cb7e",
+      "unchanged": true
+    },
+    {
+      "file": "public/assets/audio/score-impact/cloth2.ogg",
+      "gitBlob": "45e783913da1c3022c72a52fdda6e6101f98b8fd",
+      "unchanged": true
+    }
+  ],
+  "retiredBgmFiles": 9,
+  "retiredBgmBytes": 17912136
+}

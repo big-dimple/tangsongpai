@@ -1,0 +1,11 @@
+/workspace/tangsongpai/src/domain/r2Run.ts:160
+    if (!condition) throw new Error(`Run invariant: ${label}`);
+                          ^
+
+Error: Run invariant: joker slots/IDs
+    at check (/workspace/tangsongpai/src/domain/r2Run.ts:160:27)
+    at assertR2Invariants (/workspace/tangsongpai/src/domain/r2Run.ts:204:3)
+    at applyCommand (/workspace/tangsongpai/src/domain/run.ts:121:50)
+    at file:///tmp/table-art-final.mjs:10:464
+
+Node.js v24.19.0

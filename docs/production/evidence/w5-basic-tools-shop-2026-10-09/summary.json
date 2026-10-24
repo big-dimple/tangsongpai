@@ -1,0 +1,52 @@
+{
+  "status": "FINITE_SOFTWARE_PASS_WITH_ORIGINAL_FAILURES_PRESERVED",
+  "base": "1f58b994b9e050c4d3afa94ddf74cc23549154f4",
+  "product": "e519e8be840fce7e2d004f3cdb671e75de13b3c2",
+  "initialSeed": "1791506910545",
+  "identity": {
+    "version": "quality-r2-basic-tool-supply-v1",
+    "hash": "json-fnv-v1:9945e0ce56ff7cb2"
+  },
+  "tools": [
+    {
+      "offerId": "run/1791506910545/erxiang/shop/0/0/tool/0",
+      "definitionId": "T18",
+      "price": 4,
+      "consumed": false
+    },
+    {
+      "offerId": "run/1791506910545/erxiang/shop/0/0/tool/1",
+      "definitionId": "T11",
+      "price": 2,
+      "consumed": false
+    }
+  ],
+  "actualHand": "pair",
+  "actualHeat": "507",
+  "actualEndGold": 7,
+  "actualPhase": "stage-cleared",
+  "sourceUnchangedBeforeAfter": true,
+  "subjectiveBalanceAccepted": false,
+  "physicalDeviceAccepted": false,
+  "oldAsyncWaitReliable": false,
+  "targetedTests": 61,
+  "targetedFiles": 5,
+  "productAfterCIGuardFix": "cff6247e8abce9f5c5069830978662b797739901",
+  "originalCIFailure": {
+    "head": "6d9cfa5141b4f70f780c02dc3c6ddf49da383c64",
+    "run": 37867153012,
+    "job": 113616490072,
+    "status": "FAIL",
+    "reason": "toolInfo(T99) resolved price before getR2Tool identity validation; expected unknown-r2-tool: T99, got TypeError",
+    "testsPassed": 2728,
+    "testsFailed": 1,
+    "filesPassed": 169,
+    "filesFailed": 1
+  },
+  "harnessAfterExactIdentityFix": "7e5503282728a5727da17a7b01ddb2e6a9b682c1",
+  "secondCIBrowserFailure": {
+    "run": 37867376601,
+    "job": 113617222088,
+    "reason": "stale contentVersion smoke assertion"
+  }
+}
