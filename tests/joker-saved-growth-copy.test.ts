@@ -1,7 +1,6 @@
 import {expect,it} from 'vitest';
 import {R2_JOKERS,r2GrowthCaps,r2GrowthMinimums} from '../src/content/r2Schema';
 import {r2CreateJoker} from '../src/domain/r2Run';
-import {r2SelectionFacts} from '../src/domain/r2SelectionFacts';
 import {jokerMemoryAbility,type JokerMemoryContext} from '../src/game/JokerMemory';
 import {fractionText} from '../src/game/scoreText';
 
