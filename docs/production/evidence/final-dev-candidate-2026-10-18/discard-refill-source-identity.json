@@ -1,0 +1,55 @@
+{
+  "productCommit": "92f2824b79911336ab862f1abc3010f5e2d4926e",
+  "heroSource": "3b0942965e2af65e10cd18758c4665ca012bf8b0",
+  "shopSource": "57de14a2f9757eec4193db4d2ed9e68750a192d7",
+  "exactFiles": {
+    "src/game/HeroTargetAttachment.ts": {
+      "source": "3b0942965e2af65e10cd18758c4665ca012bf8b0",
+      "normalizedLfSha256": "06b191ba000b9677773a27247602430588e92f45494595d3e098ed4a597aef6c"
+    },
+    "src/game/SushiDiscardOrigin.ts": {
+      "source": "3b0942965e2af65e10cd18758c4665ca012bf8b0",
+      "normalizedLfSha256": "a3adf46f466c9e5ebc1850ed5645c7e1e5a86d14c983d657ddc224454c7ad4e0"
+    },
+    "src/game/SushiDiscardCardPresentation.ts": {
+      "source": "3b0942965e2af65e10cd18758c4665ca012bf8b0",
+      "normalizedLfSha256": "783704e4f5d0f15167699aaf6365f3b9c22b99b657c3c13204e45ff547b5498a"
+    },
+    "src/game/XinRefillLock.ts": {
+      "source": "3b0942965e2af65e10cd18758c4665ca012bf8b0",
+      "normalizedLfSha256": "082fbabec3724b8690aca202defdbeaf5dfbe01d9cd5d35722b463ca827207f5"
+    },
+    "src/game/SuitSymbols.ts": {
+      "source": "57de14a2f9757eec4193db4d2ed9e68750a192d7",
+      "normalizedLfSha256": "9f5d937367a50ebf980fd843ed226bdd2f12890911cb685124b4837dc3212752"
+    },
+    "src/game/WorkshopGoals.ts": {
+      "source": "57de14a2f9757eec4193db4d2ed9e68750a192d7",
+      "normalizedLfSha256": "a99b77806c1a88b985dcf239b55fcbd03305578308af0c60b84e59156ba977ac"
+    },
+    "src/game/WorkshopGoals.css": {
+      "source": "57de14a2f9757eec4193db4d2ed9e68750a192d7",
+      "normalizedLfSha256": "b6679766fb2a012ba8249938a30e20a2aeb89395face3c730cadfeb8689aac32"
+    },
+    "src/game/OwnedJokerScoreMotion.ts": {
+      "source": "bffcb58a",
+      "normalizedLfSha256": "2dbeecc832b96c2ff291931f739414347c68ad16e6bed80d3130a254a6fff8a6"
+    }
+  },
+  "sourcePatches": {
+    "SUSHI_DISCARD_LOCAL_OWNER_20261018.patch": {
+      "sha256": "ca8415fa2d1cf81463a5d41fe9c8c800460b97819d2744c1d38c196920a369c6",
+      "applied": true
+    },
+    "XIN_REFILL_LOCK_OWNER_20261018.patch": {
+      "sha256": "7105806658b5ab44c8f4a30f412f4fdf96747a79470d0b166a06676ea8a36061",
+      "applied": true
+    }
+  },
+  "localBrowser": "NOT_RUN",
+  "status": "PASS",
+  "actualGameSceneDeltaExactlyBothSourcePatches": true,
+  "priorAudioScoreMenuRuleAssetsAndShopScenePreserved": true,
+  "menuGlobalStyleDeltaPreservedExactly": true,
+  "nestedPatchFormatNote": "Xin patch context-empty lines 7/12 contain mandatory single-space diff context; originals retained. Nonpatch merge files and actual applied GameScene diff passed normal whitespace check."
+}

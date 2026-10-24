@@ -1,0 +1,106 @@
+{
+  "sourceMain": "2e7f5c04753b1b107d5bcec8d64d8611d7665873",
+  "historicalCopySource": "ca1fba935bb4fd67e996411bbe7b28e2db5a04f1",
+  "approvedCopySources": [
+    "c58ae03353aaacacf2d4d27da4a7544fa7ad8edd",
+    "98bc463597c02811920c5c73524afc8ab3c6ee79",
+    "6a67b0e722f677fbc31b6e69d032d6704c778657"
+  ],
+  "scope": "Approved player wording/extra effect and timing fields only; each frozen domain definition was independently equal before and after. No rule/save identity changes.",
+  "profiles": {
+    "quality-r2-basic-suit-choice-v1": {
+      "contentHash": "json-fnv-v1:1b7a0ea858306134",
+      "originalPresentationSha256": "3c8ab82c391f50e58c8dd51c59c763f6744a8952a90e8484e3782beb1bf56d4d",
+      "presentationSha256": "528f7c327a0969cbe71e5c5ced639cc5abcc205803c72ed08782e85f911a28e7",
+      "definitionsSha256": "2a9f81bd37c351da2819e6aa14eff6e98e0454d3e61206b2bbd62ebab7a6f914"
+    },
+    "quality-r2-basic-tool-choice-v1": {
+      "contentHash": "json-fnv-v1:39a8d0fb6bc97307",
+      "originalPresentationSha256": "3c8ab82c391f50e58c8dd51c59c763f6744a8952a90e8484e3782beb1bf56d4d",
+      "presentationSha256": "528f7c327a0969cbe71e5c5ced639cc5abcc205803c72ed08782e85f911a28e7",
+      "definitionsSha256": "2a9f81bd37c351da2819e6aa14eff6e98e0454d3e61206b2bbd62ebab7a6f914"
+    },
+    "quality-r2-erxiang-handoff-v1": {
+      "contentHash": "json-fnv-v1:1f5fd46c0f17da58",
+      "originalPresentationSha256": "3c8ab82c391f50e58c8dd51c59c763f6744a8952a90e8484e3782beb1bf56d4d",
+      "presentationSha256": "528f7c327a0969cbe71e5c5ced639cc5abcc205803c72ed08782e85f911a28e7",
+      "definitionsSha256": "2a9f81bd37c351da2819e6aa14eff6e98e0454d3e61206b2bbd62ebab7a6f914"
+    },
+    "quality-r2-basic-tool-supply-v1": {
+      "contentHash": "json-fnv-v1:9945e0ce56ff7cb2",
+      "originalPresentationSha256": "3c8ab82c391f50e58c8dd51c59c763f6744a8952a90e8484e3782beb1bf56d4d",
+      "presentationSha256": "528f7c327a0969cbe71e5c5ced639cc5abcc205803c72ed08782e85f911a28e7",
+      "definitionsSha256": "2a9f81bd37c351da2819e6aa14eff6e98e0454d3e61206b2bbd62ebab7a6f914"
+    },
+    "quality-r2-touye-wager-v1": {
+      "contentHash": "json-fnv-v1:a2186375d3bfcec1",
+      "originalPresentationSha256": "3c8ab82c391f50e58c8dd51c59c763f6744a8952a90e8484e3782beb1bf56d4d",
+      "presentationSha256": "528f7c327a0969cbe71e5c5ced639cc5abcc205803c72ed08782e85f911a28e7",
+      "definitionsSha256": "2a9f81bd37c351da2819e6aa14eff6e98e0454d3e61206b2bbd62ebab7a6f914"
+    },
+    "quality-r2-laohuan-refill-v1": {
+      "contentHash": "json-fnv-v1:3683dcc2deeee53e",
+      "originalPresentationSha256": "3c8ab82c391f50e58c8dd51c59c763f6744a8952a90e8484e3782beb1bf56d4d",
+      "presentationSha256": "528f7c327a0969cbe71e5c5ced639cc5abcc205803c72ed08782e85f911a28e7",
+      "definitionsSha256": "2a9f81bd37c351da2819e6aa14eff6e98e0454d3e61206b2bbd62ebab7a6f914"
+    },
+    "quality-r2-xiemu-burn-v1": {
+      "contentHash": "json-fnv-v1:525608410742e09d",
+      "originalPresentationSha256": "3c8ab82c391f50e58c8dd51c59c763f6744a8952a90e8484e3782beb1bf56d4d",
+      "presentationSha256": "528f7c327a0969cbe71e5c5ced639cc5abcc205803c72ed08782e85f911a28e7",
+      "definitionsSha256": "2a9f81bd37c351da2819e6aa14eff6e98e0454d3e61206b2bbd62ebab7a6f914"
+    },
+    "quality-r2-azao-charge-v1": {
+      "contentHash": "json-fnv-v1:1e5d534e40cc0f2a",
+      "originalPresentationSha256": "3c8ab82c391f50e58c8dd51c59c763f6744a8952a90e8484e3782beb1bf56d4d",
+      "presentationSha256": "528f7c327a0969cbe71e5c5ced639cc5abcc205803c72ed08782e85f911a28e7",
+      "definitionsSha256": "2a9f81bd37c351da2819e6aa14eff6e98e0454d3e61206b2bbd62ebab7a6f914"
+    },
+    "quality-r2-route-starter-v1": {
+      "contentHash": "json-fnv-v1:61f2c0d68afcf672",
+      "originalPresentationSha256": "3c8ab82c391f50e58c8dd51c59c763f6744a8952a90e8484e3782beb1bf56d4d",
+      "presentationSha256": "528f7c327a0969cbe71e5c5ced639cc5abcc205803c72ed08782e85f911a28e7",
+      "definitionsSha256": "2a9f81bd37c351da2819e6aa14eff6e98e0454d3e61206b2bbd62ebab7a6f914"
+    },
+    "quality-r2-group-upgrade-prototype-v1": {
+      "contentHash": "json-fnv-v1:df2816bdf026bad9",
+      "originalPresentationSha256": "3c8ab82c391f50e58c8dd51c59c763f6744a8952a90e8484e3782beb1bf56d4d",
+      "presentationSha256": "528f7c327a0969cbe71e5c5ced639cc5abcc205803c72ed08782e85f911a28e7",
+      "definitionsSha256": "2a9f81bd37c351da2819e6aa14eff6e98e0454d3e61206b2bbd62ebab7a6f914"
+    },
+    "quality-r2-combo-growth-prototype-v1": {
+      "contentHash": "json-fnv-v1:3141dde0f87b3ab4",
+      "originalPresentationSha256": "3c8ab82c391f50e58c8dd51c59c763f6744a8952a90e8484e3782beb1bf56d4d",
+      "presentationSha256": "528f7c327a0969cbe71e5c5ced639cc5abcc205803c72ed08782e85f911a28e7",
+      "definitionsSha256": "2a9f81bd37c351da2819e6aa14eff6e98e0454d3e61206b2bbd62ebab7a6f914"
+    },
+    "quality-r2-amo-assist-prototype-v1": {
+      "contentHash": "json-fnv-v1:b0dbe7b458ba9338",
+      "originalPresentationSha256": "a17d17cc28f176af3b7dc1a3cb8d038f230e4fc32d741ee3a6510ada4fb7547c",
+      "presentationSha256": "06024d6f30a011beb2ee3aab39cb3d3e2238bc5a4b18489241a2ce4eb9758a5c",
+      "definitionsSha256": "03b60585c1ddcaec673bb032146d219d483ca5551533a84ca7a63d26b482f222"
+    },
+    "quality-r2-content-v11": {
+      "contentHash": "json-fnv-v1:117fb6675e31ce73",
+      "originalPresentationSha256": "a17d17cc28f176af3b7dc1a3cb8d038f230e4fc32d741ee3a6510ada4fb7547c",
+      "presentationSha256": "06024d6f30a011beb2ee3aab39cb3d3e2238bc5a4b18489241a2ce4eb9758a5c",
+      "definitionsSha256": "03b60585c1ddcaec673bb032146d219d483ca5551533a84ca7a63d26b482f222"
+    },
+    "quality-r2-content-v10": {
+      "contentHash": "json-fnv-v1:00ba5b399c980695",
+      "originalPresentationSha256": "a17d17cc28f176af3b7dc1a3cb8d038f230e4fc32d741ee3a6510ada4fb7547c",
+      "presentationSha256": "06024d6f30a011beb2ee3aab39cb3d3e2238bc5a4b18489241a2ce4eb9758a5c",
+      "definitionsSha256": "03b60585c1ddcaec673bb032146d219d483ca5551533a84ca7a63d26b482f222"
+    }
+  },
+  "layout": {
+    "historicalSource": "212e23d547d4fcfdd886f9dfe80699318e77a738",
+    "approvedSource": "bdafa60443b4a20cb1b95950facb10e8da45597e",
+    "historicalSha256": "ebf7da44e82184ba939dadbf55c54d59db06856f803fd2d745c3dbecb6a01df1",
+    "presentationSha256": "819f05c6b9b739c8b9382b06c90d42d942e74b6cb6d42a6e0375eb44e0a1ea62",
+    "landscapeSha256": "34b53e04eab60cd94adb73d9de85863b2131736dcbad4b0f44557ed84e12ee4d",
+    "reviewedChangedLeaves": 266,
+    "unchangedLandscapeProfiles": 2,
+    "visualAcceptance": "NOT_ACCEPTED; geometry regression contract only"
+  }
+}

@@ -1,0 +1,823 @@
+{
+  "candidate": "e6dc6f2eee82edae0c4c9b0d8fa81ce38c9f4efd",
+  "status": "PASS",
+  "source": {
+    "src/game/AssistChoiceDialog.ts": "72ee3dc2b05627016033783c4863a1326db5c5b6ed3f9333bd769c2876a308a8",
+    "src/game/GameScene.ts": "206388f0e5f547195bcff6791bf200ba3ce5de1bd7389b288c03ac36f21ab164",
+    "src/game/HandSuitSort.ts": "9006cb6e7c903960b1f35355edaaa094f78af1c5de0dccc1ea64ab17b7aac10e",
+    "src/game/HeroDiscardChoice.ts": "f219b65f77b0b40828a70f29175276c9cb06f1559fbf69763979d6d3a1d1282b",
+    "src/game/HeroSkillDialog.css": "501d8c392a01c07eef5ffa3147967ce61679ce147e50537b7f8ee54af97a260d",
+    "src/game/HeroSkillDialog.ts": "eb6f1373994d637536f805d77493169bbc44cedfd1db7a63e762d4169962e3be",
+    "src/game/HeroSkillGuide.ts": "914b848a71dd31c26352e4e611503201571dce04772baaf1c6f25d898ea5aba7",
+    "src/game/IntermissionScene.ts": "0ce33412c707fac2336b9c04d1238eacfd9ccdef0bafe9aea838a93583a9b62f",
+    "src/game/ReviewBookReceipt.ts": "3794855c1e68a6e371477a103f57e919b83227281849b783ec60d706310077da",
+    "src/game/SettlementPresentation.ts": "d08cc8472acf27fea72ee8453172025d1c968f7ce7cecb8676c6c48dadee407e",
+    "src/game/ShopLayout.ts": "17a6ed768aacca2ef8a1443c7e397dd11a36911616368fac8c536ced8093fe9f",
+    "src/game/ShopScene.ts": "06705713f0665af5a44054254e3ec2372815442d98acb437807cefd3a7b05a24",
+    "src/game/SushiDiscardCardPresentation.ts": "6b67002b7cb2872b2eac700d5404aefa0a76214de61ae5e7627ad2b9e44f3efe",
+    "src/game/SushiKingCharge.ts": "8656f4655836cfaae667e8125ce231358d366652d07399175f611cbec4a9c755",
+    "src/game/SushiKingEnergy.ts": "56d854c924a3eaaf70ef2b054a2367dec0c231f5d9667898554aa61b6435eaca",
+    "src/game/layout.ts": "68b6e8ea938a0dbb27ca69f0e8e679ed0e3fd77ad43f2bc6969eb69db007d58a"
+  },
+  "steps": [
+    {
+      "kind": "natural-tablet-entry",
+      "geometry": {
+        "viewMode": "portrait",
+        "portrait": false,
+        "chapter": {
+          "x": 12,
+          "y": 112,
+          "width": 184.33333333333331,
+          "height": 44
+        },
+        "items": {
+          "x": 12,
+          "y": 164,
+          "width": 184.33333333333331,
+          "height": 44
+        }
+      },
+      "shopSeq": 1,
+      "tableSeq": 3,
+      "shopCancelTupleSha": "3530f60fbc166dbaa5ac2d69373ca740a053587ef93f37c70e4397670573576d",
+      "rotationTupleSha": "012eaffb2acc9b4918b380f456de52aed77dcaf15104f8beae55f0ece21ae6b9",
+      "status": "PASS"
+    },
+    {
+      "kind": "controlled-tablet-sushi",
+      "compact": {
+        "dialog": {
+          "x": 85,
+          "y": 393.40625,
+          "width": 640,
+          "height": 293.1875,
+          "right": 725,
+          "bottom": 686.59375
+        },
+        "close": {
+          "x": 106,
+          "y": 625.59375,
+          "width": 295,
+          "height": 48,
+          "right": 401,
+          "bottom": 673.59375
+        },
+        "primary": {
+          "x": 409,
+          "y": 625.59375,
+          "width": 295,
+          "height": 48,
+          "right": 704,
+          "bottom": 673.59375
+        }
+      },
+      "firstBlue": [
+        "hearts-13",
+        "spades-13"
+      ],
+      "result": {
+        "seq": [
+          3,
+          4
+        ],
+        "stateSha": "c3f15d56d06985e71112526633e0e2c3b256e9d509efb2ea8ccaf441d3ce8f67",
+        "score": "306"
+      },
+      "releaseIntermediateFrameObserved": false,
+      "cleanup": true,
+      "status": "PASS"
+    },
+    {
+      "kind": "controlled-phone-suit",
+      "cancelUnchanged": true,
+      "stableOrder": [
+        "hearts-2",
+        "hearts-13",
+        "hearts-5",
+        "hearts-8",
+        "spades-7",
+        "clubs-9",
+        "diamonds-4",
+        "clubs-3"
+      ],
+      "selectedPreserved": true,
+      "swept": [
+        "hearts-2",
+        "hearts-13",
+        "hearts-5",
+        "hearts-8"
+      ],
+      "discard": {
+        "seq": [
+          5,
+          6
+        ],
+        "stateSha": "43e25512aec7a5d4976d72bfe6090871eb7b5d2044895063427200cfaf66ad0c"
+      },
+      "status": "PASS"
+    },
+    {
+      "kind": "controlled-phone-U09",
+      "entry": {
+        "text": "复盘本：两对 Lv2→Lv3",
+        "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+        "motion": true,
+        "count": 1
+      },
+      "event": {
+        "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+        "handType": "two-pair",
+        "before": 2,
+        "after": 3
+      },
+      "result": {
+        "seq": [
+          4,
+          5
+        ],
+        "stateSha": "1736f109e53f67925e9254b4b4739798c548ecc3e2517ecf8d4156aab85b2315",
+        "score": "10497"
+      },
+      "restoredStatic": true,
+      "continueCommands": 1,
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "scope": "Software Chromium touch simulation. Natural selector/shop/table followed by validated controlled Su Shi, suit and U09 saves; no physical device, hearing, full hero matrix or user aesthetic acceptance.",
+  "browser": "151.0.7922.173",
+  "sushiFrames": [
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 2,
+      "charge": [],
+      "shards": 0
+    },
+    {
+      "blue": 0,
+      "charge": [
+        "windup",
+        "windup"
+      ],
+      "shards": 0,
+      "packet": "×3",
+      "arrived": false
+    },
+    {
+      "blue": 0,
+      "charge": [
+        "windup",
+        "windup"
+      ],
+      "shards": 0,
+      "packet": "×3",
+      "arrived": false
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 8,
+      "packet": "×3",
+      "arrived": false
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 8,
+      "packet": "×3",
+      "arrived": false
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 8,
+      "packet": "×3",
+      "arrived": false
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "packet": "×3",
+      "arrived": false
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "packet": "×3",
+      "arrived": false
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "packet": "×3",
+      "arrived": false
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "packet": "×3",
+      "arrived": false
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "packet": "×3",
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "packet": "×3",
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    },
+    {
+      "blue": 0,
+      "charge": [],
+      "shards": 0,
+      "arrived": true
+    }
+  ],
+  "cleanup": "context/browser/Vite closed"
+}

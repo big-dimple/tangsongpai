@@ -1,0 +1,13 @@
+{
+  "base": "9abedd0195881c64c730f13e26b66c54f94b3716",
+  "candidate": "e6dc6f2eee82edae0c4c9b0d8fa81ce38c9f4efd",
+  "changedGameSceneMethods": [
+    "inspectAmoExile",
+    "inspectHeroExplanation",
+    "presentTrace",
+    "sortHand",
+    "syncHeroTargetAttachment"
+  ],
+  "protectedTreesByteIdentical": true,
+  "status": "PASS"
+}

@@ -1,0 +1,92 @@
+{
+  "head": "14b75a42748f258d20863a82bd3b0cafeb9d1daa",
+  "scope": "One810x1080 native-touch natural shop, chapter/items right edge, tool inspect/cancel, workshop open/rotate/close. Read-only state/journal/storage tuples; no buy/production mutation or expanded viewport matrix.",
+  "steps": [
+    {
+      "note": "native right-edge action/chapter",
+      "point": {
+        "x": 192.3333307902018,
+        "y": 134
+      }
+    },
+    {
+      "note": "chapter is correct, not first goods",
+      "tupleSha": "6a3a753cbbebdf9593aab7b76b4cdffb349ca5df0a289af0b7887869a128bc1e"
+    },
+    {
+      "note": "native right-edge action/items",
+      "point": {
+        "x": 192.3333307902018,
+        "y": 186
+      }
+    },
+    {
+      "note": "items right-edge opens inventory",
+      "tupleSha": "6a3a753cbbebdf9593aab7b76b4cdffb349ca5df0a289af0b7887869a128bc1e"
+    },
+    {
+      "note": "tools shelf is read only",
+      "tupleSha": "6a3a753cbbebdf9593aab7b76b4cdffb349ca5df0a289af0b7887869a128bc1e"
+    },
+    {
+      "note": "actual tool inspect",
+      "tupleSha": "6a3a753cbbebdf9593aab7b76b4cdffb349ca5df0a289af0b7887869a128bc1e"
+    },
+    {
+      "note": "tool cancel",
+      "tupleSha": "6a3a753cbbebdf9593aab7b76b4cdffb349ca5df0a289af0b7887869a128bc1e"
+    },
+    {
+      "note": "actual workshop opens from tablet legacy shelf",
+      "tupleSha": "6a3a753cbbebdf9593aab7b76b4cdffb349ca5df0a289af0b7887869a128bc1e"
+    },
+    {
+      "note": "workshop survives one orientation change",
+      "tupleSha": "6a3a753cbbebdf9593aab7b76b4cdffb349ca5df0a289af0b7887869a128bc1e"
+    },
+    {
+      "note": "workshop close in landscape",
+      "tupleSha": "6a3a753cbbebdf9593aab7b76b4cdffb349ca5df0a289af0b7887869a128bc1e"
+    }
+  ],
+  "errors": [],
+  "baseline": {
+    "seq": 1,
+    "gold": 6,
+    "tupleSha": "6a3a753cbbebdf9593aab7b76b4cdffb349ca5df0a289af0b7887869a128bc1e"
+  },
+  "geometry": {
+    "viewMode": "portrait",
+    "shopPortrait": false,
+    "shopPc": false,
+    "chapter": {
+      "x": 12,
+      "y": 112,
+      "width": 184.33333333333331,
+      "height": 44
+    },
+    "items": {
+      "x": 12,
+      "y": 164,
+      "width": 184.33333333333331,
+      "height": 44
+    }
+  },
+  "itemsTitle": "道具箱",
+  "toolTitle": "复演 · 购买详情",
+  "workshopButtons": [
+    "升级牌型强化牌型选择",
+    "改牌调整点数选择",
+    "染色改变花色选择",
+    "大字号 · 选1–2张牌，选中牌打出且每次有效计分时，倍率+2实付 2 金 ›",
+    "看原图",
+    "精简节目 · 永久删除1–2张牌实付 2 金 ›",
+    "看原图",
+    "加厚纸 · 选1–2张牌，选中牌打出且每次有效计分时，热度+20实付 2 金 ›",
+    "看原图",
+    "查看工具包 0",
+    "返回商店"
+  ],
+  "status": "PASS",
+  "cleanup": "Chromium/Vite closed in finally"
+}

@@ -1,0 +1,89 @@
+{
+  "taskId": "P08",
+  "testedCommit": "e6dc6f2eee82edae0c4c9b0d8fa81ce38c9f4efd",
+  "productionMain": "351e1eab0c9effd13d473ed1dbe53cc8826bdd84",
+  "mergeOrder": [
+    {
+      "pr": 214,
+      "head": "9d6e8557019fb32cfaedca76a5e1e2f8fa96f48f",
+      "merge": "5b8c6b94ab3b0706e4f18ba1bcdef9df719620fa",
+      "scope": "Su Shi true cost-K blue charge only",
+      "ci": 39603445875,
+      "planCi": 39603445851,
+      "engineering": "merged_bounded_cross_checked",
+      "ciConclusion": "success",
+      "humanAestheticHearingDevice": "NOT_ACCEPTED"
+    },
+    {
+      "pr": 215,
+      "head": "14b75a42748f258d20863a82bd3b0cafeb9d1daa",
+      "merge": "f0306dae3045ca92ecfa1e9235860e47c638cebf",
+      "scope": "tablet layout and shop geometry only",
+      "ci": 39602787270,
+      "planCi": 39602787286,
+      "engineering": "merged_bounded_cross_checked",
+      "ciConclusion": "success",
+      "humanAestheticHearingDevice": "NOT_ACCEPTED"
+    },
+    {
+      "pr": 216,
+      "head": "64ca99a918038097614753cc2d0e9898b4529f30",
+      "merge": "9c287f97d8c47ca690fdf7541a7cbd6cfbd0e19a",
+      "scope": "saved U09 source receipt only",
+      "ci": 39603245877,
+      "planCi": 39603245852,
+      "engineering": "merged_bounded_cross_checked",
+      "ciConclusion": "success",
+      "humanAestheticHearingDevice": "NOT_ACCEPTED"
+    },
+    {
+      "pr": 217,
+      "head": "df6a74def1176bc17974f0b76ae52c0968affbe9",
+      "originalProductionHead": "ab8460ec70d8191087e181e0fc620b235e344144",
+      "merge": "351e1eab0c9effd13d473ed1dbe53cc8826bdd84",
+      "scope": "compact skill dialogs, explicit stable suit grouping, shared harness adaptation",
+      "ci": 39607193601,
+      "planCi": 39607193462,
+      "engineering": "merged_bounded_cross_checked",
+      "ciConclusion": "success",
+      "humanAestheticHearingDevice": "NOT_ACCEPTED"
+    }
+  ],
+  "status": "BOUNDED_ENGINEERING_INTEGRATION_PASS",
+  "independentReviews": [
+    "independent/ipad/REVIEW.md",
+    "independent/sushi/REVIEW.md",
+    "independent/review-book/REVIEW.md",
+    "independent/dialog-suit.json"
+  ],
+  "sourceUnion": "source-integration.json",
+  "crossCheck": "cross-check.json",
+  "sharedSmoke": "shared-mobile-smoke.json",
+  "typecheck": "typecheck.log",
+  "sourceBoundary": "candidate production tree identical to merged351e1eab; no domain/save/content/public/Astra changes vs9abedd",
+  "failure": "attempts/release-frame-miss.json",
+  "limits": [
+    "software Chromium touch simulation, not physical iPad/Safari/GPU",
+    "natural entry/shop/table, controlled saves for skills/suit/U09 via existing validated import",
+    "integration release subphase not captured; visible charge/fracture/transfer and eventual cleanup checked; exact step cleanup unit-tested",
+    "no six-hero cast/full responsiveness/long-term balance/hearing/user aesthetic acceptance",
+    "no domain/deployment lookup; A/B not adopted"
+  ],
+  "finalMainResolution": {
+    "ref": "refs/heads/main",
+    "sourceMain": "351e1eab0c9effd13d473ed1dbe53cc8826bdd84",
+    "meaning": "final documentation merge SHA and push/main CI resolved in delivery receipt to avoid self-referential commit hash"
+  },
+  "ipadFollowup": {
+    "status": "USER_DEFERRED_NOT_TODO",
+    "keepMergedFix": true,
+    "additionalInvestigation": false,
+    "physicalDeviceFollowup": false,
+    "resumeOnlyOnNewUserRequest": true,
+    "futureFocus": [
+      "PC landscape",
+      "phone portrait"
+    ],
+    "source": "父转交用户“iPad就到这里…后面要用再说…重点PC横版和手机竖版”"
+  }
+}

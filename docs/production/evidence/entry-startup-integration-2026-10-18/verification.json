@@ -1,0 +1,114 @@
+{
+  "baseMain": "4039c8f3402c608fd8ede272cc66df191a336c9c",
+  "testedWorkingTreeBase": "3f65764d3147654414e7f38cf26a3aa406201e42",
+  "sourceHeads": {
+    "harness": "b4d235dc84b581c5b3a912ddb33bbfe9429cfc39",
+    "audio": "53acabc2842eecead220747e483a471a25ba3394",
+    "visual": "ceb5e652668abc5a2c00f0aecba0ef13cbce513b"
+  },
+  "sourceProducts": {
+    "audio": "cc97cf316eafd8370d66d87cb971619f99629dd7",
+    "visual": "ea81ecae35b78b6219eda0df96d5413c7bec75b0"
+  },
+  "sourceFiles": {
+    "audio": {
+      "src/audio/AudioEngine.ts": "c0261732364c1a2f6b9d2987481bf2ed8df75cfc",
+      "src/audio/OpeningAudio.css": "871435b9a2aed921e64b60516e8b1ee0c7f2bb23",
+      "src/audio/OpeningAudio.ts": "655003c80704b2c61e2b9b5b538a2c6ec953806f",
+      "src/game/BootScene.ts": "3eebefb6a84f9d70c4ae804a147f7b25678d86e8",
+      "src/game/SceneResources.ts": "6f122fd9ab7b2e239d4d1fd46ca21d206a73ea7c",
+      "src/main.ts": "f376a6e26f2124d9fa1015da81eede9dd7358517",
+      "tests/audio-music-lifecycle.test.ts": "4fdfcfce36e92dd31373281065a34d171fa3014d",
+      "tests/opening-audio.test.ts": "de75ac221d5f00a18af83217175443729abd7de4",
+      "tests/scene-resources.test.ts": "9ab368d01e752da56003d37936a85720b3cb67e3"
+    },
+    "visual": {
+      "public/licenses/magicui-floating-3d-particles.MIT.txt": "cc26ce6a6cd8af895a40552ef5bd3b6496227669",
+      "src/game/CharacterSelectScene.ts": "1908b69ad2e81c74ea86e460af535578dc700513",
+      "src/game/EntryDepthParticles.ts": "ca2eee9f7f417609d59689d1472c2e42c124160b",
+      "src/game/LoadingEntryParticles.css": "8593b67bab77779f0d041227c0bc66e3b1a8ebe7",
+      "src/game/LoadingEntryParticles.ts": "4f4b0eb895f2e3f9301605a5e1dce1cd93d0e71d",
+      "src/game/LoadingScreen.ts": "3b19a592c143b2cc305588a9f0194047bd9e386c",
+      "src/game/SelectionEntryParticles.ts": "481485737f9a88fdd2c9528710fdf6d78194ef93",
+      "tests/entry-depth-particles.test.ts": "76359c215b5e4e89cfbe4e9461f9f92d544e6590",
+      "tests/entry-particle-lifecycle.test.ts": "f133b259d06872f827ddb3db25caa2a76b544553"
+    }
+  },
+  "audioSourceNormalizedSha256AllMatched": true,
+  "conflicts": "none",
+  "jointChecks": {
+    "files": 7,
+    "passed": 61,
+    "failed": 0,
+    "typecheck": "PASS",
+    "build": "PASS/376 modules",
+    "entry": "index-Dmxx8pU9.js"
+  },
+  "buildMetadata": {
+    "version": "C03",
+    "builtAt": "2026-10-18T07:40:30.132Z",
+    "revision": "3f65764d3147654414e7f38cf26a3aa406201e42",
+    "sourceStatus": "dirty",
+    "modified": true,
+    "modifiedFileCount": 11,
+    "modifiedFiles": [
+      "docs/production/evidence/entry-depth-particles-2026-10-18/README.md",
+      "docs/production/evidence/entry-depth-particles-2026-10-18/verification.json",
+      "public/licenses/magicui-floating-3d-particles.MIT.txt",
+      "src/game/CharacterSelectScene.ts",
+      "src/game/EntryDepthParticles.ts",
+      "src/game/LoadingEntryParticles.css",
+      "src/game/LoadingEntryParticles.ts",
+      "src/game/LoadingScreen.ts",
+      "src/game/SelectionEntryParticles.ts",
+      "tests/entry-depth-particles.test.ts",
+      "tests/entry-particle-lifecycle.test.ts"
+    ]
+  },
+  "sourceChecksReused": {
+    "audio": "10 files/96 on source product",
+    "visual": "6 files/29 on source product",
+    "note": "Separate source scopes; not added to joint count"
+  },
+  "ownerBoundary": {
+    "mainAndBoot": "exact audio source",
+    "loadingAndSelection": "exact visual source",
+    "openingAudioCue": ".load-copy and app gesture binding retained",
+    "readyGate": "music and decoration do not own entry gate"
+  },
+  "openingResources": {
+    "count": 26,
+    "pixels": 4478464,
+    "decodedMiB": 17.083984375,
+    "addedPortraitCount": 6,
+    "addedPortraitBytes": 757322,
+    "cardCatalogBlocking": false,
+    "musicBlocking": false
+  },
+  "resourceClarification": {
+    "newSixPortraitTransferBytes": 757322,
+    "openingBatchItems": 26,
+    "wholeOpeningBatchRgbaMiB": 17.083984375,
+    "notNetworkBytes": true,
+    "full1122x1402OriginalsChanged": false
+  },
+  "particles": {
+    "source": "MagicUI efe76fc5755eca1142dd4f74c1d6f0ace2887e3c; MIT notice retained",
+    "mobileNodes": 32,
+    "desktopNodes": 64,
+    "mobileHzCap": 30,
+    "desktopHzCap": 60,
+    "loadingCanvasDprCap": 2,
+    "globalPhaserDprChanged": false,
+    "reduced": "static frame; no continued particle RAF/update",
+    "hidden": "pause/blur/offscreen stops owner",
+    "destroy": "listeners/RAF/images released",
+    "actualPerformance": "NOT_RUN"
+  },
+  "newPackageDependencies": 0,
+  "newMediaAssets": 0,
+  "blockingExternalDependencyAdded": false,
+  "localBrowser": "NOT_RUN",
+  "realDeviceAudioVisualPerformance": "NOT_RUN",
+  "P08": "in_progress"
+}

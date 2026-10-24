@@ -1,0 +1,53 @@
+{
+  "candidate": "e6dc6f2eee82edae0c4c9b0d8fa81ce38c9f4efd",
+  "status": "FAIL",
+  "source": {
+    "src/game/AssistChoiceDialog.ts": "72ee3dc2b05627016033783c4863a1326db5c5b6ed3f9333bd769c2876a308a8",
+    "src/game/GameScene.ts": "206388f0e5f547195bcff6791bf200ba3ce5de1bd7389b288c03ac36f21ab164",
+    "src/game/HandSuitSort.ts": "9006cb6e7c903960b1f35355edaaa094f78af1c5de0dccc1ea64ab17b7aac10e",
+    "src/game/HeroDiscardChoice.ts": "f219b65f77b0b40828a70f29175276c9cb06f1559fbf69763979d6d3a1d1282b",
+    "src/game/HeroSkillDialog.css": "501d8c392a01c07eef5ffa3147967ce61679ce147e50537b7f8ee54af97a260d",
+    "src/game/HeroSkillDialog.ts": "eb6f1373994d637536f805d77493169bbc44cedfd1db7a63e762d4169962e3be",
+    "src/game/HeroSkillGuide.ts": "914b848a71dd31c26352e4e611503201571dce04772baaf1c6f25d898ea5aba7",
+    "src/game/IntermissionScene.ts": "0ce33412c707fac2336b9c04d1238eacfd9ccdef0bafe9aea838a93583a9b62f",
+    "src/game/ReviewBookReceipt.ts": "3794855c1e68a6e371477a103f57e919b83227281849b783ec60d706310077da",
+    "src/game/SettlementPresentation.ts": "d08cc8472acf27fea72ee8453172025d1c968f7ce7cecb8676c6c48dadee407e",
+    "src/game/ShopLayout.ts": "17a6ed768aacca2ef8a1443c7e397dd11a36911616368fac8c536ced8093fe9f",
+    "src/game/ShopScene.ts": "06705713f0665af5a44054254e3ec2372815442d98acb437807cefd3a7b05a24",
+    "src/game/SushiDiscardCardPresentation.ts": "6b67002b7cb2872b2eac700d5404aefa0a76214de61ae5e7627ad2b9e44f3efe",
+    "src/game/SushiKingCharge.ts": "8656f4655836cfaae667e8125ce231358d366652d07399175f611cbec4a9c755",
+    "src/game/SushiKingEnergy.ts": "56d854c924a3eaaf70ef2b054a2367dec0c231f5d9667898554aa61b6435eaca",
+    "src/game/layout.ts": "68b6e8ea938a0dbb27ca69f0e8e679ed0e3fd77ad43f2bc6969eb69db007d58a"
+  },
+  "steps": [
+    {
+      "kind": "natural-tablet-entry",
+      "geometry": {
+        "viewMode": "portrait",
+        "portrait": false,
+        "chapter": {
+          "x": 12,
+          "y": 112,
+          "width": 184.33333333333331,
+          "height": 44
+        },
+        "items": {
+          "x": 12,
+          "y": 164,
+          "width": 184.33333333333331,
+          "height": 44
+        }
+      },
+      "shopSeq": 1,
+      "tableSeq": 3,
+      "shopCancelTupleSha": "528b4d8ac416fa246a07822e2a109228c98579a2596178df3d4b6a3c43d05951",
+      "rotationTupleSha": "070ba95fae32e3df327232e6491bb763b87a4f48f22370a40cd621d37db8048e",
+      "status": "PASS"
+    }
+  ],
+  "errors": [],
+  "scope": "Software Chromium touch simulation. Natural selector/shop/table followed by validated controlled Su Shi, suit and U09 saves; no physical device, hearing, full hero matrix or user aesthetic acceptance.",
+  "browser": "151.0.7922.173",
+  "error": "AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:\n\n  assert.ok(frames.some(f=>f.charge.includes('release')))\n\n    at file:///workspace/tangsongpai/harness/batch-214-217-integration.mjs:57:84",
+  "cleanup": "context/browser/Vite closed"
+}

@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "integratedMain": "81a041cec60317b771740c788c697acf10b356ae",
+  "targets": [
+    "400",
+    "600",
+    "800"
+  ],
+  "ordinaryHandoff": {
+    "n": "8",
+    "d": "1"
+  },
+  "bare8PairScore": "430",
+  "scope": "default O bundle has zero adapter replacements; one arithmetic check, no new sampled chain/UI/39 matrix"
+}

@@ -1,0 +1,18 @@
+{
+  "taskId": "entry-depth-particles",
+  "testedCommit": "ea81ecae35b78b6219eda0df96d5413c7bec75b0",
+  "baseCommit": "2e7f5c04753b1b107d5bcec8d64d8611d7665873",
+  "branch": "dev/entry-depth-particles-20261018",
+  "testRunState": "Pre-commit working tree; final src/tests committed unchanged in testedCommit.",
+  "source": {"repository": "magicuidesign/magicui", "commit": "efe76fc5755eca1142dd4f74c1d6f0ace2887e3c", "path": "apps/www/registry/magicui/floating-3d-particles.tsx", "license": "MIT", "notice": "public/licenses/magicui-floating-3d-particles.MIT.txt"},
+  "environment": {"os": "Windows", "browser": "NOT_RUN", "device": "NOT_RUN"},
+  "checks": [
+    {"name": "entry projection/lifecycle and existing loading/selection contracts", "command": "Exact six-file vitest command in README.md", "status": "PASS", "exitCode": 0, "files": 6, "tests": 29},
+    {"name": "typecheck and Vite build", "command": "npm run build", "status": "PASS", "exitCode": 0, "modules": 374, "builtAtUtc": "2026-10-18T07:27:56.311Z", "buildMetadata": "base revision with sourceStatus=dirty; not an exact released-build claim"},
+    {"name": "whitespace", "command": "git diff --check", "status": "PASS", "exitCode": 0},
+    {"name": "PC/mobile continuous visuals and device performance", "status": "NOT_RUN"}
+  ],
+  "humanReview": {"status": "NOT_RUN", "evidence": "Remote same-version review remains with parent"},
+  "limitations": ["No local browser/game run per user instruction", "32/64, depth .25 and 30/60Hz are configured budgets, not measured device performance", "DPR<=2 applies to the new loading Canvas; selection reuses unchanged global framebuffer", "No art-quality, dynamic, physical-device or overall P08 acceptance"],
+  "nextTask": "Parent coordinates loading/audio owner hooks, integrates development branch and validates loading/selection on remote dot."
+}

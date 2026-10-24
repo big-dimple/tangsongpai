@@ -1,0 +1,85 @@
+{
+  "unchanged": [
+    {
+      "width": 390,
+      "height": 844,
+      "tableAndShopExact": true
+    },
+    {
+      "width": 390,
+      "height": 740,
+      "tableAndShopExact": true
+    },
+    {
+      "width": 844,
+      "height": 390,
+      "tableAndShopExact": true
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "tableAndShopExact": true
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "tableAndShopExact": true
+    },
+    {
+      "width": 1080,
+      "height": 810,
+      "tableAndShopExact": true
+    },
+    {
+      "width": 1080,
+      "height": 714,
+      "tableAndShopExact": true
+    }
+  ],
+  "tablet": [
+    {
+      "width": 810,
+      "height": 1080,
+      "oldHand": 546,
+      "newHand": 786,
+      "oldTop": 8,
+      "newTop": 8
+    },
+    {
+      "width": 810,
+      "height": 984,
+      "oldHand": 546,
+      "newHand": 786,
+      "oldTop": 8,
+      "newTop": 8
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "oldHand": 504,
+      "newHand": 744,
+      "oldTop": 8,
+      "newTop": 8
+    }
+  ],
+  "selectionUnchanged": [
+    {
+      "width": 810,
+      "height": 1080,
+      "fullSelectionLayoutExact": true
+    },
+    {
+      "width": 810,
+      "height": 984,
+      "fullSelectionLayoutExact": true
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "fullSelectionLayoutExact": true
+    }
+  ],
+  "explicitDesktopUnchanged": true,
+  "status": "PASS",
+  "reviewedHead": "14b75a42748f258d20863a82bd3b0cafeb9d1daa"
+}

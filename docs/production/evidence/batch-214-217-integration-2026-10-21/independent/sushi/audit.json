@@ -1,0 +1,69 @@
+{
+  "head": "9d6e8557019fb32cfaedca76a5e1e2f8fa96f48f",
+  "productionAtCaptureIdentical": true,
+  "sourceHashes": {
+    "src/game/GameScene.ts": "6b614dd7458899473e8c8ae79c5387e914890949082fb09ddec94f6edd5bc977",
+    "src/game/SushiKingEnergy.ts": "56d854c924a3eaaf70ef2b054a2367dec0c231f5d9667898554aa61b6435eaca",
+    "src/game/SushiKingCharge.ts": "8656f4655836cfaae667e8125ce231358d366652d07399175f611cbec4a9c755",
+    "src/game/SushiDiscardCardPresentation.ts": "6b67002b7cb2872b2eac700d5404aefa0a76214de61ae5e7627ad2b9e44f3efe",
+    "tests/sushi-blue-energy.test.ts": "e332fc7729a728687e799504bc3e2bf23d2f4d3f795d2ad7342be8121a6be4b2",
+    "tests/sushi-king-charge.test.ts": "0ec58c751b790bb87c4a36ac353625daced4b36d907ab4bdfd1177593b7dc9d7",
+    "harness/sushi-blue-charge.mjs": "a85361eaf2f9618b797866bea3a4af2d96b74214cbe6327ccb57d61ae868464d",
+    "tests/amo-exile-visual.test.ts": "5f2e03f427246da134d94066db008e7883afc83df153a39cb981e5317ad81910"
+  },
+  "mediaHashes": {
+    "process-1x.mp4": "c1e0f27ae3ab0a2446abc284b8f66b11891af8c70fe4b5da9b1ed07adb8990c5",
+    "process-1x.webm": "7ed85d552044e6c680e24860ffd55e53b54400a6276309e3d8d4e1f91d6756a1",
+    "armed.png": "e67ee001a9e3dc2984f4dd0db6c9a55e909c45e034aeab9b4d6c279963848257",
+    "release.png": "f653af13ae954874969b2b70bd785860ef0be94d80f2301339dd83e4ca0c653b",
+    "fracture.png": "b82f8f58174bab0a6430008aedc053e5a24b11c32b739ccf8e28e026c7847668",
+    "factor-flight.png": "6840bd5790cffb69440cc75e725c8931685dfaec64ab2bf37ac5060a68e411d8",
+    "gold.png": "657069b598904ccab01cbb271f43a5854c2480119a1ece5a118699835593e4e9",
+    "reduced-static.png": "bf56445edbb9ef6ab90d5e6cc215652a6cf2eba1166f1b539d494b1a1572470f"
+  },
+  "localTests": 64,
+  "status": "PASS",
+  "scope": "independent source/raw-evidence/video frame inspection; no independent browser rerun, physical-device/aesthetic/audio acceptance",
+  "firstArmed": {
+    "blueIds": [
+      "hearts-13",
+      "spades-13"
+    ],
+    "at": 4439.800000000047
+  },
+  "frameCount": 267,
+  "newScore": "306",
+  "factor": {
+    "n": "3",
+    "d": "1"
+  },
+  "finalObjects": 0,
+  "reduced": {
+    "status": "PASS",
+    "staticSources": [
+      "spades-13",
+      "hearts-13"
+    ],
+    "score": "306",
+    "factor": {
+      "n": "3",
+      "d": "1"
+    },
+    "cleanup": {
+      "armed": false,
+      "objects": []
+    }
+  },
+  "armedCPU": {
+    "count": 109,
+    "median": 0.19999999995343387,
+    "p95": 1.8999999999068677,
+    "max": 3.0999999998603016
+  },
+  "armedFrame": {
+    "count": 109,
+    "median": 16.5,
+    "p95": 21.5,
+    "max": 22.800000000046566
+  }
+}

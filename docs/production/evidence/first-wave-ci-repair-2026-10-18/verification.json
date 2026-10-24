@@ -1,0 +1,111 @@
+{
+  "baseline": "b9beddfec7ab8a398735683384a63f56bf79a928",
+  "productCommit": "ae3f2503a08ef9a47d73e7cc7bd37c998e34b5a9",
+  "sourceHashes": {
+    "src/game/GameScene.ts": "4e9522063ba27207f793c52bb748a4950879b3151219ccf2abf66211758a2a3d",
+    "tests/hero-ability-cue.test.ts": "b7f813e0e8ccdd142b8b7c32808003d23cc5b9a9efc12346a6915dcc4a9d2513",
+    "tests/hero-climax.test.ts": "6cbf0fc5bd81af47933bb8f2ce38c5c85d98a436d8b9442db966257ef783e4e2",
+    "tests/score-table-haptics.test.ts": "0b69fd8cf8d4f7c8e4d735899ae441404190551bcaa6090071933c653769d0bc",
+    "tests/run-menu-harness.test.mjs": "15ebaabc6907fe52ef421faef844d60579ce20456846167f70921b4bcea15799",
+    "harness/ui.mjs": "5e0ef0ac35470921f5f84767e39ea526c319decd908240460758ab036aaa39b6",
+    "harness/screenshot.mjs": "9cb6db042e31150c05b86102c283eb75e39ae83c0f39c3447786142994d1bf7a"
+  },
+  "ciFailureSource": {
+    "run": "https://github.com/big-dimple/tangsongpai/actions/runs/39133565530",
+    "domainJob": 117693447374,
+    "browserJob": 117693447555,
+    "domain": "3 files / 4 failed assertions, 4717 passing; local exact b9 reproduction same four",
+    "browser": "getByRole(button,name:收起菜单) times out after approved hover/pin labels changed"
+  },
+  "classification": [
+    {
+      "name": "actual lost-wager source cue",
+      "kind": "real product regression",
+      "fix": "GameScene one line: a savedBenefit-validated touye.lost result retains existing character source cue; hasActualBenefit and positive scoreImpact unchanged",
+      "guard": "replay, aborted context, forged event and missing committed wager remain silent"
+    },
+    {
+      "name": "hero-climax old Serenade title",
+      "kind": "approved four-track contract update",
+      "fix": "exact tianhu-begin title, retaining zero pre-gesture Audio construction assertion"
+    },
+    {
+      "name": "two score-table-haptics fixtures",
+      "kind": "incomplete saved presentation fixture",
+      "fix": "supply actual state/trace/generation/speed, current consumePerformance API, same award owner and real scorePhrase; all original haptic count, arrival, replay, cancellation and receipt assertions retained"
+    },
+    {
+      "name": "menu smoke helper",
+      "kind": "approved hover/pin contract update",
+      "fix": "stable unique arrow plus strict actual aria-expanded/aria-label/aria-pressed validation; native mouse unpin + leave + actual close, actual touch toggle, pin existing hover before actions; no forced DOM state, timeout increase or gate removal"
+    }
+  ],
+  "checks": [
+    {
+      "name": "exact baseline original failing files",
+      "status": "FAIL",
+      "expectedFailure": true,
+      "exitCode": 1,
+      "tests": 25,
+      "passed": 21,
+      "failed": 4,
+      "evidence": "before.json.gz"
+    },
+    {
+      "name": "production menu controller under old helper",
+      "status": "FAIL",
+      "expectedFailure": true,
+      "exitCode": 1,
+      "tests": 8,
+      "passed": 4,
+      "failed": 4,
+      "evidence": "menu-contract-before.json.gz"
+    },
+    {
+      "name": "necessary batch",
+      "status": "PASS",
+      "exitCode": 0,
+      "files": 14,
+      "tests": 125,
+      "passed": 125,
+      "failed": 0,
+      "evidence": "after.json.gz",
+      "command": "node node_modules/vitest/vitest.mjs run tests/hero-ability-cue.test.ts tests/hero-climax.test.ts tests/score-table-haptics.test.ts tests/run-menu-harness.test.mjs tests/audio-performance.test.ts tests/score-performance.test.ts tests/hero-attachment-facts.test.ts tests/zero-growth-presentation.test.ts tests/joker-experience.test.ts tests/run-menu-interaction.test.ts tests/menu-new-run-confirmation.test.ts tests/destination-preparation.test.ts tests/paper-flow.test.ts tests/source-stage-art.test.ts --reporter=json --outputFile=shots/first-wave-ci-repair-20261018/after.json"
+    },
+    {
+      "name": "typecheck + production build",
+      "status": "PASS",
+      "exitCode": 0,
+      "command": "npm run build",
+      "modules": 384,
+      "evidence": "build.txt.gz",
+      "buildFingerprint": "build-info.json retains b9 plus actual dirty sources; source SHA256 above pins checked product"
+    },
+    {
+      "name": "harness syntax",
+      "status": "PASS",
+      "exitCode": 0,
+      "commands": [
+        "node --check harness/ui.mjs",
+        "node --check harness/screenshot.mjs"
+      ]
+    }
+  ],
+  "remoteS0Followup": {
+    "source": "trusted parent dot report 14:26-14:27",
+    "testedMain": "b9beddfec7ab8a398735683384a63f56bf79a928",
+    "viewport": "PC1180x757",
+    "status": "PASS_PER_PARENT_LIMITED_PC",
+    "path": "home -> click Liu E -> group route -> replace test run -> shop6gold/3 actual cards -> chapter -> warmup400 -> table8cards; no repeated stock loading gate",
+    "selectionCorrection": "initial Su Shi was only preview; selecting a hero makes route action enabled, not a confirmed input S0",
+    "phone": "NOT_RUN",
+    "listening": "NOT_RUN",
+    "hover": "NOT_RUN"
+  },
+  "limitations": [
+    "No local browser by instruction; native full smoke remains NOT_RUN, controller/locator contract is not browser acceptance",
+    "No full suite/matrix rerun; second-batch owner full-suite platform failures remain separate",
+    "No AudioEngine/RunMenu.ts/ShopScene/filter product edits; new clear-audio requirement belongs to original audio owner",
+    "P08/H17 in_progress and M1 unaccepted; no physical device or listening claim"
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "taskId": "P08",
+  "testedCommit": "c682acea3c319a5c65cd1e4e1323b83c0e1342d0",
+  "status": "DEV_TYPECHECKED_SUSHI_AND_ROUTE_HOLD",
+  "shopSource": "4463e3cc64b363f24bed3192de818a7a9fe6d3cc",
+  "shopIntegratedProduct": "ace6dbeea1f4e12951f9926ac9b9ed6be1c49c54",
+  "idleSource": "bffcb58a3181bf85975b5fae39522a9fe111a66b",
+  "idleSourceProduct": "1c40b6ae6dad32a7f4e35c8f3593a8e4c4b3e2f3",
+  "sourceBaseForIdle": "cdfd345fe34402bf7a54646e821bc8ab06453531",
+  "checks": {
+    "shopMergeConflicts": [],
+    "shopSourceScope": "9 helper/style files exact4463; ShopScene retains exactly previous audio/copy delta",
+    "shopTypecheck": "PASS",
+    "idleMergeConflict": "DELIVERY_PLAN only; current plan retained and idle row updated",
+    "idleSourceScope": "OwnedJokerScoreMotion only runtime delta, exactbffcb58a; all other ready sources preserved",
+    "idleTypecheck": "PASS"
+  },
+  "reusedSources": {
+    "shop": "43 focused/type/build at4463; mobile/PC390320 post-addition browser NOT_RUN, not a pass of the later route override",
+    "idle": "34 focused/type/build at1c40b6ae; no local browser, no current combined runtime pass"
+  },
+  "routeCurrentOverride": {
+    "status": "confirmed_pending_owner_patch",
+    "sourceMessageId": "Sentinel_5446bd875c588191ad2ffbd196261e3d",
+    "owner": "01a148b9",
+    "ownerTurn": "01a14c59-2b21-7256-a92b-26b1906615ff",
+    "currentRule": "未成功执行消费前，三条DIY路线可随时直接切换；取消/余额不足不锁；成功实际用掉共享次数后才锁其余。",
+    "supersededRule": "选择预览即给另外两路打叉/禁用，必须切tab重进才能换路。",
+    "oldRuleStillEffective": false,
+    "currentCodeStatus": "4463e3cc已合开发中间态，但此项新规则的追加SHA尚未交付；不声明已修。",
+    "replacementCommit": null,
+    "mainReleaseAllowedForCurrentRoutePart": false
+  },
+  "idleConfirmedDiagnosisAndCandidate": {
+    "status": "dev_integrated_typechecked_remote_pending",
+    "sourceCommit": "bffcb58a3181bf85975b5fae39522a9fe111a66b",
+    "sourceProduct": "1c40b6ae6dad32a7f4e35c8f3593a8e4c4b3e2f3",
+    "sourceBase": "cdfd345fe34402bf7a54646e821bc8ab06453531",
+    "integratedProduct": "c682acea3c319a5c65cd1e4e1323b83c0e1342d0",
+    "diagnosisStatus": "source_cause_confirmed",
+    "rootCause": "mountOwnedJokerIdle用66ms门槛节流整个transform约15fps；绝对相位及禁用归零导致恢复跳变。OwnedCardTilt与SpringMotion不是该15fps门槛来源。",
+    "implementation": "逐帧活动相位/弹簧平滑，暂停不追帧、hover冻结、score/drag让层，适当增幅并限制在原框内；虹彩材质仍15fps。",
+    "sourceChecks": "34定向/type/build按源产品1c40b6ae复用；本次不重跑矩阵/构建",
+    "currentTypecheck": "PASS",
+    "actualVisual": "PENDING_REMOTE_DOT",
+    "localBrowser": "NOT_RUN"
+  },
+  "currentMainHolds": [
+    "Su-Shi rule/quantitative contract awaits user confirmation; ad9fb main-hand-only ring rejected, owner discard-source revision pending",
+    "DIY route preview locking superseded; wait owner follow-up SHA"
+  ],
+  "remoteAcceptance": "Root coordinates final same-version Dot checks; no new local browser, matrix or production build. PC/390/320 shop/menus and idle continuous appearance remain pending.",
+  "sushiGameplayMutationPerformed": false,
+  "mainPushPerformed": false,
+  "ciQueried": false,
+  "deploymentChanged": false,
+  "publicProbePerformed": false,
+  "P08": "in_progress"
+}

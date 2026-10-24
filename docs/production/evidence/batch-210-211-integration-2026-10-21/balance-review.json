@@ -1,0 +1,47 @@
+{
+  "status": "PASS",
+  "reviewedHead": "c199c8d850c5c1b98245cc3bb25c4817d2d58ff1",
+  "policyCommit": "c61858ef2034b6bb983cf9117f619a647ef8fff5",
+  "noResultAtPolicyCommit": true,
+  "sourceFilesLockedAndProductionUnchanged": 416,
+  "allIndexedEvidenceHashes": true,
+  "ledgerCheckpointAndSequenceConsistency": true,
+  "restoresRecorded": 117,
+  "conditionsRecalculated": {
+    "O": {
+      "chains": 18,
+      "stages": 54,
+      "firstStageFirstHand": 15,
+      "allStageFirstHands": 30,
+      "hands": 80,
+      "discards": 8,
+      "practices": 30,
+      "burn": 10
+    },
+    "A": {
+      "chains": 18,
+      "stages": 54,
+      "firstStageFirstHand": 15,
+      "allStageFirstHands": 27,
+      "hands": 94,
+      "discards": 10,
+      "practices": 28,
+      "burn": 25
+    },
+    "B": {
+      "chains": 3,
+      "stages": 9,
+      "firstStageFirstHand": 3,
+      "allStageFirstHands": 8,
+      "hands": 10,
+      "discards": 0,
+      "practices": 5,
+      "burn": 0
+    }
+  },
+  "baselineLiueFirstHands": 9,
+  "qinActualBetCommands": 0,
+  "wenActualReleaseCommands": 0,
+  "ordinaryHandoffEventsChecked": 18,
+  "scope": "Read-only audit of original39 ledgers/checkpoints, no chain re-execution. Pure adapter arithmetic/public-state checks separately rerun. Fixed three seeds/single route/conservative strategy do not certify six-hero balance or fun; A/B remain experiments."
+}

@@ -1,0 +1,22 @@
+{
+  "version": "C03",
+  "builtAt": "2026-10-18T14:37:04.052Z",
+  "revision": "b9beddfec7ab8a398735683384a63f56bf79a928",
+  "sourceStatus": "dirty",
+  "modified": true,
+  "modifiedFileCount": 12,
+  "modifiedFiles": [
+    "harness/music-filter-transition.mjs",
+    "harness/windows-experience-integration.mjs",
+    "src/audio/AudioEngine.ts",
+    "src/audio/MusicFilter.ts",
+    "src/audio/MusicModalStack.ts",
+    "src/game/GameScene.ts",
+    "src/game/ShopScene.ts",
+    "src/main.ts",
+    "tests/audio-music-lifecycle.test.ts",
+    "tests/audio-sample-loading.test.ts",
+    "tests/music-filter.test.ts",
+    "tests/music-modal-stack.test.ts"
+  ]
+}

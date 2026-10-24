@@ -1,0 +1,31 @@
+{
+  "head": "ab8460ec70d8191087e181e0fc620b235e344144",
+  "sourceHashesChecked": {
+    "src/game/GameScene.ts": "a4508924a3a135871c00fbc928aa7e4ba2ddc91f86b759bea8aa2a0227f83494",
+    "src/game/HeroSkillDialog.ts": "eb6f1373994d637536f805d77493169bbc44cedfd1db7a63e762d4169962e3be",
+    "src/game/HeroSkillDialog.css": "501d8c392a01c07eef5ffa3147967ce61679ce147e50537b7f8ee54af97a260d",
+    "src/game/HeroSkillGuide.ts": "914b848a71dd31c26352e4e611503201571dce04772baaf1c6f25d898ea5aba7",
+    "src/game/HeroDiscardChoice.ts": "f219b65f77b0b40828a70f29175276c9cb06f1559fbf69763979d6d3a1d1282b",
+    "src/game/AssistChoiceDialog.ts": "72ee3dc2b05627016033783c4863a1326db5c5b6ed3f9333bd769c2876a308a8",
+    "src/game/HandSuitSort.ts": "9006cb6e7c903960b1f35355edaaa094f78af1c5de0dccc1ea64ab17b7aac10e"
+  },
+  "authorCases": 14,
+  "rawAllPass": true,
+  "independentSourceFindings": [
+    "Single selected suit overrides same-run previous explicit target; otherwise asks, never infers majority. Stable partition retains IDs and intra-group order.",
+    "Picker cancel does not dispatch, choose validates current scene/run/seq/modal. Suit sort retains draft/selection; rank sort keeps old clearing contract.",
+    "Compact style attached only to table skill dialogs, explicit close-left confirmation-right; long content scrolls and footer remains outside.",
+    "GameScene changes inspectAmoExile/inspectHeroExplanation/sortHand plus fields/import only; no overlap with Su Shi methods."
+  ],
+  "notRun": [
+    "six hero live skill casts",
+    "physical devices",
+    "aesthetic/hearing"
+  ],
+  "integrationTests": {
+    "files": 7,
+    "tests": 44,
+    "command": "npx vitest run tests/hand-sort-selection.test.ts tests/hand-suit-sort.test.ts tests/hero-discard-footer.test.ts tests/current-hero-display-copy.test.ts tests/hero-skill-guide.test.ts tests/amo-exile-visual.test.ts tests/review-book-receipt.test.ts",
+    "status": "PASS"
+  }
+}

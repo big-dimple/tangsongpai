@@ -1,0 +1,63 @@
+{
+  "taskId": "P08",
+  "testedCommit": "2da75566e595951269a9b4e13679fb2db345d8c8",
+  "status": "DEV_TYPECHECKED_SUSHI_RELEASE_HOLD",
+  "menuSource": "0c9ebae85603d7ddb66feb2cdaf9af24cf698566",
+  "menuSourceProduct": "fc03f777cb9b40c19514b918212d603d14141f7c",
+  "menuSourceInitialProduct": "2b564015f7628f37b56253f91846c4815731feb5",
+  "checks": {
+    "mergeConflict": "DELIVERY_PLAN.md only; both records retained",
+    "typecheck": "PASS: npm run typecheck / tsc --noEmit",
+    "sourceScope": "7 menu/style/platform files exact source; main.ts/audio/GameScene/ShopScene/score/hero/domain unchanged from four-ready candidate",
+    "musicModalBoundary": "RunMenu remains native dialog[open] id/class run-menu-modal; unmodified MusicModalStack observes native dialog open identity. Static check only."
+  },
+  "sourceEvidence": "../player-menu-entry-2026-10-17/README.md",
+  "reusedMenuChecks": "104 targeted + additional DOM entry regression / type / build at source fc03f777; no current-combined runtime PASS",
+  "initialSelectionPrompt": {
+    "staticObservation": "CharacterSelectScene57初始selectedId只取教程固定角色或传入characterId；135未选时中央仍预览amo；216实际选卡才赋selectedId。",
+    "existingVisibleStatus": "点一位英雄，决定谁来对局。",
+    "portraitHint": "轻点人物看原画",
+    "scope": "两种提示未直接说底部角色卡选择；默认预览与已选关系留远端核查，不直接定菜单回归，本批不扩修改。"
+  },
+  "sushiRuleRevision": {
+    "status": "awaiting_user_confirmation",
+    "source": "root relay of user 2026-10-18 00:01 actual new-Su-Shi feedback; no Sentinel ID supplied",
+    "userConcerns": [
+      "不应自动弃掉全部余牌；想自主决定弃哪张。",
+      "质疑弃1张和弃7张获得同样固定爆发。"
+    ],
+    "proposedDirectionPendingConfirmation": "root已询问是否自主选弃且数量越多爆发越高；尚待用户确认，不当作正式新规则。",
+    "numericContract": "弃牌数量到收益/倍率的公式或数表未定；没有擅定基础值、增量或上限。",
+    "publishedRuleFact": "main9fe仍是自动弃余牌、本手×4、每场一次；本批不回滚、不静默改机制/数值/身份或存档。",
+    "implementationAuthorizedNow": false,
+    "ruleSourceRevision": null
+  },
+  "sushiVisualReleaseHold": {
+    "status": "owner_revision_required_before_main",
+    "sourceCommitWithSupersededPart": "ad9fb069882575f95ab143650cf28e230192d3cd",
+    "supersededPart": "苏轼只主手环流表达被用户否定。",
+    "requiredDirection": "交原英雄owner改为被弃牌→计分来源；待最终来源SHA。",
+    "otherFive": "其他五英雄候选可保留。",
+    "mainReleaseAllowedForCurrentSuShiPart": false,
+    "doesNotBlockOtherReadyDevIntegration": true
+  },
+  "topFiveIdleFollowup": {
+    "status": "owner_diagnosis_pending",
+    "ownerModule": "既有N01原sourceowner / 顶部五张唐宋牌idle",
+    "feedback": "用户反馈idle卡顿、幅度小；交原owner追加诊断，不由本整合重复改源码。",
+    "sourceCommit": null,
+    "localBrowser": "NOT_RUN; final same-version check coordinated remotely by root"
+  },
+  "executionBoundary": {
+    "localBrowser": "NOT_RUN",
+    "unitMatrix": "NOT_RERUN",
+    "productionBuild": "NOT_RERUN",
+    "formalCombinedPlaytest": "PENDING_REMOTE_DOT",
+    "mainPushPerformed": false,
+    "deploymentChanged": false,
+    "ciQueried": false,
+    "publicProbePerformed": false
+  },
+  "remaining": "shop mobile full-card-row/shared-scroll final SHA; Su-Shi user rule confirmation and owner visual revision; N01 idle diagnosis; remote final same-version checks",
+  "P08": "in_progress"
+}

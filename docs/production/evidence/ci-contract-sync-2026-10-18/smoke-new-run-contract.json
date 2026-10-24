@@ -1,0 +1,42 @@
+{
+  "base": "4039c8f3402c608fd8ede272cc66df191a336c9c",
+  "checks": [
+    {
+      "name": "smoke identity reads actual current Su v3 constants",
+      "status": "PASS"
+    },
+    {
+      "name": "identity accepted by real r2RulesetFor",
+      "status": "PASS"
+    },
+    {
+      "name": "legacy assist fixture stays S04",
+      "status": "PASS"
+    }
+  ],
+  "actualIdentity": {
+    "contentVersion": "quality-r2-amo-exile-v3",
+    "contentHash": "json-fnv-v1:cf857ebc71020ca8"
+  },
+  "legacyFixtureIdentity": {
+    "contentVersion": "quality-r2-s04-finish-v1",
+    "contentHash": "json-fnv-v1:65b545bd97c0fdf1"
+  },
+  "syntax": {
+    "files": [
+      "harness/screenshot.mjs",
+      "harness/fixtures/current-new-run-identity.mjs"
+    ],
+    "status": "PASS"
+  },
+  "initialAttempt": "SSR transport timed out on Windows; replaced by existing Vite in-memory library bundling",
+  "browser": "NOT_RUN",
+  "newGameplay": "NOT_RUN",
+  "fullSuite": "NOT_RUN",
+  "sourceBlobs": {
+    "harness/screenshot.mjs": "6eed0997b1e999c2eaf056d51127ce4780ed679b",
+    "harness/fixtures/current-new-run-identity.mjs": "2485a834b52c057d07066df77d9741a23256131a"
+  },
+  "layoutApprovedBlob": "b1c652b7eb764f32a76f76a7867a7a32bbb16363",
+  "layoutCurrentBlob": "b1c652b7eb764f32a76f76a7867a7a32bbb16363"
+}

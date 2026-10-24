@@ -1,0 +1,152 @@
+{
+  "productCommit": "2748223f8780592846e35b2efa157eb35d276bf7",
+  "baseMain": "9fe60fc581227829df6caadc712a5bd0fed74bc4",
+  "priorCandidate": "3e29bae29ad763092fd01f76085df783203df069",
+  "sourceCommits": {
+    "audio": "e6bec936f94ac7b7b8c64d7f1358456b12ac3dc9",
+    "score": "cdfd345fe34402bf7a54646e821bc8ab06453531",
+    "hero": "ad9fb069882575f95ab143650cf28e230192d3cd",
+    "copy": "dd74020e99e09f4eec50151779e3688d1b69ab35"
+  },
+  "runtimeFiles": {
+    "src/audio/AudioEngine.ts": {
+      "exactSource": "e6bec936f94ac7b7b8c64d7f1358456b12ac3dc9",
+      "normalizedLfSha256": "b78c6fe0cab8bacb0d58bb43c58e5aaf3807acbf5c377fb5b192df6c6af8772f"
+    },
+    "src/audio/MusicFilter.ts": {
+      "exactSource": "e6bec936f94ac7b7b8c64d7f1358456b12ac3dc9",
+      "normalizedLfSha256": "defc0d3dbb6e1ec5cc2732a7b75aa158583ab7ee63afc2df806b9efd48edfe8a"
+    },
+    "src/audio/MusicModalStack.ts": {
+      "exactSource": "e6bec936f94ac7b7b8c64d7f1358456b12ac3dc9",
+      "normalizedLfSha256": "0844763c677aa3f87e066bbbf5d32a7d4bda5ab3bf1144a155727aacfeb1d97d"
+    },
+    "src/game/StageImageWarmup.ts": {
+      "exactSource": "e6bec936f94ac7b7b8c64d7f1358456b12ac3dc9",
+      "normalizedLfSha256": "64b727d218627514bd8637b412b0ea71416ff4b49ad52df870a783dbd50aacd4"
+    },
+    "src/main.ts": {
+      "exactSource": "e6bec936f94ac7b7b8c64d7f1358456b12ac3dc9",
+      "normalizedLfSha256": "d9dc173251b892a4976aac2c4af6b8d0b404ea70537cabf95bcb57b8dcfe7cc0"
+    },
+    "src/game/JokerScoreStrike.ts": {
+      "exactSource": "cdfd345fe34402bf7a54646e821bc8ab06453531",
+      "normalizedLfSha256": "0d75f700ac9b11520da7abb74b03d710949954eb22ccb6d758dacbb7b0b55aba"
+    },
+    "src/game/OwnedJokerScoreMotion.ts": {
+      "exactSource": "cdfd345fe34402bf7a54646e821bc8ab06453531",
+      "normalizedLfSha256": "71f00502efce78270829de8e7c6c61c3e9d09875591ccd38b31e08295c1de87d"
+    },
+    "src/game/ScorePhrase.ts": {
+      "exactSource": "cdfd345fe34402bf7a54646e821bc8ab06453531",
+      "normalizedLfSha256": "8e33359d2ad60095fc0753b2c67581abde78e6ebf7c8e9642becc0e5ee7d76c1"
+    },
+    "src/game/ScoreTableCredit.ts": {
+      "exactSource": "cdfd345fe34402bf7a54646e821bc8ab06453531",
+      "normalizedLfSha256": "83c7477a0fb49f23de015b008dd9215844babfa6e40924e65f120082d88b8ae9"
+    },
+    "src/game/scorePresentation.ts": {
+      "exactSource": "cdfd345fe34402bf7a54646e821bc8ab06453531",
+      "normalizedLfSha256": "8ce5bf3a90380f400051c19d6d902bf8f6b538f89039b05ed3d32c34b5f9f234"
+    },
+    "src/game/AssistInkGeometry.ts": {
+      "exactSource": "ad9fb069882575f95ab143650cf28e230192d3cd",
+      "normalizedLfSha256": "75afa56763e4c8174aca6dc979c2fbf2538a14e564e22912ef9d5368a6ccb747"
+    },
+    "src/game/HeroCardAttachmentAtmosphere.ts": {
+      "exactSource": "ad9fb069882575f95ab143650cf28e230192d3cd",
+      "normalizedLfSha256": "4bd1526039075a26719f510aac1d3c5e2ab83482fc88b997070ef63d9b49f86e"
+    },
+    "src/game/HeroTargetAttachment.ts": {
+      "exactSource": "ad9fb069882575f95ab143650cf28e230192d3cd",
+      "normalizedLfSha256": "3b2857e818259620c845524863f06c92aa1b3dec5b4fb436e99d8e6b54235687"
+    },
+    "src/game/BossPressure.ts": {
+      "exactSource": "dd74020e99e09f4eec50151779e3688d1b69ab35",
+      "normalizedLfSha256": "b0e680e136e3103787f2f57573097a0175292ce78b9e0bd21030cc6fdb0257b6"
+    },
+    "src/game/BuildFallback.ts": {
+      "exactSource": "dd74020e99e09f4eec50151779e3688d1b69ab35",
+      "normalizedLfSha256": "09065c7f35d9a70754ddd0700f22d58eea79cf14b4cb736634c3ace7e7909e4a"
+    },
+    "src/game/CardCopy.ts": {
+      "exactSource": "dd74020e99e09f4eec50151779e3688d1b69ab35",
+      "normalizedLfSha256": "3b2c1df9e1b14ace4b4ea71fa522e1f5d29d6966c93e37e99012b1e7f145b4c8"
+    },
+    "src/game/ConsumableDialog.ts": {
+      "exactSource": "dd74020e99e09f4eec50151779e3688d1b69ab35",
+      "normalizedLfSha256": "0484ba2b402b28f671d5b3f155d9768f9819c89379c6b3741b6eb63cd241dbcc"
+    },
+    "src/game/EnhancementReference.ts": {
+      "exactSource": "dd74020e99e09f4eec50151779e3688d1b69ab35",
+      "normalizedLfSha256": "53fef728d9e8269a3cfc6b8f936832c2222fabf06bc87db978eb40140a62820c"
+    },
+    "src/game/ErxiangHandoffCopy.ts": {
+      "exactSource": "dd74020e99e09f4eec50151779e3688d1b69ab35",
+      "normalizedLfSha256": "830fc3280b581a0faaa34cffdff93ff50db3d072074b6ea0fe03348923df4082"
+    },
+    "src/game/HandRuleReference.ts": {
+      "exactSource": "dd74020e99e09f4eec50151779e3688d1b69ab35",
+      "normalizedLfSha256": "c5bc268581a5906d447621ad314c59b8fa1ddf1a40649b8880a6652d5951f866"
+    },
+    "src/game/JokerAssistTemplates.ts": {
+      "exactSource": "dd74020e99e09f4eec50151779e3688d1b69ab35",
+      "normalizedLfSha256": "db90c753de0040151f154688181b4ed7f616112ac3a04b8efd2a908524f1cd28"
+    },
+    "src/game/JokerPlayerCopy.ts": {
+      "exactSource": "dd74020e99e09f4eec50151779e3688d1b69ab35",
+      "normalizedLfSha256": "a6941d9302cd0a897bef4e33dea10d92dd52ac5e178e35996e621cea6550a651"
+    },
+    "src/game/JokerPlayerTemplates.json": {
+      "exactSource": "dd74020e99e09f4eec50151779e3688d1b69ab35",
+      "normalizedLfSha256": "e2eddcd6b694676dd54e5093733919ce9d4f39758af7501b23aa6166f3a96f03"
+    },
+    "src/game/RouteFitCue.ts": {
+      "exactSource": "dd74020e99e09f4eec50151779e3688d1b69ab35",
+      "normalizedLfSha256": "3b2674a200908d9ec0f3b595a3fbd9d0ad91db86d23450367965073d4a6100cf"
+    },
+    "src/game/SavedToolResult.ts": {
+      "exactSource": "dd74020e99e09f4eec50151779e3688d1b69ab35",
+      "normalizedLfSha256": "d933802ca92b1f877757278855b07d190b33c7a86dac9177fc6ad70939f64ad3"
+    },
+    "src/game/ShopPurchaseValue.ts": {
+      "exactSource": "dd74020e99e09f4eec50151779e3688d1b69ab35",
+      "normalizedLfSha256": "c0ecc2fda4d0b1aaf4a6be7c512f3b43100ff1f9e96a2f99b6411b2ca5dac1d7"
+    },
+    "src/game/ShopRouteRelations.ts": {
+      "exactSource": "dd74020e99e09f4eec50151779e3688d1b69ab35",
+      "normalizedLfSha256": "4a62130d75b7cd1e2fa1b1969708b2688b019f477e95c52e55083b48c66341d7"
+    },
+    "src/game/ToolChangePreview.ts": {
+      "exactSource": "dd74020e99e09f4eec50151779e3688d1b69ab35",
+      "normalizedLfSha256": "050f82e6e6ae45baae7485a9c7caae413ea58c58d4f4f3bec64c4ebc674c9bfd"
+    },
+    "src/game/ToolTargetDirectory.ts": {
+      "exactSource": "dd74020e99e09f4eec50151779e3688d1b69ab35",
+      "normalizedLfSha256": "0776b7560f330d8d3a84242e5f482942d360cde8199a09fd40a032d1ade4ccb2"
+    },
+    "src/game/r2ToolInfo.ts": {
+      "exactSource": "dd74020e99e09f4eec50151779e3688d1b69ab35",
+      "normalizedLfSha256": "330a7767b80c54ddb9e4c63d7a706e92bee9f6c60c68ec64a143f7df06c4f1fe"
+    }
+  },
+  "sharedSceneCopyDeltas": {
+    "src/game/GameScene.ts": {
+      "onlyExpectedCopyAdditionsAndRemovals": true,
+      "changedLines": 10,
+      "deltaSha256": "3ec2287bf37e32bd92e20c2e11b115efe305e43a8c22bc257deea2489b3dd9ce",
+      "normalizedLfSha256": "aa165191ace79c4ac1b58d7a92959de2a48092da30b8dc901d4004ad74a4f4d1"
+    },
+    "src/game/ShopScene.ts": {
+      "onlyExpectedCopyAdditionsAndRemovals": true,
+      "changedLines": 8,
+      "deltaSha256": "08c0311766d4bc06fe70a6f2460bd0c1dfcea8cc4ba8a3dccb031f73c160c69f",
+      "normalizedLfSha256": "795b79a04b58f54f85d37ec0fa91993cf391cd5ded034837a935bd56b0073166"
+    }
+  },
+  "localBrowserStarted": false,
+  "ruleApplicationAssetDelta": [],
+  "plainCopyParentIsMain": true,
+  "purposeCandidateMerged": false,
+  "status": "PASS"
+}

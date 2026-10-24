@@ -1,0 +1,83 @@
+{
+  "taskId": "opening-music-and-selection-warmup-20261018",
+  "testedCommit": "cc97cf316eafd8370d66d87cb971619f99629dd7",
+  "baseCommit": "2e7f5c04753b1b107d5bcec8d64d8611d7665873",
+  "branch": "dev/boot-music-warmup-20261018",
+  "environment": {
+    "os": "win32",
+    "node": "v22.20.0",
+    "browser": "NOT_RUN; user explicitly requested no local browser",
+    "device": "NOT_RUN"
+  },
+  "checks": [
+    {
+      "name": "focused unit tests",
+      "status": "PASS",
+      "exitCode": 0,
+      "files": 10,
+      "tests": 96,
+      "evidence": "tests.json"
+    },
+    {
+      "name": "TypeScript --noEmit",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "Vite production build",
+      "status": "PASS",
+      "exitCode": 0,
+      "modules": 372,
+      "evidence": "build-info.json",
+      "note": "Built the exact normalized source hashes below before committing; original build metadata correctly retains base SHA and dirty=true."
+    },
+    {
+      "name": "git diff --check",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "browser autoplay/media continuity/lock-screen/native touch",
+      "status": "NOT_RUN"
+    },
+    {
+      "name": "auditory/physical device review",
+      "status": "NOT_RUN"
+    }
+  ],
+  "openingResources": {
+    "count": 26,
+    "pixels": 4478464,
+    "decodedMiB": 17.083984375,
+    "addedPortraitCount": 6,
+    "addedPortraitBytes": 757322,
+    "cardCatalogBlocking": false,
+    "musicBlocking": false
+  },
+  "sourceSha256LF": {
+    "src/audio/AudioEngine.ts": "4131f35fb82cf14887a055e363be7eac2740960efef07e9e26ae3ac91c6813c0",
+    "src/audio/OpeningAudio.ts": "e366fd591b980ba1e81120abb804460d264a1de142a0c56e5ca73dafc8da93f2",
+    "src/audio/OpeningAudio.css": "0e70d75b3284528fb1a0cbe744cdd8038d05dd42fcf23b285c0436e4c2076140",
+    "src/game/BootScene.ts": "41fe01a6ac65c7a32ff43790c6efbbc7dbf071840e4275b37880b27f6fb43d30",
+    "src/game/SceneResources.ts": "7b7986b5b7c9151ea71a1878ced5dc987d9e864359c909b0a1de3213a628b90f",
+    "src/main.ts": "3949b8889b019143985ba0a350027b74d28930a1f4eb81a6164d0936c115b2d2",
+    "tests/audio-music-lifecycle.test.ts": "5d160fcf19c4e76612904341d791a9e5d68b1fe15ecc0f2c16edc08302e4be2f",
+    "tests/opening-audio.test.ts": "35e6a0f358a4ecfa8fa157789a439b9667a705da03ca01aab94b3b872b5c794b",
+    "tests/scene-resources.test.ts": "2c85404d9557ac33ff9f6a5bd284c30331f7d675e58fc000dbd6eb05c909a898"
+  },
+  "humanReview": {
+    "status": "NOT_RUN"
+  },
+  "limitations": [
+    "First-visit audible autoplay is browser-policy dependent.",
+    "Unit media/context mocks do not prove actual browser playback or audibility.",
+    "Particle visuals are delegated to a separate owner.",
+    "Existing production bundle chunk-size warning remains."
+  ],
+  "officialReferences": [
+    "https://developer.chrome.com/blog/autoplay",
+    "https://webkit.org/blog/7734/auto-play-policy-changes-for-macos/",
+    "https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/play",
+    "https://developer.mozilla.org/en-US/docs/Web/API/BaseAudioContext/state#resuming_interrupted_play_states_in_ios_safari"
+  ]
+}

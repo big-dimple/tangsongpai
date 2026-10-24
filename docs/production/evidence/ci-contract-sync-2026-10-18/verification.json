@@ -1,0 +1,62 @@
+{
+  "testedWorkingTreeBase": "2e7f5c04753b1b107d5bcec8d64d8611d7665873",
+  "sourceRun": 39106012361,
+  "sourceFailureSetExactlyRetained": 41,
+  "classification": {
+    "approvedDisplayContracts": 26,
+    "legacyDisplayProjectionBaselines": 14,
+    "approvedPhoneGeometryBaseline": 1,
+    "productBehaviorErrorsIdentifiedInThese41": 0
+  },
+  "tests": {
+    "firstBatch": {
+      "files": 7,
+      "passed": 67,
+      "pending": 14,
+      "failed": 0
+    },
+    "secondBatch": {
+      "files": 2,
+      "passed": 35,
+      "pending": 0,
+      "failed": 0
+    },
+    "finalFileCoverage": 8,
+    "finalCases": 94,
+    "allFinalStatuses": "PASS",
+    "recheckedCurrentC2Cases": 8,
+    "actualExecutions": 102,
+    "noFullSuite": true
+  },
+  "typecheck": "PASS",
+  "runtimeSourceAssetsDependenciesGatesAndScriptsUnchanged": true,
+  "historicalSnapshotUnchanged": true,
+  "legacyAudit": {
+    "all14OriginalPresentationHashesReproduced": true,
+    "allFrozenDefinitionsIdentical": true,
+    "currentFullDisplayHashStillStrict": true
+  },
+  "layoutAudit": {
+    "originalHashReproduced": true,
+    "changedLeaves": 266,
+    "portraitProfilesChanged": 2,
+    "landscapeProfilesIdentical": 2,
+    "approvedSource": "bdafa60443b4a20cb1b95950facb10e8da45597e",
+    "visualAcceptance": "NOT_ACCEPTED"
+  },
+  "browser": {
+    "jobId": 117611896437,
+    "url": "https://github.com/big-dimple/tangsongpai/actions/runs/39106012361/job/117611896437",
+    "build": "PASS",
+    "firstBlocker": "harness/screenshot.mjs:81",
+    "versionAssertion": "quality-r2-amo-exile-v3 already passed",
+    "expected": "json-fnv-v1:65b545bd97c0fdf1",
+    "actual": "json-fnv-v1:cf857ebc71020ca8",
+    "classification": "stale S04 hash in current Su v3 new-game assertion",
+    "actionStatus": "PENDING_SCRIPT_OWNER; this batch explicitly prohibits script changes",
+    "scriptChanged": false
+  },
+  "localBrowser": "NOT_RUN",
+  "build": "NOT_RERUN; runtime source unchanged",
+  "P08": "in_progress"
+}

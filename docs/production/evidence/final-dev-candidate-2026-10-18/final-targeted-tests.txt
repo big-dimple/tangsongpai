@@ -1,0 +1,13 @@
+
+> tangsongpai@0.1.0 test
+> vitest run tests/sushi-discard-local.test.ts tests/xin-refill-lock.test.ts tests/hero-discard-footer.test.ts tests/workshop-route-state.test.ts
+
+
+ RUN  v4.1.11 C:/Users/wanghongping/AppData/Local/Temp/tangsongpai-hero-gift-integration-20261017
+
+
+ Test Files  4 passed (4)
+      Tests  21 passed (21)
+   Start at  08:44:29
+   Duration  2.47s (transform 5.75s, setup 0ms, import 7.30s, tests 170ms, environment 0ms)
+
