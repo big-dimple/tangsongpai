@@ -14,9 +14,9 @@ export interface OpeningRuleCard {
  selected:boolean;
 }
 
-export const OPENING_BASE_HAND_TYPES:readonly R2HandType[]=[
+export const OPENING_BASE_HAND_TYPES=[
  'straight-flush','four-kind','full-house','flush','straight','three-kind','two-pair','pair',
-];
+] as const;
 const ROUTE_HAND_TYPES={
  group:['pair','two-pair','three-kind'],
  straight:['straight'],
@@ -40,7 +40,7 @@ export function openingRuleBriefing(run:R2RunState){
  const selected=new Set<R2HandType>(ROUTE_HAND_TYPES[focus]);
  const cards:OpeningRuleCard[]=handTypeRuleCards(run.handLevels,rules,OPENING_BASE_HAND_TYPES).map((card,index)=>{
   const type=OPENING_BASE_HAND_TYPES[index];
-  return {title:card.title,body:'',example:EXAMPLES[type],selected:selected.has(type)};
+  return {title:card.title.split(' · ')[0],body:'',example:EXAMPLES[type],selected:selected.has(type)};
  });
  return {title:'牌型示例',body:'',cards,primaryLabel:'进入商店'};
 }
