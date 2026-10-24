@@ -1,0 +1,56 @@
+{
+  "upstreamCommit": "ca843a64b02cb630e52a691abb055b6f40aeae76",
+  "source": "Singapore independent RFC branch; retained pentatonic, war-drum and temple-bell SFX only.",
+  "adoption": "User explicitly requested personal-game adoption on 2026-10-17; upstream supplied no separate license.",
+  "assets": [
+    {
+      "name": "sfx-penta-1-gong",
+      "runtimePath": "assets/audio/gamefeel-rfc/sfx-penta-1-gong.ogg",
+      "bytes": 8580,
+      "sha256": "9a31ab0febdda292ee98bd6a162a848db95b871ad7732e5f94ab632771002a77",
+      "license": "User-directed personal use; no separate upstream license supplied"
+    },
+    {
+      "name": "sfx-penta-2-shang",
+      "runtimePath": "assets/audio/gamefeel-rfc/sfx-penta-2-shang.ogg",
+      "bytes": 8474,
+      "sha256": "7dbc78c474ab9dead6f7065841976f7867a17c3401ab028fc513a2cf50365e45",
+      "license": "User-directed personal use; no separate upstream license supplied"
+    },
+    {
+      "name": "sfx-penta-3-jiao",
+      "runtimePath": "assets/audio/gamefeel-rfc/sfx-penta-3-jiao.ogg",
+      "bytes": 8504,
+      "sha256": "672ae79f1b7ff725c9e763972c497018f12f68a818758a915ef7b63afbeb14ec",
+      "license": "User-directed personal use; no separate upstream license supplied"
+    },
+    {
+      "name": "sfx-penta-4-zhi",
+      "runtimePath": "assets/audio/gamefeel-rfc/sfx-penta-4-zhi.ogg",
+      "bytes": 8316,
+      "sha256": "5f774605a41db2c142c9f73de9bb8e52f612b18109b2a8c839c30fcc8088a4a5",
+      "license": "User-directed personal use; no separate upstream license supplied"
+    },
+    {
+      "name": "sfx-penta-5-yu",
+      "runtimePath": "assets/audio/gamefeel-rfc/sfx-penta-5-yu.ogg",
+      "bytes": 8163,
+      "sha256": "5f23c46816483c53e5929943e6b92fac452818d0a8af9449fd659c9853580e0a",
+      "license": "User-directed personal use; no separate upstream license supplied"
+    },
+    {
+      "name": "sfx-temple-bell-victory",
+      "runtimePath": "assets/audio/gamefeel-rfc/sfx-temple-bell-victory.ogg",
+      "bytes": 22870,
+      "sha256": "6722fea0dd66f00b3cf7a41b74caeffe63c269c7ddfb3c1d2d24d15f49a430f5",
+      "license": "User-directed personal use; no separate upstream license supplied"
+    },
+    {
+      "name": "sfx-wardrum-mult-hit",
+      "runtimePath": "assets/audio/gamefeel-rfc/sfx-wardrum-mult-hit.ogg",
+      "bytes": 13478,
+      "sha256": "a3cb86cc24018c1a5de8b6bbdfaf7eceb7ee6fc421a0632ec8ba1c0eb1c08a90",
+      "license": "User-directed personal use; no separate upstream license supplied"
+    }
+  ]
+}

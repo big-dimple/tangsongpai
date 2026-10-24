@@ -1,0 +1,101 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "feat/**", "fix/**", "docs/**", "art/**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  domain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run verify:ci -- --scope=domain
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: domain-${{ github.run_id }}
+          path: shots/ci/
+          retention-days: 14
+  browser:
+    runs-on: ubuntu-latest
+    # Include container setup, the existing build/smoke checks, and post-job cleanup.
+    timeout-minutes: 15
+    container:
+      # Must match the locked Playwright version; OS dependencies and all engines are preinstalled.
+      image: mcr.microsoft.com/playwright:v1.63.0-noble@sha256:eff16c30e6f3f4af0a03fa4b706120d5e9b0891c344a27d64559aff5900a4a27
+      options: --user 1001 --ipc=host
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - name: Trust the checked-out workspace inside the container
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Verify preinstalled Playwright version and all engines
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const {chromium, firefox, webkit} = require('playwright');
+          const version = require('playwright/package.json').version;
+          if (version !== '1.63.0') throw new Error('Update the pinned Playwright image to match package-lock.json: ' + version);
+          for (const browser of [chromium, firefox, webkit]) {
+            const executable = browser.executablePath();
+            fs.accessSync(executable, fs.constants.X_OK);
+            console.log(browser.name() + ': ' + executable);
+          }
+          NODE
+      - run: npm run verify:ci -- --scope=browser
+        env:
+          SMOKE_BROWSERS: chromium,firefox,webkit
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: browser-${{ github.run_id }}
+          path: |
+            shots/ci/
+            shots/desktop-*.png
+            shots/mobile-*.png
+            shots/smoke-result.json
+            shots/smoke-failure.png
+            shots/smoke-failure-dom.html
+          retention-days: 14
+  docs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run verify:ci -- --scope=docs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: docs-${{ github.run_id }}
+          path: shots/ci/
+          retention-days: 14

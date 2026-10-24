@@ -1,0 +1,46 @@
+/* The picture is its own inspection target, separate from purchase/use actions. */
+.detail-dialog .dialog-card-art:has(.dialog-card-zoom-trigger) { display:grid;grid-template-rows:minmax(0,1fr) auto;gap:3px;padding:0;border:0;background:transparent;box-shadow:none; }
+.detail-dialog .dialog-card-art:has(.dialog-card-zoom-trigger) > .dialog-art-visual { min-height:0; }
+.detail-dialog .dialog-art-visual > .dialog-card-zoom-trigger { border:0;border-radius:0;background:transparent;box-shadow:none;transform:none; }
+.detail-dialog .dialog-card-zoom-trigger[hidden] { display:none; }
+.detail-dialog .dialog-card-zoom-badge { position:static;display:block;justify-self:center;margin:0;padding:0;border:0;border-radius:0;background:none;color:#59646a;font-size:11px;line-height:16px;white-space:nowrap; }
+.detail-dialog .dialog-card-art:has(.dialog-card-zoom-trigger[hidden]) > .dialog-card-zoom-badge { display:none; }
+
+/* Only a plain message and its actions shrink to their content. Callers that
+   append catalog controls, forms or art retain the existing detail workspace. */
+.detail-dialog[open]:has(> .dialog-content > .dialog-scroll:only-child > .dialog-copy:only-child > .dialog-body):not(:has(.dialog-copy > :not(.dialog-body,.dialog-status),.dialog-body > :not(.suit-symbol))) {
+ width:min(520px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));
+ height:fit-content;
+ display:flex;
+ flex-direction:column;
+
+ & .dialog-content { flex:0 1 auto;padding:20px;overflow:auto; }
+ & .dialog-scroll { height:auto;overflow:visible;font-size:16px; }
+ & .dialog-body { line-height:1.65; }
+ & .dialog-actions { justify-content:flex-end; }
+ & .dialog-actions button { flex:0 1 auto;min-width:96px;min-height:48px; }
+ & .dialog-actions .dialog-primary { order:1; }
+
+ @media(max-width:560px) {
+  & .dialog-content { padding:16px; }
+  & .dialog-actions { display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.5fr); }
+  & .dialog-actions button { min-width:0;padding:8px; }
+  & .dialog-close:only-child { grid-column:1/-1; }
+ }
+ @media(max-height:420px) {
+  & .dialog-content { padding:12px 16px; }
+ }
+}
+
+/* Desktop card inspection grows with its art/copy. The independent text-only
+   confirmation and mobile/interactive workspaces keep their existing rules. */
+@media(min-width:761px) and (min-height:501px) {
+ .detail-dialog--illustrated[open]:has(> .dialog-content > .dialog-card-art):not(.tool-detail,.shop-tool-purchase) {
+  height:fit-content;
+  display:flex;
+  flex-direction:column;
+
+  & > .dialog-content { flex:0 1 auto;grid-template-rows:minmax(0,1fr); }
+  & > .dialog-content > .dialog-scroll { height:auto;overflow:auto; }
+ }
+}

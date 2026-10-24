@@ -1,0 +1,219 @@
+import {playerText} from './Brand';
+import {cardDefinitionName} from './tangsongCardNames';
+import type {R2RunState} from '../domain/r2Run';
+import {applyCommand,type Action} from '../domain/run';
+import type {Condition,R2JokerInstance,R2JokerDefinition} from '../content/r2Schema';
+import {r2JokerDefinitionFor,r2JokerDefinitionsFor} from '../domain/r2ContentProfiles';
+import {R2_GROUP_HAND_TYPES} from '../domain/r2GroupHands';
+import {r2CreateJoker} from '../domain/r2Run';
+import {r2JokerCapacity} from '../domain/r2Resources';
+import {r2PurchasePrice,salePrice,type R2Offer} from '../domain/r2Shop';
+import type {BuildFocus} from './BuildJourney';
+import {r2ConditionDescription} from './JokerMemory';
+import {r2JokerStateText} from './r2Help';
+import {buildGrowthProgress} from './BuildGrowthProgress';
+import {Rational} from '../domain/rational';
+import {fractionText} from './scoreText';
+import {HAND_LABELS} from '../content/handLabels';
+import {editionEffectText} from './r2ToolInfo';
+import {shopRouteGrowthFacts} from './ShopRouteGrowthFacts';
+const labels={group:'同点成组',straight:'顺子接续',flush:'同花集中'};
+const focuses=['group','straight','flush'] as const;
+const effectNames:Record<string,string>={heat:'热度',multiplier:'倍率',multiply:'相乘倍率',retrigger:'再次计分',gold:'过关金币','four-straight':'四张顺子','four-flush':'四张同花'};
+function effectRoles(d:R2JokerDefinition){
+ const roles=new Set<string>();for(const h of d.hooks)for(const o of h.operations){
+  if(o.kind==='add-heat'||o.kind==='add-heat-per-gold'||o.kind==='add-heat-per-empty-slot')roles.add('heat');
+  if(o.kind==='add-multiplier')roles.add('multiplier');
+  if(o.kind==='read-growth'||o.kind==='consume-growth')roles.add(o.target);
+  if(o.kind==='multiply-multiplier'||o.kind==='read-coefficient')roles.add('multiply');
+  if(o.kind==='retrigger-card')roles.add('retrigger');
+  if(o.kind==='add-gold'&&h.phase==='onStageClear')roles.add('gold');
+ }for(const m of d.modifiers??[])if(m.kind==='four-straight'||m.kind==='four-flush')roles.add(m.kind);return [...roles];
+}
+function routePossible(state:R2RunState,c:Condition,focus:BuildFocus,size=5){
+ const cards=state.deckInstances.filter(c=>!state.destroyedIds.includes(c.id));
+ const counts=[...new Set(cards.map(c=>c.rank))].map(r=>cards.filter(c=>c.rank===r).length);
+ if(c.kind==='hand-type-transition'||c.kind==='hand-type-relation'||c.kind==='stage-hand-types-all'||c.kind==='hand-type-unfinished')return false;
+ const types=c.kind==='hand-type-in'?c.values:c.kind==='scoring-position'?c.handTypes:undefined;
+ const consecutive=(pool:typeof cards,length:number)=>{const ranks=new Set(pool.flatMap(c=>c.rank===14?[1,14]:[c.rank]));return Array.from({length:15-length},(_,i)=>i+1).some(start=>Array.from({length},(_,i)=>start+i).every(r=>ranks.has(r)));};
+ const straightFlush=()=>[...new Set(cards.map(c=>c.suit))].some(s=>consecutive(cards.filter(c=>c.suit===s),5));
+ if(types&&focus==='straight')return types.some(t=>t==='straight-flush'?straightFlush():t==='straight'?consecutive(cards,size):false);
+ if(types&&focus==='flush')return types.some(t=>t==='straight-flush'?straightFlush():t==='flush'?[...new Set(cards.map(c=>c.suit))].some(s=>cards.filter(c=>c.suit===s).length>=size):false);
+ if(focus==='group'&&types)return types.some(t=>t==='pair'?counts.some(n=>n>=2):t==='two-pair'?counts.filter(n=>n>=2).length>=2:t==='three-kind'?counts.some(n=>n>=3):t==='full-house'?counts.some((n,i)=>n>=3&&counts.some((m,j)=>j!==i&&m>=2)):t==='four-kind'?counts.some(n=>n>=4):false);
+ if(focus==='group'&&c.kind==='paired-rank')return counts.some(n=>n>=c.minimum);
+ if(focus==='group'&&c.kind==='rank-groups')return counts.filter(n=>n>=c.groupSize).length>=c.minimum;
+ if(focus==='group'&&c.kind==='largest-scoring-rank-group')return counts.some(n=>n>=2);
+ if(focus==='flush')return [...new Set(cards.map(c=>c.suit))].some(s=>cards.filter(c=>c.suit===s).length>=size);
+ if(focus==='straight'){const ranks=new Set(cards.flatMap(c=>c.rank===14?[1,14]:[c.rank]));return Array.from({length:15-size},(_,i)=>i+1).some(start=>Array.from({length:size},(_,i)=>start+i).every(r=>ranks.has(r)));}
+ return true;
+}
+function savedInvestment(state:R2RunState,j:R2JokerInstance){
+ const fresh=r2CreateJoker(j.definitionId,'advice/initial',j.paidPrice,j.edition,state);
+ return !!j.edition&&j.edition!=='none'||Object.entries(j.growth).some(([k,v])=>Rational.fromJSON(v).compare(Rational.fromJSON(fresh.growth[k]??{n:'0',d:'1'}))>0)||Object.values(j.counters??{}).some(v=>typeof v==='number'?v>0:v===true)||!!state.lastTrace?.events.some(e=>e.sourceType==='joker'&&e.sourceInstanceId===j.instanceId);
+}
+function shortEffect(d:R2JokerDefinition){
+ const values=d.hooks.flatMap(h=>h.operations).flatMap(o=>o.kind==='add-multiplier'?['倍率+'+fractionText(o.value)]:o.kind==='add-heat'?['热度+'+fractionText(o.value)]:o.kind==='multiply-multiplier'?['倍率×'+fractionText(o.value)]:[]);return [...new Set(values)].join('、')||playerText(d.description).split('；')[0];
+}
+/** Public cash after the specified sale, including real on-sale hooks. No dispatch or save. */
+export function shopPurchaseCashFacts(state:R2RunState,offer:R2Offer,sold?:R2JokerInstance){
+ let afterSale=state;
+ if(sold){
+  const result=applyCommand(state,{runId:state.runId,commandId:state.runId+'/condition-sale/'+(state.commandSeq+1),expectedSeq:state.commandSeq,action:{type:'SellJoker',instanceId:sold.instanceId}});
+  if(!result.ok)return {status:'blocked' as const,code:result.code};
+  afterSale=result.state;
+ }else if(r2JokerDefinitionsFor(state).some(d=>d.id===offer.definitionId)&&state.jokers.length>=r2JokerCapacity(state))return {status:'needs-selection' as const};
+ const price=r2PurchasePrice(afterSale,offer);
+ return {status:'assessed' as const,afterSale,price,goldAfterPurchase:afterSale.gold-price};
+}
+/** Public gold condition only; other trigger types need their own actual context. */
+export function shopGoldConditionMatches(c:Condition,gold:number):boolean|undefined {
+ if(c.kind==='resource-minimum')return gold>=c.minimum;
+ if(c.kind==='resource-maximum')return gold<=c.maximum;
+ if(c.kind==='resource'&&c.resource==='gold')return gold===c.equals;
+}
+/** Retained losses and a new card's unmet cash gate share the exact transaction basis. */
+export function shopPurchaseConditionLosses(state:R2RunState,offer:R2Offer,sold?:R2JokerInstance){
+ const transaction=shopPurchaseCashFacts(state,offer,sold);
+ if(transaction.status!=='assessed'||transaction.goldAfterPurchase<0)return [];
+ const jokers=transaction.afterSale.jokers,cash=transaction.goldAfterPurchase,purchaseGold=transaction.afterSale.gold;
+ const isGold=(c:Condition)=> (c.kind==='resource-minimum'||c.kind==='resource-maximum'||c.kind==='resource')&&c.resource==='gold';
+ const retained=jokers.flatMap(j=>{const d=r2JokerDefinitionFor(state,j.definitionId);return d.hooks.filter(h=>isGold(h.condition)&&shopGoldConditionMatches(h.condition,purchaseGold)&&!shopGoldConditionMatches(h.condition,cash)).map(h=>`购款金币${purchaseGold}→${cash}；${cardDefinitionName(d)}买后${cash}金，暂不触发${shortEffect({...d,hooks:[h]})}（需${r2ConditionDescription(h.condition)}）；这轮先留金。`);});
+ // Tools/items have no Joker hooks; keep their retained-card warnings intact.
+ const fresh=r2JokerDefinitionsFor(state).find(d=>d.id===offer.definitionId);
+ return [...retained,...(fresh?.hooks.filter(h=>isGold(h.condition)&&!shopGoldConditionMatches(h.condition,cash)).map(h=>`${cardDefinitionName(fresh)}买后${cash}金，暂不触发${shortEffect({...fresh,hooks:[h]})}（需${r2ConditionDescription(h.condition)}）。`)??[])];
+}
+export interface ShopRouteAdviceItem {offer:R2Offer;verdict:'consider'|'compare'|'skip';reason:string;replaceId?:string;loss?:string;purchaseConditionLosses?:string[]}
+/** Conservative current-state advice layered on the existing relation/price/replacement facts. No score or future draws. */
+export function shopRouteAdvice(state:R2RunState,focus:BuildFocus){
+ const held=state.jokers.map(j=>({j,d:r2JokerDefinitionFor(state,j.definitionId),relation:shopRouteRelation(state,j,focus)}));
+ const roles=new Set(held.filter(h=>h.relation.kind!=='other').flatMap(h=>effectRoles(h.d)));
+ const items:ShopRouteAdviceItem[]=(state.phase==='shop'?state.shop?.offers??[]:[]).filter(o=>!o.consumed).map(offer=>{
+  const d=r2JokerDefinitionFor(state,offer.definitionId),relation=shopOfferRelation(state,offer,focus),price=r2PurchasePrice(state,offer),base={offer,verdict:'skip' as const};
+  if(held.some(h=>h.j.definitionId===d.id))return {...base,reason:'已经持有同名牌，不能重复购买；先留金。'};
+  if(price>state.gold)return {...base,reason:`实付${price}金，当前还差${price-state.gold}金；这轮先留金。`};
+  if(relation.kind==='other')return {...base,reason:`它的条件不补当前${labels[focus]}；想用它时先主动换方向。`};
+  const missing=effectRoles(d).filter(r=>!roles.has(r));
+  const routeHooks=d.hooks.filter(h=>conditionRoutes(h.condition).includes(focus));
+  const wanted=focus==='group'?R2_GROUP_HAND_TYPES:focus==='straight'?['straight','straight-flush']:['flush','straight-flush'];
+  const targetTypes=[...new Set(routeHooks.flatMap(h=>h.condition.kind==='hand-type-in'?h.condition.values:h.condition.kind==='scoring-position'?h.condition.handTypes??[]:[]))].filter(t=>wanted.includes(t));
+  const target=targetTypes.length?targetTypes.map(t=>HAND_LABELS[t]).join('／'):labels[focus];
+  const direct=relation.kind==='direct'&&missing.length>0&&(routeHooks.some(h=>routePossible(state,h.condition,focus))||(d.modifiers??[]).some(m=>m.kind==='four-'+focus&&routePossible(state,{kind:'always'},focus,4)));
+  if(relation.kind==='direct'&&missing.length>0&&routeHooks.length&&!direct)return {...base,reason:`当前公开牌组不能核实${target}的触发资格；这轮先留金，不把普通牌型当作已能触发。`};
+  const multiplier=d.hooks.some(h=>h.condition.kind==='always'&&h.operations.some(o=>o.kind==='multiply-multiplier'&&Rational.fromJSON(o.value).compare(Rational.fromJSON({n:'1',d:'1'}))>0));
+  const additive=held.filter(h=>h.relation.kind==='direct'&&effectRoles(h.d).includes('multiplier')&&Object.values(h.j.growth).some(v=>Rational.fromJSON(v).compare(Rational.fromJSON({n:'0',d:'1'}))>0));
+  const support=relation.kind==='support'&&multiplier&&additive.length>0&&!roles.has('multiply');
+  if(!direct&&!support){const same=held.filter(h=>effectRoles(h.d).some(r=>effectRoles(d).includes(r)));return {...base,reason:same.length?`已有${cardDefinitionName(same[0].d)}（${r2JokerStateText(same[0].j,same[0].d)}）；新牌${shortEffect(d)}，未补明确缺口，建议先不买。`:`当前构筑没有明确需要它的条件；${shortEffect(d)}，这轮先留金。`};}
+  const reason=direct?`补当前缺少的${missing.map(r=>effectNames[r]).join('／')}，用于${target}；实付${price}金。`:`可接${additive.map(h=>cardDefinitionName(h.d)).join('、')}已存倍率，再作相乘；实付${price}金。`;
+  if(state.jokers.length<r2JokerCapacity(state)){const losses=shopPurchaseConditionLosses(state,offer);return losses.length?{...base,reason:losses.join('\n'),purchaseConditionLosses:losses}:{offer,verdict:'consider',reason,purchaseConditionLosses:losses};}
+  const replace=held.find(h=>h.relation.kind==='other'&&!savedInvestment(state,h.j));
+  if(!replace){const investment=held.find(h=>savedInvestment(state,h.j));return {...base,reason:investment?`槽位已满；${cardDefinitionName(investment.d)}（${r2JokerStateText(investment.j,investment.d)}）应先保留，不为本件先丢成长/来源；这轮留金。`:'槽位已满；没有明确可换的非路线牌，建议这轮留金。'};}
+  const loss=shopReplacementFacts(state,offer,replace.j,focus),saleEffects=shopSaleConsequences(state,replace.j);
+  const cashLosses=shopPurchaseConditionLosses(state,offer,replace.j);
+  if(cashLosses.length)return {...base,replaceId:replace.j.instanceId,reason:cashLosses.join('\n'),purchaseConditionLosses:cashLosses};
+  if(saleEffects.length)return {...base,reason:`换掉${cardDefinitionName(replace.d)}还会影响保留牌的出售联动；先留金，完整损失可查看。`};
+  return {offer,verdict:'compare',replaceId:replace.j.instanceId,reason:reason+`先比较第${state.jokers.indexOf(replace.j)+1}槽${cardDefinitionName(replace.d)}。`,loss:`出售会失去${cardDefinitionName(replace.d)}：${shortEffect(replace.d)}；基础卖价${salePrice(replace.j.paidPrice)}金。`,details:loss.loss,purchaseConditionLosses:cashLosses};
+ });
+ const priority=(i:ShopRouteAdviceItem)=>{const d=r2JokerDefinitionFor(state,i.offer.definitionId),r=effectRoles(d);return shopOfferRelation(state,i.offer,focus).kind==='support'?4:r.some(r=>r.startsWith('four-'))?0:r.some(r=>r==='heat'||r==='multiplier')?1:r.includes('retrigger')?2:3;};
+ const candidates=items.filter(i=>i.verdict!=='skip').sort((a,b)=>priority(a)-priority(b)||r2PurchasePrice(state,a.offer)-r2PurchasePrice(state,b.offer));
+ return {items,candidates,headline:candidates.length?(candidates[0].verdict==='compare'?'先看替换：':'优先考虑：')+cardDefinitionName(r2JokerDefinitionFor(state,candidates[0].offer.definitionId)):`这轮不买，留${state.gold}金`,reason:candidates[0]?.reason??'当前货架没有明确补强这条路线的牌；保留现有构筑，或主动换方向。'};
+}
+function conditionRoutes(c:Condition):BuildFocus[]{
+ const types=c.kind==='hand-type-in'||c.kind==='hand-type-relation'||c.kind==='stage-hand-types-all'||c.kind==='hand-type-unfinished'?c.values:c.kind==='hand-type-transition'?[c.current,c.previous]:c.kind==='scoring-position'?c.handTypes:undefined;
+ if(types)return focuses.filter(f=>types.some(t=>(f==='group'?R2_GROUP_HAND_TYPES:f==='straight'?['straight','straight-flush']:['flush','straight-flush']).includes(t)));
+ return ['largest-scoring-rank-group','paired-rank','rank-groups'].includes(c.kind)?['group']:[];
+}
+/** Purpose describes public conditions, never present activation or a recommended sale. */
+export function shopRouteRelation(state:R2RunState,j:R2JokerInstance,focus:BuildFocus|undefined){
+ const d=r2JokerDefinitionFor(state,j.definitionId),routes=new Set<BuildFocus>();
+ for(const h of d.hooks)for(const f of conditionRoutes(h.condition))routes.add(f);
+ for(const m of d.modifiers??[])if(m.kind==='four-straight')routes.add('straight');else if(m.kind==='four-flush')routes.add('flush');
+ const general=d.hooks.some(h=>!conditionRoutes(h.condition).length&&h.operations.some(o=>o.kind==='read-growth'||o.kind==='consume-growth'?Number(j.growth[o.key]?.n??0)>0:true))||!!d.modifiers?.some(m=>m.kind!=='four-straight'&&m.kind!=='four-flush');
+ const kind=!focus?'unfocused':routes.has(focus)?'direct':general||!routes.size?'support':'other';
+ const label=kind==='direct'?'适合当前打法':kind==='support'?'通用辅助':kind==='other'?'可用于其他打法':'尚未选方向';
+ const tag=kind==='direct'?'主线':kind==='support'?'辅助':kind==='other'?'转向':'待选';
+ const opportunity=[...routes].map(f=>labels[f]).join('／');
+ return {kind,label,tag,body:playerText(d.description)+'\n'+(opportunity?'可用于'+opportunity+'。':'不专属某一种牌型。')};
+}
+export function shopOfferRelation(state:R2RunState,o:R2Offer,focus:BuildFocus|undefined){
+ return shopRouteRelation(state,r2CreateJoker(o.definitionId,'preview/'+o.offerId,r2PurchasePrice(state,o),o.edition,state),focus);
+}
+/** Deterministic public on-sale effects on retained instances; no command, RNG or scoring preview. */
+export function shopSaleConsequences(state:R2RunState,sold:R2JokerInstance):string[]{
+ if(state.phase!=='shop'||!state.shop||!state.jokers.some(j=>j.instanceId===sold.instanceId))return [];
+ const rows:string[]=[],route=shopRouteGrowthFacts(state);
+ for(const [index,j] of state.jokers.entries()){
+  if(j.instanceId===sold.instanceId)continue;
+  const d=r2JokerDefinitionFor(state,j.definitionId),growth={...j.growth};
+  for(const hook of d.hooks){
+   if(hook.phase!=='onSellJoker'||hook.condition.kind!=='always')continue;
+   for(const op of hook.operations){
+    if(op.kind==='add-growth'){
+     const before=Rational.fromJSON(growth[op.key]??{n:'0',d:'1'}),raw=before.add(Rational.fromJSON(op.value)),cap=Rational.fromJSON(op.cap),after=raw.compare(cap)>0?cap:raw;
+     growth[op.key]=after.toJSON();const read=d.hooks.flatMap(h=>h.operations).find(o=>o.kind==='read-growth'&&o.key===op.key);
+     const unit=read?.kind==='read-growth'&&read.target==='multiplier'?'倍率成长':'热度成长';
+     rows.push(`${cardDefinitionName(d)}（第${index+1}槽）保留：${unit} +${fractionText(before.toJSON())} → +${fractionText(after.toJSON())}（上限${fractionText(op.cap)}${after.compare(before)===0?'，本次不再增加':''}）。`);
+    }else if(op.kind==='reset-coefficient'){
+     const before=growth[op.key];if(!before)continue;growth[op.key]=op.initial;
+     rows.push(`${cardDefinitionName(d)}（第${index+1}槽）保留：系数 ×${fractionText(before)} → ×${fractionText(op.initial)}。`);
+    }
+   }
+  }
+  if(d.hooks.some(h=>h.phase==='onStageClear'&&h.condition.kind==='no-joker-sale-this-stage')){
+   const kept=route&&j.growth.coefficient&&!d.hooks.some(h=>h.phase==='onSellJoker'&&h.operations.some(o=>o.kind==='reset-coefficient'))?'已有系数×'+fractionText(j.growth.coefficient)+'保留；':'';
+   rows.push(cardDefinitionName(d)+'：'+kept+(state.shop.soldJoker?'本店已出售，该资格已失去；本次仍不满足':'本次出售将使下一场“本场未出售”的过关成长条件不满足')+'；不会在这里获得过关成长。');
+  }
+ }
+ if(route)rows.push(route.preserved);
+ return rows;
+}
+export function shopReplacementFacts(state:R2RunState,offer:R2Offer,held:R2JokerInstance,focus:BuildFocus|undefined){
+ const d=r2JokerDefinitionFor(state,held.definitionId),other=r2JokerDefinitionFor(state,offer.definitionId);
+ const growth=buildGrowthProgress(state).filter(p=>p.instanceId===held.instanceId).map(p=>p.metric+'；'+p.cause).join('\n');
+ const coSources=state.jokers.filter(j=>j.instanceId!==held.instanceId&&state.lastTrace?.events.some(e=>e.sourceType==='joker'&&e.sourceInstanceId===held.instanceId)&&state.lastTrace?.events.some(e=>e.sourceType==='joker'&&e.sourceInstanceId===j.instanceId)).map(j=>cardDefinitionName(r2JokerDefinitionFor(state,j.definitionId)));
+ const ownConditions=d.hooks.map(h=>JSON.stringify(h.condition)).filter(c=>c!==JSON.stringify({kind:'always'}));
+ const shared=state.jokers.filter(j=>j.instanceId!==held.instanceId&&r2JokerDefinitionFor(state,j.definitionId).hooks.some(h=>ownConditions.includes(JSON.stringify(h.condition)))).map(j=>cardDefinitionName(r2JokerDefinitionFor(state,j.definitionId)));
+ return {saleEffects:shopSaleConsequences(state,held),held:shopRouteRelation(state,held,focus),offer:shopOfferRelation(state,offer,focus),loss:'出售将失去「'+cardDefinitionName(d)+'」的效果、额外加成和已存成长：'+r2JokerStateText(held,d)+(growth?'\n'+growth:'')+'。重买同名牌从初值开始，不继承成长。',connections:(shared.length?'与'+shared.join('、')+'共享条件；共同满足仍分别检查，不保证额外加成。\n':'')+(coSources.length?'上手还触发了'+coSources.join('、')+'；出售会移除这张来源，不保证下一手仍共同触发。':'上手没有共同触发记录；配合还要看各自条件。'),money:'当前余额 '+state.gold+' 金；该牌基础卖价 '+salePrice(held.paidPrice)+' 金；现货「'+cardDefinitionName(other)+'」当前实付 '+r2PurchasePrice(state,offer)+' 金。出售、购买分别确认；优惠和买后余额会随之变化。'};
+}
+/** Clone-only actual transaction facts. Never dispatch, save, score, draw or recommend a sale. */
+export function shopReplacementTransactionFacts(state:R2RunState,offer:R2Offer,held:R2JokerInstance){
+ const command=(s:R2RunState,action:Action)=>applyCommand(s,{runId:s.runId,commandId:s.runId+'/comparison/'+action.type+'/'+(s.commandSeq+1),expectedSeq:s.commandSeq,action});
+ const sold=command(state,{type:'SellJoker',instanceId:held.instanceId});
+ if(!sold.ok)return {status:'blocked' as const,summary:'此出售当前不可执行：'+sold.code,growthEffects:[] as string[],cashLosses:[] as string[]};
+ const price=r2PurchasePrice(sold.state,offer),bought=command(sold.state,{type:'BuyOffer',offerId:offer.offerId});
+ const growthEffects:string[]=[];
+ for(const j of state.jokers.filter(j=>j.instanceId!==held.instanceId)){
+  const afterSale=sold.state.jokers.find(k=>k.instanceId===j.instanceId)!,afterBuy=bought.ok?bought.state.jokers.find(k=>k.instanceId===j.instanceId)!:afterSale;
+  const d=r2JokerDefinitionFor(state,j.definitionId);
+  if(JSON.stringify(j.growth)!==JSON.stringify(afterSale.growth))growthEffects.push(cardDefinitionName(d)+' · 售后：'+r2JokerStateText(j,d)+' → '+r2JokerStateText(afterSale,d));
+  if(JSON.stringify(afterSale.growth)!==JSON.stringify(afterBuy.growth))growthEffects.push(cardDefinitionName(d)+' · 购后：'+r2JokerStateText(afterSale,d)+' → '+r2JokerStateText(afterBuy,d));
+ }
+ const cashLosses=shopPurchaseConditionLosses(state,offer,held);
+ const summary=`指定替换 · 先售后买：${state.gold}→${sold.state.gold}金；售后实付${price}金`+(bought.ok?`；买后${bought.state.gold}金。新牌放在末槽，成长从初值开始。`:'；购买当前不可执行：'+bought.code+'。')+'\n失去额外加成：'+editionEffectText(held.edition).split('。')[0]+'；新牌额外加成：'+editionEffectText(offer.edition).split('。')[0]+(cashLosses.length?'\n'+cashLosses.join('\n'):'');
+ return {status:bought.ok?'ready' as const:'blocked' as const,summary,growthEffects,cashLosses,refund:sold.state.gold-state.gold,price,goldAfterSale:sold.state.gold,goldAfterPurchase:bought.ok?bought.state.gold:undefined};
+}
+/** Comparison first layer: actual money and nonzero losses, full rules stay in details. */
+export function shopReplacementCompactFacts(state:R2RunState,held:R2JokerInstance,transaction:ReturnType<typeof shopReplacementTransactionFacts>):string[]{
+ if(transaction.price===undefined)return ['当前不能出售：'+(transaction.summary.includes('over-capacity-after-sale')?'售后道具超容量':transaction.summary)];
+ const route=shopRouteGrowthFacts(state);
+ const rows=[`返${transaction.refund}金 · 实付${transaction.price}金`+(transaction.goldAfterPurchase!==undefined?` · 买后${transaction.goldAfterPurchase}金`:' · 当前不能买入')];
+ const names:Record<string,string>={heat:'热度',multiplier:'倍率',pendingHeat:'待用热度'};
+ const growth=Object.entries(held.growth).filter(([key,value])=>Rational.fromJSON(value).compare(new Rational(key==='coefficient'?1n:0n))>0).map(([key,value])=>key==='coefficient'?'系数×'+fractionText(value):(names[key]??'成长')+'+'+fractionText(value));
+ if(growth.length)rows.push('失去：'+growth.join('、'));
+ if(held.edition&&held.edition!=='none')rows.push('失去：'+editionEffectText(held.edition).split('。')[0]);
+ const d=r2JokerDefinitionFor(state,held.definitionId),lifetime=d.hooks.flatMap(h=>h.operations).find(o=>o.kind==='expire-after-hands');
+ if(lifetime?.kind==='expire-after-hands'&&(held.counters?.handsScored??0)>0)rows.push(`现牌余${Math.max(0,lifetime.limit-(held.counters?.handsScored??0))}手`);
+ if(held.counters?.stageClears)rows.push(`失去：过关进度${held.counters.stageClears}/2`);
+ rows.push(...transaction.growthEffects.map(row=>{
+  const short=row.replaceAll('热度成长','热度').replaceAll('倍率成长','倍率').replaceAll('乘法系数','系数').replaceAll(' · ','').replaceAll(' → ','→');
+  return short.replace(/(热度|倍率|系数) /g,'$1').replace(/0→(热度|倍率|系数)/g,'$10→').replace(/→(热度|倍率|系数)/g,'→');
+ }));
+ if(!state.shop?.soldJoker)for(const other of state.jokers.filter(j=>j.instanceId!==held.instanceId)){
+  const otherDef=r2JokerDefinitionFor(state,other.definitionId);
+  if(otherDef.hooks.some(h=>h.phase==='onStageClear'&&h.condition.kind==='no-joker-sale-this-stage')){
+   const kept=route&&other.growth.coefficient&&!otherDef.hooks.some(h=>h.phase==='onSellJoker'&&h.operations.some(o=>o.kind==='reset-coefficient'))?'系数×'+fractionText(other.growth.coefficient)+'保留 · ':'';
+   rows.push(cardDefinitionName(otherDef)+'：'+kept+'下一场未售成长失效');
+  }
+ }
+ rows.push(...transaction.cashLosses);
+ return rows;
+}

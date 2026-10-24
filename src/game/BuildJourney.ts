@@ -1,0 +1,108 @@
+import {playerText} from './Brand';
+import {cardDefinitionName} from './tangsongCardNames';
+import {shopRouteRelation,shopOfferRelation,shopRouteAdvice,shopPurchaseConditionLosses} from './ShopRouteRelations';
+import {buildGrowthProgress} from './BuildGrowthProgress';
+import {shopInvestment} from './ShopInvestment';
+import {R2_HAND_TYPES,type R2HandType} from '../domain/evaluateR2';
+import type {R2RunState} from '../domain/r2Run';
+import {r2JokerDefinitionFor} from '../domain/r2ContentProfiles';
+import {R2_GROUP_HAND_TYPES} from '../domain/r2GroupHands';
+import {isR2CoreBuild} from '../domain/r2GroupUpgrade';
+import {r2PracticeQuotes,type R2PracticeQuote} from '../domain/r2Practice';
+import {r2PurchasePrice,type R2Offer} from '../domain/r2Shop';
+import {r2InterestCap,r2ConsumableCapacity} from '../domain/r2Run';
+import {r2ToolAllowed,r2ToolSupported} from '../domain/r2ToolRuntime';
+import {R2_TOOLS,R2_TOOL_CATALOG} from '../content/r2Tools';
+import {HAND_LABELS} from '../content/handLabels';
+import {rankLabel,SUIT_SYMBOL,type Suit,type Rank} from '../cards/types';
+import {jokerArtPreviewUrl} from './jokerArt';
+import {r2JokerStateText} from './r2Help';
+import {toolInfo,itemInfo} from './r2ToolInfo';
+import {savedExperienceCards} from './JokerExperience';
+import {currentBuildFocus,buildFocusRetention,type BuildFocus} from './BuildDirectionPreferences';
+export {currentBuildFocus,chooseBuildFocus,BUILD_FOCUS,buildFocusRetention,type BuildFocus} from './BuildDirectionPreferences';
+export const BUILD_LABEL:Record<BuildFocus,string>={group:'同点成组',straight:'顺子接续',flush:'同花集中'};
+export function buildDirectionSummary(state:R2RunState):string {
+ const current=currentBuildFocus(state,state.openingRoute),retention=buildFocusRetention(state);
+ return (current?'当前培养：'+BUILD_LABEL[current]:'尚未选择培养方向')+(state.openingRoute?' · 开局路线：'+BUILD_LABEL[state.openingRoute]:'')+'\n'+(retention==='session'?'本机偏好未能保存，当前方向仅本次页面保留；下次续局可重新选择。':current?'当前方向在本机续局保留；导入到其它设备仍可重新选择。':'选好后在本机续局保留；导入到其它设备仍可重新选择。')+'方向可随时换，不卖牌、不改成长或自动操作。';
+}
+export function buildDirectionCaption(state:R2RunState):string {
+ const current=currentBuildFocus(state,state.openingRoute),short={group:'成组',straight:'顺子',flush:'同花'};
+ return (current?'当前培养 '+short[current]:'尚未选择方向')+(state.openingRoute&&state.openingRoute!==current?' · 开局 '+short[state.openingRoute]:'')+(buildFocusRetention(state)==='session'?' · 仅本页保留':' · 本机续局保留');
+}
+export const buildHandTypes=(focus:BuildFocus)=>focus==='group'?R2_GROUP_HAND_TYPES:focus==='straight'?['straight','straight-flush']:['flush','straight-flush'];
+const practiceHandTypes=(focus:BuildFocus):readonly R2HandType[]=>focus==='group'?R2_GROUP_HAND_TYPES:focus==='straight'?['straight','straight-flush']:['flush','straight-flush','flush-house','flush-five'];
+export function jokerSupportsFocus(state:R2RunState,id:string,focus:BuildFocus):boolean {
+ const d=r2JokerDefinitionFor(state,id),wanted=buildHandTypes(focus);
+ return d.hooks.some(h=>h.phase==='jokerScore'&&h.condition.kind==='resource'&&h.operations.some(o=>o.kind==='add-multiplier'||o.kind==='multiply-multiplier')?true:h.condition.kind==='held-count'&&h.operations.some(o=>o.kind==='add-growth')?true:h.condition.kind==='suit-in'?true:h.condition.kind==='scoring-position'?!h.condition.handTypes||h.condition.handTypes.some(t=>wanted.includes(t)):h.condition.kind==='all-played-active'?h.condition.minimum<=5:h.condition.kind==='discard-same-suit'?focus==='straight':h.condition.kind==='hand-type-in'?h.condition.values.some(t=>wanted.includes(t)):h.condition.kind==='hand-type-transition'?wanted.includes(h.condition.current)||wanted.includes(h.condition.previous):h.condition.kind==='hand-type-relation'?h.condition.values.some(t=>wanted.includes(t)):h.condition.kind==='largest-scoring-rank-group'?focus==='group':h.condition.kind==='always'&&h.operations.some(o=>o.kind==='read-growth'||o.kind==='consume-growth'?state.jokers.some(j=>j.definitionId===id&&BigInt(j.growth[o.key]?.n??'0')>0n):['read-coefficient','add-heat','add-multiplier','multiply-multiplier'].includes(o.kind)))||!!d.modifiers?.some(m=>focus==='straight'?m.kind==='four-straight':focus==='flush'?m.kind==='four-flush':false);
+}
+export function toolSupportsFocus(id:string,focus:BuildFocus):boolean {
+ const op=R2_TOOLS.find(t=>t.id===id)!.operation;
+ if(op.kind==='upgrade-hand')return !op.handType||buildHandTypes(focus).includes(op.handType);
+ // Existing score-paper / repeat tools are optional bridges, never a required glass recipe.
+ if(op.kind==='set-enhancement'||op.kind==='random-enhancement'||op.kind==='random-edition')return true;
+ if(op.kind==='add-gold'||op.kind==='restore-discard'||op.kind==='free-reroll')return true;
+ return focus==='group'?['copy-card','shift-rank','delete-cards','exchange-hand-levels'].includes(op.kind):focus==='straight'?['shift-rank','copy-card','delete-cards','exchange-hand-levels'].includes(op.kind):['set-suit','set-deck-suit','copy-card','delete-cards','exchange-hand-levels'].includes(op.kind);
+}
+export function focusedUpgradeTypes(state:R2RunState,focus:BuildFocus|undefined){
+ const discovered=R2_HAND_TYPES.filter(t=>state.handLevels[t]!==undefined);
+ return discovered.filter(t=>state.handLevels[t]!<R2_TOOL_CATALOG.limits.handLevelMaximum).sort((a,b)=>Number(!!focus&&buildHandTypes(focus).includes(b))-Number(!!focus&&buildHandTypes(focus).includes(a)));
+}
+export function cashDecision(state:R2RunState,spend=0){
+ const cap=r2InterestCap(state),before=state.gold,after=before-spend;
+ return {before,after,cap,beforeTier:Math.min(cap,Math.floor(before/5)),afterTier:after<0?undefined:Math.min(cap,Math.floor(after/5)),body:after<0?'当前'+before+'金，尚差'+(-after)+'金。':`余额 ${before}→${after} 金；按当前持有上限对应利息档 ${Math.min(cap,Math.floor(before/5))}→${Math.min(cap,Math.floor(after/5))} 金。利息在成功过关时按届时余额计算，不是现在到账或下场保证收入。`};
+}
+/** Paid services follow the existing route families without changing recommendation matching. */
+export function buildPracticeOptions(state:R2RunState,focus:BuildFocus){
+ const types=practiceHandTypes(focus);
+ return r2PracticeQuotes(state).filter(q=>types.includes(q.handType)).map((quote:R2PracticeQuote)=>{
+  const cash=cashDecision(state,quote.price);
+  return {quote,affordable:quote.available,title:`${HAND_LABELS[quote.handType]} Lv.${quote.levelBefore} → Lv.${quote.levelAfter}`,
+   decision:quote.available?`实付 ${quote.price} 金 · 升级后余 ${quote.goldAfter} 金`:`实付 ${quote.price} 金 · 还差 ${-quote.goldAfter} 金`,
+   body:`当场升1级，不占道具箱；原价 ${quote.basePrice} 金，当前实付 ${quote.price} 金。\n${cash.body}\n升级 / 改牌 / 染色共用本店1次，刷新不恢复；确认后才扣款和升级。`};
+ });
+}
+export function buildPracticeStatus(state:R2RunState,focus:BuildFocus):string {
+ if(!isR2CoreBuild(state))return '当前身份没有当场升级服务；现货与库存升型工具仍按原规则使用。';
+ if(state.phase!=='shop')return '当场升级仅在商店办理。';
+ const shared='升级 / 改牌 / 染色共用本店1次，刷新不恢复；下一店恢复。';
+ if(state.shop?.basicChoice?.purchase)return '本店自选已用 · '+shared;
+ if(!state.shop?.basicChoice)return '本店暂无当场升级服务。';
+ if(buildPracticeOptions(state,focus).length)return shared+'只列当前路线已发现且未30级的牌型。';
+ const types=practiceHandTypes(focus);
+ const discovered=types.filter(t=>Object.hasOwn(state.handLevels,t));
+ return (discovered.length?'当前路线已发现的牌型均已30级，不能继续当场升级。':'当前路线的牌型尚未发现；发现后才能当场升级。')+'\n'+shared;
+}
+/** Known deck composition only; no draw-pile order, RNG or projected score. */
+export function buildJourneyFacts(state:R2RunState,focus:BuildFocus){
+ const live=state.deckInstances.filter(c=>!state.destroyedIds.includes(c.id)),counts=new Map<number,number>(),suits=new Map<Suit,number>();
+ for(const card of live){counts.set(card.rank,(counts.get(card.rank)??0)+1);suits.set(card.suit,(suits.get(card.suit)??0)+1);}
+ const rankCounts=[...counts].sort((a,b)=>a[0]-b[0]).map(([rank,count])=>rankLabel(rank as Rank)+'×'+count).join('、');
+ const composition=focus==='flush'?[...suits].map(([s,n])=>SUIT_SYMBOL[s]+' '+n+'张').join(' · '):rankCounts;
+ const guide=focus==='group'?'保留同点牌，用改点凑对子／两对，不必等复制；增强给实际计分牌，留牌增强另看条件。培养成长后保留现金，遇到满足来源条件的组合再爆发。':focus==='straight'?'用不同点数接连续牌；成长来源可能仍读旧值，但是否新增成长另按来源条件。':'先决定集中哪一花色；染色只改所选对象，不保证下一手抽到同花。';
+ const owned=state.jokers.map(j=>{const d=r2JokerDefinitionFor(state,j.definitionId);return {id:j.instanceId,title:cardDefinitionName(d),url:jokerArtPreviewUrl(d.id),relation:shopRouteRelation(state,j,focus),body:shopRouteRelation(state,j,focus).body+'\n'+r2JokerStateText(j,d)};});
+ const tools=state.consumables.filter(c=>toolSupportsFocus(c.definitionId,focus)).map(c=>{const d=R2_TOOLS.find(t=>t.id===c.definitionId)!,info=toolInfo(d.id,state),openable=d.phases.includes(state.phase as 'shop'|'await-input')&&r2ToolSupported(d.id)&&r2ToolAllowed(state,d.id);return {id:c.instanceId,title:info.name,url:info.artUrl,openable,body:info.description+'\n'+info.cost+'\n'+(openable?'打开后自己选择对象；确认前仍校验目标、余额和上限。':'当前时点不能用；查看完整工具规则或到商店再决定。')};});
+ const shop=state.shop,offers: {price:number;decision:string;brief:string;id:string;kind:'jokers'|'tools'|'items';title:string;body:string;url?:string;affordable:boolean;relation?:ReturnType<typeof shopOfferRelation>}[]=[];
+ const add=(o:R2Offer,kind:'jokers'|'tools'|'items')=>{if(o.consumed)return;const price=r2PurchasePrice(state,o),d=kind==='jokers'?r2JokerDefinitionFor(state,o.definitionId):undefined,info=kind==='tools'?toolInfo(o.definitionId,state):kind==='items'?itemInfo(o.definitionId):undefined;const investment=shopInvestment(state,o,kind);const cash=cashDecision(state,price);const brief=(d?shopOfferRelation(state,o,focus).label+' · ':'')+(investment?investment.effect:playerText(d?.description??info!.description));offers.push({relation:d?shopOfferRelation(state,o,focus):undefined,price,decision:cash.after<0?'还差'+(-cash.after)+'金':'买后余'+cash.after+'金 · 当前利息档'+cash.beforeTier+'→'+cash.afterTier,brief,id:o.offerId,kind,title:(cardDefinitionName(d)??info!.name)+' · 实付'+price+'金',url:d?jokerArtPreviewUrl(d.id):info?.artUrl,affordable:price<=state.gold,body:(investment?investment.role+' · '+investment.effect+'\n'+investment.next:playerText(d?.description??info!.description))+'\n'+cashDecision(state,price).body+'\n查看购买详情，查看费用、空位与使用条件。'});};
+ if(state.phase==='shop'&&shop){for(const o of shop.offers)add(o,'jokers');for(const o of shop.toolOffers)if(toolSupportsFocus(o.definitionId,focus))add(o,'tools');for(const o of shop.itemOffers)add(o,'items');}
+ const practices=buildPracticeOptions(state,focus),practiceStatus=buildPracticeStatus(state,focus);
+ const discovered=Object.entries(state.handLevels).filter(([t])=>practiceHandTypes(focus).includes(t as R2HandType)).map(([t,l])=>HAND_LABELS[t as keyof typeof HAND_LABELS]+' Lv.'+l).join(' · ')||'该方向牌型尚未发现；工具升型资格以使用页为准。';
+ const trace=state.lastTrace,saved=trace?savedExperienceCards(state,trace):[];
+ const spendWarnings:string[]=[],advice=shopRouteAdvice(state,focus),choices:{id:string;kind:'jokers'|'tools';reason:string;replaceId?:string;loss?:string}[]=advice.candidates.map(i=>({id:i.offer.offerId,kind:'jokers',reason:i.reason,replaceId:i.replaceId,loss:i.loss}));
+ if(state.phase==='shop'&&state.consumables.length<r2ConsumableCapacity(state))for(const o of offers.filter(o=>o.kind==='tools'&&o.affordable)){
+  const d=R2_TOOLS.find(t=>t.id===state.shop!.toolOffers.find(x=>x.offerId===o.id)!.definitionId)!,op=d.operation;
+  if(!r2ToolSupported(d.id)||!r2ToolAllowed(state,d.id))continue;
+  const spendLosses=shopPurchaseConditionLosses(state,state.shop!.toolOffers.find(x=>x.offerId===o.id)!);if(spendLosses.length){spendWarnings.push(...spendLosses);continue;}
+  if(op.kind==='upgrade-hand'){
+   const types=focusedUpgradeTypes(state,focus).filter(t=>buildHandTypes(focus).includes(t)&&(!op.handType||t===op.handType));
+   const type=types.find(t=>focus==='group'?['two-pair','three-kind','full-house'].includes(t):buildHandTypes(focus).includes(t))??types[0];
+   if(type)choices.push({id:o.id,kind:'tools',reason:`继续${BUILD_LABEL[focus]}：可把已发现的${HAND_LABELS[type]}Lv.${state.handLevels[type]}再升级；买后自己选择使用。`});
+  }else if(focus==='flush'&&op.kind==='set-suit'){
+   const bonus=state.jokers.some(j=>r2JokerDefinitionFor(state,j.definitionId).hooks.some(h=>h.condition.kind==='suit-in'&&h.condition.values.includes(op.suit)));
+   const leading=[...suits].sort((a,b)=>b[1]-a[1]);
+   if(live.some(c=>c.suit!==op.suit)&&(bonus||leading[0]?.[0]===op.suit&&leading[0][1]>(leading[1]?.[1]??0)))choices.push({id:o.id,kind:'tools',reason:`同花集中到${SUIT_SYMBOL[op.suit]}：${bonus?'现持有对应花色加成':'公开牌组已偏这色'}，可把一张牌改成这色；目标由你确认。`});
+  }
+ }
+ const decision={...advice,choices,headline:choices.length?(choices[0].replaceId?'先看替换：':'优先考虑：')+offers.find(o=>o.id===choices[0].id)!.title.split(' · ')[0]:advice.headline,reason:choices[0]?.reason??(spendWarnings[0]??(advice.items.length?cardDefinitionName(r2JokerDefinitionFor(state,advice.items[0].offer.definitionId))+'：'+advice.items[0].reason:advice.reason))};
+ return {decision,progress:buildGrowthProgress(state),focus,title:BUILD_LABEL[focus],guide,composition,deckSize:live.length,discovered,owned,tools,offers,practices,practiceStatus,cash:cashDecision(state),saved,gaps:[!state.jokers.some(j=>shopRouteRelation(state,j,focus).kind!=='other')?'尚无该方向对应的持有来源；先看公开可成牌型，也可换培养方向。':'',!tools.length?(practices.length?'当前没有对应的库存改牌/升型工具；本店当场升级可另作取舍。':'当前没有对应改牌/升型工具；可用现有牌出场，或查看本店货架。'):'',state.phase==='shop'&&!practices.length&&!offers.some(o=>o.kind!=='jokers'||shopOfferRelation(state,state.shop!.offers.find(x=>x.offerId===o.id)!,focus).kind!=='other')?'本店没有该方向对应商品；保留金币直接入场或换方向，不保证刷新补齐。':''].filter(Boolean)};
+}

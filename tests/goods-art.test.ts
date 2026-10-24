@@ -1,0 +1,67 @@
+import {it,expect} from 'vitest';
+import {readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import manifest from '../public/assets/handdrawn-tools/manifest.json';
+import {GOODS_ART,goodsArtUrl} from '../src/game/GoodsArt';
+import {JOKER_ART} from '../src/game/jokerArt';
+import {toolInfo,itemInfo,goodsArtPortrait} from '../src/game/r2ToolInfo';
+const finalToolIds=['P08','P09','P10','P12','S01','T19','S03','S04','S05','S06','S07','S08'];
+it('binds all twelve items and thirty-nine tools to reviewed, complete source derivatives',()=>{
+  const expectedIds=[...Array.from({length:19},(_,i)=>'T'+String(i+1).padStart(2,'0')),...Array.from({length:12},(_,i)=>'P'+String(i+1).padStart(2,'0')),...Array.from({length:8},(_,i)=>'S'+String(i+1).padStart(2,'0')),...Array.from({length:12},(_,i)=>'U'+String(i+1).padStart(2,'0'))].sort();
+  expect(GOODS_ART.map(a=>a.domainId).sort()).toEqual(expectedIds);
+  expect(manifest.replacementSources).toHaveLength(1);
+  const source=manifest.replacementSources[0],raw=readFileSync(new URL('../'+source.sourceManifestPath,import.meta.url));
+  expect(createHash('sha256').update(JSON.stringify(JSON.parse(raw.toString()),null,2)+'\n').digest('hex')).toBe(source.sourceManifestSHA256);
+  const receipt=JSON.parse(raw.toString());
+  expect(source.domainIds).toEqual(expectedIds);expect(receipt.unmapped).toEqual([]);
+  expect(receipt.assets).toHaveLength(51);
+  for(const a of receipt.assets){
+    const original=readFileSync(new URL('../art/sources/'+receipt.batch+'/'+a.sourceFilename,import.meta.url));
+    expect(createHash('sha256').update(original).digest('hex')).toBe(a.sourceSHA256);
+    expect(original.length).toBe(a.sourceBytes);expect(a.pixelObservation).toBeTruthy();
+    expect(a.geometry).toEqual({fit:'contain',entireSourceSampled:true,noStretch:true,sourceCropPixels:{left:0,top:0,width:a.sourceWidth,height:a.sourceHeight},background:'#F3EADB',insetBoundingBoxes:{thumbnail:{left:4,top:5,width:120,height:150},detail:{left:19,top:24,width:576,height:720}}});
+    const runtime=GOODS_ART.find(row=>row.domainId===a.domainId)!;
+    expect(runtime.id).toBe(a.id);expect(runtime.category).toBe(a.category);
+    expect(runtime.sourceBatch).toBe(receipt.batch);expect(runtime.outputs).toEqual(a.outputs);
+  }
+  let bytes=0,count=0;for(const a of GOODS_ART){
+    expect(a.category).toBe(a.domainId.startsWith('U')?'item-card':'tool-card');
+    expect(JOKER_ART.some(j=>j.id===a.id||j.id===a.domainId)).toBe(false);
+    expect(a.outputs.map(o=>[o.purpose,o.width,o.height])).toEqual([['thumbnail',128,160],['detail',615,768]]);
+    for(const o of a.outputs){
+      expect(o.path).toBe(a.id+'-v3-'+o.sha256.slice(0,12)+'.'+o.purpose+'.webp');
+      const b=readFileSync(new URL('../public/assets/handdrawn-tools/'+o.path,import.meta.url));
+      expect(b.length).toBe(o.bytes);expect(b.length).toBeLessThanOrEqual(o.purpose==='thumbnail'?10000:100000);
+      expect(createHash('sha256').update(b).digest('hex')).toBe(o.sha256);bytes+=b.length;count++;
+    }
+  }
+  expect(count).toBe(102);expect(manifest.runtimeBytes).toBe(bytes);expect(manifest.runtimeFileCount).toBe(count);
+  expect(GOODS_ART.filter(a=>a.category==='item-card')).toHaveLength(12);expect(GOODS_ART.filter(a=>a.category==='tool-card')).toHaveLength(39);
+});
+it('keeps categories distinct and only requests HD via an illustrated detail descriptor',()=>{
+  expect(goodsArtUrl('U07','tool-card','thumbnail')).toBeUndefined();expect(goodsArtUrl('T12','item-card','thumbnail')).toBeUndefined();expect(goodsArtUrl('T99','tool-card','thumbnail')).toBeUndefined();
+  for(const id of ['T12','P11','S02',...Array.from({length:12},(_,i)=>'U'+String(i+1).padStart(2,'0')),...Array.from({length:6},(_,i)=>'T'+String(i+6).padStart(2,'0')),...Array.from({length:6},(_,i)=>'T'+String(i+13).padStart(2,'0')),...Array.from({length:5},(_,i)=>'T'+String(i+1).padStart(2,'0')),'P01',...Array.from({length:6},(_,i)=>'P'+String(i+2).padStart(2,'0')),...finalToolIds]){const info=id.startsWith('U')?itemInfo(id):toolInfo(id),p=goodsArtPortrait(info);expect(info.artUrl).toContain('.thumbnail.webp');expect(p.url).toContain('.detail.webp');expect(p.thumbnailUrl).toBe(info.artUrl);expect(p.fallbackUrl).toMatch(/^data:image\/svg\+xml,/);expect(p.layout).toBe('card');}
+  expect(goodsArtUrl('T01','item-card','thumbnail')).toBeUndefined();expect(goodsArtUrl('P01','item-card','thumbnail')).toBeUndefined();
+  expect(()=>toolInfo('T99')).toThrow('unknown-r2-tool: T99');
+});
+it('uses authoritative text rather than inference from artwork',()=>{
+  const glass=toolInfo('T12');expect(glass.description).toContain('倍率×1.5');expect(glass.description).toContain('1/4');
+  expect(toolInfo('P11').description).toContain('同花葫芦');expect(toolInfo('P11').description).toContain('等级+1');
+  expect(toolInfo('S02').risk).toMatch(/5\/10[\s\S]*3\/10[\s\S]*2\/10/);expect(toolInfo('S02').cost).toContain('5金');expect(itemInfo('U07').description).toContain('容量+1');
+  const copy:Record<string,string[]>={T01:['选择一种已发现牌型','所选牌型等级+1','只影响未来出牌'],T02:['选择1–2张可见扑克','永久删除所选扑克','当前场不补抽被删掉的手牌'],T03:['永久改为红桃♥','保留点数、增强和原有额外加成'],T04:['永久改为方片♦','保留点数、增强和原有额外加成'],T05:['永久改为梅花♣','保留点数、增强和原有额外加成'],P01:['对象固定，须已发现该牌型','等级+1','只影响未来出牌'],T06:['永久改为黑桃♠','保留点数、增强和原有额外加成'],T07:['保留原牌','新建1张完整复制','真实抽牌堆底部','不洗牌、不立即补抽'],T08:['点数+1','不循环：A不能再升'],T09:['点数−1','不循环：2不能再降'],T10:['赋予热度纸','替换原增强，保留额外加成'],T11:['赋予倍率纸','替换原增强，保留额外加成'],T13:['赋予留声纸','有效持牌一次','替换原增强，保留额外加成'],T14:['赋予金纸','成功过关时','每场最多'],T15:['赋予返场纸','额外计分+1次','不递归触发'],T16:['金币+5','不增加本手热度或倍率'],T17:['本场弃牌次数+1','最多恢复至入场次数','须实际用过弃牌'],T18:['刷新一次唐宋牌和工具','长期道具不变']};
+  for(const [id,parts] of Object.entries(copy))for(const part of parts)expect.soft(toolInfo(id).description).toContain(part);
+  const planets:Record<string,string>={P02:'对子',P03:'两对',P04:'三条',P05:'顺子',P06:'同花',P07:'葫芦',P08:'四条',P09:'同花顺',P10:'五条',P12:'同花五条'};
+  for(const [id,label] of Object.entries(planets)){const description=toolInfo(id).description;for(const part of ['对象固定，须已发现该牌型','固定升级'+label,'等级+1','上限30级','只影响未来出牌'])expect(description).toContain(part);}
+  const finalCopy:Record<string,string[]>={S01:['每张受赠扑克独立随机获得一种增强','保留原有额外加成','不按目标点击顺序分配'],T19:['赋予幸运纸','替换原增强，保留额外加成'],S03:['保留原牌','新建2张完整复制','不洗牌、不立即补抽'],S04:['整个有效牌组永久改为所选花色','保留点数、增强、原有额外加成以及各牌堆顺序','须至少一张确实改变花色'],S05:['受益牌型+3级、牺牲牌型−1级','受益方原等级最多27','牺牲方至少2级'],S06:['当前可用且未持有的稀有唐宋牌','等概率','初始成长与计数','购入价0','不触发购买成长或首购优惠'],S07:['受赠唐宋牌变为多彩','保留稀有度、购入价、成长与计数','牺牲不算出售，无返金或出售成长'],S08:['有效牌组须至少4张','同时拥有两者的牌每张只计一次','清除全部扑克的增强与额外加成','下一场起永久手牌上限+1','本局一次']};
+  for(const [id,parts] of Object.entries(finalCopy))for(const part of parts)expect.soft(toolInfo(id).description).toContain(part);
+  expect(toolInfo('S01').risk.match(/1\/7/g)).toHaveLength(7);
+  expect(toolInfo('S03').cost).toContain('下一场起永久出牌次数−1');expect(toolInfo('S04').cost).toContain('下一场起永久手牌上限−1');expect(toolInfo('S06').cost).toContain('全部金币（至少5金）');
+});
+
+it('keeps unknown/category mismatch unregistered and all item descriptions authoritative',()=>{
+  for(const id of ['U08','U09','U10','U11','U12'])expect(goodsArtUrl(id,'tool-card','thumbnail')).toBeUndefined();
+  expect(goodsArtUrl('U99','item-card','thumbnail')).toBeUndefined();expect(goodsArtUrl('U01','tool-card','thumbnail')).toBeUndefined();
+  expect(()=>itemInfo('U99')).toThrow('unknown-r2-item: U99');
+  const copy:Record<string,string[]>= {U01:['下一场','手牌上限','当前场不补手牌'],U02:['下一场','弃牌次数','当前场次数不增加'],U03:['下一场','出牌次数','当前场次数不变'],U04:['利息上限','不会直接赠送金币'],U05:['唐宋牌货位','当前已生成货架不补货'],U06:['付费刷新价格','免费刷新照常免费'],U08:['删至16张','不能因此删光手牌','玻璃牌破碎'],U09:['本章使用最多','升1级','已到30级则跳过、不重选'],U10:['第一次成功购买价格−1金','至少1金','自身这次购买不享受自身优惠','取消与失败不占用首购资格'],U11:['长期道具货位1→2','当前货架不补货','刷新也不重抽'],U12:['每章首次普通场','金币+3','未持有时也如此','之后购买不追补']};
+  for(const [id,parts] of Object.entries(copy))for(const part of parts)expect.soft(itemInfo(id).description).toContain(part);
+});

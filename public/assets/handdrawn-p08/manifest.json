@@ -1,0 +1,2628 @@
+{
+  "schemaVersion": 2,
+  "originalArtworkCount": 75,
+  "runtimeFileCount": 147,
+  "runtimeBytes": 9701766,
+  "sourceCommit": "c618cee93089bb2e556f16567709b0ea23abbcb9",
+  "assets": [
+    {
+      "id": "j",
+      "category": "court",
+      "outputs": [
+        {
+          "purpose": "court",
+          "path": "court/j.court.webp",
+          "width": 256,
+          "height": 384,
+          "bytes": 23858,
+          "sha256": "1159aa69ae9141e59a9e7120af31d7dfccdf981008428c85938b41f54e9c9264"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "928e1161e6fd1976057df927e24b172058575021",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261004/manifest.json",
+        "sourceManifestSHA256": "b1b2ee8edcd15b8b326c27961c42ffa62c10fce38f88733cfc28c6f6dda6bea6",
+        "status": "derivatives-only",
+        "missingEvidence": "original bytes and per-original filename/SHA256 binding"
+      }
+    },
+    {
+      "id": "q",
+      "category": "court",
+      "outputs": [
+        {
+          "purpose": "court",
+          "path": "court/q.court.webp",
+          "width": 256,
+          "height": 384,
+          "bytes": 23292,
+          "sha256": "54d581a71ea19f50db92c31a404482e494643d4700d6164db50075ee205b9efe"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "928e1161e6fd1976057df927e24b172058575021",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261004/manifest.json",
+        "sourceManifestSHA256": "b1b2ee8edcd15b8b326c27961c42ffa62c10fce38f88733cfc28c6f6dda6bea6",
+        "status": "derivatives-only",
+        "missingEvidence": "original bytes and per-original filename/SHA256 binding"
+      }
+    },
+    {
+      "id": "k",
+      "category": "court",
+      "outputs": [
+        {
+          "purpose": "court",
+          "path": "court/k.court.webp",
+          "width": 256,
+          "height": 384,
+          "bytes": 24632,
+          "sha256": "be013d9df76e76dc67cd502f48c0177cfe62595d044ceebfa180e707c1105116"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "928e1161e6fd1976057df927e24b172058575021",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261004/manifest.json",
+        "sourceManifestSHA256": "b1b2ee8edcd15b8b326c27961c42ffa62c10fce38f88733cfc28c6f6dda6bea6",
+        "status": "derivatives-only",
+        "missingEvidence": "original bytes and per-original filename/SHA256 binding"
+      }
+    },
+    {
+      "id": "f04",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/f04.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 8416,
+          "sha256": "a0731ba1602828e6fff44aa73e13e173ddd9fb370c696555f9c050cf979e58c8"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/f04.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 149642,
+          "sha256": "b264d2da422d0af4adcfe0a83877e1c00ec374bef484538c1d381ead09f28932"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "928e1161e6fd1976057df927e24b172058575021",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004/manifest.json",
+          "sourceManifestSHA256": "b1b2ee8edcd15b8b326c27961c42ffa62c10fce38f88733cfc28c6f6dda6bea6"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "e07",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/e07.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 8638,
+          "sha256": "e1b9fc96cafafbd1e2a6f2a35932126cb9c7885c29dd63445b89e4eb41226e78"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/e07.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 173998,
+          "sha256": "4d40aeee6955048147869b0a48acdd7104546778b7234e622e4145ae6566bb2e"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "928e1161e6fd1976057df927e24b172058575021",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004/manifest.json",
+          "sourceManifestSHA256": "b1b2ee8edcd15b8b326c27961c42ffa62c10fce38f88733cfc28c6f6dda6bea6"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "f09",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/f09.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 8586,
+          "sha256": "8fe7c102ec66af76f9d0a092d1a92eb3be8d3978fdf3aa1bddee4da5379a886d"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/f09.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 163216,
+          "sha256": "5a162c59c8b0689e509ba67cb62e05069a9d9206c41015ea776d5782aa38fca6"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "928e1161e6fd1976057df927e24b172058575021",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004/manifest.json",
+          "sourceManifestSHA256": "b1b2ee8edcd15b8b326c27961c42ffa62c10fce38f88733cfc28c6f6dda6bea6"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "f07",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/f07.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 8916,
+          "sha256": "4d939ba8701426b45d6bf7f4f39aea8199b8428f1b84df27142bcf1dfa9951e7"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/f07.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 156240,
+          "sha256": "9cfc3b182cd55f7aad3bcb96c9bc36eafe06b4b140d272c18dd8b4110a19d4e6"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "928e1161e6fd1976057df927e24b172058575021",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004/manifest.json",
+          "sourceManifestSHA256": "b1b2ee8edcd15b8b326c27961c42ffa62c10fce38f88733cfc28c6f6dda6bea6"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "d07",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/d07.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 7414,
+          "sha256": "a4dcf9c680756e3aafb18ff8bf39b3eaae3a1e984bca28bf1064534d02889827"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/d07.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 129754,
+          "sha256": "76e47c9acff39e7ef3a0d0086e7cc5b42a15dc2e816039759bead46dfe6a92d2"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "928e1161e6fd1976057df927e24b172058575021",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004/manifest.json",
+          "sourceManifestSHA256": "b1b2ee8edcd15b8b326c27961c42ffa62c10fce38f88733cfc28c6f6dda6bea6"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "a07",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/a07.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 7252,
+          "sha256": "d4f85f109d1fa2317ac9ce7ff33152f3cab6ee6cb63bbeada271b0d03ca0636d"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/a07.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 148344,
+          "sha256": "5dd313ea80a296bb9850feaa75ca0a67c3949eb1137c7e072f0ba0fe72f3a5ac"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "928e1161e6fd1976057df927e24b172058575021",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004/manifest.json",
+          "sourceManifestSHA256": "b1b2ee8edcd15b8b326c27961c42ffa62c10fce38f88733cfc28c6f6dda6bea6"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "a08",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/a08.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 6880,
+          "sha256": "e5c5cc6d8f1e3664751ab661c3e7109cb9783e89b6b2c9051aae0eb19056f915"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/a08.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 122154,
+          "sha256": "90edce2857a7496a770610b13635a50402149aa31ce676a263d2e5dc0aa04145"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "928e1161e6fd1976057df927e24b172058575021",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004/manifest.json",
+          "sourceManifestSHA256": "b1b2ee8edcd15b8b326c27961c42ffa62c10fce38f88733cfc28c6f6dda6bea6"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "c03",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/c03.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 6642,
+          "sha256": "45b03b2ede120cb437f89b8a3817e80837f7e7b05a546be0d5476e0b7f60d43c"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/c03.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 71334,
+          "sha256": "44d84c04646be2ff972d543286c6662e7e0233161559fd03d8683072805fbc39"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "928e1161e6fd1976057df927e24b172058575021",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004/manifest.json",
+          "sourceManifestSHA256": "b1b2ee8edcd15b8b326c27961c42ffa62c10fce38f88733cfc28c6f6dda6bea6"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "d02",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/d02.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 8346,
+          "sha256": "3d99d1c4b535bfea0ff24f3ad3c33293117f084c5a5ca9a069a4ac125355a628"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/d02.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 139760,
+          "sha256": "f3cce3788a17744c0a473c1422241812269f1f0f08b7402cd88007d0619fa068"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "928e1161e6fd1976057df927e24b172058575021",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004/manifest.json",
+          "sourceManifestSHA256": "b1b2ee8edcd15b8b326c27961c42ffa62c10fce38f88733cfc28c6f6dda6bea6"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "e02",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/e02.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 8226,
+          "sha256": "decef4e1e8ec590fc9d62810dfb3bbc58cdbd0cde1f81712ab01011e19c311ac"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/e02.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 132890,
+          "sha256": "47f454580580bf1f1d9b7322fc15a11e37532a177156482919a6b4760a1abd9a"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "928e1161e6fd1976057df927e24b172058575021",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004/manifest.json",
+          "sourceManifestSHA256": "b1b2ee8edcd15b8b326c27961c42ffa62c10fce38f88733cfc28c6f6dda6bea6"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "e09",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/e09.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 8542,
+          "sha256": "a352220a25203cad0088b6a40527116ef87746d1e09e1d26a6430d1c42aa9fca"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/e09.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 160322,
+          "sha256": "21b1a856dd1fcb5448de5e6883644377896e8d9277471d510dfa60fbddba0b62"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "928e1161e6fd1976057df927e24b172058575021",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004/manifest.json",
+          "sourceManifestSHA256": "b1b2ee8edcd15b8b326c27961c42ffa62c10fce38f88733cfc28c6f6dda6bea6"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "tiesuanpan",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/tiesuanpan.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 7284,
+          "sha256": "fd0df1d8d503e0d2b5faf48d7e4a0d3893b2e55026bfbae2bf2be800e9dcd934"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/tiesuanpan.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 147102,
+          "sha256": "fc7bc2fa1131cdbe938443611e0c3946b33d6d7fda43b886137706167d27127f"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "3284505ad86e4e216343aa873719d20524f9a4ce",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b2/manifest.json",
+          "sourceManifestSHA256": "c00c8942d75e023da38930d95be9492ce63b55342f2633031662d9217403deeb"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "f10",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/f10.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 8076,
+          "sha256": "6b1bee0f86439e7b848e50d6996ccbdbf054ba294d5abf0a53b58e5c3fdcbc91"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/f10.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 145566,
+          "sha256": "acc2c94d036a14c44af6e69c9944557ac6596ab283b5665676618bee128416e2"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "3284505ad86e4e216343aa873719d20524f9a4ce",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b2/manifest.json",
+          "sourceManifestSHA256": "c00c8942d75e023da38930d95be9492ce63b55342f2633031662d9217403deeb"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "c08",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/c08.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 5034,
+          "sha256": "f0ab880f7712cfc1ec3a6f8cc77de2c439150c66dc258760e1d4b34c7769295c"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/c08.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 57112,
+          "sha256": "7028100b6469855a96b953e1f7c40670cbef91145ee771f8279fe84b8d5792a7"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "b0394efd921fc05d936ea3519d2b401a1cba9abd",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b3/manifest.json",
+          "sourceManifestSHA256": "b39553ee11e7f774952d79f8fd10f149e429fb0fd0636a1f61cd7155ebf96bd8"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "c09",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/c09.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 6488,
+          "sha256": "a3852ce26308218b7cbf802a23f6c98c28036b8c8052cd8ac53992b4999c46f0"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/c09.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 96814,
+          "sha256": "224e0bec6a09dce091191ceb4dc618631f6efdea68d2063accaa4629b270bd3f"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "b0394efd921fc05d936ea3519d2b401a1cba9abd",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b3/manifest.json",
+          "sourceManifestSHA256": "b39553ee11e7f774952d79f8fd10f149e429fb0fd0636a1f61cd7155ebf96bd8"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "pengci",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 8082,
+          "sha256": "97d6cf9c9207601127e936d234ac92a24b47a4311c929059d37f58ec341ed290",
+          "purpose": "thumbnail",
+          "path": "cards/pengci.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 157184,
+          "sha256": "44a2e648c917ce159b48501a17f99cd7e202783eceb21fd4a11e384595c44206",
+          "purpose": "detail",
+          "path": "cards/pengci.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "41e78e1eac85920cede9ed867e4dabb8bba4f5c4",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b4/manifest.json",
+          "sourceManifestSHA256": "48952177fc4e41787236e551c8ab8c100403565886178f9739c719d678c8dee3"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "mantangcai",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 7348,
+          "sha256": "21f74c3eb5c9bf5d7c0f2c73c2e2dffbd4426b541bff5bcac4e628afc272fced",
+          "purpose": "thumbnail",
+          "path": "cards/mantangcai.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 87298,
+          "sha256": "a9daab0b3e27031886cf46e36f22d6fc75b3b8b64ae3a1f8fba7c439f5fd24ed",
+          "purpose": "detail",
+          "path": "cards/mantangcai.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "41e78e1eac85920cede9ed867e4dabb8bba4f5c4",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b4/manifest.json",
+          "sourceManifestSHA256": "48952177fc4e41787236e551c8ab8c100403565886178f9739c719d678c8dee3"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "huimaqiang",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 8476,
+          "sha256": "4628953d8a3ac4800a6975ea8ccf81b9ccf75c7cb8e7e8ae806ffeda7339c8e2",
+          "purpose": "thumbnail",
+          "path": "cards/huimaqiang.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 161066,
+          "sha256": "ad16fa92ff4890718756eaa19a9707f29e7185c4ce18628cdce27f1acb97e341",
+          "purpose": "detail",
+          "path": "cards/huimaqiang.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "41e78e1eac85920cede9ed867e4dabb8bba4f5c4",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b4/manifest.json",
+          "sourceManifestSHA256": "48952177fc4e41787236e551c8ab8c100403565886178f9739c719d678c8dee3"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "jiedongfeng",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 5566,
+          "sha256": "4324a56d639e4f59cd190662940195a94c51cea359b1dddc4383c17aac1a3fbf",
+          "purpose": "thumbnail",
+          "path": "cards/jiedongfeng.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 61656,
+          "sha256": "508c5941ae052ad454e90a1716a14cca87d315ddb68a83cd11de6561c787f0ee",
+          "purpose": "detail",
+          "path": "cards/jiedongfeng.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "41e78e1eac85920cede9ed867e4dabb8bba4f5c4",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b4/manifest.json",
+          "sourceManifestSHA256": "48952177fc4e41787236e551c8ab8c100403565886178f9739c719d678c8dee3"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "b07",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 7180,
+          "sha256": "94f5d2bf7554c38bded636e830e5985972913b83608a9b5a5240e59a9b8168a6",
+          "purpose": "thumbnail",
+          "path": "cards/b07.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 91142,
+          "sha256": "71aefec758d45345c4f2c998b3834ad4e6a087fbc0fadd692b0b71b8b54e7c2e",
+          "purpose": "detail",
+          "path": "cards/b07.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "1671376cde093f1450e07564815468dafbfe070a",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b5/manifest.json",
+          "sourceManifestSHA256": "4bb440cbafa6b2c42a460550d4165a4cc483b9234c2d889311b753e8733cdd28"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "a09",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 8188,
+          "sha256": "8ddd8a7f58a35c6bb3b3060de68d12a9c3cad940f1c26ae10804d366d3577728",
+          "purpose": "thumbnail",
+          "path": "cards/a09.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 155824,
+          "sha256": "2dc4a53be683ebe59cbc5f0c78a64698105bd6a9aa298daca40f3c9436d89431",
+          "purpose": "detail",
+          "path": "cards/a09.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "1671376cde093f1450e07564815468dafbfe070a",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b5/manifest.json",
+          "sourceManifestSHA256": "4bb440cbafa6b2c42a460550d4165a4cc483b9234c2d889311b753e8733cdd28"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "d06",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 7278,
+          "sha256": "60894c7ae4698af200faf626ce761a2daeb428e995c492377ea03a2b93d3c456",
+          "purpose": "thumbnail",
+          "path": "cards/d06.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 137904,
+          "sha256": "00ea45bd19cf636d694f9158cbea00cd4824f6574a88024af417db0be96f79f8",
+          "purpose": "detail",
+          "path": "cards/d06.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "1671376cde093f1450e07564815468dafbfe070a",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b5/manifest.json",
+          "sourceManifestSHA256": "4bb440cbafa6b2c42a460550d4165a4cc483b9234c2d889311b753e8733cdd28"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "a04",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 7674,
+          "sha256": "ad0b673f36de7b5c992e03bb908bcec57a47672b47e8e8730936af3680062dfa",
+          "purpose": "thumbnail",
+          "path": "cards/a04.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 156056,
+          "sha256": "e842ae37f476918fc86a34e61eeb8b3bddcf7c28470adb0ef3f0d21c570e816f",
+          "purpose": "detail",
+          "path": "cards/a04.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "1671376cde093f1450e07564815468dafbfe070a",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b5/manifest.json",
+          "sourceManifestSHA256": "4bb440cbafa6b2c42a460550d4165a4cc483b9234c2d889311b753e8733cdd28"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "e04",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 8838,
+          "sha256": "5aeb4363d85502783a5d383cc74c1d32a5130eca69aa49637676b1ecb7fa6155",
+          "purpose": "thumbnail",
+          "path": "cards/e04.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 176792,
+          "sha256": "16154fcb4aa4bca35509e7bac783ef74c6bcc38c2c830cde7ecae321b2ce176b",
+          "purpose": "detail",
+          "path": "cards/e04.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "1671376cde093f1450e07564815468dafbfe070a",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b5/manifest.json",
+          "sourceManifestSHA256": "4bb440cbafa6b2c42a460550d4165a4cc483b9234c2d889311b753e8733cdd28"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "c05",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 7014,
+          "sha256": "62415f348f42c404aafd328dc91234457c2bd462a14ac77ff00dc0a9f91aad92",
+          "purpose": "thumbnail",
+          "path": "cards/c05.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 89498,
+          "sha256": "43d01720fcf8d9e872f113fc8a7f0a6bd8638048f658b0077d843865f9a3fde2",
+          "purpose": "detail",
+          "path": "cards/c05.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "1671376cde093f1450e07564815468dafbfe070a",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b5/manifest.json",
+          "sourceManifestSHA256": "4bb440cbafa6b2c42a460550d4165a4cc483b9234c2d889311b753e8733cdd28"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "c02",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 5684,
+          "sha256": "930fdfbb3e67e58037ef33a1f9e0d7d42b61d119dd91d51500a6da3cc0f0e8e0",
+          "purpose": "thumbnail",
+          "path": "cards/c02.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 83162,
+          "sha256": "634aa197d97b238679d907aaa0f98f63bc5e6071033b2c84adcbb8555834e472",
+          "purpose": "detail",
+          "path": "cards/c02.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "1671376cde093f1450e07564815468dafbfe070a",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b5/manifest.json",
+          "sourceManifestSHA256": "4bb440cbafa6b2c42a460550d4165a4cc483b9234c2d889311b753e8733cdd28"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "f03",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 8906,
+          "sha256": "5e4dd1ca2b9a02a459656d4cdad9797ab097d9dae9433f3a54a5e119ecc044eb",
+          "purpose": "thumbnail",
+          "path": "cards/f03.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 165328,
+          "sha256": "ed8c934fbf4e8335665e47ebf348f16e5144faf7b86272ddeb179534bdac00d7",
+          "purpose": "detail",
+          "path": "cards/f03.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "1671376cde093f1450e07564815468dafbfe070a",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b5/manifest.json",
+          "sourceManifestSHA256": "4bb440cbafa6b2c42a460550d4165a4cc483b9234c2d889311b753e8733cdd28"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "a03",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 6764,
+          "sha256": "0cac2fb555decd38a03e587e068c7b3e0180ef1a2be7560b3400dde588c8afc2",
+          "purpose": "thumbnail",
+          "path": "cards/a03.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 133074,
+          "sha256": "e3514e85e5d3141421cd43ed9f7948eaa00d1e533a5092ca2b2b90adf8792bc9",
+          "purpose": "detail",
+          "path": "cards/a03.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "421dbf9f7a1a09ca81f275ad8c32eafac4b14db5",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b6/manifest.json",
+          "sourceManifestSHA256": "1475afe4928e9d6b092930a5b5a3b9628df26c0f9655b2da20e9780a6bd05581"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "b02",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 5126,
+          "sha256": "48f776f675669ce9799a3fea27968f4d6ed6dd97921816ee04b3d3b7d8b5d999",
+          "purpose": "thumbnail",
+          "path": "cards/b02.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 69014,
+          "sha256": "edb103560a9f997e172b66c53ba5e2b41eab644b3d52b8c97c6171774092e173",
+          "purpose": "detail",
+          "path": "cards/b02.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "421dbf9f7a1a09ca81f275ad8c32eafac4b14db5",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b6/manifest.json",
+          "sourceManifestSHA256": "1475afe4928e9d6b092930a5b5a3b9628df26c0f9655b2da20e9780a6bd05581"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "b04",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 7394,
+          "sha256": "ad084a418b3159991241b34d490b58476369f1f86b739470cb5afc273892d557",
+          "purpose": "thumbnail",
+          "path": "cards/b04.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 94764,
+          "sha256": "cdcb1f0eb87346e6acb25fb2b5ff8204ca75b2f8ceb541a72d34bcf154802d48",
+          "purpose": "detail",
+          "path": "cards/b04.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "421dbf9f7a1a09ca81f275ad8c32eafac4b14db5",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b6/manifest.json",
+          "sourceManifestSHA256": "1475afe4928e9d6b092930a5b5a3b9628df26c0f9655b2da20e9780a6bd05581"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "c04",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 5972,
+          "sha256": "46520616a3c822e3ac5466e5c91d3e46b342b55668f7250403c1a08ace12e9b0",
+          "purpose": "thumbnail",
+          "path": "cards/c04.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 100390,
+          "sha256": "767aa10bbbaf1caed326a2346901bb337cb67f5bf29187e77d109b6c888243ac",
+          "purpose": "detail",
+          "path": "cards/c04.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "421dbf9f7a1a09ca81f275ad8c32eafac4b14db5",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b6/manifest.json",
+          "sourceManifestSHA256": "1475afe4928e9d6b092930a5b5a3b9628df26c0f9655b2da20e9780a6bd05581"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "d01",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 8226,
+          "sha256": "04c0f7a5236f83fc5af1df070fd62ec2fafb0cb0b9a42c9183ea5fc541704f2c",
+          "purpose": "thumbnail",
+          "path": "cards/d01.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 150134,
+          "sha256": "76b666ae1c34485e31d79b336185ede698a40e0f8f62e1b27e35da386b9390f5",
+          "purpose": "detail",
+          "path": "cards/d01.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "421dbf9f7a1a09ca81f275ad8c32eafac4b14db5",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b6/manifest.json",
+          "sourceManifestSHA256": "1475afe4928e9d6b092930a5b5a3b9628df26c0f9655b2da20e9780a6bd05581"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "f02",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 8064,
+          "sha256": "0fb8fe262a587941016327c5efa91b0eba30903d2e6e4022dcee3aec9697fd59",
+          "purpose": "thumbnail",
+          "path": "cards/f02.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 154252,
+          "sha256": "cf4498b4891eec5b598324a4e04edc14706606373c86ed6c833376dbaca390b3",
+          "purpose": "detail",
+          "path": "cards/f02.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "421dbf9f7a1a09ca81f275ad8c32eafac4b14db5",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b6/manifest.json",
+          "sourceManifestSHA256": "1475afe4928e9d6b092930a5b5a3b9628df26c0f9655b2da20e9780a6bd05581"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "d10",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 7626,
+          "sha256": "8537d79199ece3b826916a1d9dafb0666af4fa27ae26868896e91f3075b98278",
+          "purpose": "thumbnail",
+          "path": "cards/d10.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 132470,
+          "sha256": "5d418e8d7806dc02e7069fcc02684dec714438d3d534c8c38b7ea6636ec11c4a",
+          "purpose": "detail",
+          "path": "cards/d10.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "421dbf9f7a1a09ca81f275ad8c32eafac4b14db5",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b6/manifest.json",
+          "sourceManifestSHA256": "1475afe4928e9d6b092930a5b5a3b9628df26c0f9655b2da20e9780a6bd05581"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "e01",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 9036,
+          "sha256": "1758a1fc2a8b0f60e0330399591e4a8e1ac7d074281c1e1ef376c9ac11664306",
+          "purpose": "thumbnail",
+          "path": "cards/e01.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 164274,
+          "sha256": "1bfa980319708553064227499a9b43da2c44c7766af00ce68de097f21155c287",
+          "purpose": "detail",
+          "path": "cards/e01.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "421dbf9f7a1a09ca81f275ad8c32eafac4b14db5",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b6/manifest.json",
+          "sourceManifestSHA256": "1475afe4928e9d6b092930a5b5a3b9628df26c0f9655b2da20e9780a6bd05581"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "b05",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/b05-v3-ee1848ebb107.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 7960,
+          "sha256": "ee1848ebb107e505ada50db8484a9ab6967d7716687b8cb8a3e11daefecf1604"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/b05-v3-808bf2fbfd26.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 136794,
+          "sha256": "808bf2fbfd262662b2c678e3dfec1ae5d3fb511325f5d62bcef0be50336a3ec7"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "b67200e4a6a89d71a2e0d33ec18d36a1a446d5fb",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b7/manifest.json",
+          "sourceManifestSHA256": "5a1ccfadd3bb887f3448296082f70cb347d095eed563f848dbb9d0a6b2b35135"
+        },
+        {
+          "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+          "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+          "status": "source-verified",
+          "outputsRoot": "public/assets/handdrawn-p08",
+          "outputsCommit": "c4525b2c2faf77ad2df0b5486e0ea64276856d04"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "70340cc590a22882948490e6276808b9d12cca70",
+        "sourceManifestPath": "art/sources/fengmingchaoyang-art-20261017/manifest.json",
+        "sourceManifestSHA256": "76459e0c50e2ba0763b7b5bdf81b71e00ca8de2c382406a28879983aed8d9e18",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "b10",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 4272,
+          "sha256": "b9e309650a34c0ef18dcfd5e56ad8847826b3bd08249716bcdb47ed07473de38",
+          "purpose": "thumbnail",
+          "path": "cards/b10.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 49552,
+          "sha256": "27806f0c4b3450d64b10c9a41d8c6fb30c94bcbf03eceacb0ea69dd68695270d",
+          "purpose": "detail",
+          "path": "cards/b10.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "b67200e4a6a89d71a2e0d33ec18d36a1a446d5fb",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b7/manifest.json",
+          "sourceManifestSHA256": "5a1ccfadd3bb887f3448296082f70cb347d095eed563f848dbb9d0a6b2b35135"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "b08",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 6872,
+          "sha256": "df9bce25ca19e9f45478595a7d927afe2b7592d9a4ffe4ccd0e279a55cdb21d5",
+          "purpose": "thumbnail",
+          "path": "cards/b08.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 71440,
+          "sha256": "877382f9f623b44b14f8408f86906d80e174d282c9699bcc7cbfe08e87f7d9f9",
+          "purpose": "detail",
+          "path": "cards/b08.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "b67200e4a6a89d71a2e0d33ec18d36a1a446d5fb",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b7/manifest.json",
+          "sourceManifestSHA256": "5a1ccfadd3bb887f3448296082f70cb347d095eed563f848dbb9d0a6b2b35135"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "d05",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 7844,
+          "sha256": "a4eea8cc2234407cb411f213a784170fc479e2deb37122e6d13f2be848f9ec30",
+          "purpose": "thumbnail",
+          "path": "cards/d05.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 146824,
+          "sha256": "f208bee87ec6bf291fe5d7bb09b22bcea7424d855162c1927e1b8ffd727deec6",
+          "purpose": "detail",
+          "path": "cards/d05.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "b67200e4a6a89d71a2e0d33ec18d36a1a446d5fb",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b7/manifest.json",
+          "sourceManifestSHA256": "5a1ccfadd3bb887f3448296082f70cb347d095eed563f848dbb9d0a6b2b35135"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "e03",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 8436,
+          "sha256": "a345b46e905cf1beeb4d3a42f0029a2c7084d5177a3f1aeed0747710b3470494",
+          "purpose": "thumbnail",
+          "path": "cards/e03.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 171208,
+          "sha256": "5a125b4c7b26ed6091c1341bcc693b9d27c5be4e2dbe61af37ae0b18da4d896e",
+          "purpose": "detail",
+          "path": "cards/e03.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "b67200e4a6a89d71a2e0d33ec18d36a1a446d5fb",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b7/manifest.json",
+          "sourceManifestSHA256": "5a1ccfadd3bb887f3448296082f70cb347d095eed563f848dbb9d0a6b2b35135"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "e06",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 9226,
+          "sha256": "bdecf3239847a5c8044e352f55b08a72740a5a887da07ab375ba632bf7cef50f",
+          "purpose": "thumbnail",
+          "path": "cards/e06.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 169636,
+          "sha256": "0f5656f1f42ae3a5a16b33d7a3ebd4051667622ad81687741eac5b7c2132f935",
+          "purpose": "detail",
+          "path": "cards/e06.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "b67200e4a6a89d71a2e0d33ec18d36a1a446d5fb",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b7/manifest.json",
+          "sourceManifestSHA256": "5a1ccfadd3bb887f3448296082f70cb347d095eed563f848dbb9d0a6b2b35135"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "f05",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 8156,
+          "sha256": "c395b74c05cb896be5afa28967761ff746393420870bec2f15fb50da8ffe805e",
+          "purpose": "thumbnail",
+          "path": "cards/f05.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 148948,
+          "sha256": "3881219f1870140f39df32d8e14ee1473fcffa9dd68acdadec7afa61639bfb7c",
+          "purpose": "detail",
+          "path": "cards/f05.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "b67200e4a6a89d71a2e0d33ec18d36a1a446d5fb",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b7/manifest.json",
+          "sourceManifestSHA256": "5a1ccfadd3bb887f3448296082f70cb347d095eed563f848dbb9d0a6b2b35135"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "f11",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 8184,
+          "sha256": "6588ba0ce1d94300094ba4c583f6e70b2471a4a4d9702bd2d0c38b674817cdcc",
+          "purpose": "thumbnail",
+          "path": "cards/f11.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 152164,
+          "sha256": "9e1c9e49b5833d203009ed0291a895e02fa31f880dee64a72f7919280d101776",
+          "purpose": "detail",
+          "path": "cards/f11.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "b67200e4a6a89d71a2e0d33ec18d36a1a446d5fb",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b7/manifest.json",
+          "sourceManifestSHA256": "5a1ccfadd3bb887f3448296082f70cb347d095eed563f848dbb9d0a6b2b35135"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "b06",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 5224,
+          "sha256": "61796bfceffb0c787496b6d55525fbab292a5792a99317cb985e404605cf4c5b",
+          "purpose": "thumbnail",
+          "path": "cards/b06.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 62348,
+          "sha256": "5dc7b719e53df9cb8e4146445913ce270282cc4908976a24609e6904a7c28a25",
+          "purpose": "detail",
+          "path": "cards/b06.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "030508fb4dca8af276094dd5bc3eb6a9774d8375",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b8/manifest.json",
+          "sourceManifestSHA256": "17dfd191b0300201b563f14035fd95fd39700d2901a58e5a4af80d9764024605"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "a11",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 6878,
+          "sha256": "3717b4202b0163feb8bdb8f2a81cd5d1dd3c094413501480c4453bb48c4acbdf",
+          "purpose": "thumbnail",
+          "path": "cards/a11-v3-3717b4202b01.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 107666,
+          "sha256": "9a3c66b239fcdbee26aebeedeb9a86eccf6d6c294c3c566d02448f4003b4dbc9",
+          "purpose": "detail",
+          "path": "cards/a11-v3-9a3c66b239fc.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "cd11009db796c815c21de6ba165e3697632e7334",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-a11-fix-20261004/manifest.json",
+          "sourceManifestSHA256": "11f1d97c84841fba5f65535a298e08f25b5ceb3d99282ee1669dfc50fedece21"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "d04",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 8084,
+          "sha256": "562ab75739ffa9792c58e9ebf0d10c2bf893535b8d5150912397a7d7b501224c",
+          "purpose": "thumbnail",
+          "path": "cards/d04.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 135810,
+          "sha256": "9492923b3c17e070fbe186b33071f6c4797ff645ef9e23f61ad93e2fc85987a2",
+          "purpose": "detail",
+          "path": "cards/d04.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "030508fb4dca8af276094dd5bc3eb6a9774d8375",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b8/manifest.json",
+          "sourceManifestSHA256": "17dfd191b0300201b563f14035fd95fd39700d2901a58e5a4af80d9764024605"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "c07",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 7634,
+          "sha256": "d0b74544acbaf7e52cefc0cc9501b4afeaf766b6d46c61cfc2ad5273159bcde2",
+          "purpose": "thumbnail",
+          "path": "cards/c07.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 134960,
+          "sha256": "0b07396efca09f72927161acaa63f55bea0a326b3fe57f33871cd7e41786cbef",
+          "purpose": "detail",
+          "path": "cards/c07.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "030508fb4dca8af276094dd5bc3eb6a9774d8375",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b8/manifest.json",
+          "sourceManifestSHA256": "17dfd191b0300201b563f14035fd95fd39700d2901a58e5a4af80d9764024605"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "d11",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 8094,
+          "sha256": "d81348f79099c81070977b9144e301ae712d625dbc7aa0d3a71f1def39593ef2",
+          "purpose": "thumbnail",
+          "path": "cards/d11.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 142154,
+          "sha256": "bda60ce46cc8645688a2af28f57a3eb7f564e48dbed386fc8de2da3660ac86d0",
+          "purpose": "detail",
+          "path": "cards/d11.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "030508fb4dca8af276094dd5bc3eb6a9774d8375",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b8/manifest.json",
+          "sourceManifestSHA256": "17dfd191b0300201b563f14035fd95fd39700d2901a58e5a4af80d9764024605"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "d08",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 7282,
+          "sha256": "2c2e531e6f5e9f314dd3a121de593d08665eaa8dab8916220e54ed2b45d53ac1",
+          "purpose": "thumbnail",
+          "path": "cards/d08.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 138140,
+          "sha256": "a234ecf1613bde00dec95628684bdebd66c2dfec6ef0022f55bd13594eebeb7e",
+          "purpose": "detail",
+          "path": "cards/d08.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "030508fb4dca8af276094dd5bc3eb6a9774d8375",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b8/manifest.json",
+          "sourceManifestSHA256": "17dfd191b0300201b563f14035fd95fd39700d2901a58e5a4af80d9764024605"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "d09",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 7542,
+          "sha256": "9ceb4f4cfd847aecc48c31af0edf04aa26f8609b960c33a9a5a34f28b058f3b7",
+          "purpose": "thumbnail",
+          "path": "cards/d09.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 127148,
+          "sha256": "46cc4c6283ca54c0d4570756fe8d03a55c17a1137913384dbcb044aeae3c632c",
+          "purpose": "detail",
+          "path": "cards/d09.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "030508fb4dca8af276094dd5bc3eb6a9774d8375",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b8/manifest.json",
+          "sourceManifestSHA256": "17dfd191b0300201b563f14035fd95fd39700d2901a58e5a4af80d9764024605"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "b12",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "width": 128,
+          "height": 160,
+          "bytes": 4012,
+          "sha256": "fb817daa74e84e12e675446ee3f732d3253e954f15b6769a4abb2d9c666b0496",
+          "purpose": "thumbnail",
+          "path": "cards/b12.thumbnail.webp"
+        },
+        {
+          "width": 615,
+          "height": 768,
+          "bytes": 38158,
+          "sha256": "d7adef301b5b69759b21e6754be16020c0b4a34ec0d6fd858aacf764294e644b",
+          "purpose": "detail",
+          "path": "cards/b12.detail.webp"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "030508fb4dca8af276094dd5bc3eb6a9774d8375",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b8/manifest.json",
+          "sourceManifestSHA256": "17dfd191b0300201b563f14035fd95fd39700d2901a58e5a4af80d9764024605"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "a05",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/a05.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 7974,
+          "sha256": "770b8f59b204dbd5e5f95060e49e328d9ae2241e4f7fc1777893890d5639edc4"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/a05.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 167196,
+          "sha256": "370c9fa5f3d86e651c1be8014adc2f103363fef6bb9e427ecf6bc80f5332745f"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "1da558691621e8c3972b3d5bbdeaf16a9eba47fa",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b9/manifest.json",
+          "sourceManifestSHA256": "1a946005647ed895f386fc5398022979b2870f4d863ebe47308138d94e70d44b"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "b03",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/b03.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 4028,
+          "sha256": "82d7c7fc5868960ecc1a49058b5aa618b3649d1e3f32d645311556ec14d8bc2d"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/b03.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 42320,
+          "sha256": "bf6fa329b0084aaaf1b3e8c4f83f8284ae07f3f6d537608f01e82cb50c32561c"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "1da558691621e8c3972b3d5bbdeaf16a9eba47fa",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b9/manifest.json",
+          "sourceManifestSHA256": "1a946005647ed895f386fc5398022979b2870f4d863ebe47308138d94e70d44b"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "c06",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/c06-v3-45e28c8be0e9.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 8492,
+          "sha256": "45e28c8be0e9b99889849355026f8442c30a9e3662a761c7f1083165ed2a7493"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/c06-v3-2cac9ea20520.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 155372,
+          "sha256": "2cac9ea20520b03c13de76a42dbb55fb5229990e209ecda1975d3c192c55c07e"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "1da558691621e8c3972b3d5bbdeaf16a9eba47fa",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b9/manifest.json",
+          "sourceManifestSHA256": "1a946005647ed895f386fc5398022979b2870f4d863ebe47308138d94e70d44b"
+        },
+        {
+          "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+          "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+          "outputsRoot": "public/assets/handdrawn-p08",
+          "outputsCommit": "c4525b2c2faf77ad2df0b5486e0ea64276856d04"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "3897abbc80f71d760fa41a9a8330f9fb606e72ab",
+        "sourceManifestPath": "art/sources/qingchuyulan-art-20261017/manifest.json",
+        "sourceManifestSHA256": "a248d6f72527d6e60c2ab9e01d1ede2b3eaf57ae6be562988c75d2a4ae62d863",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "d03",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/d03.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 7166,
+          "sha256": "fc00dce977cd31868cf3ce44079c4735fc11da66c92ea51afa2609529f4da9f3"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/d03.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 127368,
+          "sha256": "3dc0bafd3017f3942ea3749e733e80bbbe276f5d64718bef1a5ae9865cc9bd26"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "1da558691621e8c3972b3d5bbdeaf16a9eba47fa",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b9/manifest.json",
+          "sourceManifestSHA256": "1a946005647ed895f386fc5398022979b2870f4d863ebe47308138d94e70d44b"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "a10",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/a10.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 7140,
+          "sha256": "299c52a86fb4b88e61156ccc9d2fe9a5e7f2b6e71744ed2c6a87a44011d49091"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/a10.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 142834,
+          "sha256": "512077a2820060c937d5f2d43ed0b17d3d237ac62874cfeca41031216af16b02"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "1da558691621e8c3972b3d5bbdeaf16a9eba47fa",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b9/manifest.json",
+          "sourceManifestSHA256": "1a946005647ed895f386fc5398022979b2870f4d863ebe47308138d94e70d44b"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "b11",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/b11.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 4364,
+          "sha256": "e63f487c41a8d8f8d1a39d749a4092d6a585cb1b3c593a2817710f212d18365e"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/b11.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 42492,
+          "sha256": "b74f5f15bacb8c1b613687500f89f762f1f4823c2a5035b482019309178a995d"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "1da558691621e8c3972b3d5bbdeaf16a9eba47fa",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b9/manifest.json",
+          "sourceManifestSHA256": "1a946005647ed895f386fc5398022979b2870f4d863ebe47308138d94e70d44b"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "c10",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/c10.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 6258,
+          "sha256": "6c1e0b712ee37a14c3e24e8babc106acdb584d0f07632e9d75bcbebc3a4151a5"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/c10.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 84294,
+          "sha256": "2b7c6b8d0421a37768c9c6c77d0837b49a48bb4adc582029624dd84e8c2447c7"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "1da558691621e8c3972b3d5bbdeaf16a9eba47fa",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b9/manifest.json",
+          "sourceManifestSHA256": "1a946005647ed895f386fc5398022979b2870f4d863ebe47308138d94e70d44b"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "d12",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/d12.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 6210,
+          "sha256": "d4588c63359e2d7edc5d60baf05baa8856d59f4bea0c83b8320f52f3ab227dda"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/d12.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 102824,
+          "sha256": "e91f51ccb3d5a2c80783f79dd06eeae37e66e6562cd6758af2f7be5fa0bfe5d0"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "1da558691621e8c3972b3d5bbdeaf16a9eba47fa",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b9/manifest.json",
+          "sourceManifestSHA256": "1a946005647ed895f386fc5398022979b2870f4d863ebe47308138d94e70d44b"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "a06",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/a06.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 8462,
+          "sha256": "bd41cd92c2c265457b96d6a2e3ca292b69f7acc396e1ac77e5b4fcf7276cfc55"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/a06.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 159112,
+          "sha256": "73ce3f67c8b76564c3f01a73e7550255007027c87dec63b52a146f8ad307e3e9"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "b7feb390c55ed8f930d22d4897641ba0c405128d",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b10/manifest.json",
+          "sourceManifestSHA256": "4e04bd389d3e2322b78b465822de815b4570ba4aeb30c472384e9a9ad67954b3"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "a12",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/a12.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 7866,
+          "sha256": "cd006bd689e81abf814dc6e193f96bfe8339bbedc4be2039d6c887e245a5b533"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/a12.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 156230,
+          "sha256": "cf75e80e8c93477ce797850182947861db7ad8bf5dedf8ba7e0287d5b5655728"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "b7feb390c55ed8f930d22d4897641ba0c405128d",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b10/manifest.json",
+          "sourceManifestSHA256": "4e04bd389d3e2322b78b465822de815b4570ba4aeb30c472384e9a9ad67954b3"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "b09",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/b09.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 5998,
+          "sha256": "b495ee426c1b4fb7fa22626c1fdf49372be55a11cee4751213ac72bfc812fcbf"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/b09.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 68666,
+          "sha256": "2ac0d6ee4441b930ef58a67f77e5960f29d5408cd5251f346f66fd22512ffb31"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "b7feb390c55ed8f930d22d4897641ba0c405128d",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b10/manifest.json",
+          "sourceManifestSHA256": "4e04bd389d3e2322b78b465822de815b4570ba4aeb30c472384e9a9ad67954b3"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "c11",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/c11.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 6070,
+          "sha256": "00b17d92bc4cb0e3247d14222dedc8d7b7ed87f46a35c84272d9ace244378ff0"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/c11.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 86652,
+          "sha256": "c227fc409f50ce80999193e73297c39ce40e35e2027a46ed95f60c9328c41362"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "b7feb390c55ed8f930d22d4897641ba0c405128d",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b10/manifest.json",
+          "sourceManifestSHA256": "4e04bd389d3e2322b78b465822de815b4570ba4aeb30c472384e9a9ad67954b3"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "c12",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/c12.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 7026,
+          "sha256": "be851572e93836a80dc7833b8a2dd9c75ad6866d24b1d6ad08967cc6f2b7a8bf"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/c12.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 116224,
+          "sha256": "1ce0d6eafa177bd9b96921a0196e3a3a3a713638ba433bc18f92880e1f6ae0d6"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "b7feb390c55ed8f930d22d4897641ba0c405128d",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b10/manifest.json",
+          "sourceManifestSHA256": "4e04bd389d3e2322b78b465822de815b4570ba4aeb30c472384e9a9ad67954b3"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "e10",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/e10.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 8222,
+          "sha256": "0bb3e6a3c285233f17f87f21ee5f93fdd35e686aab0c5f95dc5424e370841f82"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/e10.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 148306,
+          "sha256": "37e4062e508467c80e5654366bec6a3cd3b58f6c7e5f03bb11d969317f92300f"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "b7feb390c55ed8f930d22d4897641ba0c405128d",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b10/manifest.json",
+          "sourceManifestSHA256": "4e04bd389d3e2322b78b465822de815b4570ba4aeb30c472384e9a9ad67954b3"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "e12",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/e12.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 8308,
+          "sha256": "5b84843efa75c669ffe9e5e8a7e24314c9f82a7ad9e4ef4e95268ca5eacb90f0"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/e12.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 155458,
+          "sha256": "0a6a318e1424106a5ccc0750a0c4231c8e97967f1685f0d0c6f8f4ca3aaa9710"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "b7feb390c55ed8f930d22d4897641ba0c405128d",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b10/manifest.json",
+          "sourceManifestSHA256": "4e04bd389d3e2322b78b465822de815b4570ba4aeb30c472384e9a9ad67954b3"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "e05",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/e05.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 7646,
+          "sha256": "f745697986c6728db2616fc1b2035487cfa6aa77afd7724a8734fd06b0d2a612"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/e05.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 136284,
+          "sha256": "fc9c4d7cd3f8b0167e46c00e26679f58a0e58bce88e8f5dd2ead319daafcfce9"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "b7feb390c55ed8f930d22d4897641ba0c405128d",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b10/manifest.json",
+          "sourceManifestSHA256": "4e04bd389d3e2322b78b465822de815b4570ba4aeb30c472384e9a9ad67954b3"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "e08",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/e08.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 8430,
+          "sha256": "fa28ed699ad4745e53388e827718a3b87aa0cb81a54e129d0dc908b173e1f91b"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/e08.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 161444,
+          "sha256": "c26d372b34db3979c373a2f367386b55a171bd4b8c26bbdb09a9ed21d668ebee"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "a6dbecb0b0612777d7c960dd8de65c9a1c897acc",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b11/manifest.json",
+          "sourceManifestSHA256": "96bbfde09f6fe5502be949cd893d495097f40853959cdc3a2ddd99e888482119"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "e11",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/e11.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 8284,
+          "sha256": "49030096892c5440b820d67dce2d3767b1355f38a8253a027059f0fb7f8c86e2"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/e11.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 139702,
+          "sha256": "ae382a1f083d71d87c8d98cd1084fe13fb7a7f2b8a32dcf714e9c7d33592196e"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "a6dbecb0b0612777d7c960dd8de65c9a1c897acc",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b11/manifest.json",
+          "sourceManifestSHA256": "96bbfde09f6fe5502be949cd893d495097f40853959cdc3a2ddd99e888482119"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "f06",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/f06.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 8616,
+          "sha256": "ff1e1b9e6e23f17a6646272b36d0b3f39e4c58d61b9f1aa020bc2e0a377e5848"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/f06.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 162364,
+          "sha256": "e7e50765c5c97ce7c897bbb0ec2178ffacaff6c7978fb64b6260d4bcaf48580e"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "a6dbecb0b0612777d7c960dd8de65c9a1c897acc",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b11/manifest.json",
+          "sourceManifestSHA256": "96bbfde09f6fe5502be949cd893d495097f40853959cdc3a2ddd99e888482119"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "f08",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/f08.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 7904,
+          "sha256": "2ca6d66e1d26c55ed13ca302e1aa3933e31301f54230c4ed246936041898acff"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/f08.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 149124,
+          "sha256": "f2e8b321d3b51fe4bcff7483f11de522a05d229582247b5049fed726b9d0ae7f"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "a6dbecb0b0612777d7c960dd8de65c9a1c897acc",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b11/manifest.json",
+          "sourceManifestSHA256": "96bbfde09f6fe5502be949cd893d495097f40853959cdc3a2ddd99e888482119"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    },
+    {
+      "id": "f12",
+      "category": "functional-card",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/f12.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 7836,
+          "sha256": "39c5bbb6d41aa434bf65d7f3ee077f44e2d5b821362fc08082d22a92d712539f"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/f12.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 146056,
+          "sha256": "3e9eb4b6c36193a209457ff8136af3c8f2090333061d1826fc57117bbdba0e9d"
+        }
+      ],
+      "historicalSources": [
+        {
+          "receiptCommit": "a6dbecb0b0612777d7c960dd8de65c9a1c897acc",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b11/manifest.json",
+          "sourceManifestSHA256": "96bbfde09f6fe5502be949cd893d495097f40853959cdc3a2ddd99e888482119"
+        }
+      ],
+      "currentSource": {
+        "receiptCommit": "c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e",
+        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half2/manifest.json",
+        "sourceManifestSHA256": "854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891",
+        "status": "source-verified"
+      }
+    }
+  ],
+  "sourceCommits": [
+    "c618cee93089bb2e556f16567709b0ea23abbcb9",
+    "3284505ad86e4e216343aa873719d20524f9a4ce",
+    "b0394efd921fc05d936ea3519d2b401a1cba9abd",
+    "41e78e1eac85920cede9ed867e4dabb8bba4f5c4",
+    "1671376cde093f1450e07564815468dafbfe070a",
+    "421dbf9f7a1a09ca81f275ad8c32eafac4b14db5",
+    "b67200e4a6a89d71a2e0d33ec18d36a1a446d5fb",
+    "030508fb4dca8af276094dd5bc3eb6a9774d8375",
+    "1da558691621e8c3972b3d5bbdeaf16a9eba47fa",
+    "b7feb390c55ed8f930d22d4897641ba0c405128d",
+    "a6dbecb0b0612777d7c960dd8de65c9a1c897acc",
+    "cd11009db796c815c21de6ba165e3697632e7334"
+  ],
+  "provenancePolicy": {
+    "sourceCommitScope": "initial-delivery-only",
+    "sourceCommitsScope": "historical-deliveries-only",
+    "sourceManifestHashPolicy": "UTF-8 JSON.stringify(parsed, null, 2) plus LF",
+    "sourceVerified": "Original bytes match the referenced archived record. This is not authorship, licence or visual approval.",
+    "derivativesOnly": "Archived derivative hashes are verifiable; original bytes and per-original filename/SHA256 binding are unavailable in this archive."
+  }
+}

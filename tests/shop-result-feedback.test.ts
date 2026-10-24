@@ -1,0 +1,26 @@
+import{expect,it}from'vitest';import{ShopResultFeedback,shopResultBox,shopResultPages}from'../src/game/ShopResultFeedback';import{shopLayout,shopSummaryWrap}from'../src/game/ShopLayout';import{intersects}from'../src/game/layout';
+it('footer result avoids owned cards/items and every action through phone and short safe34',()=>{
+ for(const [width,height]of [[320,740],[390,740],[844,300]])for(const bottom of [0,12,34]){const p=shopLayout(width,height,12,bottom,3,true),b=shopResultBox(p,height,bottom);expect(b.y).toBeGreaterThanOrEqual(p.play.y+p.play.height+2);expect(b.y+b.height).toBeLessThanOrEqual(height-bottom);for(const t of [...p.slots,p.items,p.chapter,p.reroll,p.build,p.play])expect(intersects(b,t)).toBe(false);expect((b.width-12)*Math.floor((b.height-2)/18)).toBeGreaterThanOrEqual(284);}
+});
+it('complete source/clause pages do not truncate a number or create a forecast',()=>{const text='长期捧场 · 系数重置 ×1.4 → ×1 · 后续出牌生效',pages=shopResultPages(text,t=>t.length<=25);expect(pages).toEqual(['长期捧场 · 系数重置 ×1.4 → ×1','长期捧场 · 后续出牌生效']);expect(shopResultPages('物品 · 12345678901234567890123456789',t=>t.length<=25)).toEqual(['物品 · 完整结果见构筑详情']);});
+it('opaque reading hold, normal fade, reduced static and wall-clock expiry never restart on render',()=>{const f=new ShopResultFeedback();f.enqueue(4,[{name:'transaction/j',text:'已保存结果'}],1000);const a=f.snapshot(1000)!;expect(a.alpha).toBe(1);expect(f.snapshot(1900)?.startedAt).toBe(1000);expect(f.snapshot(3399)?.alpha).toBe(1);expect(f.snapshot(3500)?.alpha).toBe(.5);expect(f.snapshot(3500,true)?.alpha).toBe(1);expect(f.snapshot(3600,true)).toBeUndefined();expect(f.enqueue(4,[{name:'transaction/j',text:'已保存结果'}],3700)).toBe(false);expect(f.snapshot(5000)).toBeUndefined();});
+it('rapid saved reroll/sale/reroll preserves unread FIFO results and the current deadline',()=>{
+ const f=new ShopResultFeedback(),first={name:'transaction/e12',text:'淘旧摊 · 成长 +3 · 后续出牌生效'},sale=[{name:'transaction/e06',text:'旧物新用 · 成长 +0.5 · 后续出牌生效'},{name:'transaction/e11',text:'长期捧场 · 系数重置 ×1.4 → ×1 · 后续出牌生效'}];
+ f.enqueue(2,[first],0);const initial=f.snapshot(0)!;f.enqueue(3,sale,800);expect(f.snapshot(800)?.pending).toBe(2);f.enqueue(4,[first],1000);expect(f.snapshot(1000)?.pending).toBe(3);expect(f.snapshot(1000)?.startedAt).toBe(initial.startedAt);expect(f.snapshot(1000)?.endsAt).toBe(initial.endsAt);
+ const read=[];let at=0;for(let i=0;i<4;i++){const a=f.snapshot(at)!;read.push({name:a.name,text:a.text});at=a.endsAt;}expect(read).toEqual([first,...sale,first]);expect(f.snapshot(at)).toBeUndefined();
+ f.dispose();expect(f.snapshot(at+1000)).toBeUndefined();expect(f.enqueue(5,[first],at+1000)).toBe(false);
+});
+it('duplicate committed pages never replay across interleaved batches or after reading',()=>{
+ const f=new ShopResultFeedback(),a={name:'transaction/e11',text:'长期捧场 · 系数重置 ×1.4 → ×1'},b={name:'transaction/e11',text:'长期捧场 · 后续出牌生效'},next={name:'transaction/e12',text:'淘旧摊 · 成长 +3'};
+ expect(f.enqueue(2,[a,b],0)).toBe(true);const first=f.snapshot(0)!;f.enqueue(3,[next],800);expect(f.enqueue(2,[a,b],1000)).toBe(false);expect(f.snapshot(1000)?.pending).toBe(2);expect(f.snapshot(1000)?.endsAt).toBe(first.endsAt);
+ const second=f.snapshot(first.endsAt)!;expect(second.text).toBe(b.text);const third=f.snapshot(second.endsAt)!;expect(third.text).toBe(next.text);expect(f.snapshot(third.endsAt)).toBeUndefined();expect(f.enqueue(2,[a,b],third.endsAt+1)).toBe(false);expect(f.snapshot(third.endsAt+2)).toBeUndefined();
+});
+it('committed strings are copied without mutating the caller',()=>{const lines=[{name:'tool-use/a',text:'已用 塔罗 · 红桃染'}],before=structuredClone(lines),f=new ShopResultFeedback();f.enqueue(1,lines,0);f.snapshot(2000);expect(lines).toEqual(before);});
+
+it('portrait result keeps the complete saved source and numeric clause readable beside advice',()=>{
+ const text='长期捧场 · 系数重置 ×1.4 → ×1 · 后续出牌生效',p=shopLayout(320,740,12,34,3,true),box=shopResultBox(p,740,34),measure=(s:string)=>Array.from(s).length*14,wrap=(s:string)=>shopSummaryWrap(s,box.width-12,measure);
+ const pages=shopResultPages(text,s=>wrap(s).split('\n').length*18<=box.height-2);
+ expect(pages).toEqual(['长期捧场 · 系数重置 ×1.4 → ×1','长期捧场 · 后续出牌生效']);
+ for(const page of pages){const lines=wrap(page).split('\n');expect(lines).toHaveLength(2);expect(lines.every(s=>measure(s)<=box.width-12)).toBe(true);expect(lines.join('')).toBe(page);}
+ expect(wrap(pages[0])).toContain('×1.4');expect(wrap(pages[0])).not.toContain('…');
+});

@@ -1,0 +1,67 @@
+import {cardDisplayName} from '../src/game/tangsongCardNames';
+import {it,expect,beforeEach,afterEach,vi} from 'vitest';
+import {buildJourneyPlan,journeySend} from '../harness/fixtures/build-journey';
+import {r2Price} from '../src/domain/r2Shop';
+import {r2CreateJoker} from '../src/domain/r2Run';
+import {shopRouteAdvice,shopPurchaseCashFacts} from '../src/game/ShopRouteRelations';
+import {shopOfferGuidance} from '../src/game/ShopOfferGuidance';
+import {buildJourneyFacts,chooseBuildFocus} from '../src/game/BuildJourney';
+import {showBuildJourney} from '../src/game/BuildJourneyDialog';
+import type {DetailDialog} from '../src/game/DetailDialog';
+const shop=(ids:string[],gold=21)=>{const s=buildJourneyPlan(true);s.gold=gold;s.shop!.offers=ids.map((id,i)=>({offerId:'stock/'+i,definitionId:id,price:r2Price(id,'none',s),consumed:false}));s.shop!.toolOffers=[];s.shop!.itemOffers=[];return s;};
+const held=(s:ReturnType<typeof shop>,ids:string[])=>s.jokers=ids.map((id,i)=>r2CreateJoker(id,'held/'+i,8,undefined,s));
+beforeEach(()=>vi.stubGlobal('document',{querySelector:()=>null}));afterEach(()=>vi.unstubAllGlobals());
+it('strong saved group build declines weak generic half multiplier and keeps actual cash',()=>{const s=shop(['d07']);held(s,['b10','b03']);s.jokers[0].growth.heat={n:'40',d:'1'};s.jokers[1].growth.multiplier={n:'2',d:'1'};const before=JSON.stringify(s),a=shopRouteAdvice(s,'group');expect(a.headline).toBe('这轮不买，留21金');expect(a.items[0].reason).toContain('倍率成长 2');expect(a.items[0].reason).toContain('+0.5');expect(JSON.stringify(s)).toBe(before);});
+it('missing direct component is considered ahead of a generic card',()=>{const s=shop(['d07','b10']);const a=shopRouteAdvice(s,'group');expect(a.candidates.map(x=>x.offer.definitionId)).toEqual(['b10']);expect(a.headline).toContain((cardDisplayName('b10')));expect(a.reason).toContain('热度');});
+it('full protected build refuses to sacrifice saved growth for a new function',()=>{const s=shop(['b06']);held(s,['b10','b03','b08','e11','c08']);s.jokers[0].growth.heat={n:'40',d:'1'};s.jokers[1].growth.multiplier={n:'2',d:'1'};s.jokers[4].edition='foil';const a=shopRouteAdvice(s,'group');expect(a.candidates).toHaveLength(0);expect(a.items[0].reason).toContain('热度成长 40');expect(a.items[0].reason).toContain('槽位已满');});
+it('full build can suggest an uninvested off-route slot but exposes the exact lost source',()=>{const s=shop(['b06']);held(s,['b10','b03','b08','e01','c08']);const a=shopRouteAdvice(s,'group');expect(a.candidates[0].verdict).toBe('compare');expect(a.candidates[0].replaceId).toBe(s.jokers[4].instanceId);expect(a.candidates[0].loss).toContain((cardDisplayName('c08')));expect(a.candidates[0].loss).toContain('基础卖价4金');});
+it('insufficient money and empty actual shelf give actionable no-buy advice',()=>{const s=shop(['b10'],1);expect(shopRouteAdvice(s,'group').items[0].reason).toContain('还差3金');expect(shopRouteAdvice(s,'group').candidates).toHaveLength(0);s.shop!.offers=[];expect(shopRouteAdvice(s,'group').headline).toContain('留1金');});
+it('active route switch changes actual priorities without touching the run or hidden order',()=>{const s=shop(['b10','c08','c09']),before=JSON.stringify(s);expect(shopRouteAdvice(s,'group').candidates.map(i=>i.offer.definitionId)).toEqual(['b10']);expect(shopRouteAdvice(s,'straight').candidates.map(i=>i.offer.definitionId)).toEqual(['c08']);expect(shopRouteAdvice(s,'flush').candidates.map(i=>i.offer.definitionId)).toEqual(['c09']);const changed={...s,drawPile:[...s.drawPile].reverse(),rng:{...s.rng,state:123}};expect(shopRouteAdvice(changed,'group')).toEqual(shopRouteAdvice(s,'group'));expect(JSON.stringify(s)).toBe(before);});
+it('selected screen starts with no-buy conclusion, not repeated rules or interest table',()=>{const s=shop(['d07']);held(s,['b10','b03']);s.jokers[1].growth.multiplier={n:'2',d:'1'};chooseBuildFocus(s,'group');const open=vi.fn(),next=vi.fn();showBuildJourney({open} as unknown as DetailDialog,s,{tools:vi.fn(),tool:vi.fn(),source:vi.fn(),deck:vi.fn(),continue:next,continueLabel:'继续',ready:true});const [title,,actions,options]=open.mock.calls[0];expect(title).toContain('这轮怎么选');expect(options.summaryBody).toMatch(/^这轮不买，留21金/);expect(options.summaryBody).not.toContain('利息');expect(options.cards).toHaveLength(0);expect(actions.find((a:{label:string;primary?:boolean})=>a.primary)?.label).toBe('先留21金，进入牌桌');expect(next).not.toHaveBeenCalled();actions.find((a:{label:string})=>a.label.includes('查看全部')).run();expect(open.mock.calls[1][0]).toContain('培养路线');});
+it('route upgrades and suit conversion use real discovered types and held suit support',()=>{const s=shop([]);s.handLevels={'two-pair':1};s.shop!.toolOffers=[{offerId:'upgrade',definitionId:'T01',price:4,consumed:false}];expect(buildJourneyFacts(s,'group').decision.choices[0]?.id).toBe('upgrade');expect(buildJourneyFacts(s,'straight').decision.choices).toHaveLength(0);s.shop!.toolOffers=[{offerId:'dye',definitionId:'T05',price:4,consumed:false}];s.deckInstances=s.deckInstances.map((c,i)=>i<20?({...c,suit:'clubs'}):c);expect(buildJourneyFacts(s,'flush').decision.choices[0]?.id).toBe('dye');expect(buildJourneyFacts(s,'group').decision.choices).toHaveLength(0);s.deckInstances=s.deckInstances.map(c=>({...c,suit:'clubs'}));expect(buildJourneyFacts(s,'flush').decision.choices).toHaveLength(0);});
+
+it('spending cannot hide the current held gold-condition loss in a positive conclusion',()=>{const s=shop(['b10']);held(s,['e08']);const before=JSON.stringify(s),a=buildJourneyFacts(s,'group').decision;expect(a.choices).toHaveLength(0);expect(a.headline).toContain('这轮不买');expect(a.reason).toContain('21→17');expect(a.reason).toContain((cardDisplayName('e08')));expect(a.reason).toContain('20');expect(a.reason).toContain('1.8');expect(JSON.stringify(s)).toBe(before);s.gold=24;expect(shopRouteAdvice(s,'group').candidates).toHaveLength(1);s.gold=19;expect(shopRouteAdvice(s,'group').candidates).toHaveLength(1);});
+it('threshold protection uses actual discounted price and post-sale purchase cash',()=>{
+ const s=shop(['b10']);held(s,['e08']);s.purchaseCoupons=1;s.gold=22;
+ expect(shopRouteAdvice(s,'group').candidates).toHaveLength(1);
+ s.gold=21;expect(shopRouteAdvice(s,'group').items[0].reason).toContain('21→19');
+ s.purchaseCoupons=0;held(s,['e08','b03','b08','e01','c08']);
+ expect(shopRouteAdvice(s,'group').candidates[0].verdict).toBe('compare');
+ s.jokers[4].paidPrice=2;const before=JSON.stringify(s),advice=shopRouteAdvice(s,'group');
+ expect(advice.candidates).toHaveLength(0);expect(advice.items[0].replaceId).toBe(s.jokers[4].instanceId);
+ const sold=journeySend(s,{type:'SellJoker',instanceId:advice.items[0].replaceId!}),bought=journeySend(sold,{type:'BuyOffer',offerId:s.shop!.offers[0].offerId});
+ // The refund is already owned at the purchase baseline, not a purchase gain.
+ expect([s.gold,sold.gold,bought.gold]).toEqual([21,22,18]);
+ expect(advice.items[0].reason).toContain(`购款金币${sold.gold}→${bought.gold}`);
+ expect(advice.items[0].reason).not.toContain('21→18');expect(JSON.stringify(s)).toBe(before);
+});
+it('visible stars do not borrow an automatically proposed replacement cash basis',()=>{
+ const s=shop(['b10']);held(s,['e08','b03','b08','e01','c08']);chooseBuildFocus(s,'group');
+ const o=s.shop!.offers[0];expect(shopRouteAdvice(s,'group').items[0].verdict).toBe('compare');
+ expect(shopOfferGuidance(s,o)).toMatchObject({stars:4,operation:'需替换'});
+ s.jokers[4].paidPrice=2;const before=JSON.stringify(s),unspecified=shopOfferGuidance(s,o);
+ expect(shopPurchaseCashFacts(s,o)).toEqual({status:'needs-selection'});
+ expect(unspecified).toMatchObject({stars:4,operationShort:'需替换',replaceId:undefined,cashBasis:'未选替换：买后余额待核',purchaseConditionLosses:[]});
+ expect(unspecified.recommendation.facts.replacementCashRisk).toBeUndefined();expect(unspecified.detail).not.toContain('21→17');
+ const selected=shopOfferGuidance(s,o,s.jokers[4]),sold=journeySend(s,{type:'SellJoker',instanceId:s.jokers[4].instanceId}),bought=journeySend(sold,{type:'BuyOffer',offerId:o.offerId});
+ expect([sold.gold,bought.gold]).toEqual([22,18]);expect(selected).toMatchObject({stars:2,operationShort:'现金风险',replaceId:s.jokers[4].instanceId});
+ expect(JSON.parse(selected.recommendation.facts.replacementCashRisk as string)).toMatchObject({basis:'current-purchase',goldBeforePurchase:sold.gold,goldAfterPurchase:bought.gold});
+ expect(selected.recommendation).toEqual(shopOfferGuidance(sold,o).recommendation);
+ expect(selected.detail).toContain('22→18');expect(selected.detail).not.toContain('21→18');expect(JSON.stringify(s)).toBe(before);
+});
+it('assessed replacement losses agree with saved sale/purchase and discounted direct-purchase boundaries',()=>{
+ const s=shop(['b10']);held(s,['e08','b03','b08','e01','c08']);chooseBuildFocus(s,'group');
+ const o=s.shop!.offers[0],a=shopRouteAdvice(s,'group').items[0];expect(a.purchaseConditionLosses).toEqual([]);
+ const preview=shopOfferGuidance(s,o,s.jokers[4]),sold=journeySend(s,{type:'SellJoker',instanceId:a.replaceId!}),bought=journeySend(sold,{type:'BuyOffer',offerId:o.offerId});
+ expect([sold.gold,bought.gold]).toEqual([25,21]);expect(bought.jokers.some(j=>j.definitionId==='e08')).toBe(true);
+ expect(preview.stars).toBe(4);expect(preview.recommendation).toEqual(shopOfferGuidance(sold,o).recommendation);
+ s.purchaseCoupons=1;expect(shopOfferGuidance(s,o)).toMatchObject({stars:4,operation:'需替换'});
+ s.jokers=s.jokers.slice(0,4);const before=JSON.stringify(s),direct=shopOfferGuidance(s,o),discounted=journeySend(s,{type:'BuyOffer',offerId:o.offerId});
+ expect([s.gold,discounted.gold]).toEqual([21,19]);expect(discounted.purchaseCoupons).toBe(0);
+ expect(direct).toMatchObject({stars:2,operationShort:'现金风险'});expect(direct.detail).toContain('21→19');
+ expect(JSON.parse(direct.recommendation.facts.replacementCashRisk as string)).toMatchObject({basis:'current-purchase',goldBeforePurchase:s.gold,goldAfterPurchase:discounted.gold});
+ expect(shopRouteAdvice(s,'group').items[0].purchaseConditionLosses).toEqual(direct.purchaseConditionLosses);expect(JSON.stringify(s)).toBe(before);
+});
+it('route tool spending also preserves the held gold gate and names the actual loss',()=>{const s=shop([]);held(s,['e08']);s.handLevels={'two-pair':1};s.shop!.toolOffers=[{offerId:'upgrade',definitionId:'T01',price:4,consumed:false}];const a=buildJourneyFacts(s,'group').decision;expect(a.choices).toHaveLength(0);expect(a.reason).toContain((cardDisplayName('e08')));expect(a.reason).toContain('21→17');});
+
+it('flush-only retrigger is not ordinary-straight support without a public straight flush',()=>{const s=shop(['c07']);s.deckInstances=Array.from({length:13},(_,i)=>({id:'public/'+i,rank:(i+2) as 2,suit:i%2?'spades' as const:'clubs' as const}));s.destroyedIds=[];const before=JSON.stringify(s);expect(shopRouteAdvice(s,'straight').candidates).toHaveLength(0);expect(buildJourneyFacts(s,'straight').decision.headline).toContain('这轮不买');expect(buildJourneyFacts(s,'straight').decision.reason).toContain('同花顺');expect(JSON.stringify(s)).toBe(before);for(const c of s.deckInstances.filter(c=>c.rank>=2&&c.rank<=6))c.suit='clubs';expect(shopRouteAdvice(s,'straight').candidates[0].offer.definitionId).toBe('c07');expect(shopRouteAdvice(s,'straight').candidates[0].reason).toContain('用于同花顺');});

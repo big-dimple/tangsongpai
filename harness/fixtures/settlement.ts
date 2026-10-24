@@ -1,0 +1,112 @@
+import {isR2CoreBuild,r2HouseProfile} from '../../src/domain/r2GroupUpgrade';
+import {lockR2ChapterTargets} from '../../src/domain/r2Chapter';
+import {createRun,type R2RunState} from '../../src/domain/run';
+import {R2_ROUTE_GROWTH_VERSION,R2_ROUTE_GROWTH_HASH} from '../../src/domain/r2GroupUpgrade';
+import {newRunIdentity} from '../../src/game/RunLaunch';
+import {r2CreateJoker} from '../../src/domain/r2Run';
+import {energySend} from './hero-climax';
+import {touyeSnapshotToken} from '../../src/domain/r2TouyeWager';
+
+/** Controlled public inventory, levels and prior clear ledger; no natural acquisition claim.
+ * Only the resulting real PlayHand trace supplies the presentation numbers. */
+export function settlementReady(kind:'ordinary'|'chain'|'million'|'billion'|'long'|'boss-win'|'boss-loss',identity:'legacy'|'current'='legacy'){
+ // Large-score fixtures manufacture prior clear ledgers. Preserve the published
+ // rescue/cap identity for those instead of fabricating encounter RNG/receipts.
+ const current=newRunIdentity('xiemu','straight'),controlled=['million','billion','long'].includes(kind)?r2HouseProfile(current)!.pokerBase!:current;
+ let state=createRun({seed:'settlement-controlled/'+kind,runId:'controlled/settlement/'+kind,characterId:'xiemu',rulesVersion:'r2',r2Identity:identity==='legacy'?{contentVersion:R2_ROUTE_GROWTH_VERSION,contentHash:R2_ROUTE_GROWTH_HASH}:controlled,openingRoute:'straight',modeConfig:{mode:'standard',difficulty:0,challengeId:null,programsEnabled:false}});
+ state=energySend(state,{type:'LeaveShop'});
+ const big=['million','billion','long'].includes(kind),boss=kind.startsWith('boss');
+ if(big){
+  Object.assign(state,{chapter:8,stageIndex:23,totalHeat:'1000',boss:{definitionId:'B12',disabledSuit:null},seenBossIds:['B01','B02','B05','B06','B07','B08','B13','B12']});
+  const count=kind==='million'?12:kind==='long'?23:21;
+  state.routeGrowth={clears:count,G:0,S:count,F:0,settlements:Array.from({length:23},(_,stageIndex)=>stageIndex).filter(index=>index<count||index%3===2).map(stageIndex=>({stageIndex,families:['S'] as ['S']}))};
+  state.routeGrowth.clears=state.routeGrowth.S=state.routeGrowth.settlements.length;
+  state.handLevels={'straight':kind==='long'?30:18};
+ }
+ if(boss){Object.assign(state,{chapter:1,stageIndex:2,totalHeat:'1000',boss:{definitionId:'B03',disabledSuit:'clubs'},seenBossIds:['B03']});state.routeGrowth={clears:2,G:0,S:2,F:0,settlements:[{stageIndex:0,families:['S']},{stageIndex:1,families:['S']}]};}
+ state.deckInstances.forEach((card,index)=>{card.rank=(index%5+9) as typeof card.rank;card.suit=index%2?'hearts':'spades';if(big)card.edition='polychrome';});
+ state.gold=80;
+ const ids=kind==='ordinary'||kind==='boss-loss'?['c04']:['c04','f10','e08','a06'];
+ state.jokers=ids.map((id,index)=>r2CreateJoker(id,'controlled/settlement/source/'+index,8,'none',state));
+ state.jokers[0].growth.heat={n:'100',d:'1'};
+ if(kind==='long'){state.jokers[3].growth.coefficient={n:'1000000',d:'1'};}
+ if(isR2CoreBuild(state))state.chapterTargetPlan=lockR2ChapterTargets(state.chapter,state.tourMode,state.difficulty,state.boss);
+ state=energySend(state,{type:'EnterStage'});
+ if(kind==='boss-loss'){while(state.stage!.handsLeft>1)state=energySend(state,{type:'PlayHand',selectedIds:[state.handOrder[0]]});return {state,action:{type:'PlayHand' as const,selectedIds:[state.handOrder[0]]}};}
+ // A controlled public hand before discard; the real command owns both zone movement and rescue.
+ const hand=state.handOrder.map(id=>state.deckInstances.find(c=>c.id===id)!);
+ hand.forEach((card,index)=>{card.rank=([8,9,10,11,12,13,2,3][index]) as typeof card.rank;card.suit=index%2?'hearts':'spades';});
+ const selectedIds=state.handOrder.slice(1,6);
+ if(kind!=='ordinary')state=energySend(state,{type:'DiscardHand',selectedIds:[state.handOrder[0]]});
+ return {state,action:{type:'PlayHand' as const,selectedIds,...(kind!=='ordinary'?{xiemuBurn:identity==='current'?10 as const:30 as const}:{})}};
+}
+
+/** Five face cards with their own encore-paper: ten actual same-source triggers. */
+export function repeatedSettlementReady(){
+ const f=settlementReady('ordinary');f.state.jokers[0]=r2CreateJoker('tiesuanpan',f.state.jokers[0].instanceId,4,'none',f.state);
+ for(const id of f.action.selectedIds){const card=f.state.deckInstances.find(c=>c.id===id)!;card.rank=13;card.enhancement='encore-paper';}
+ return {...f,action:{...f.action,xiemuBurn:30 as const}};
+}
+
+export function retriggerSettlementReady(){
+ const f=settlementReady('ordinary');f.state.jokers[0]=r2CreateJoker('b06',f.state.jokers[0].instanceId,8,'none',f.state);
+ f.state.handLevels.pair=12;
+ for(const id of f.action.selectedIds.slice(0,2))f.state.deckInstances.find(c=>c.id===id)!.rank=13;
+ return {...f,action:{type:'PlayHand' as const,selectedIds:f.action.selectedIds.slice(0,2)}};
+}
+export function growthSettlementReady(){const f=settlementReady('ordinary');f.state.jokers[0].growth.heat={n:'50',d:'1'};return f;}
+export function dualRouteSettlementReady(){
+ const f=settlementReady('billion');f.state.routeGrowth!.F=f.state.routeGrowth!.S;
+ f.state.routeGrowth!.settlements.forEach(s=>{s.families=['S','F'];});
+ for(const id of f.action.selectedIds)f.state.deckInstances.find(c=>c.id===id)!.suit='hearts';
+ return f;
+}
+
+/** Current identity e11 reading: same local source issue as parent observation, not its missing save. */
+export function supportSettlementReady(){
+ let state=createRun({seed:'settlement-e11-current',runId:'controlled/settlement/e11-current',characterId:'amo',rulesVersion:'r2',r2Identity:newRunIdentity('amo','group'),openingRoute:'group',modeConfig:{mode:'standard',difficulty:0,challengeId:null,programsEnabled:false}});
+ state=energySend(state,{type:'LeaveShop'});state.jokers=[r2CreateJoker('e11','controlled/e11',8,'none',state)];state.jokers[0].growth.coefficient={n:'13',d:'10'};
+ state.handLevels['full-house']=4;state=energySend(state,{type:'EnterStage'});
+ const ids=['spades-13','hearts-13','clubs-13','spades-9','hearts-9'];state.handOrder=[...ids,...state.deckInstances.map(c=>c.id).filter(id=>!ids.includes(id)).slice(0,state.handOrder.length-ids.length)];state.drawPile=state.deckInstances.map(c=>c.id).filter(id=>!state.handOrder.includes(id));
+ return {state,action:{type:'PlayHand' as const,selectedIds:ids}};
+}
+
+/** Two actual PlayHand commands: the terminal hand is smaller than the stage total. */
+export function multiHandSettlementReady(){
+ const f=supportSettlementReady(),extra=f.state.handOrder.find(id=>!f.action.selectedIds.includes(id))!;
+ return {...f,state:energySend(f.state,{type:'PlayHand',selectedIds:[extra]})};
+}
+
+/** Current Qin Qiong + c06, scored by a real committed discard and PlayHand.
+ * Controlled public hand/history; this is not the user's screenshot save. */
+export function touyeSettlementReady(){
+ let state=createRun({seed:'settlement-qin-current',runId:'controlled/settlement/qin',characterId:'touye',rulesVersion:'r2',r2Identity:newRunIdentity('touye','flush'),openingRoute:'flush',modeConfig:{mode:'standard',difficulty:0,challengeId:null,programsEnabled:false}});
+ state=energySend(state,{type:'LeaveShop'});
+ Object.assign(state,{shop:null,stageIndex:1,totalHeat:'400',routeGrowth:{clears:1,G:1,S:0,F:0,settlements:[{stageIndex:0,families:['G']}]}});
+ state.jokers=[r2CreateJoker('c06','controlled/qin/source',8,'none',state)];state.jokers[0].growth.multiplier={n:'1',d:'2'};
+ state=energySend(state,{type:'EnterStage'});
+ const hand=['hearts-2','hearts-6','hearts-9','clubs-3','diamonds-8','spades-11','spades-4','diamonds-13'],incoming=['hearts-11','hearts-13','clubs-7','spades-8','diamonds-4'];
+ state.handOrder=hand;state.drawPile=state.deckInstances.map(c=>c.id).filter(id=>!hand.includes(id)&&!incoming.includes(id)).concat([...incoming].reverse());
+ const snapshotToken=touyeSnapshotToken(hand.map(id=>state.deckInstances.find(c=>c.id===id)!),{fourStraight:false,fourFlush:false},state.stage!.index,1,state.commandSeq);
+ state=energySend(state,{type:'DiscardHand',selectedIds:hand.slice(3),touyeBet:{target:'flush',snapshotToken}});
+ return {state,action:{type:'PlayHand' as const,selectedIds:[...hand.slice(0,3),...incoming.slice(0,2)]}};
+}
+
+/** Current cap identity, deliberately controlled inventory/levels; not natural reachability. */
+export function climaxSettlementReady(kind:'ordinary'|'million'|'billion'|'long'){
+ if(kind==='long')return settlementReady('long'); // Existing scorer-produced scientific-format boundary only.
+ const fixture=settlementReady(kind,'current');
+ if(kind==='million')fixture.state.handLevels.straight=4;
+ if(kind==='billion')fixture.state.jokers[3].growth.coefficient={n:'100',d:'1'};
+ return fixture;
+}
+
+/** Cold-result art boundary matching the reported a10 family; not the user's unseen save. */
+export function backstageSettlementReady(){
+ let state=createRun({seed:'controlled/backstage-cold-result',runId:'controlled/backstage-cold-result',characterId:'laohuan',rulesVersion:'r2',r2Identity:newRunIdentity('laohuan','group'),openingRoute:'group',modeConfig:{mode:'standard',difficulty:0,challengeId:null,programsEnabled:false}});
+ state=energySend(state,{type:'LeaveShop'});state.jokers=[r2CreateJoker('a10','controlled/backstage-source',8,'polychrome',state)];state.handLevels['high-card']=30;
+ state=energySend(state,{type:'EnterStage'});
+ const ids=['spades-8','spades-11','hearts-12','clubs-13','diamonds-4','clubs-3','hearts-2','diamonds-9'];
+ state.handOrder=ids;state.drawPile=state.deckInstances.map(c=>c.id).filter(id=>!ids.includes(id));
+ return {state,action:{type:'PlayHand' as const,selectedIds:[ids[0]]}};
+}

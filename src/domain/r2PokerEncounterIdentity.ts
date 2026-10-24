@@ -1,0 +1,4 @@
+import {stableHash} from './hash';
+export const POKER_ENCOUNTER_PRICE=18;
+export const POKER_ENCOUNTER_CONTRACT=Object.freeze({version:1,interval:[7,9],clock:'successful-normal-standard-clears-only-no-skip',first:'same-interval',stream:'seed/r2/poker-encounter/0',scope:'normal24-no-terminal-shop-no-endless',price:18,discount:'fixed-no-coupon-consumption-counts-shop-purchase',target:'one-living-ordinary-edition-poker-preserve-enhancement',edition:'polychrome',quota:'shared-basic-practice-once-shop',expiry:'explicit-skip-or-leave-shop',cancel:'no-command',advance:'appearance-not-purchase',legacy:'new-identity-no-migration'});
+export const withPokerEncounterIdentity=(base:{contentVersion:string;contentHash:string})=>({contentVersion:base.contentVersion+'-poker-encounter-v1',contentHash:stableHash({inherits:base.contentHash,pokerEncounter:POKER_ENCOUNTER_CONTRACT})});

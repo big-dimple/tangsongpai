@@ -1,0 +1,41 @@
+import {toolInfo} from './r2ToolInfo';
+import {R2_TOOLS} from '../content/r2Tools';
+import type {R2RunState} from '../domain/run';
+import {r2CreateJoker} from '../domain/r2Run';
+import {currentBuildFocus} from './BuildDirectionPreferences';
+import {toolSupportsFocus} from './BuildJourney';
+import {shopRouteRelation} from './ShopRouteRelations';
+import {jokerApplicableRoutes} from './ShopOfferGuidance';
+import {r2S04Facts} from '../domain/r2S04';
+export const ROUTE_TONE={group:{ink:0x3f606b,css:'#3F606B',label:'契合同点成组路线'},straight:{ink:0x8f6a3b,css:'#8F6A3B',label:'契合顺子路线'},flush:{ink:0xb8473a,css:'#B8473A',label:'契合同花路线'}};
+/** Same current-profile effect relation on shelf, held faces and detail; never a purchase ranking. */
+export function routeFitCue(state:R2RunState,kind:'jokers'|'tools'|'items',id:string,instanceId?:string){
+ const focus=currentBuildFocus(state,state.openingRoute);if(!focus||kind==='items')return;
+ const relation=kind==='jokers'?shopRouteRelation(state,state.jokers.find(j=>j.instanceId===instanceId)??r2CreateJoker(id,'display/'+id,0,'none',state),focus):undefined;
+ const matches=relation?relation.kind==='direct'||relation.kind==='support':toolSupportsFocus(id,focus);
+ const j=kind==='jokers'?(state.jokers.find(j=>j.instanceId===instanceId)??r2CreateJoker(id,'display/'+id,0,'none',state)):undefined;
+ const label=j?'适用：'+jokerApplicableRoutes(state,j).map(f=>({group:'同点',straight:'顺子',flush:'同花'})[f]).join('/') :ROUTE_TONE[focus].label;
+ return matches?{...ROUTE_TONE[focus],label,focus,reason:relation?.body??'可用于当前打法；用前选好目标、查看费用。'}:undefined;
+}
+export function markRouteDetail(host:HTMLElement,cue:ReturnType<typeof routeFitCue>):void {
+ if(!cue)return;host.dataset.routeFit=cue.focus;host.style.setProperty('--route-fit',cue.css);const tag=document.createElement('p');tag.className='route-fit-caption';tag.textContent=cue.label;host.querySelector('.dialog-header')?.append(tag);
+}
+
+/** A purpose cue follows the operation, not a tool name or a promised next draw. */
+export function toolPurpose(state:R2RunState,id:string):string {
+ const op=R2_TOOLS.find(t=>t.id===id)?.operation,focus=currentBuildFocus(state,state.openingRoute);
+ if(!op)return '';
+ switch(op.kind){
+ case 'free-reroll':return toolInfo(id,state).summary;
+ case 'shift-rank':return focus==='group'?'把相邻点数改成同点，培养对子／两对；不必等复制牌。':'微调点数，自己核对改后组合。';
+ case 'delete-cards':return '永久删掉偏离方向的牌，缩小牌组；不保证下一手抽中核心。';
+ case 'set-enhancement':return op.enhancement==='voice-paper'?'受益牌留在手中才加倍率，打出它不读取留牌加成。':op.enhancement==='gold-paper'?'过关时受益牌有效留在手中才给金币，不提高本手分数。':'给会参与计分的牌加增强；对子／两对也可用，无须同花。';
+ case 'copy-card':return '复制已有好牌，可增加同点或同花色数量；原牌保留。';
+ case 'random-enhancement':return '用一张牌换另外一至两张的随机增强；每张独立随机，使用后揭晓。';
+ case 'random-edition':return '为所选牌随机增加闪箔、全息或多彩加成，使用后揭晓。';
+ case 'set-deck-suit':{const facts=r2S04Facts(state);if(facts.restricted)return `第${facts.minimumChapter}章起，先铺到至少${facts.required}/${facts.living}张目标色，再整副收尾；永久手牌容量−1。`;return '集中花色，点数保留；不会保证下一手成型。';}
+ case 'set-suit':return '集中花色，点数保留；不会保证下一手成型。';
+ case 'upgrade-hand':return '升级已发现的对应牌型，增加基础值；改牌与升型可以分步培养。';
+ default:return '选好目标，查看费用后确认使用。';
+ }
+}

@@ -1,0 +1,701 @@
+/* 唐宋手绘奇遇 · 纸上流彩专场舞台与赋予演出样式 */
+.detail-dialog.poker-encounter[open] {
+  width: min(860px, calc(100vw - var(--safe-left, 0px) - var(--safe-right, 0px) - 20px));
+  max-height: calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 20px);
+  border: 1px solid #6b634b;
+  border-radius: 6px;
+  background: #f2ead8;
+  box-shadow: 0 22px 68px rgba(15, 31, 29, 0.52), inset 0 0 0 3px #fbf5e6;
+  color: #223533;
+}
+.detail-dialog.poker-encounter[data-motion="animated"][open] {
+  animation: qiyu-dialog-arrive 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes qiyu-dialog-arrive {
+  from {
+    opacity: 0.72;
+    transform: translateY(6px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.poker-encounter > .dialog-header {
+  background: linear-gradient(115deg, #193330 0%, #274541 62%, #472926 100%);
+  border-bottom: 2px solid #c7a35e;
+  padding: 14px 22px;
+}
+.poker-encounter > .dialog-header .dialog-eyebrow {
+  color: #e2c285;
+  letter-spacing: 0.16em;
+  font-size: 12px;
+}
+.poker-encounter > .dialog-header h2 {
+  color: #f8eed9;
+  letter-spacing: 0.12em;
+  font-size: clamp(22px, 3vw, 30px);
+}
+
+.poker-encounter .dialog-purchase-summary {
+  margin: 0 0 10px;
+  padding: 9px 14px;
+  border-radius: 5px;
+  border: 1px solid rgba(45, 82, 76, 0.28);
+  background: linear-gradient(90deg, rgba(217, 232, 224, 0.72), rgba(244, 234, 210, 0.85));
+  color: #1d3c37;
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+/* 六英雄唐宋分镜横幅与三栏合同条 */
+.qiyu-stage-banner {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 12px;
+  padding: 12px 14px;
+  border-radius: 6px;
+  border: 1px solid #b89c64;
+  background: linear-gradient(135deg, #172f2c 0%, #23403c 56%, #3f2624 100%);
+  color: #f6ecd7;
+  box-shadow: 0 8px 24px rgba(17, 34, 32, 0.22), inset 0 0 0 1px rgba(248, 232, 200, 0.16);
+}
+.qiyu-stage-banner[data-motion="animated"] {
+  animation: qiyu-banner-unfurl 280ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+@keyframes qiyu-banner-unfurl {
+  from {
+    opacity: 0.65;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.qiyu-hero-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1.35fr) minmax(180px, 0.85fr);
+  gap: 12px;
+  align-items: center;
+}
+.qiyu-hero-identity {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.qiyu-hero-avatar {
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #deb971;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+  background: #142826;
+}
+.qiyu-hero-titles {
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+}
+.qiyu-hero-seal-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.qiyu-hero-seal {
+  display: inline-grid;
+  place-items: center;
+  padding: 1px 7px;
+  border: 1.5px solid #e06d53;
+  border-radius: 3px;
+  background: rgba(176, 56, 40, 0.38);
+  color: #ffe3cc;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+.qiyu-scene-title {
+  color: #e6c687;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+}
+.qiyu-hero-name {
+  font-size: 16px;
+  color: #fff6e4;
+  letter-spacing: 0.06em;
+}
+.qiyu-hero-quote {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #f3e4c3;
+}
+.qiyu-hero-allusion {
+  font-size: 12px;
+  color: #c7b898;
+  line-height: 1.35;
+}
+.qiyu-hero-eyes-frame {
+  position: relative;
+  width: 100%;
+  max-width: 248px;
+  justify-self: end;
+  aspect-ratio: 768 / 288;
+  border-radius: 5px;
+  overflow: hidden;
+  border: 1px solid rgba(226, 198, 135, 0.62);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4);
+  background: #122422;
+}
+.qiyu-hero-eyes-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.qiyu-contract-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(240, 214, 164, 0.24);
+}
+.qiyu-contract-cell {
+  display: grid;
+  gap: 2px;
+  padding: 7px 10px;
+  border-radius: 4px;
+  background: rgba(15, 31, 29, 0.52);
+  border: 1px solid rgba(226, 198, 135, 0.24);
+}
+.qiyu-contract-tag {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: #deb971;
+  font-weight: 700;
+}
+.qiyu-contract-val {
+  font-size: 13px;
+  color: #fff6e5;
+  line-height: 1.35;
+}
+.qiyu-contract-note {
+  font-size: 11.5px;
+  color: #cbbd9e;
+  line-height: 1.3;
+}
+
+/* 选牌网格：手绘宣纸扑克牌座 */
+.poker-encounter .dialog-choice-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+.poker-encounter .dialog-choice-actions > div.qiyu-card-choice-cell {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 6px 7px;
+  border-radius: 6px;
+  border: 1px solid #bfb193;
+  background: linear-gradient(180deg, #fffdf7 0%, #f3ead6 100%);
+  box-shadow: 0 3px 8px rgba(28, 48, 45, 0.08);
+  transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+}
+.poker-encounter .dialog-choice-actions > div.qiyu-card-choice-cell:hover {
+  transform: translateY(-2px);
+  border-color: #b8473a;
+  box-shadow: 0 6px 14px rgba(184, 71, 58, 0.16);
+}
+.poker-encounter .dialog-choice-actions > div.qiyu-card-choice-cell[data-edition="foil"],
+.poker-encounter .dialog-choice-actions > div.qiyu-card-choice-cell[data-edition="holographic"],
+.poker-encounter .dialog-choice-actions > div.qiyu-card-choice-cell[data-edition="polychrome"] {
+  background: linear-gradient(180deg, #eae3d2 0%, #ddd4c0 100%);
+  opacity: 0.78;
+}
+
+.qiyu-card-choice-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4px;
+  margin-bottom: 4px;
+  min-height: 18px;
+}
+.qiyu-card-choice-court {
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  object-fit: cover;
+  border: 1px solid rgba(107, 99, 75, 0.45);
+}
+.qiyu-choice-tag {
+  font-size: 11px;
+  line-height: 1.2;
+  padding: 1px 5px;
+  border-radius: 3px;
+  font-weight: 700;
+}
+.qiyu-choice-tag.is-ready {
+  background: rgba(41, 92, 83, 0.12);
+  color: #23534b;
+  border: 1px solid rgba(41, 92, 83, 0.28);
+}
+.qiyu-choice-tag.is-enh {
+  background: rgba(180, 118, 42, 0.16);
+  color: #7d4c14;
+  border: 1px solid rgba(180, 118, 42, 0.35);
+}
+.qiyu-choice-tag.is-edition {
+  background: rgba(168, 58, 46, 0.15);
+  color: #8c2f24;
+  border: 1px solid rgba(168, 58, 46, 0.32);
+}
+
+.poker-encounter .dialog-choice-actions button {
+  width: 100%;
+  min-height: 46px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  border-radius: 4px;
+  border: 1px solid #9e8f70;
+  background: #fdf9f0;
+  font: 700 18px/1.2 Georgia, 'Noto Serif SC', SimSun, serif;
+  color: #1c3330;
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
+}
+.poker-encounter .dialog-choice-actions button[data-red="true"] {
+  color: #b23b2e;
+}
+.poker-encounter .dialog-choice-actions button:hover:not(:disabled),
+.poker-encounter .dialog-choice-actions button:focus-visible:not(:disabled) {
+  background: #fff4dc;
+  border-color: #b8473a;
+  box-shadow: 0 0 0 2px rgba(184, 71, 58, 0.22);
+}
+.poker-encounter .dialog-choice-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.62;
+  background: #e5decb;
+}
+.poker-encounter .dialog-choice-actions p {
+  font-size: 12px;
+  margin: 4px 0 2px;
+  color: #524b3c;
+  text-align: center;
+}
+
+/* 确认页：普通牌 -> 纸上流彩祭坛预览 */
+.qiyu-confirm-altar {
+  margin: 10px 0 12px;
+  padding: 14px 16px;
+  border-radius: 6px;
+  border: 1px solid #bda678;
+  background: radial-gradient(circle at 50% 50%, #fbf4e4 0%, #e9dec6 100%);
+  box-shadow: inset 0 0 0 2px rgba(255, 250, 240, 0.7);
+}
+.qiyu-altar-cards {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  justify-items: center;
+}
+.qiyu-altar-col {
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+}
+.qiyu-altar-col-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #4f5c58;
+  letter-spacing: 0.08em;
+}
+.qiyu-altar-col-label.is-highlight {
+  color: #9e3528;
+}
+.qiyu-altar-conduit {
+  display: grid;
+  gap: 6px;
+  justify-items: center;
+  text-align: center;
+  padding: 8px 12px;
+}
+.qiyu-altar-seal {
+  padding: 3px 10px;
+  border: 1.5px solid #b8473a;
+  border-radius: 4px;
+  background: rgba(184, 71, 58, 0.12);
+  color: #9e3528;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+}
+.qiyu-altar-arrow {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1f423d;
+  letter-spacing: 0.08em;
+}
+.qiyu-altar-formula {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: #1f423d;
+  color: #f9eed8;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* 可视化宣纸扑克牌组件 */
+.qiyu-visual-card {
+  position: relative;
+  width: 132px;
+  height: 184px;
+  padding: 10px;
+  box-sizing: border-box;
+  border-radius: 8px;
+  border: 1.5px solid #968769;
+  background: linear-gradient(165deg, #fffdf8 0%, #f1e5cc 100%);
+  box-shadow: 0 8px 22px rgba(22, 42, 39, 0.18);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #1d3330;
+  overflow: hidden;
+}
+.qiyu-visual-card[data-red="true"] {
+  color: #b23b2e;
+}
+.qiyu-visual-card.is-polychrome {
+  border-color: #d69c4e;
+  background: linear-gradient(155deg, #fffdf9 0%, #f8edd6 52%, #efe0c4 100%);
+  box-shadow: 0 10px 28px rgba(184, 71, 58, 0.25), 0 0 0 1px rgba(240, 199, 122, 0.65);
+}
+.qiyu-polychrome-edge-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+.qiyu-card-corner {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  line-height: 1;
+}
+.qiyu-card-rank {
+  font: 700 22px/1 Georgia, serif;
+}
+.qiyu-card-suit {
+  font-size: 18px;
+}
+.qiyu-card-center {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.qiyu-card-big-pip {
+  font-size: 52px;
+  line-height: 1;
+  opacity: 0.9;
+}
+.qiyu-card-court-art {
+  width: 78px;
+  height: 96px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid rgba(138, 118, 82, 0.55);
+}
+.qiyu-card-seal {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 3;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid #b63f30;
+  border-radius: 4px;
+  background: #b63f30;
+  color: #fff3d6;
+  font: 700 14px/1 'Noto Serif SC', SimSun, serif;
+  transform: rotate(-6deg);
+  box-shadow: 0 2px 6px rgba(182, 63, 48, 0.35);
+}
+.qiyu-card-footer {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: center;
+}
+.qiyu-card-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+.qiyu-card-badge.is-ordinary {
+  background: rgba(45, 69, 66, 0.12);
+  color: #354f4b;
+}
+.qiyu-card-badge.is-enhancement {
+  background: rgba(184, 122, 40, 0.18);
+  color: #6e420c;
+}
+.qiyu-card-badge.is-polychrome {
+  background: linear-gradient(90deg, #9e3528, #244b45);
+  color: #fff5df;
+}
+
+/* 赋予完成演出舞台与成长账单 */
+.qiyu-ceremony-stage {
+  display: grid;
+  gap: 12px;
+  margin: 8px 0 12px;
+  padding: 14px;
+  border-radius: 6px;
+  border: 1px solid #b59a66;
+  background: linear-gradient(180deg, #faf3e3 0%, #ece0c8 100%);
+  box-shadow: inset 0 0 0 2px rgba(255, 251, 242, 0.8);
+}
+.qiyu-ceremony-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 12px;
+  border-radius: 5px;
+  background: #1d3936;
+  color: #f7edd8;
+}
+.qiyu-ceremony-status-text {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+  min-width: 0;
+}
+.qiyu-ceremony-phase-badge {
+  padding: 2px 8px;
+  border-radius: 3px;
+  background: #b63f30;
+  color: #fff4dc;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+.qiyu-ceremony-caption {
+  font-size: 15px;
+  color: #ffe7b8;
+  letter-spacing: 0.06em;
+}
+.qiyu-ceremony-subcaption {
+  margin: 0;
+  font-size: 13px;
+  color: #d8ccb2;
+}
+.qiyu-ceremony-skip {
+  flex: 0 0 auto;
+  min-width: 112px;
+  min-height: 40px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid #ecc478;
+  background: #ecc478;
+  color: #182f2c;
+  font-weight: 700;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.qiyu-ceremony-center {
+  position: relative;
+  min-height: 218px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 6px;
+  background: radial-gradient(circle at 50% 50%, rgba(255, 250, 238, 0.9) 0%, rgba(226, 213, 185, 0.65) 100%);
+  border: 1px solid rgba(158, 138, 98, 0.45);
+}
+.qiyu-ceremony-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.qiyu-ceremony-card-seat {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 8px 16px;
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.qiyu-ceremony-stage[data-ceremony-phase="charge"] .qiyu-ceremony-card-seat {
+  transform: scale(0.95) translateY(4px);
+}
+.qiyu-ceremony-stage[data-ceremony-phase="strike"] .qiyu-ceremony-card-seat {
+  transform: scale(1.05) translateY(-6px);
+}
+.qiyu-ceremony-stage[data-ceremony-phase="impact"] .qiyu-ceremony-card-seat {
+  transform: scale(1.03) translateY(0);
+}
+.qiyu-ceremony-stage[data-ceremony-phase="settled"] .qiyu-ceremony-card-seat {
+  transform: scale(1) translateY(0);
+}
+
+.qiyu-multiplier-crest {
+  display: grid;
+  gap: 2px;
+  padding: 12px 18px;
+  border-radius: 6px;
+  border: 2px solid #b63f30;
+  background: linear-gradient(145deg, #213f3b 0%, #4b2623 100%);
+  color: #fff6e4;
+  text-align: center;
+  box-shadow: 0 10px 26px rgba(27, 48, 45, 0.28);
+  transition: transform 200ms cubic-bezier(0.2, 0.9, 0.2, 1.2);
+}
+.qiyu-ceremony-stage[data-ceremony-phase="impact"] .qiyu-multiplier-crest {
+  transform: scale(1.14);
+}
+.qiyu-multiplier-crest span {
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: #e6c687;
+}
+.qiyu-multiplier-crest strong {
+  font: 700 34px/1.1 Georgia, serif;
+  color: #ffdf9a;
+}
+.qiyu-multiplier-crest small {
+  font-size: 12px;
+  color: #dfd2b7;
+}
+
+.qiyu-growth-ledger {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.qiyu-ledger-col {
+  display: grid;
+  gap: 3px;
+  padding: 9px 12px;
+  border-radius: 5px;
+  background: #fffaf0;
+  border: 1px solid #cabaa0;
+}
+.qiyu-ledger-col span {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #7d4c24;
+  letter-spacing: 0.08em;
+}
+.qiyu-ledger-col strong {
+  font-size: 14px;
+  color: #1d3532;
+}
+.qiyu-ledger-col small {
+  font-size: 12px;
+  color: #5b5547;
+  line-height: 1.35;
+}
+
+@media (max-width: 600px) {
+  .detail-dialog.poker-encounter[open] {
+    width: calc(100vw - var(--safe-left, 0px) - var(--safe-right, 0px) - 12px);
+    max-height: calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 12px);
+  }
+  .poker-encounter > .dialog-header {
+    padding: 10px 14px;
+  }
+  .qiyu-stage-banner {
+    padding: 9px 10px;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .qiyu-hero-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+  .qiyu-hero-avatar {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+  }
+  .qiyu-hero-eyes-frame {
+    max-width: 100%;
+    max-height: 68px;
+    justify-self: stretch;
+  }
+  .qiyu-contract-strip,
+  .qiyu-growth-ledger {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+  .poker-encounter .dialog-choice-actions {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .qiyu-altar-cards {
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    gap: 8px;
+  }
+  .qiyu-visual-card {
+    width: 96px;
+    height: 136px;
+    padding: 7px;
+  }
+  .qiyu-card-rank {
+    font-size: 17px;
+  }
+  .qiyu-card-big-pip {
+    font-size: 36px;
+  }
+  .qiyu-card-court-art {
+    width: 54px;
+    height: 68px;
+  }
+  .qiyu-ceremony-card-seat {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detail-dialog.poker-encounter[open],
+  .qiyu-stage-banner {
+    animation: none !important;
+  }
+  .qiyu-ceremony-card-seat,
+  .qiyu-multiplier-crest,
+  .poker-encounter .dialog-choice-actions > div.qiyu-card-choice-cell {
+    transition: none !important;
+    transform: none !important;
+  }
+}

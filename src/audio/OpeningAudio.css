@@ -1,0 +1,4 @@
+.opening-audio-hint{display:block;margin:12px 0 0;padding:8px 14px;min-height:44px;border:0;border-radius:6px;background:#3f606b12;color:#3f606b;font:14px/1.5 "Microsoft YaHei","PingFang SC",sans-serif;cursor:pointer}
+.opening-audio-hint[hidden]{display:none}
+body>.opening-audio-hint{position:fixed;top:max(12px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);margin:0;z-index:1000;background:#fff9eef2;box-shadow:0 2px 10px #26313a16}
+.opening-audio-hint:focus-visible{outline:2px solid #3f606b;outline-offset:3px}

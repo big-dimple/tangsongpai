@@ -1,0 +1,51 @@
+{
+  "name": "tangsongpai",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:domain": "vitest run tests/domain.test.ts tests/SeededRng.test.ts",
+    "test:domain:browser": "node harness/domain.mjs",
+    "test:rules": "vitest run tests/rules.test.ts tests/rational.test.ts tests/r2-command.test.ts tests/content-schema.test.ts",
+    "test:run": "vitest run tests/r2-run.test.ts tests/r2-shop.test.ts tests/r2-command.test.ts tests/card-boundary.test.ts tests/run.test.ts tests/shop.test.ts",
+    "verify:content": "node scripts/verify-content.mjs",
+    "test:watch": "vitest",
+    "verify": "npm run typecheck && npm test && npm run build",
+    "shot": "node harness/screenshot.mjs",
+    "verify:smoke": "node harness/screenshot.mjs --verify-smoke",
+    "release:checked": "node scripts/release-checked.mjs",
+    "test:recovery": "vitest run tests/recovery-queue.test.ts tests/recovery-save.test.ts",
+    "test:recovery:browser": "node harness/recovery.mjs",
+    "test:layout": "vitest run tests/layout.test.ts",
+    "test:layout:browser": "node harness/layout.mjs",
+    "test:e2e": "node harness/e2e.mjs",
+    "test:v00:sample": "node harness/v00-sample.mjs",
+    "test:v00:browser": "node harness/v00.mjs",
+    "test:assets-runtime": "node harness/assets-runtime.mjs",
+    "test:assets": "node --test tools/blender/verify_assets.test.mjs tools/blender/inspect_asset_pack.test.mjs tools/blender/verify_publication.test.mjs",
+    "verify:assets": "node tools/blender/verify_assets.mjs",
+    "test:gate-faults": "node harness/gate-faults.mjs",
+    "verify:ci": "node scripts/verify-ci.mjs"
+  },
+  "dependencies": {
+    "phaser": "3.90.0"
+  },
+  "devDependencies": {
+    "@gltf-transform/cli": "^4.5.1",
+    "@gltf-transform/core": "4.5.1",
+    "@gltf-transform/extensions": "4.5.1",
+    "@gltf-transform/functions": "4.5.1",
+    "gltf-validator": "2.0.0-dev.3.10",
+    "mikktspace": "1.1.1",
+    "playwright": "^1.63.0",
+    "sharp": "0.35.5",
+    "typescript": "^5.9.2",
+    "vite": "7.3.6",
+    "vitest": "4.1.11"
+  }
+}

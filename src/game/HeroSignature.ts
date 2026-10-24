@@ -1,0 +1,28 @@
+import {erxiangHandoffLimit} from '../domain/r2ErxiangHandoff';
+import {laohuanRefillRepeats} from '../domain/r2LaohuanRefill';
+import {newRunIdentity} from './RunLaunch';
+import {amoExileMultiplier,amoExileRequiresKing} from '../domain/r2AmoExile';
+import {xiemuTiersFor} from '../domain/r2XiemuBurn';
+import type {CharacterId} from './characters';
+import {characterForNewRun,characterForRun} from './CharacterRunCopy';
+import {usesAmoExile} from '../domain/r2AmoExile';
+import type {R2RunState} from '../domain/r2Run';
+import {R2_ASSIST_CONTRACT} from '../domain/r2AssistIdentity';
+import {R2_AZAO_CHARGE_CONTRACT,R2_TOUYE_WAGER_CONTRACT,R2_LAOHUAN_REFILL_CONTRACT} from '../domain/r2GroupUpgrade';
+import {ordinaryCardPoints} from '../domain/r2ErxiangHandoff';
+export interface SignatureBeat {label:string;cards:string[];result:string}
+/** Educational public rule examples: no RNG, hypothetical total, run, reward or command. */
+export function heroSignature(id:CharacterId,run?:R2RunState){
+ const identity=run??{characterId:id,...newRunIdentity(id)};
+ const burn=xiemuTiersFor(run??newRunIdentity('xiemu'))[0];
+ const signatures:Record<CharacterId,{cost:string;beats:SignatureBeat[]}>= {
+  amo:{cost:'副组真消耗 · 本场一次',beats:[{label:'先成主手',cards:['7♠','7♥','Q♣','Q♦'],result:'两对及以上'},{label:'剩牌助攻',cards:['3♠','3♥'],result:'再搭一组'},{label:'一起出牌',cards:[],result:'对子 ×'+R2_ASSIST_CONTRACT.pair}]},
+  touye:{cost:'赌下一手 · 押后不能再弃',beats:[{label:'先定目标',cards:['7♠','7♥','Q♣'],result:'已成型也能押'},{label:'真弃补新牌',cards:['Q♦'],result:'用新摸的牌成型'},{label:'达约／未达约',cards:[],result:'×'+R2_TOUYE_WAGER_CONTRACT.success+' ／ ×'+R2_TOUYE_WAGER_CONTRACT.failure}]},
+  laohuan:{cost:'照付弃牌成本 · '+(laohuanRefillRepeats(identity)?'每次正常弃牌':'本场一次'),beats:[{label:'先弃1张',cards:['3♠'],result:'真实弃牌'},{label:'多看候选',cards:['7♠','9♥','Q♣'],result:'最多多看'+R2_LAOHUAN_REFILL_CONTRACT.extra+'张'},{label:'自己留1张',cards:['7♠'],result:'其余本场不抽'}]},
+  erxiang:{cost:'普通点数不计热度 · 每场'+erxiangHandoffLimit(identity)+'次',beats:[{label:'先有对子',cards:['8♠','8♥'],result:'对子及以上'},{label:'选择8作计分牌',cards:['8♠'],result:'普通点数转移'},{label:'接住倍率',cards:[],result:'+ '+ordinaryCardPoints({id:'example',rank:8,suit:'spades'})+' 倍率'}]},
+  azao:{cost:'同牌型未释放则清空 · 最高3层',beats:[{label:'两对蓄势',cards:['7♠','7♥','Q♣','Q♦'],result:'存1层'},{label:'换三条',cards:['7♠','7♥','7♣'],result:'再蓄到2层'},{label:'下手释放',cards:[],result:'2层 ×'+R2_AZAO_CHARGE_CONTRACT.tiers[1]}]},
+  xiemu:{cost:'两对起 · 真扣金 · 每场一次',beats:[{label:'经营存钱',cards:[],result:'先留'+burn.cost+'金'},{label:'出牌前选支付档',cards:['7♠','7♥','Q♣','Q♦'],result:'扣'+burn.cost+'金'},{label:'关键手兑现',cards:[],result:'角色 ×'+burn.multiplier}]},
+ };
+ if(id==='amo'&&(!run||usesAmoExile(run)))signatures.amo={cost:(amoExileRequiresKing(run??newRunIdentity(id))?'余牌须含K · ':'')+'弃掉余牌 · 每场1次',beats:[{label:'选这手要打的牌',cards:['2♥','5♥','8♥','J♥','K♥'],result:'五张同花'},{label:'出牌时弃掉余牌',cards:amoExileRequiresKing(run??newRunIdentity(id))?['K♠','9♣','3♣']:['9♠','9♣','3♣'],result:'不再留手'},{label:'当手生效',cards:[],result:'这手得分×'+amoExileMultiplier(run??newRunIdentity(id))}]};
+ const ability=run?characterForRun(run):characterForNewRun(id);return {...signatures[id],tag:ability.passiveName,ability};
+}

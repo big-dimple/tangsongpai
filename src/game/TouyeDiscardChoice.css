@@ -1,0 +1,34 @@
+.detail-dialog.hero-discard-choice[open] {
+ display:grid;grid-template-rows:auto minmax(0,1fr) auto;overflow:hidden;
+ width:min(700px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));
+ height:min(660px,calc(100dvh - var(--safe-top) - var(--safe-bottom) - 24px));
+}
+.hero-discard-choice > .dialog-content { min-height:0;padding:12px;overflow:hidden; }
+.hero-discard-choice .dialog-scroll { display:grid;grid-template-rows:auto minmax(0,1fr) auto;gap:8px;height:100%;min-height:0;overflow:hidden; }
+.hero-discard-choice .dialog-intro { display:flex;flex-direction:column;gap:6px; }
+.hero-discard-choice .dialog-intro :is(.dialog-effect,.dialog-purchase-summary) { margin:0!important;padding:0;border:0;background:none;font-size:14px;line-height:1.4;font-weight:400; }
+.hero-discard-choice .dialog-purchase-summary { order:-1; }
+.hero-discard-choice .dialog-copy { max-height:min(120px,24dvh);min-height:0;overflow:auto;overscroll-behavior:contain; }
+.hero-discard-choice .card-rules summary { min-height:44px;padding:10px 0; }
+.touye-discard-grid { display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-content:start;gap:8px;min-height:0;overflow:auto;overscroll-behavior:contain;touch-action:pan-y;scrollbar-gutter:stable; }
+.touye-discard-grid > button { min-width:44px;min-height:92px;padding:6px 2px;border:1px solid #6b827d;border-radius:6px;background:#faf2e3; }
+.touye-discard-grid > button[aria-pressed=true] { border:3px solid #a43728;background:#f5dbca; }
+.touye-discard-grid .candidate-card-row { justify-content:center; }
+.touye-discard-grid > button:disabled { opacity:.55; }
+.hero-discard-choice > .dialog-actions { display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.6fr);grid-template-rows:auto auto;gap:4px 8px;padding:8px 12px; }
+.hero-discard-choice .touye-discard-count { grid-column:1/-1;grid-row:1;margin:0;min-height:20px;font-size:14px;line-height:20px;font-weight:700; }
+.hero-discard-choice > .dialog-actions .dialog-close { grid-column:1;grid-row:2;min-width:0;min-height:48px;padding:6px;font-size:14px; }
+.hero-discard-choice > .dialog-actions .touye-discard-next { grid-column:2;grid-row:2;min-width:0;min-height:52px;margin:0;padding:6px;font-size:15px;line-height:1.35; }
+@media(max-width:560px) {
+ .hero-discard-choice .dialog-header { padding:10px 12px; }
+ .hero-discard-choice .dialog-header.has-decision-eyes { grid-template-columns:minmax(0,1fr) 96px;gap:8px; }
+ .hero-discard-choice .hero-decision-eyes { width:96px;height:36px; }
+ .hero-discard-choice .dialog-header h2 { font-size:18px;line-height:1.35; }
+ .hero-discard-choice .touye-discard-grid { gap:6px; }
+}
+@media(max-height:520px) {
+ .hero-discard-choice > .dialog-content { padding:8px 12px; }
+ .hero-discard-choice .dialog-scroll { gap:4px; }
+ .hero-discard-choice .dialog-intro { gap:4px; }
+ .hero-discard-choice .dialog-copy { max-height:80px; }
+}

@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 2,
+  "repeatGapMs": 3000,
+  "endingPolicy": "Continue actual table or boss recording",
+  "tracks": [
+    {
+      "id": "tianhu-begin",
+      "file": "user-20261018/tianhu-begin.ogg",
+      "title": "tianhu-begin",
+      "composer": "User-selected complete track",
+      "style": "User supplied",
+      "scenes": [
+        "menu"
+      ],
+      "license": "Project owner supplied",
+      "durationSeconds": 53.832,
+      "runtimePath": "assets/audio/bgm/user-20261018/tianhu-begin.ogg",
+      "bytes": 1080836,
+      "sha256": "27de1b3d69592b970f1ca6b2548a779b1d2b9ee4a03c7f2062e5d453117e2116",
+      "fallbackRuntimePath": "assets/audio/bgm/user-20261018/tianhu-begin.mp3",
+      "fallbackBytes": 1293165,
+      "fallbackSha256": "d9dbe1c025346c1b24b9f3d31cb0a26fe9602a334f7879e725f797b48ba68346"
+    },
+    {
+      "id": "moon-shop",
+      "file": "user-20261018/moon-shop.ogg",
+      "title": "moon-shop",
+      "composer": "User-selected complete track",
+      "style": "User supplied",
+      "scenes": [
+        "shop"
+      ],
+      "license": "Project owner supplied",
+      "durationSeconds": 46.536,
+      "runtimePath": "assets/audio/bgm/user-20261018/moon-shop.ogg",
+      "bytes": 841256,
+      "sha256": "b7f6a11c21c4d6dcb99341b79e499dc57be2663ac661182bff943154322bf179",
+      "fallbackRuntimePath": "assets/audio/bgm/user-20261018/moon-shop.mp3",
+      "fallbackBytes": 1118061,
+      "fallbackSha256": "ff00399200ae04bf2dde38e15f0488f51e6342f8286689ad3bc5611597c351b0"
+    },
+    {
+      "id": "go-cake",
+      "file": "user-20261018/go-cake.ogg",
+      "title": "go-cake",
+      "composer": "User-selected complete track",
+      "style": "User supplied",
+      "scenes": [
+        "table"
+      ],
+      "license": "Project owner supplied",
+      "durationSeconds": 69.264,
+      "runtimePath": "assets/audio/bgm/user-20261018/go-cake.ogg",
+      "bytes": 1402264,
+      "sha256": "7fdba489a6d7e8c8033273d747446d93e0b0102faa9dd9567379ca9afc86fd42",
+      "fallbackRuntimePath": "assets/audio/bgm/user-20261018/go-cake.mp3",
+      "fallbackBytes": 1663533,
+      "fallbackSha256": "aa186c94edaf63aa5a8a6fa5d2f2489fefd3b03337054ed58f09b3afa4d2c53b"
+    },
+    {
+      "id": "vsboss",
+      "file": "user-20261018/vsboss.ogg",
+      "title": "vsboss",
+      "composer": "User-selected complete track",
+      "style": "User supplied",
+      "scenes": [
+        "boss"
+      ],
+      "license": "Project owner supplied",
+      "durationSeconds": 67.416,
+      "runtimePath": "assets/audio/bgm/user-20261018/vsboss.ogg",
+      "bytes": 1243497,
+      "sha256": "d211fbd67d8b3dec22c725dcbf76331aca375b8dfd660c0d43693ddccd8fea34",
+      "fallbackRuntimePath": "assets/audio/bgm/user-20261018/vsboss.mp3",
+      "fallbackBytes": 1619181,
+      "fallbackSha256": "6412815ad81481a4bbf84c5ba94f57033528883b837a8c667a8a3c8133dc1073"
+    }
+  ]
+}

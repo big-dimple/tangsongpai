@@ -1,0 +1,60 @@
+import type Phaser from 'phaser';
+import {loadArtTexture,promoteArtTexture} from './ArtTextureLoading';
+
+type Status='idle'|'loading'|'loaded'|'failed';
+interface Entry {status:Status;attempts:number;controller?:AbortController;promise?:Promise<boolean>;visible?:boolean;promotionPending?:boolean}
+const loaders=new WeakMap<Phaser.Scene,GoodsLoads>();
+export const goodsArtKey=(id:string)=>'goods-art/'+id;
+/** Read the completed render tree: only the top card of a basic-choice fan is visible.
+ * Metadata is assigned after drawGoodsArt returns, so classification runs in a microtask.
+ */
+function foreground(scene:Phaser.Scene,id:string):boolean {
+  type Node={name:string;getData?:(key:string)=>unknown;list?:Node[]};
+  let matched=false,visible=false;
+  const walk=(nodes:Node[])=>{for(const node of nodes){if(node.name==='shop/goods-art/'+id){matched=true;if(!node.getData?.('basicChoiceArt')||node.getData?.('primary'))visible=true;}if(node.list)walk(node.list);}};
+  walk((scene.children?.list??[]) as Node[]);return !matched||visible;
+}
+
+/** Visible thumbnails share the texture queue with Jokers and stage warmup. */
+class GoodsLoads {
+  readonly entries=new Map<string,Entry>();
+  private disposed=false;
+  constructor(private readonly scene:Phaser.Scene){scene.events.once('shutdown',this.dispose);scene.events.once('destroy',this.dispose);}
+  request(id:string,url:string,refresh:()=>void,retry=false):Promise<boolean> {
+    if(this.disposed)return Promise.resolve(false);
+    const key=goodsArtKey(id);
+    if(this.scene.textures.exists(key))return Promise.resolve(true);
+    let entry=this.entries.get(id);if(!entry){entry={status:'idle',attempts:0};this.entries.set(id,entry);}
+    if(entry.status==='loading'){
+      const current=entry;
+      if(!current.visible&&!current.promotionPending){
+        current.promotionPending=true;
+        void Promise.resolve().then(()=>{
+          current.promotionPending=false;
+          if(this.disposed||current.controller?.signal.aborted||current.status!=='loading'||this.entries.get(id)!==current)return;
+          if(retry||foreground(this.scene,id)){current.visible=true;promoteArtTexture(this.scene.game,key);}
+        });
+      }
+      return entry.promise!;
+    }
+    if(entry.status==='failed'&&!retry)return Promise.resolve(false);
+    const controller=new AbortController();entry.controller=controller;entry.status='loading';entry.attempts++;
+    const current=entry;
+    return entry.promise=Promise.resolve().then(()=>{current.visible=retry||foreground(this.scene,id);return loadArtTexture(this.scene.game,key,url,controller.signal,current.visible);}).then(()=>{
+      if(this.disposed||controller.signal.aborted)return false;
+      current.status=this.scene.textures.exists(key)?'loaded':'failed';refresh();return current.status==='loaded';
+    }).catch(()=>{if(!this.disposed&&!controller.signal.aborted){current.status='failed';refresh();}return false;});
+  }
+  private readonly dispose=()=>{
+    if(this.disposed)return;this.disposed=true;
+    for(const entry of this.entries.values())entry.controller?.abort();this.entries.clear();
+    this.scene.events.off('shutdown',this.dispose);this.scene.events.off('destroy',this.dispose);loaders.delete(this.scene);
+  };
+}
+function loader(scene:Phaser.Scene):GoodsLoads {let value=loaders.get(scene);if(!value){value=new GoodsLoads(scene);loaders.set(scene,value);}return value;}
+export function requestGoodsArt(scene:Phaser.Scene,id:string,url:string,refresh:()=>void):void {void loader(scene).request(id,url,refresh);}
+export function retryGoodsArt(scene:Phaser.Scene,id:string,url:string,refresh:()=>void):Promise<boolean>{return loader(scene).request(id,url,refresh,true);}
+export function goodsArtLoadState(scene:Phaser.Scene,id:string):{status:Status;attempts:number}{
+  if(scene.textures.exists(goodsArtKey(id)))return {status:'loaded',attempts:loaders.get(scene)?.entries.get(id)?.attempts??0};
+  const entry=loaders.get(scene)?.entries.get(id);return {status:entry?.status??'idle',attempts:entry?.attempts??0};
+}

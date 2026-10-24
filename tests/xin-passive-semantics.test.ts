@@ -1,0 +1,40 @@
+import {afterEach,expect,it,vi} from 'vitest';
+vi.mock('phaser',()=>({default:{Scene:class {}}}));
+vi.mock('../src/game/runAdapter',()=>({dispatchRun:vi.fn(),runController:vi.fn()}));
+import {dispatchRun} from '../src/game/runAdapter';
+import {GameScene} from '../src/game/GameScene';
+import {createRun,applyCommand,type R2RunState,type Action} from '../src/domain/run';
+import {CHARACTER_IDS} from '../src/domain/characters';
+import {newRunIdentity} from '../src/game/RunLaunch';
+import {r2SelectionFacts} from '../src/domain/r2SelectionFacts';
+import {r2JokerDefinitionsFor} from '../src/domain/r2ContentProfiles';
+import {heroAbilityCue} from '../src/game/HeroAbilityCue';
+import {heroSkillGuide} from '../src/game/HeroSkillGuide';
+import {heroExplanationCopy} from '../src/game/HeroExplanation';
+import {characterForNewRun} from '../src/game/CharacterRunCopy';
+import {SELECTION_PRESENTATION} from '../src/game/SelectionPresentation';
+import {unusedHeroAbility,showHeroPlayReminder} from '../src/game/HeroPlayReminder';
+import {renderXinPassiveSkillEntry} from '../src/game/XinPassiveSkillEntry';
+import type {SceneView} from '../src/game/SceneView';
+import {layout} from '../src/game/layout';
+const make=(id:'laohuan'|'amo'|'touye'|'azao'|'erxiang'|'xiemu'='laohuan')=>createRun({rulesVersion:'r2',seed:'xin-passive',runId:'xin-passive/'+id,characterId:id,r2Identity:newRunIdentity(id,'group'),openingRoute:'group',modeConfig:{mode:'standard',difficulty:0,challengeId:null,programsEnabled:false}});
+const result=(s:R2RunState,action:Action)=>{const r=applyCommand(s,{runId:s.runId,commandId:'passive/'+s.commandSeq,expectedSeq:s.commandSeq,action});if(!r.ok)throw Error(r.code);return r;};
+const entered=()=>result(result(make(),{type:'LeaveShop'}).state,{type:'EnterStage'}).state;
+const facts=(s:R2RunState,ids:readonly string[])=>r2SelectionFacts({hand:s.handOrder.map(id=>s.deckInstances.find(c=>c.id===id)!),selectedIds:ids,disabledIds:s.stage!.disabledIds,jokers:s.jokers,definitions:r2JokerDefinitionsFor(s)});
+afterEach(()=>vi.clearAllMocks());
+it('Xin never exposes active availability, selection failure or red pending semantics',()=>{let s=entered();for(const ids of [[],s.handOrder.slice(0,1),s.handOrder.slice(0,5)]){const cue=heroAbilityCue(s,undefined,ids)!;expect(cue).toMatchObject({label:'众里寻他',state:'passive',status:'被动',detail:'弃牌后多看两张',available:false,opportunity:false,actionable:false,attention:false});expect(cue.ariaLabel).toContain('被动技能');expect(cue.ariaLabel).not.toMatch(/主动|条件未满足|当前可用|待完成/);}s=result(s,{type:'DiscardHand',selectedIds:s.handOrder.slice(0,1)}).state;const cue=heroAbilityCue(s)!;expect(cue.state).toBe('passive');expect(cue.status).toBe('被动');expect(cue.detail).toBe('请选择保留的牌');expect(cue.ariaLabel).toContain('请选择保留的牌');expect(cue.attention).toBe(false);});
+it('selection and read-only explanation describe automatic discard without a skill button instruction',()=>{const c=characterForNewRun('laohuan');expect(c.skillTags).toContain('被动');expect(SELECTION_PRESENTATION.laohuan.entry).toContain('自动多看');expect(SELECTION_PRESENTATION.laohuan.when).toContain('被动');expect(heroExplanationCopy('laohuan').now).toContain('正常弃牌即可自动生效');expect(heroExplanationCopy('laohuan').now).not.toContain('点击对应技能按钮');expect(heroSkillGuide(entered()).active).toBe(false);});
+it.each(CHARACTER_IDS.filter(id=>id!=='laohuan'))('%s retains active cue semantics',id=>{const cue=heroAbilityCue(make(id))!;expect(cue.state).not.toBe('passive');expect(cue.ariaLabel).toContain(id==='amo'?'苏轼技能：余音袅袅（贬谪）':'主动技能');expect(characterForNewRun(id).skillTags).not.toContain('被动');});
+it('two real automatic discards/choices followed by a five-card flush dispatches PlayHand without a reminder',async()=>{
+ let s=entered();const hand=['clubs-2','clubs-4','clubs-7','clubs-9','clubs-13','spades-3','hearts-5','diamonds-6'];s={...s,handOrder:hand,drawPile:s.deckInstances.map(c=>c.id).filter(id=>!hand.includes(id))};
+ for(const id of ['spades-3','hearts-5']){s=result(s,{type:'DiscardHand',selectedIds:[id]}).state;expect(s.pendingRefill).toBeTruthy();s=result(s,{type:'ChooseRefill',selectedIds:s.pendingRefill!.candidateIds.slice(0,s.pendingRefill!.required)}).state;}
+ expect(s.stage!.discardsLeft).toBe(1);const ids=hand.slice(0,5),selection=facts(s,ids);expect(selection.type).toBe('flush');expect(unusedHeroAbility(s,selection,ids,false,{})).toBe(false);
+ const open=vi.fn(),play=vi.fn();showHeroPlayReminder({open} as never,s,selection,ids,false,{valid:()=>true,back:vi.fn(),play,disable:vi.fn()});expect(open).not.toHaveBeenCalled();expect(play).not.toHaveBeenCalled();
+ const scene={run:s,pendingRefill:undefined,ready:true,presentation:undefined,dialog:{current:undefined,open},selectedIds:new Set(ids),handsLeft:s.stage!.handsLeft,selectionPreview:()=>selection,assistProfile:false,assistIds:[],erxiangTargetId:null,xiemuBurn:0,azaoRelease:false,amoExile:false,lifecycle:1,intent:0,heat:Number(s.stage!.heat),pendingTouye:undefined,cardViews:[],clearHover:vi.fn(),cancelAiCandidates:vi.fn(),updateControls:vi.fn(),alive:()=>false};
+ vi.mocked(dispatchRun).mockResolvedValue(result(s,{type:'PlayHand',selectedIds:ids}));await (GameScene.prototype as unknown as {playSelected():Promise<void>}).playSelected.call(scene as unknown as GameScene);expect(dispatchRun).toHaveBeenCalledOnce();expect(vi.mocked(dispatchRun).mock.calls[0][1]).toEqual({type:'PlayHand',selectedIds:ids});expect(open).not.toHaveBeenCalled();
+});
+it.each([[1366,768],[390,740],[320,740],[740,390]])('passive information is non-interactive in the existing %sx%s skill slot', (width,height)=>{
+ const b=layout({width,height},{top:0,right:0,bottom:0,left:0}).heroAction,items:{name:string;text:string}[]=[];
+ const object=(text='')=>{const item={name:'',text,setFillStyle:()=>item,setStrokeStyle:()=>item,setData:()=>item,setFontStyle:()=>item,setBackgroundColor:()=>item,setPadding:()=>item,setOrigin:()=>item,setName:(name:string)=>{item.name=name;return item;}};items.push(item);return item;};
+ const view={rect:vi.fn(()=>object()),text:vi.fn((_x:number,_y:number,text:string)=>object(text)),target:vi.fn(),button:vi.fn()};renderXinPassiveSkillEntry(view as unknown as SceneView,b,heroAbilityCue(entered())!,width<600);expect(view.rect).toHaveBeenCalledWith(b);expect(view.target).not.toHaveBeenCalled();expect(view.button).not.toHaveBeenCalled();expect(items).toEqual(expect.arrayContaining([expect.objectContaining({name:'hero/passive-name',text:'众里寻他'}),expect.objectContaining({name:'hero/passive-badge',text:'被动'}),expect.objectContaining({name:'hero/passive-description',text:'弃牌后多看两张'})]));
+});

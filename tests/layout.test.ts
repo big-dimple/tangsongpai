@@ -1,0 +1,249 @@
+import {describe,it,expect} from 'vitest';
+import {layout,intersects,scorePedestal,scoreCells,playedFootprint,type Box} from '../src/game/layout';
+import {PointerIntent} from '../src/game/PointerIntent';
+import {gameToolInventoryBox,toolInventoryPlayedArea} from '../src/game/ToolInventoryEntry';
+
+const sizes=[[320,568],[360,640],[390,740],[390,844],[430,932],[844,300],[844,360],[844,390],[1024,768],[1280,720],[1920,1080],[768,1024]];
+const inside=(b:Box,w:number,h:number)=>b.x>=0&&b.y>=0&&b.x+b.width<=w+.01&&b.y+b.height<=h+.01;
+describe('CSS layout contract',()=>{
+  it('spends spare score height while preserving full five-card previews and existing hand budgets',()=>{
+    for(const width of [360,390])for(const count of [9,10,14]){
+      const l=layout({width,height:740},{top:0,right:0,bottom:0,left:0},undefined,{count});
+      expect(l.playedArea.height).toBeGreaterThanOrEqual(88);
+      expect(l.scoreBoard.height).toBeLessThanOrEqual(132);
+      const base=scorePedestal(l.scoreBoard)!;expect(base).toBeDefined();expect(l.scoreFire.y).toBeGreaterThanOrEqual(l.scoreBoard.y+24);expect(l.scoreFire.y+l.scoreFire.height).toBeCloseTo(base.y+1);expect(l.scoreFire.height).toBeGreaterThan(0);
+      const total=scoreCells(l.scoreBoard)[2];expect(total.y).toBeGreaterThan(base.y);expect(total.y+total.height).toBeLessThan(base.y+base.height);expect(l.scoreFire.y+l.scoreFire.height).toBeLessThan(total.y);
+      expect(l.hand.height).toBeGreaterThanOrEqual(count===9?(width===360?52:64)*1.4+22:189.6);expect(l.hand.height).toBeLessThanOrEqual(223.2);
+      expect(intersects(l.playedArea,l.hand)).toBe(false);
+      expect(intersects(l.scoreFire,l.playedArea)).toBe(false);
+    }
+  });
+  it('preserves complete five-card workplane and two readable fourteen-card rows through real safe insets',()=>{
+    for(const width of [360,390])for(const safe of [{top:0,right:0,bottom:34,left:0},{top:12,right:0,bottom:34,left:0}]){
+      const l=layout({width,height:740},safe,undefined,{count:14});
+      expect(l.handRows).toBe(2);expect(l.hand.height).toBeGreaterThanOrEqual(189.6);expect(l.hand.height).toBeLessThanOrEqual(223.2);expect(l.cards.every(c=>c.visual.width>=52)).toBe(true);expect(l.playedArea.height).toBeGreaterThanOrEqual(88);
+      expect(l.scoreBoard.height).toBeGreaterThanOrEqual(92);expect(l.slots.every(b=>Math.abs(b.height/b.width-1.4)<1e-6)).toBe(true);
+      expect(l.buttons.rank.width).toBe(44);expect(l.buttons.suit.width).toBe(44);
+      expect(l.tableActions.play.y+l.tableActions.play.height).toBeLessThanOrEqual(740-safe.bottom);
+    }
+  });
+  it('shows all10–14 cards in two stable rows with independent lift and hit space',()=>{
+    for(const width of [360,390])for(const count of [10,11,12,13,14])for(const bottom of [0,12]){
+      const l=layout({width,height:740},{top:0,left:0,right:0,bottom},undefined,{count,start:14});
+      expect(l.handRows).toBe(2);expect(l.handOverflow).toBe(false);expect(l.handStart).toBe(0);
+      expect(l.visibleCardCount).toBe(count);expect(l.cards.every(c=>c.visible)).toBe(true);
+      expect(new Set(l.cards.map(c=>c.hit.y)).size).toBe(2);
+      const columns=Math.ceil(count/2),first=l.cards.slice(0,columns),second=l.cards.slice(columns);
+      for(const card of l.cards){
+        expect(inside(card.visual,width,740)).toBe(true);expect(inside(card.hit,width,740)).toBe(true);
+        expect(card.visual.width).toBeGreaterThanOrEqual(52);expect(card.hit.width).toBeGreaterThanOrEqual(36);
+        expect(card.visual.y-16).toBeGreaterThanOrEqual(card.hit.y);
+        for(const control of [l.scoreBoard,...Object.values(l.buttons),...Object.values(l.tableActions)])expect(intersects(card.hit,control)).toBe(false);
+      }
+      for(let i=0;i<l.cards.length;i++)for(let j=i+1;j<l.cards.length;j++)expect(intersects(l.cards[i].hit,l.cards[j].hit)).toBe(false);
+      for(const lower of second)for(const upper of first)expect(intersects({...lower.visual,y:lower.visual.y-16},upper.visual)).toBe(false);
+    }
+  });
+
+  it('D44 reserves readable score and independent fire space through short-landscape boundary and safe insets',()=>{
+    for(const height of [300,320,359,360,361,390,430])for(const bottom of [0,12]){
+      const l=layout({width:844,height},{top:0,left:0,right:0,bottom},undefined,{count:9});
+      expect(l.scoreBoard.height).toBeGreaterThanOrEqual(80);
+      expect(l.scoreFire.y).toBeGreaterThan(l.scoreBoard.y);
+      expect(l.scoreFire.y+l.scoreFire.height).toBeLessThan(l.scoreBoard.y+l.scoreBoard.height);
+      for(const control of [...Object.values(l.buttons),...Object.values(l.tableActions),l.hand]){
+        expect(intersects(l.scoreBoard,control)).toBe(false);
+        expect(intersects(l.scoreFire,control)).toBe(false);
+      }
+      expect(l.toolsInHud).toBe(false);expect(l.tools.y).toBe(l.actions.y);
+    }
+  });
+  it('D44 keeps nine cards in one row at 320–430px without changing seats on selection',()=>{
+    for(const width of [320,360,390,430]){
+      const l=layout({width,height:640},{top:0,left:0,right:0,bottom:0},undefined,{count:9,start:8});
+      expect(l.handOverflow).toBe(false);expect(l.visibleCardCount).toBe(9);expect(l.handStart).toBe(0);
+      for(const card of l.cards){
+        expect(card.visible).toBe(true);expect(card.hit.width).toBeGreaterThanOrEqual(width<360?30:36);
+        expect(card.hit.height).toBeGreaterThanOrEqual(90);
+        expect(card.visual.height).toBeCloseTo(card.visual.width*1.4);
+        // Sixteen pixels of selection lift stay within the original seat's vertical reserve.
+        expect(card.visual.y-16).toBeGreaterThan(card.hit.y);
+      }
+    }
+  });
+  for(const [width,height] of sizes)it(`${width}×${height}: readable, visible and distinct hit areas`,()=>{
+    const l=layout({width,height},{top:0,right:0,bottom:0,left:0});
+    for(const b of [l.hud,l.jokers,l.preview,l.tools,l.hand,l.actions,l.status])expect(inside(b,width,height)).toBe(true);
+    const buttons=[...Object.values(l.buttons),...Object.values(l.tableActions)];
+    for(const b of buttons){expect(inside(b,width,height)).toBe(true);expect(b.height).toBeGreaterThanOrEqual(44);expect(b.width).toBeGreaterThanOrEqual(44);}
+    expect(l.tableActions.play.height).toBeGreaterThanOrEqual(48);expect(l.tableActions.discard.height).toBeGreaterThanOrEqual(48);
+    expect(intersects(l.hand,l.actions)).toBe(false);expect(intersects(l.tools,l.hand)).toBe(false);
+    for(const visiblePreview of [l.scoreBoard,playedFootprint(toolInventoryPlayedArea(l),l.mode==='portrait')])expect(intersects(visiblePreview,l.tools)).toBe(false);
+    for(let i=0;i<buttons.length;i++)for(let j=i+1;j<buttons.length;j++)expect(intersects(buttons[i],buttons[j])).toBe(false);
+    expect(l.cards.length).toBe(8);for(const c of l.cards){expect(inside(c.hit,width,height)).toBe(true);expect(c.hit.width).toBeGreaterThanOrEqual(36);expect(c.visual.height/c.visual.width).toBeGreaterThanOrEqual(1.4-1e-6);}
+    for(let i=0;i<l.cards.length;i++)for(let j=i+1;j<l.cards.length;j++)expect(intersects(l.cards[i].hit,l.cards[j].hit)).toBe(false);
+  });
+  it('safe insets preserve CSS targets; 320px uses compact cards with scrollable details',()=>{
+    const l=layout({width:390,height:844},{top:24,right:0,bottom:34,left:0});
+    expect(l.hud.y).toBeGreaterThanOrEqual(24);expect(l.tableActions.play.y+l.tableActions.play.height).toBeLessThanOrEqual(810);
+    const narrow=layout({width:320,height:568},{top:0,right:0,bottom:0,left:0});expect(narrow.compact).toBe(true);expect(narrow.height).toBe(568);
+  });
+  it('keeps three sorting targets and two primary targets within the dynamic safe viewport',()=>{
+    for(const [width,height] of [[320,568],[390,740],[390,844],[640,320],[844,300],[844,390],[1280,720]]){
+      const safe={top:8,right:12,bottom:12,left:8},l=layout({width,height},safe,undefined,{count:14});
+      expect(Object.keys(l.buttons).sort()).toEqual(['ai','rank','suit']);expect(Object.keys(l.tableActions).sort()).toEqual(['discard','play']);
+      const controls=[...Object.values(l.buttons),...Object.values(l.tableActions)];
+      for(const b of controls){
+        expect(b.width).toBeGreaterThanOrEqual(44);expect(b.height).toBeGreaterThanOrEqual(44);
+        expect(b.x).toBeGreaterThanOrEqual(safe.left);expect(b.y).toBeGreaterThanOrEqual(safe.top);
+        expect(b.x+b.width).toBeLessThanOrEqual(width-safe.right);expect(b.y+b.height).toBeLessThanOrEqual(height-safe.bottom);
+        expect(intersects(b,l.hand)).toBe(false);
+      }
+      for(let i=0;i<controls.length;i++)for(let j=i+1;j<controls.length;j++)expect(intersects(controls[i],controls[j])).toBe(false);
+      expect(l.buttons.rank.x).toBe(l.tools.x);expect(l.buttons.ai.x).toBe(l.tools.x+l.tools.width*2/3);expect(l.buttons.rank.y).toBe(l.tools.y+14);expect(l.tableActions.discard.width).toBe(l.tableActions.play.width);
+      expect(l.tableActions.discard.x+l.tableActions.discard.width).toBeLessThan(l.tools.x);
+      expect(l.tools.x+l.tools.width).toBeLessThan(l.tableActions.play.x);
+      if(l.mode==='portrait'&&!l.handOverflow)expect((l.tableActions.discard.x+l.tableActions.play.x+l.tableActions.play.width)/2).toBeCloseTo(l.actions.x+l.actions.width/2);
+      else expect(l.tableActions.play.x+l.tableActions.play.width).toBeCloseTo(l.actions.x+l.actions.width);
+    }
+  });
+  it('expanded hands keep every seat and use a bounded horizontal window on narrow screens',()=>{
+    for(const [width,height] of [[320,568],[390,844],[844,390],[1280,720]])for(const count of [9,10,14]){
+      const l=layout({width,height},{top:0,right:0,bottom:0,left:0},undefined,{count,start:100});
+      expect(l.cards.length).toBe(count);
+      const visible=l.cards.filter(card=>card.visible);
+      expect(visible.length).toBe(l.visibleCardCount);
+      expect(l.handStart).toBe(count-l.visibleCardCount);
+      expect(l.cards.findIndex(card=>card.visible)).toBe(l.handStart);
+      for(const card of visible){
+        expect(inside(card.hit,width,height)).toBe(true);
+        expect(card.hit.width).toBeGreaterThanOrEqual(width<360&&count===9?30:36);
+        expect(card.visual.height/card.visual.width).toBeGreaterThanOrEqual(1.4-1e-6);
+      }
+      for(let i=0;i<visible.length;i++)for(let j=i+1;j<visible.length;j++)expect(intersects(visible[i].hit,visible[j].hit)).toBe(false);
+      if(l.handOverflow){
+        expect(l.handStart).toBeGreaterThan(0);
+        for(const button of Object.values(l.handNavigation)){
+          expect(inside(button,width,height)).toBe(true);
+          expect(button.width).toBeGreaterThanOrEqual(44);expect(button.height).toBeGreaterThanOrEqual(44);
+          for(const card of visible)expect(intersects(button,card.hit)).toBe(false);
+        }
+      }else expect(visible.length).toBe(count);
+    }
+  });
+  it('expanded hand windows keep all indices reachable without shrinking the original eight-card faces',()=>{
+    const viewport={width:390,height:568},safe={top:0,right:0,bottom:0,left:0};
+    const baseline=layout(viewport,safe),first=layout(viewport,safe,undefined,{count:14,start:0}),last=layout(viewport,safe,undefined,{count:14,start:14});
+    expect(first.handOverflow).toBe(true);expect(first.handStart).toBe(0);
+    expect(first.cards.filter(card=>card.visible)[0].visual.width).toBe(baseline.cards[0].visual.width);
+    const reachable=new Set<number>();
+    for(let start=0;start<14;start++)layout(viewport,safe,undefined,{count:14,start}).cards.forEach((card,i)=>{if(card.visible)reachable.add(i);});
+    expect([...reachable].sort((a,b)=>a-b)).toEqual(Array.from({length:14},(_,i)=>i));
+    expect(last.cards.at(-1)?.visible).toBe(true);
+    expect(layout(viewport,safe,undefined,{count:1,start:0}).cards).toHaveLength(1);
+    expect(layout(viewport,safe,undefined,{count:0,start:0}).cards).toHaveLength(0);
+  });
+  it('played cards, current score and pile counts stay visible above the independent hand controls',()=>{
+    for(const [width,height] of [[1920,1080],[1280,720],[360,640],[390,740],[390,844],[844,300],[844,390]]){
+      const l=layout({width,height},{top:0,right:0,bottom:0,left:0});
+      for(const b of [l.scoreBoard,l.playedArea,l.handLabel,l.piles])expect(inside(b,width,height)).toBe(true);
+      expect(l.playedArea.height).toBeGreaterThanOrEqual(48);
+      expect(intersects(l.scoreBoard,l.playedArea)).toBe(false);
+      // D16 moves the mobile pile/history row into details; score and landing remain on the table.
+      const plane=playedFootprint(toolInventoryPlayedArea(l),l.mode==='portrait');
+      const visible=l.mode==='portrait'||!l.labelHeight?[l.scoreBoard,plane]:[l.scoreBoard,plane,l.handLabel,l.piles];
+      for(const b of visible)for(const control of [l.tools,l.hand,l.actions])expect(intersects(b,control)).toBe(false);
+      for(const action of Object.values(l.tableActions)){expect(inside(action,width,height)).toBe(true);expect(action.height).toBeGreaterThanOrEqual(48);}
+      expect(intersects(l.tableActions.play,l.tableActions.discard)).toBe(false);
+      if(l.mode==='landscape'){
+        const utility={x:width-148,y:12,width:136,height:44};
+        for(const b of [...l.slots,...l.jokerLabels])expect(intersects(b,utility),'menu/fullscreen must not cover the fifth joker').toBe(false);
+      }
+      expect(l.hand.width).toBeLessThanOrEqual(1100);
+    }
+  });
+});
+describe('bottom discard — sorting — play row and independent skill',()=>{
+  it.each([[320,568,0,0,80,80],[390,740,0,0,111,111],[844,300,12,12,250,250],[844,300,12,34,250,250]])('%s×%s safe%s/%s reserves usable submit/discard sizes and all nine seats', (width,height,top,bottom,discard,play)=>{
+    const l=layout({width,height},{top,bottom,left:0,right:0},undefined,{count:9}),entry=gameToolInventoryBox(l);
+    expect(l.visibleCardCount).toBe(9);expect(l.handOverflow).toBe(false);
+    expect(l.tableActions.discard.width).toBe(discard);expect(l.tableActions.play.width).toBe(play);
+    expect(l.tableActions.discard.x+l.tableActions.discard.width).toBeLessThan(l.buttons.rank.x);
+    expect(l.buttons.ai.x+l.buttons.ai.width).toBeLessThan(l.tableActions.play.x);
+    const controls=[...Object.values(l.buttons),...Object.values(l.tableActions),entry,l.heroAction];
+    for(const b of controls){expect(inside(b,width,height)).toBe(true);expect(b.width).toBeGreaterThanOrEqual(44);expect(b.height).toBeGreaterThanOrEqual(44);expect(b.y).toBeGreaterThanOrEqual(top);expect(b.y+b.height).toBeLessThanOrEqual(height-bottom);for(const protectedBox of [l.hand,l.scoreBoard,l.status,playedFootprint(toolInventoryPlayedArea(l),l.mode==='portrait')])expect(intersects(b,protectedBox)).toBe(false);}
+    for(let i=0;i<controls.length;i++)for(let j=i+1;j<controls.length;j++)expect(intersects(controls[i],controls[j])).toBe(false);
+  });
+});
+describe('pointer intent prevents accidental commands',()=>{
+  it('holding a plain action button still releases once; only inspectable cards long-press',()=>{
+    const p=new PointerIntent();p.down(1,10,10,0,false);expect(p.hold(355)).toBe(false);expect(p.up(1,10,10,500)).toBe('tap');expect(p.up(1,10,10,510)).toBe('none');
+    p.down(1,10,10,0,false);p.move(1,30,10);expect(p.up(1,30,10,500)).toBe('drag');
+  });
+  it('tap selects; motion and cancellation never select or buy',()=>{
+    const p=new PointerIntent();p.down(1,10,10,0);expect(p.up(1,12,11,90)).toBe('tap');
+    p.down(1,10,10,100);p.move(1,35,10);expect(p.up(1,35,10,160)).toBe('drag');
+    p.down(1,10,10,200);p.cancel();expect(p.up(1,10,10,250)).toBe('none');
+  });
+  it('350ms long press is detail only, release is not a second tap',()=>{
+    const p=new PointerIntent();p.down(1,10,10,0);expect(p.hold(349)).toBe(false);expect(p.hold(350)).toBe(true);expect(p.up(1,10,10,500)).toBe('none');
+  });
+  it('cancelled drag releases the lock; a different pointer cannot complete it',()=>{
+    const p=new PointerIntent();p.down(1,10,10,0);expect(p.up(2,10,10,30)).toBe('none');p.cancel();p.down(2,10,10,50);expect(p.up(2,10,10,70)).toBe('tap');
+  });
+});
+
+it('the continuous score band protects its digits and real played cards in short and safe-inset layouts',()=>{
+ for(const [width,height,count] of [[360,740,14],[390,740,9],[844,300,9],[1280,720,9]])for(const bottom of [0,12,34]){
+  const l=layout({width,height},{top:12,left:0,right:0,bottom},undefined,{count});
+  expect(intersects(l.scoreBoard,l.playedArea)).toBe(false);
+  const mat=playedFootprint(l.playedArea,l.mode==='portrait');expect(mat.width).toBeLessThanOrEqual(l.mode==='portrait'?316:600);expect(mat.height).toBeLessThanOrEqual(l.playedArea.height);
+ }
+});
+
+ describe('desktop final shared rectangles',()=>{
+  for(const [width,height] of [[1280,720],[1366,768],[1920,1080],[1912,954],[768,1024],[811,812],[812,811]])for(const count of [8,9,14])it(`${width}x${height} / ${count}`,()=>{
+    const l=layout({width,height},{top:0,right:0,bottom:0,left:0},undefined,{count,start:100});
+    const utility={x:width-148,y:12,width:136,height:44};
+    for(const slot of l.slots)expect(intersects(slot,utility)).toBe(false);
+    expect(intersects(l.hud,l.scoreBoard)).toBe(false);
+    if(count===9)expect(l.visibleCardCount).toBe(9);
+    for(const card of l.cards.filter(c=>c.visible)){
+      expect(card.hit.width).toBeGreaterThanOrEqual(36);
+      expect(card.visual.y-16).toBeGreaterThanOrEqual(l.hand.y);
+      if(l.handOverflow)for(const arrow of Object.values(l.handNavigation))expect(intersects(arrow,card.hit)).toBe(false);
+    }
+    if(l.handOverflow){expect(l.handNavigation.previous.x).toBe(l.hand.x);expect(l.handNavigation.next.x+l.handNavigation.next.width).toBe(l.hand.x+l.hand.width);expect(l.handStart+l.visibleCardCount).toBe(count);}
+  });
+ });
+
+it('desktop card art uses spare height while ordinary nine and fourteen windows keep full hit safety',()=>{
+ for(const [width,height] of [[1280,720],[1366,768],[1920,1080],[811,812],[812,811]])for(const count of [9,14]){
+  const l=layout({width,height},{top:0,right:0,bottom:0,left:0},undefined,{count});
+  expect(l.slots[0].width).toBeGreaterThanOrEqual(64);expect(l.slots[0].width).toBeLessThanOrEqual(140);expect(l.slots[1].x-l.slots[0].x-l.slots[0].width).toBeGreaterThanOrEqual(22-1e-6);expect(l.cards[0].visual.width).toBeGreaterThanOrEqual(88);
+  expect(l.slots[0].y+l.slots[0].height).toBeLessThan(l.playedArea.y);
+  if(count===9)expect(l.visibleCardCount).toBe(9);
+  const mat=playedFootprint(l.playedArea,false);expect(mat.width).toBeGreaterThanOrEqual(Math.min(540,l.playedArea.width));
+  for(const c of l.cards.filter(c=>c.visible))expect(c.hit.width).toBeGreaterThanOrEqual(36);
+ }
+});
+
+it('larger five-card racks preserve the score and hand budgets through phones, short tables and PC',()=>{
+ for(const [width,height,minWidth,handHeight,scoreHeight]of [[320,568,57,94.8,96],[390,740,68,156.4,108],[390,844,68,156.4,108],[430,932,76,156.4,108],[844,300,34,88,80],[844,390,54,122,86],[1280,720,140,153.04,80],[1366,768,140,161.776,114.224],[1920,1080,140,167.6,128]]){
+  const l=layout({width,height},{top:0,right:0,bottom:0,left:0});expect(l.slots).toHaveLength(5);expect(l.slots[0].width).toBeGreaterThanOrEqual(minWidth);expect(l.hand.height).toBeCloseTo(handHeight);expect(l.scoreBoard.height).toBeCloseTo(scoreHeight);
+  for(const [i,b]of l.slots.entries()){expect(inside(b,width,height)).toBe(true);expect(b.height/b.width).toBeCloseTo(1.4);expect(intersects(b,l.scoreBoard)).toBe(false);expect(intersects(b,l.hand)).toBe(false);if(i)expect(l.slots[i-1].x+l.slots[i-1].width).toBeLessThan(b.x);}
+ }
+});
+
+it('iPad portrait uses the full-width table while landscape and near-square windows retain the desktop rail',()=>{
+ for(const [width,height] of [[768,1024],[768,928],[810,1080],[810,984]])for(const bottom of [0,20])for(const count of [8,9,14]){
+  const l=layout({width,height},{top:0,right:0,bottom,left:0},undefined,{count});
+  expect(l.mode).toBe('portrait');expect(l.hand.width).toBe(width-24);expect(l.hand.x).toBe(12);
+  expect(l.visibleCardCount).toBe(count);expect(l.handOverflow).toBe(false);
+  const controls=[l.heroAction,...Object.values(l.tableActions),...Object.values(l.buttons)];
+  for(const b of [l.hud,l.scoreBoard,l.playedArea,l.hand,...controls])expect(inside(b,width,height-bottom)).toBe(true);
+  for(const b of controls){expect(b.width).toBeGreaterThanOrEqual(44);expect(b.height).toBeGreaterThanOrEqual(44);expect(intersects(b,l.hand)).toBe(false);}
+  for(const c of l.cards){expect(inside(c.hit,width,height-bottom)).toBe(true);expect(c.hit.width).toBeGreaterThanOrEqual(36);}
+ }
+ for(const [width,height] of [[1024,768],[1024,672],[1080,810],[1080,714],[811,812],[1280,720]])expect(layout({width,height},{top:0,right:0,bottom:0,left:0}).mode).toBe('desktop');
+});

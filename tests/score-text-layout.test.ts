@@ -1,0 +1,100 @@
+import {describe,it,expect,vi} from 'vitest';
+import type Phaser from 'phaser';
+import {compactScoreText,fitScoreLine,scoreFlightLanding,scoreImpactCell,scorePulseFrame} from '../src/game/ScoreTextLayout';
+
+function fakeText(value:string){
+  let font=26,wrap=0;const data=new Map<string,unknown>();
+  const text={text:value,x:0,y:0,
+    get width(){return wrap?Math.min(wrap,this.text.length*font*.6):this.text.length*font*.6;},
+    get height(){return font*1.22*(wrap?Math.ceil(this.text.length*font*.6/wrap):1);},
+    setText(value:string){this.text=value;return this;},setWordWrapWidth(value:number){wrap=value;return this;},
+    setFontSize(value:number){font=value;return this;},setScale(){return this;},setOrigin(){return this;},
+    setPosition(x:number,y:number){this.x=x;this.y=y;return this;},
+    setData(key:string,value:unknown){data.set(key,value);return this;},getData:(key:string)=>data.get(key),
+  };return text as unknown as Phaser.GameObjects.Text;
+}
+describe('score display space and exact value preservation',()=>{
+  it('source flight stops outside the number cell from cards, role and Joker directions',()=>{
+    const cell={x:120,y:100,width:100,height:32};
+    for(const source of [{x:40,y:116},{x:170,y:260},{x:320,y:20},{x:170,y:116}]){
+      const point=scoreFlightLanding(source,cell);
+      expect(point.x<cell.x||point.x>cell.x+cell.width||point.y<cell.y||point.y>cell.y+cell.height).toBe(true);
+      expect(Math.min(Math.abs(point.x-(cell.x-14)),Math.abs(point.x-(cell.x+cell.width+14)),Math.abs(point.y-(cell.y-14)),Math.abs(point.y-(cell.y+cell.height+14)))).toBeLessThan(.00001);
+    }
+  });
+  it('fits long exact integers and ranges without crossing neighbouring numeric columns',()=>{
+    for(const value of ['123,456,789,012,345','× 123,456,789','100,000,000–999,999,999','× 1,000,000/3']){
+      const text=fakeText(value),area={x:100,y:200,width:88,height:40};fitScoreLine(text,area,26,true);
+      expect(text.width).toBeLessThanOrEqual(area.width);expect(text.height).toBeLessThanOrEqual(area.height);
+      expect(text.getData('fullText')).toBe(value);
+      fitScoreLine(text,area,26,true);expect(text.getData('fullText')).toBe(value);
+      fitScoreLine(text,{...area,width:360},26,true);expect(text.text).toBe(value);
+    }
+  });
+  it('keeps current shorter values accurate after a large value was abbreviated',()=>{
+    const text=fakeText('999,999,999,999');fitScoreLine(text,{x:0,y:0,width:88,height:32},26,true);
+    text.setText('× 1.5');fitScoreLine(text,{x:0,y:0,width:88,height:32},26,true);
+    expect(text.text).toBe('× 1.5');expect(text.getData('fullText')).toBe('× 1.5');
+    expect(compactScoreText('× 1.5')).toBe('× 1.5');
+  });
+  it('clips a long source sentence to one actual row, preserving full copy for a wider layout',()=>{
+    const value='熟面孔 · 乘倍率 ×1.5 · 实际来源收益';
+    const text=fakeText(value);fitScoreLine(text,{x:0,y:0,width:180,height:24},17);
+    expect(text.width).toBeLessThanOrEqual(180);expect(text.text.endsWith('…')).toBe(true);expect(text.getData('fullText')).toBe(value);
+    fitScoreLine(text,{x:0,y:0,width:480,height:24},17);expect(text.text).toBe(value);
+  });
+});
+
+describe('primary numeric impact room',()=>{
+  it('reserves a real 1.54 pulse instead of fitting the resting number to the entire lane',()=>{
+    const text=fakeText('12,345'),cell={x:0,y:0,width:180,height:65};
+    fitScoreLine(text,{...cell,width:cell.width/1.54,height:cell.height/1.54},44,true);
+    const frame=scorePulseFrame(cell,text.width,text.height,1.54,-4);
+    expect(frame.scale).toBeCloseTo(1.54);expect(text.height*frame.scale/2-frame.lift).toBeLessThanOrEqual(cell.height/2);
+    expect(text.getData('fullText')).toBe('12,345');
+  });
+  it('keeps the lifted secondary pulse inside its 24px lane and returns to scale one',()=>{
+    const cell={x:0,y:0,width:100,height:24},frame=scorePulseFrame(cell,42,18,1.28,-4);
+    expect(frame.scale).toBeCloseTo(1.28);expect(frame.lift-18*frame.scale/2).toBeGreaterThanOrEqual(-12);
+    expect(frame.lift+18*frame.scale/2).toBeLessThanOrEqual(12);expect(scorePulseFrame(cell,42,18,1,0)).toEqual({scale:1,lift:0});
+  });
+  it('reserves a centred larger primary area inside the original score board',()=>{
+    for(const board of [{x:12,y:165,width:366,height:132},{x:188,y:72,width:318,height:58}]){
+      const area=scoreImpactCell(board);
+      expect(area.x).toBeGreaterThanOrEqual(board.x);expect(area.y).toBeGreaterThanOrEqual(board.y);
+      expect(area.x+area.width).toBeLessThanOrEqual(board.x+board.width);
+      expect(area.y+area.height).toBeLessThanOrEqual(board.y+board.height);
+      expect(area.height).toBeGreaterThanOrEqual(board.height>=108?41*1.4:26*1.4);
+    }
+  });
+});
+
+it('width fallback marks precision loss once and keeps exact powers unmarked',()=>{
+ expect(compactScoreText('× 123,456,789')).toBe('× ≈1.23e8');
+ expect(compactScoreText('× -123,456,789')).toBe('× ≈-1.23e8');
+ expect(compactScoreText('× ≈123456789')).toBe('× ≈1.23e8');
+ expect(compactScoreText('× 123000000')).toBe('× 1.23e8');
+ const text=fakeText('× 123000000');fitScoreLine(text,{x:0,y:0,width:60,height:40},26,true);
+ expect(text.text).toBe('× ≈1e8');expect(text.getData('fullText')).toBe('× 123000000');
+});
+
+it('reuses an unchanged fitted bitmap during animation, but remeasures new content or room',()=>{
+ const text=fakeText('123,456,789'),area={x:0,y:0,width:88,height:32};
+ fitScoreLine(text,area,26,true);const display=text.text,measure=vi.spyOn(text,'setFontSize');
+ fitScoreLine(text,{...area,x:20,y:30},26,true);expect(measure).not.toHaveBeenCalled();expect(text.text).toBe(display);expect(text.x).toBe(64);expect(text.y).toBe(30);
+ fitScoreLine(text,{...area,width:360},26,true);expect(measure).toHaveBeenCalled();expect(text.text).toBe('123,456,789');
+ text.setText('42');fitScoreLine(text,area,26,true);expect(text.getData('fullText')).toBe('42');
+});
+
+it('fits initial large cut-in text with a bounded number of font rasterizations',()=>{
+ const text=fakeText('123,456,789'),measure=vi.spyOn(text,'setFontSize');
+ fitScoreLine(text,{x:0,y:0,width:120,height:40},190,true);
+ expect(text.width).toBeLessThanOrEqual(120);expect(text.height).toBeLessThanOrEqual(40);expect(text.getData('fullText')).toBe('123,456,789');expect(measure.mock.calls.length).toBeLessThanOrEqual(10);
+});
+
+it('does not rasterize intermediate fonts for a near-fitting desktop high-score number',()=>{
+ const text=fakeText('≈284.77'),measure=vi.spyOn(text,'setFontSize');
+ fitScoreLine(text,{x:0,y:0,width:1032,height:188*1.22},190,true);
+ expect(text.height).toBeLessThanOrEqual(188*1.22);expect(text.width).toBeLessThanOrEqual(1032);
+ expect(text.getData('fullText')).toBe('≈284.77');expect(measure.mock.calls.length).toBeLessThanOrEqual(3);
+});

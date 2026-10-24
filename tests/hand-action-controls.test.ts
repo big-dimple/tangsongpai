@@ -1,0 +1,57 @@
+import {createHash} from 'node:crypto';
+import approvedLayout from '../docs/production/evidence/shop-closeout-repair-2026-10-18/layout-contract.json';
+import type Phaser from 'phaser';
+import {describe,expect,it} from 'vitest';
+import {layout,intersects} from '../src/game/layout';
+import {HAND_ACTION_LINES,drawHandActionGlyph,handActionContent,handActionCountColor} from '../src/game/HandActionArt';
+import {PAPER_THEME,PAPER_CSS} from '../src/game/theme';
+import {handSortTitleBox,handAiButtonLabel} from '../src/game/HandActionControls';
+const profiles=[[390,740,0,0],[320,568,0,0],[844,300,12,12],[844,300,12,34]];
+const layouts=()=>profiles.map(([width,height,top,bottom])=>layout({width,height},{top,bottom,left:0,right:0},undefined,{count:9}));
+describe('sorting caption above three controls beside equal primary actions',()=>{
+ it('locks the approved larger rack while preserving every hand seat and score height',()=>{
+  // Short-landscape status only gives its former spare right gutter to AI.
+  const fixed=layouts().map(l=>{const {buttons,tableActions,tools,toolsInHud,actions,...rest}=l;return {...rest,status:l.mode==='landscape'?{...rest.status,width:l.hud.width}:rest.status};});
+  // 043e536f enlarges the rack using spare space; the exact-source audit keeps the old baseline.
+  // Hand seats and score heights retain their previous hash, independently of the rack snapshot.
+  const protectedGeometry=layouts().map(l=>({hud:l.hud,hand:l.hand,handRows:l.handRows,handOverflow:l.handOverflow,handStart:l.handStart,visibleCardCount:l.visibleCardCount,cards:l.cards,handNavigation:l.handNavigation,scoreHeight:l.scoreBoard.height}));
+  expect(createHash('sha256').update(JSON.stringify(protectedGeometry)).digest('hex')).toBe(approvedLayout.protectedHandAndScoreSha256);
+  // Geometry only, without aesthetic or device acceptance.
+  expect(createHash('sha256').update(JSON.stringify(fixed)).digest('hex')).toBe(approvedLayout.presentationSha256);
+  expect(createHash('sha256').update(JSON.stringify(fixed.slice(2))).digest('hex')).toBe(approvedLayout.landscapeSha256);
+ });
+ it.each(profiles)('%s×%s safe %s/%s keeps three44px sort targets together and preserves primary dimensions', (width,height,top,bottom)=>{
+  const l=layout({width,height},{top,bottom,left:0,right:0},undefined,{count:9});
+  expect(l.tools.width).toBe(l.mode==='desktop'?144:132);expect(l.tools.y).toBe(l.actions.y);expect(l.buttons.rank.x).toBe(l.tools.x);expect(l.buttons.suit.x).toBe(l.buttons.rank.x+l.tools.width/3);expect(l.buttons.ai.x).toBe(l.buttons.rank.x+l.tools.width*2/3);expect(l.tableActions.discard.width).toBe(l.tableActions.play.width);
+  const title=handSortTitleBox(l.tools);expect(title.height).toBe(14);expect(title.y+title.height).toBe(l.buttons.rank.y);for(const b of Object.values(l.buttons))expect(intersects(title,b)).toBe(false);
+  expect(l.tableActions.discard.width).toBeGreaterThan((l.actions.width-168-12)/2);
+  const controls=[...Object.values(l.buttons),...Object.values(l.tableActions)];
+  for(const b of controls){expect(b.width).toBeGreaterThanOrEqual(44);expect(b.height).toBeGreaterThanOrEqual(44);expect(b.x).toBeGreaterThanOrEqual(l.hud.x);expect(b.x+b.width).toBeLessThanOrEqual(width);expect(b.y+b.height).toBeLessThanOrEqual(height-bottom);expect(intersects(b,l.hand)).toBe(false);}
+  for(let i=0;i<controls.length;i++)for(let j=i+1;j<controls.length;j++)expect(intersects(controls[i],controls[j])).toBe(false);
+  for(const b of Object.values(l.tableActions)){const c=handActionContent(b);expect(c.text.width).toBeGreaterThanOrEqual(32);if(c.glyph.width)expect(c.glyph.x+c.glyph.width).toBeLessThan(c.text.x);else expect(c.centerX).toBe(b.x+b.width/2);expect(c.glyph.y).toBeGreaterThan(b.y);expect(c.glyph.y+c.glyph.height).toBeLessThan(b.y+b.height);expect(c.countY+10).toBeLessThan(b.y+b.height);}
+ });
+ it('adds a readable caption without taking height from the44px sort targets',()=>{
+  const l=layouts()[0];expect(l.tableActions.play.height).toBe(58);expect(l.buttons.rank.height).toBe(44);expect(l.tableActions.play.width).toBe(l.tableActions.discard.width);
+ });
+ it('shortens only the ready AI label and preserves computing, paused and unavailable feedback',()=>{
+  expect(['ready','working','paused','unavailable'].map(s=>handAiButtonLabel(s as Parameters<typeof handAiButtonLabel>[0]))).toEqual(['AI','AI\n计算','AI\n稍候','AI\n不可用']);
+ });
+});
+describe('card actions remain readable as different ink shapes',()=>{
+ it('draws discard down into a flat card pile and play forward, independent of color',()=>{
+  const down=HAND_ACTION_LINES.discard[2],forward=HAND_ACTION_LINES.play[3];expect(down[1][0]).toBe(down[0][0]);expect(down[1][1]).toBeGreaterThan(down[0][1]);expect(forward[1][0]).toBeGreaterThan(forward[0][0]);expect(forward[1][1]).toBe(forward[0][1]);expect(HAND_ACTION_LINES.discard[3].slice(0,-1)).toHaveLength(4);expect(HAND_ACTION_LINES.play.filter(line=>line[0][0]===line.at(-1)![0]&&line[0][1]===line.at(-1)![1])).toHaveLength(3);
+ });
+ it.each(['discard','play'] as const)('%s stays within28×36 and retains its whole geometry through enabled/disabled recoloring',kind=>{
+  const draw=(color:number)=>{const log:unknown[][]=[];let g:object;g=new Proxy({}, {get:(_,name)=>(...args:unknown[])=>{log.push([name,...(name==='lineStyle'?[args[0],'COLOR',args[2]]:args)]);return g;}});drawHandActionGlyph(g as Phaser.GameObjects.Graphics,kind,color);return log;};
+  expect(draw(0x3f606b)).toEqual(draw(0x595b59));for(const line of HAND_ACTION_LINES[kind])for(const [x,y] of line){expect(x).toBeGreaterThanOrEqual(0);expect(x).toBeLessThanOrEqual(28);expect(y).toBeGreaterThanOrEqual(0);expect(y).toBeLessThanOrEqual(36);}expect(draw(0x3f606b)).toContainEqual(['lineStyle',1.5,'COLOR',1]);
+ });
+});
+describe('remaining counts preserve readable disabled ink',()=>{
+ it.each(['discard','play'] as const)('%s disabled normal and critical counts reach4.5 contrast against the actual disabled face',kind=>{
+  const luminance=(rgb:number)=>{const channel=(shift:number)=>{const s=(rgb>>shift&255)/255;return s<=.04045?s/12.92:((s+.055)/1.055)**2.4;};return .2126*channel(16)+.7152*channel(8)+.0722*channel(0);};
+  for(const critical of [false,true]){const color=handActionCountColor(kind,false,critical);expect(color).toBe(PAPER_CSS.disabledInk);const fg=luminance(parseInt(color.slice(1),16)),bg=luminance(PAPER_THEME.disabled);expect((Math.max(fg,bg)+.05)/(Math.min(fg,bg)+.05)).toBeGreaterThanOrEqual(4.5);}
+ });
+ it('preserves the active white submit count and normal jade / critical red discard count',()=>{
+  expect(handActionCountColor('play',true)).toBe(PAPER_CSS.paperLight);expect(handActionCountColor('discard',true)).toBe(PAPER_CSS.jade);expect(handActionCountColor('discard',true,true)).toBe(PAPER_CSS.red);
+ });
+});

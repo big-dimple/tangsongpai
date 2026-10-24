@@ -1,0 +1,120 @@
+import {describe,expect,it} from 'vitest';
+import {applyCommand,createRun,type R2RunState} from '../src/domain/run';
+import {newRunIdentity} from '../src/game/RunLaunch';
+import {r2ToolPrice} from '../src/domain/r2Shop';
+import {intersects,type Box} from '../src/game/layout';
+import {shopAnchoredTip} from '../src/game/ShopAnchoredTip';
+import {shopOfferGeometry,shopHeldGeometry,shopIdentityText,shopOfferSynopsis,SHOP_CATEGORIES} from '../src/game/ShopOfferLayout';
+import {shopLayout,shopSharedContent,shopSummaryWrap,shopOfferSummary} from '../src/game/ShopLayout';
+import {shopPurchaseContinuation,shopToolContinuation,shopToolPurchaseContinuation} from '../src/game/ShopPurchaseFlow';
+
+const inside=(a:Box,b:Box)=>a.x>=b.x&&a.y>=b.y&&a.x+a.width<=b.x+b.width&&a.y+a.height<=b.y+b.height;
+
+it('medium desktop spends space on full merchandise while keeping two-line information and aligned prices',()=>{
+ const p=shopLayout(1180,757,8,0,3,true),pc=p.pc!;
+ expect(pc.ownedRail.height+16).toBeLessThan(757*.25);
+ const rows=pc.jokerOffers.map(tile=>shopOfferGeometry(tile,'jokers')!);
+ for(const [i,g] of rows.entries()){
+  expect(g.art.width).toBeGreaterThanOrEqual(112);expect(g.summary.height).toBeGreaterThanOrEqual(34);
+  expect(g.price.y).toBe(rows[0].price.y);for(const copy of [g.title,g.identity!,g.summary,g.price])expect(intersects(g.art,copy)).toBe(false);
+ }
+});
+
+it('held phone identity stays outside complete art in a bottom rail clear of central controls and entry',()=>{
+ for(const width of [360,390])for(const height of [740,844]){
+  const p=shopLayout(width,height,8,0,3,true);
+  expect(p.inventoryCollapsed).toBe(false);
+  for(const b of p.slots){const g=shopHeldGeometry(b,true);expect(g.art.height/g.art.width).toBeCloseTo(1.25);expect(intersects(g.art,g.name)).toBe(false);expect(intersects(g.art,g.identity)).toBe(false);expect(g.identity.y+g.identity.height).toBeLessThanOrEqual(b.y+b.height);expect(b.y+b.height).toBeLessThan(p.build.y);expect(b.y+b.height).toBeLessThanOrEqual(p.play.y-8);expect(intersects(b,shopSharedContent(p,5)!)).toBe(false);}
+  expect(shopIdentityText('common')).toContain('普通');expect(shopIdentityText('rare','foil',true)).toBe('稀有 · 闪箔');
+ }
+});
+
+it('a first purchase costs at most a compact rail of phone working space, and filling slots costs no more',()=>{
+ const p=shopLayout(390,844,8,0,3,true),empty=shopSharedContent(p,0)!,one=shopSharedContent(p,1)!,full=shopSharedContent(p,5)!;
+ expect(empty.height-one.height).toBeLessThanOrEqual(110);expect(full).toEqual(one);expect(full.height).toBeGreaterThanOrEqual(460);
+});
+
+it('bounded summaries keep numeric facts together and mark omitted rules explicitly',()=>{
+ const text=shopSummaryWrap('当前每手+0.15，上限+0.9。\n下次1/15得10金，另有很长的后续规则。',12,s=>s.length,2),lines=text.split('\n');
+ expect(lines).toHaveLength(2);expect(lines[0]).toContain('+0.15');expect(text).toContain('+0.9');expect(text.endsWith('…')).toBe(true);expect(lines.every(line=>line.length<=12)).toBe(true);
+});
+
+it('does not repeat a category in the summary or drop a distinct future condition',()=>{
+ expect(shopOfferSynopsis('多步成长 · 热度+已存值','多步成长')).toBe('多步成长 · 热度+已存值');
+ expect(shopOfferSynopsis('手牌上限+2','进场时牌组≤40张')).toBe('手牌上限+2\n进场时牌组≤40张');
+});
+
+it('keeps the saved trigger row visible on narrow cards even when the effect needs shortening',()=>{
+ const text=shopOfferSummary(shopOfferSynopsis('每次出牌，倍率×2','本场第3/6/9次出牌'),10,s=>s.length),rows=text.split('\n');
+ expect(rows).toHaveLength(2);expect(rows[0]).toContain('每次出牌');expect(rows[0]).toContain('×2');expect(rows[1]).toContain('3/6/9');expect(rows.every(row=>row.length<=10)).toBe(true);
+});
+
+describe('shop tips stay beside the relevant card and outside protected regions',()=>{
+  const region={x:24,y:24,width:1232,height:672},sidebar={x:24,y:24,width:224,height:672};
+  it('uses the near side and flips at the right edge without covering the sidebar',()=>{
+    const size={width:260,height:220};
+    const middle=shopAnchoredTip({x:560,y:180,width:128,height:180},size,region,[sidebar])!;
+    const edge=shopAnchoredTip({x:1100,y:180,width:128,height:180},size,region,[sidebar])!;
+    expect(middle.side).toBe('right');expect(middle.box.x).toBe(700);
+    expect(edge.side).toBe('left');expect(edge.box.x).toBe(828);
+    for(const tip of [middle,edge]){expect(inside(tip.box,region)).toBe(true);expect(intersects(tip.box,sidebar)).toBe(false);}
+  });
+  it('flips vertically when horizontal space is unavailable and respects safe insets',()=>{
+    const safe={x:12,y:34,width:366,height:672},anchor={x:170,y:570,width:72,height:100};
+    const tip=shopAnchoredTip(anchor,{width:240,height:160},safe)!;
+    expect(tip.side).toBe('above');expect(tip.box.y).toBe(398);expect(inside(tip.box,safe)).toBe(true);expect(intersects(tip.box,anchor)).toBe(false);
+  });
+  it('leaves the tip hidden when every nearby location would cover the character or actions',()=>{
+    const anchor={x:280,y:200,width:100,height:140},size={width:250,height:200};
+    expect(shopAnchoredTip(anchor,size,{x:12,y:12,width:620,height:350},[{x:392,y:12,width:228,height:326},{x:12,y:12,width:250,height:326}])).toBeUndefined();
+    expect(shopAnchoredTip(anchor,{width:1000,height:1000},region)).toBeUndefined();
+  });
+});
+
+describe('shop goods have a stable title, summary and price grid',()=>{
+  it.each([['tools',320,180],['items',320,180],['tools',220,150],['jokers',280,400]] as const)('%s keeps complete art and all copy inside a %s×%s seat',(kind,width,height)=>{
+    const tile={x:400,y:240,width,height},geometry=shopOfferGeometry(tile,kind)!;
+    expect(geometry).toBeDefined();expect(geometry.art.height/geometry.art.width).toBeCloseTo(1.25);
+    const boxes=Object.values(geometry);for(const box of boxes){expect(inside(box,tile)).toBe(true);expect(box.width).toBeGreaterThan(0);expect(box.height).toBeGreaterThan(0);}
+    for(let i=0;i<boxes.length;i++)for(let j=i+1;j<boxes.length;j++)expect(intersects(boxes[i],boxes[j])).toBe(false);
+    if(width===320)expect(geometry.art.width).toBeGreaterThan(100);
+  });
+  it('aligns tools and long term goods identically regardless of description length',()=>{
+    const a=shopOfferGeometry({x:0,y:20,width:320,height:180},'tools')!;
+    const b=shopOfferGeometry({x:340,y:20,width:320,height:180},'items')!;
+    expect(a.art.y).toBe(b.art.y);expect(a.title.y).toBe(b.title.y);expect(a.summary.y).toBe(b.summary.y);expect(a.price.y).toBe(b.price.y);
+    expect(Object.values(SHOP_CATEGORIES).map(c=>c.title)).toEqual(['唐宋牌','消耗工具','长期物品']);
+  });
+  it('reports insufficient space instead of shrinking art or moving price into the summary',()=>{
+    expect(shopOfferGeometry({x:0,y:0,width:160,height:100},'tools')).toBeUndefined();
+    expect(shopOfferGeometry({x:0,y:0,width:100,height:200},'jokers')).toBeUndefined();
+  });
+});
+
+function fixture():R2RunState {
+  const run=createRun({rulesVersion:'r2',runId:'shop-flow',seed:'shop-flow',characterId:'laohuan',r2Identity:newRunIdentity('laohuan','group'),openingRoute:'group'});
+  run.gold=30;run.consumables=[];run.handLevels={'high-card':1,pair:1};return run;
+}
+
+describe('saved tool purchases continue without choosing or consuming for the player',()=>{
+  it.each(['T02','T01','T18'])('projects a real %s purchase into one next step and leaves complete state unchanged',id=>{
+    const before=fixture(),offer=before.shop!.toolOffers[0];offer.definitionId=id;offer.price=r2ToolPrice(id,before);
+    const result=applyCommand(before,{runId:before.runId,commandId:'buy/'+id,expectedSeq:before.commandSeq,action:{type:'BuyOffer',offerId:offer.offerId}});
+    if(!result.ok)throw Error(result.code);expect(result.ok).toBe(true);
+    const snapshot=structuredClone(result.state),flow=shopToolPurchaseContinuation(before,result.state,offer)!;
+    expect(flow).toBeDefined();expect(flow.continuation.expectedSeq).toBe(result.state.commandSeq);
+    expect(flow.continuation.next).toBe(id==='T18'?'confirmation':'targets');
+    expect(flow.continuation.secondaryLabel).toBe('稍后使用');
+    expect(flow.continuation).not.toHaveProperty('targetIds');expect(flow.continuation).not.toHaveProperty('handType');
+    expect(result.state).toEqual(snapshot);expect(result.state.consumables).toHaveLength(1);
+    expect(shopToolPurchaseContinuation(result.state,result.state,offer)).toBeUndefined();
+    expect(shopToolPurchaseContinuation(before,{...result.state,runId:'different-run'},offer)).toBeUndefined();
+    expect(shopPurchaseContinuation({...result.state,commandSeq:result.state.commandSeq+1},flow.receipt)).toBeUndefined();
+    expect(shopPurchaseContinuation({...result.state,consumables:[]},flow.receipt)).toBeUndefined();
+  });
+  it('explains phase restrictions and keeps the tool without inventing a hand target or carry intent',()=>{
+    const run=fixture();run.consumables=[{instanceId:'held',definitionId:'T17'}];
+    const snapshot=structuredClone(run),flow=shopToolContinuation(run,'held')!;
+    expect(flow.next).toBe('later');expect(flow.primaryLabel).toBeUndefined();expect(flow.status).toContain('留到可用阶段');expect(flow).not.toHaveProperty('carryIntent');expect(run).toEqual(snapshot);
+  });
+});

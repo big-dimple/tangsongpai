@@ -1,0 +1,26 @@
+/* One scroll owner for expanding rules and choices, with actions always outside it. */
+dialog.detail-dialog.hero-skill-compact[open] {
+ display:flex;flex-direction:column;
+ width:min(640px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));
+ height:fit-content;max-height:calc(100dvh - var(--safe-top) - var(--safe-bottom) - 24px);
+ inset:calc(var(--safe-top) + 12px) calc(var(--safe-right) + 12px) calc(var(--safe-bottom) + 12px) calc(var(--safe-left) + 12px);
+ margin:auto;transform:none;
+}
+.detail-dialog.hero-skill-compact > .dialog-header,
+.detail-dialog.hero-skill-compact > .dialog-actions { flex:0 0 auto; }
+.detail-dialog.hero-skill-compact > .dialog-content { flex:0 1 auto;min-height:0;overflow:auto;overscroll-behavior:contain;grid-template-rows:auto; }
+.detail-dialog.hero-skill-compact .dialog-scroll { display:block;height:auto;overflow:visible; }
+.detail-dialog.hero-skill-compact .dialog-copy { max-height:none;overflow:visible; }
+.detail-dialog.hero-skill-compact .dialog-portrait-art { height:auto;width:120px; }
+.detail-dialog.hero-skill-compact .dialog-portrait { max-height:180px; }
+.detail-dialog.hero-skill-compact .touye-discard-grid { overflow:visible; }
+.detail-dialog.hero-skill-compact:not(.hero-discard-choice) > .dialog-actions { display:flex;flex-wrap:nowrap;justify-content:flex-end;gap:8px; }
+.detail-dialog.hero-skill-compact:not(.hero-discard-choice) > .dialog-actions button { flex:1 1 0;min-width:0;min-height:48px;padding:8px; }
+.detail-dialog.hero-skill-compact > .dialog-actions .dialog-close { order:-1; }
+.detail-dialog.hero-skill-compact > .dialog-actions .dialog-primary { order:1; }
+@media(max-width:560px) {
+ .detail-dialog.hero-skill-compact > .dialog-content { grid-template-columns:minmax(0,1fr);padding:12px; }
+ .detail-dialog.hero-skill-compact .dialog-portrait-art { display:none; }
+ .detail-dialog.hero-skill-compact > .dialog-header { padding:12px; }
+ .detail-dialog.hero-skill-compact > .dialog-actions { padding:8px 12px; }
+}

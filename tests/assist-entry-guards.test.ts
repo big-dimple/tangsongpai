@@ -1,0 +1,38 @@
+import {afterEach,expect,it,vi} from 'vitest';
+import {createRun,applyCommand,type R2RunState,type Action} from '../src/domain/run';
+import {newRunIdentity} from '../harness/fixtures/legacy-assist-launch';
+import {AssistRecommendationCache,assistPublicInput} from '../src/game/AssistRecommendation';
+import {r2SelectionFacts} from '../src/domain/r2SelectionFacts';
+import {heroSkillName} from '../src/game/HeroSkillPresentation';
+const gate=vi.hoisted(()=>({session:{lease:{writable:true},working:false,pendingRun:undefined as object|undefined},controller:{status:'idle'}}));
+vi.mock('phaser',()=>({default:{Scene:class{}}}));
+vi.mock('../src/game/session',()=>({gameSession:()=>gate.session}));
+vi.mock('../src/game/runAdapter',()=>({runController:()=>gate.controller,dispatchRun:vi.fn()}));
+vi.mock('../src/game/AssistChoiceDialog',()=>({showAssistChoices:vi.fn()}));
+import {GameScene} from '../src/game/GameScene';
+import {showAssistChoices} from '../src/game/AssistChoiceDialog';
+const main=['spades-9','hearts-9','clubs-13','diamonds-13'],side=['spades-12','hearts-12','clubs-12'];
+function send(s:R2RunState,action:Action){const r=applyCommand(s,{runId:s.runId,commandId:s.runId+'/'+(s.commandSeq+1),expectedSeq:s.commandSeq,action});if(!r.ok)throw Error(r.code);return r.state;}
+function fixture(hero:any='amo'){let s=createRun({rulesVersion:'r2',characterId:hero,runId:'assist-guards/'+hero,seed:'assist-guards',r2Identity:newRunIdentity(hero,'group'),openingRoute:'group'});s=send(send(s,{type:'LeaveShop'}),{type:'EnterStage'});s.handOrder=[...main,...side,'clubs-6'];s.drawPile=s.deckInstances.map(c=>c.id).filter(id=>!s.handOrder.includes(id));s.gold=15;return s;}
+function node(){const values=new Map();const n:any={active:true,text:'',scene:{scale:{zoom:1}},style:{resolution:1,color:''},frame:{source:{resolution:1}},input:{enabled:false},setData(k:string,v:any){values.set(k,v);return n;},getData(k:string){return values.get(k);},setResolution:vi.fn((value:number)=>{n.style.resolution=value;return n;}),setText:vi.fn((value:string)=>{n.text=value;return n;}),setColor:vi.fn((value:string)=>{n.style.color=value;return n;}),setStrokeStyle:vi.fn(()=>n)};return n;}
+function scene(run=fixture()){const s=Object.create(GameScene.prototype) as any,role=node(),button=node();button.setData('label',node());Object.assign(s,{run,cardViews:[],selectedIds:new Set(main),assistIds:[],assistRecommendations:new AssistRecommendationCache(),roleFrame:role,roleText:node(),heroActionButton:button,view:{layout:{mode:'portrait'},setEnabled:(b:any,e:boolean)=>b.input.enabled=e},playing:false,presentation:undefined,chooseAssist:vi.fn(),refreshSelection:vi.fn()});return s;}
+afterEach(()=>{gate.controller.status='idle';gate.session.lease.writable=true;gate.session.working=false;gate.session.pendingRun=undefined;vi.clearAllMocks();});
+it('labels equal random lower bounds as the same guarantee rather than the same final score',()=>{for(const random of [false,true]){const run=fixture();run.handOrder=run.handOrder.map(id=>id===side[2]?'diamonds-7':id);run.drawPile=run.deckInstances.map(c=>c.id).filter(id=>!run.handOrder.includes(id));for(const id of side.slice(0,2))run.deckInstances.find(c=>c.id===id)!.enhancement='voice-paper';if(random)run.deckInstances.find(c=>c.id===main[0])!.enhancement='lucky-paper';const s=scene(run);s.updateControls=vi.fn();const recommendation=s.assistRecommendations.get(run,main)!;expect(recommendation.best.ids).toEqual([]);expect(recommendation.options.map((o:any)=>o.range)).toEqual(random?[{minimum:'412',maximum:'824'},{minimum:'412',maximum:'1236'}]:[{minimum:'412',maximum:'412'},{minimum:'412',maximum:'412'}]);s.inspectHeroAction();expect(s.statusMessage).toBe((random?'同保底不助攻':'同分不助攻')+' · 保留副组，可手选');expect(s.chooseAssist).not.toHaveBeenCalled();expect(s.assistIds).toEqual([]);}});
+it('a previously opened choice cannot run after seq, main, public effect, lease or save changes',()=>{const s=scene();s.inspectAssistChoices();expect(showAssistChoices).toHaveBeenCalledOnce();const current=vi.mocked(showAssistChoices).mock.calls[0][5];expect(current()).toBe(true);const before=structuredClone(s.run);s.run={...s.run,commandSeq:s.run.commandSeq+1};expect(current()).toBe(false);s.run=before;s.selectedIds=new Set(main.slice(0,2));expect(current()).toBe(false);s.selectedIds=new Set(main);s.run={...before,gold:before.gold+1};expect(current()).toBe(false);s.run=before;for(const status of ['saving','paused','readonly']){gate.controller.status=status;expect(current()).toBe(false);}gate.controller.status='idle';gate.session.lease.writable=false;expect(current()).toBe(false);gate.session.lease.writable=true;s.presentation={};expect(current()).toBe(false);expect(s.chooseAssist).not.toHaveBeenCalled();});
+it('each hero disables the executable entry when read-only, saving, paused, replacing or without lease',()=>{for(const hero of ['amo','erxiang','laohuan','touye','xiemu','azao']){const s=scene(fixture(hero));for(const status of ['saving','paused','readonly']){gate.controller.status=status;s.updateHeroControl();expect(s.heroActionButton.input.enabled).toBe(false);expect(s.roleFrame.getData('abilityAvailable')).toBe(false);}gate.controller.status='idle';for(const key of ['working','pendingRun','lease']){if(key==='lease')gate.session.lease.writable=false;else if(key==='pendingRun')gate.session.pendingRun={};else gate.session.working=true;s.updateHeroControl();expect(s.heroActionButton.input.enabled).toBe(false);expect(s.roleFrame.getData('abilityAvailable')).toBe(false);gate.session.working=false;gate.session.pendingRun=undefined;gate.session.lease.writable=true;}}});
+it('wires all six bare skill names, separate states and accessible detail without changing the run or the draft',()=>{
+ for(const hero of ['amo','erxiang','laohuan','touye','xiemu','azao']){
+  const s=scene(fixture(hero)),status=node(),aria=vi.fn();status.scene.scale.zoom=1/3;s.characterId=s.run.characterId;s.view.layout.mode='desktop';s.game={canvas:{setAttribute:aria}};s.heroActionButton.setData('skillStatus',status);
+  if(hero==='erxiang')s.erxiangTargetId=main[0];
+  const before=structuredClone(s.run),selected=[...s.selectedIds];s.updateHeroControl();
+  expect(s.heroActionButton.getData('label').setText).toHaveBeenLastCalledWith(heroSkillName(s.run.characterId));
+  if(hero!=='erxiang')expect(s.roleText.setText).toHaveBeenLastCalledWith(heroSkillName(s.run.characterId));
+  expect(status.setText).toHaveBeenCalledWith(expect.stringMatching(/^(可用|已用|条件未满足|已停用|已选择|待完成)$/));
+  expect(status.style.resolution).toBe(3);expect(status.frame.source.resolution).toBe(3);
+  expect(s.heroActionButton.getData('ariaLabel')).toContain('主动技能'+heroSkillName(s.run.characterId));
+  expect(aria).toHaveBeenLastCalledWith('aria-label',expect.stringContaining(s.heroActionButton.getData('ariaLabel')));
+  if(hero==='erxiang'){expect(status.setText).toHaveBeenLastCalledWith('已选择');expect(s.heroActionButton.getData('abilityState')).toBe('selected');expect(s.erxiangTargetId).toBe(main[0]);}
+  expect(s.run).toEqual(before);expect([...s.selectedIds]).toEqual(selected);
+ }
+});
+it('revalidating a draft preserves manual choices and rejects overlaps or disabled instances',()=>{const s=scene();s.assistIds=side.slice(0,2);s.validateAssistSelection();expect(s.assistIds).toEqual(side.slice(0,2));s.selectedIds.add('clubs-6');s.validateAssistSelection();expect(s.assistIds).toEqual(side.slice(0,2));s.selectedIds.add(side[0]);s.validateAssistSelection();expect(s.assistIds).toEqual([]);s.selectedIds=new Set(main);s.assistIds=side.slice(0,2);s.run={...s.run,stage:{...s.run.stage,disabledIds:[side[0]]}};s.validateAssistSelection();expect(s.assistIds).toEqual([]);});
