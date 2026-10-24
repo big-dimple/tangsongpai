@@ -1,0 +1,17 @@
+{
+  "version": "C03",
+  "builtAt": "2026-10-17T23:20:26.930Z",
+  "revision": "9fe60fc581227829df6caadc712a5bd0fed74bc4",
+  "sourceStatus": "dirty",
+  "modified": true,
+  "modifiedFileCount": 7,
+  "modifiedFiles": [
+    "docs/production/DELIVERY_PLAN.md",
+    "docs/production/plan.json",
+    "src/audio/AudioEngine.ts",
+    "src/game/ShopScene.ts",
+    "src/game/StageImageWarmup.ts",
+    "src/main.ts",
+    "tests/audio-music-lifecycle.test.ts"
+  ]
+}

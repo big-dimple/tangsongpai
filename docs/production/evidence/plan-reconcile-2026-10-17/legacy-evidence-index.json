@@ -1,0 +1,249 @@
+{
+  "schemaVersion": 1,
+  "recordType": "unverified_evidence_catalog",
+  "taskId": "P08",
+  "status": "PENDING_VERIFICATION",
+  "count": 15,
+  "acceptedAsRuntimePass": false,
+  "policy": "Raw evidence remains immutable. These entries leave the accepted evidence list and remain mandatory reads plus explicit gaps; no testedCommit is invented and no P08/experience/human gate is closed. Structural plan PASS only means the eligible records and references conform.",
+  "entries": [
+    {
+      "source": "docs/production/evidence/feedback-batch-integration-2026-10-17/status.json",
+      "sha256": "4f22c20512a8a0376be0491b5a79c53817c48c91a6c82bac3d2a183e6566f216",
+      "verificationStatus": "PENDING_VERIFICATION",
+      "contractGaps": [
+        "source testedCommit missing or not a full 40-character commit"
+      ],
+      "declaredTaskId": "P08",
+      "declaredTestedCommit": null,
+      "declaredCommitObjectExists": false,
+      "acceptedAsP08RuntimePass": false,
+      "requiredNextEvidence": "source author receipt/log with exact execution commit and scope; object existence alone does not prove the tests executed there",
+      "hashBasis": "original Git blob bytes at main9fe60fc5 (portable across CRLF worktrees)",
+      "gitBlob": "485e5a7a7846885d1a723402692f1d0b8c5d29c5"
+    },
+    {
+      "source": "docs/production/evidence/touye-discard-footer-ai-2026-10-17/status.json",
+      "sha256": "4470baea0eac8e3c85932c5fdb3e4b13b2ca41d5f8b33a4d0645eb93b645ac0c",
+      "verificationStatus": "PENDING_VERIFICATION",
+      "contractGaps": [
+        "source taskId is not P08",
+        "source testedCommit missing or not a full 40-character commit"
+      ],
+      "declaredTaskId": null,
+      "declaredTestedCommit": null,
+      "declaredCommitObjectExists": false,
+      "acceptedAsP08RuntimePass": false,
+      "requiredNextEvidence": "source author receipt/log with exact execution commit and scope; object existence alone does not prove the tests executed there",
+      "hashBasis": "original Git blob bytes at main9fe60fc5 (portable across CRLF worktrees)",
+      "gitBlob": "307a396ef80cd372311c7321eae5c199cdb29607"
+    },
+    {
+      "source": "docs/production/evidence/shop-synergy-ui-names-2026-10-17/status.json",
+      "sha256": "fc949c64b11f9a456e4d65f469c0d9e8e738f7162cdef3fa82e4c2ec362cf463",
+      "verificationStatus": "PENDING_VERIFICATION",
+      "contractGaps": [
+        "source taskId is not P08",
+        "source testedCommit missing or not a full 40-character commit"
+      ],
+      "declaredTaskId": null,
+      "declaredTestedCommit": null,
+      "declaredCommitObjectExists": false,
+      "acceptedAsP08RuntimePass": false,
+      "requiredNextEvidence": "source author receipt/log with exact execution commit and scope; object existence alone does not prove the tests executed there",
+      "hashBasis": "original Git blob bytes at main9fe60fc5 (portable across CRLF worktrees)",
+      "gitBlob": "dc47bfb3744c0d5c2c00b47a9d5f89041ca7224e"
+    },
+    {
+      "source": "docs/production/evidence/cards-bgm-tangsong-refresh-2026-10-17/status.json",
+      "sha256": "754dfe2c400cfada01a57e1f467bc358750c27b5befb166adc98152d5b6329e9",
+      "verificationStatus": "PENDING_VERIFICATION",
+      "contractGaps": [
+        "source taskId is not P08",
+        "source testedCommit missing or not a full 40-character commit"
+      ],
+      "declaredTaskId": "cards-bgm-tangsong-refresh",
+      "declaredTestedCommit": null,
+      "declaredCommitObjectExists": false,
+      "acceptedAsP08RuntimePass": false,
+      "requiredNextEvidence": "source author receipt/log with exact execution commit and scope; object existence alone does not prove the tests executed there",
+      "hashBasis": "original Git blob bytes at main9fe60fc5 (portable across CRLF worktrees)",
+      "gitBlob": "2dbc02e3e1a49bd1b578706d329297119284d26f"
+    },
+    {
+      "source": "docs/production/evidence/visual-three-route-integration-2026-10-16/status.json",
+      "sha256": "b305526e34c892b0881aa8110a63027e539b9e0092e613d7de34a9aad9001d23",
+      "verificationStatus": "PENDING_VERIFICATION",
+      "contractGaps": [
+        "source taskId is not P08"
+      ],
+      "declaredTaskId": "visual-three-route-integration",
+      "declaredTestedCommit": "2e500ef4e52231bdf656b123695d384df143c905",
+      "declaredCommitObjectExists": true,
+      "acceptedAsP08RuntimePass": false,
+      "requiredNextEvidence": "source author receipt/log with exact execution commit and scope; object existence alone does not prove the tests executed there",
+      "hashBasis": "original Git blob bytes at main9fe60fc5 (portable across CRLF worktrees)",
+      "gitBlob": "468dc14faad9bd12b13f6a59a99eec367b832edb"
+    },
+    {
+      "source": "docs/production/evidence/cash-warning-plan-main-integration-2026-10-16/status.json",
+      "sha256": "518f77923b5152e99052bffa996b5ca3dd3f557be6d69866e8ddfb3a57218be0",
+      "verificationStatus": "PENDING_VERIFICATION",
+      "contractGaps": [
+        "source taskId is not P08",
+        "source testedCommit missing or not a full 40-character commit"
+      ],
+      "declaredTaskId": null,
+      "declaredTestedCommit": null,
+      "declaredCommitObjectExists": false,
+      "acceptedAsP08RuntimePass": false,
+      "requiredNextEvidence": "source author receipt/log with exact execution commit and scope; object existence alone does not prove the tests executed there",
+      "hashBasis": "original Git blob bytes at main9fe60fc5 (portable across CRLF worktrees)",
+      "gitBlob": "8ae3804681094a19ebafde4b8babbf57e1f2b427"
+    },
+    {
+      "source": "docs/production/evidence/local-plan-reconcile-2026-10-16/status.json",
+      "sha256": "67865bec3847c2cee3e98e4aa2b8472157ccd59559d38505618a69c932be2058",
+      "verificationStatus": "PENDING_VERIFICATION",
+      "contractGaps": [
+        "source taskId is not P08",
+        "source testedCommit missing or not a full 40-character commit"
+      ],
+      "declaredTaskId": null,
+      "declaredTestedCommit": null,
+      "declaredCommitObjectExists": false,
+      "acceptedAsP08RuntimePass": false,
+      "requiredNextEvidence": "source author receipt/log with exact execution commit and scope; object existence alone does not prove the tests executed there",
+      "hashBasis": "original Git blob bytes at main9fe60fc5 (portable across CRLF worktrees)",
+      "gitBlob": "7dc8b1e91e1fd1490e76a03fb314247a62545b1c"
+    },
+    {
+      "source": "docs/production/evidence/ordinary-failure-retry-2026-10-16/status.json",
+      "sha256": "76382fe699a6c0b42d01f01b6af7f2eb1e4c16dc33a19541169482501b7fda62",
+      "verificationStatus": "PENDING_VERIFICATION",
+      "contractGaps": [
+        "source taskId is not P08",
+        "source testedCommit missing or not a full 40-character commit"
+      ],
+      "declaredTaskId": null,
+      "declaredTestedCommit": null,
+      "declaredCommitObjectExists": false,
+      "acceptedAsP08RuntimePass": false,
+      "requiredNextEvidence": "source author receipt/log with exact execution commit and scope; object existence alone does not prove the tests executed there",
+      "hashBasis": "original Git blob bytes at main9fe60fc5 (portable across CRLF worktrees)",
+      "gitBlob": "aecfd07fe095a3e930585f14b9ffc72580a6b1b8"
+    },
+    {
+      "source": "docs/production/evidence/natural-straight-economy-2026-10-16/status.json",
+      "sha256": "976f272f36ac4c719f5861766b5abe4a4d04b99abcabfb69a7b27c1d53f2e8c4",
+      "verificationStatus": "PENDING_VERIFICATION",
+      "contractGaps": [
+        "source taskId is not P08",
+        "source testedCommit missing or not a full 40-character commit"
+      ],
+      "declaredTaskId": null,
+      "declaredTestedCommit": null,
+      "declaredCommitObjectExists": false,
+      "acceptedAsP08RuntimePass": false,
+      "requiredNextEvidence": "source author receipt/log with exact execution commit and scope; object existence alone does not prove the tests executed there",
+      "hashBasis": "original Git blob bytes at main9fe60fc5 (portable across CRLF worktrees)",
+      "gitBlob": "c99c69894bde627f4eeb3a71887c16989d93baaa"
+    },
+    {
+      "source": "docs/production/evidence/hero-skill-footer-reachability-2026-10-16/status.json",
+      "sha256": "f5c46fb2154a23cfbdc665d80b8c316ccbdb66efb7c5ef7bb07451dd2e827d1a",
+      "verificationStatus": "PENDING_VERIFICATION",
+      "contractGaps": [
+        "source taskId is not P08",
+        "source testedCommit missing or not a full 40-character commit"
+      ],
+      "declaredTaskId": null,
+      "declaredTestedCommit": null,
+      "declaredCommitObjectExists": false,
+      "acceptedAsP08RuntimePass": false,
+      "requiredNextEvidence": "source author receipt/log with exact execution commit and scope; object existence alone does not prove the tests executed there",
+      "hashBasis": "original Git blob bytes at main9fe60fc5 (portable across CRLF worktrees)",
+      "gitBlob": "56cfeec22944b2469f9d74fc12ac99b8c6e7816e"
+    },
+    {
+      "source": "docs/production/evidence/natural-straight-economy-2026-10-16/balance-review.json",
+      "sha256": "850d5b2361b207bfd98e785a7fa8c038da560e5286a6a03a34260afa6e5b1a79",
+      "verificationStatus": "PENDING_VERIFICATION",
+      "contractGaps": [
+        "source taskId is not P08",
+        "source testedCommit missing or not a full 40-character commit"
+      ],
+      "declaredTaskId": null,
+      "declaredTestedCommit": null,
+      "declaredCommitObjectExists": false,
+      "acceptedAsP08RuntimePass": false,
+      "requiredNextEvidence": "source author receipt/log with exact execution commit and scope; object existence alone does not prove the tests executed there",
+      "hashBasis": "original Git blob bytes at main9fe60fc5 (portable across CRLF worktrees)",
+      "gitBlob": "81cde8cb1b33b92edc56b3b795bf82ef7ff0590c"
+    },
+    {
+      "source": "docs/production/evidence/xiemu-cash-gate-warning-2026-10-16/status.json",
+      "sha256": "b20caf3fffb80a622e7bb1baedd4de5f980b133108974a118bda7164dd80a2f1",
+      "verificationStatus": "PENDING_VERIFICATION",
+      "contractGaps": [
+        "source taskId is not P08",
+        "source testedCommit missing or not a full 40-character commit"
+      ],
+      "declaredTaskId": null,
+      "declaredTestedCommit": null,
+      "declaredCommitObjectExists": false,
+      "acceptedAsP08RuntimePass": false,
+      "requiredNextEvidence": "source author receipt/log with exact execution commit and scope; object existence alone does not prove the tests executed there",
+      "hashBasis": "original Git blob bytes at main9fe60fc5 (portable across CRLF worktrees)",
+      "gitBlob": "9139e9bc76fd692a4a8a4f8d5d8b56a0738b6c09"
+    },
+    {
+      "source": "docs/production/evidence/highlight-shop-union-2026-10-16/status.json",
+      "sha256": "72fa7ce1934889973ef86204cfc52799cae29cdc9a75c2a3b0e73d315940f1b0",
+      "verificationStatus": "PENDING_VERIFICATION",
+      "contractGaps": [
+        "source taskId is not P08",
+        "source testedCommit missing or not a full 40-character commit"
+      ],
+      "declaredTaskId": null,
+      "declaredTestedCommit": null,
+      "declaredCommitObjectExists": false,
+      "acceptedAsP08RuntimePass": false,
+      "requiredNextEvidence": "source author receipt/log with exact execution commit and scope; object existence alone does not prove the tests executed there",
+      "hashBasis": "original Git blob bytes at main9fe60fc5 (portable across CRLF worktrees)",
+      "gitBlob": "545c93b7d21ce5f3aefaf8abd372fc39424ed7f1"
+    },
+    {
+      "source": "docs/production/evidence/shop-tool-image-warmup-2026-10-16/status.json",
+      "sha256": "12126877f45dea30dbba94095d187580d3501bd95666e569c848f6d971b3d595",
+      "verificationStatus": "PENDING_VERIFICATION",
+      "contractGaps": [
+        "source taskId is not P08",
+        "source testedCommit missing or not a full 40-character commit"
+      ],
+      "declaredTaskId": null,
+      "declaredTestedCommit": null,
+      "declaredCommitObjectExists": false,
+      "acceptedAsP08RuntimePass": false,
+      "requiredNextEvidence": "source author receipt/log with exact execution commit and scope; object existence alone does not prove the tests executed there",
+      "hashBasis": "original Git blob bytes at main9fe60fc5 (portable across CRLF worktrees)",
+      "gitBlob": "9258adb4c2a643d1fb930e3eeb002a10e7752df7"
+    },
+    {
+      "source": "docs/production/evidence/shop-growth-mobile-current-main-2026-10-16/status.json",
+      "sha256": "f8b74008544aa04210732a86a379b1bcc201d1d8dc3a277455c891979f3d421e",
+      "verificationStatus": "PENDING_VERIFICATION",
+      "contractGaps": [
+        "source taskId is not P08",
+        "source testedCommit missing or not a full 40-character commit"
+      ],
+      "declaredTaskId": null,
+      "declaredTestedCommit": null,
+      "declaredCommitObjectExists": false,
+      "acceptedAsP08RuntimePass": false,
+      "requiredNextEvidence": "source author receipt/log with exact execution commit and scope; object existence alone does not prove the tests executed there",
+      "hashBasis": "original Git blob bytes at main9fe60fc5 (portable across CRLF worktrees)",
+      "gitBlob": "e9875bce088a4a7f1a0d33fd069d19ff9706cc7f"
+    }
+  ]
+}

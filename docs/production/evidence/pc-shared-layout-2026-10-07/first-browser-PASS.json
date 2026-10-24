@@ -1,0 +1,859 @@
+{
+  "source": "0c35a824e4ab29b8c9d213722060c714324f853b",
+  "dirty": "M src/game/GameScene.ts\n M src/game/ToolInventoryEntry.ts\n M src/game/layout.ts\n M tests/layout.test.ts\n?? harness/pc-shared-layout.mjs",
+  "scope": "Controlled 8/9/14-card validated checkpoints; native DOM import, mouse selection/sort/AI/window inputs. Software Canvas only. Not natural acquisition, user device, GPU performance or audio acceptance.",
+  "cases": [
+    {
+      "width": 1280,
+      "height": 720,
+      "count": 8,
+      "status": "PASS",
+      "measured": {
+        "mode": "desktop",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 8,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6\n还需 400 热度",
+          "bounds": {
+            "x": 80,
+            "y": 188,
+            "width": 88,
+            "height": 32
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "count": 8,
+      "status": "PASS",
+      "measured": {
+        "mode": "desktop",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 8,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6\n还需 400 热度",
+          "bounds": {
+            "x": 80,
+            "y": 188,
+            "width": 88,
+            "height": 32
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "count": 8,
+      "status": "PASS",
+      "measured": {
+        "mode": "desktop",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 8,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6\n还需 400 热度",
+          "bounds": {
+            "x": 80,
+            "y": 188,
+            "width": 88,
+            "height": 32
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 1912,
+      "height": 954,
+      "count": 8,
+      "status": "PASS",
+      "measured": {
+        "mode": "desktop",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 8,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6\n还需 400 热度",
+          "bounds": {
+            "x": 80,
+            "y": 188,
+            "width": 88,
+            "height": 32
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "count": 8,
+      "status": "PASS",
+      "measured": {
+        "mode": "desktop",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 8,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6\n还需 400 热度",
+          "bounds": {
+            "x": 80,
+            "y": 188,
+            "width": 88,
+            "height": 32
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 811,
+      "height": 812,
+      "count": 8,
+      "status": "PASS",
+      "measured": {
+        "mode": "desktop",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 8,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6\n还需 400 热度",
+          "bounds": {
+            "x": 80,
+            "y": 188,
+            "width": 88,
+            "height": 32
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 812,
+      "height": 811,
+      "count": 8,
+      "status": "PASS",
+      "measured": {
+        "mode": "desktop",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 8,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6\n还需 400 热度",
+          "bounds": {
+            "x": 80,
+            "y": 188,
+            "width": 88,
+            "height": 32
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 390,
+      "height": 740,
+      "count": 8,
+      "status": "PASS",
+      "measured": {
+        "mode": "portrait",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 8,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6",
+          "bounds": {
+            "x": 156,
+            "y": 14,
+            "width": 40,
+            "height": 16
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 320,
+      "height": 740,
+      "count": 8,
+      "status": "PASS",
+      "measured": {
+        "mode": "portrait",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 8,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6",
+          "bounds": {
+            "x": 152,
+            "y": 18,
+            "width": 40,
+            "height": 16
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 740,
+      "height": 390,
+      "count": 8,
+      "status": "PASS",
+      "measured": {
+        "mode": "landscape",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 8,
+        "handOverflow": false,
+        "gold": {
+          "text": "6 金",
+          "bounds": {
+            "x": 134,
+            "y": 23,
+            "width": 26,
+            "height": 16
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 164,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "count": 9,
+      "status": "PASS",
+      "ai": "native AI cut followed by sort clears selection",
+      "measured": {
+        "mode": "desktop",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 9,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6\n还需 400 热度",
+          "bounds": {
+            "x": 80,
+            "y": 188,
+            "width": 88,
+            "height": 32
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "count": 9,
+      "status": "PASS",
+      "ai": "native AI cut followed by sort clears selection",
+      "measured": {
+        "mode": "desktop",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 9,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6\n还需 400 热度",
+          "bounds": {
+            "x": 80,
+            "y": 188,
+            "width": 88,
+            "height": 32
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "count": 9,
+      "status": "PASS",
+      "ai": "native AI cut followed by sort clears selection",
+      "measured": {
+        "mode": "desktop",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 9,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6\n还需 400 热度",
+          "bounds": {
+            "x": 80,
+            "y": 188,
+            "width": 88,
+            "height": 32
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 1912,
+      "height": 954,
+      "count": 9,
+      "status": "PASS",
+      "ai": "native AI cut followed by sort clears selection",
+      "measured": {
+        "mode": "desktop",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 9,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6\n还需 400 热度",
+          "bounds": {
+            "x": 80,
+            "y": 188,
+            "width": 88,
+            "height": 32
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "count": 9,
+      "status": "PASS",
+      "ai": "native AI cut followed by sort clears selection",
+      "measured": {
+        "mode": "desktop",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 9,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6\n还需 400 热度",
+          "bounds": {
+            "x": 80,
+            "y": 188,
+            "width": 88,
+            "height": 32
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 811,
+      "height": 812,
+      "count": 9,
+      "status": "PASS",
+      "ai": "native AI cut followed by sort clears selection",
+      "measured": {
+        "mode": "desktop",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 9,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6\n还需 400 热度",
+          "bounds": {
+            "x": 80,
+            "y": 188,
+            "width": 88,
+            "height": 32
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 812,
+      "height": 811,
+      "count": 9,
+      "status": "PASS",
+      "ai": "native AI cut followed by sort clears selection",
+      "measured": {
+        "mode": "desktop",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 9,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6\n还需 400 热度",
+          "bounds": {
+            "x": 80,
+            "y": 188,
+            "width": 88,
+            "height": 32
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 390,
+      "height": 740,
+      "count": 9,
+      "status": "PASS",
+      "ai": "native AI cut followed by sort clears selection",
+      "measured": {
+        "mode": "portrait",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 9,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6",
+          "bounds": {
+            "x": 156,
+            "y": 14,
+            "width": 40,
+            "height": 16
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 320,
+      "height": 740,
+      "count": 9,
+      "status": "PASS",
+      "ai": "native AI cut followed by sort clears selection",
+      "measured": {
+        "mode": "portrait",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 9,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6",
+          "bounds": {
+            "x": 152,
+            "y": 18,
+            "width": 40,
+            "height": 16
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 740,
+      "height": 390,
+      "count": 9,
+      "status": "PASS",
+      "ai": "native AI cut followed by sort clears selection",
+      "measured": {
+        "mode": "landscape",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 9,
+        "handOverflow": false,
+        "gold": {
+          "text": "6 金",
+          "bounds": {
+            "x": 134,
+            "y": 23,
+            "width": 26,
+            "height": 16
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 164,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 1280,
+      "height": 720,
+      "count": 14,
+      "status": "PASS",
+      "measured": {
+        "mode": "desktop",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 14,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6\n还需 400 热度",
+          "bounds": {
+            "x": 80,
+            "y": 188,
+            "width": 88,
+            "height": 32
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "count": 14,
+      "status": "PASS",
+      "measured": {
+        "mode": "desktop",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 14,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6\n还需 400 热度",
+          "bounds": {
+            "x": 80,
+            "y": 188,
+            "width": 88,
+            "height": 32
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "count": 14,
+      "status": "PASS",
+      "measured": {
+        "mode": "desktop",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 14,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6\n还需 400 热度",
+          "bounds": {
+            "x": 80,
+            "y": 188,
+            "width": 88,
+            "height": 32
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 1912,
+      "height": 954,
+      "count": 14,
+      "status": "PASS",
+      "measured": {
+        "mode": "desktop",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 14,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6\n还需 400 热度",
+          "bounds": {
+            "x": 80,
+            "y": 188,
+            "width": 88,
+            "height": 32
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 768,
+      "height": 1024,
+      "count": 14,
+      "status": "PASS",
+      "window": "all 14 reachable",
+      "measured": {
+        "mode": "desktop",
+        "handRows": 1,
+        "handStart": 4,
+        "visibleCardCount": 9,
+        "handOverflow": true,
+        "gold": {
+          "text": "金币 6\n还需 400 热度",
+          "bounds": {
+            "x": 80,
+            "y": 188,
+            "width": 88,
+            "height": 32
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 811,
+      "height": 812,
+      "count": 14,
+      "status": "PASS",
+      "measured": {
+        "mode": "desktop",
+        "handRows": 1,
+        "handStart": 3,
+        "visibleCardCount": 11,
+        "handOverflow": true,
+        "gold": {
+          "text": "金币 6\n还需 400 热度",
+          "bounds": {
+            "x": 80,
+            "y": 188,
+            "width": 88,
+            "height": 32
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 812,
+      "height": 811,
+      "count": 14,
+      "status": "PASS",
+      "measured": {
+        "mode": "desktop",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 14,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6\n还需 400 热度",
+          "bounds": {
+            "x": 80,
+            "y": 188,
+            "width": 88,
+            "height": 32
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 390,
+      "height": 740,
+      "count": 14,
+      "status": "PASS",
+      "measured": {
+        "mode": "portrait",
+        "handRows": 2,
+        "handStart": 0,
+        "visibleCardCount": 14,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6",
+          "bounds": {
+            "x": 156,
+            "y": 14,
+            "width": 40,
+            "height": 16
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 320,
+      "height": 740,
+      "count": 14,
+      "status": "PASS",
+      "measured": {
+        "mode": "portrait",
+        "handRows": 2,
+        "handStart": 0,
+        "visibleCardCount": 14,
+        "handOverflow": false,
+        "gold": {
+          "text": "金币 6",
+          "bounds": {
+            "x": 152,
+            "y": 18,
+            "width": 40,
+            "height": 16
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 246,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    },
+    {
+      "width": 740,
+      "height": 390,
+      "count": 14,
+      "status": "PASS",
+      "measured": {
+        "mode": "landscape",
+        "handRows": 1,
+        "handStart": 0,
+        "visibleCardCount": 14,
+        "handOverflow": false,
+        "gold": {
+          "text": "6 金",
+          "bounds": {
+            "x": 134,
+            "y": 23,
+            "width": 26,
+            "height": 16
+          }
+        },
+        "progress": {
+          "x": 24,
+          "y": 164,
+          "width": 0.5,
+          "height": 5
+        }
+      }
+    }
+  ],
+  "status": "PASS"
+}

@@ -1,0 +1,12 @@
+
+> tangsongpai@0.1.0 test
+> vitest run tests/owned-joker-idle.test.ts tests/singapore-final-adoption.test.ts tests/owned-joker-score-motion.test.ts tests/inkwave-spring.test.ts tests/polychrome-iridescence.test.ts tests/score-phrase.test.ts
+
+
+ RUN  v4.1.11 D:/ai/tangsongpai/tangsongpai/.codex-remote-attachments/owned-joker-score-motion
+
+
+ Test Files  6 passed (6)
+      Tests  34 passed (34)
+   Start at  08:07:30
+   Duration  2.33s (transform 4.48s, setup 0ms, import 5.94s, tests 796ms, environment 1ms)

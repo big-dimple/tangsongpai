@@ -1,0 +1,5 @@
+Captured failure, 2026-10-22:
+FAIL tests/poker-encounter.test.ts > normal-run poker polychrome encounter > requires no free tool slot; native copy and repeated scoring preserve/read the existing edition without a second grant
+AssertionError: expected [] to have a length of 4 but got +0
+Expected 4; received 0. Tests 1 failed | 10 passed (11). Duration 15.40s.
+Cause: filtered sourceDefinitionId='polychrome', but the actual card source definition is its card identity; the edition is named by reasonKey='edition.polychrome.multiply-multiplier'. Only the test predicate was corrected.

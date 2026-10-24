@@ -1,0 +1,146 @@
+{
+  "numPassedTests": 5051,
+  "numFailedTests": 20,
+  "failed": [
+    {
+      "file": "/workspace/tangsongpai/tests/core-build.test.ts",
+      "name": "core build paid growth and public chapter lock chapter3 B09 has a paid buy/keep outcome difference without adding a multiplier",
+      "failureMessages": [
+        "Error: invalid-poker-encounter\n    at check (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:64:42)\n    at assertPokerEncounter (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:69:61)\n    at validateState (/workspace/tangsongpai/src/application/checkpoint.ts:890:3)\n    at makeCheckpoint (/workspace/tangsongpai/src/application/checkpoint.ts:959:19)\n    at round (/workspace/tangsongpai/tests/core-build.test.ts:30:39)\n    at play (/workspace/tangsongpai/tests/core-build.test.ts:99:221)\n    at /workspace/tangsongpai/tests/core-build.test.ts:103:14\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20"
+      ]
+    },
+    {
+      "file": "/workspace/tangsongpai/tests/opponent-challenge.test.ts",
+      "name": "opens with the real target and first-hand exception, without remembering a prior stage",
+      "failureMessages": [
+        "Error: invalid-poker-encounter\n    at check (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:64:42)\n    at assertPokerEncounter (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:69:61)\n    at assertR2Invariants (/workspace/tangsongpai/src/domain/r2Run.ts:166:3)\n    at b05Entrance (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:17:3)\n    at /workspace/tangsongpai/tests/opponent-challenge.test.ts:5:114\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)"
+      ]
+    },
+    {
+      "file": "/workspace/tangsongpai/tests/opponent-challenge.test.ts",
+      "name": "tells the selected type risk without forecasting scores or mutating the choice",
+      "failureMessages": [
+        "Error: invalid-poker-encounter\n    at check (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:64:42)\n    at assertPokerEncounter (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:69:61)\n    at assertR2Invariants (/workspace/tangsongpai/src/domain/r2Run.ts:166:3)\n    at b05Entrance (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:17:3)\n    at b05ChoicesReady (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:28:32)\n    at /workspace/tangsongpai/tests/opponent-challenge.test.ts:6:98\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)"
+      ]
+    },
+    {
+      "file": "/workspace/tangsongpai/tests/opponent-challenge.test.ts",
+      "name": "remembers the newly committed type through the actual checkpoint and next selection",
+      "failureMessages": [
+        "Error: invalid-poker-encounter\n    at check (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:64:42)\n    at assertPokerEncounter (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:69:61)\n    at assertR2Invariants (/workspace/tangsongpai/src/domain/r2Run.ts:166:3)\n    at b05Entrance (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:17:3)\n    at b05ChoicesReady (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:28:32)\n    at /workspace/tangsongpai/tests/opponent-challenge.test.ts:7:151\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)"
+      ]
+    },
+    {
+      "file": "/workspace/tangsongpai/tests/opponent-challenge.test.ts",
+      "name": "does not leak the B05 challenge into pre-entry, another boss or terminal screens",
+      "failureMessages": [
+        "Error: invalid-poker-encounter\n    at check (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:64:42)\n    at assertPokerEncounter (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:69:61)\n    at assertR2Invariants (/workspace/tangsongpai/src/domain/r2Run.ts:166:3)\n    at b05Entrance (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:17:3)\n    at /workspace/tangsongpai/tests/opponent-challenge.test.ts:8:117\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)"
+      ]
+    },
+    {
+      "file": "/workspace/tangsongpai/tests/opponent-cues.test.ts",
+      "name": "B05 view cue protocol anchors the focused move before its real reduction and the respectful response after its final result",
+      "failureMessages": [
+        "Error: invalid-poker-encounter\n    at check (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:64:42)\n    at assertPokerEncounter (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:69:61)\n    at assertR2Invariants (/workspace/tangsongpai/src/domain/r2Run.ts:166:3)\n    at b05Entrance (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:17:3)\n    at b05ChoicesReady (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:28:32)\n    at played (/workspace/tangsongpai/tests/opponent-cues.test.ts:6:40)\n    at /workspace/tangsongpai/tests/opponent-cues.test.ts:8:18\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20"
+      ]
+    },
+    {
+      "file": "/workspace/tangsongpai/tests/opponent-cues.test.ts",
+      "name": "B05 view cue protocol does not invent a result anchor from changed type, terminal phase or an unrelated final operation",
+      "failureMessages": [
+        "Error: invalid-poker-encounter\n    at check (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:64:42)\n    at assertPokerEncounter (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:69:61)\n    at assertR2Invariants (/workspace/tangsongpai/src/domain/r2Run.ts:166:3)\n    at b05Entrance (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:17:3)\n    at b05ChoicesReady (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:28:32)\n    at played (/workspace/tangsongpai/tests/opponent-cues.test.ts:6:40)\n    at /workspace/tangsongpai/tests/opponent-cues.test.ts:13:19\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20"
+      ]
+    },
+    {
+      "file": "/workspace/tangsongpai/tests/opponent-cues.test.ts",
+      "name": "B05 view cue protocol uses terminal facts for conceding or confident outcomes, after the result, without mutating saved state",
+      "failureMessages": [
+        "Error: invalid-poker-encounter\n    at check (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:64:42)\n    at assertPokerEncounter (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:69:61)\n    at assertR2Invariants (/workspace/tangsongpai/src/domain/r2Run.ts:166:3)\n    at b05Entrance (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:17:3)\n    at b05TerminalReady (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:34:23)\n    at /workspace/tangsongpai/tests/opponent-cues.test.ts:23:15\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)"
+      ]
+    },
+    {
+      "file": "/workspace/tangsongpai/tests/opponent-cues.test.ts",
+      "name": "B05 view cue protocol keeps reaction before outcome when a changed hand also clears, anchored to the same actual result",
+      "failureMessages": [
+        "Error: invalid-poker-encounter\n    at check (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:64:42)\n    at assertPokerEncounter (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:69:61)\n    at assertR2Invariants (/workspace/tangsongpai/src/domain/r2Run.ts:166:3)\n    at b05Entrance (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:17:3)\n    at b05ChoicesReady (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:28:32)\n    at played (/workspace/tangsongpai/tests/opponent-cues.test.ts:6:40)\n    at /workspace/tangsongpai/tests/opponent-cues.test.ts:30:17\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20"
+      ]
+    },
+    {
+      "file": "/workspace/tangsongpai/tests/opponent-cues.test.ts",
+      "name": "B05 view cue protocol adds no opening, unknown or ordinary repeated cue, while explicit replay can show the saved key cue",
+      "failureMessages": [
+        "Error: invalid-poker-encounter\n    at check (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:64:42)\n    at assertPokerEncounter (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:69:61)\n    at assertR2Invariants (/workspace/tangsongpai/src/domain/r2Run.ts:166:3)\n    at b05Entrance (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:17:3)\n    at b05ChoicesReady (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:28:32)\n    at /workspace/tangsongpai/tests/opponent-cues.test.ts:37:17\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)"
+      ]
+    },
+    {
+      "file": "/workspace/tangsongpai/tests/opponent-encounter.test.ts",
+      "name": "B05 encounter uses current saved commands and facts validates entrance, actual prior hand and both actual results as native checkpoints",
+      "failureMessages": [
+        "Error: invalid-poker-encounter\n    at check (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:64:42)\n    at assertPokerEncounter (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:69:61)\n    at assertR2Invariants (/workspace/tangsongpai/src/domain/r2Run.ts:166:3)\n    at b05Entrance (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:17:3)\n    at b05ChoicesReady (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:28:32)\n    at /workspace/tangsongpai/tests/opponent-encounter.test.ts:8:17\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)"
+      ]
+    },
+    {
+      "file": "/workspace/tangsongpai/tests/opponent-encounter.test.ts",
+      "name": "B05 encounter uses current saved commands and facts provides two formed actionable choices without consuming cards or forecasting a win",
+      "failureMessages": [
+        "Error: invalid-poker-encounter\n    at check (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:64:42)\n    at assertPokerEncounter (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:69:61)\n    at assertR2Invariants (/workspace/tangsongpai/src/domain/r2Run.ts:166:3)\n    at b05Entrance (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:17:3)\n    at b05ChoicesReady (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:28:32)\n    at /workspace/tangsongpai/tests/opponent-encounter.test.ts:20:17\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)"
+      ]
+    },
+    {
+      "file": "/workspace/tangsongpai/tests/opponent-encounter.test.ts",
+      "name": "B05 encounter uses current saved commands and facts distinguishes first hand, missing context, non-B05 and unconfirmed same type",
+      "failureMessages": [
+        "Error: invalid-poker-encounter\n    at check (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:64:42)\n    at assertPokerEncounter (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:69:61)\n    at assertR2Invariants (/workspace/tangsongpai/src/domain/r2Run.ts:166:3)\n    at b05Entrance (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:17:3)\n    at b05ChoicesReady (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:28:32)\n    at /workspace/tangsongpai/tests/opponent-encounter.test.ts:24:17\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)"
+      ]
+    },
+    {
+      "file": "/workspace/tangsongpai/tests/opponent-encounter.test.ts",
+      "name": "B05 encounter uses current saved commands and facts never calls first hands a break or treats a different hand plus reduction as avoided",
+      "failureMessages": [
+        "Error: invalid-poker-encounter\n    at check (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:64:42)\n    at assertPokerEncounter (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:69:61)\n    at assertR2Invariants (/workspace/tangsongpai/src/domain/r2Run.ts:166:3)\n    at b05Entrance (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:17:3)\n    at b05ChoicesReady (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:28:32)\n    at /workspace/tangsongpai/tests/opponent-encounter.test.ts:30:17\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)"
+      ]
+    },
+    {
+      "file": "/workspace/tangsongpai/tests/opponent-encounter.test.ts",
+      "name": "B05 encounter uses current saved commands and facts does not offer an impossible repeat, respects four-card modifiers and keeps the public hand intact",
+      "failureMessages": [
+        "Error: invalid-poker-encounter\n    at check (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:64:42)\n    at assertPokerEncounter (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:69:61)\n    at assertR2Invariants (/workspace/tangsongpai/src/domain/r2Run.ts:166:3)\n    at b05Entrance (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:17:3)\n    at b05ChoicesReady (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:28:32)\n    at /workspace/tangsongpai/tests/opponent-encounter.test.ts:35:17\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)"
+      ]
+    },
+    {
+      "file": "/workspace/tangsongpai/tests/opponent-encounter.test.ts",
+      "name": "B05 encounter uses current saved commands and facts uses the actual terminal phase and heat for the opponent result",
+      "failureMessages": [
+        "Error: invalid-poker-encounter\n    at check (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:64:42)\n    at assertPokerEncounter (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:69:61)\n    at assertR2Invariants (/workspace/tangsongpai/src/domain/r2Run.ts:166:3)\n    at b05Entrance (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:17:3)\n    at b05TerminalReady (/workspace/tangsongpai/tests/fixtures/b05-encounter.ts:34:23)\n    at /workspace/tangsongpai/tests/opponent-encounter.test.ts:41:44\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)"
+      ]
+    },
+    {
+      "file": "/workspace/tangsongpai/tests/settlement-presentation.test.ts",
+      "name": "current bounded save shows its real cap rather than legacy uncapped seniority",
+      "failureMessages": [
+        "Error: invalid-poker-encounter\n    at check (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:64:42)\n    at assertPokerEncounter (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:69:61)\n    at assertR2Invariants (/workspace/tangsongpai/src/domain/r2Run.ts:166:3)\n    at applyCommand (/workspace/tangsongpai/src/domain/run.ts:211:5)\n    at energySend (/workspace/tangsongpai/harness/fixtures/score-energy.ts:13:64)\n    at settlementReady (/workspace/tangsongpai/harness/fixtures/settlement.ts:31:8)\n    at /workspace/tangsongpai/tests/settlement-presentation.test.ts:70:16\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20"
+      ]
+    },
+    {
+      "file": "/workspace/tangsongpai/tests/settlement-presentation.test.ts",
+      "name": "current million and billion focus the actual strongest local source, while the automatic cap stays separate",
+      "failureMessages": [
+        "Error: invalid-poker-encounter\n    at check (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:64:42)\n    at assertPokerEncounter (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:69:61)\n    at assertR2Invariants (/workspace/tangsongpai/src/domain/r2Run.ts:166:3)\n    at applyCommand (/workspace/tangsongpai/src/domain/run.ts:211:5)\n    at energySend (/workspace/tangsongpai/harness/fixtures/score-energy.ts:13:64)\n    at settlementReady (/workspace/tangsongpai/harness/fixtures/settlement.ts:31:8)\n    at climaxSettlementReady (/workspace/tangsongpai/harness/fixtures/settlement.ts:95:16)\n    at /workspace/tangsongpai/tests/settlement-presentation.test.ts:87:11\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26"
+      ]
+    },
+    {
+      "file": "/workspace/tangsongpai/tests/shop-holographic-source.test.ts",
+      "name": "B16 stops a rare holographic source but keeps a common holographic source",
+      "failureMessages": [
+        "Error: invalid-poker-encounter\n    at check (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:64:42)\n    at assertPokerEncounter (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:69:61)\n    at assertR2Invariants (/workspace/tangsongpai/src/domain/r2Run.ts:166:3)\n    at assertRunInvariants (/workspace/tangsongpai/src/domain/run.ts:363:43)\n    at lateBoss (/workspace/tangsongpai/tests/shop-holographic-source.test.ts:67:138)\n    at /workspace/tangsongpai/tests/shop-holographic-source.test.ts:70:10\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)"
+      ]
+    },
+    {
+      "file": "/workspace/tangsongpai/tests/shop-holographic-source.test.ts",
+      "name": "B15 real seal follows the holographic instance after reordering",
+      "failureMessages": [
+        "Error: invalid-poker-encounter\n    at check (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:64:42)\n    at assertPokerEncounter (/workspace/tangsongpai/src/domain/r2PokerEncounter.ts:69:61)\n    at assertR2Invariants (/workspace/tangsongpai/src/domain/r2Run.ts:166:3)\n    at assertRunInvariants (/workspace/tangsongpai/src/domain/run.ts:363:43)\n    at lateBoss (/workspace/tangsongpai/tests/shop-holographic-source.test.ts:67:138)\n    at /workspace/tangsongpai/tests/shop-holographic-source.test.ts:77:8\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///workspace/tangsongpai/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)"
+      ]
+    }
+  ]
+}

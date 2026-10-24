@@ -1,0 +1,56 @@
+{
+  "checkedMain": "9fe60fc581227829df6caadc712a5bd0fed74bc4",
+  "candidateBeforeFix": "3180222f920092b9aa73c9dfe2a8fbd0bba53b5c",
+  "scope": "Focused source inspection, four narrow cases against literal main imports and pre-fix candidate, sample analysis in memory, then three-file unit regression/type/build. No local browser, new recording/material or subjective listening.",
+  "bgmThreeLayers": {
+    "file": {"decodedSeconds": 45.714285714285715, "loopSubrangeInSource": false},
+    "playerRuntime": "NOT_OBSERVED: file length and passing simulated continuity cases do not prove the user's currentTime/loop behavior. Dot observation required.",
+    "internalPhrase": {
+      "source": "ca843a64 scripts/generate-gamefeel-audio.py generate_stranger_things_theme",
+      "bpm": 84,
+      "notes": ["C3", "E3", "G3", "B3", "C4", "B3", "G3", "E3"],
+      "stepSeconds": 0.17857142857142858,
+      "eightNotePeriodSeconds": 1.4285714285714286,
+      "arpRepeatsIn16Bars": 32,
+      "drumBarPeriodSeconds": 2.857142857142857,
+      "padLfoPeriodSeconds": 11.428571428571429,
+      "finding": "Same eight-note ostinato throughout, fixed bass and pad frequencies, same drum bar; mainly pan/delay/pad-level variation rather than developed sections. A few-second repeated phrase exists inside the file even if the playhead remains continuous.",
+      "spectralSupport": {
+        "method": "Actual runtime MP3 decoded to mono 8kHz in memory; log-magnitude STFT 512/hop64, 100-2000Hz, compare source periods. Similar texture, not byte-identical PCM repetition.",
+        "periods": [
+          {"nearestLagSeconds": 1.432, "meanCosine": 0.9848104119300842},
+          {"nearestLagSeconds": 2.856, "meanCosine": 0.9852938652038574},
+          {"nearestLagSeconds": 11.432, "meanCosine": 0.9892019629478455}
+        ]
+      }
+    }
+  },
+  "drumChain": {
+    "eligibility": "GameScene.impactAccumulator -> scoreImpact -> scoreArrivalKind/actualMultiplier: saved multiply-multiplier/read-coefficient/rescue-multiplier with M.after>M.before; ordinary additions and final H*M are not this trigger.",
+    "recipe": "scoreMultiply: glass + 140ms drum + glass; paired scoreDoubleImpact: glass + 75ms drum, with the shared paired cap reducing playback to 45ms.",
+    "nominalDrumGain": 0.028,
+    "sharedScoreVoiceCap": 6,
+    "sharedNominalGainCap": 0.12,
+    "actualSample": {"decodedSeconds": 0.7970975056689342, "sampleBodyOffsetSeconds": 0, "sampleBodyGain": 0.4342083065662178, "first45msRawEnergyFraction": 0.3998720049858093},
+    "confirmedCodeGap": "On main and pre-fix candidate, loaded glass made the recipe count as recorded even when the drum was missing. The drum was then absent and the whole-family synthetic fallback was bypassed. Late decode never replays the consumed event.",
+    "minimalFix": "For a real multiplication with some recordings present but the drum family missing, admit one existing synthScoreFallback multiply body before cue(). Preserve available glass and existing atomic voice/gain admission, ownership and no-late-replay policy. No new asset, context, pitch/gain settings or scene timing.",
+    "userIncidentAttribution": "NOT_CONFIRMED: dot must record whether the actual multiplier existed, drum decode completed before arrival, source/synth start occurred, and any early stop/stealing. Device low-frequency loss remains a hypothesis. Paired 45ms body is measured behavior, not a listening approval."
+  },
+  "checks": {
+    "mainPinnedSourceImports": "Two generated temporary diagnostic files imported D:/ai/tangsongpai/tangsongpai/src explicitly; 4 cases passed, 33 skipped. Current main files unchanged.",
+    "mainRegressionRed": "With the new required missing-drum fallback expectation, the same literal main imports give 3 PASS / 1 FAIL / 35 skipped: fallback oscillator called 0 times instead of 1. Intentional pre-fix red report: main-drum-regression-red-20261018.json; main files unchanged.",
+    "preFixCandidate": "Same 4 narrow cases passed while demonstrating the partial-drum gap; simulated shop/boss UI/preload/unlock and suspend/resume did not seek or reload active media.",
+    "postFix": "3 files / 60 tests PASS, tsc --noEmit PASS, Vite production build 362 modules PASS, observer node --check PASS.",
+    "firstFixTestFailure": "1 failed / 57 passed because the new oscillator fixture omitted native Q.setValueAtTime; corrected fixture surface, no product workaround.",
+    "browserAndListeningThisBatch": "NOT_RUN by instruction; prior e6bec936 browser/audio artifacts remain bound to their original hashes, not claimed as this fix's runtime evidence."
+  },
+  "sourceHashesNormalizedLF": {
+    "mainAudioEngine": "8b31d085e1c98a23867e7f3d8e08b44c50d0f9a714bbb761e429ad363d72a638",
+    "src/audio/AudioEngine.ts": "fcde9dd50bc14a9293224f7c5bbb71998d170ace1b58d9d19bca2e44fb0f9f5d",
+    "tests/audio-music-lifecycle.test.ts": "3cb5ed13d913cdcfc759e3ed221455e58c405bc5135e73b0367f220d236598db",
+    "tests/score-melody-audio.test.ts": "2fa14c23fe935a54cb206d1b3f1f3456fb004d0c770d1b578b4cb9e2472c2da2",
+    "harness/music-runtime-observer.mjs": "5a767699e4bd4e62a6cd4f63c95e033237a24cbf83acfe6b64820d4852da85bf"
+  },
+  "integrationNotice": "No reproduced blocking player rewind in these narrow cases. Partial drum-family gap is a confirmed existing audio defect with a minimal candidate fix. BGM runtime observation and long developed same-theme replacement remain pending; rules/saves/assets/GameScene unchanged.",
+  "heard": false
+}

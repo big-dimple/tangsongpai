@@ -1,0 +1,90 @@
+{
+  "taskId": "P08",
+  "testedCommit": "7c2c09df2614fe1b5790ac844642af6ebc2aac7e",
+  "recordType": "scoped_source_evidence_adapter",
+  "status": "SCOPED_SOFTWARE_VERIFIED",
+  "scope": "The root testedCommit is copied from the original actual build execution. Unit/browser batches retain their separate original commits; no new game tests ran in this documentation batch.",
+  "originalRecord": "docs/production/evidence/sushi-exile-2026-10-17/integration.json",
+  "originalSha256": "2e2531630085a48d6bc01522a6da3356c884301a8706d3c6bf3707a88078a558",
+  "build": {
+    "executedCommit": "7c2c09df2614fe1b5790ac844642af6ebc2aac7e",
+    "typecheck": "PASS",
+    "vite": "PASS",
+    "modules": 360,
+    "distFiles": 397,
+    "distBytes": 37175726,
+    "budgetBytes": 20000000,
+    "budgetStatus": "FAIL",
+    "info": {
+      "version": "C03",
+      "builtAt": "2026-10-17T17:59:44.918Z",
+      "revision": "7c2c09df2614fe1b5790ac844642af6ebc2aac7e",
+      "sourceStatus": "clean",
+      "modified": false
+    }
+  },
+  "humanReview": {
+    "status": "NOT_GRANTED",
+    "scope": "No overall art/experience/hearing/physical-device signoff"
+  },
+  "limitations": [
+    "P08 remains in_progress",
+    "Three experience goals remain unmet",
+    "Runtime budget remains FAIL",
+    "No domain or deployment verification"
+  ],
+  "unitBatches": {
+    "executedCommit": "0ac48422886cb17aad2ea8f16865e64c880d5c16",
+    "files": 20,
+    "passed": 240,
+    "rawLog": "targeted-initial.txt",
+    "srcAndTestsMatchProduct": true
+  },
+  "browser": {
+    "source": "7c2c09df2614fe1b5790ac844642af6ebc2aac7e",
+    "buildInfo": {
+      "version": "C03",
+      "builtAt": "2026-10-17T17:58:44.343Z",
+      "revision": "7c2c09df2614fe1b5790ac844642af6ebc2aac7e",
+      "sourceStatus": "clean",
+      "modified": false
+    },
+    "viewport": {
+      "width": 390,
+      "height": 740
+    },
+    "browser": "143.0.3650.80",
+    "status": "PASS",
+    "cancelAndReselect": "draft-only; state/journal/storage unchanged by native harness assertions",
+    "trace": {
+      "use": true,
+      "beforeUsed": false,
+      "afterUsed": true,
+      "discardedIds": [
+        "spades-4",
+        "spades-12",
+        "hearts-5",
+        "hearts-11",
+        "hearts-7",
+        "diamonds-12"
+      ],
+      "beforeScore": "78",
+      "afterScore": "312"
+    },
+    "nextScore": "30",
+    "refilledHand": 8,
+    "usedAfterNext": true,
+    "errors": [],
+    "canonicalStateJournalStorage": true,
+    "evidence": "integration-phone-report.json.gz"
+  },
+  "sourceEvidenceReuse": {
+    "relatedTests": 508,
+    "nativeHeroes": 6,
+    "sourceProduct": "7627e7ddc09f44a8412f4e944852969c15f9cf33",
+    "scope": "original precise version only; no claim phone final layout was in source build"
+  },
+  "publishedMain": "9fe60fc581227829df6caadc712a5bd0fed74bc4",
+  "originalGitBlob": "4d24feb13b1298fb06628a85b46b919644701977",
+  "originalHashBasis": "Git blob bytes at main9fe60fc5"
+}

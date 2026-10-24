@@ -1,0 +1,593 @@
+{
+  "base": "77bd50fcae0991f021b68219c83de8027424bacb",
+  "requestedMain": "2e70b314",
+  "baseNote": "77bd adds only the recorded limited PC observation above 2e70",
+  "branch": "dev/owned-joker-presence-20261018",
+  "status": "development-candidate",
+  "checks": {
+    "method": "Latest actual result for each file, not a claim of one full-suite run",
+    "files": 14,
+    "tests": 255,
+    "passed": 255,
+    "failed": 0,
+    "verifiedFiles": [
+      "tests/hero-native-score-clock.test.ts",
+      "tests/joker-reorder.test.ts",
+      "tests/joker-score-strike.test.ts",
+      "tests/layout.test.ts",
+      "tests/owned-joker-drag-visual.test.ts",
+      "tests/owned-joker-idle.test.ts",
+      "tests/owned-joker-input.test.ts",
+      "tests/owned-joker-score-motion.test.ts",
+      "tests/score-card-performance.test.ts",
+      "tests/score-performance.test.ts",
+      "tests/score-phrase.test.ts",
+      "tests/tool-inventory-entry.test.ts",
+      "tests/singapore-final-adoption.test.ts",
+      "tests/stage-table-art.test.ts"
+    ],
+    "attempts": [
+      {
+        "report": "owned-rack-tests.json",
+        "files": 12,
+        "tests": 243,
+        "passed": 242,
+        "failed": 1,
+        "success": false
+      },
+      {
+        "report": "owned-rack-final-tests.json",
+        "files": 3,
+        "tests": 67,
+        "passed": 67,
+        "failed": 0,
+        "success": true
+      },
+      {
+        "report": "owned-rack-idle-final-tests.json",
+        "files": 2,
+        "tests": 18,
+        "passed": 18,
+        "failed": 0,
+        "success": true
+      }
+    ],
+    "notes": [
+      "Initial one failed assertion was 21.999999999999986 versus 22; test uses the existing CSS subpixel tolerance after correction.",
+      "One later idle-only attempt ran 0 tests because OS sandbox TEMP SSR rename returned EPERM; rerun with the existing writable workspace TEMP passed.",
+      "No whole-project suite, CI, browser, hearing, physical-device or subjective naturalness acceptance in this task."
+    ]
+  },
+  "build": {
+    "status": "PASS",
+    "command": "npm run build (tsc --noEmit && vite build)",
+    "modules": 387,
+    "artifact": "index-CuHRT5Hs.js",
+    "sha256": "568d8beabd46f4c9e65ed47ddd49f991934556f354e6f34c08e9fc2bd541161f",
+    "jsKB": 3030.52,
+    "gzipKB": 889.16,
+    "info": {
+      "version": "C03",
+      "builtAt": "2026-10-18T15:13:14.172Z",
+      "revision": "77bd50fcae0991f021b68219c83de8027424bacb",
+      "sourceStatus": "dirty",
+      "modified": true,
+      "modifiedFileCount": 6,
+      "modifiedFiles": [
+        "src/game/GameScene.ts",
+        "src/game/OwnedCardTilt.ts",
+        "src/game/OwnedJokerScoreMotion.ts",
+        "src/game/layout.ts",
+        "tests/layout.test.ts",
+        "tests/owned-joker-idle.test.ts"
+      ]
+    },
+    "note": "Original build metadata preserved; known large-chunk warning only"
+  },
+  "layoutComparison": [
+    {
+      "viewport": [
+        320,
+        568
+      ],
+      "mode": "portrait",
+      "slotWidthBefore": 51.2,
+      "slotWidthAfter": 57.6,
+      "handHeightBefore": 94.8,
+      "handHeightAfter": 94.8,
+      "scoreHeightBefore": 96,
+      "scoreHeightAfter": 96,
+      "playedHeightBefore": 93.51999999999998,
+      "playedHeightAfter": 84.56,
+      "slots": [
+        {
+          "x": 8,
+          "y": 64,
+          "width": 57.6,
+          "height": 80.64
+        },
+        {
+          "x": 69.6,
+          "y": 64,
+          "width": 57.6,
+          "height": 80.64
+        },
+        {
+          "x": 131.2,
+          "y": 64,
+          "width": 57.6,
+          "height": 80.64
+        },
+        {
+          "x": 192.8,
+          "y": 64,
+          "width": 57.6,
+          "height": 80.64
+        },
+        {
+          "x": 254.4,
+          "y": 64,
+          "width": 57.6,
+          "height": 80.64
+        }
+      ]
+    },
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "mode": "portrait",
+      "slotWidthBefore": 63.6,
+      "slotWidthAfter": 68.4,
+      "handHeightBefore": 156.39999999999998,
+      "handHeightAfter": 156.39999999999998,
+      "scoreHeightBefore": 108,
+      "scoreHeightAfter": 108,
+      "playedHeightBefore": 112,
+      "playedHeightAfter": 112,
+      "slots": [
+        {
+          "x": 12,
+          "y": 68,
+          "width": 68.4,
+          "height": 95.76
+        },
+        {
+          "x": 86.4,
+          "y": 68,
+          "width": 68.4,
+          "height": 95.76
+        },
+        {
+          "x": 160.8,
+          "y": 68,
+          "width": 68.4,
+          "height": 95.76
+        },
+        {
+          "x": 235.20000000000002,
+          "y": 68,
+          "width": 68.4,
+          "height": 95.76
+        },
+        {
+          "x": 309.6,
+          "y": 68,
+          "width": 68.4,
+          "height": 95.76
+        }
+      ]
+    },
+    {
+      "viewport": [
+        390,
+        740
+      ],
+      "mode": "portrait",
+      "slotWidthBefore": 63.6,
+      "slotWidthAfter": 68.4,
+      "handHeightBefore": 156.39999999999998,
+      "handHeightAfter": 156.39999999999998,
+      "scoreHeightBefore": 108,
+      "scoreHeightAfter": 108,
+      "playedHeightBefore": 112,
+      "playedHeightAfter": 112,
+      "slots": [
+        {
+          "x": 12,
+          "y": 68,
+          "width": 68.4,
+          "height": 95.76
+        },
+        {
+          "x": 86.4,
+          "y": 68,
+          "width": 68.4,
+          "height": 95.76
+        },
+        {
+          "x": 160.8,
+          "y": 68,
+          "width": 68.4,
+          "height": 95.76
+        },
+        {
+          "x": 235.20000000000002,
+          "y": 68,
+          "width": 68.4,
+          "height": 95.76
+        },
+        {
+          "x": 309.6,
+          "y": 68,
+          "width": 68.4,
+          "height": 95.76
+        }
+      ]
+    },
+    {
+      "viewport": [
+        430,
+        932
+      ],
+      "mode": "portrait",
+      "slotWidthBefore": 64,
+      "slotWidthAfter": 76,
+      "handHeightBefore": 156.39999999999998,
+      "handHeightAfter": 156.39999999999998,
+      "scoreHeightBefore": 108,
+      "scoreHeightAfter": 108,
+      "playedHeightBefore": 112,
+      "playedHeightAfter": 112,
+      "slots": [
+        {
+          "x": 13,
+          "y": 68,
+          "width": 76,
+          "height": 106.39999999999999
+        },
+        {
+          "x": 95,
+          "y": 68,
+          "width": 76,
+          "height": 106.39999999999999
+        },
+        {
+          "x": 177,
+          "y": 68,
+          "width": 76,
+          "height": 106.39999999999999
+        },
+        {
+          "x": 259,
+          "y": 68,
+          "width": 76,
+          "height": 106.39999999999999
+        },
+        {
+          "x": 341,
+          "y": 68,
+          "width": 76,
+          "height": 106.39999999999999
+        }
+      ]
+    },
+    {
+      "viewport": [
+        844,
+        300
+      ],
+      "mode": "landscape",
+      "slotWidthBefore": 34,
+      "slotWidthAfter": 34.285714285714285,
+      "handHeightBefore": 88,
+      "handHeightAfter": 88,
+      "scoreHeightBefore": 80,
+      "scoreHeightAfter": 80,
+      "playedHeightBefore": 80,
+      "playedHeightAfter": 80,
+      "slots": [
+        {
+          "x": 332.2857142857143,
+          "y": 8,
+          "width": 34.285714285714285,
+          "height": 47.99999999999999
+        },
+        {
+          "x": 376.57142857142856,
+          "y": 8,
+          "width": 34.285714285714285,
+          "height": 47.99999999999999
+        },
+        {
+          "x": 420.85714285714283,
+          "y": 8,
+          "width": 34.285714285714285,
+          "height": 47.99999999999999
+        },
+        {
+          "x": 465.1428571428571,
+          "y": 8,
+          "width": 34.285714285714285,
+          "height": 47.99999999999999
+        },
+        {
+          "x": 509.42857142857144,
+          "y": 8,
+          "width": 34.285714285714285,
+          "height": 47.99999999999999
+        }
+      ]
+    },
+    {
+      "viewport": [
+        844,
+        390
+      ],
+      "mode": "landscape",
+      "slotWidthBefore": 34,
+      "slotWidthAfter": 54.28571428571429,
+      "handHeightBefore": 122,
+      "handHeightAfter": 122,
+      "scoreHeightBefore": 86,
+      "scoreHeightAfter": 86,
+      "playedHeightBefore": 86,
+      "playedHeightAfter": 86,
+      "slots": [
+        {
+          "x": 282.2857142857143,
+          "y": 8,
+          "width": 54.28571428571429,
+          "height": 76
+        },
+        {
+          "x": 346.57142857142856,
+          "y": 8,
+          "width": 54.28571428571429,
+          "height": 76
+        },
+        {
+          "x": 410.8571428571429,
+          "y": 8,
+          "width": 54.28571428571429,
+          "height": 76
+        },
+        {
+          "x": 475.14285714285717,
+          "y": 8,
+          "width": 54.28571428571429,
+          "height": 76
+        },
+        {
+          "x": 539.4285714285714,
+          "y": 8,
+          "width": 54.28571428571429,
+          "height": 76
+        }
+      ]
+    },
+    {
+      "viewport": [
+        1024,
+        600
+      ],
+      "mode": "desktop",
+      "slotWidthBefore": 104,
+      "slotWidthAfter": 104,
+      "handHeightBefore": 145.2,
+      "handHeightAfter": 145.2,
+      "scoreHeightBefore": 80,
+      "scoreHeightAfter": 80,
+      "playedHeightBefore": 0,
+      "playedHeightAfter": 0,
+      "slots": [
+        {
+          "x": 328,
+          "y": 64,
+          "width": 104,
+          "height": 145.6
+        },
+        {
+          "x": 454,
+          "y": 64,
+          "width": 104,
+          "height": 145.6
+        },
+        {
+          "x": 580,
+          "y": 64,
+          "width": 104,
+          "height": 145.6
+        },
+        {
+          "x": 706,
+          "y": 64,
+          "width": 104,
+          "height": 145.6
+        },
+        {
+          "x": 832,
+          "y": 64,
+          "width": 104,
+          "height": 145.6
+        }
+      ]
+    },
+    {
+      "viewport": [
+        1280,
+        720
+      ],
+      "mode": "desktop",
+      "slotWidthBefore": 104,
+      "slotWidthAfter": 140,
+      "handHeightBefore": 153.04,
+      "handHeightAfter": 153.04,
+      "scoreHeightBefore": 80,
+      "scoreHeightAfter": 80,
+      "playedHeightBefore": 102.96000000000004,
+      "playedHeightAfter": 102.96000000000004,
+      "slots": [
+        {
+          "x": 292,
+          "y": 12,
+          "width": 140,
+          "height": 196
+        },
+        {
+          "x": 454,
+          "y": 12,
+          "width": 140,
+          "height": 196
+        },
+        {
+          "x": 616,
+          "y": 12,
+          "width": 140,
+          "height": 196
+        },
+        {
+          "x": 778,
+          "y": 12,
+          "width": 140,
+          "height": 196
+        },
+        {
+          "x": 940,
+          "y": 12,
+          "width": 140,
+          "height": 196
+        }
+      ]
+    },
+    {
+      "viewport": [
+        1366,
+        768
+      ],
+      "mode": "desktop",
+      "slotWidthBefore": 104,
+      "slotWidthAfter": 140,
+      "handHeightBefore": 161.77599999999998,
+      "handHeightAfter": 161.77599999999998,
+      "scoreHeightBefore": 114.22400000000005,
+      "scoreHeightAfter": 114.22400000000005,
+      "playedHeightBefore": 108,
+      "playedHeightAfter": 108,
+      "slots": [
+        {
+          "x": 335,
+          "y": 12,
+          "width": 140,
+          "height": 196
+        },
+        {
+          "x": 497,
+          "y": 12,
+          "width": 140,
+          "height": 196
+        },
+        {
+          "x": 659,
+          "y": 12,
+          "width": 140,
+          "height": 196
+        },
+        {
+          "x": 821,
+          "y": 12,
+          "width": 140,
+          "height": 196
+        },
+        {
+          "x": 983,
+          "y": 12,
+          "width": 140,
+          "height": 196
+        }
+      ]
+    },
+    {
+      "viewport": [
+        1920,
+        1080
+      ],
+      "mode": "desktop",
+      "slotWidthBefore": 104,
+      "slotWidthAfter": 140,
+      "handHeightBefore": 167.6,
+      "handHeightAfter": 167.6,
+      "scoreHeightBefore": 128,
+      "scoreHeightAfter": 128,
+      "playedHeightBefore": 400.4,
+      "playedHeightAfter": 400.4,
+      "slots": [
+        {
+          "x": 612,
+          "y": 12,
+          "width": 140,
+          "height": 196
+        },
+        {
+          "x": 774,
+          "y": 12,
+          "width": 140,
+          "height": 196
+        },
+        {
+          "x": 936,
+          "y": 12,
+          "width": 140,
+          "height": 196
+        },
+        {
+          "x": 1098,
+          "y": 12,
+          "width": 140,
+          "height": 196
+        },
+        {
+          "x": 1260,
+          "y": 12,
+          "width": 140,
+          "height": 196
+        }
+      ]
+    }
+  ],
+  "sourceHashes": [
+    {
+      "file": "src/game/GameScene.ts",
+      "lfSha256": "9758487dee984b21a452a01ccbb351a3f0b57932c0befa68f05a27af9c8b20bf"
+    },
+    {
+      "file": "src/game/OwnedCardTilt.ts",
+      "lfSha256": "06a97caf97ed23485a5e0d0b07f80ad42e47cbced5ecd2df817ab4d7f9c6a60d"
+    },
+    {
+      "file": "src/game/OwnedJokerScoreMotion.ts",
+      "lfSha256": "0cbb07fa2620956b00d354c293fa43b693ad20e983b9389920f96e9a67d0463e"
+    },
+    {
+      "file": "src/game/layout.ts",
+      "lfSha256": "ce3d17b2682aba99a45e77e6aff7652e53c6087f21e4df3e91604a4d86238d26"
+    },
+    {
+      "file": "tests/layout.test.ts",
+      "lfSha256": "ce7deb46f7e582602243cf54f0af6b7a2986947c2af726173ee1158d04ff153c"
+    },
+    {
+      "file": "tests/owned-joker-idle.test.ts",
+      "lfSha256": "b9114e214c07d3e8d0106745208c52042cc0d93c19c2cf0deb19454d1abcc492"
+    }
+  ],
+  "untouched": [
+    "audio/BGM/no-lowpass routing",
+    "resource S0 and original asset bytes",
+    "six-hero ScorePerformance contract/domain/save/RNG/event arithmetic",
+    "ShopScene/CharacterSelectScene/global plan/main/CI/deployment"
+  ],
+  "browser": "NOT_RUN",
+  "naturalFeel": "NOT_RUN"
+}

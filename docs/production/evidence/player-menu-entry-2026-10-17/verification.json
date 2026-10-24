@@ -1,0 +1,67 @@
+{
+  "base": "9fe60fc581227829df6caadc712a5bd0fed74bc4",
+  "product": "fc03f777cb9b40c19514b918212d603d14141f7c",
+  "tests": {
+    "files": [
+      "c04-mode-save.test.ts",
+      "haptics.test.ts",
+      "player-entry-storage.test.ts",
+      "recovery-queue.test.ts",
+      "recovery-save.test.ts",
+      "write-lease.test.ts"
+    ],
+    "passed": 104,
+    "failed": 0
+  },
+  "typecheck": "PASS",
+  "diff": "PASS",
+  "build": {
+    "version": "C03",
+    "builtAt": "2026-10-17T23:58:02.046Z",
+    "revision": "fc03f777cb9b40c19514b918212d603d14141f7c",
+    "sourceStatus": "clean",
+    "modified": false,
+    "bundles": [
+      {
+        "file": "assets/index-2AkKX7L2.js",
+        "sha256": "7d48047a30cc086cacb6143281ba600c86d2789326043e5baae1ab43dddaab86"
+      }
+    ]
+  },
+  "baseline": {
+    "status": "reproduced before fix",
+    "pages": [
+      {
+        "menuOpen": false,
+        "status": "没有进行中的局，请选择角色。",
+        "heldWriterCount": 1
+      },
+      {
+        "menuOpen": true,
+        "status": "另一页面持有写入权，本页只读。接管会读取最新完整进度。",
+        "heldWriterCount": 1
+      }
+    ],
+    "screenshotSha256": "291369046f0269dd06e5590b96b6c67b358b9be05385f8cee28bd9f756813776"
+  },
+  "afterFixBrowser": {
+    "status": "NOT_RUN",
+    "reason": "User23:51 stopped local gameplay; root coordinates one remote Dot validation.",
+    "preparedHarness": "harness/player-menu-entry.mjs",
+    "localBrowserRunning": false
+  },
+  "unchanged": [
+    "src/main.ts",
+    "src/game/HeroCardAttachment.ts",
+    "src/game/ShopScene.ts",
+    "src/game/ScorePhrase.ts",
+    "src/audio/AudioEngine.ts"
+  ],
+  "initialProduct": "2b564015f7628f37b56253f91846c4815731feb5",
+  "visibleMenuEntry": {
+    "status": "PASS: one DOM simulation only",
+    "test": "tests/player-menu-entry-button.test.ts",
+    "browserHitTesting": "NOT_RUN; remote Dot pending",
+    "change": "remove hidden dock; visible native menu control; safe insets and pointer layer; Escape/focus preserved"
+  }
+}

@@ -1,0 +1,281 @@
+{
+  "base": "15cdc0532a2ef5656798bb2429a7a3b2810d8c1d",
+  "audioSource": "1d1f61b82225222bdef3fc5ad85fd5fe4a6e3210",
+  "audioProduct": "b693dc1383cd9091a181b8bccf7f24071722d982",
+  "menuSource": "22dfd9f4ec6d10eb781b7c1017801a5f7c36676c",
+  "menuProduct": "1a8559b80fd25e3248978f170eb5f966859f0089",
+  "productMerge": "edb056561aed13f0a51cb4f8ae3f00a36000152b",
+  "audioMerge": "cea52f1323aee03eeb8b16a47346d1dd676449c5",
+  "planAncestor": "0f86ec9e59619219762a439ef69ea97505883365",
+  "sourcePaths": [
+    {
+      "kind": "audio",
+      "path": "art/sources/audio-gamefeel-rfc-20261017/upstream.json",
+      "blob": "41d83bf329a8750a565afc581041f56166815d0e",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "harness/hero-climax.mjs",
+      "blob": "993d10e69c75d2be199e346b34bbb21f6eb7ca71",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "harness/music-filter-transition.mjs",
+      "blob": "452e87fa8da112a40368f04b105b2c7719ecad13",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "harness/windows-experience-integration.mjs",
+      "blob": "5fa1f66d0e0f94f2ddd2a5a1d7f8fa6ad28b7b70",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "public/assets/audio/bgm/manifest.json",
+      "blob": "a9090c6afd9d4e64c37d55f5731ab1f7c28ee30d",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "public/assets/audio/bgm/user-20261018/go-cake.mp3",
+      "blob": "9695d39daffd96b6f6c5d858b3b1cecd79611960",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "public/assets/audio/bgm/user-20261018/go-cake.ogg",
+      "blob": "81800f26bf40a3797f0f9574523e44af86819ec3",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "public/assets/audio/bgm/user-20261018/moon-shop.mp3",
+      "blob": "2baa18ef62c62aa554eb99748c5c7211edf55e0d",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "public/assets/audio/bgm/user-20261018/moon-shop.ogg",
+      "blob": "22d4f35ce3f059f1e7f2f346f9ed58cf91c14b08",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "public/assets/audio/bgm/user-20261018/tianhu-begin.mp3",
+      "blob": "bbf5f386df48b371c172ccaaa062fdb0370aaf39",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "public/assets/audio/bgm/user-20261018/tianhu-begin.ogg",
+      "blob": "54b915a6fd2f67f47ed16c10c4a8c2205cb7c8cb",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "public/assets/audio/bgm/user-20261018/vsboss.mp3",
+      "blob": "116946505fef79ed09d6613ecec085302c8916d9",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "public/assets/audio/bgm/user-20261018/vsboss.ogg",
+      "blob": "e7167d6d0cb52a18b123c28f529ccb3eae1387e1",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "public/assets/audio/gamefeel-rfc/sources.json",
+      "blob": "73d04b3dfcf3940b6cae4782ea7ffe3bea8a696b",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "scripts/prepare-user-bgm.py",
+      "blob": "3fc76eec573b71973322db14531ba7355024f694",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "src/audio/AudioEngine.ts",
+      "blob": "80ad5ecccda1f86f1133d6c574aea8810a3949d8",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "src/audio/MusicSourceFormats.ts",
+      "blob": "cdaeb32935b6fe63de3dd971e6d9d5e1ff0fcba1",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "src/game/GameScene.ts",
+      "blob": "223955a367227e9f76eb91a8f425d6c965ac1499",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "src/game/IntermissionScene.ts",
+      "blob": "a90f0a69c205f5de5345817d59edf1f9cd9b0e84",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "src/game/ShopScene.ts",
+      "blob": "1ba4c26364f0712bdcac405702b7a234b3f0fbf4",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "tests/audio-lifecycle.browser.mjs",
+      "blob": "0159b1474010ae3574b89b40e48a6a381616a052",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "tests/audio-music-lifecycle.test.ts",
+      "blob": "f09505b03f65445dd79db94f31fea61b48fb48d2",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "tests/bgm-scene.test.ts",
+      "blob": "ff244af665f6dd5ceb5fbe2f27127b6e6ff718d5",
+      "equal": true
+    },
+    {
+      "kind": "audio",
+      "path": "tests/runtime-assets-retirement.test.ts",
+      "blob": "4eceaa15078ab8f5afbccbd75bbc38398e27fa4b",
+      "equal": true
+    },
+    {
+      "kind": "menu",
+      "path": "src/game/RunMenu.ts",
+      "blob": "7258b357dd4fa55469876a251da6c184671192b0",
+      "equal": true
+    },
+    {
+      "kind": "menu",
+      "path": "src/game/RunMenuInteraction.ts",
+      "blob": "d2e887bc5e3c290915d7e17b72602affee9832bd",
+      "equal": true
+    },
+    {
+      "kind": "menu",
+      "path": "src/style.css",
+      "blob": "05567ddef2be0e2fed85f919309922f303f5e334",
+      "equal": true
+    },
+    {
+      "kind": "menu",
+      "path": "tests/player-menu-entry-button.test.ts",
+      "blob": "099634a59ca3d84bd1c707476b0b3d3e2bf378f9",
+      "equal": true
+    },
+    {
+      "kind": "menu",
+      "path": "tests/run-menu-interaction.test.ts",
+      "blob": "793553a1c5112942f2723b9fa40fe67bb1e1ec2a",
+      "equal": true
+    }
+  ],
+  "sourceChecksReused": {
+    "audio": {
+      "files": 14,
+      "passed": 191
+    },
+    "menu": {
+      "files": 3,
+      "passed": 30
+    },
+    "scope": "each source version only; not added together"
+  },
+  "originalsPreserved": 4,
+  "sfxExactBaseline": 30,
+  "thinEventContractExact": true,
+  "domainUnchanged": true,
+  "heroNativeModulesUnchanged": true,
+  "browser": "NOT_RUN",
+  "hearing": "NOT_RUN",
+  "physicalDevice": "NOT_RUN",
+  "shopFinalCandidate": "PENDING",
+  "mainMerged": false,
+  "P08": "in_progress",
+  "H17": "in_progress",
+  "cancelledRetrospective": "13:22 user cancelled old BGM used/residual classification; no new classification/list or expanded audit",
+  "integrationChecks": {
+    "files": 5,
+    "passed": 37,
+    "failed": 0,
+    "byFile": [
+      {
+        "file": "bgm-scene.test.ts",
+        "passed": 3
+      },
+      {
+        "file": "menu-new-run-confirmation.test.ts",
+        "passed": 5
+      },
+      {
+        "file": "music-modal-stack.test.ts",
+        "passed": 2
+      },
+      {
+        "file": "score-card-performance.test.ts",
+        "passed": 13
+      },
+      {
+        "file": "source-stage-art.test.ts",
+        "passed": 14
+      }
+    ],
+    "typecheck": "PASS via npm run build",
+    "build": "PASS",
+    "modules": 384,
+    "buildInfo": {
+      "version": "C03",
+      "builtAt": "2026-10-18T13:25:38.583Z",
+      "revision": "edb056561aed13f0a51cb4f8ae3f00a36000152b",
+      "sourceStatus": "clean",
+      "modified": false
+    },
+    "bundle": "index-DGT0G5Nj.js"
+  },
+  "distCheck": {
+    "scope": "normal final dist only; no expanded repository asset audit or old-BGM classification",
+    "buildInfo": {
+      "version": "C03",
+      "builtAt": "2026-10-18T13:25:38.583Z",
+      "revision": "edb056561aed13f0a51cb4f8ae3f00a36000152b",
+      "sourceStatus": "clean",
+      "modified": false
+    },
+    "distFiles": 402,
+    "unexpectedSourceTestHarnessFiles": [],
+    "currentBgmFiles": 8,
+    "currentBgmBytes": 10261793,
+    "currentBgmExactManifest": true,
+    "mp3FallbacksAreUsedByDynamicManifest": true,
+    "extraDeletions": [],
+    "allOtherAssetReferenceAudit": "NOT_EXPANDED per13:22"
+  },
+  "latestBatchMainAuthorization": {
+    "source": "user13:18 via parent",
+    "allowed": true,
+    "actualMainMerged": false,
+    "gate": "complete current audio/menu/shop batch; reasonable engineering and feasible dynamic checks; no unavailable preview claimed as tested"
+  },
+  "remaining": {
+    "shopFinalCandidate": "PENDING_OWNER_01a148b9_INCLUDING13:12",
+    "heroNextBatch": "RUNNING_01a149b8_AND_01a147ec_AFTER_CURRENT_BATCH",
+    "straightDiy": "RULES_MATH_ANALYSIS_RUNNING_SHOP_PROPOSAL_PENDING",
+    "preview": "WAIT_PARENT_SINGAPORE_RETURN",
+    "realPixels": "NOT_RUN",
+    "hearing": "NOT_RUN",
+    "physicalMobile": "NOT_RUN"
+  }
+}

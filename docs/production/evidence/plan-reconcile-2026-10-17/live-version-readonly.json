@@ -1,0 +1,709 @@
+{
+  "checkedAt": "2026-10-17T23:17:26.126118+00:00",
+  "scope": "read-only public HTML/build-info/assets; no deployment or session mutation",
+  "requests": [
+    {
+      "path": "/",
+      "status": 200,
+      "url": "https://pai.hp666.cc/",
+      "headers": {
+        "Date": "Sat, 17 Oct 2026 23:17:27 GMT",
+        "Content-Type": "text/html; charset=utf-8",
+        "Cache-Control": "public, max-age=0, must-revalidate",
+        "Server": "cloudflare"
+      },
+      "bytes": 14344,
+      "sha256": "987df362cba87fdaac829b9547fadea67ae8d144b6170bf725797a8c43306cb3",
+      "assetPaths": [
+        "./assets/index-BGS8xiMH.js",
+        "./assets/index-Be2le79Y.css"
+      ]
+    },
+    {
+      "path": "/build-info.json",
+      "status": 200,
+      "url": "https://pai.hp666.cc/build-info.json",
+      "headers": {
+        "Date": "Sat, 17 Oct 2026 23:17:27 GMT",
+        "Content-Type": "application/json",
+        "Cache-Control": "public, max-age=0, must-revalidate",
+        "ETag": "\"43869d74a0b201b9824ffa201037bf2f\"",
+        "Server": "cloudflare"
+      },
+      "bytes": 244,
+      "sha256": "133e09e03e2064cde05e8584972db880692d716d59ae8685720413475c877c23",
+      "buildInfo": {
+        "version": "C03",
+        "builtAt": "2026-10-17T13:25:49.996Z",
+        "revision": "da671af2e59bac6877a954b000ba4c527fddcf7f",
+        "sourceStatus": "dirty",
+        "modified": true,
+        "modifiedFileCount": 1,
+        "modifiedFiles": [
+          "package-lock.json"
+        ]
+      }
+    }
+  ],
+  "actualEntryAsset": {
+    "url": "https://pai.hp666.cc/assets/index-BGS8xiMH.js",
+    "status": 200,
+    "headers": {
+      "Date": "Sat, 17 Oct 2026 23:18:06 GMT",
+      "Content-Type": "text/javascript; charset=utf-8",
+      "Cache-Control": "public, max-age=0, must-revalidate",
+      "ETag": "\"d4c1b6632f0291015933cf1afb745b2f\""
+    },
+    "bytes": 2851269,
+    "sha256": "101ff387b720a2554dbaacd5ecaab013fe33c7366c18f668ba0aef40f0511285",
+    "markers": {
+      "点商品看配合，再点看详情；确认后扣款": 2,
+      "本手使用贬谪": 0,
+      "取消本手贬谪": 0,
+      "amo.exile": 0,
+      "quality-r2-amo-exile-v1": 0,
+      "next-real-hand": 0,
+      "待出牌": 8,
+      "培养": 31,
+      "da671af2e59bac6877a954b000ba4c527fddcf7f": 1
+    },
+    "footerContext": [
+      ".shelfKind===\"tools\"?\"购买后收入库存；查看详情，再确认使用。\":this.shelfKind===\"items\"?\"道具本局生效；换牌不重抽道具货架。\":b.portrait?\"点商品看配合，再点看详情；确认后扣款。\":\"点卡牌不会扣钱；点随身牌可出售或左移、右移。\":\"当前进度未保存或只读，请查看菜单。\",E=this.ready&&!this.notice?Cd(this.run,\"shop\"):void "
+    ]
+  },
+  "recordType": "read_only_public_version_observation",
+  "publishedMain": "9fe60fc581227829df6caadc712a5bd0fed74bc4",
+  "deploymentChanged": false,
+  "observation": "Public HTML references index-BGS8xiMH.js; actual JS embeds da671af2 and old portrait shop footer, has no amo.exile/new identity marker. Public served package differs from main9fe; no inference about user browser cache or current-main touch behavior.",
+  "userClarification": {
+    "messageId": "Sentinel_90e808dc06988191b08772f090eed3e8",
+    "functionalClickBlockerWithdrawn": true,
+    "scope": "large regions lack purchase/DIY purpose, duplicated DIY content and purposeless large portrait; preserve product original-art viewing",
+    "expandedHitTests": false
+  },
+  "hostComparison": {
+    "checkedAt": "2026-10-17T23:29:28.588716+00:00",
+    "mainReference": "9fe60fc581227829df6caadc712a5bd0fed74bc4",
+    "scope": "read-only HTTP compare; no playback/login/cache purge/config/deploy/restart",
+    "hosts": [
+      {
+        "host": "https://pai.hp666.cc",
+        "responses": [
+          {
+            "url": "https://pai.hp666.cc/",
+            "finalUrl": "https://pai.hp666.cc/",
+            "status": 200,
+            "headers": {
+              "Date": "Sat, 17 Oct 2026 23:29:29 GMT",
+              "Content-Type": "text/html; charset=utf-8",
+              "Cache-Control": "public, max-age=0, must-revalidate",
+              "Server": "cloudflare",
+              "CF-RAY": "a4c315eedb4caf82-NRT"
+            },
+            "bytesRead": 14344,
+            "sha256": "987df362cba87fdaac829b9547fadea67ae8d144b6170bf725797a8c43306cb3",
+            "path": "/",
+            "entryAssets": [
+              "./assets/index-BGS8xiMH.js",
+              "./assets/index-Be2le79Y.css"
+            ]
+          },
+          {
+            "url": "https://pai.hp666.cc/build-info.json",
+            "finalUrl": "https://pai.hp666.cc/build-info.json",
+            "status": 200,
+            "headers": {
+              "Date": "Sat, 17 Oct 2026 23:29:29 GMT",
+              "Content-Type": "application/json",
+              "Cache-Control": "public, max-age=0, must-revalidate",
+              "ETag": "\"43869d74a0b201b9824ffa201037bf2f\"",
+              "Server": "cloudflare",
+              "CF-RAY": "a4c315eee9b8b359-NRT"
+            },
+            "bytesRead": 244,
+            "sha256": "133e09e03e2064cde05e8584972db880692d716d59ae8685720413475c877c23",
+            "path": "/build-info.json",
+            "json": {
+              "version": "C03",
+              "builtAt": "2026-10-17T13:25:49.996Z",
+              "revision": "da671af2e59bac6877a954b000ba4c527fddcf7f",
+              "sourceStatus": "dirty",
+              "modified": true,
+              "modifiedFileCount": 1,
+              "modifiedFiles": [
+                "package-lock.json"
+              ]
+            }
+          },
+          {
+            "url": "https://pai.hp666.cc/assets/audio/bgm/manifest.json",
+            "finalUrl": "https://pai.hp666.cc/assets/audio/bgm/manifest.json",
+            "status": 200,
+            "headers": {
+              "Date": "Sat, 17 Oct 2026 23:29:29 GMT",
+              "Content-Type": "application/json",
+              "Cache-Control": "public, max-age=0, must-revalidate",
+              "ETag": "\"010dcb09458e64ade30e4ce0b139540a\"",
+              "Server": "cloudflare",
+              "CF-RAY": "a4c315eeccefb740-NRT"
+            },
+            "bytesRead": 2666,
+            "sha256": "f1430e3e3610b39254c5e22c5f2f3641f185275537689e49679faeac7a3d605e",
+            "path": "/assets/audio/bgm/manifest.json",
+            "json": {
+              "schemaVersion": 1,
+              "trackIds": [
+                "boss-dark-things",
+                "menu-yangguan",
+                "table-zuiyu",
+                "table-tango",
+                "shop-serenade"
+              ],
+              "trackDetailsReference": "audioDeliveryAudit.embeddedOldTracks; identical path/size/hash metadata verified"
+            }
+          }
+        ],
+        "actualJs": {
+          "url": "https://pai.hp666.cc/assets/index-BGS8xiMH.js",
+          "finalUrl": "https://pai.hp666.cc/assets/index-BGS8xiMH.js",
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 17 Oct 2026 23:29:44 GMT",
+            "Content-Type": "text/javascript; charset=utf-8",
+            "Cache-Control": "public, max-age=0, must-revalidate",
+            "ETag": "\"d4c1b6632f0291015933cf1afb745b2f\"",
+            "Server": "cloudflare",
+            "CF-RAY": "a4c3164f3c2fd4a6-NRT"
+          },
+          "bytesRead": 2851269,
+          "sha256": "101ff387b720a2554dbaacd5ecaab013fe33c7366c18f668ba0aef40f0511285",
+          "markers": {
+            "da671af2e59bac6877a954b000ba4c527fddcf7f": 1,
+            "9fe60fc581227829df6caadc712a5bd0fed74bc4": 0,
+            "gamefeel-rfc": 0,
+            "amo.exile": 0,
+            "点商品看配合，再点看详情；确认后扣款": 2
+          },
+          "embeddedTrackIds": [
+            "boss-dark-things",
+            "menu-yangguan",
+            "table-zuiyu",
+            "table-tango",
+            "shop-serenade"
+          ]
+        }
+      },
+      {
+        "host": "https://tangsongpai.pages.dev",
+        "responses": [
+          {
+            "url": "https://tangsongpai.pages.dev/",
+            "finalUrl": "https://tangsongpai.pages.dev/",
+            "status": 200,
+            "headers": {
+              "Date": "Sat, 17 Oct 2026 23:29:44 GMT",
+              "Content-Type": "text/html; charset=utf-8",
+              "Cache-Control": "public, max-age=0, must-revalidate",
+              "Server": "cloudflare",
+              "CF-RAY": "a4c3164ceb79d791-NRT"
+            },
+            "bytesRead": 14344,
+            "sha256": "987df362cba87fdaac829b9547fadea67ae8d144b6170bf725797a8c43306cb3",
+            "path": "/",
+            "entryAssets": [
+              "./assets/index-BGS8xiMH.js",
+              "./assets/index-Be2le79Y.css"
+            ]
+          },
+          {
+            "url": "https://tangsongpai.pages.dev/build-info.json",
+            "finalUrl": "https://tangsongpai.pages.dev/build-info.json",
+            "status": 200,
+            "headers": {
+              "Date": "Sat, 17 Oct 2026 23:29:29 GMT",
+              "Content-Type": "application/json",
+              "Cache-Control": "public, max-age=0, must-revalidate",
+              "ETag": "\"43869d74a0b201b9824ffa201037bf2f\"",
+              "Server": "cloudflare",
+              "CF-RAY": "a4c315eefe81291c-NRT"
+            },
+            "bytesRead": 244,
+            "sha256": "133e09e03e2064cde05e8584972db880692d716d59ae8685720413475c877c23",
+            "path": "/build-info.json",
+            "json": {
+              "version": "C03",
+              "builtAt": "2026-10-17T13:25:49.996Z",
+              "revision": "da671af2e59bac6877a954b000ba4c527fddcf7f",
+              "sourceStatus": "dirty",
+              "modified": true,
+              "modifiedFileCount": 1,
+              "modifiedFiles": [
+                "package-lock.json"
+              ]
+            }
+          },
+          {
+            "url": "https://tangsongpai.pages.dev/assets/audio/bgm/manifest.json",
+            "finalUrl": "https://tangsongpai.pages.dev/assets/audio/bgm/manifest.json",
+            "status": 200,
+            "headers": {
+              "Date": "Sat, 17 Oct 2026 23:29:29 GMT",
+              "Content-Type": "application/json",
+              "Cache-Control": "public, max-age=0, must-revalidate",
+              "ETag": "\"010dcb09458e64ade30e4ce0b139540a\"",
+              "Server": "cloudflare",
+              "CF-RAY": "a4c315eee9de97de-NRT"
+            },
+            "bytesRead": 2666,
+            "sha256": "f1430e3e3610b39254c5e22c5f2f3641f185275537689e49679faeac7a3d605e",
+            "path": "/assets/audio/bgm/manifest.json",
+            "json": {
+              "schemaVersion": 1,
+              "trackIds": [
+                "boss-dark-things",
+                "menu-yangguan",
+                "table-zuiyu",
+                "table-tango",
+                "shop-serenade"
+              ],
+              "trackDetailsReference": "audioDeliveryAudit.embeddedOldTracks; identical path/size/hash metadata verified"
+            }
+          }
+        ],
+        "actualJs": {
+          "url": "https://tangsongpai.pages.dev/assets/index-BGS8xiMH.js",
+          "finalUrl": "https://tangsongpai.pages.dev/assets/index-BGS8xiMH.js",
+          "status": 200,
+          "headers": {
+            "Date": "Sat, 17 Oct 2026 23:29:45 GMT",
+            "Content-Type": "text/javascript; charset=utf-8",
+            "Cache-Control": "public, max-age=0, must-revalidate",
+            "ETag": "\"d4c1b6632f0291015933cf1afb745b2f\"",
+            "Server": "cloudflare",
+            "CF-RAY": "a4c316525deae366-NRT"
+          },
+          "bytesRead": 2851269,
+          "sha256": "101ff387b720a2554dbaacd5ecaab013fe33c7366c18f668ba0aef40f0511285",
+          "markers": {
+            "da671af2e59bac6877a954b000ba4c527fddcf7f": 1,
+            "9fe60fc581227829df6caadc712a5bd0fed74bc4": 0,
+            "gamefeel-rfc": 0,
+            "amo.exile": 0,
+            "点商品看配合，再点看详情；确认后扣款": 2
+          },
+          "embeddedTrackIds": [
+            "boss-dark-things",
+            "menu-yangguan",
+            "table-zuiyu",
+            "table-tango",
+            "shop-serenade"
+          ]
+        }
+      }
+    ],
+    "cacheHeaderBoundary": "Cache-Control was public, max-age=0, must-revalidate. Neither CF-Cache-Status nor Age was present in these responses; absent headers do not establish a cache hit/miss or root cause. No query variation was needed or used.",
+    "conclusion": "Both public hosts returned byte-identical HTML, build-info, actual entry JS and BGM manifest at observation time. This is not evidence of a custom-domain-only mismatch; no assertion about origin state, stale cache cause, routing configuration or the user device cache is made."
+  },
+  "audioDeliveryAudit": {
+    "checkedAt": "2026-10-17T23:25:56.200408+00:00",
+    "entryJs": "https://pai.hp666.cc/assets/index-BGS8xiMH.js",
+    "entryJsSha256": "101ff387b720a2554dbaacd5ecaab013fe33c7366c18f668ba0aef40f0511285",
+    "mainReference": "9fe60fc581227829df6caadc712a5bd0fed74bc4",
+    "entryReferencesSingapore": false,
+    "audioPlayed": false,
+    "deploymentChanged": false,
+    "publicAudioProbes": [
+      {
+        "kind": "main-singapore",
+        "path": "assets/audio/gamefeel-rfc/boss-stranger-things-theme.mp3",
+        "manifestSha256": "d291dac7ca024722129d4ddb7f68eb62b51b03abdeef8288b4c42c4ace119de4",
+        "manifestBytes": 1098440,
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "contentLength": null,
+        "contentRange": null,
+        "etag": null,
+        "readBytes": 4096,
+        "readSha256": "ba24012a2b8e5e82fa648e7f1512f0d8b2337fbf29012af5f5f1df4f1138008f",
+        "mediaResponse": false,
+        "matchesHomepagePrefix": true
+      },
+      {
+        "kind": "main-singapore",
+        "path": "assets/audio/gamefeel-rfc/table-tangsong-cyber-groove.mp3",
+        "manifestSha256": "6089d50cd6b0f7d736e77e410a608e5903cddbe89be85b920783f0d626bd62da",
+        "manifestBytes": 1003146,
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "contentLength": null,
+        "contentRange": null,
+        "etag": null,
+        "readBytes": 4096,
+        "readSha256": "ba24012a2b8e5e82fa648e7f1512f0d8b2337fbf29012af5f5f1df4f1138008f",
+        "mediaResponse": false,
+        "matchesHomepagePrefix": true
+      },
+      {
+        "kind": "main-singapore",
+        "path": "assets/audio/gamefeel-rfc/sfx-penta-1-gong.ogg",
+        "manifestSha256": "9a31ab0febdda292ee98bd6a162a848db95b871ad7732e5f94ab632771002a77",
+        "manifestBytes": 8580,
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "contentLength": null,
+        "contentRange": null,
+        "etag": null,
+        "readBytes": 4096,
+        "readSha256": "ba24012a2b8e5e82fa648e7f1512f0d8b2337fbf29012af5f5f1df4f1138008f",
+        "mediaResponse": false,
+        "matchesHomepagePrefix": true
+      },
+      {
+        "kind": "main-singapore",
+        "path": "assets/audio/gamefeel-rfc/sfx-penta-2-shang.ogg",
+        "manifestSha256": "7dbc78c474ab9dead6f7065841976f7867a17c3401ab028fc513a2cf50365e45",
+        "manifestBytes": 8474,
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "contentLength": null,
+        "contentRange": null,
+        "etag": null,
+        "readBytes": 4096,
+        "readSha256": "ba24012a2b8e5e82fa648e7f1512f0d8b2337fbf29012af5f5f1df4f1138008f",
+        "mediaResponse": false,
+        "matchesHomepagePrefix": true
+      },
+      {
+        "kind": "main-singapore",
+        "path": "assets/audio/gamefeel-rfc/sfx-penta-3-jiao.ogg",
+        "manifestSha256": "672ae79f1b7ff725c9e763972c497018f12f68a818758a915ef7b63afbeb14ec",
+        "manifestBytes": 8504,
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "contentLength": null,
+        "contentRange": null,
+        "etag": null,
+        "readBytes": 4096,
+        "readSha256": "ba24012a2b8e5e82fa648e7f1512f0d8b2337fbf29012af5f5f1df4f1138008f",
+        "mediaResponse": false,
+        "matchesHomepagePrefix": true
+      },
+      {
+        "kind": "main-singapore",
+        "path": "assets/audio/gamefeel-rfc/sfx-penta-4-zhi.ogg",
+        "manifestSha256": "5f774605a41db2c142c9f73de9bb8e52f612b18109b2a8c839c30fcc8088a4a5",
+        "manifestBytes": 8316,
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "contentLength": null,
+        "contentRange": null,
+        "etag": null,
+        "readBytes": 4096,
+        "readSha256": "ba24012a2b8e5e82fa648e7f1512f0d8b2337fbf29012af5f5f1df4f1138008f",
+        "mediaResponse": false,
+        "matchesHomepagePrefix": true
+      },
+      {
+        "kind": "main-singapore",
+        "path": "assets/audio/gamefeel-rfc/sfx-penta-5-yu.ogg",
+        "manifestSha256": "5f23c46816483c53e5929943e6b92fac452818d0a8af9449fd659c9853580e0a",
+        "manifestBytes": 8163,
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "contentLength": null,
+        "contentRange": null,
+        "etag": null,
+        "readBytes": 4096,
+        "readSha256": "ba24012a2b8e5e82fa648e7f1512f0d8b2337fbf29012af5f5f1df4f1138008f",
+        "mediaResponse": false,
+        "matchesHomepagePrefix": true
+      },
+      {
+        "kind": "main-singapore",
+        "path": "assets/audio/gamefeel-rfc/sfx-temple-bell-victory.ogg",
+        "manifestSha256": "6722fea0dd66f00b3cf7a41b74caeffe63c269c7ddfb3c1d2d24d15f49a430f5",
+        "manifestBytes": 22870,
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "contentLength": null,
+        "contentRange": null,
+        "etag": null,
+        "readBytes": 4096,
+        "readSha256": "ba24012a2b8e5e82fa648e7f1512f0d8b2337fbf29012af5f5f1df4f1138008f",
+        "mediaResponse": false,
+        "matchesHomepagePrefix": true
+      },
+      {
+        "kind": "main-singapore",
+        "path": "assets/audio/gamefeel-rfc/sfx-wardrum-mult-hit.ogg",
+        "manifestSha256": "a3cb86cc24018c1a5de8b6bbdfaf7eceb7ee6fc421a0632ec8ba1c0eb1c08a90",
+        "manifestBytes": 13478,
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "contentLength": null,
+        "contentRange": null,
+        "etag": null,
+        "readBytes": 4096,
+        "readSha256": "ba24012a2b8e5e82fa648e7f1512f0d8b2337fbf29012af5f5f1df4f1138008f",
+        "mediaResponse": false,
+        "matchesHomepagePrefix": true
+      },
+      {
+        "kind": "entry-old",
+        "path": "assets/audio/bgm/boss-dark-things.mp3",
+        "manifestSha256": "bd99bc0d86649fe84cb416003d4309428a2a9b0fb5fdd4b8dfd98453abd7b9c4",
+        "manifestBytes": 384723,
+        "status": 200,
+        "contentType": "audio/mpeg",
+        "contentLength": "384723",
+        "contentRange": null,
+        "etag": "\"82e1928f5df1f79a9211204db6fc4923\"",
+        "readBytes": 384723,
+        "readSha256": "bd99bc0d86649fe84cb416003d4309428a2a9b0fb5fdd4b8dfd98453abd7b9c4",
+        "mediaResponse": true,
+        "matchesHomepagePrefix": false,
+        "fullBodyCompared": true,
+        "fullShaMatchesEmbeddedManifest": true,
+        "readPrefixMatchesDa671File": true
+      },
+      {
+        "kind": "entry-old",
+        "path": "assets/audio/bgm/table-chinese-zuiyu.mp3",
+        "manifestSha256": "edc667ee985f73e2e6f2cbcec39554856744dda2e816c53fe5f913ebb17dd125",
+        "manifestBytes": 3444133,
+        "status": 200,
+        "contentType": "audio/mpeg",
+        "contentLength": "3444133",
+        "contentRange": null,
+        "etag": "\"9b25f92de9e0791980b398bb06c8b61d\"",
+        "readBytes": 4096,
+        "readSha256": "38c75c5b6402e43d3a850ea83902d2e9aa5b803ddcb49f87a51fa97e5d35d0d5",
+        "mediaResponse": true,
+        "matchesHomepagePrefix": false,
+        "fullBodyCompared": false,
+        "readPrefixMatchesMainFile": true
+      },
+      {
+        "kind": "entry-old",
+        "path": "assets/audio/bgm/table-tango.mp3",
+        "manifestSha256": "0a274655d6da0747cbc28ee91439536605b129ce7ed2f6346fc39ed5ffa25dac",
+        "manifestBytes": 2190408,
+        "status": 200,
+        "contentType": "audio/mpeg",
+        "contentLength": "2190408",
+        "contentRange": null,
+        "etag": "\"040ef2f7453c1da7dd1dea12ab573b3f\"",
+        "readBytes": 4096,
+        "readSha256": "a2180675fffeda027a451a49644c0f519f698a0deb8937118f636adf9b8ddffd",
+        "mediaResponse": true,
+        "matchesHomepagePrefix": false,
+        "fullBodyCompared": false,
+        "readPrefixMatchesDa671File": true
+      }
+    ],
+    "scopeBoundary": "No playback or deployment change. Full hash asserted only when entire expected body was read; partial Range probes only certify returned prefix. HTML fallback is not a valid audio response. Current main intentionally keeps menu Yangguan and shop Schubert; new Singapore BGM is table/boss only.",
+    "embeddedOldTracks": [
+      {
+        "id": "boss-dark-things",
+        "scenes": [
+          "boss"
+        ],
+        "runtimePath": "assets/audio/bgm/boss-dark-things.mp3",
+        "bytes": 384723,
+        "sha256": "bd99bc0d86649fe84cb416003d4309428a2a9b0fb5fdd4b8dfd98453abd7b9c4"
+      },
+      {
+        "id": "menu-yangguan",
+        "scenes": [
+          "menu"
+        ],
+        "runtimePath": "assets/audio/bgm/menu-chinese-yangguan.mp3",
+        "bytes": 4201788,
+        "sha256": "e2a565db0f514b0c41e350b3ccc4924e27439fafdd8a16e3310a426d9efbcc22"
+      },
+      {
+        "id": "table-zuiyu",
+        "scenes": [
+          "table",
+          "success"
+        ],
+        "runtimePath": "assets/audio/bgm/table-chinese-zuiyu.mp3",
+        "bytes": 3444133,
+        "sha256": "edc667ee985f73e2e6f2cbcec39554856744dda2e816c53fe5f913ebb17dd125"
+      },
+      {
+        "id": "table-tango",
+        "scenes": [
+          "table"
+        ],
+        "runtimePath": "assets/audio/bgm/table-tango.mp3",
+        "bytes": 2190408,
+        "sha256": "0a274655d6da0747cbc28ee91439536605b129ce7ed2f6346fc39ed5ffa25dac"
+      },
+      {
+        "id": "shop-serenade",
+        "scenes": [
+          "shop"
+        ],
+        "runtimePath": "assets/audio/p06/serenade-schubert-216755.mp3",
+        "bytes": 3487912,
+        "sha256": "e07b53322fd650fb5929215cef3b07b34977a2c486e140f8b71c5a23017daead"
+      }
+    ],
+    "currentMainTracks": [
+      {
+        "id": "boss-gamefeel-synth",
+        "scenes": [
+          "boss"
+        ],
+        "runtimePath": "assets/audio/gamefeel-rfc/boss-stranger-things-theme.mp3",
+        "bytes": 1098440,
+        "sha256": "d291dac7ca024722129d4ddb7f68eb62b51b03abdeef8288b4c42c4ace119de4"
+      },
+      {
+        "id": "menu-yangguan",
+        "scenes": [
+          "menu"
+        ],
+        "runtimePath": "assets/audio/bgm/menu-chinese-yangguan.mp3",
+        "bytes": 4201788,
+        "sha256": "e2a565db0f514b0c41e350b3ccc4924e27439fafdd8a16e3310a426d9efbcc22"
+      },
+      {
+        "id": "table-zuiyu",
+        "scenes": [
+          "success"
+        ],
+        "runtimePath": "assets/audio/bgm/table-chinese-zuiyu.mp3",
+        "bytes": 3444133,
+        "sha256": "edc667ee985f73e2e6f2cbcec39554856744dda2e816c53fe5f913ebb17dd125"
+      },
+      {
+        "id": "table-gamefeel-groove",
+        "scenes": [
+          "table"
+        ],
+        "runtimePath": "assets/audio/gamefeel-rfc/table-tangsong-cyber-groove.mp3",
+        "bytes": 1003146,
+        "sha256": "6089d50cd6b0f7d736e77e410a608e5903cddbe89be85b920783f0d626bd62da"
+      },
+      {
+        "id": "shop-serenade",
+        "scenes": [
+          "shop"
+        ],
+        "runtimePath": "assets/audio/p06/serenade-schubert-216755.mp3",
+        "bytes": 3487912,
+        "sha256": "e07b53322fd650fb5929215cef3b07b34977a2c486e140f8b71c5a23017daead"
+      }
+    ],
+    "currentMainSingaporeSamples": [
+      {
+        "name": "sfx-penta-1-gong",
+        "runtimePath": "assets/audio/gamefeel-rfc/sfx-penta-1-gong.ogg",
+        "bytes": 8580,
+        "sha256": "9a31ab0febdda292ee98bd6a162a848db95b871ad7732e5f94ab632771002a77"
+      },
+      {
+        "name": "sfx-penta-2-shang",
+        "runtimePath": "assets/audio/gamefeel-rfc/sfx-penta-2-shang.ogg",
+        "bytes": 8474,
+        "sha256": "7dbc78c474ab9dead6f7065841976f7867a17c3401ab028fc513a2cf50365e45"
+      },
+      {
+        "name": "sfx-penta-3-jiao",
+        "runtimePath": "assets/audio/gamefeel-rfc/sfx-penta-3-jiao.ogg",
+        "bytes": 8504,
+        "sha256": "672ae79f1b7ff725c9e763972c497018f12f68a818758a915ef7b63afbeb14ec"
+      },
+      {
+        "name": "sfx-penta-4-zhi",
+        "runtimePath": "assets/audio/gamefeel-rfc/sfx-penta-4-zhi.ogg",
+        "bytes": 8316,
+        "sha256": "5f774605a41db2c142c9f73de9bb8e52f612b18109b2a8c839c30fcc8088a4a5"
+      },
+      {
+        "name": "sfx-penta-5-yu",
+        "runtimePath": "assets/audio/gamefeel-rfc/sfx-penta-5-yu.ogg",
+        "bytes": 8163,
+        "sha256": "5f23c46816483c53e5929943e6b92fac452818d0a8af9449fd659c9853580e0a"
+      },
+      {
+        "name": "sfx-temple-bell-victory",
+        "runtimePath": "assets/audio/gamefeel-rfc/sfx-temple-bell-victory.ogg",
+        "bytes": 22870,
+        "sha256": "6722fea0dd66f00b3cf7a41b74caeffe63c269c7ddfb3c1d2d24d15f49a430f5"
+      },
+      {
+        "name": "sfx-wardrum-mult-hit",
+        "runtimePath": "assets/audio/gamefeel-rfc/sfx-wardrum-mult-hit.ogg",
+        "bytes": 13478,
+        "sha256": "a3cb86cc24018c1a5de8b6bbdfaf7eceb7ee6fc421a0632ec8ba1c0eb1c08a90"
+      }
+    ],
+    "initialManifestProbeResults": [
+      {
+        "path": "assets/audio/bgm/manifest.json",
+        "error": "<urlopen error timed out>"
+      },
+      {
+        "path": "assets/audio/gamefeel-rfc/sources.json",
+        "status": 200,
+        "contentType": "text/html; charset=utf-8",
+        "bytes": 14344,
+        "sha256": "987df362cba87fdaac829b9547fadea67ae8d144b6170bf725797a8c43306cb3",
+        "bodyStart": "<!doctype html>\n<html lang=\"zh-CN\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" "
+      }
+    ],
+    "laterManifestObservation": "The initial BGM manifest request timed out. The later two-host comparison successfully returned identical old manifests from both hosts; the timeout is retained above, not relabeled as success."
+  },
+  "repositoryDeploymentAudit": {
+    "inspectedCommit": "9fe60fc581227829df6caadc712a5bd0fed74bc4",
+    "scope": "Read-only tracked repository configuration; no new server login, external deployment API, CI status query or deployment action.",
+    "files": [
+      {
+        "path": ".github/workflows/ci.yml",
+        "sha256": "b8dcc9b915c398d87e6d4d441baaf86433994970dfa6bd05754f6df039d09c58"
+      },
+      {
+        "path": ".github/workflows/production-docs.yml",
+        "sha256": "19a6be34972264ff0bcff4637ae0b5dba36f4f9d5fa94f180428c6d790f5db4c"
+      },
+      {
+        "path": ".github/workflows/smoke-diagnostics.yml",
+        "sha256": "d899538626fa06bee691da9bb1c8064f33d5cc21b837ed7e97ff722f14134f27"
+      },
+      {
+        "path": "scripts/release-checked.mjs",
+        "sha256": "92b166dfe1412e4b591fed74e2713ff3abf8ca74c8940e61ac1796f1bc39dd4c"
+      },
+      {
+        "path": "package.json",
+        "sha256": "ae02402f4ad88094af1af5d077f53afe283b1955cb4999b57b5689495c487916"
+      },
+      {
+        "path": "docs/production/ENGINEERING.md",
+        "sha256": "edc2c8da549c9c31f15fb82f52c99b31dd0bb149f39e603cea7880d5f0580d5f"
+      }
+    ],
+    "observations": [
+      "No tracked deploy/wrangler/cloudflare/Dockerfile/compose filename was found by the scoped filename search. This does not inspect external automation.",
+      "The three visible workflows run verification/build/diagnostic steps and upload artifacts; no deployment step is present.",
+      "package.json has no deploy command. release-checked.mjs only runs verify:ci and expressly does not mutate Git.",
+      "ENGINEERING.md records that the user auto-deploys from main; it does not expose the actual deployment job or prove which commit was deployed."
+    ],
+    "unavailableEvidence": [
+      "Cloudflare Pages production deployment record, production branch and deployed commit",
+      "Actual deployment/build logs and external automation execution logs",
+      "Custom-domain to Pages-project routing mapping"
+    ],
+    "conclusion": "The repository alone cannot establish whether automatic deployment ran, what it deployed, or why the public package is old. No CI-cause conclusion is supported."
+  },
+  "laterUserConfirmedResolution": {
+    "messageId": "Sentinel_63490afdfdcc819186893c293800c7f6",
+    "source": "user confirmation; not independently audited server causality",
+    "cause": "Singapore server local testing switched the branch used by automatic deployment; user reports it has now been corrected.",
+    "independentPostRepairObservation": "../windows-experience-integration-2026-10-17/post-repair-readonly.json",
+    "cdnInvestigationStopped": true
+  }
+}

@@ -1,0 +1,23 @@
+[
+  {
+    "attempt": "browser-1792649253334",
+    "status": "FAIL",
+    "scope": "Fixed seed; declared mature inventory and 32 gold, actual native clear commands to first encounter. Real DOM/mouse/touch, IndexedDB. PC Chromium and phone emulation, original speed1. Not natural acquisition/balance evidence or a physical device.",
+    "cases": [],
+    "error": "Error: invalid-save-combo-clear-ledger\n    at fail (/workspace/tangsongpai/src/application/checkpoint.ts:118:9)\n    at trace (/workspace/tangsongpai/src/application/checkpoint.ts:811:125)\n    at validateState (/workspace/tangsongpai/src/application/checkpoint.ts:1382:3)\n    at makeCheckpoint (/workspace/tangsongpai/src/application/checkpoint.ts:1462:3)\n    at file:///workspace/tangsongpai/harness/poker-encounter.mjs:24:11"
+  },
+  {
+    "attempt": "browser-1792649303213",
+    "status": "FAIL",
+    "scope": "Fixed seed; declared mature inventory and native clear income, actual native clear commands to first encounter. Real DOM/mouse/touch, IndexedDB. PC Chromium and phone emulation, original speed1. Not natural acquisition/balance evidence or a physical device.",
+    "cases": [
+      {
+        "key": "pc",
+        "status": "RUNNING",
+        "errors": []
+      }
+    ],
+    "browser": "151.0.7922.173",
+    "error": "browserContext.newPage: Executable doesn't exist at /home/agent/.cache/ms-playwright/ffmpeg-1011/ffmpeg-linux\n╔═════════════════════════════════════════════════════════════════╗\n║ Video rendering requires ffmpeg binary.                         ║\n║ Downloading it will not affect any of the system-wide settings. ║\n║ Please run the following command:                               ║\n║                                                                 ║\n║     npx playwright install ffmpeg                               ║\n║                                                                 ║\n║ <3 Playwright Team                                              ║\n╚═════════════════════════════════════════════════════════════════╝\n    at /workspace/tangsongpai/harness/poker-encounter.mjs:29:25"
+  }
+]

@@ -1,0 +1,558 @@
+{
+  "base": "9fe60fc581227829df6caadc712a5bd0fed74bc4",
+  "sourceHashes": {
+    "src/audio/MusicFilter.ts": "defc0d3dbb6e1ec5cc2732a7b75aa158583ab7ee63afc2df806b9efd48edfe8a",
+    "src/audio/MusicModalStack.ts": "0844763c677aa3f87e066bbbf5d32a7d4bda5ab3bf1144a155727aacfeb1d97d",
+    "src/audio/AudioEngine.ts": "b78c6fe0cab8bacb0d58bb43c58e5aaf3807acbf5c377fb5b192df6c6af8772f",
+    "src/main.ts": "d9dc173251b892a4976aac2c4af6b8d0b404ea70537cabf95bcb57b8dcfe7cc0",
+    "src/game/ShopScene.ts": "b6fbed64a2872ba9793d87e44d32af2fa0f18d12ddc05f6641cbcd1dd74309bd",
+    "src/game/StageImageWarmup.ts": "64b727d218627514bd8637b412b0ea71416ff4b49ad52df870a783dbd50aacd4",
+    "public/assets/audio/bgm/manifest.json": "e76ecbb44f3c4965fb4439fb217058989d7af5bdf8591e6097672eaa027661cf"
+  },
+  "browser": "153.0.8010.12",
+  "heard": false,
+  "scope": "Built app, native shop/detail/zoom/menu/new-run inputs; actual music graph/media/cutoff and post-ceiling recording. Mute/suspend/destroy/failing-filter calls are labeled lifecycle diagnostics. No rule or scoring changes. Software Chromium; no subjective listening or physical-device approval.",
+  "cases": [
+    {
+      "name": "native-PC",
+      "errors": [],
+      "steps": [
+        {
+          "label": "shop",
+          "at": 2081.7000000029802,
+          "depth": 1,
+          "cutoff": 450,
+          "context": "running",
+          "track": "assets/audio/p06/serenade-schubert-216755.mp3",
+          "paused": false,
+          "slots": 2,
+          "volume": {
+            "music": 0.3,
+            "sfx": 0.8,
+            "ui": 0.8
+          },
+          "musicGain": 0.05400000140070915,
+          "filterCount": 1,
+          "graph": {
+            "musicToFilter": true,
+            "filterToMaster": true,
+            "musicDirect": false,
+            "sfxDirect": true,
+            "uiDirect": true
+          },
+          "responseDb": [
+            0.5325184560126303,
+            -38.36759114727095
+          ],
+          "open": []
+        },
+        {
+          "label": "shop-detail",
+          "at": 3008,
+          "depth": 2,
+          "cutoff": 450,
+          "context": "running",
+          "track": "assets/audio/p06/serenade-schubert-216755.mp3",
+          "paused": false,
+          "slots": 2,
+          "volume": {
+            "music": 0.3,
+            "sfx": 0.8,
+            "ui": 0.8
+          },
+          "musicGain": 0.05400000140070915,
+          "filterCount": 1,
+          "graph": {
+            "musicToFilter": true,
+            "filterToMaster": true,
+            "musicDirect": false,
+            "sfxDirect": true,
+            "uiDirect": true
+          },
+          "responseDb": [
+            0.5325184560126303,
+            -38.36759114727095
+          ],
+          "open": [
+            "detail-dialog detail-dialog--plain-joker detail-dialog--illustrated detail-dialog--art-background shop-joker-purchase"
+          ]
+        },
+        {
+          "label": "nested-zoom",
+          "at": 3724.5,
+          "depth": 3,
+          "cutoff": 450,
+          "context": "running",
+          "track": "assets/audio/p06/serenade-schubert-216755.mp3",
+          "paused": false,
+          "slots": 2,
+          "volume": {
+            "music": 0.3,
+            "sfx": 0.8,
+            "ui": 0.8
+          },
+          "musicGain": 0.03823160007596016,
+          "filterCount": 1,
+          "graph": {
+            "musicToFilter": true,
+            "filterToMaster": true,
+            "musicDirect": false,
+            "sfxDirect": true,
+            "uiDirect": true
+          },
+          "responseDb": [
+            0.5325184560126303,
+            -38.36759114727095
+          ],
+          "open": [
+            "detail-dialog detail-dialog--plain-joker detail-dialog--illustrated detail-dialog--art-background shop-joker-purchase",
+            "card-art-zoom-dialog"
+          ]
+        },
+        {
+          "label": "zoom-closed-parent-retained",
+          "at": 4769.20000000298,
+          "depth": 2,
+          "cutoff": 450,
+          "context": "running",
+          "track": "assets/audio/p06/serenade-schubert-216755.mp3",
+          "paused": false,
+          "slots": 2,
+          "volume": {
+            "music": 0.3,
+            "sfx": 0.8,
+            "ui": 0.8
+          },
+          "musicGain": 0.05400000140070915,
+          "filterCount": 1,
+          "graph": {
+            "musicToFilter": true,
+            "filterToMaster": true,
+            "musicDirect": false,
+            "sfxDirect": true,
+            "uiDirect": true
+          },
+          "responseDb": [
+            0.5325184560126303,
+            -38.36759114727095
+          ],
+          "open": [
+            "detail-dialog detail-dialog--plain-joker detail-dialog--illustrated detail-dialog--art-background shop-joker-purchase"
+          ]
+        },
+        {
+          "label": "diagnostic-music-zero",
+          "at": 4788.0999999940395,
+          "depth": 2,
+          "cutoff": 450,
+          "context": "running",
+          "track": "assets/audio/p06/serenade-schubert-216755.mp3",
+          "paused": true,
+          "slots": 2,
+          "volume": {
+            "music": 0,
+            "sfx": 0.8,
+            "ui": 0.8
+          },
+          "musicGain": 0,
+          "filterCount": 1,
+          "graph": {
+            "musicToFilter": true,
+            "filterToMaster": true,
+            "musicDirect": false,
+            "sfxDirect": true,
+            "uiDirect": true
+          },
+          "responseDb": [
+            0.5325184560126303,
+            -38.36759114727095
+          ],
+          "open": [
+            "detail-dialog detail-dialog--plain-joker detail-dialog--illustrated detail-dialog--art-background shop-joker-purchase"
+          ]
+        },
+        {
+          "label": "diagnostic-foreground-same-mood",
+          "at": 4870.4000000059605,
+          "depth": 2,
+          "cutoff": 450,
+          "context": "running",
+          "track": "assets/audio/p06/serenade-schubert-216755.mp3",
+          "paused": false,
+          "slots": 2,
+          "volume": {
+            "music": 0.3,
+            "sfx": 0.8,
+            "ui": 0.8
+          },
+          "musicGain": 0.05233888328075409,
+          "filterCount": 1,
+          "graph": {
+            "musicToFilter": true,
+            "filterToMaster": true,
+            "musicDirect": false,
+            "sfxDirect": true,
+            "uiDirect": true
+          },
+          "responseDb": [
+            0.5325184560126303,
+            -38.36759114727095
+          ],
+          "open": [
+            "detail-dialog detail-dialog--plain-joker detail-dialog--illustrated detail-dialog--art-background shop-joker-purchase"
+          ]
+        },
+        {
+          "label": "detail-closed-shop-retained",
+          "at": 4953.4000000059605,
+          "depth": 1,
+          "cutoff": 450,
+          "context": "running",
+          "track": "assets/audio/p06/serenade-schubert-216755.mp3",
+          "paused": false,
+          "slots": 2,
+          "volume": {
+            "music": 0.3,
+            "sfx": 0.8,
+            "ui": 0.8
+          },
+          "musicGain": 0.053991056978702545,
+          "filterCount": 1,
+          "graph": {
+            "musicToFilter": true,
+            "filterToMaster": true,
+            "musicDirect": false,
+            "sfxDirect": true,
+            "uiDirect": true
+          },
+          "responseDb": [
+            0.5325184560126303,
+            -38.36759114727095
+          ],
+          "open": []
+        },
+        {
+          "label": "stage-directory-still-open",
+          "at": 5425.5,
+          "depth": 1,
+          "cutoff": 492.3794250488281,
+          "context": "running",
+          "track": "assets/audio/p06/serenade-schubert-216755.mp3",
+          "paused": false,
+          "slots": 2,
+          "volume": {
+            "music": 0.3,
+            "sfx": 0.8,
+            "ui": 0.8
+          },
+          "musicGain": 0.05400000140070915,
+          "filterCount": 1,
+          "graph": {
+            "musicToFilter": true,
+            "filterToMaster": true,
+            "musicDirect": false,
+            "sfxDirect": true,
+            "uiDirect": true
+          },
+          "responseDb": [
+            0.4482820351934099,
+            -36.791198611004205
+          ],
+          "open": [
+            "detail-dialog blind-select-dialog"
+          ]
+        },
+        {
+          "label": "table-bright",
+          "at": 5786.9000000059605,
+          "depth": 0,
+          "cutoff": 20000,
+          "context": "running",
+          "track": "assets/audio/gamefeel-rfc/table-tangsong-cyber-groove.mp3",
+          "paused": false,
+          "slots": 2,
+          "volume": {
+            "music": 0.3,
+            "sfx": 0.8,
+            "ui": 0.8
+          },
+          "musicGain": 0.05400000140070915,
+          "filterCount": 1,
+          "graph": {
+            "musicToFilter": true,
+            "filterToMaster": true,
+            "musicDirect": false,
+            "sfxDirect": true,
+            "uiDirect": true
+          },
+          "responseDb": [
+            0.00001242525590720925,
+            0.009268442498956479
+          ],
+          "open": []
+        },
+        {
+          "label": "table-menu",
+          "at": 6880.20000000298,
+          "depth": 1,
+          "cutoff": 450,
+          "context": "running",
+          "track": "assets/audio/gamefeel-rfc/table-tangsong-cyber-groove.mp3",
+          "paused": false,
+          "slots": 2,
+          "volume": {
+            "music": 0.3,
+            "sfx": 0.8,
+            "ui": 0.8
+          },
+          "musicGain": 0.05400000140070915,
+          "filterCount": 1,
+          "graph": {
+            "musicToFilter": true,
+            "filterToMaster": true,
+            "musicDirect": false,
+            "sfxDirect": true,
+            "uiDirect": true
+          },
+          "responseDb": [
+            0.5325184560126303,
+            -38.36759114727095
+          ],
+          "open": [
+            "run-menu-modal"
+          ]
+        },
+        {
+          "label": "menu-Escape-bright",
+          "at": 7783.0999999940395,
+          "depth": 0,
+          "cutoff": 20000,
+          "context": "running",
+          "track": "assets/audio/gamefeel-rfc/table-tangsong-cyber-groove.mp3",
+          "paused": false,
+          "slots": 2,
+          "volume": {
+            "music": 0.3,
+            "sfx": 0.8,
+            "ui": 0.8
+          },
+          "musicGain": 0.05400000140070915,
+          "filterCount": 1,
+          "graph": {
+            "musicToFilter": true,
+            "filterToMaster": true,
+            "musicDirect": false,
+            "sfxDirect": true,
+            "uiDirect": true
+          },
+          "responseDb": [
+            0.00001242525590720925,
+            0.009268442498956479
+          ],
+          "open": []
+        },
+        {
+          "label": "rapid-menu-toggles",
+          "at": 8470.5,
+          "depth": 0,
+          "cutoff": 19749.65625,
+          "context": "running",
+          "track": "assets/audio/gamefeel-rfc/table-tangsong-cyber-groove.mp3",
+          "paused": false,
+          "slots": 2,
+          "volume": {
+            "music": 0.3,
+            "sfx": 0.8,
+            "ui": 0.8
+          },
+          "musicGain": 0.05400000140070915,
+          "filterCount": 1,
+          "graph": {
+            "musicToFilter": true,
+            "filterToMaster": true,
+            "musicDirect": false,
+            "sfxDirect": true,
+            "uiDirect": true
+          },
+          "responseDb": [
+            0.000015531567106754417,
+            0.01171119691766196
+          ],
+          "open": []
+        },
+        {
+          "label": "new-run-canceled-menu-retained",
+          "at": 8997.59999999404,
+          "depth": 1,
+          "cutoff": 450,
+          "context": "running",
+          "track": "assets/audio/gamefeel-rfc/table-tangsong-cyber-groove.mp3",
+          "paused": false,
+          "slots": 2,
+          "volume": {
+            "music": 0.3,
+            "sfx": 0.8,
+            "ui": 0.8
+          },
+          "musicGain": 0.05400000140070915,
+          "filterCount": 1,
+          "graph": {
+            "musicToFilter": true,
+            "filterToMaster": true,
+            "musicDirect": false,
+            "sfxDirect": true,
+            "uiDirect": true
+          },
+          "responseDb": [
+            0.5325184560126303,
+            -38.36759114727095
+          ],
+          "open": [
+            "run-menu-modal"
+          ]
+        },
+        {
+          "label": "new-run-all-layers-released",
+          "at": 9342.20000000298,
+          "depth": 0,
+          "cutoff": 20000,
+          "context": "running",
+          "track": "assets/audio/bgm/menu-chinese-yangguan.mp3",
+          "paused": false,
+          "slots": 2,
+          "volume": {
+            "music": 0.3,
+            "sfx": 0.8,
+            "ui": 0.8
+          },
+          "musicGain": 0.05400000140070915,
+          "filterCount": 1,
+          "graph": {
+            "musicToFilter": true,
+            "filterToMaster": true,
+            "musicDirect": false,
+            "sfxDirect": true,
+            "uiDirect": true
+          },
+          "responseDb": [
+            0.00001242525590720925,
+            0.009268442498956479
+          ],
+          "open": []
+        }
+      ],
+      "beforeGesture": {
+        "contextCreated": false,
+        "slots": 1,
+        "paused": true,
+        "playCalls": 0,
+        "src": "http://127.0.0.1:5588/assets/audio/bgm/menu-chinese-yangguan.mp3",
+        "buffered": 267.562
+      },
+      "shopPrepared": {
+        "at": 1279.4000000059605,
+        "paused": true,
+        "buffered": 53.234,
+        "playCalls": 0
+      },
+      "shopPromotion": {
+        "sameElement": true,
+        "firstPlay": {
+          "src": "http://127.0.0.1:5588/assets/audio/p06/serenade-schubert-216755.mp3",
+          "at": 1668.2999999970198,
+          "readyState": 4,
+          "buffered": 217.939592
+        }
+      },
+      "nextTablePrepared": {
+        "at": 2135.9000000059605,
+        "src": "http://127.0.0.1:5588/assets/audio/gamefeel-rfc/table-tangsong-cyber-groove.mp3",
+        "paused": true,
+        "readyState": 4,
+        "buffered": 41.739116,
+        "playCalls": 0,
+        "slots": 2
+      },
+      "tablePromotion": {
+        "sameElement": true,
+        "firstPlay": {
+          "src": "http://127.0.0.1:5588/assets/audio/gamefeel-rfc/table-tangsong-cyber-groove.mp3",
+          "at": 5479.79999999702,
+          "readyState": 4,
+          "buffered": 41.739116
+        }
+      },
+      "recording": {
+        "bytes": 115250,
+        "startAt": 2138.0999999940395,
+        "endAt": 9349
+      },
+      "destroyed": {
+        "label": "diagnostic-game-destroy",
+        "at": 10350.40000000596,
+        "depth": 0,
+        "cutoff": 450,
+        "context": "suspended",
+        "track": "assets/audio/bgm/menu-chinese-yangguan.mp3",
+        "paused": true,
+        "slots": 2,
+        "volume": {
+          "music": 0.3,
+          "sfx": 0.8,
+          "ui": 0.8
+        },
+        "musicGain": 0.05400000140070915,
+        "filterCount": 1,
+        "graph": {
+          "musicToFilter": true,
+          "filterToMaster": true,
+          "musicDirect": false,
+          "sfxDirect": true,
+          "uiDirect": true
+        },
+        "responseDb": [
+          0.5325184560126303,
+          -38.36759114727095
+        ],
+        "open": []
+      }
+    },
+    {
+      "name": "390-first-entry-preload",
+      "errors": [],
+      "prepared": {
+        "at": 1442.5999999940395,
+        "scene": "shop",
+        "src": "http://127.0.0.1:5588/assets/audio/gamefeel-rfc/table-tangsong-cyber-groove.mp3",
+        "loads": 2,
+        "readyState": 4,
+        "buffered": 41.739116,
+        "paused": true,
+        "playCalls": 0,
+        "slots": 2
+      },
+      "promoted": {
+        "sameElement": true,
+        "loads": 2,
+        "firstPlay": {
+          "src": "http://127.0.0.1:5588/assets/audio/gamefeel-rfc/table-tangsong-cyber-groove.mp3",
+          "at": 1677.3999999910593,
+          "readyState": 4,
+          "buffered": 41.739116
+        },
+        "slots": 2
+      }
+    },
+    {
+      "name": "filter-unavailable",
+      "errors": [],
+      "playing": {
+        "track": "assets/audio/bgm/menu-chinese-yangguan.mp3",
+        "paused": false,
+        "filter": false,
+        "volume": 0.3
+      }
+    }
+  ],
+  "pass": true
+}

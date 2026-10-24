@@ -1,0 +1,18 @@
+{
+  "scope": "normal final dist only; no expanded repository asset audit or old-BGM classification",
+  "buildInfo": {
+    "version": "C03",
+    "builtAt": "2026-10-18T13:25:38.583Z",
+    "revision": "edb056561aed13f0a51cb4f8ae3f00a36000152b",
+    "sourceStatus": "clean",
+    "modified": false
+  },
+  "distFiles": 402,
+  "unexpectedSourceTestHarnessFiles": [],
+  "currentBgmFiles": 8,
+  "currentBgmBytes": 10261793,
+  "currentBgmExactManifest": true,
+  "mp3FallbacksAreUsedByDynamicManifest": true,
+  "extraDeletions": [],
+  "allOtherAssetReferenceAudit": "NOT_EXPANDED per13:22"
+}

@@ -1,0 +1,236 @@
+{
+  "base": "9fe60fc581227829df6caadc712a5bd0fed74bc4",
+  "sourceHashes": {
+    "src/audio/MusicFilter.ts": "defc0d3dbb6e1ec5cc2732a7b75aa158583ab7ee63afc2df806b9efd48edfe8a",
+    "src/audio/MusicModalStack.ts": "0844763c677aa3f87e066bbbf5d32a7d4bda5ab3bf1144a155727aacfeb1d97d",
+    "src/audio/AudioEngine.ts": "d20c9733da1f64d1804c7f436129a411dde94ac084a5c018ecfecd2ca620247b",
+    "src/main.ts": "d9dc173251b892a4976aac2c4af6b8d0b404ea70537cabf95bcb57b8dcfe7cc0",
+    "src/game/ShopScene.ts": "104573eea1f0c2eabbcdefc9e18adcc0ecdcf96f848a59685d825344ca04154a",
+    "public/assets/audio/bgm/manifest.json": "e76ecbb44f3c4965fb4439fb217058989d7af5bdf8591e6097672eaa027661cf"
+  },
+  "browser": "153.0.8010.12",
+  "heard": false,
+  "scope": "Built app, native shop/detail/zoom/menu/new-run inputs; actual music graph/media/cutoff and post-ceiling recording. Mute/suspend/destroy/failing-filter calls are labeled lifecycle diagnostics. No rule or scoring changes. Software Chromium; no subjective listening or physical-device approval.",
+  "cases": [
+    {
+      "name": "native-PC",
+      "errors": [],
+      "steps": [
+        {
+          "label": "shop",
+          "at": 1499.5,
+          "depth": 1,
+          "cutoff": 450,
+          "context": "running",
+          "track": "assets/audio/p06/serenade-schubert-216755.mp3",
+          "paused": false,
+          "slots": 2,
+          "volume": {
+            "music": 0.3,
+            "sfx": 0.8,
+            "ui": 0.8
+          },
+          "musicGain": 0.05400000140070915,
+          "filterCount": 1,
+          "graph": {
+            "musicToFilter": true,
+            "filterToMaster": true,
+            "musicDirect": false,
+            "sfxDirect": true,
+            "uiDirect": true
+          },
+          "responseDb": [
+            0.5325184560126303,
+            -38.36759114727095
+          ],
+          "open": []
+        },
+        {
+          "label": "shop-detail",
+          "at": 1735.4000000059605,
+          "depth": 2,
+          "cutoff": 450,
+          "context": "running",
+          "track": "assets/audio/p06/serenade-schubert-216755.mp3",
+          "paused": false,
+          "slots": 2,
+          "volume": {
+            "music": 0.3,
+            "sfx": 0.8,
+            "ui": 0.8
+          },
+          "musicGain": 0.05400000140070915,
+          "filterCount": 1,
+          "graph": {
+            "musicToFilter": true,
+            "filterToMaster": true,
+            "musicDirect": false,
+            "sfxDirect": true,
+            "uiDirect": true
+          },
+          "responseDb": [
+            0.5325184560126303,
+            -38.36759114727095
+          ],
+          "open": [
+            "detail-dialog detail-dialog--plain-joker detail-dialog--illustrated detail-dialog--art-background shop-joker-purchase"
+          ]
+        },
+        {
+          "label": "nested-zoom",
+          "at": 1851.2000000029802,
+          "depth": 3,
+          "cutoff": 450,
+          "context": "running",
+          "track": "assets/audio/p06/serenade-schubert-216755.mp3",
+          "paused": false,
+          "slots": 2,
+          "volume": {
+            "music": 0.3,
+            "sfx": 0.8,
+            "ui": 0.8
+          },
+          "musicGain": 0.03823160007596016,
+          "filterCount": 1,
+          "graph": {
+            "musicToFilter": true,
+            "filterToMaster": true,
+            "musicDirect": false,
+            "sfxDirect": true,
+            "uiDirect": true
+          },
+          "responseDb": [
+            0.5325184560126303,
+            -38.36759114727095
+          ],
+          "open": [
+            "detail-dialog detail-dialog--plain-joker detail-dialog--illustrated detail-dialog--art-background shop-joker-purchase",
+            "card-art-zoom-dialog"
+          ]
+        },
+        {
+          "label": "zoom-closed-parent-retained",
+          "at": 2135.1000000089407,
+          "depth": 2,
+          "cutoff": 450,
+          "context": "running",
+          "track": "assets/audio/p06/serenade-schubert-216755.mp3",
+          "paused": false,
+          "slots": 2,
+          "volume": {
+            "music": 0.3,
+            "sfx": 0.8,
+            "ui": 0.8
+          },
+          "musicGain": 0.05400000140070915,
+          "filterCount": 1,
+          "graph": {
+            "musicToFilter": true,
+            "filterToMaster": true,
+            "musicDirect": false,
+            "sfxDirect": true,
+            "uiDirect": true
+          },
+          "responseDb": [
+            0.5325184560126303,
+            -38.36759114727095
+          ],
+          "open": [
+            "detail-dialog detail-dialog--plain-joker detail-dialog--illustrated detail-dialog--art-background shop-joker-purchase"
+          ]
+        },
+        {
+          "label": "diagnostic-music-zero",
+          "at": 2150,
+          "depth": 2,
+          "cutoff": 450,
+          "context": "running",
+          "track": "assets/audio/p06/serenade-schubert-216755.mp3",
+          "paused": true,
+          "slots": 2,
+          "volume": {
+            "music": 0,
+            "sfx": 0.8,
+            "ui": 0.8
+          },
+          "musicGain": 0,
+          "filterCount": 1,
+          "graph": {
+            "musicToFilter": true,
+            "filterToMaster": true,
+            "musicDirect": false,
+            "sfxDirect": true,
+            "uiDirect": true
+          },
+          "responseDb": [
+            0.5325184560126303,
+            -38.36759114727095
+          ],
+          "open": [
+            "detail-dialog detail-dialog--plain-joker detail-dialog--illustrated detail-dialog--art-background shop-joker-purchase"
+          ]
+        },
+        {
+          "label": "diagnostic-foreground-same-mood",
+          "at": 2198.4000000059605,
+          "depth": 2,
+          "cutoff": 450,
+          "context": "running",
+          "track": "assets/audio/p06/serenade-schubert-216755.mp3",
+          "paused": false,
+          "slots": 2,
+          "volume": {
+            "music": 0.3,
+            "sfx": 0.8,
+            "ui": 0.8
+          },
+          "musicGain": 0.05039796605706215,
+          "filterCount": 1,
+          "graph": {
+            "musicToFilter": true,
+            "filterToMaster": true,
+            "musicDirect": false,
+            "sfxDirect": true,
+            "uiDirect": true
+          },
+          "responseDb": [
+            0.5325184560126303,
+            -38.36759114727095
+          ],
+          "open": [
+            "detail-dialog detail-dialog--plain-joker detail-dialog--illustrated detail-dialog--art-background shop-joker-purchase"
+          ]
+        },
+        {
+          "label": "detail-closed-shop-retained",
+          "at": 2250.1000000089407,
+          "depth": 1,
+          "cutoff": 450,
+          "context": "running",
+          "track": "assets/audio/p06/serenade-schubert-216755.mp3",
+          "paused": false,
+          "slots": 2,
+          "volume": {
+            "music": 0.3,
+            "sfx": 0.8,
+            "ui": 0.8
+          },
+          "musicGain": 0.053865741938352585,
+          "filterCount": 1,
+          "graph": {
+            "musicToFilter": true,
+            "filterToMaster": true,
+            "musicDirect": false,
+            "sfxDirect": true,
+            "uiDirect": true
+          },
+          "responseDb": [
+            0.5325184560126303,
+            -38.36759114727095
+          ],
+          "open": []
+        }
+      ]
+    }
+  ]
+}
