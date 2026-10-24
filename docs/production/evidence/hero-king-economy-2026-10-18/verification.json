@@ -1,0 +1,130 @@
+{
+  "base": "93e5787de1a00a5cfde83c5d6778ae69f0de9b8e",
+  "branch": "dev/hero-balance-20261018",
+  "tests": {
+    "success": true,
+    "files": 22,
+    "passed": 179,
+    "failed": 0,
+    "results": [
+      {
+        "file": "ai-hand-candidates.test.ts",
+        "status": "passed",
+        "tests": 13
+      },
+      {
+        "file": "amo-exile-ui.test.ts",
+        "status": "passed",
+        "tests": 1
+      },
+      {
+        "file": "amo-exile.test.ts",
+        "status": "passed",
+        "tests": 12
+      },
+      {
+        "file": "amo-launch.test.ts",
+        "status": "passed",
+        "tests": 9
+      },
+      {
+        "file": "hand-rule-order.test.ts",
+        "status": "passed",
+        "tests": 10
+      },
+      {
+        "file": "hero-ability-cue.test.ts",
+        "status": "passed",
+        "tests": 7
+      },
+      {
+        "file": "hero-balance.test.ts",
+        "status": "passed",
+        "tests": 11
+      },
+      {
+        "file": "hero-economy-revision.test.ts",
+        "status": "passed",
+        "tests": 9
+      },
+      {
+        "file": "hero-explanation.test.ts",
+        "status": "passed",
+        "tests": 2
+      },
+      {
+        "file": "hero-opening-copy.test.ts",
+        "status": "passed",
+        "tests": 2
+      },
+      {
+        "file": "hero-review-copy.test.ts",
+        "status": "passed",
+        "tests": 8
+      },
+      {
+        "file": "hero-skill-draft-lifecycle.test.ts",
+        "status": "passed",
+        "tests": 5
+      },
+      {
+        "file": "hero-skill-guide.test.ts",
+        "status": "passed",
+        "tests": 4
+      },
+      {
+        "file": "hero-stage-continuity.test.ts",
+        "status": "passed",
+        "tests": 15
+      },
+      {
+        "file": "hero-text-contract.test.ts",
+        "status": "passed",
+        "tests": 4
+      },
+      {
+        "file": "opening-play-sample.test.ts",
+        "status": "passed",
+        "tests": 6
+      },
+      {
+        "file": "p1a-active-mult.test.ts",
+        "status": "passed",
+        "tests": 19
+      },
+      {
+        "file": "s04-finish.test.ts",
+        "status": "passed",
+        "tests": 17
+      },
+      {
+        "file": "score-review.test.ts",
+        "status": "passed",
+        "tests": 7
+      },
+      {
+        "file": "tangsong-identity.test.ts",
+        "status": "passed",
+        "tests": 4
+      },
+      {
+        "file": "xiemu-burn.test.ts",
+        "status": "passed",
+        "tests": 11
+      },
+      {
+        "file": "xiemu-cash-choice.test.ts",
+        "status": "passed",
+        "tests": 3
+      }
+    ]
+  },
+  "typecheck": "PASS",
+  "browser": "NOT_RUN",
+  "fullSuite": "NOT_RUN",
+  "naturalActivationAndWinRate": "NOT_MEASURED",
+  "otherFourHeroes": "rules unchanged",
+  "extraSuShiResourcePenalties": "none; superseded unpublished proposal archived only under ignored shots",
+  "sourceParticleFunctions": "unchanged",
+  "productionBuild": "NOT_RUN"
+}

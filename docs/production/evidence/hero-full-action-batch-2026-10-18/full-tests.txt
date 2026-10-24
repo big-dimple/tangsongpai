@@ -1,0 +1,5 @@
+
+> tangsongpai@0.1.0 test
+> vitest run --reporter=json --outputFile=.vite/hero-av-all-tests.json
+
+JSON report written to D:/ai/tangsongpai/tangsongpai/.codex-remote-attachments/owned-joker-score-motion/.vite/hero-av-all-tests.json

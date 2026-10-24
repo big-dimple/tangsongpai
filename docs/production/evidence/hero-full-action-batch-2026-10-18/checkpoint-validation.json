@@ -1,0 +1,50 @@
+{
+  "status": "PASS",
+  "kind": "official readCheckpoint validation; no browser",
+  "files": [
+    {
+      "file": "remote-amo-before.json",
+      "ok": true
+    },
+    {
+      "file": "remote-azao-before.json",
+      "ok": true
+    },
+    {
+      "file": "remote-azao-charge-before.json",
+      "ok": true
+    },
+    {
+      "file": "remote-erxiang-before.json",
+      "ok": true
+    },
+    {
+      "file": "remote-laohuan-before.json",
+      "ok": true
+    },
+    {
+      "file": "remote-laohuan-discard-start.json",
+      "ok": true
+    },
+    {
+      "file": "remote-laohuan-kept.json",
+      "ok": true
+    },
+    {
+      "file": "remote-touye-before.json",
+      "ok": true
+    },
+    {
+      "file": "remote-touye-discard-start.json",
+      "ok": true
+    },
+    {
+      "file": "remote-touye-lost-before.json",
+      "ok": true
+    },
+    {
+      "file": "remote-xiemu-before.json",
+      "ok": true
+    }
+  ]
+}

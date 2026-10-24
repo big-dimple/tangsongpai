@@ -1,0 +1,39 @@
+{
+  "baseline": "19ab29421d028bdf51533ccbbb9967915a3fc6f9",
+  "checkedProduct": "c98c6509ff4162e4de92829e1f4edb1496a0dbd5",
+  "source": "cc89f02fe137b5bd9fc5bc5c7c9b57eb21eafc0c",
+  "visual": {
+    "source": "1dc5c09170918910f85727bde048105834d44a9e",
+    "adoptedAs": "55839ba653bd87fb3ec63e3cc432763a61e113cf",
+    "exactFiles": 10,
+    "allExact": true
+  },
+  "scoreRuntimeFilesExactExceptGameScene": 6,
+  "conflicts": "only GameScene cue + ability test + haptic fixture; retain actual loss light cue and original assertions, preserve positive receipt guard, add actual notice-beat coverage",
+  "checks": {
+    "source475": "reused exact48file source scope",
+    "sourceFinal112": "reused exact10file final source scope",
+    "joint190": "18files190 PASS before clear-audio merge",
+    "firstNewAssertion": "189/190; my receipt assumption wrong, actual saved notice verified; originalFAIL preserved",
+    "final": {
+      "files": 7,
+      "tests": 74,
+      "passed": 74,
+      "failed": 0
+    },
+    "typecheckBuild": "PASS,387 modules",
+    "fullSuite": "NOT_PASS: source isolated7 remain (CRLF2,Windows symlinkEPERM2,CLI timeout3); no broad rerun",
+    "browserListeningPhone": "NOT_RUN"
+  },
+  "scope": "six saved-hero real-card group/single actions, portrait/avatar same phase clock, costs and loss distinct, visual echo/grain/bounded pools; retains latest S0, CI cue/menu helpers, clear music routing",
+  "preserved": "AudioEngine/main/Shop/S0/harness/domain/application/content/asset bytes exact published19ab; score runtime exact source except necessary GameScene merge",
+  "sourceShortCases": "10 scenes,11 validated formal checkpoints per source; controlled preconditions, not natural play acceptance",
+  "pending": [
+    "real PC/390/320/short-landscape visuals and listening",
+    "1/2/4x native same-version short cases, reduced motion/replay/interrupt observations",
+    "physical devices/performance and overall M1 approval"
+  ],
+  "P08": "in_progress",
+  "H17": "in_progress",
+  "M1": "unaccepted"
+}

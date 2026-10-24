@@ -1,0 +1,1016 @@
+{
+  "scope": "Controlled official checkpoint packages; no browser, hearing or device acceptance",
+  "cases": [
+    {
+      "hero": "amo",
+      "checkpoint": "remote-amo-before.json",
+      "action": {
+        "type": "PlayHand",
+        "selectedIds": [
+          "spades-8",
+          "hearts-8"
+        ],
+        "amoExile": true
+      },
+      "commandId": "current/pool/amo/command/4",
+      "controlledSetup": "Current identity; explicit public deck/hand partition and gold40; real SavedRun commands, not natural acquisition.",
+      "expected": {
+        "event": {
+          "hero": "amo",
+          "eventId": "current/pool/amo/hand/current/pool/amo/command/4/event/4",
+          "sourceInstanceId": "current/pool/amo/character",
+          "positive": true,
+          "contributions": [
+            {
+              "target": "M",
+              "kind": "multiply",
+              "label": "×3",
+              "exact": "倍率 2 → 6",
+              "before": {
+                "n": "2",
+                "d": "1"
+              },
+              "after": {
+                "n": "6",
+                "d": "1"
+              }
+            }
+          ],
+          "costIds": [
+            "clubs-7",
+            "diamonds-7",
+            "spades-13",
+            "hearts-13",
+            "clubs-2",
+            "diamonds-4"
+          ],
+          "kind": "exile",
+          "targetIds": [
+            "spades-8",
+            "hearts-8"
+          ]
+        },
+        "before": {
+          "H": {
+            "n": "51",
+            "d": "1"
+          },
+          "M": {
+            "n": "2",
+            "d": "1"
+          }
+        },
+        "after": {
+          "H": {
+            "n": "51",
+            "d": "1"
+          },
+          "M": {
+            "n": "6",
+            "d": "1"
+          }
+        },
+        "finalScore": "306",
+        "beats": [
+          {
+            "speed": 1,
+            "beat": {
+              "windup": 160,
+              "flight": 115,
+              "impact": 275,
+              "rest": 90,
+              "strength": "multiply",
+              "phrase": {
+                "role": "accent",
+                "pulse": 2,
+                "progress": 1,
+                "notePulse": 0,
+                "sourcePulse": 0,
+                "accentWeight": 1,
+                "paired": true,
+                "budgetMs": 640,
+                "start": 1050,
+                "arrival": 1325,
+                "end": 1690
+              },
+              "strike": {
+                "hold": 55,
+                "recovery": 220
+              }
+            }
+          },
+          {
+            "speed": 2,
+            "beat": {
+              "windup": 170,
+              "flight": 140,
+              "impact": 330,
+              "rest": 80,
+              "strength": "multiply",
+              "phrase": {
+                "role": "accent",
+                "pulse": 2,
+                "progress": 1,
+                "notePulse": 0,
+                "sourcePulse": 0,
+                "accentWeight": 1,
+                "paired": true,
+                "budgetMs": 700,
+                "start": 1150,
+                "arrival": 1460,
+                "end": 1870
+              },
+              "strike": {
+                "hold": 110,
+                "recovery": 220
+              }
+            }
+          },
+          {
+            "speed": 4,
+            "beat": {
+              "windup": 340,
+              "flight": 280,
+              "impact": 640,
+              "rest": 140,
+              "strength": "multiply",
+              "phrase": {
+                "role": "accent",
+                "pulse": 2,
+                "progress": 1,
+                "notePulse": 0,
+                "sourcePulse": 0,
+                "accentWeight": 1,
+                "paired": true,
+                "budgetMs": 1400,
+                "start": 1740,
+                "arrival": 2360,
+                "end": 3140
+              },
+              "strike": {
+                "hold": 220,
+                "recovery": 420
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "hero": "erxiang",
+      "checkpoint": "remote-erxiang-before.json",
+      "action": {
+        "type": "PlayHand",
+        "selectedIds": [
+          "spades-8",
+          "hearts-8"
+        ],
+        "erxiangTargetId": "spades-8"
+      },
+      "commandId": "current/pool/erxiang/command/4",
+      "controlledSetup": "Current identity; explicit public deck/hand partition and gold40; real SavedRun commands, not natural acquisition.",
+      "expected": {
+        "event": {
+          "hero": "erxiang",
+          "eventId": "current/pool/erxiang/hand/current/pool/erxiang/command/4/event/2",
+          "sourceInstanceId": "current/pool/erxiang/character",
+          "positive": true,
+          "contributions": [
+            {
+              "target": "M",
+              "kind": "add",
+              "label": "+8",
+              "exact": "倍率 2 → 10",
+              "before": {
+                "n": "2",
+                "d": "1"
+              },
+              "after": {
+                "n": "10",
+                "d": "1"
+              }
+            }
+          ],
+          "costIds": [],
+          "kind": "handoff",
+          "targetIds": [
+            "spades-8"
+          ]
+        },
+        "before": {
+          "H": {
+            "n": "35",
+            "d": "1"
+          },
+          "M": {
+            "n": "2",
+            "d": "1"
+          }
+        },
+        "after": {
+          "H": {
+            "n": "35",
+            "d": "1"
+          },
+          "M": {
+            "n": "10",
+            "d": "1"
+          }
+        },
+        "finalScore": "430",
+        "beats": [
+          {
+            "speed": 1,
+            "beat": {
+              "windup": 110,
+              "flight": 95,
+              "impact": 190,
+              "rest": 25,
+              "strength": "role",
+              "phrase": {
+                "role": "opening",
+                "pulse": 0,
+                "progress": 0,
+                "notePulse": 0,
+                "sourcePulse": 0,
+                "accentWeight": 0.72,
+                "paired": true,
+                "budgetMs": 420,
+                "start": 400,
+                "arrival": 605,
+                "end": 820
+              },
+              "strike": {
+                "hold": 40,
+                "recovery": 150
+              }
+            }
+          },
+          {
+            "speed": 2,
+            "beat": {
+              "windup": 110,
+              "flight": 120,
+              "impact": 230,
+              "rest": 60,
+              "strength": "role",
+              "phrase": {
+                "role": "opening",
+                "pulse": 0,
+                "progress": 0,
+                "notePulse": 0,
+                "sourcePulse": 0,
+                "accentWeight": 0.72,
+                "paired": true,
+                "budgetMs": 520,
+                "start": 400,
+                "arrival": 630,
+                "end": 920
+              },
+              "strike": {
+                "hold": 80,
+                "recovery": 150
+              }
+            }
+          },
+          {
+            "speed": 4,
+            "beat": {
+              "windup": 220,
+              "flight": 240,
+              "impact": 360,
+              "rest": 220,
+              "strength": "role",
+              "phrase": {
+                "role": "opening",
+                "pulse": 0,
+                "progress": 0,
+                "notePulse": 0,
+                "sourcePulse": 0,
+                "accentWeight": 0.72,
+                "paired": true,
+                "budgetMs": 1040,
+                "start": 400,
+                "arrival": 860,
+                "end": 1440
+              },
+              "strike": {
+                "hold": 160,
+                "recovery": 200
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "hero": "azao",
+      "checkpoint": "remote-azao-before.json",
+      "action": {
+        "type": "PlayHand",
+        "selectedIds": [
+          "spades-8",
+          "hearts-8",
+          "clubs-7",
+          "diamonds-7"
+        ],
+        "azaoRelease": true
+      },
+      "commandId": "current/pool/azao/command/5",
+      "controlledSetup": "Current identity; explicit public deck/hand partition and gold40; real SavedRun commands, not natural acquisition.",
+      "expected": {
+        "event": {
+          "hero": "azao",
+          "eventId": "current/pool/azao/hand/current/pool/azao/command/5/event/6",
+          "sourceInstanceId": "current/pool/azao/character",
+          "positive": true,
+          "contributions": [
+            {
+              "target": "M",
+              "kind": "multiply",
+              "label": "×1.5",
+              "exact": "倍率 2 → 3",
+              "before": {
+                "n": "2",
+                "d": "1"
+              },
+              "after": {
+                "n": "3",
+                "d": "1"
+              }
+            }
+          ],
+          "costIds": [],
+          "kind": "release",
+          "targetIds": [
+            "spades-8",
+            "hearts-8",
+            "clubs-7",
+            "diamonds-7"
+          ],
+          "cost": {
+            "kind": "charge",
+            "before": 1,
+            "after": 0
+          }
+        },
+        "before": {
+          "H": {
+            "n": "95",
+            "d": "1"
+          },
+          "M": {
+            "n": "2",
+            "d": "1"
+          }
+        },
+        "after": {
+          "H": {
+            "n": "95",
+            "d": "1"
+          },
+          "M": {
+            "n": "3",
+            "d": "1"
+          }
+        },
+        "finalScore": "285",
+        "beats": [
+          {
+            "speed": 1,
+            "beat": {
+              "windup": 160,
+              "flight": 115,
+              "impact": 275,
+              "rest": 90,
+              "strength": "multiply",
+              "phrase": {
+                "role": "accent",
+                "pulse": 4,
+                "progress": 1,
+                "notePulse": 0,
+                "sourcePulse": 0,
+                "accentWeight": 1,
+                "paired": true,
+                "budgetMs": 640,
+                "start": 1510,
+                "arrival": 1785,
+                "end": 2150
+              },
+              "strike": {
+                "hold": 55,
+                "recovery": 220
+              }
+            }
+          },
+          {
+            "speed": 2,
+            "beat": {
+              "windup": 170,
+              "flight": 140,
+              "impact": 330,
+              "rest": 80,
+              "strength": "multiply",
+              "phrase": {
+                "role": "accent",
+                "pulse": 4,
+                "progress": 1,
+                "notePulse": 0,
+                "sourcePulse": 0,
+                "accentWeight": 1,
+                "paired": true,
+                "budgetMs": 700,
+                "start": 1610,
+                "arrival": 1920,
+                "end": 2330
+              },
+              "strike": {
+                "hold": 110,
+                "recovery": 220
+              }
+            }
+          },
+          {
+            "speed": 4,
+            "beat": {
+              "windup": 340,
+              "flight": 280,
+              "impact": 640,
+              "rest": 140,
+              "strength": "multiply",
+              "phrase": {
+                "role": "accent",
+                "pulse": 4,
+                "progress": 1,
+                "notePulse": 0,
+                "sourcePulse": 0,
+                "accentWeight": 1,
+                "paired": true,
+                "budgetMs": 1400,
+                "start": 2344,
+                "arrival": 2964,
+                "end": 3744
+              },
+              "strike": {
+                "hold": 220,
+                "recovery": 420
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "hero": "azao-charge",
+      "checkpoint": "remote-azao-charge-before.json",
+      "action": {
+        "type": "PlayHand",
+        "selectedIds": [
+          "spades-8",
+          "hearts-8",
+          "clubs-8"
+        ]
+      },
+      "expected": {
+        "eventId": "current/pool/azao/next-charge/azao-charge",
+        "sourceInstanceId": "current/pool/azao/character",
+        "before": 1,
+        "after": 2,
+        "targetIds": [
+          "spades-8",
+          "hearts-8",
+          "clubs-8"
+        ],
+        "gained": true
+      },
+      "scoreEventInvented": false
+    },
+    {
+      "hero": "xiemu",
+      "checkpoint": "remote-xiemu-before.json",
+      "action": {
+        "type": "PlayHand",
+        "selectedIds": [
+          "spades-8",
+          "hearts-8",
+          "clubs-7",
+          "diamonds-7"
+        ],
+        "xiemuBurn": 3
+      },
+      "commandId": "current/pool/xiemu/command/4",
+      "controlledSetup": "Current identity; explicit public deck/hand partition and gold40; real SavedRun commands, not natural acquisition.",
+      "expected": {
+        "event": {
+          "hero": "xiemu",
+          "eventId": "current/pool/xiemu/hand/current/pool/xiemu/command/4/event/6",
+          "sourceInstanceId": "current/pool/xiemu/character",
+          "positive": true,
+          "contributions": [
+            {
+              "target": "M",
+              "kind": "multiply",
+              "label": "×1.5",
+              "exact": "倍率 2 → 3",
+              "before": {
+                "n": "2",
+                "d": "1"
+              },
+              "after": {
+                "n": "3",
+                "d": "1"
+              }
+            }
+          ],
+          "costIds": [],
+          "kind": "release",
+          "targetIds": [
+            "spades-8",
+            "hearts-8",
+            "clubs-7",
+            "diamonds-7"
+          ],
+          "cost": {
+            "kind": "gold",
+            "before": 40,
+            "after": 37
+          }
+        },
+        "before": {
+          "H": {
+            "n": "95",
+            "d": "1"
+          },
+          "M": {
+            "n": "2",
+            "d": "1"
+          }
+        },
+        "after": {
+          "H": {
+            "n": "95",
+            "d": "1"
+          },
+          "M": {
+            "n": "3",
+            "d": "1"
+          }
+        },
+        "finalScore": "285",
+        "beats": [
+          {
+            "speed": 1,
+            "beat": {
+              "windup": 160,
+              "flight": 115,
+              "impact": 275,
+              "rest": 90,
+              "strength": "multiply",
+              "phrase": {
+                "role": "accent",
+                "pulse": 4,
+                "progress": 1,
+                "notePulse": 0,
+                "sourcePulse": 0,
+                "accentWeight": 1,
+                "paired": true,
+                "budgetMs": 640,
+                "start": 1510,
+                "arrival": 1785,
+                "end": 2150
+              },
+              "strike": {
+                "hold": 55,
+                "recovery": 220
+              }
+            }
+          },
+          {
+            "speed": 2,
+            "beat": {
+              "windup": 170,
+              "flight": 140,
+              "impact": 330,
+              "rest": 80,
+              "strength": "multiply",
+              "phrase": {
+                "role": "accent",
+                "pulse": 4,
+                "progress": 1,
+                "notePulse": 0,
+                "sourcePulse": 0,
+                "accentWeight": 1,
+                "paired": true,
+                "budgetMs": 700,
+                "start": 1610,
+                "arrival": 1920,
+                "end": 2330
+              },
+              "strike": {
+                "hold": 110,
+                "recovery": 220
+              }
+            }
+          },
+          {
+            "speed": 4,
+            "beat": {
+              "windup": 340,
+              "flight": 280,
+              "impact": 640,
+              "rest": 140,
+              "strength": "multiply",
+              "phrase": {
+                "role": "accent",
+                "pulse": 4,
+                "progress": 1,
+                "notePulse": 0,
+                "sourcePulse": 0,
+                "accentWeight": 1,
+                "paired": true,
+                "budgetMs": 1400,
+                "start": 2344,
+                "arrival": 2964,
+                "end": 3744
+              },
+              "strike": {
+                "hold": 220,
+                "recovery": 420
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "hero": "touye",
+      "checkpoint": "remote-touye-before.json",
+      "action": {
+        "type": "PlayHand",
+        "selectedIds": [
+          "spades-8",
+          "hearts-8",
+          "clubs-8"
+        ]
+      },
+      "commandId": "current/pool/touye/command/5",
+      "controlledSetup": "Current identity; explicit public deck/hand partition and gold40; real SavedRun commands, not natural acquisition.",
+      "expected": {
+        "event": {
+          "hero": "touye",
+          "eventId": "current/pool/touye/hand/current/pool/touye/command/5/event/5",
+          "sourceInstanceId": "current/pool/touye/character",
+          "positive": true,
+          "contributions": [
+            {
+              "target": "M",
+              "kind": "multiply",
+              "label": "×2",
+              "exact": "倍率 3 → 6",
+              "before": {
+                "n": "3",
+                "d": "1"
+              },
+              "after": {
+                "n": "6",
+                "d": "1"
+              }
+            }
+          ],
+          "costIds": [],
+          "kind": "wager-won",
+          "targetIds": [
+            "clubs-8"
+          ]
+        },
+        "before": {
+          "H": {
+            "n": "114",
+            "d": "1"
+          },
+          "M": {
+            "n": "3",
+            "d": "1"
+          }
+        },
+        "after": {
+          "H": {
+            "n": "114",
+            "d": "1"
+          },
+          "M": {
+            "n": "6",
+            "d": "1"
+          }
+        },
+        "finalScore": "684",
+        "beats": [
+          {
+            "speed": 1,
+            "beat": {
+              "windup": 160,
+              "flight": 115,
+              "impact": 275,
+              "rest": 90,
+              "strength": "multiply",
+              "phrase": {
+                "role": "accent",
+                "pulse": 3,
+                "progress": 1,
+                "notePulse": 0,
+                "sourcePulse": 0,
+                "accentWeight": 1,
+                "paired": true,
+                "budgetMs": 640,
+                "start": 1280,
+                "arrival": 1555,
+                "end": 1920
+              },
+              "strike": {
+                "hold": 55,
+                "recovery": 220
+              }
+            }
+          },
+          {
+            "speed": 2,
+            "beat": {
+              "windup": 170,
+              "flight": 140,
+              "impact": 330,
+              "rest": 80,
+              "strength": "multiply",
+              "phrase": {
+                "role": "accent",
+                "pulse": 3,
+                "progress": 1,
+                "notePulse": 0,
+                "sourcePulse": 0,
+                "accentWeight": 1,
+                "paired": true,
+                "budgetMs": 700,
+                "start": 1380,
+                "arrival": 1690,
+                "end": 2100
+              },
+              "strike": {
+                "hold": 110,
+                "recovery": 220
+              }
+            }
+          },
+          {
+            "speed": 4,
+            "beat": {
+              "windup": 340,
+              "flight": 280,
+              "impact": 640,
+              "rest": 140,
+              "strength": "multiply",
+              "phrase": {
+                "role": "accent",
+                "pulse": 3,
+                "progress": 1,
+                "notePulse": 0,
+                "sourcePulse": 0,
+                "accentWeight": 1,
+                "paired": true,
+                "budgetMs": 1400,
+                "start": 2040,
+                "arrival": 2660,
+                "end": 3440
+              },
+              "strike": {
+                "hold": 220,
+                "recovery": 420
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "hero": "laohuan",
+      "checkpoint": "remote-laohuan-before.json",
+      "action": {
+        "type": "ChooseRefill",
+        "selectedIds": [
+          "diamonds-14"
+        ]
+      },
+      "commandId": "current/pool/laohuan/command/5",
+      "controlledSetup": "Current identity; explicit public deck/hand partition and gold40; real SavedRun commands, not natural acquisition.",
+      "afterKeep": "remote-laohuan-kept.json",
+      "expectedKept": [
+        "diamonds-14"
+      ],
+      "followup": {
+        "action": {
+          "type": "PlayHand",
+          "selectedIds": [
+            "diamonds-14"
+          ]
+        },
+        "event": {
+          "hero": "laohuan",
+          "eventId": "current/pool/laohuan/hand/current/pool/laohuan/command/6/event/1",
+          "sourceInstanceId": "diamonds-14",
+          "kind": "retained-card",
+          "targetIds": [
+            "diamonds-14"
+          ],
+          "costIds": [],
+          "positive": true,
+          "contributions": [
+            {
+              "target": "H",
+              "kind": "heat",
+              "label": "+11",
+              "exact": "热度 20 → 31",
+              "before": {
+                "n": "20",
+                "d": "1"
+              },
+              "after": {
+                "n": "31",
+                "d": "1"
+              }
+            }
+          ]
+        },
+        "finalScore": "31",
+        "beats": [
+          {
+            "speed": 1,
+            "beat": {
+              "windup": 110,
+              "flight": 95,
+              "impact": 190,
+              "rest": 25,
+              "strength": "light",
+              "phrase": {
+                "role": "opening",
+                "pulse": 0,
+                "progress": 0,
+                "notePulse": 0,
+                "sourcePulse": 0,
+                "accentWeight": 0.72,
+                "paired": true,
+                "budgetMs": 420,
+                "start": 200,
+                "arrival": 405,
+                "end": 620
+              },
+              "strike": {
+                "hold": 40,
+                "recovery": 150
+              }
+            }
+          },
+          {
+            "speed": 2,
+            "beat": {
+              "windup": 110,
+              "flight": 120,
+              "impact": 230,
+              "rest": 60,
+              "strength": "light",
+              "phrase": {
+                "role": "opening",
+                "pulse": 0,
+                "progress": 0,
+                "notePulse": 0,
+                "sourcePulse": 0,
+                "accentWeight": 0.72,
+                "paired": true,
+                "budgetMs": 520,
+                "start": 200,
+                "arrival": 430,
+                "end": 720
+              },
+              "strike": {
+                "hold": 80,
+                "recovery": 150
+              }
+            }
+          },
+          {
+            "speed": 4,
+            "beat": {
+              "windup": 220,
+              "flight": 240,
+              "impact": 360,
+              "rest": 220,
+              "strength": "light",
+              "phrase": {
+                "role": "opening",
+                "pulse": 0,
+                "progress": 0,
+                "notePulse": 0,
+                "sourcePulse": 0,
+                "accentWeight": 0.72,
+                "paired": true,
+                "budgetMs": 1040,
+                "start": 200,
+                "arrival": 660,
+                "end": 1240
+              },
+              "strike": {
+                "hold": 160,
+                "recovery": 200
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "hero": "touye-lost",
+      "checkpoint": "remote-touye-lost-before.json",
+      "action": {
+        "type": "PlayHand",
+        "selectedIds": [
+          "diamonds-6"
+        ]
+      },
+      "expected": {
+        "event": {
+          "hero": "touye",
+          "eventId": "current/pool/touye/lost/hand/current/pool/touye/lost/command/5/event/2",
+          "sourceInstanceId": "current/pool/touye/lost/character",
+          "positive": false,
+          "contributions": [
+            {
+              "target": "M",
+              "kind": "multiply",
+              "label": "×0.85",
+              "exact": "倍率 1 → 0.85",
+              "before": {
+                "n": "1",
+                "d": "1"
+              },
+              "after": {
+                "n": "17",
+                "d": "20"
+              }
+            }
+          ],
+          "costIds": [],
+          "kind": "wager-lost",
+          "targetIds": [
+            "clubs-8",
+            "diamonds-6"
+          ]
+        },
+        "before": {
+          "H": {
+            "n": "26",
+            "d": "1"
+          },
+          "M": {
+            "n": "1",
+            "d": "1"
+          }
+        },
+        "after": {
+          "H": {
+            "n": "26",
+            "d": "1"
+          },
+          "M": {
+            "n": "17",
+            "d": "20"
+          }
+        },
+        "finalScore": "22",
+        "audio": "No positive impact/rebound"
+      }
+    },
+    {
+      "hero": "laohuan-discard-start",
+      "checkpoint": "remote-laohuan-discard-start.json",
+      "action": {
+        "type": "DiscardHand",
+        "selectedIds": [
+          "clubs-12"
+        ]
+      },
+      "scope": "Real fresh-stage state; lock/eye first, no candidate IDs before actual reveal."
+    },
+    {
+      "hero": "touye-discard-start",
+      "checkpoint": "remote-touye-discard-start.json",
+      "action": {
+        "type": "DiscardHand",
+        "selectedIds": [
+          "clubs-12"
+        ],
+        "touyeBet": {
+          "target": "two-pair",
+          "snapshotToken": "json-fnv-v1:9c5b2fc06b5d141c"
+        }
+      },
+      "scope": "Real fresh-stage state; lock/eye first, no candidate IDs before actual reveal."
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+
+ RUN  v4.1.11 D:/ai/tangsongpai/tangsongpai/.codex-remote-attachments/hero-target-attachments-20261017
+
+
+ Test Files  9 passed (9)
+      Tests  104 passed (104)
+   Start at  07:52:50
+   Duration  5.00s (transform 6.99s, setup 0ms, import 10.19s, tests 9.74s, environment 1ms)

@@ -1,0 +1,5 @@
+
+> tangsongpai@0.1.0 test
+> vitest run tests/score-card-performance.test.ts tests/hero-native-score-clock.test.ts tests/joker-score-strike.test.ts tests/hero-retained-ownership.test.ts tests/xin-repeat-sequence.test.ts tests/hero-action-chain-order.test.ts tests/score-table-haptics.test.ts tests/hero-score-action.test.ts tests/hero-portrait-score-motion.test.ts tests/score-performance.test.ts --reporter=json --outputFile=.vite/hero-av-final-clock-tests.json
+
+JSON report written to D:/ai/tangsongpai/tangsongpai/.codex-remote-attachments/owned-joker-score-motion/.vite/hero-av-final-clock-tests.json

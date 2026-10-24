@@ -1,0 +1,20 @@
+{
+  "version": "C03",
+  "builtAt": "2026-10-18T14:12:02.007Z",
+  "revision": "55839ba653bd87fb3ec63e3cc432763a61e113cf",
+  "sourceStatus": "dirty",
+  "modified": true,
+  "modifiedFileCount": 10,
+  "modifiedFiles": [
+    "src/game/GameScene.ts",
+    "src/game/HeroPortraitScoreMotion.ts",
+    "src/game/JokerScoreStrike.ts",
+    "src/game/ScorePerformance.ts",
+    "src/game/ScorePhrase.ts",
+    "tests/hero-ability-cue.test.ts",
+    "tests/hero-portrait-score-motion.test.ts",
+    "tests/score-card-performance.test.ts",
+    "tests/score-performance.test.ts",
+    "tests/score-table-haptics.test.ts"
+  ]
+}

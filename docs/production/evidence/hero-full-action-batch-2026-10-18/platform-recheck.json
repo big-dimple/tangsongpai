@@ -1,0 +1,23 @@
+{
+  "baseline": "75d4f973",
+  "naturalSave": {
+    "raw": "a00838d02d390ebf9e01009240efeb61592da35c215cd1d06c7354c7b1d5746d",
+    "lfNormalized": "085d29b9fd4bcabf638f87c2eeb63f55c17ca553c65ade87e10544337d28f1b9",
+    "baselineBlob": "085d29b9fd4bcabf638f87c2eeb63f55c17ca553c65ade87e10544337d28f1b9",
+    "sameAfterLfNormalization": true
+  },
+  "workflow": {
+    "rawBrowserSplit": false,
+    "lfBrowserSplit": true
+  },
+  "contentChild": {
+    "status": null,
+    "signal": "SIGTERM",
+    "error": {
+      "code": "ETIMEDOUT",
+      "message": "spawnSync C:\\Program Files\\nodejs\\node.exe ETIMEDOUT"
+    },
+    "stdoutBytes": 77,
+    "stderrTail": ""
+  }
+}

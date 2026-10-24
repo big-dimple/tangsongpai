@@ -1,0 +1,821 @@
+{
+  "recordKind": "PRE_PUSH_VERIFICATION_SNAPSHOT",
+  "baseMain": "16b6f7347820ed056b1d868d3caa235f73fdd968",
+  "product": "5fddd4ae2ba2e17a7a7029ec12611266564d2b88",
+  "branch": "dev/hero-score-joint-20261019",
+  "sources": {
+    "heroHead": "f12776c8bf3bfb34645da21a394f995c9c0481d5",
+    "heroProduct": "a2f8839604f2ccc80e0a586affaa1b88902156ce",
+    "scoreBase": "b658f4787d106397859d907995b9576ded87bbe5",
+    "outboundAfterimages": "e8012f463fd3b60b53a3c616a6991ee2221928dc"
+  },
+  "takeover": {
+    "owner": "D:/ai/tangsongpai/tangsongpai/.codex-remote-attachments/owned-joker-score-motion",
+    "head": "e8012f463fd3b60b53a3c616a6991ee2221928dc",
+    "trackedPatchBytes": 0,
+    "untrackedFiles": 0,
+    "method": "Read-only git --no-optional-locks; snapshot preserved under ignored integration shots; no original worktree edits or repeated owner push"
+  },
+  "checks": {
+    "jointFiles": 7,
+    "jointPassed": 78,
+    "jointFailed": 0,
+    "typecheck": "PASS npm run build includes tsc --noEmit",
+    "viteModules": 399,
+    "buildSource": "Clean product5fddd4ae; later evidence-only changes do not alter runtime",
+    "additionalCases": [
+      "Real SushiDiscardCardPresentation plus playSushiDiscardExit share the same arrival and context; prepared cut refused, costs survive an extended paused cut, completion/abort clean only committed costs",
+      "GameScene existing portrait adapter uses native Image texture/frame, bounded2/3 slots, arrival destroys all snapshots, subsequent return steps cannot recreate them"
+    ],
+    "reused": "Owner source reports retained by exact SHA; no repeated full-owner or full-repository suite"
+  },
+  "contracts": [
+    "Six hero energy materials retain existing FBO/clock/masks/budget; explicit matching mediump shader interface preserved",
+    "Su prepared effect uses only actual pending discard IDs; cancel/reselect reconciles targets and prepared stage cannot slash",
+    "Actual discarded entities remain until real arrival and the cut/dissolve Tween completes; no empty-frame continuation after source death",
+    "Afterimages reuse actual original texture/frame and previous motion pose; emit outbound only, clear at real arrival, no return afterimages; abort/reduction/shutdown cleanup"
+  ],
+  "sourceEquality": {
+    "hero": "All supplied hero runtime blobs exactf127",
+    "score": "GameScene/CardBodyMotion/JokerScoreStrike/ScoreStrikeLayers/SushiDiscardExit/ImageAfterimages exacte801",
+    "protected": "ShopScene/ShopLayout/audio/domain/application/public assets/dependencies exactmain16b6",
+    "integrationChanges": "Only four cross-interface test cases; no extra runtime fixes"
+  },
+  "publication": "No new main publication asserted by this pre-push snapshot. Exact main SHA and successful normal push belong to the later delivery receipt.",
+  "experience": "GL driver/GPU pixels, actual PC/phone continuous visuals, physical-device performance and hearing NOT_RUN; P08/H17/M1 remain unaccepted",
+  "reports": [
+    "tests.json.gz",
+    "build.txt.gz"
+  ],
+  "ciFollowup20261019": {
+    "recordKind": "PRE_PUSH_VERIFICATION_SNAPSHOT",
+    "baseMain": "b819a13387dd8c44be708769216e2f61b92be432",
+    "product": "76caa3d6a9af0c003054db32e6560607019e26c7",
+    "sourceRun": "https://github.com/big-dimple/tangsongpai/actions/runs/39179687933",
+    "originalFailures": {
+      "domainJob": 117829592043,
+      "domain": {
+        "files": 399,
+        "passed": 4910,
+        "failed": 2,
+        "failures": [
+          "hero-live-smoke: high expected, medium actual in framebuffer double",
+          "shop-result-feedback: result rectangle intersects advice action"
+        ]
+      },
+      "browserJob": 117829592132,
+      "browser": "Chromium desktop PASS; phone remains shop at seq2/controller idle after start tap; install and build PASS. No actual local-browser reproduction.",
+      "productionDocs": "39179687846 PASS"
+    },
+    "fixes": [
+      "Portrait saved result reuses the existing notice strip excluding advice; rendering and pagination measure both wrapped width and height and retain complete numeric tokens/clauses.",
+      "The active native shop shelf explicitly retires an older scene tap marker. The 350ms same-position transition guard remains for accidental canvas repeats; the scoped handler is removed at teardown.",
+      "Framebuffer resource double uses controlled submission time; original high/three-layer/131072pixel/eight-target/release assertions and original 33ms/4ms degradation inputs remain. A separate healthy-frame/slow-submission case verifies CPU-only downgrade. Runtime quality thresholds unchanged."
+    ],
+    "diagnosisLimits": "The native-input omission is RED/GREEN at handler and actual ShopScene shelf wiring boundaries; its contribution to the reported CI browser timeout remains an inference until same-version browser verification. Host wall-clock noise in the shader double is inferred from its production measured-cost hook, not a GPU failure.",
+    "checks": {
+      "files": 14,
+      "passed": 183,
+      "failed": 0,
+      "status": "PASS",
+      "countMethod": "Latest result per file: targeted182 with final hero-live-smoke result replacing its prior module; unique total183, not sum of reruns.",
+      "red": "Original geometry assertion and native-guard regression failed before fixes (13pass/2fail).",
+      "typecheck": "PASS tsc --noEmit in npm run build",
+      "viteModules": 399,
+      "bundle": "index-Djf2dw3V.js",
+      "sourceIdentity": "Pre-commit checked working tree based b819; checked runtime bytes committed unchanged in product76caa3d6; final independent CPU test passed after its addition."
+    },
+    "actualTimingAudit": {
+      "status": "SOURCE_AND_TARGETED_TESTS_PASS_NO_ADDITIONAL_RUNTIME_GAP_FOUND",
+      "chain": [
+        "Only available chosen skill uses actual draft target IDs during preparation.",
+        "Existing outbound motion samples genuine original textures; actual strike landing clears ghosts before impact.",
+        "The same arrival resolves saved cost reactions, displays committed values and admits first impact audio.",
+        "Existing strike rebound callback requests the paired second note; no added timer or invented score event.",
+        "Completion restores real cards/portrait; cancel/reselect/fast-forward/abort retire stale owners."
+      ],
+      "roles": {
+        "Su": "Actual pending discarded IDs prepare. Saved costs stay visible through actual arrival and cut/dissolve completion; beneficiary main cards are separate.",
+        "LiuE": "Saved handoff target only; no discard exit.",
+        "Wencheng": "Saved charge receipt is distinct from a saved multiplier release; release uses real beneficiaries and charge cost.",
+        "Huarui": "Paid gold release uses actual main beneficiaries and gold before/after; no discard exit.",
+        "Qin": "Actual new refill identities; won beneficiaries strike, failed promise cools without a win packet or second hit.",
+        "Xin": "Saved candidate/retained instances only; first actual positive ordinary card event consumes retained field."
+      },
+      "runtimeFilesChangedForAudit": []
+    },
+    "approvalIncident": "Auto-review denied replacing original smoke stress input33ms with16ms; that command did not execute. Original input retained; independent CPU-only case added instead. No retry of the denied replacement.",
+    "notRun": [
+      "Local browser (prohibited)",
+      "Same-version CI phone/browser revalidation",
+      "GPU/GL driver pixels",
+      "Actual PC/phone hearing and physical-device acceptance"
+    ],
+    "publication": "No new main publication asserted here; actual normal push SHA belongs to later delivery receipt.",
+    "reports": [
+      "ci-targeted.json.gz",
+      "ci-smoke-cost.json.gz",
+      "ci-red.json.gz",
+      "ci-build.txt.gz"
+    ]
+  },
+  "ownedIdleDepth20261019": {
+    "recordKind": "PRE_PUSH_VERIFICATION_SNAPSHOT",
+    "baseMain": "ca5e78799c44e683d2b26a5b54f16d3b4fcc898c",
+    "product": "76639ca0c6f0d71f4d0056bdf20a7371beff47b8",
+    "branch": "dev/hero-visible-owned-depth-20261019",
+    "changes": [
+      "Existing rest/shift/settle spring also drives bounded inner pitch/yaw compression and original-art parallax. No continuous sine bob or new clock/timer.",
+      "A separate table-plane shadow responds with relative displacement, size and opacity; all shadow ellipses remain inside the fixed slot.",
+      "Idle never writes the score/drag pose after handoff. Existing score entry clears inner idle bias before owning its pose; return blends depth using the existing update delta. Hover settles; reduction is still; outer hit/drag owner is untouched."
+    ],
+    "checks": {
+      "files": 8,
+      "passed": 51,
+      "failed": 0,
+      "method": "Latest per file: targeted8, final-owner replaces3 core modules, final-idle-ear replaces owned-joker-idle. Its separate handoff-ear3 checks are preparation only, not counted in owned51.",
+      "red": "Original10 pass/new2 PC-phone depth failures; required inner perspective/parallax/shadow coupling is GREEN after changes.",
+      "typecheck": "PASS tsc --noEmit through build",
+      "viteModules": 399,
+      "bundle": "index-CVEA_DcZ.js",
+      "sourceIdentity": "Checked working tree bytes committed unchanged in76639ca0; two untracked ear preparation files are not part of this product."
+    },
+    "ear": {
+      "status": "PREPARED_NOT_WIRED",
+      "files": [
+        "src/game/HandoffEar.ts",
+        "tests/handoff-ear.test.ts"
+      ],
+      "checks": "3 pure/native Graphics and local-scale checks PASS; typecheck PASS",
+      "next": "Use the hero owner actual visible single-card patch after its candidate SHA; no concurrent HeroTargetAttachment or GameScene edits."
+    },
+    "ca5eCI": {
+      "run": "https://github.com/big-dimple/tangsongpai/actions/runs/39181398451",
+      "domain": {
+        "job": 117834725099,
+        "result": "success"
+      },
+      "docs": {
+        "job": 117834724873,
+        "result": "success"
+      },
+      "browser": {
+        "job": 117834725048,
+        "result": "failure",
+        "desktop": "PASS",
+        "mobile": "Same waitScene(game) timeout at harness/screenshot.mjs91; phase shop,seq2,controller idle. Earlier native-shelf fix did not resolve this CI failure."
+      },
+      "productionDocs": 39181398439,
+      "rootCause": "Not confirmed. Existing modal-dismiss350ms same-point guard is a static lead only; no local browser run and no harness timing change."
+    },
+    "remaining": [
+      "Hero candidate SHA and actual visible-surface/ear final wiring",
+      "CI mobile timeout investigation",
+      "Actual PC/phone pixels and physical-device acceptance"
+    ],
+    "publication": "This snapshot does not assert new main publication; wait for hero candidate and normal joint merge/push receipt.",
+    "reports": [
+      "owned-depth-targeted.json.gz",
+      "owned-depth-owner.json.gz",
+      "owned-depth-idle-ear.json.gz",
+      "owned-depth-red.json.gz",
+      "owned-depth-build.txt.gz"
+    ]
+  },
+  "visibleSurfaceCopyJoint20261019": {
+    "recordKind": "PRE_PUSH_VERIFICATION_SNAPSHOT",
+    "baseMain": "ca5e78799c44e683d2b26a5b54f16d3b4fcc898c",
+    "product": "2ee4706fabeee1a8888059c9b7d2cb00e7e3fa4d",
+    "sources": {
+      "hero": "68a9fbba043355488060176f86c17335c6462226",
+      "copy": "0b8099c98f1da38a99a6c6075a2fbed1eac3ff1a",
+      "idle": "76639ca0c6f0d71f4d0056bdf20a7371beff47b8"
+    },
+    "heroCause": "Confirmed static-dot preparation fallback, saved whole-card exterior smoke and proxy draw-order occlusion; union size was an early suspicion, not a verified cause.",
+    "ear": {
+      "status": "WIRED",
+      "hero": "Liu E only",
+      "implementation": "Vector Graphics on the real card visual, in its currently visible unprinted patch. Exact four-corner world bounds append to the existing GameScene labelExclusions without replacing control bounds. Placement ignores its own exclusion to avoid self-chasing; material includes that exclusion. Local scale preserves a small CSS-sized glyph. No extra caption row, input target, texture or clock.",
+      "checks": "PC/phone native adapters cover neighbor exclusion, same-target stability, scaled/moved body, body destruction, reselect, non-Liu role and cleanup; human-readable meaning retained."
+    },
+    "copy": "a08 scoring2/3/4/5 +20 each actual scoring occurrence; d02 held2/3/4/5 +6 each,max4,duplicates separately,disabled skipped. Display reads real definitions; no mechanics changed.",
+    "checks": {
+      "files": 15,
+      "passed": 157,
+      "failed": 0,
+      "countMethod": "Latest per file: visible-joint-tests, final handoff-ear module replaced by visible-ear-final. Source106/25/51 kept by source SHA, not added mechanically.",
+      "typecheck": "PASS after explicit fixture type annotation",
+      "viteModules": 401,
+      "bundle": "index-DH3mb4IY.js",
+      "buildSource": "Checked working-tree runtime bytes committed unchanged as2ee4706f; later changes are evidence only."
+    },
+    "sourceEquality": {
+      "copy": "Three runtime copy files exact0b8099",
+      "idle": "OwnedCardTilt and OwnedJokerScoreMotion exact76639ca0",
+      "hero": "Exact68a9 except the scoped ear/Graphics exclusion hook in HeroTargetAttachment",
+      "GameScene": "Only append ear bounds to existing labelExclusions; no other GameScene changes",
+      "protected": "domain/content/application/audio/public/dependencies exactca5e"
+    },
+    "experience": "GPU/GL driver pixels, actual PC/phone continuous visuals, physical-device performance and hearing NOT_RUN; P08/H17/M1 not accepted.",
+    "publication": "No new main publication asserted in this snapshot; normal main merge/push SHA belongs to later delivery receipt.",
+    "reports": [
+      "visible-joint-tests.json.gz",
+      "visible-ear-final.json.gz",
+      "visible-joint-build.txt.gz"
+    ]
+  },
+  "mobileEntryInvestigation20261019": {
+    "status": "UNRESOLVED_WITH_PRECISE_MISSING_OBSERVATIONS",
+    "run": "https://github.com/big-dimple/tangsongpai/actions/runs/39181398451",
+    "job": 117834725048,
+    "artifact": {
+      "id": 12155763812,
+      "zipBytes": 730,
+      "sha256": "23d7bc2c93f659fbd418eae09b5c85beba97c09f75b551a873d708dbc5bbbda9",
+      "digestVerified": true,
+      "entries": [
+        {
+          "path": "ci/browser.json",
+          "bytes": 1452
+        }
+      ],
+      "contents": "Outer CI result only. No failure DOM, accessibility tree, pointer hit trace, screenshot or smoke-result JSON."
+    },
+    "observed": "Desktop PASS. Phone purchase assertions pass, then waitScene(game) fails; phase shop,seq2,controller idle. This proves no successful LeaveShop commit, not that the canvas received the intended tap.",
+    "reducerProbe": {
+      "initial": {
+        "seq": 1,
+        "phase": "shop",
+        "gold": 6,
+        "jokers": 0
+      },
+      "offer": {
+        "id": "run/p00-core-ui/amo/shop/0/0/joker/0",
+        "definitionId": "b11",
+        "price": 6
+      },
+      "steps": [
+        {
+          "action": "BuyOffer",
+          "ok": true,
+          "seq": 2,
+          "phase": "shop",
+          "gold": 0,
+          "jokers": 1
+        },
+        {
+          "action": "LeaveShop",
+          "ok": true,
+          "seq": 3,
+          "phase": "stage-ready",
+          "gold": 0,
+          "jokers": 1
+        },
+        {
+          "action": "EnterStage",
+          "ok": true,
+          "seq": 4,
+          "phase": "await-input",
+          "gold": 0,
+          "jokers": 1
+        }
+      ],
+      "geometry": {
+        "viewport": {
+          "width": 390,
+          "height": 740
+        },
+        "point": {
+          "x": 195,
+          "y": 660
+        },
+        "play": {
+          "x": 12,
+          "y": 632,
+          "width": 366,
+          "height": 56
+        },
+        "inventoryCollapsed": false,
+        "nativeOffers": {
+          "x": 12,
+          "y": 156,
+          "width": 366,
+          "height": 281
+        },
+        "ownedSurface": {
+          "x": 23,
+          "y": 465,
+          "width": 64,
+          "height": 116
+        },
+        "nativeOffersCoversStart": false,
+        "ownedSurfaceCoversStart": false
+      },
+      "note": "Exact smoke seed/hero/route/product identity and reducer; no browser, DOM layout, lease or storage acceptance inferred.",
+      "modeSource": {
+        "file": "src/game/ModeSelectDialog.ts",
+        "value": {
+          "mode": "standard",
+          "difficulty": 0,
+          "challengeId": null,
+          "programsEnabled": true
+        }
+      }
+    },
+    "conclusions": [
+      "Configured smoke seed/hero/route/current identity accepts BuyOffer seq2,LeaveShop seq3,EnterStage seq4. Reducer-only result does not rule out real session/lease/storage rejection.",
+      "Computed portrait native offer and owned-input bounds do not cover start center195,660. This is geometry evidence, not an observed DOM elementFromPoint result.",
+      "No successful LeaveShop means the known snapshot has not reached navigation/audio/image preparation; there is no basis to assign this timeout to music or S0 resource gates."
+    ],
+    "missing": [
+      {
+        "branch": "Wrong hit target",
+        "observe": "Immediately before the existing tap: named action enabled flag and CSS hit rectangle; document.elementsFromPoint(195,660), active element and open dialog classes. point() currently computes enabled but tapUI does not log it."
+      },
+      {
+        "branch": "Modal/input lock",
+        "observe": "At the actual down: whether SceneView.down ran; modalBlocksCanvas return and open-dialog versus dismissed-point until/distance; multiContact/contact IDs, pressed object, scene.input.enabled; shop.ready/busy and ownedInput owner."
+      },
+      {
+        "branch": "Command/business failure",
+        "observe": "Whether ShopScene.send received LeaveShop; actual dispatch result/error code, controller seq/phase before-after; session working/pendingRun/lease writable and current shop notice. Current failure context reads game scene, not active shop."
+      },
+      {
+        "branch": "Pointer timing",
+        "observe": "Actual Phaser downTime/upTime,isDown,active and event target/pointer ID; current snapshot asks for nonexistent timeDown/timeUp, and the last pointer position alone may be stale."
+      }
+    ],
+    "scope": "Read-only existing CI evidence and exact narrow source probes. No local browser, no harness waits/timeouts/assertion changes, no speculative product fix.",
+    "reports": [
+      "ca5e-domain-geometry.json.gz",
+      "ca5e-browser-artifact.json.gz"
+    ]
+  },
+  "mobileEntryDiagnostics20261019": {
+    "status": "PRE_PUSH_VERIFIED",
+    "baseMain": "3ab2bb4204e18a29d47b41871fdbd4987523c90d",
+    "product": "02160ccc52f0f5f34469c8a3fdad7583f5f3b6ae",
+    "domainProduct": "ba39c327b2f628997fb8b296cbcd9c5403715215",
+    "baselineCI": {
+      "run": 39186326183,
+      "domain": {
+        "job": 117849420105,
+        "status": "FAIL",
+        "files": 3,
+        "failed": 10,
+        "passed": 4922,
+        "total": 4932,
+        "causes": [
+          "Five saved-owner and one Qin test still require superseded portrait echo/exterior emitter graph.",
+          "Three native Xin tests still require exterior particles and omit cardId on their handmade face.",
+          "Seven-candidate test still requires63 old exterior particles."
+        ]
+      },
+      "browser": {
+        "job": 117849420310,
+        "status": "FAIL",
+        "engine": "chromium",
+        "profile": "mobile",
+        "phase": "shop",
+        "commandSeq": 2,
+        "controller": "idle",
+        "timeoutMs": 30000,
+        "rootCause": "UNRESOLVED; baseline has no active-shop DOM/gate diagnostics"
+      },
+      "docs": "PASS"
+    },
+    "domainFix": {
+      "contract": "Migrate the3 failing test files to actual on-card material. Keep all7 target IDs/tags,3.2s live motion, print avoidance, normal-card isolation, reduced freeze, hidden/destruction cleanup. Direct native emitter component tests remain.",
+      "product": "Canvas failed material alpha0 abruptly removed pending wager cards, unlike existing Shader .28 fade. Match .28*(1-impact); no victory burst or source echo.",
+      "red": "Original3 files reproduced10 FAIL/16 PASS. New failed-fade regression against original alpha0 is1 FAIL/0 PASS.",
+      "green": "Joint9files236 PASS; original failed files included26 PASS; no skipped test introduced."
+    },
+    "diagnostics": {
+      "enabled": "Existing explicit MODE=e2e and harness=1 only; bounded80 rows. Disabled sink evaluates no lazy state/DOM snapshots.",
+      "observes": [
+        "Existing coordinate read adds elementsFromPoint, button enabled/hit bounds, open dialogs and active shop gates.",
+        "Actual SceneView multi-contact/modal/cross-scene/no-target branches and accepted/released/tap dispatch; native downTime/upTime.",
+        "Shop send attempt captures actual ready decision; saved result includes ok/code/seq/phase after dispatch.",
+        "Native owned-input bounds, hidden flag and pointer owner; failure DOM, PNG and JSON now uploaded."
+      ],
+      "preserved": "No waits, timeout changes, assertion skips, retries, input bypass or stress changes. Modal350ms/24px and original touch path retained.",
+      "checks": "Actual close guard expiry/near-far behavior; accepted/cross-scene tap and bounded trace; pending save/busy LeaveShop rejection/success/failure command result."
+    },
+    "checks": {
+      "tests": {
+        "files": 9,
+        "passed": 236,
+        "failed": 0,
+        "exitCode": 0
+      },
+      "syntax": "node --check harness/ui.mjs and harness/screenshot.mjs PASS",
+      "build": "npm run build: TypeScript/Vite401 PASS; existing chunk-size warning",
+      "diff": "git diff --check PASS"
+    },
+    "reports": [
+      "entry-domain-red.json.gz",
+      "entry-failure-parity-red.json.gz",
+      "entry-joint-tests.json.gz",
+      "entry-build.txt.gz"
+    ],
+    "remaining": [
+      "Mobile purchase->table cause unresolved until same-version CI trace; domain migration/fade fix is independently verified.",
+      "No local browser, actual GPU/PC/phone pixels, listening or physical-device acceptance. P08/H17/M1 remain unaccepted."
+    ],
+    "publication": "Pre-push snapshot; actual remote main SHA belongs to normal publication receipt."
+  },
+  "mobileEntryConfirmed20261019": {
+    "status": "DOMAIN_PASS_BROWSER_FAIL_CONTRACT_DECISION_REQUIRED",
+    "publishedMain": "60daeb554e79c48c040b6fbb31ab63f32d9e9201",
+    "ci": {
+      "run": 39187742479,
+      "url": "https://github.com/big-dimple/tangsongpai/actions/runs/39187742479",
+      "domain": {
+        "job": 117853639063,
+        "status": "PASS",
+        "tests": 4936
+      },
+      "docs": {
+        "job": 117853639425,
+        "status": "PASS"
+      },
+      "browser": {
+        "job": 117853639234,
+        "status": "FAIL",
+        "engine": "chromium",
+        "profile": "mobile",
+        "timeoutMs": 30000
+      }
+    },
+    "artifact": {
+      "id": 12159200290,
+      "bytes": 788232,
+      "sha256": "ab7bb36697060ea0e87af954c62d9cced64fa9bda9e844c08d70e69f096e52cd",
+      "localHashVerified": true,
+      "expiresAt": "2026-11-02T02:01:10Z",
+      "files": {
+        "ci/browser.json": 1452,
+        "smoke-failure.png": 790735,
+        "smoke-failure-dom.html": 16864,
+        "smoke-result.json": 34267
+      },
+      "retained": [
+        "entry-60da-smoke-result.json.gz",
+        "entry-60da-smoke-failure-dom.html.gz"
+      ]
+    },
+    "proof": {
+      "purchase": {
+        "ok": true,
+        "seq": 2,
+        "phase": "shop"
+      },
+      "hit": {
+        "x": 195,
+        "y": 660,
+        "enabled": true,
+        "topDOM": "CANVAS",
+        "openDialogs": [],
+        "gate": {
+          "ready": true,
+          "busy": false,
+          "inputEnabled": true,
+          "phase": "shop",
+          "seq": 2,
+          "controller": "idle",
+          "controllerSeq": 2,
+          "controllerPhase": "shop",
+          "sessionWorking": false,
+          "pendingRun": false,
+          "leaseWritable": true,
+          "notice": "已入第 1 槽 · 点购物结果查看",
+          "sessionNotice": "",
+          "ownedInput": {
+            "bounds": {
+              "x": 23,
+              "y": 465,
+              "width": 64,
+              "height": 116
+            },
+            "hidden": false,
+            "contacts": [],
+            "savedInput": true
+          }
+        }
+      },
+      "actualInput": {
+        "at": 3080.399999999994,
+        "scene": "shop",
+        "stage": "modal-gate",
+        "blocked": true,
+        "reason": "dismissed-point",
+        "x": 195,
+        "y": 660,
+        "checkedAt": 3080.399999999994,
+        "dismissed": {
+          "x": 195,
+          "y": 637,
+          "until": 3360.3000000000175
+        },
+        "distance": 23
+      },
+      "after": {
+        "ready": true,
+        "busy": false,
+        "inputEnabled": true,
+        "phase": "shop",
+        "seq": 2,
+        "controller": "idle",
+        "controllerSeq": 2,
+        "controllerPhase": "shop",
+        "sessionWorking": false,
+        "pendingRun": false,
+        "leaseWritable": true,
+        "notice": "已入第 1 槽 · 点购物结果查看",
+        "sessionNotice": "",
+        "ownedInput": {
+          "bounds": {
+            "x": 23,
+            "y": 465,
+            "width": 64,
+            "height": 116
+          },
+          "hidden": false,
+          "contacts": [],
+          "savedInput": true
+        }
+      },
+      "leaveShopAttempts": 0
+    },
+    "rootCause": "The actual down is rejected by DetailDialog dismissed-point protection. Last dialog release195,637 and start center195,660 are23CSSpx apart (<24); handler checks at3080.4 before until3360.3, about70.1ms after close. The button is enabled, DOM hits canvas, shop.ready/lease writable/input enabled, controller idle, no modal/owned contact; BuyOffer saved seq2. LeaveShop never reached send.",
+    "classification": "The fast smoke input collides with the existing350ms/24px anti-click-through contract. No business, navigation, resource, or audio command has run for this attempted entry. This trace identifies the CI failure path; it does not prove every human mobile complaint has this cause.",
+    "remaining": "Parent must resolve the interaction-contract conflict before changing product protection or smoke behavior. Browser verification remains FAIL. No timeout increase, assertion skip, alternate hit point, retry, or waiting workaround applied.",
+    "approval": "Prior automatic approval rejected waiting through the protection window as potentially masking a regression; latest parent explicitly prohibited retry. No retry made.",
+    "scope": "Read-only CI/ZIP/DOM/screenshot inspection; no local browser. Main remains60da; this receipt is dev-only and does not trigger a docs-only main release. P08/H17/M1 unaccepted."
+  },
+  "modalGestureFix20261019": {
+    "status": "PRE_PUSH_VERIFIED",
+    "baseMain": "60daeb554e79c48c040b6fbb31ab63f32d9e9201",
+    "product": "fa0c6295670b25b23cfcb37a2782e2010f55b964",
+    "authorization": "Parent directs preserving closing gesture protection while permitting independent post-close down/up; no smoke waits/timeouts/assertion/stress changes or denied waiting workaround.",
+    "verifiedNewGesture": {
+      "ciRun": 39187742479,
+      "job": 117853639234,
+      "closedAt": 3010.3000000000175,
+      "phaserDownTime": 3048.899999999994,
+      "phaserUpTime": 3048.899999999994,
+      "handlerAt": 3080.399999999994,
+      "downAfterCloseMs": 38.59999999997672,
+      "handlerAfterCloseMs": 70.09999999997672,
+      "proof": "Actual SceneView.down ran, followed by up-unowned; pinned Phaser Pointer.touchstart assigns downTime from native event.timeStamp and InputPlugin only calls processDownEvents on MOUSE_DOWN/TOUCH_START. Independent native down/up after close; not a bare old release."
+    },
+    "change": {
+      "guard": "Keep open-dialog and350ms/24px closing-tail fallback. Fresh admission requires a trusted pointerdown identity whose start is later than closedAt; no guard state is erased by admission.",
+      "phaser": "Match one active native pointer captured by existing window contact listeners to a trusted Phaser touchstart/mousedown and use the earlier native/Phaser start. Missing proof, old starts, click/up events and compatibility mouse tails keep conservative protection.",
+      "owners": "Native hand/owned-card owners retain the verified initial press through move/up, release it with the owner; scroll passes actual pointerdown only. Hover/wheel have no press exemption.",
+      "scope": "5 runtime files plus1 targeted regression file. No rules/audio/resources/dependencies/GameScene/harness/workflow edits."
+    },
+    "checks": {
+      "red": {
+        "passed": 1,
+        "failed": 3,
+        "report": "modal-gesture-red.json.gz"
+      },
+      "green": {
+        "files": 5,
+        "passed": 199,
+        "failed": 0,
+        "executed": [
+          "detail-dialog.test.ts",
+          "hand-selection-input.test.ts",
+          "modal-canvas-gesture.test.ts",
+          "owned-joker-input.test.ts",
+          "scene-view-refresh.test.ts"
+        ],
+        "report": "modal-gesture-green.json.gz"
+      },
+      "coverage": [
+        "Same closing gesture remains blocked before/after close, old bubbling down/up and click/touchend/compatibility-mouse tails never tap.",
+        "Independent post-close touch/mouse/pen at exact CI195,660 vs dismissed195,637 succeeds inside350ms; mouse/pen may reuse same pointerId.",
+        "New admission does not erase original fallback protection; an extra release does not tap twice."
+      ],
+      "build": "TypeScript/Vite401 PASS;index-BoHr8H6f.js; existing chunk warning",
+      "buildReport": "modal-gesture-build.txt.gz",
+      "diff": "git diff --check PASS; harness/workflow/domain/content/application/audio/public/dependencies exact60da"
+    },
+    "remaining": "Same-version automatic CI pending ordinary main publication. No local browser or physical/GPU/hearing acceptance; P08/H17/M1 remain unaccepted.",
+    "publication": "Pre-push snapshot; precise published main SHA and corresponding CI belong to final receipt."
+  },
+  "modalGestureCI20261019": {
+    "main": "6608dfa590ceec4c90594340b7f1777c022ba337",
+    "ci": 39189298274,
+    "phase": "await-input",
+    "seq": 4,
+    "events": [
+      {
+        "at": 3664.2999999999884,
+        "scene": "shop",
+        "stage": "modal-gate",
+        "blocked": false,
+        "reason": "none",
+        "x": 195,
+        "y": 660,
+        "checkedAt": 3664.2999999999884,
+        "dismissed": {
+          "x": 195,
+          "y": 637,
+          "closedAt": 3595.1999999999825,
+          "until": 3945.1999999999825
+        },
+        "distance": 23,
+        "freshPress": true,
+        "press": {
+          "pointerId": 23,
+          "startedAt": 3632.0999999999767,
+          "phase": "pointerdown",
+          "trusted": true,
+          "pointerType": "touch"
+        }
+      },
+      {
+        "at": 3664.899999999994,
+        "scene": "shop",
+        "stage": "tap-dispatch",
+        "object": "action/start-stage"
+      },
+      {
+        "at": 3665.1999999999825,
+        "scene": "shop",
+        "stage": "shop-command-attempt",
+        "action": "LeaveShop",
+        "ready": true,
+        "gate": {
+          "ready": true,
+          "busy": false,
+          "inputEnabled": true,
+          "phase": "shop",
+          "seq": 2,
+          "controller": "idle",
+          "controllerSeq": 2,
+          "controllerPhase": "shop",
+          "sessionWorking": false,
+          "pendingRun": false,
+          "leaseWritable": true,
+          "notice": "已入第 1 槽 · 点购物结果查看",
+          "sessionNotice": "",
+          "ownedInput": {
+            "bounds": {
+              "x": 23,
+              "y": 465,
+              "width": 64,
+              "height": 116
+            },
+            "hidden": false,
+            "contacts": [],
+            "savedInput": true
+          }
+        }
+      },
+      {
+        "at": 3719.7999999999884,
+        "scene": "shop",
+        "stage": "shop-command-result",
+        "action": "LeaveShop",
+        "ok": true,
+        "duplicate": false,
+        "seq": 3,
+        "phase": "stage-ready",
+        "gate": {
+          "ready": false,
+          "busy": true,
+          "inputEnabled": true,
+          "phase": "shop",
+          "seq": 2,
+          "controller": "idle",
+          "controllerSeq": 3,
+          "controllerPhase": "stage-ready",
+          "sessionWorking": false,
+          "pendingRun": false,
+          "leaseWritable": true,
+          "notice": "已入第 1 槽 · 点购物结果查看",
+          "sessionNotice": "",
+          "ownedInput": {
+            "bounds": {
+              "x": 23,
+              "y": 465,
+              "width": 64,
+              "height": 116
+            },
+            "hidden": false,
+            "contacts": [],
+            "savedInput": true
+          }
+        }
+      }
+    ],
+    "nextFailure": {
+      "file": "harness/screenshot.mjs",
+      "line": 96,
+      "error": "Cannot read properties of undefined (reading 'getBounds')",
+      "cause": "Observer searches outer card container; actual rank-index and card-pip now belong to existing cardBodyRoot."
+    },
+    "domain": {
+      "files": 403,
+      "passed": 4940
+    },
+    "docs": "PASS",
+    "browser": "FAIL_AFTER_ENTRY_SUCCEEDED",
+    "evidence": "modal-gesture-ci-entry.json.gz",
+    "conclusion": "The exact former23px mobile entry is now accepted via trusted pointerdown23. LeaveShop actual attempt/ok seq3 and subsequent await-input seq4 prove entry fixed; overall browser remainsFAIL on later read-only rank lookup."
+  },
+  "cardBodyObserver20261019": {
+    "status": "PRE_PUSH_VERIFIED",
+    "baseMain": "6608dfa590ceec4c90594340b7f1777c022ba337",
+    "product": "b2821bd7060a8f496b57f4bb323b184923324aa8",
+    "change": "Only2 existing evaluate callbacks read rank-index/card-pip from cardBodyRoot with outer-container fallback. All getBounds are still actual world bounds; outer card draw-order comparison stays unchanged.",
+    "checks": {
+      "base": "6608dfa590ceec4c90594340b7f1777c022ba337",
+      "assertionAndTimingLines": 128,
+      "sha256": "8c2275772ddab5b263608daae482098010c18f5bb17ff994ca7c2378a60749c1",
+      "unchanged": true,
+      "syntax": "node --check harness/screenshot.mjs PASS",
+      "scope": "Two read-only evaluate bodies now use existing cardBodyRoot; original world bounds, outer draw order, assertions, waits, pressure and timeouts remain."
+    },
+    "evidence": "card-body-observer-check.json.gz",
+    "reuse": "Runtime/tests unchanged from6608 CI403files4940 PASS, plus local modal5files199/type401. No redundant local full matrix or build; next normal main CI observes real browser.",
+    "remaining": "Same-version browser verification; no local browser/physical acceptance;P08/H17/M1 unaccepted."
+  },
+  "amoExileVisualRework20261019": {
+    "status": "PUBLISHED_ENGINEERING_DYNAMIC_NOT_ACCEPTED",
+    "baseMain": "b341e672a0532c8b77cba7cfbae92e9b9e93c5b1",
+    "candidate": "2cb30201f8f01ca2b2b265136008c7f94e4a772a",
+    "scope": "Su Shi amo.exile only; no rules, K requirement, multiplier, save schema, audio contract or other hero implementation changes.",
+    "change": {
+      "source": "src/game/SushiDiscardCardPresentation.ts",
+      "wire": "src/game/GameScene.ts",
+      "test": "tests/amo-exile-visual.test.ts",
+      "targets": "faces are constructed only from trace.amoExile.discardedIds and carry actual card rank",
+      "timing": "existing arrival -> playSushiDiscardExit hit/cut/destroy -> existing score event progression; cut/destroy remains the owner clock; abort/reselect/fast-forward use existing EffectContext cleanup",
+      "visual": "local black smoke, assassin silhouette and dagger stroke; K rank13 high-contrast flame/hit flash; existing HeroLiveSmoke keeps the adapted SpookySmoke fBm/ElectricBorder path and bounded fallback"
+    },
+    "checks": {
+      "tests": "51 PASS / 0 FAIL across sushi-lempo-slash, amo-exile-visual, hero-atmosphere, hero-live-smoke, amo-exile",
+      "typecheck": "PASS",
+      "build": "TypeScript/Vite401 PASS; existing chunk warning",
+      "diff": "git diff --check PASS",
+      "viewports": [
+        "1280 model",
+        "390 model"
+      ]
+    },
+    "acceptance": {
+      "dynamicVisual": "NOT_ACCEPTED until parent/physical PC+390x844 observes the real continuous sequence",
+      "hearing": "NOT_RUN",
+      "physicalDevices": "NOT_RUN",
+      "otherHeroes": "not changed or newly accepted"
+    },
+    "evidence": "amo-exile-visual-20261019.json.gz",
+    "publishedMain": "2cb30201f8f01ca2b2b265136008c7f94e4a772a",
+    "ci": {
+      "run": 39201606161,
+      "status": "PASS",
+      "domain": "4943 tests / 404 files PASS",
+      "browser": "Chromium/Firefox/WebKit desktop+mobile smoke PASS",
+      "docs": "PASS"
+    }
+  },
+  "remainingHeroTargetAudit20261019": {
+    "status": "LOCAL_ENGINEERING_FIX_PENDING_PUBLICATION_DYNAMIC_NOT_ACCEPTED",
+    "baseMain": "c188e48953a7f5545390d55b3d898b2b67af3aff",
+    "candidate": "1e367a3e",
+    "scope": "Remaining five hero score attachments only; no rules, values, save schema, audio contract or entry/loading changes.",
+    "provenance": {
+      "erxiang": "saved erxiang.handoff target card",
+      "azao": "saved azao.multiply-multiplier activeScoringIds",
+      "xiemu": "saved xiemu.multiply-multiplier activeScoringIds",
+      "touye": "saved wager outcome activeNewIds or refill.refilledIds",
+      "laohuan": "first real ordinary card event for the retained instance"
+    },
+    "change": {
+      "source": "src/game/HeroTargetAttachment.ts",
+      "test": "tests/hero-real-group-targets.test.ts",
+      "targets": "group states now bind each real target card; synthetic group/* union targets are removed",
+      "timing": "existing preview/commit -> native visible material -> existing score release/settle lifecycle",
+      "cleanup": "existing preview reselect, release, hidden/offscreen and abort/destroy cleanup remains owner-bound"
+    },
+    "timingDiagnosis": "SceneView resize from CSS/DPR/fullscreen changes used to call GameScene.fastForward while presentation was active; the fix defers layout until the normal completion render. User speed/reduced-motion preferences remain unchanged.",
+    "checks": {
+      "tests": "85 PASS / 0 FAIL across seven focused timing and hero files",
+      "typecheck": "PASS",
+      "build": "TypeScript/Vite401 PASS; existing chunk warning",
+      "diff": "PASS git diff --check"
+    },
+    "acceptance": {
+      "dynamicVisual": "NOT_ACCEPTED until parent/dot observes the real continuous sequence on PC and 390x844",
+      "hearing": "NOT_RUN",
+      "physicalDevices": "NOT_RUN",
+      "entryCacheIssue": "reported PC entry block was confirmed as stale browser cache; no entry code change made"
+    },
+    "publishedMain": "PENDING_NORMAL_MERGE"
+  }
+}
