@@ -6,6 +6,7 @@
 
 - [扑克奇遇玩法与视觉交付（PR #227 + PR #226 合流）](docs/production/POKER_POLYCHROME_ENCOUNTER_IMPLEMENTATION.md)：已将 `feat/poker-polychrome-encounter-20261022`（阶段 1b 扑克多彩奇遇规则、7–9 关独立随机流、18 金事务保存/恢复校验）与 `feat/qiyu-special-animation-plan-20261022`（阶段 2 纸上流彩转场墨卷、六英雄眼神特写与文化典故入画、选牌赋彩祭坛、蓄势→冲击→顿挫→×1.5 爆发 4 阶段仪式、成长账单与多层音效/震动反馈）合并入 `main`。
 - [奇遇专场动画计划与落库记录](docs/production/QIYU_SPECIAL_ANIMATION_PLAN_20261022.md)：软件单测与生产构建已完成；真人审美、实体手机与长期自然对局平衡仍待用户在浏览器实机体验确认，不用测试或构建结果替代玩家签收。
+- [唐宋入场演出交接记录（2026-10-24）](docs/production/TANGSONG_ENTRANCE_HANDOFF_20261024.md)：首页首次加载/选角群英长卷、六英雄共用入场 cut-in 的现状、美术审查修复和待办；接力者先读这一页。
 - [扑克多彩与两阶段奇遇研究（PR #225）](https://github.com/big-dimple/tangsongpai/pull/225) 与 [PR #223](https://github.com/big-dimple/tangsongpai/pull/223) 仍为独立研究，暂保留。
 - 用户明确提出「奇遇做完就可以合并提交」。应先完成受影响游戏流程、保存/恢复边界和必要验证，再合并对应完成成果；**不要只凭计划文档宣称奇遇完成**。此前正常发布由 main push 自动部署；本维护工作不触碰部署或试玩站。
 - 保持唐宋题材、六英雄已批准素材、PC 横屏与手机竖屏、可跳过/减少动态、保存成功后演出、重复提交不重复奖励的基本约束；实际设计以已批准范围为准，不把候选参数自动定案。

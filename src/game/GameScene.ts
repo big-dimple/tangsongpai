@@ -53,6 +53,8 @@ import type {HeroAttachmentPhaseEvent} from './HeroAttachmentPhases';
 import {savedHeroAttachment,retainedRefillImpact} from './HeroAttachmentFacts';
 import {drawStageTableArt,playedCaptionBox} from './StageTableArt';
 import {paperSceneStart} from './PaperFlow';
+import {enhanceBlindSelectEntrance,mountHeroEntranceBurst} from './QiyuAnimationPresentation';
+import './PokerEncounterDialog.css';
 import {usesTouyeWager,usesTouyeNewCore,type TouyeBet,type TouyeTarget} from '../domain/r2TouyeWager';
 import {touyeChoice,touyeConfirmationCopy} from './TouyeWagerCopy';
 import {usesLaohuanRefill} from '../domain/r2LaohuanRefill';
@@ -508,6 +510,7 @@ export class GameScene extends Phaser.Scene {
       dialog.dataset.stageKind=identity.isBoss?'boss':'normal';
     }
     if(introduceBoss&&this.dialog.current){const modal=this.dialog.current,stop=trackBossRulesVisible(this.run,modal,()=>this.lifecycle===lifecycle&&this.scene.isActive()&&controller.state===this.run&&this.dialog.active(modal));this.events.once('shutdown',stop);}
+    if(enteredStage){const stopBurst=mountHeroEntranceBurst(this.dialog.current??document.body,this.run.characterId,{context:this.run.stage.boss?'boss':'stage',stageIndex:this.run.stage.index,reducedMotion:this.reducedMotion});this.events.once('shutdown',stopBurst);}
   }
 
   /** Closing the directory keeps this stage-ready run mounted until the player reopens it. */
@@ -523,8 +526,16 @@ export class GameScene extends Phaser.Scene {
         if(opening||lifecycle!==this.lifecycle||runController(this)!==controller)return;
         opening=true;
         void (async()=>{
+          let stopDirectoryEntrance:(()=>void)|undefined;
           try {
-            const enter=!directory&&bossRulesSeen(controller.state)||await presentOpponentEntrance(this.dialog,controller.state,this,()=>this.openStagePrograms?.());
+            const skipDirectory=!directory&&bossRulesSeen(controller.state);
+            const directoryPromise=skipDirectory?Promise.resolve(true):presentOpponentEntrance(this.dialog,controller.state,this,()=>this.openStagePrograms?.());
+            if(!skipDirectory&&this.dialog.current?.classList.contains('blind-select-dialog')){
+              stopDirectoryEntrance=enhanceBlindSelectEntrance(this.dialog.current,controller.state.characterId,controller.state.stageIndex,this.reducedMotion);
+              this.events.once('shutdown',()=>stopDirectoryEntrance?.());
+            }
+            const enter=await directoryPromise;
+            stopDirectoryEntrance?.();stopDirectoryEntrance=undefined;
             if(lifecycle!==this.lifecycle||!this.scene.isActive()||runController(this)!==controller)return;
             if(controller.state.phase!=='stage-ready'){finish(false);return;}
             if(!enter)return;
@@ -533,7 +544,7 @@ export class GameScene extends Phaser.Scene {
             if(result.ok){this.view.clear();finish(true);return;}
             this.statusMessage='入场未完成，请重试；如存档暂停，请在菜单重试保存。';
           }catch {this.statusMessage='入场未完成，请重试。';}
-          finally {opening=false;if(this.waitingForStage&&lifecycle===this.lifecycle&&this.scene.isActive())this.renderStageReady();}
+          finally {stopDirectoryEntrance?.();opening=false;if(this.waitingForStage&&lifecycle===this.lifecycle&&this.scene.isActive())this.renderStageReady();}
         })();
       };
       this.reopenStageDirectory=()=>{if(!opening&&this.waitingForStage&&lifecycle===this.lifecycle&&runController(this)===controller){this.audio.preloadSceneMusic(controller.state.stageIndex%3===2?'boss':'table');open(true);}};this.enterPreparedStage=()=>open(false);

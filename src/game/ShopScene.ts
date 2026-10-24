@@ -15,6 +15,7 @@ import {shopPracticeServices,shopPracticeQuota,shopPracticeConfirmation,shopPrac
 import {showShopServiceConfirmation} from './ShopServiceDialog';
 import {pokerEncounterServices,showPokerEncounter} from './PokerEncounterDialog';
 import {pokerEncounterView} from './PokerEncounterView';
+import {mountHeroEntranceBurst} from './QiyuAnimationPresentation';
 import {showShopRefreshConfirmation} from './ShopRefreshConfirmation';
 import {shopToolbarGlyph} from './ShopToolbarArt';
 import {mountWorkshopGoals} from './WorkshopGoals';
@@ -227,6 +228,10 @@ export class ShopScene extends Phaser.Scene {
     this.events.once('shutdown',()=>{this.ownedInput?.destroy();this.ownedInput=undefined;if(this.ownedDrag?.saving)this.input.enabled=true;this.ownedDrag?.destroy();this.ownedDrag=undefined;});this.render();this.prepareBossEntrance(owner,run,this.lifecycle);warmTableImages(this,this.run.characterId);
     if(!gameSession().reducedMotion&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
       this.view.root.setAlpha(.35);this.tweens.add({targets:this.view.root,alpha:1,duration:220,ease:'Cubic.easeOut'});
+      if(!this.dialog.current){
+        const stopBurst=mountHeroEntranceBurst(document.body,this.run.characterId,{context:'shop',stageIndex:this.run.stageIndex,reducedMotion:false});
+        this.events.once('shutdown',stopBurst);
+      }
     }
   }
   /** Present only the saved owner snapshot; defer across existing modals without changing music. */

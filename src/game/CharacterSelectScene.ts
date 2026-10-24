@@ -32,6 +32,7 @@ import {heroPlaySample,routePlaySample} from './OpeningPlaySample';
 import {SELECTION_INK,selectionStageBackground,selectionQuietButton} from './SelectionStageView';
 import {SelectionEntryParticles} from './SelectionEntryParticles';
 import {ENTRY_HERO_TINTS} from './EntryDepthParticles';
+import {mountHeroEntranceBurst, mountTangSongEnsembleBurst} from './TangSongEntranceBurst';
 
 interface SelectionOptions {freshSeed?:boolean;seed?:string;characterId?:CharacterId;modeConfig?:R2ModeSelection}
 /** The selector reserves its action row before sizing cards; it never borrows table space. */
@@ -55,6 +56,9 @@ export class CharacterSelectScene extends Phaser.Scene {
   private readonly audio=AudioEngine.shared;
   private entryParticles?:SelectionEntryParticles;
   private entryArt?:Box;
+  private ensembleDispose?:()=>void;
+  private heroBurstDispose?:()=>void;
+  private heroBurstAt=0;
   constructor(){super('character-select');}
   init(data?:SelectionOptions):void {
     this.step='hero';this.selectedRoute=undefined;
@@ -67,6 +71,8 @@ export class CharacterSelectScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#192D32');this.audio.setScene('menu');
     this.view=new SceneView(this,()=>this.render());
     this.entryParticles=new SelectionEntryParticles(this,()=>this.reducedMotion());
+    this.ensembleDispose?.();
+    this.ensembleDispose=mountTangSongEnsembleBurst(document.body,{mode:'character-select',reducedMotion:this.reducedMotion()});
     const refreshImage=(key:string)=>{
       if(!this.scene.isActive())return;
       for(const [holder,target] of this.portraitTargets)if(holder.active&&[selectionPortraitKey(target.id),avatarKey(target.id),...(target.hero?[portraitKey(target.id)]:[])].includes(key))this.paintPortrait(holder,target.id,target.box,target.hero);
@@ -88,7 +94,7 @@ export class CharacterSelectScene extends Phaser.Scene {
       else if(this.step==='hero'&&/^[1-6]$/.test(event.key)){event.preventDefault();this.select(CHARACTERS[Number(event.key)-1].id);}
     };
     window.addEventListener('keydown',keydown);this.events.once('shutdown',()=>window.removeEventListener('keydown',keydown));
-    this.events.once('shutdown',()=>{this.confirming=false;settle();window.removeEventListener('blur',settle);window.removeEventListener('tangsongpai-presentation',settle);document.removeEventListener('visibilitychange',hide);unsubscribe();this.lifecycle++;this.dialog.close();this.modeDialog.close();});this.render();
+    this.events.once('shutdown',()=>{this.confirming=false;this.ensembleDispose?.();this.ensembleDispose=undefined;this.heroBurstDispose?.();this.heroBurstDispose=undefined;settle();window.removeEventListener('blur',settle);window.removeEventListener('tangsongpai-presentation',settle);document.removeEventListener('visibilitychange',hide);unsubscribe();this.lifecycle++;this.dialog.close();this.modeDialog.close();});this.render();
   }
   private render():void {
     this.entryArt=undefined;
@@ -227,7 +233,14 @@ export class CharacterSelectScene extends Phaser.Scene {
     if(this.modeConfig.mode==='tutorial'&&id!=='erxiang'){this.notice=heroText('教程固定二响；跳过教程后可自由选角。');this.audio.invalid();this.render();return;}
     const changed=this.selectedId!==id;
     this.selectedId=id;this.notice='';this.animateChoice=changed;this.audio.select();this.render();
-    if(changed)this.entryParticles?.switchHero();
+    if(changed){
+      this.entryParticles?.switchHero();
+      this.ensembleDispose?.();this.ensembleDispose=undefined;
+      this.heroBurstDispose?.();
+      // Rapid browsing (arrow keys / quick taps) keeps the visuals but drops the extra cue.
+      const now=performance.now(),quiet=now-this.heroBurstAt<450;this.heroBurstAt=now;
+      this.heroBurstDispose=mountHeroEntranceBurst(document.body,id,{context:'select',reducedMotion:this.reducedMotion(),playAudio:!quiet});
+    }
   }
   private compareHeroes():void {
     if(this.choosing)return;

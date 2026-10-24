@@ -12,6 +12,7 @@ import {handdrawnPath} from './HanddrawnArt';
 import {assetUrl} from './theme';
 import {iridescenceColor, iridescencePath} from './PolychromeCardIridescence';
 import {inkBurstFrame} from './InkBurst';
+import {createShadowCanvasHost, mountHeroEntranceBurst} from './TangSongEntranceBurst';
 import {AudioEngine} from '../audio/AudioEngine';
 import {Haptics} from '../haptics/Haptics';
 import type {PokerEncounterView} from './PokerEncounterView';
@@ -164,6 +165,252 @@ function startPolychromeEdgeLoop(canvas: HTMLCanvasElement, reducedMotion: boole
   };
 }
 
+export {mountHeroEntranceBurst, mountTangSongEnsembleBurst} from './TangSongEntranceBurst';
+
+const activeBannerPulseByDialog = new WeakMap<HTMLElement, () => void>();
+
+/**
+ * Shared 6-Hero Live 60fps Dynamic Stage Canvas (`qiyu-hero-live-canvas`).
+ * Continuously renders undulating Tang-Song polychrome aurora ribbons, rising gold-leaf
+ * embers, vermilion seal ripples, and interactive spark bursts behind the hero banner or stage card.
+ */
+export function mountHeroLiveStageCanvas(
+  container: HTMLElement | null | undefined,
+  characterId: CharacterId,
+  reducedMotion = false,
+): {pulse: () => void; dispose: () => void} {
+  if (typeof window === 'undefined' || typeof document === 'undefined' || !container) {
+    return {pulse: () => {}, dispose: () => {}};
+  }
+  container.querySelectorAll('.qiyu-hero-live-canvas').forEach(node => node.remove());
+  const shadowCanvas = createShadowCanvasHost('qiyu-hero-live-canvas', 640, 220, false);
+  if (!shadowCanvas) {
+    return {pulse: () => {}, dispose: () => {}};
+  }
+  const {hostNode, canvas, ctx} = shadowCanvas;
+  container.prepend(hostNode);
+
+  const profile = qiyuHeroProfile(characterId);
+  let disposed = false;
+  let rafId = 0;
+  const startTime = performance.now();
+
+  type LiveSpark = {
+    x: number;
+    y: number;
+    vx: number;
+    vy: number;
+    r: number;
+    life: number;
+    maxLife: number;
+    color: string;
+  };
+  const ambientMotes = Array.from({length: 28}, (_, i) => ({
+    x: ((i * 53 + 19) % 100) / 100,
+    y: ((i * 37 + 11) % 100) / 100,
+    speedX: (i % 2 === 0 ? 1 : -1) * (0.015 + (i % 5) * 0.006),
+    speedY: -(0.025 + (i % 4) * 0.01),
+    size: 1.4 + (i % 4) * 0.85,
+    hueOffset: i / 28,
+    kind: i % 4 === 0 ? 'cinnabar' : i % 3 === 0 ? 'gold' : 'polychrome',
+  }));
+  const burstSparks: LiveSpark[] = [];
+  let rippleAge = 0;
+
+  const triggerPulse = () => {
+    rippleAge = 0.01;
+    const cx = canvas.width * (0.35 + Math.random() * 0.3);
+    const cy = canvas.height * (0.35 + Math.random() * 0.3);
+    for (let i = 0; i < 20; i++) {
+      const angle = (Math.PI * 2 * i) / 20 + (Math.random() - 0.5) * 0.22;
+      const speed = 1.6 + Math.random() * 3.4;
+      burstSparks.push({
+        x: cx,
+        y: cy,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - 0.5,
+        r: 1.8 + Math.random() * 2.4,
+        life: 0,
+        maxLife: 24 + Math.random() * 18,
+        color:
+          i % 3 === 0
+            ? '#e6c168'
+            : i % 3 === 1
+              ? profile.accentHex
+              : hexColor(iridescenceColor(i / 20)),
+      });
+    }
+  };
+
+  const paintFrame = (tSec: number) => {
+    const w = canvas.width;
+    const h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+
+    // 1. Subtle radial hero aura glow
+    const auraX = w * (0.24 + 0.05 * Math.sin(tSec * 1.3));
+    const auraY = h * 0.46;
+    const auraGrad = ctx.createRadialGradient(auraX, auraY, 8, auraX, auraY, w * 0.52);
+    auraGrad.addColorStop(0, profile.accentHex + '44');
+    auraGrad.addColorStop(0.5, 'rgba(230, 193, 104, 0.14)');
+    auraGrad.addColorStop(1, 'rgba(18, 28, 32, 0)');
+    ctx.fillStyle = auraGrad;
+    ctx.fillRect(0, 0, w, h);
+
+    // 2. Two undulating Tang-Song polychrome & ink-gold aurora ribbons
+    for (let ribbon = 0; ribbon < 2; ribbon++) {
+      ctx.save();
+      ctx.beginPath();
+      const baseY = h * (ribbon === 0 ? 0.34 : 0.68);
+      const amp = ribbon === 0 ? 18 : 14;
+      for (let x = 0; x <= w; x += 16) {
+        const u = x / w;
+        const y =
+          baseY +
+          Math.sin(u * Math.PI * 3.2 - tSec * (ribbon === 0 ? 2.4 : -1.9) + ribbon) * amp +
+          Math.cos(u * Math.PI * 5.5 + tSec * 1.5) * 5;
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      const ribbonGrad = ctx.createLinearGradient(0, 0, w, 0);
+      ribbonGrad.addColorStop(0, hexColor(iridescenceColor((tSec * 0.22 + ribbon * 0.3) % 1)));
+      ribbonGrad.addColorStop(0.5, profile.accentHex);
+      ribbonGrad.addColorStop(1, hexColor(iridescenceColor((tSec * 0.22 + 0.5 + ribbon * 0.3) % 1)));
+      ctx.strokeStyle = ribbonGrad;
+      ctx.globalAlpha = ribbon === 0 ? 0.32 : 0.22;
+      ctx.lineWidth = ribbon === 0 ? 2.6 : 1.8;
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // 3. Periodic vermilion & gold seal shockwave ripple
+    const autoRipple = (tSec * 0.65) % 1;
+    for (const rProgress of [autoRipple, ...(rippleAge > 0 ? [rippleAge] : [])]) {
+      const rRadius = 18 + rProgress * (w * 0.44);
+      ctx.save();
+      ctx.strokeStyle = rProgress === rippleAge ? '#e6c168' : profile.accentHex;
+      ctx.globalAlpha = (1 - rProgress) * (rProgress === rippleAge ? 0.58 : 0.26);
+      ctx.lineWidth = rProgress === rippleAge ? 2.4 : 1.5;
+      ctx.beginPath();
+      ctx.arc(w * 0.82, h * 0.42, rRadius, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+    }
+    if (rippleAge > 0) {
+      rippleAge += 0.032;
+      if (rippleAge >= 1) rippleAge = 0;
+    }
+
+    // 4. Continuous floating gold-leaf embers & cinnabar sparks
+    for (const m of ambientMotes) {
+      const px = (((m.x + tSec * m.speedX) % 1) + 1) % 1;
+      const py = (((m.y + tSec * m.speedY) % 1) + 1) % 1;
+      const twinkle = 0.45 + 0.55 * Math.sin(tSec * 3.8 + m.hueOffset * 12);
+      ctx.save();
+      ctx.globalAlpha = 0.72 * twinkle;
+      ctx.fillStyle =
+        m.kind === 'cinnabar'
+          ? '#d84b37'
+          : m.kind === 'gold'
+            ? '#f0cf7b'
+            : hexColor(iridescenceColor((m.hueOffset + tSec * 0.18) % 1));
+      ctx.beginPath();
+      ctx.arc(px * w, py * h, m.size, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // 5. Interactive burst sparks
+    for (let i = burstSparks.length - 1; i >= 0; i--) {
+      const sp = burstSparks[i];
+      sp.x += sp.vx;
+      sp.y += sp.vy;
+      sp.vx *= 0.95;
+      sp.vy = sp.vy * 0.95 + 0.04;
+      sp.life++;
+      if (sp.life >= sp.maxLife) {
+        burstSparks.splice(i, 1);
+        continue;
+      }
+      const alpha = 1 - sp.life / sp.maxLife;
+      ctx.save();
+      ctx.globalAlpha = alpha * 0.92;
+      ctx.fillStyle = sp.color;
+      ctx.beginPath();
+      ctx.arc(sp.x, sp.y, sp.r * (0.6 + 0.4 * alpha), 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+  };
+
+  paintFrame(0.35);
+  if (reducedMotion) {
+    return {
+      pulse: () => {},
+      dispose: () => {
+        disposed = true;
+        hostNode.remove();
+      },
+    };
+  }
+
+  triggerPulse();
+  const loop = (now: number) => {
+    if (disposed || !hostNode.isConnected) return;
+    paintFrame((now - startTime) / 1000);
+    rafId = requestAnimationFrame(loop);
+  };
+  rafId = requestAnimationFrame(loop);
+
+  return {
+    pulse: triggerPulse,
+    dispose: () => {
+      disposed = true;
+      cancelAnimationFrame(rafId);
+      hostNode.remove();
+    },
+  };
+}
+
+/**
+ * Enhances the chapter stage confrontation modal (`dialog.blind-select-dialog[open]`)
+ * with the shared 6-hero explosive entrance cut-in and a persistent 60fps live canvas
+ * stage inside `.blind-card.is-active`.
+ */
+export function enhanceBlindSelectEntrance(
+  dialog: HTMLDialogElement | null | undefined,
+  characterId: CharacterId,
+  stageIndex: number,
+  reducedMotion = false,
+): () => void {
+  if (!dialog || typeof window === 'undefined' || typeof document === 'undefined') {
+    return () => {};
+  }
+  const cleanups: (() => void)[] = [];
+  const isBoss = stageIndex % 3 === 2;
+  cleanups.push(
+    mountHeroEntranceBurst(dialog, characterId, {
+      context: isBoss ? 'boss' : 'stage',
+      stageIndex,
+      reducedMotion,
+    }),
+  );
+
+  const activeCard = dialog.querySelector<HTMLElement>('.blind-card.is-active');
+  if (activeCard) {
+    activeCard.classList.add('qiyu-active-stage-card');
+    const live = mountHeroLiveStageCanvas(activeCard, characterId, reducedMotion);
+    cleanups.push(() => live.dispose());
+    const onEnter = () => live.pulse();
+    activeCard.addEventListener('pointerenter', onEnter);
+    cleanups.push(() => activeCard.removeEventListener('pointerenter', onEnter));
+  }
+
+  return () => {
+    for (const fn of cleanups) fn();
+  };
+}
+
 /**
  * Mounts the Tang-Song Hero Banner & 3-Column Contract Strip at the top of the Qiyu dialog.
  */
@@ -186,11 +433,29 @@ export function mountQiyuHeroBanner(
   const eyesAsset = characterArt(characterId, 'eyes');
   const avatarAsset = characterArt(characterId, 'avatar');
   const reduced = !!options.reducedMotion;
+  const cleanups: (() => void)[] = [];
 
   const banner = el('section', `qiyu-stage-banner is-${mode}`);
   banner.dataset.hero = characterId;
   banner.dataset.motion = reduced ? 'static' : 'animated';
   banner.setAttribute('aria-label', `${profile.name}奇遇分镜`);
+
+  // Embed live 60fps 2D Canvas inside the hero banner so it is continuously dynamic
+  const liveStage = mountHeroLiveStageCanvas(banner, characterId, reduced);
+  cleanups.push(() => liveStage.dispose());
+  activeBannerPulseByDialog.set(dialog, () => liveStage.pulse());
+  cleanups.push(() => activeBannerPulseByDialog.delete(dialog));
+
+  // Trigger full Top-Layer Explosive Entrance Cut-In when entering Qiyu
+  if (mode === 'selection') {
+    cleanups.push(
+      mountHeroEntranceBurst(dialog, characterId, {
+        context: 'qiyu',
+        reducedMotion: reduced,
+        playAudio: !!options.freshEntry,
+      }),
+    );
+  }
 
   const topRow = el('div', 'qiyu-hero-row');
   const identityBox = el('div', 'qiyu-hero-identity');
@@ -324,6 +589,7 @@ export function mountQiyuHeroBanner(
   }
 
   return () => {
+    for (const fn of cleanups) fn();
     banner.remove();
   };
 }
@@ -386,6 +652,7 @@ export function enhanceQiyuCardGrid(
 
     const onEnter = () => {
       if (!button.disabled) {
+        activeBannerPulseByDialog.get(dialog)?.();
         try {
           AudioEngine.shared.hoverTick();
         } catch {
@@ -394,7 +661,11 @@ export function enhanceQiyuCardGrid(
       }
     };
     button.addEventListener('pointerenter', onEnter);
-    cleanups.push(() => button.removeEventListener('pointerenter', onEnter));
+    button.addEventListener('focus', onEnter);
+    cleanups.push(() => {
+      button.removeEventListener('pointerenter', onEnter);
+      button.removeEventListener('focus', onEnter);
+    });
   });
 
   return () => {

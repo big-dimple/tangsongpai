@@ -687,6 +687,57 @@
   }
 }
 
+/* Shared 6-Hero Explosive Entrance Cut-In & Live Stage Canvas */
+.qiyu-entrance-burst-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  z-index: 95;
+  pointer-events: none !important;
+  user-select: none;
+}
+
+.qiyu-entrance-burst-canvas,
+.qiyu-ensemble-burst-canvas,
+dialog .qiyu-entrance-burst-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 40;
+  pointer-events: none !important;
+}
+
+.qiyu-hero-live-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none !important;
+  z-index: 0;
+  border-radius: inherit;
+}
+
+.qiyu-stage-banner > *:not(.qiyu-hero-live-canvas) {
+  position: relative;
+  z-index: 1;
+}
+
+.blind-card.is-active.qiyu-active-stage-card {
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(230, 193, 104, 0.55),
+    0 8px 24px rgba(184, 71, 58, 0.18);
+}
+
+.blind-card.is-active.qiyu-active-stage-card > *:not(.qiyu-hero-live-canvas) {
+  position: relative;
+  z-index: 1;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .detail-dialog.poker-encounter[open],
   .qiyu-stage-banner {
@@ -697,5 +748,9 @@
   .poker-encounter .dialog-choice-actions > div.qiyu-card-choice-cell {
     transition: none !important;
     transform: none !important;
+  }
+  .qiyu-entrance-burst-canvas,
+  .qiyu-ensemble-burst-canvas {
+    display: none !important;
   }
 }

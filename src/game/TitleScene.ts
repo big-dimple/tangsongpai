@@ -8,6 +8,7 @@ import {routeSavedRun} from './RunMenu';
 import {selectionModeName} from './ModeSelectDialog';
 import {characterForRun} from './CharacterRunCopy';
 import {HomePage} from './HomePage';
+import {mountTangSongEnsembleBurst} from './TangSongEntranceBurst';
 
 /** The paper home shares loading artwork; native actions keep the original new/continue routes. */
 export class TitleScene extends Phaser.Scene {
@@ -15,12 +16,15 @@ export class TitleScene extends Phaser.Scene {
   private seed?:string;
   private home?:HomePage;
   private confirmation?:Phaser.Time.TimerEvent;
+  private entranceDispose?:()=>void;
   private readonly audio=AudioEngine.shared;
   constructor(){super('title');}
   init(data?:{seed?:string}):void {this.seed=data?.seed??new URLSearchParams(location.search).get('seed')??undefined;}
   create():void {
     this.leaving=false;this.audio.setScene('menu');this.cameras.main.setBackgroundColor('#F3EADB');
     this.home?.destroy();this.home=new HomePage({start:()=>this.enterNew(),resume:()=>this.continueRun()});this.render();warmOpeningImages(this);
+    this.entranceDispose?.();
+    this.entranceDispose=mountTangSongEnsembleBurst(document.body,{mode:'title',reducedMotion:this.reducedMotion()});
     this.game.canvas.setAttribute('aria-label',GAME_NAME+' · 首页');this.game.canvas.setAttribute('aria-hidden','true');
     const keyboardOpen=(event:KeyboardEvent)=>{
       const element=document.activeElement;
@@ -35,6 +39,7 @@ export class TitleScene extends Phaser.Scene {
     const unsubscribe=gameSession().subscribe(()=>{if(this.scene.isActive()&&!this.leaving)this.render();});
     this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>{
       this.leaving=true;unsubscribe();this.input.keyboard?.off('keydown-ENTER',keyboardOpen);this.input.keyboard?.off('keydown-SPACE',keyboardOpen);
+      this.entranceDispose?.();this.entranceDispose=undefined;
       this.confirmation?.remove();this.confirmation=undefined;this.home?.destroy();this.home=undefined;this.game.canvas.removeAttribute('aria-hidden');
       siblings.forEach(scene=>scene.events.off(Phaser.Scenes.Events.START,stopTitle));
     });
