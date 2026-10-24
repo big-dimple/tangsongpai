@@ -2,6 +2,9 @@ import type {R2RunState} from '../domain/r2Run';
 import {r2JokerDefinitionsFor} from '../domain/r2ContentProfiles';
 import {readR2Modifiers} from '../content/r2Schema';
 import type {R2HandType} from '../domain/evaluateR2';
+import {R2_BASE_SCORES} from '../domain/scoreR2';
+import {Rational} from '../domain/rational';
+import {fractionText} from './scoreText';
 import {currentBuildFocus} from './BuildJourney';
 import type {DetailDialog} from './DetailDialog';
 import {handTypeRuleCards} from './HandRuleReference';
@@ -12,6 +15,11 @@ export interface OpeningRuleCard {
  body:string;
  example:readonly string[];
  selected:boolean;
+ rank:number;
+ rankText:string;
+ heat:number;
+ mult:string;
+ baseScore:number;
 }
 
 export const OPENING_BASE_HAND_TYPES=[
@@ -22,6 +30,7 @@ const ROUTE_HAND_TYPES={
  straight:['straight'],
  flush:['flush'],
 } as const;
+const RANK_TEXTS=['壹','贰','叁','肆','伍','陆','柒','捌'] as const;
 const EXAMPLES:Record<typeof OPENING_BASE_HAND_TYPES[number],readonly string[]>={
  'straight-flush':['10♠','J♠','Q♠','K♠','A♠'],
  'four-kind':['9♠','9♥','9♣','9♦','4♠'],
@@ -33,14 +42,31 @@ const EXAMPLES:Record<typeof OPENING_BASE_HAND_TYPES[number],readonly string[]>=
  pair:['Q♠','Q♥','8♣','5♦','2♠'],
 };
 
-/** Eight visual examples only; no scoring, random or run-state changes. */
+/** Eight visual examples only with strength rank & base scores; no scoring, random or run-state changes. */
 export function openingRuleBriefing(run:R2RunState){
  const focus=currentBuildFocus(run,run.openingRoute)??'group';
  const rules=readR2Modifiers(run.jokers,r2JokerDefinitionsFor(run));
  const selected=new Set<R2HandType>(ROUTE_HAND_TYPES[focus]);
  const cards:OpeningRuleCard[]=handTypeRuleCards(run.handLevels,rules,OPENING_BASE_HAND_TYPES).map((card,index)=>{
   const type=OPENING_BASE_HAND_TYPES[index];
-  return {title:card.title.split(' · ')[0],body:'',example:EXAMPLES[type],selected:selected.has(type)};
+  const [heat,mult,heatStep,multStep]=R2_BASE_SCORES[type];
+  const level=run.handLevels[type]??1;
+  const currentHeat=heat+(level-1)*heatStep;
+  const currentMult=Rational.fromJSON(mult).add(Rational.fromJSON(multStep).multiply(new Rational(BigInt(level-1))));
+  const multStr=fractionText(currentMult.toJSON());
+  const multNum=Number(currentMult.n)/Number(currentMult.d);
+  const baseScore=Math.floor(currentHeat*multNum);
+  return {
+   title:card.title.split(' · ')[0],
+   body:`基准分 ${baseScore.toLocaleString()} (${currentHeat} × ${multStr}倍)`,
+   example:EXAMPLES[type],
+   selected:selected.has(type),
+   rank:index+1,
+   rankText:RANK_TEXTS[index],
+   heat:currentHeat,
+   mult:multStr,
+   baseScore,
+  };
  });
  return {title:'牌型示例',body:'',cards,primaryLabel:'进入商店'};
 }
@@ -55,13 +81,66 @@ export function showOpeningRuleBriefing(dialog:DetailDialog,run:R2RunState,onEnt
  });
  element.classList.add('opening-rule-briefing');
  const close=element.querySelector<HTMLButtonElement>('.dialog-close');if(close)close.hidden=true;
+ const header=element.querySelector('.dialog-header');
+ if(header&&!header.querySelector('.opening-header-sub')){
+  const sub=document.createElement('p');
+  sub.className='opening-header-sub';
+  sub.textContent='8 种主要牌型按强度从高到低排列 · 基准分＝基础热度 × 基础倍率（打出有效牌点数另加）';
+  header.append(sub);
+ }
  element.querySelector('.experience-cards')?.setAttribute('aria-label','牌型示例，按强度从高到低');
  const items=[...element.querySelectorAll<HTMLElement>('.experience-card')];
  for(const [index,item] of items.entries()){
   const card=model.cards[index];if(!card)continue;
-  item.querySelector('p')?.remove();item.querySelector('.experience-card-stat')?.remove();
   if(card.selected)item.dataset.routeSelected='true';
-  item.setAttribute('aria-label',card.title+'：'+card.example.join(' '));
+  item.setAttribute('aria-label',`第${card.rank}顺位 ${card.title}，基准分${card.baseScore}：${card.example.join(' ')}`);
+
+  const copy=item.querySelector<HTMLElement>('div');
+  if(copy){
+   copy.className='opening-hand-info';
+   copy.replaceChildren();
+
+   const titleRow=document.createElement('div');
+   titleRow.className='opening-hand-title-row';
+
+   const rankBadge=document.createElement('span');
+   rankBadge.className='opening-hand-rank';
+   rankBadge.dataset.rank=String(card.rank);
+   rankBadge.textContent=card.rankText;
+   rankBadge.title=`第${card.rank}顺位`;
+
+   const h3=document.createElement('h3');
+   h3.className='opening-hand-name';
+   h3.textContent=card.title;
+
+   titleRow.append(rankBadge,h3);
+
+   if(card.selected){
+    const routeTag=document.createElement('span');
+    routeTag.className='opening-route-tag';
+    routeTag.textContent='已选路线';
+    titleRow.append(routeTag);
+   }
+
+   const scoreRow=document.createElement('div');
+   scoreRow.className='opening-hand-score-row';
+
+   const scoreLabel=document.createElement('span');
+   scoreLabel.className='opening-score-label';
+   scoreLabel.textContent='基准分';
+
+   const scoreNum=document.createElement('strong');
+   scoreNum.className='opening-score-num';
+   scoreNum.textContent=card.baseScore.toLocaleString();
+
+   const formula=document.createElement('span');
+   formula.className='opening-score-formula';
+   formula.textContent=`(${card.heat} × ${card.mult}倍)`;
+
+   scoreRow.append(scoreLabel,scoreNum,formula);
+   copy.append(titleRow,scoreRow);
+  }
+
   const example=document.createElement('div');example.className='opening-hand-example';example.setAttribute('aria-hidden','true');
   for(const label of card.example){
    const face=document.createElement('span'),rank=document.createElement('span'),suit=document.createElement('span');

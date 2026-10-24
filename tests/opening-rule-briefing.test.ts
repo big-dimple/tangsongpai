@@ -17,6 +17,9 @@ describe('opening rule briefing',()=>{
   expect(model.cards.every(card=>card.example.length===5&&card.example.every(label=>/^(?:10|[2-9AJQK])[♠♥♣♦]$/.test(label)))).toBe(true);
   expect(model.cards[0].example).toEqual(['10♠','J♠','Q♠','K♠','A♠']);
   expect(names(model.cards.filter(card=>card.selected))).toEqual(focus==='group'?['三条','两对','对子']:focus==='straight'?['顺子']:['同花']);
+  expect(model.cards.map(card=>card.rank)).toEqual([1,2,3,4,5,6,7,8]);
+  expect(model.cards.map(card=>card.rankText)).toEqual(['壹','贰','叁','肆','伍','陆','柒','捌']);
+  expect(model.cards.map(card=>card.baseScore)).toEqual([4050,2240,1050,560,500,270,130,70]);
   expect(JSON.stringify(state)).toBe(before);
  });
 
