@@ -2,6 +2,7 @@ import {isHouseJoker} from '../content/r2RouteGrowthJokers';
 import {playerText} from './Brand';
 import {cardDefinitionName} from './tangsongCardNames';
 import {jokerPlainCopy} from './JokerPlainCopy';
+import {jokerSavedGrowthCopy} from './JokerSavedGrowthCopy';
 import {R2_ROUTE_GROWTH_IDS,R2_ROUTE_GROWTH_JOKERS} from '../content/r2RouteGrowthJokers';
 import {JOKER_ROUTE_GROWTH_TEMPLATES} from './JokerRouteGrowthTemplates';
 import {R2_GROUP_HAND_TYPES,r2LargestScoringRankGroup} from '../domain/r2GroupHands';
@@ -150,6 +151,16 @@ export function jokerPlayerCopy(definition:R2JokerDefinition,instance:R2JokerIns
   }
   if(memory.scoreLimited)state.push('当前计分加成暂停');
  }
+ const temporary=definition.hooks.some(h=>h.operations.some(o=>o.kind==='add-heat'||o.kind==='add-multiplier'||o.kind==='multiply-multiplier'));
  if(definition.hooks.some(h=>h.operations.some(o=>o.kind==='add-heat'||o.kind==='add-multiplier'||o.kind==='multiply-multiplier'||o.kind==='read-growth'||o.kind==='read-coefficient'))){rules.push('热度是计分的底数；倍率 + 表示增加，倍率 × 表示相乘。各效果按实际顺序结算，最后才算总分。');}
- return{plain:jokerPlainCopy(definition,instance,ctx,memory,main,limits,rules.join('\n'),state.join('\n'),events),condition:main,value:limits.join('\n'),state:state.join('\n'),rules:rules.join('\n'),flavor:'',summary:main,compact:memory.short,narrow:memory.short,benefit:'条件与效果',bodyActive,editionActive,playerCopy:true};
+ if(temporary)rules.push('牌面直接写出的热度／倍率加成只在当次计分生效，不保存、不跨手累计；单独标为成长的数值才会保存。');
+ const saved=instance&&!events?jokerSavedGrowthCopy(definition,instance):undefined;
+ if(saved){for(const text of saved.status)if(!state.includes(text))state.push(text);rules.push(...saved.notes);}
+ else if(instance&&!events&&temporary)state.push('直接热度／倍率加成只在当次计分生效，不保存、不跨手累计');
+ const plain=jokerPlainCopy(definition,instance,ctx,memory,main,limits,rules.join('\n'),state.join('\n'),events);
+ if(saved){
+  plain.status=plain.growthDecision?(ctx.scoringLimited?'当前计分暂停；':'')+saved.status.join('\n'):[...saved.status,plain.status].filter(Boolean).join('\n');
+  if(plain.steps)plain.steps.status=plain.status;
+ }
+ return{plain,condition:main,value:limits.join('\n'),state:state.join('\n'),rules:rules.join('\n'),flavor:'',summary:main,compact:memory.short,narrow:memory.short,benefit:'条件与效果',bodyActive,editionActive,playerCopy:true};
 }
