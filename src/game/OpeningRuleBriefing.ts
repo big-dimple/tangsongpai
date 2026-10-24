@@ -55,6 +55,7 @@ export function showOpeningRuleBriefing(dialog:DetailDialog,run:R2RunState,onEnt
  });
  element.classList.add('opening-rule-briefing');
  const close=element.querySelector<HTMLButtonElement>('.dialog-close');if(close)close.hidden=true;
+ element.querySelector('.experience-cards')?.setAttribute('aria-label','牌型示例，按强度从高到低');
  const items=[...element.querySelectorAll<HTMLElement>('.experience-card')];
  for(const [index,item] of items.entries()){
   const card=model.cards[index];if(!card)continue;
@@ -64,7 +65,7 @@ export function showOpeningRuleBriefing(dialog:DetailDialog,run:R2RunState,onEnt
   const example=document.createElement('div');example.className='opening-hand-example';example.setAttribute('aria-hidden','true');
   for(const label of card.example){
    const face=document.createElement('span'),rank=document.createElement('span'),suit=document.createElement('span');
-   face.className='opening-playing-card';face.dataset.red=String(label.endsWith('♥')||label.endsWith('♦'));
+   face.className='opening-playing-card';face.dataset.red=String(label.endsWith('♥')||label.endsWith('♦'));face.dataset.suit=label.slice(-1);
    rank.className='opening-playing-rank';rank.textContent=label.slice(0,-1);
    suit.className='opening-playing-suit';suit.textContent=label.slice(-1);
    face.append(rank,suit);example.append(face);
