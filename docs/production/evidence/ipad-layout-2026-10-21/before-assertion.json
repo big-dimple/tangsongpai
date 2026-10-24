@@ -1,0 +1,507 @@
+{
+  "checks": [
+    {
+      "name": "01-shop-portrait",
+      "state": {
+        "seq": 1,
+        "phase": "shop",
+        "gold": 6,
+        "owned": 0,
+        "selected": []
+      },
+      "viewport": {
+        "width": 810,
+        "height": 1080
+      },
+      "canvas": {
+        "width": 810,
+        "height": 1080
+      },
+      "mode": "desktop",
+      "hand": {
+        "x": 252,
+        "y": 820.4,
+        "width": 546,
+        "height": 167.6
+      },
+      "hits": [
+        {
+          "name": "action/chapter",
+          "type": 5,
+          "x": 12,
+          "y": 112,
+          "width": 200,
+          "height": 44
+        },
+        {
+          "name": "action/items",
+          "type": 5,
+          "x": 12,
+          "y": 164,
+          "width": 200,
+          "height": 44
+        },
+        {
+          "name": "action/shelf-jokers",
+          "type": 5,
+          "x": 195,
+          "y": 60,
+          "width": 80,
+          "height": 44
+        },
+        {
+          "name": "action/shelf-tools",
+          "type": 5,
+          "x": 277,
+          "y": 60,
+          "width": 80,
+          "height": 44
+        },
+        {
+          "name": "action/shelf-workshop",
+          "type": 5,
+          "x": 359,
+          "y": 60,
+          "width": 80,
+          "height": 44
+        },
+        {
+          "name": "action/shelf-items",
+          "type": 5,
+          "x": 441,
+          "y": 60,
+          "width": 80,
+          "height": 44
+        },
+        {
+          "name": "action/tool-inventory",
+          "type": 5,
+          "x": 527,
+          "y": 60,
+          "width": 88,
+          "height": 44
+        },
+        {
+          "name": "offer/run/ipad-readonly/amo/shop/0/0/joker/0",
+          "type": 5,
+          "x": 208.33333333333331,
+          "y": 112,
+          "width": 108,
+          "height": 245.2
+        },
+        {
+          "name": "offer/run/ipad-readonly/amo/shop/0/0/joker/1",
+          "type": 5,
+          "x": 350.99999999999994,
+          "y": 112,
+          "width": 108,
+          "height": 245.2
+        },
+        {
+          "name": "offer/run/ipad-readonly/amo/shop/0/0/joker/2",
+          "type": 5,
+          "x": 493.66666666666663,
+          "y": 112,
+          "width": 108,
+          "height": 245.2
+        },
+        {
+          "name": "action/reroll",
+          "type": 5,
+          "x": 195,
+          "y": 496.79999999999995,
+          "width": 206,
+          "height": 44
+        },
+        {
+          "name": "action/start-stage",
+          "type": 5,
+          "x": 195,
+          "y": 548.8,
+          "width": 420,
+          "height": 56
+        },
+        {
+          "name": "action/build",
+          "type": 5,
+          "x": 409,
+          "y": 496.79999999999995,
+          "width": 206,
+          "height": 44
+        },
+        {
+          "name": "first-guide/shop-open",
+          "type": 5,
+          "x": 18,
+          "y": 710.8,
+          "width": 384,
+          "height": 44
+        },
+        {
+          "name": "first-guide/shop-options",
+          "type": 5,
+          "x": 408,
+          "y": 710.8,
+          "width": 384,
+          "height": 44
+        }
+      ],
+      "texts": [
+        {
+          "name": "shop/title",
+          "text": "苏轼 · 筹备",
+          "type": 5,
+          "x": 12,
+          "y": 11,
+          "width": 88,
+          "height": 21
+        },
+        {
+          "name": "shop/gold",
+          "text": "金币余额 6",
+          "type": 5,
+          "x": 636,
+          "y": 14.5,
+          "width": 78,
+          "height": 19
+        },
+        {
+          "name": "",
+          "text": "第 1 章 · 暖场 · 目标 400",
+          "type": 5,
+          "x": 12,
+          "y": 45,
+          "width": 152,
+          "height": 16
+        },
+        {
+          "name": "",
+          "text": "本章节目",
+          "type": 5,
+          "x": 81.5,
+          "y": 124,
+          "width": 61,
+          "height": 18
+        },
+        {
+          "name": "",
+          "text": "道具箱 0/2",
+          "type": 5,
+          "x": 76.5,
+          "y": 176,
+          "width": 71,
+          "height": 18
+        },
+        {
+          "name": "",
+          "text": "唐宋牌\n3",
+          "type": 5,
+          "x": 214,
+          "y": 64,
+          "width": 42,
+          "height": 34
+        },
+        {
+          "name": "",
+          "text": "消耗工具\n1",
+          "type": 5,
+          "x": 289,
+          "y": 65,
+          "width": 56,
+          "height": 32
+        },
+        {
+          "name": "",
+          "text": "自选做牌\n1",
+          "type": 5,
+          "x": 371,
+          "y": 65,
+          "width": 56,
+          "height": 32
+        },
+        {
+          "name": "",
+          "text": "长期物品\n1",
+          "type": 5,
+          "x": 453,
+          "y": 65,
+          "width": 56,
+          "height": 32
+        },
+        {
+          "name": "",
+          "text": "道具箱\n0/2",
+          "type": 5,
+          "x": 554.5,
+          "y": 67,
+          "width": 37,
+          "height": 28
+        },
+        {
+          "name": "shop/offer-name",
+          "text": "狭路相逢",
+          "id": "run/ipad-readonly/amo/shop/0/0/joker/0",
+          "type": 5,
+          "x": 208.00001017252606,
+          "y": 267.0000061035156,
+          "width": 61,
+          "height": 18
+        },
+        {
+          "name": "shop/offer-purpose",
+          "text": "每次出牌 倍率+2\n三条",
+          "id": "run/ipad-readonly/amo/shop/0/0/joker/0",
+          "type": 5,
+          "x": 208.00001017252606,
+          "y": 306.20000610351565,
+          "width": 104,
+          "height": 32
+        },
+        {
+          "name": "shop/offer-identity",
+          "text": "普通 · 普通版",
+          "id": "run/ipad-readonly/amo/shop/0/0/joker/0",
+          "type": 5,
+          "x": 208.00001017252606,
+          "y": 287.0000061035156,
+          "width": 83,
+          "height": 16
+        },
+        {
+          "name": "shop/offer-price",
+          "text": "4金 · 详情",
+          "id": "run/ipad-readonly/amo/shop/0/0/joker/0",
+          "type": 5,
+          "x": 208.00001017252606,
+          "y": 339.0000061035156,
+          "width": 72,
+          "height": 19
+        },
+        {
+          "name": "shop/offer-operation",
+          "text": "购后2金",
+          "id": "run/ipad-readonly/amo/shop/0/0/joker/0",
+          "type": 5,
+          "x": 208.00001017252606,
+          "y": 285.0000061035156,
+          "width": 50,
+          "height": 16
+        },
+        {
+          "name": "shop/offer-name",
+          "text": "青云直上",
+          "id": "run/ipad-readonly/amo/shop/0/0/joker/1",
+          "type": 5,
+          "x": 351.00000000000006,
+          "y": 267.0000061035156,
+          "width": 61,
+          "height": 18
+        },
+        {
+          "name": "shop/offer-purpose",
+          "text": "多步成长 · 倍率+\n已存值",
+          "id": "run/ipad-readonly/amo/shop/0/0/joker/1",
+          "type": 5,
+          "x": 351.00000000000006,
+          "y": 306.20000610351565,
+          "width": 105,
+          "height": 32
+        },
+        {
+          "name": "shop/offer-identity",
+          "text": "特别 · 普通版",
+          "id": "run/ipad-readonly/amo/shop/0/0/joker/1",
+          "type": 5,
+          "x": 351.00000000000006,
+          "y": 287.0000061035156,
+          "width": 83,
+          "height": 16
+        },
+        {
+          "name": "shop/offer-price",
+          "text": "6金 · 详情",
+          "id": "run/ipad-readonly/amo/shop/0/0/joker/1",
+          "type": 5,
+          "x": 351.00000000000006,
+          "y": 339.0000061035156,
+          "width": 72,
+          "height": 19
+        },
+        {
+          "name": "shop/offer-operation",
+          "text": "购后0金",
+          "id": "run/ipad-readonly/amo/shop/0/0/joker/1",
+          "type": 5,
+          "x": 351.00000000000006,
+          "y": 285.0000061035156,
+          "width": 50,
+          "height": 16
+        },
+        {
+          "name": "shop/offer-name",
+          "text": "满堂喝彩",
+          "id": "run/ipad-readonly/amo/shop/0/0/joker/2",
+          "type": 5,
+          "x": 494.0000203450521,
+          "y": 267.0000061035156,
+          "width": 61,
+          "height": 18
+        },
+        {
+          "name": "shop/offer-purpose",
+          "text": "每次出牌 热度+90\n对子等同点组合",
+          "id": "run/ipad-readonly/amo/shop/0/0/joker/2",
+          "type": 5,
+          "x": 494.0000203450521,
+          "y": 306.20000610351565,
+          "width": 112,
+          "height": 32
+        },
+        {
+          "name": "shop/offer-identity",
+          "text": "普通 · 普通版",
+          "id": "run/ipad-readonly/amo/shop/0/0/joker/2",
+          "type": 5,
+          "x": 494.0000203450521,
+          "y": 287.0000061035156,
+          "width": 83,
+          "height": 16
+        },
+        {
+          "name": "shop/offer-price",
+          "text": "4金 · 详情",
+          "id": "run/ipad-readonly/amo/shop/0/0/joker/2",
+          "type": 5,
+          "x": 494.0000203450521,
+          "y": 339.0000061035156,
+          "width": 72,
+          "height": 19
+        },
+        {
+          "name": "shop/offer-operation",
+          "text": "购后2金",
+          "id": "run/ipad-readonly/amo/shop/0/0/joker/2",
+          "type": 5,
+          "x": 494.0000203450521,
+          "y": 285.0000061035156,
+          "width": 50,
+          "height": 16
+        },
+        {
+          "name": "",
+          "text": "花钱换货\n2金币",
+          "type": 5,
+          "x": 282,
+          "y": 502,
+          "width": 56,
+          "height": 32
+        },
+        {
+          "name": "",
+          "text": "进入牌桌",
+          "type": 5,
+          "x": 360.5,
+          "y": 563.5,
+          "width": 89,
+          "height": 25
+        },
+        {
+          "name": "",
+          "text": "培养 · 同点成组",
+          "type": 5,
+          "x": 460,
+          "y": 509,
+          "width": 104,
+          "height": 18
+        },
+        {
+          "name": "",
+          "text": "成组起手 · 满堂喝彩 4金可买；不买也可入场。",
+          "type": 5,
+          "x": 195,
+          "y": 613,
+          "width": 291,
+          "height": 16
+        },
+        {
+          "name": "first-guide/shop-heading",
+          "text": "同点成组 · 可选筹备",
+          "type": 5,
+          "x": 18,
+          "y": 647,
+          "width": 125,
+          "height": 16
+        },
+        {
+          "name": "first-guide/shop-copy",
+          "text": "满堂喝彩 · 4金，查看后再决定",
+          "type": 5,
+          "x": 18,
+          "y": 667,
+          "width": 189,
+          "height": 17
+        },
+        {
+          "name": "",
+          "text": "看起手",
+          "type": 5,
+          "x": 187,
+          "y": 723,
+          "width": 46,
+          "height": 18
+        },
+        {
+          "name": "",
+          "text": "提示选项",
+          "type": 5,
+          "x": 569.5,
+          "y": 723,
+          "width": 61,
+          "height": 18
+        }
+      ]
+    }
+  ],
+  "input": [
+    {
+      "key": "character-select",
+      "name": "character/amo",
+      "x": 72.5,
+      "y": 948
+    },
+    {
+      "key": "character-select",
+      "name": "action/confirm-character",
+      "x": 405,
+      "y": 1032
+    },
+    {
+      "key": "character-select",
+      "name": "route/group",
+      "x": 140.3333282470703,
+      "y": 948
+    },
+    {
+      "key": "character-select",
+      "name": "action/confirm-character",
+      "x": 405,
+      "y": 1032
+    }
+  ],
+  "errors": [],
+  "requestFailures": [],
+  "limitations": [
+    "Chromium touch emulation, not physical iPad or Safari/WebKit.",
+    "810x984 and 1080x714 are synthetic 96 CSS px browser-chrome budgets, not measured user viewport heights."
+  ],
+  "browser": "151.0.7922.173",
+  "status": "FAIL",
+  "error": "AssertionError [ERR_ASSERTION]: action/chapter must not steal a goods hit\n\ntrue !== false\n",
+  "failureState": {
+    "seq": 1,
+    "phase": "shop",
+    "gold": 6,
+    "owned": 0,
+    "selected": []
+  }
+}

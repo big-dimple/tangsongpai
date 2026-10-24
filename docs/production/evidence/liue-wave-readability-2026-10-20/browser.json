@@ -1,0 +1,739 @@
+{
+  "head": "c889d3f5f7f95e893493b55a25be71e8b95af1f0",
+  "dirty": " M src/game/HandoffEar.ts\n M src/game/HeroLiveSmoke.ts\n M tests/handoff-ear.test.ts\n M tests/hero-live-smoke.test.ts\n",
+  "browser": "151.0.7922.173",
+  "scope": "Controlled current-identity checkpoint seeded through IndexedDbSave.commit then ordinary reload/continue. Native select/skill/cancel/menu/play inputs, actual card-body Graphics and exact saved state. Chromium software rendering; no visual, hardware, hearing or natural-run acceptance.",
+  "cases": [
+    {
+      "width": 1366,
+      "height": 768,
+      "key": "1366-full",
+      "errors": [],
+      "samples": [
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0.13869907407407392,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -4.67712115211405,
+              "y": -14.000000126998593,
+              "width": 13.090909209661021,
+              "height": 18.0000001632839
+            },
+            "world": [
+              {
+                "x": 454.0353638715159,
+                "y": 575.4016853642304
+              },
+              {
+                "x": 467.26684918395307,
+                "y": 593.2986035768466
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0.20806018518518543,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -4.521194708793101,
+              "y": -13.999999952857678,
+              "width": 13.09090904682796,
+              "height": 17.999999939388445
+            },
+            "world": [
+              {
+                "x": 454.71721054116165,
+                "y": 575.9622859637749
+              },
+              {
+                "x": 467.84541576898533,
+                "y": 593.9351023549615
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0.27738888888888924,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -4.436834685092122,
+              "y": -13.999999893216199,
+              "width": 13.0909089910593,
+              "height": 17.999999862706538
+            },
+            "world": [
+              {
+                "x": 455.00734670580965,
+                "y": 576.1686328937824
+              },
+              {
+                "x": 468.0917836887266,
+                "y": 594.1733380311423
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0.36868981481481516,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -4.433870545454552,
+              "y": -14,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 455.0140664662642,
+                "y": 576.175537109375
+              },
+              {
+                "x": 468.1049755571733,
+                "y": 594.175537109375
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0.4566296296296302,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -4.433870545454552,
+              "y": -14,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 454.9794290150923,
+                "y": 576.128662109375
+              },
+              {
+                "x": 468.07033810600143,
+                "y": 594.128662109375
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0.5260671296296301,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -4.433870545454552,
+              "y": -14,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 454.96590972798293,
+                "y": 576.1112060546875
+              },
+              {
+                "x": 468.05681881889205,
+                "y": 594.1112060546875
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0.5978101851851856,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -4.433870545454552,
+              "y": -14,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 454.9634072865767,
+                "y": 576.1083374023438
+              },
+              {
+                "x": 468.0543163774858,
+                "y": 594.1083374023438
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0.6938657407407413,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -4.433870545454552,
+              "y": -14,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 454.9650247182173,
+                "y": 576.110595703125
+              },
+              {
+                "x": 468.05593380912643,
+                "y": 594.110595703125
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0.7783657407407412,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -4.433870545454552,
+              "y": -14,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 454.9660928334517,
+                "y": 576.1119995117188
+              },
+              {
+                "x": 468.0570019243608,
+                "y": 594.1119995117188
+              }
+            ],
+            "commands": 359
+          }
+        ]
+      ],
+      "score": "328",
+      "checks": [
+        "native target selection, no 交 marker",
+        "moving full/static reduced waves",
+        "retarget and cancel destroy old Graphics",
+        "menu clears and returns current idle",
+        "real release clears all ears",
+        "exact domain state, journal and storage unchanged by previews"
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "key": "390-full",
+      "errors": [],
+      "samples": [
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0.06941666666666685,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -42.25067305624125,
+              "y": 0.1404350274010433,
+              "width": 13.090908824194962,
+              "height": 17.99999963326807
+            },
+            "world": [
+              {
+                "x": 56.16607626766061,
+                "y": 685.1326274608659
+              },
+              {
+                "x": 69.25519300537093,
+                "y": 703.1339304297592
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0.10412500000000019,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -42.26260160962916,
+              "y": 0.14008410180177577,
+              "width": 13.090908906589199,
+              "height": 17.999999746560146
+            },
+            "world": [
+              {
+                "x": 56.19781023126777,
+                "y": 685.6977616154397
+              },
+              {
+                "x": 69.2996085739807,
+                "y": 703.6898368510141
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0.17356944444444464,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -42.265454545454546,
+              "y": 0.1400000000000432,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 56.248347029252486,
+                "y": 686.2960058593751
+              },
+              {
+                "x": 69.33925612016158,
+                "y": 704.2960058593751
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0.20829166666666687,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -42.265454545454546,
+              "y": 0.1400000000000432,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 56.28695176558061,
+                "y": 686.7366796875001
+              },
+              {
+                "x": 69.3778608564897,
+                "y": 704.7366796875001
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0.2777083333333337,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -42.265454545454546,
+              "y": 0.1400000000000432,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 56.309740767045454,
+                "y": 686.9907690429689
+              },
+              {
+                "x": 69.40064985795455,
+                "y": 704.9907690429689
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0.3401851851851854,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -42.265454545454546,
+              "y": 0.1400000000000432,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 56.31404374556108,
+                "y": 687.0343481445314
+              },
+              {
+                "x": 69.40495283647017,
+                "y": 705.0343481445314
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0.4130949074074075,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -42.265454545454546,
+              "y": 0.1400000000000432,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 56.310229048295454,
+                "y": 686.9880834960939
+              },
+              {
+                "x": 69.40113813920455,
+                "y": 704.9880834960939
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0.5207129629629631,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -42.265454545454546,
+              "y": 0.1400000000000432,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 56.3060405106978,
+                "y": 686.9402319335939
+              },
+              {
+                "x": 69.39694960160689,
+                "y": 704.9402319335939
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0.5832129629629631,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -42.265454545454546,
+              "y": 0.1400000000000432,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 56.30597184614702,
+                "y": 686.9353491210939
+              },
+              {
+                "x": 69.39688093705611,
+                "y": 704.9353491210939
+              }
+            ],
+            "commands": 359
+          }
+        ]
+      ],
+      "score": "328",
+      "checks": [
+        "native target selection, no 交 marker",
+        "moving full/static reduced waves",
+        "retarget and cancel destroy old Graphics",
+        "menu clears and returns current idle",
+        "real release clears all ears",
+        "exact domain state, journal and storage unchanged by previews"
+      ],
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "height": 740,
+      "reduced": true,
+      "key": "390-reduced",
+      "errors": [],
+      "samples": [
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -42.265454545454546,
+              "y": 0.1400000000000432,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 56.30597184614702,
+                "y": 582.9399877929689
+              },
+              {
+                "x": 69.39688093705611,
+                "y": 600.9399877929689
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -42.265454545454546,
+              "y": 0.1400000000000432,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 56.30597184614702,
+                "y": 582.9399877929689
+              },
+              {
+                "x": 69.39688093705611,
+                "y": 600.9399877929689
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -42.265454545454546,
+              "y": 0.1400000000000432,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 56.30597184614702,
+                "y": 582.9399877929689
+              },
+              {
+                "x": 69.39688093705611,
+                "y": 600.9399877929689
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -42.265454545454546,
+              "y": 0.1400000000000432,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 56.30597184614702,
+                "y": 582.9399877929689
+              },
+              {
+                "x": 69.39688093705611,
+                "y": 600.9399877929689
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -42.265454545454546,
+              "y": 0.1400000000000432,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 56.30597184614702,
+                "y": 582.9399877929689
+              },
+              {
+                "x": 69.39688093705611,
+                "y": 600.9399877929689
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -42.265454545454546,
+              "y": 0.1400000000000432,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 56.30597184614702,
+                "y": 582.9399877929689
+              },
+              {
+                "x": 69.39688093705611,
+                "y": 600.9399877929689
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -42.265454545454546,
+              "y": 0.1400000000000432,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 56.30597184614702,
+                "y": 582.9399877929689
+              },
+              {
+                "x": 69.39688093705611,
+                "y": 600.9399877929689
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -42.265454545454546,
+              "y": 0.1400000000000432,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 56.30597184614702,
+                "y": 582.9399877929689
+              },
+              {
+                "x": 69.39688093705611,
+                "y": 600.9399877929689
+              }
+            ],
+            "commands": 359
+          }
+        ],
+        [
+          {
+            "id": "hearts-6",
+            "phase": 0,
+            "visible": true,
+            "body": "card/body",
+            "bounds": {
+              "x": -42.265454545454546,
+              "y": 0.1400000000000432,
+              "width": 13.090909090909092,
+              "height": 18
+            },
+            "world": [
+              {
+                "x": 56.30597184614702,
+                "y": 582.9399877929689
+              },
+              {
+                "x": 69.39688093705611,
+                "y": 600.9399877929689
+              }
+            ],
+            "commands": 359
+          }
+        ]
+      ],
+      "score": "328",
+      "checks": [
+        "native target selection, no 交 marker",
+        "moving full/static reduced waves",
+        "retarget and cancel destroy old Graphics",
+        "menu clears and returns current idle",
+        "real release clears all ears",
+        "exact domain state, journal and storage unchanged by previews"
+      ],
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

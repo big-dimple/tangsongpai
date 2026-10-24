@@ -1,0 +1,48 @@
+{
+  "scope": "domain",
+  "testedCommit": "afc9d9c79f23a5c8131922444f7a02677acc6f93",
+  "status": "PASS",
+  "exitCode": 0,
+  "before": {
+    "source": "cb543c30663a9a2bb1644cb0e0aaeb735ec8c5fd8b7a14bb5f6dc96619a96875",
+    "index": "a1c2122108fd153d7b6786c962c30ec36c7502f3b94125eb4aa79b3184060ac7",
+    "head": "afc9d9c79f23a5c8131922444f7a02677acc6f93",
+    "branch": "refs/heads/dev/liu-e-ear-ripples-20261020"
+  },
+  "after": {
+    "source": "cb543c30663a9a2bb1644cb0e0aaeb735ec8c5fd8b7a14bb5f6dc96619a96875",
+    "index": "a1c2122108fd153d7b6786c962c30ec36c7502f3b94125eb4aa79b3184060ac7",
+    "head": "afc9d9c79f23a5c8131922444f7a02677acc6f93",
+    "branch": "refs/heads/dev/liu-e-ear-ripples-20261020"
+  },
+  "steps": [
+    {
+      "name": "test",
+      "status": "PASS",
+      "childExitCode": 0,
+      "elapsedMs": 111259
+    },
+    {
+      "name": "verify:content",
+      "status": "PASS",
+      "childExitCode": 0,
+      "elapsedMs": 7448
+    }
+  ],
+  "notIncluded": [
+    {
+      "name": "extended browser/recovery/fault/asset/simulation diagnostics",
+      "status": "NOT_INCLUDED",
+      "reason": "run the existing specific command only when its domain changes; P00 removes repeated default execution"
+    },
+    {
+      "name": "balance/benchmark acceptance",
+      "status": "NOT_INCLUDED",
+      "reason": "later work packages; no gameplay approval inferred from checks"
+    },
+    {
+      "name": "physical devices / human / art approval",
+      "status": "NOT_RUN"
+    }
+  ]
+}

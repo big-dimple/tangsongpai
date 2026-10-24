@@ -1,0 +1,2 @@
+390-8-destroy PASS charge score=430
+390-10-special PASS charge/flight/impact/settled score=1800

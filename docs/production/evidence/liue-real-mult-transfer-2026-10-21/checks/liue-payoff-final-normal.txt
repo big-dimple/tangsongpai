@@ -1,0 +1,4 @@
+1366-8-normal PASS charge/flight/impact/settled score=430
+1366-10-normal PASS charge/flight/impact/settled score=540
+390-8-normal PASS charge/flight/impact/settled score=430
+390-10-normal PASS charge/flight/impact/settled score=540

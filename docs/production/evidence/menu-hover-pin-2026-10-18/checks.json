@@ -1,0 +1,96 @@
+{
+  "task": "H19 menu hover/pin/touch followup",
+  "base": "15cdc0532a2ef5656798bb2429a7a3b2810d8c1d",
+  "testedCommit": "1a8559b80fd25e3248978f170eb5f966859f0089",
+  "branch": "dev/menu-hover-pin-20261018",
+  "environment": {
+    "platform": "win32",
+    "node": "v22.20.0",
+    "browser": "NOT_RUN",
+    "device": "NOT_RUN"
+  },
+  "sourceBlobs": {
+    "src/game/RunMenu.ts": "7258b357dd4fa55469876a251da6c184671192b0",
+    "src/game/RunMenuInteraction.ts": "d2e887bc5e3c290915d7e17b72602affee9832bd",
+    "src/style.css": "05567ddef2be0e2fed85f919309922f303f5e334",
+    "tests/player-menu-entry-button.test.ts": "099634a59ca3d84bd1c707476b0b3d3e2bf378f9",
+    "tests/run-menu-interaction.test.ts": "793553a1c5112942f2723b9fa40fe67bb1e1ec2a"
+  },
+  "checks": [
+    {
+      "name": "menu state, DOM event wiring and actual replacement confirmation",
+      "command": "npm exec vitest run tests/run-menu-interaction.test.ts tests/player-menu-entry-button.test.ts tests/menu-new-run-confirmation.test.ts -- --reporter=json --outputFile=shots/menu-hover-tests.json",
+      "status": "PASS",
+      "exitCode": 0,
+      "total": 30,
+      "passed": 30,
+      "failed": 0,
+      "files": [
+        {
+          "file": "tests/menu-new-run-confirmation.test.ts",
+          "passed": 5
+        },
+        {
+          "file": "tests/player-menu-entry-button.test.ts",
+          "passed": 18
+        },
+        {
+          "file": "tests/run-menu-interaction.test.ts",
+          "passed": 7
+        }
+      ],
+      "reportSha256": "f7f976a2bb65dbf781be58294c48d4e0fff4cc44c96deaf0387668857f9bddc8"
+    },
+    {
+      "name": "TypeScript",
+      "command": "npm run typecheck",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "production build",
+      "command": "npm exec vite build -- --outDir shots/menu-hover-build",
+      "status": "PASS",
+      "exitCode": 0,
+      "modules": 384,
+      "note": "Existing >500kB chunk advisory remains; generated output is ignored, not committed."
+    },
+    {
+      "name": "diff whitespace",
+      "command": "git diff --cached --check",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "excluded source equality",
+      "command": "git diff --name-only 15cdc0532a2ef5656798bb2429a7a3b2810d8c1d HEAD -- src/audio src/haptics src/domain src/application src/game/GameScene.ts src/game/ShopScene.ts src/main.ts",
+      "status": "PASS",
+      "exitCode": 0,
+      "changedFiles": []
+    }
+  ],
+  "earlierFailure": {
+    "status": "FAIL",
+    "check": "intermediate typecheck",
+    "reason": "DOM test helper parameters tag/text lacked explicit string types (TS7006); fixed before the final 30-test/type/build run.",
+    "exitCode": 1
+  },
+  "coverage": [
+    "220ms whole-region departure and gap crossing",
+    "click pin/unpin; keyboard focus and Escape then re-hover",
+    "actual touch vs mouse on mixed-capability devices and capability loss",
+    "nested dialogs and restored focus",
+    "range drag and pending save action",
+    "scene transition and destroy; no focus steal when already closed",
+    "new run remains first; scroll reset; replacement confirm/cancel"
+  ],
+  "humanReview": {
+    "status": "NOT_RUN"
+  },
+  "limitations": [
+    "No local or remote browser was run in this worker batch; DOM tests use an event/geometry shell, not native hit testing or screenshots.",
+    "Same-version PC hover geometry/flicker, actual nested dialog focus, mobile readable caption/taps and hybrid input require parent remote Dot review.",
+    "No full suite, CI inspection, domains, deployment, main merge/push or unrelated source changes."
+  ],
+  "nextTask": "Existing integration owner adopts this dev commit, then performs limited same-version remote PC and portrait menu acceptance."
+}

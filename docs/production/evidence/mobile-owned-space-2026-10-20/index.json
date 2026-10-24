@@ -1,0 +1,220 @@
+{
+  "baseCommit": "23c9e7f06fa34fbf2b46b55e89d9b95fddc52250",
+  "productCommit": "7e255e36450ac282cfcdad9a29eef10cafb422fd",
+  "branch": "fix/mobile-owned-cards-tools-20261020",
+  "scope": "Ordinary shop layout and workshop grouping only; no hero animation, rule, price, score or save-schema changes. Legal controlled shop checkpoints, real mouse/touch actions; no natural-acquisition, physical-device or aesthetic acceptance claim.",
+  "userAttachments": {
+    "libraryIds": [
+      "libfile_1d139ae4d9c481918ca9555bb8b620bb",
+      "libfile_b0de6bcada6c81919f9ad4efb4733cc7"
+    ],
+    "status": "Metadata read succeeded; image-byte download failed twice. Original screenshot pixels NOT_SEEN; actual local reproduction used as explicitly authorized."
+  },
+  "rootCause": "Buying the first joker changed shared-content bottom from entry-action y-8 to owned-slot y-28. Legacy stock art/copy offsets left the owned rail at y465 and 155px blank before entry at y736 on 390x844. Shared height fell 572px to281px.",
+  "result": "Owned rail is78px tall and docked8px above entry; header/goods/actions remain independent. Shared height466px for one or five cards (185px reclaimed). Two complete goods and tool images visible at390x844; native dropdown above rail; full card identity/detail and right-move remain reachable. Short320x568 keeps scroll, detail, reorder, quote/cancel and entry operable.",
+  "checks": {
+    "browser": "5/5 after cases; 4/4 same-viewport baseline cases; buy, inspect/cancel, full-slot reorder, native dropdown, T11 quote/cancel, enter table; each saved command and IDB state matches applyCommand",
+    "workshop": "1366x768 and390x844: original group and route precedence, all tools expanded, first/last priced button reachable, quote/cancel spends nothing",
+    "unit": "Initial full run4956/4960 passed; four old rail/collapse expectations updated, affected37/37 passed; remaining unchanged tests passed in that full run. Final combined CI is authoritative.",
+    "build": "tsc + vite production build PASS",
+    "visualReview": "Viewed full-scene phone baseline/purchased, full-slot goods, route tools and open dropdown; two full art panels, price/details, held identities and entry visible. This is agent visual inspection only."
+  },
+  "cases": {
+    "before": [
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "initialHeld": 0,
+        "status": "PASS",
+        "initialHeight": 572,
+        "afterPurchaseHeight": 281,
+        "workshopHeight": 281,
+        "observedCommands": [
+          "BuyOffer"
+        ],
+        "errors": []
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "initialHeld": 5,
+        "status": "PASS",
+        "initialHeight": 281,
+        "afterPurchaseHeight": null,
+        "workshopHeight": 281,
+        "observedCommands": [],
+        "errors": []
+      },
+      {
+        "viewport": {
+          "width": 1366,
+          "height": 900
+        },
+        "initialHeld": 0,
+        "status": "PASS",
+        "initialHeight": null,
+        "afterPurchaseHeight": null,
+        "workshopHeight": 528,
+        "observedCommands": [
+          "BuyOffer"
+        ],
+        "errors": []
+      },
+      {
+        "viewport": {
+          "width": 1366,
+          "height": 900
+        },
+        "initialHeld": 5,
+        "status": "PASS",
+        "initialHeight": null,
+        "afterPurchaseHeight": null,
+        "workshopHeight": 528,
+        "observedCommands": [],
+        "errors": []
+      }
+    ],
+    "after": [
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "initialHeld": 0,
+        "status": "PASS",
+        "initialHeight": 572,
+        "afterPurchaseHeight": 466,
+        "workshopHeight": 466,
+        "observedCommands": [
+          "BuyOffer"
+        ],
+        "errors": []
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "initialHeld": 5,
+        "status": "PASS",
+        "initialHeight": 466,
+        "afterPurchaseHeight": null,
+        "workshopHeight": 466,
+        "observedCommands": [
+          "ReorderJokers"
+        ],
+        "errors": []
+      },
+      {
+        "viewport": {
+          "width": 1366,
+          "height": 900
+        },
+        "initialHeld": 0,
+        "status": "PASS",
+        "initialHeight": null,
+        "afterPurchaseHeight": null,
+        "workshopHeight": 528,
+        "observedCommands": [
+          "BuyOffer"
+        ],
+        "errors": []
+      },
+      {
+        "viewport": {
+          "width": 1366,
+          "height": 900
+        },
+        "initialHeld": 5,
+        "status": "PASS",
+        "initialHeight": null,
+        "afterPurchaseHeight": null,
+        "workshopHeight": 528,
+        "observedCommands": [
+          "ReorderJokers"
+        ],
+        "errors": []
+      },
+      {
+        "viewport": {
+          "width": 320,
+          "height": 568
+        },
+        "initialHeld": 5,
+        "status": "PASS",
+        "initialHeight": 190,
+        "afterPurchaseHeight": null,
+        "workshopHeight": 190,
+        "observedCommands": [
+          "ReorderJokers"
+        ],
+        "errors": []
+      }
+    ]
+  },
+  "remaining": [
+    "User aesthetic approval",
+    "Physical phone/GPU and hearing acceptance"
+  ],
+  "screenshots": [
+    {
+      "variant": "before",
+      "label": "390-held-0-goods",
+      "libraryFileId": "libfile_2ccad32a3a5881919cdede56c5bc854c",
+      "fileName": "390-held-0-goods.png",
+      "size": 259789
+    },
+    {
+      "variant": "before",
+      "label": "390-held-1-goods",
+      "libraryFileId": "libfile_f75d00df8d288191986d98d7d9e10b73",
+      "fileName": "390-held-1-goods.png",
+      "size": 156813
+    },
+    {
+      "variant": "after",
+      "label": "390-held-1-goods",
+      "libraryFileId": "libfile_51d2a06849c8819187a94ee43c1b2b2f",
+      "fileName": "390-held-1-goods(1).png",
+      "size": 216301
+    },
+    {
+      "variant": "after",
+      "label": "390-held-5-goods",
+      "libraryFileId": "libfile_a85be31fe688819185d966994f5d1e69",
+      "fileName": "390-held-5-goods.png",
+      "size": 242562
+    },
+    {
+      "variant": "after",
+      "label": "390-held-5-modify",
+      "libraryFileId": "libfile_6f34814d81508191b47d797a2f95369a",
+      "fileName": "390-held-5-modify.png",
+      "size": 143601
+    },
+    {
+      "variant": "after",
+      "label": "390-held-5-dropdown",
+      "libraryFileId": "libfile_9d4fbf35cd5c8191866b92f1a97db1fb",
+      "fileName": "390-held-5-dropdown.png",
+      "size": 122142
+    },
+    {
+      "variant": "after",
+      "label": "1366-held-5-modify",
+      "libraryFileId": "libfile_7f96c2ce02f48191b4b8bf8099b717bc",
+      "fileName": "1366-held-5-modify.png",
+      "size": 398769
+    }
+  ],
+  "combinedVerification": {
+    "sourceTree": "00692ebe9c010c046afe0970ad3c0c2dd6c04cf0",
+    "astraHead": "67bef45f01532b96305fc9478b45b2bbda55fbf7",
+    "scope": "Same five cases after serial integration, including real EnterStage to dealt hand. Shop DOM surfaces absent on table; all saved states equal canonical command replay.",
+    "result": "5/5 PASS; tsc PASS; no hero source differs from handed-off commit."
+  }
+}

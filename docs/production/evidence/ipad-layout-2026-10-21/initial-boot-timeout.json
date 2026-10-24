@@ -1,0 +1,13 @@
+{
+  "checks": [],
+  "input": [],
+  "errors": [],
+  "limitations": [
+    "Chromium touch emulation, not physical iPad or Safari/WebKit.",
+    "810x984 and 1080x714 are synthetic 96 CSS px browser-chrome budgets, not measured user viewport heights."
+  ],
+  "browser": "151.0.7922.173",
+  "status": "FAIL",
+  "error": "TimeoutError: page.waitForFunction: Timeout 20000ms exceeded.",
+  "failureState": null
+}

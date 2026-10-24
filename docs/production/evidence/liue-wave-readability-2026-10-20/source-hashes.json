@@ -1,0 +1,6 @@
+{
+  "src/game/HandoffEar.ts": "bc778b9805eb5e9178fea4389d3f9559abb5eccce403332d51374ec942fc9a6a",
+  "src/game/HeroLiveSmoke.ts": "f5902eca2bb85a621a719917e64e93c5d96dc736e551524a9338aee03ea35329",
+  "tests/handoff-ear.test.ts": "c3396446dfd7848cc80ab41af3e2b09932606d837b683650b219a8202ead9656",
+  "tests/hero-live-smoke.test.ts": "8fc893f6e1b4a7fb4fc49308eb0b98aeca6e95af53d242a09ed13fb84b269b70"
+}
