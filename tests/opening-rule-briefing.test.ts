@@ -50,4 +50,25 @@ describe('opening rule briefing',()=>{
   showOpeningRuleBriefing(dialog,state,enter);options?.onClose?.();options?.onClose?.();
   expect(enter).toHaveBeenCalledOnce();
  });
+
+ it('renders concise subtitle for main hand types and base score formula',()=>{
+  const originalDoc=globalThis.document;
+  try {
+   (globalThis as unknown as {document:unknown}).document={
+    createElement:vi.fn((tag:string)=>({tagName:tag,className:'',textContent:''})),
+   };
+   const state=run();
+   const header={querySelector:vi.fn(()=>null),append:vi.fn()};
+   const element={classList:{add:vi.fn()},querySelector:vi.fn((selector:string)=>selector==='.dialog-header'?header:null),querySelectorAll:vi.fn(()=>[])} as unknown as HTMLDialogElement;
+   const open=vi.fn(()=>element);
+   const dialog={open,close:vi.fn()} as unknown as DetailDialog;
+   showOpeningRuleBriefing(dialog,state,vi.fn());
+   expect(header.append).toHaveBeenCalled();
+   const appended=header.append.mock.calls[0][0];
+   expect(appended.className).toBe('opening-header-sub');
+   expect(appended.textContent).toBe('主要牌型 · 基准分＝基础热度 × 基础倍率');
+  } finally {
+   globalThis.document=originalDoc;
+  }
+ });
 });

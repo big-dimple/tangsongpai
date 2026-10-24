@@ -85,7 +85,7 @@ export function showOpeningRuleBriefing(dialog:DetailDialog,run:R2RunState,onEnt
  if(header&&!header.querySelector('.opening-header-sub')){
   const sub=document.createElement('p');
   sub.className='opening-header-sub';
-  sub.textContent='8 种主要牌型按强度从高到低排列 · 基准分＝基础热度 × 基础倍率（打出有效牌点数另加）';
+  sub.textContent='主要牌型 · 基准分＝基础热度 × 基础倍率';
   header.append(sub);
  }
  element.querySelector('.experience-cards')?.setAttribute('aria-label','牌型示例，按强度从高到低');
