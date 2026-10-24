@@ -5,13 +5,13 @@ import type {R2HandType} from '../domain/evaluateR2';
 import {currentBuildFocus} from './BuildJourney';
 import type {DetailDialog} from './DetailDialog';
 import {handTypeRuleCards} from './HandRuleReference';
-import {OPENING_ROUTES} from './HeroOpeningCopy';
-import {openingRouteDemo} from './OpeningRouteDemo';
+import './OpeningRuleBriefing.css';
 
 export interface OpeningRuleCard {
- title: string;
- body: string;
- stat?: string;
+ title:string;
+ body:string;
+ example:readonly string[];
+ selected:boolean;
 }
 
 export const OPENING_BASE_HAND_TYPES:readonly R2HandType[]=[
@@ -22,37 +22,55 @@ const ROUTE_HAND_TYPES={
  straight:['straight'],
  flush:['flush'],
 } as const;
+const EXAMPLES:Record<typeof OPENING_BASE_HAND_TYPES[number],readonly string[]>={
+ 'straight-flush':['10♠','J♠','Q♠','K♠','A♠'],
+ 'four-kind':['9♠','9♥','9♣','9♦','4♠'],
+ 'full-house':['8♠','8♥','8♣','K♦','K♠'],
+ flush:['2♥','6♥','9♥','J♥','A♥'],
+ straight:['5♠','6♥','7♣','8♦','9♠'],
+ 'three-kind':['7♠','7♥','7♣','K♦','2♠'],
+ 'two-pair':['J♠','J♥','4♣','4♦','9♠'],
+ pair:['Q♠','Q♥','8♣','5♦','2♠'],
+};
 
-/** Read-only new-run context: eight primary types first; three extension types stay supplementary. */
+/** Eight visual examples only; no scoring, random or run-state changes. */
 export function openingRuleBriefing(run:R2RunState){
- const focus=currentBuildFocus(run,run.openingRoute)??'group',route=OPENING_ROUTES[focus],demo=openingRouteDemo(focus,run.characterId);
+ const focus=currentBuildFocus(run,run.openingRoute)??'group';
  const rules=readR2Modifiers(run.jokers,r2JokerDefinitionsFor(run));
  const selected=new Set<R2HandType>(ROUTE_HAND_TYPES[focus]);
- const cards:OpeningRuleCard[]=handTypeRuleCards(run.handLevels,rules,OPENING_BASE_HAND_TYPES).map((card,index)=>selected.has(OPENING_BASE_HAND_TYPES[index])
-  ?{...card,title:'已选路线 · '+card.title,stat:'当前路线：'+route.title}
-  :{...card,stat:undefined});
- return {
-  title:'开局规则 · 8种主要牌型',
-  body:'每场选择1–5张牌打出，同一次只按一种牌型结算。下面按基础牌型由强到弱排列；实际得分还会受牌型等级和加成影响。牌型提供基础热度与倍率，有效计分牌再加入点数和强化，最后按热度×倍率得分；达到本场目标即可继续。\n\n确认后进入初始商店。可以购买路线起手唐宋牌或工具，也可以保留金币直接入场。',
-  effectBody:'你选择了「'+route.title+'」：'+demo.shape.join(' ')+'。'+demo.method+'。下方带「已选路线」标记的牌型就是你的起手方向，之后仍可改玩其他牌型。',
-  summaryBody:'普通点数：2–10按牌面，J／Q／K为10，A为11。\n\n扩展牌型（之后遇到再看）：五条＝5张同点；同花葫芦＝同花色的葫芦；同花五条＝同花色且同点。',
-  cards,
-  primaryLabel:'明白了，进入初始商店',
-  closeLabel:'跳过说明，进入商店',
- };
+ const cards:OpeningRuleCard[]=handTypeRuleCards(run.handLevels,rules,OPENING_BASE_HAND_TYPES).map((card,index)=>{
+  const type=OPENING_BASE_HAND_TYPES[index];
+  return {title:card.title,body:'',example:EXAMPLES[type],selected:selected.has(type)};
+ });
+ return {title:'牌型示例',body:'',cards,primaryLabel:'进入商店'};
 }
 
-/** Every exit continues to the same first shop; repeated close events cannot navigate twice. */
+/** One visible action; native cancel follows the same guarded shop transition. */
 export function showOpeningRuleBriefing(dialog:DetailDialog,run:R2RunState,onEnterShop:()=>void):HTMLDialogElement{
  const model=openingRuleBriefing(run);let finished=false;
- const finish=()=>{
-  if(finished)return;finished=true;dialog.close();onEnterShop();
- };
- const element=dialog.open(model.title,model.body,[{label:model.primaryLabel,primary:true,run:()=>finish()}],{
-  effectBody:model.effectBody,summaryBody:model.summaryBody,cards:model.cards,
-  closeLabel:model.closeLabel,guideSteps:{labels:['选择路线','规则说明','初始商店'],current:1},
+ const finish=()=>{if(finished)return;finished=true;dialog.close();onEnterShop();};
+ const element=dialog.open(model.title,model.body,[{label:model.primaryLabel,primary:true,run:finish}],{
+  cards:model.cards,
   onClose:()=>{if(finished)return;finished=true;onEnterShop();},
  });
  element.classList.add('opening-rule-briefing');
+ const close=element.querySelector<HTMLButtonElement>('.dialog-close');if(close)close.hidden=true;
+ const items=[...element.querySelectorAll<HTMLElement>('.experience-card')];
+ for(const [index,item] of items.entries()){
+  const card=model.cards[index];if(!card)continue;
+  item.querySelector('p')?.remove();item.querySelector('.experience-card-stat')?.remove();
+  if(card.selected)item.dataset.routeSelected='true';
+  item.setAttribute('aria-label',card.title+'：'+card.example.join(' '));
+  const example=document.createElement('div');example.className='opening-hand-example';example.setAttribute('aria-hidden','true');
+  for(const label of card.example){
+   const face=document.createElement('span'),rank=document.createElement('span'),suit=document.createElement('span');
+   face.className='opening-playing-card';face.dataset.red=String(label.endsWith('♥')||label.endsWith('♦'));
+   rank.className='opening-playing-rank';rank.textContent=label.slice(0,-1);
+   suit.className='opening-playing-suit';suit.textContent=label.slice(-1);
+   face.append(rank,suit);example.append(face);
+  }
+  item.append(example);
+ }
+ element.querySelector<HTMLButtonElement>('.dialog-primary')?.focus({preventScroll:true});
  return element;
 }
