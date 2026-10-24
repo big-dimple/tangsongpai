@@ -1,0 +1,11 @@
+{
+  "version": "C03",
+  "builtAt": "2026-10-17T23:47:56.102Z",
+  "revision": "1337da6f13d83db4aa154a200721581c83c976e6",
+  "sourceStatus": "dirty",
+  "modified": true,
+  "modifiedFileCount": 1,
+  "modifiedFiles": [
+    "harness/owned-joker-score-motion.mjs"
+  ]
+}

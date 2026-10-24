@@ -1,0 +1,1 @@
+Controlled stop before the first build/case message: SSR fixture startup did not finish. No native case or product assertion ran. Follow-up uses the existing Windows fixture-server settings: no config discovery, HMR, watcher or dependency discovery.

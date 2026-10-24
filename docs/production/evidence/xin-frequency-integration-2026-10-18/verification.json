@@ -1,0 +1,515 @@
+{
+  "baseMain": "252a165e08b61b9495cdaabe92dcf6ab36c98372",
+  "sourceHead": "e96916b5e07b3e1e7a67a7830ca0d3963439cbdd",
+  "sourceProduct": "69a16e61be9f718ccf03afd9537a66c88e63589b",
+  "ruleDependency": "f46ef5bec0ab244ec70fc8221bf19e5abfe0c47e",
+  "dependencyAlreadyAncestor": true,
+  "noDuplicateCherryPick": true,
+  "conflicts": "only DELIVERY_PLAN.md and plan.json appends; semantic merge retained both, runtime conflict-free",
+  "allRuntimeExactlySource": true,
+  "sourceBlobs": {
+    "src/application/checkpoint.ts": "011ebf22e0dd3699f0834aa26cf0dbe2d88957ea",
+    "src/domain/r2ErxiangHandoff.ts": "d53569d8d8aaf6a8d34beab003f838e857e9d821",
+    "src/domain/r2GroupUpgrade.ts": "e8ce5b1f11d6281bfd2f967e03ab9db70bb8d1f2",
+    "src/domain/r2LaohuanRefill.ts": "8645e61f0b115e0a5acbf9fdcccd518e53401f8e",
+    "src/domain/r2Run.ts": "28211e0e221f350baf3199a0b01a75f072e87e7a",
+    "src/game/CharacterRunCopy.ts": "8f7bd34b4239a0cb047e41e5dbc934308ee2f998",
+    "src/game/ErxiangHandoffCopy.ts": "4f8cd9934be0ed5d233ef87c2426554d7322651d",
+    "src/game/GameScene.ts": "8d8e92dc052e56d6621fbdb070c2671f25ee3632",
+    "src/game/HeroAbilityCue.ts": "3ad4a3cf6b16342cd2b04a10ee643e83dfb4fc62",
+    "src/game/HeroSignature.ts": "e58bcaac91c9e06cf2dd7ad6a5e3cebd9bd003f5",
+    "src/game/HeroSkillGuide.ts": "7749d7836b1440589aeb39f0c01e10452788c107",
+    "src/game/HeroStageContinuity.ts": "f093b1d68f8fb3d84b5c74a71476e09b2863478b",
+    "src/game/HeroTargetAttachment.ts": "7be94f1860d0cfc3f6124577a8b0c36049ca030a",
+    "src/game/HeroTargetAttachmentState.ts": "22cefc9241ad30b18ce27da3f52eda86bbc7bfa3",
+    "src/game/OpeningPlaySample.ts": "68d0a65cb9eec94467c6f4022524ac8f9f21060f",
+    "src/game/RunLaunch.ts": "6496760778220dcd5332e19e7263cda4523ebb7d",
+    "src/game/SelectionPresentation.ts": "11791b7f333767fc86ab78c12abc0e214f5b7d79",
+    "src/game/XinRefillLock.ts": "ad2070b370845d38cd43471c41223a48d5dfc83e",
+    "src/game/XinRefillSequence.ts": "bb760963ec0bd7ebe8dc1ce5f45723a38bbd8b30",
+    "tests/hero-action-chain-order.test.ts": "956f9509bdef2a43ab3491916e18ad490a586d9e",
+    "tests/hero-retained-ownership.test.ts": "bb77157ee81be0f1142fbe5404bc2eea2594c249",
+    "tests/hero-target-attachment.test.ts": "6391271bd0cbae3f2e64c6d97e1bfbb0cbc31a5e",
+    "tests/refill-handoff-analysis.test.ts": "6e506393a6fd30d4fccc9e59848d86eba0e0b490",
+    "tests/refill-handoff-frequency.test.ts": "af243d0d3227cdf5206469f4e5b1cfe899341682",
+    "tests/xin-refill-lock.test.ts": "b369f3d904c3d4ecc8d31ff114ed585dd6d0ae15",
+    "tests/xin-refill-sequence.test.ts": "9b5e298e48ccb1eac04018d4155adb5384fc0d33",
+    "tests/xin-repeat-sequence.test.ts": "aef92d6661906380078752fa60b3e7af0e2620ca",
+    "tests/xin-seven-candidates.test.ts": "728a7fc06f48c1da0f9375ce7b3408ccde4fe535"
+  },
+  "ownTestFiles": [
+    "tests/core-build.test.ts",
+    "tests/hero-stage-continuity.test.ts",
+    "tests/recovery-save.test.ts",
+    "tests/route-starter.test.ts"
+  ],
+  "jointChecks": {
+    "first": {
+      "files": 9,
+      "passed": 101,
+      "failed": 11
+    },
+    "repair": {
+      "files": 2,
+      "passed": 36,
+      "failed": 0
+    },
+    "finalFiles": 9,
+    "finalIndependentCases": 112,
+    "finalStatus": "PASS",
+    "finalTypecheck": "PASS",
+    "runtimeBuild": "PASS/377 modules before test-only fixture repairs; runtime source unchanged",
+    "source105": "reused on exact source; not added to joint112"
+  },
+  "repairClassification": {
+    "serviceFixture7": "Old fixed Laohuan195-command tape cannot be replayed as new automatic-frequency choices; service-only counterfactual pinned to priorS04 identity, no pending bypass/state edits. New repeat behavior tested separately.",
+    "currentErxiang1": "first handoff uses1/2, not exhausted; keep real+8 multiplier/checkpoint assertions",
+    "currentContinuity3": "every normal Xin discard / Liu next-stage2 uses, not old once copy",
+    "identityContracts": "new Xin/Liu profile from real exported rule constants; old saved/retry cases unchanged"
+  },
+  "latestCiRead": {
+    "run": 39111245991,
+    "domain": "success",
+    "docs": "success",
+    "browser": "failure at screenshot128 awaiting old 返回牌桌 text; after actual stage entry",
+    "impact": "historical smoke close-label assumption, unrelated to new rules/effects",
+    "sameClassFix": "scope actual detail-dialog and native dialog-close; require one action and detail actually closes, preserve expanded menu/aria/state equality; syntaxPASS",
+    "browserRerun": "NOT_RUN"
+  },
+  "preserved": "latest main menu/loading/audio/entry particles/media/dependencies/deployment/gates exact; GameScene exact e969",
+  "eyeOriginal": {
+    "path": "public/assets/tangsong-eyes/laohuan.eyes-375b308030e5.webp",
+    "sha256": "375b308030e5e789f9c8d1d80807c739bb3fc820c73fefb09c330083349a26a1",
+    "unchanged": true
+  },
+  "sourceNodeEvidence": {
+    "secondHistoryFlag": true,
+    "eyeEventIds": [
+      "xin/repeat/command/4/xin-refill-lock",
+      "xin/repeat/command/6/xin-refill-lock"
+    ],
+    "storeCommits": 7,
+    "journalCommands": 6,
+    "sevenCandidates": 7,
+    "nativeEmitters": 14,
+    "particleBudgetUsed": 112,
+    "particleBudgetCap": 128,
+    "rendering": "mocked in Node, not browser dynamics"
+  },
+  "buildMetadata": {
+    "version": "C03",
+    "builtAt": "2026-10-18T08:38:56.769Z",
+    "revision": "252a165e08b61b9495cdaabe92dcf6ab36c98372",
+    "sourceStatus": "dirty",
+    "modified": true,
+    "modifiedFileCount": 41,
+    "modifiedFiles": [
+      "docs/production/CHARACTER_PLAY_PLAN.md",
+      "docs/production/DELIVERY_PLAN.md",
+      "docs/production/evidence/refill-handoff-frequency-2026-10-18/README.md",
+      "docs/production/evidence/refill-handoff-frequency-2026-10-18/analysis.json",
+      "docs/production/evidence/refill-handoff-frequency-2026-10-18/checks.json",
+      "docs/production/evidence/refill-handoff-frequency-2026-10-18/effect-contract.md",
+      "docs/production/evidence/xin-refill-sequence-2026-10-18/README.md",
+      "docs/production/evidence/xin-refill-sequence-2026-10-18/verification.json",
+      "docs/production/plan.json",
+      "harness/screenshot.mjs",
+      "src/application/checkpoint.ts",
+      "src/domain/r2ErxiangHandoff.ts",
+      "src/domain/r2GroupUpgrade.ts",
+      "src/domain/r2LaohuanRefill.ts",
+      "src/domain/r2Run.ts",
+      "src/game/CharacterRunCopy.ts",
+      "src/game/ErxiangHandoffCopy.ts",
+      "src/game/GameScene.ts",
+      "src/game/HeroAbilityCue.ts",
+      "src/game/HeroSignature.ts",
+      "src/game/HeroSkillGuide.ts",
+      "src/game/HeroStageContinuity.ts",
+      "src/game/HeroTargetAttachment.ts",
+      "src/game/HeroTargetAttachmentState.ts",
+      "src/game/OpeningPlaySample.ts",
+      "src/game/RunLaunch.ts",
+      "src/game/SelectionPresentation.ts",
+      "src/game/XinRefillLock.ts",
+      "src/game/XinRefillSequence.ts",
+      "tests/core-build.test.ts",
+      "tests/hero-action-chain-order.test.ts",
+      "tests/hero-retained-ownership.test.ts",
+      "tests/hero-target-attachment.test.ts",
+      "tests/recovery-save.test.ts",
+      "tests/refill-handoff-analysis.test.ts",
+      "tests/refill-handoff-frequency.test.ts",
+      "tests/route-starter.test.ts",
+      "tests/xin-refill-lock.test.ts",
+      "tests/xin-refill-sequence.test.ts",
+      "tests/xin-repeat-sequence.test.ts",
+      "tests/xin-seven-candidates.test.ts"
+    ]
+  },
+  "localBrowser": "NOT_RUN",
+  "visualTouchHumanPhysicalPerformance": "PENDING_PARENT_REMOTE_DOT",
+  "H17": "in_progress",
+  "P08": "in_progress",
+  "followup": {
+    "status": "engineering_integrated_remote_dynamic_pending",
+    "baseMain": "41aef038aede64ddf570bf325545c65333dbbe50",
+    "branch": "dev/frequency-contract-followups-20261018",
+    "sources": {
+      "sourceDelta": {
+        "head": "6cdd1175442c58ed12ce367a3fb3f15f78aacbc8",
+        "product": "b2c4d3ac432476e700d3f0d8fe06d18ea15fa7b9",
+        "reusedChecks": "7 files /45 targeted tests, typecheck/build377 PASS"
+      },
+      "passive": {
+        "head": "4cfd2099ee25b7d0b32ba66bfaf7b2b3431a1225",
+        "product": "ab7c131886ddec6bb06acdd209de5d6dd5f13aea",
+        "reusedChecks": "4 files /52 targeted tests, typecheck/build378 PASS"
+      }
+    },
+    "sourceUnion": {
+      "gameSceneExact": true,
+      "flightHunks": 3,
+      "otherRuntimeFilesExact": 10
+    },
+    "ciInput": {
+      "run": "39113011901",
+      "domain": {
+        "filesFailed": 13,
+        "testsFailed": 19,
+        "testsPassed": 4547
+      },
+      "browser": "Chromium desktop passed; touch initial shop offer locator used canvas pagination despite native DOM offer"
+    },
+    "checks": {
+      "contractSync": {
+        "files": 17,
+        "tests": 158,
+        "failed": 0
+      },
+      "joint": {
+        "files": 8,
+        "tests": 36,
+        "failed": 0
+      },
+      "finalByFile": {
+        "files": 22,
+        "tests": 181,
+        "failed": 0,
+        "rule": "latest result per file; repeated cases and source evidence not added",
+        "results": [
+          {
+            "file": "amo-exile.test.ts",
+            "cases": 12,
+            "status": "passed"
+          },
+          {
+            "file": "amo-launch.test.ts",
+            "cases": 9,
+            "status": "passed"
+          },
+          {
+            "file": "build-keepsake.test.ts",
+            "cases": 10,
+            "status": "passed"
+          },
+          {
+            "file": "erxiang-handoff.test.ts",
+            "cases": 13,
+            "status": "passed"
+          },
+          {
+            "file": "fixed-suit-dyes.test.ts",
+            "cases": 12,
+            "status": "passed"
+          },
+          {
+            "file": "hero-ability-cue.test.ts",
+            "cases": 7,
+            "status": "passed"
+          },
+          {
+            "file": "hero-balance.test.ts",
+            "cases": 11,
+            "status": "passed"
+          },
+          {
+            "file": "hero-opening-copy.test.ts",
+            "cases": 2,
+            "status": "passed"
+          },
+          {
+            "file": "hero-text-contract.test.ts",
+            "cases": 4,
+            "status": "passed"
+          },
+          {
+            "file": "laohuan-refill.test.ts",
+            "cases": 11,
+            "status": "passed"
+          },
+          {
+            "file": "refill-handoff-frequency.test.ts",
+            "cases": 8,
+            "status": "passed"
+          },
+          {
+            "file": "run-menu-harness.test.mjs",
+            "cases": 4,
+            "status": "passed"
+          },
+          {
+            "file": "s04-finish.test.ts",
+            "cases": 17,
+            "status": "passed"
+          },
+          {
+            "file": "shop-mobile-offers.test.ts",
+            "cases": 6,
+            "status": "passed"
+          },
+          {
+            "file": "shop-offer-harness.test.mjs",
+            "cases": 3,
+            "status": "passed"
+          },
+          {
+            "file": "tangsong-identity.test.ts",
+            "cases": 4,
+            "status": "passed"
+          },
+          {
+            "file": "touye-new-core.test.ts",
+            "cases": 25,
+            "status": "passed"
+          },
+          {
+            "file": "hero-retained-ownership.test.ts",
+            "cases": 4,
+            "status": "passed"
+          },
+          {
+            "file": "hero-skill-guide.test.ts",
+            "cases": 4,
+            "status": "passed"
+          },
+          {
+            "file": "xin-passive-semantics.test.ts",
+            "cases": 12,
+            "status": "passed"
+          },
+          {
+            "file": "xin-repeat-sequence.test.ts",
+            "cases": 1,
+            "status": "passed"
+          },
+          {
+            "file": "xin-seven-candidates.test.ts",
+            "cases": 2,
+            "status": "passed"
+          }
+        ]
+      },
+      "typecheck": "PASS within joint production build",
+      "build": {
+        "status": "PASS",
+        "modules": 378,
+        "artifact": "index-BaRXSq0r.js",
+        "metadata": "base main plus dirty combined merge/test changes; docs-only receipt followed"
+      },
+      "syntax": [
+        "harness/ui.mjs",
+        "harness/screenshot.mjs"
+      ],
+      "browser": "NOT_RUN",
+      "fullSuite": "NOT_RUN"
+    },
+    "safety": {
+      "rulesAndCheckpointImplementationUnchanged": true,
+      "legacyAssertionsPreserved": true,
+      "forgedUseCountsRejected": true,
+      "realPendingChoiceRequired": true,
+      "purchaseCancelAndExactGrantAssertionsKept": true,
+      "menuLoadingAudioMaterialsUnchanged": true
+    },
+    "experienceAccepted": false,
+    "H17": "in_progress",
+    "P08": "in_progress",
+    "remoteNext": "Same version remote dot: passive badge and natural selection, two ordinary discards, second source only new card, five-card play without active reminder; mobile/hearing/device/particle texture remain pending",
+    "sourceBlobs": [
+      {
+        "source": "6cdd1175442c58ed12ce367a3fb3f15f78aacbc8",
+        "file": "src/game/HeroTargetAttachment.ts",
+        "blob": "102f9ee767086b376c726bee20875e0afd867857"
+      },
+      {
+        "source": "6cdd1175442c58ed12ce367a3fb3f15f78aacbc8",
+        "file": "src/game/HeroTargetAttachmentState.ts",
+        "blob": "09cfbd4178f7334bf191fae353c57fd616ae85d9"
+      },
+      {
+        "source": "4cfd2099ee25b7d0b32ba66bfaf7b2b3431a1225",
+        "file": "src/game/CharacterRunCopy.ts",
+        "blob": "cdb3503759eaae3e920206493beec1eef0df8140"
+      },
+      {
+        "source": "4cfd2099ee25b7d0b32ba66bfaf7b2b3431a1225",
+        "file": "src/game/HeroAbilityCue.ts",
+        "blob": "88c17acc2d9864503f393ae7254fa41d58a342be"
+      },
+      {
+        "source": "4cfd2099ee25b7d0b32ba66bfaf7b2b3431a1225",
+        "file": "src/game/HeroExplanation.ts",
+        "blob": "4e1ec6cf16970bbfa7eccb1ef6268eb7e55ceb23"
+      },
+      {
+        "source": "4cfd2099ee25b7d0b32ba66bfaf7b2b3431a1225",
+        "file": "src/game/HeroPlayReminder.ts",
+        "blob": "8b868c6ff6d476198a5f6df258d4662b418cfd8a"
+      },
+      {
+        "source": "4cfd2099ee25b7d0b32ba66bfaf7b2b3431a1225",
+        "file": "src/game/HeroSkillGuide.ts",
+        "blob": "bb28bbb61876c9cda4ae0e164d442f062ed94af5"
+      },
+      {
+        "source": "4cfd2099ee25b7d0b32ba66bfaf7b2b3431a1225",
+        "file": "src/game/HeroSkillPresentation.ts",
+        "blob": "dad132f5585eef318e6e841218813a85e7e4c05d"
+      },
+      {
+        "source": "4cfd2099ee25b7d0b32ba66bfaf7b2b3431a1225",
+        "file": "src/game/SelectionPresentation.ts",
+        "blob": "a2185379336b982b9785194611acb092069c2919"
+      },
+      {
+        "source": "4cfd2099ee25b7d0b32ba66bfaf7b2b3431a1225",
+        "file": "src/game/XinPassiveSkillEntry.ts",
+        "blob": "cea8f731c26fb1d11f9d25e7e189cfdc37634fea"
+      }
+    ],
+    "limitedPcObservation": {
+      "status": "LIMITED_PC_PARENT_REPORTED",
+      "version": "9e1959cb8c89227348c81c923006754aa4902ed3",
+      "reportedOn": "2026-10-18",
+      "sourceThread": "01a0ff29-5792-7524-8980-f2037b2c30ce",
+      "actions": [
+        "Parent confirmed deployed domain version; integration agent did not check the domain.",
+        "Continue a real Xin Qiji stage on remote PC: unframed small passive label and description are visible.",
+        "Without discarding, select 7 clubs and 7 spades and play directly; animation begins without an erroneous active-skill reminder."
+      ],
+      "observedPass": [
+        "current PC passive label and short copy",
+        "direct paired-card play without active reminder"
+      ],
+      "notObserved": [
+        "final score or reward for this paired hand",
+        "corrected second saved-choice source flight",
+        "mobile/touch",
+        "AX actual readout",
+        "continuous recording or screenshot evidence supplied to this agent",
+        "particle texture/strength approval",
+        "hearing, physical device or performance"
+      ],
+      "experienceAccepted": false,
+      "H17": "in_progress",
+      "P08": "in_progress"
+    },
+    "ciTriage": {
+      "run": "39114694517",
+      "head": "9e1959cb8c89227348c81c923006754aa4902ed3",
+      "scope": "Read failing job logs only; no local tests, browser, CI rerun or changes to tests/harness/product.",
+      "jobs": {
+        "docs": {
+          "id": 117637977971,
+          "status": "success"
+        },
+        "browser": {
+          "id": 117637978143,
+          "status": "success"
+        },
+        "domain": {
+          "id": 117637978230,
+          "status": "failure",
+          "passed": 4578,
+          "failed": 5,
+          "filesFailed": 2,
+          "filesPassed": 376
+        }
+      },
+      "failures": [
+        {
+          "file": "tests/hero-phase-status.test.ts",
+          "cases": 1,
+          "cause": "Current automatic Xin is passive even after stage end; old test expects ended badge. Actual detail explanation separately says stage ended and cue remains unavailable/nonactionable.",
+          "minimalFix": "Expect Xin passive label while preserving unavailable/nonactionable, unchanged state and explicit ended explanation; keep other heroes unchanged."
+        },
+        {
+          "file": "tests/laohuan-discard-handoff.test.ts",
+          "cases": 2,
+          "cause": "Prototype-only mock calls inspectRole with actual current newRunIdentity, so it now enters read-only explanation instead of the former active discard draft. Mock bypasses real class field initializers: missing assistIds triggers length TypeError; actual GameScene initializes assistIds=[].",
+          "minimalFix": "Keep old active discard separation, double-confirm and close/lifecycle/state rejection assertions under an explicit existing S04 active identity. Keep current new-run fixture automatic; verify its role entry is read-only with a complete fixture, rather than restoring active production behavior."
+        },
+        {
+          "file": "tests/laohuan-discard-handoff.test.ts",
+          "cases": 2,
+          "cause": "Gap0/1 both still have real required=3; test expects old active step3 copy, current passive guidance is natural choose-cards text.",
+          "minimalFix": "Update only passive guidance expectation; retain required=3, actual discarded and retained IDs, single quota cost, pending completion; reject wrong ChooseRefill count without state mutation."
+        }
+      ],
+      "assessment": "No production regression identified by these five failures. They are remaining old active-display/fixture contracts. Browser smoke is already green and needs no further change. This is source/log analysis, not a new runtime acceptance."
+    },
+    "remainingContractSync": {
+      "status": "engineering_checked",
+      "base": "9e1959cb8c89227348c81c923006754aa4902ed3",
+      "branch": "dev/xin-remaining-contracts-20261018",
+      "ciInput": "39114694517",
+      "changedTests": [
+        "tests/hero-phase-status.test.ts",
+        "tests/laohuan-discard-handoff.test.ts"
+      ],
+      "fixture": "tests/fixtures/laohuan-discard-handoff.ts",
+      "oldIdentity": "Explicit R2_S04_FINISH_VERSION/HASH only in the two existing active-entry tests; fixture default still actual current newRunIdentity.",
+      "preserved": [
+        "Unavailable/nonactionable ended-stage cue plus explicit ended explanation",
+        "Discard draft isolated from the five-card straight",
+        "Exact discard card ID and original hand selection unchanged",
+        "Double confirmation submits exactly once",
+        "Close/lifecycle/state changes reject stale confirmation without state or resource consumption",
+        "Gap0/1 required=3 and real selected/rejected card IDs remain authoritative",
+        "Wrong ChooseRefill counts2/4 reject with same state object and deep equality",
+        "Valid three-card choice consumes exactly one normal discard and clears pending"
+      ],
+      "checks": {
+        "command": "node node_modules/vitest/vitest.mjs run tests/hero-phase-status.test.ts tests/laohuan-discard-handoff.test.ts",
+        "files": 2,
+        "passed": 13,
+        "failed": 0,
+        "results": [
+          {
+            "file": "hero-phase-status.test.ts",
+            "cases": 9,
+            "status": "passed"
+          },
+          {
+            "file": "laohuan-discard-handoff.test.ts",
+            "cases": 4,
+            "status": "passed"
+          }
+        ],
+        "typecheck": {
+          "command": "node node_modules/typescript/bin/tsc --noEmit",
+          "status": "PASS",
+          "exitCode": 0
+        },
+        "diffCheck": "PASS"
+      },
+      "productionAndBrowserHarnessChanges": [],
+      "browser": "NOT_RUN; exact base CI browser job passed",
+      "build": "NOT_RUN; no runtime changes and user requested only two files/typecheck",
+      "fullSuite": "NOT_RUN",
+      "compatibilityMatrix": "NOT_ADDED",
+      "experienceAccepted": false
+    }
+  }
+}

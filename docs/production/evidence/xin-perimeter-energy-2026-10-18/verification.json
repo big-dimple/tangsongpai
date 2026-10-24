@@ -1,0 +1,348 @@
+{
+  "taskId": "H17-xin-perimeter-energy",
+  "status": "in_progress",
+  "sourceBase": "9e1959cb8c89227348c81c923006754aa4902ed3",
+  "product": "e0ed4f3d3fde8d5011d0f2fca8c9e135de24333c",
+  "branch": "dev/xin-perimeter-energy-20261018",
+  "scope": [
+    "src/game/XinPerimeterEnergy.ts",
+    "src/game/HeroSkillParticles.ts",
+    "src/game/HeroTargetAttachment.ts"
+  ],
+  "baselineAudit": {
+    "edge": "speed0,40ms births,360ms life,cap9; stationary shrinking soft dots",
+    "initialSpriteAt64pxCard": 9.152,
+    "canvas": "both channels precolored with the same glow, no tint",
+    "staticLayer": "four small round marks were drawn even in full motion",
+    "runtimeBranchDuringParentObservation": "not observed here; dot must record full/reduced and renderer branch"
+  },
+  "candidate": {
+    "coreSizeAt64px": [
+      16,
+      3
+    ],
+    "wakeSizeAt64px": [
+      34.56,
+      6
+    ],
+    "wakeAlpha": 0.5328,
+    "periodMs": 3200
+  },
+  "retained": {
+    "coreSizeAt64px": [
+      21.76,
+      3.8
+    ],
+    "wakeSizeAt64px": [
+      46.08,
+      8
+    ],
+    "wakeAlpha": 0.74,
+    "periodMs": 2600
+  },
+  "budget": {
+    "corePerTarget": 3,
+    "wakePerTarget": 6,
+    "steadyPerTargetBefore": 9,
+    "steadyPerTargetAfter": 9,
+    "sevenTargetReservation": 63,
+    "eightTargetReservation": 72,
+    "sceneLimit": 128,
+    "configuredSteadyBirthsPerSecondBefore": 25,
+    "configuredSteadyBirthsPerSecondAfter": 11.25,
+    "birthLimitations": "Actual births also depend on frame interval, pool limit and death zones",
+    "newCanvasColorBitmaps": 2,
+    "bitmapPixelsEach": 1024
+  },
+  "checks": [
+    {
+      "name": "targeted tests",
+      "status": "PASS",
+      "files": 9,
+      "tests": 70,
+      "command": "Exact 9-file command in README.md"
+    },
+    {
+      "name": "typecheck and Vite build",
+      "status": "PASS",
+      "modules": 379,
+      "builtAtUtc": "2026-10-18T09:33:31.485Z",
+      "artifact": "index-cGmHdb0e.js",
+      "metadata": "9e1959cb dirty worktree; runtime sources including the then-untracked module committed unchanged as product; subsequent test-only Canvas lifecycle addition passed final typecheck"
+    },
+    {
+      "name": "patch whitespace",
+      "status": "PASS"
+    },
+    {
+      "name": "same-version browser continuous presentation",
+      "status": "NOT_RUN_PARENT_DOT_PENDING"
+    },
+    {
+      "name": "physical-device touch/performance and audio",
+      "status": "NOT_RUN"
+    }
+  ],
+  "nativeEvidence": "Pinned Phaser3.90 Particle.fire/update and EmitterOps execute in Node; delta partitions, moving geometry, stretched size, whole-footprint alpha guard and finite initial accent checked. Emitter/texture/scene shells are synthetic, no browser pixels or performance measured.",
+  "replayProtection": "Initial candidate accent requires current successful-eye ignite; retained accent intersects current real sourceTargetIds. Same receipt rebind/hidden return does not re-accent. Existing finite source-flight delta remains unchanged.",
+  "resourceGap": "No blocking texture gap for this batch; existing cached soft32 reused, no third-party code, image downloads or original art changes.",
+  "rulesOrSaveChanges": false,
+  "gameSceneChanges": false,
+  "experienceAccepted": false,
+  "visibilityRegression": {
+    "version": "287a38cea83a92195a3a5a9a87ace69100749a94",
+    "observedAtUtc": "2026-10-18 09:52 UTC (minute precision)",
+    "provenance": "Parent remote dot PC reports screenshot observations across candidate, selected and confirmed phases; screenshots not attached in this child session",
+    "scenario": "Discard A hearts, candidates 2 spades/5 hearts/10 clubs; choose and retain 5 hearts",
+    "observed": "Perimeter energy invisible across phases; eye/source flight and retained tag remain functional",
+    "status": "BASELINE_VISUAL_REGRESSION_CONFIRMED_PARENT_REPORTED"
+  },
+  "visibilityRepair": {
+    "sourceBase": "287a38cea83a92195a3a5a9a87ace69100749a94",
+    "product": "b4f4a365103396b07675f159e59cd0370c5c0d7c",
+    "branch": "fix/xin-perimeter-visible-20261018",
+    "cause": "Native Particle.fire adds onEmit offsets; a death-zone-rejected pooled particle is reused without reset, so absolute callback coordinates accumulated and drifted into protected print/neighbor faces.",
+    "fix": "Return target minus existing particle position from x/y onEmit; keep absolute onUpdate and all quantities, sizes, masks, palettes and lifetime rules unchanged.",
+    "nativeRegression": {
+      "test": "tests/xin-native-emitter-runtime.test.ts",
+      "cases": 4,
+      "realObjects": [
+        "ParticleEmitter",
+        "Particle",
+        "EmitterOp",
+        "EmitterColorOp",
+        "Frame",
+        "Container",
+        "Graphics",
+        "Zone",
+        "DeathZone",
+        "DisplayList",
+        "UpdateList"
+      ],
+      "durationMs": 3200,
+      "beforeHeart5Samples": {
+        "candidate": [
+          0,
+          0,
+          0
+        ],
+        "selected": [
+          0,
+          0,
+          0
+        ],
+        "retained": [
+          0,
+          0,
+          0
+        ]
+      },
+      "beforeInvalidOwnFaceChecks": [
+        23,
+        23,
+        20
+      ],
+      "beforeFailures": 3,
+      "after": "All three stages have over100 valid nontransparent samples total, over10 in each time window, no wrong own-face birth centers, non-target cards have no emitters and native update list clears",
+      "limitations": "Node scene/texture/font shells; no browser pixels, touch or hardware rendering measured"
+    },
+    "checks": {
+      "status": "PASS",
+      "files": 10,
+      "tests": 74,
+      "command": "Exact 10-file vitest command in README.md",
+      "build": "typecheck and Vite379 PASS",
+      "builtAtUtc": "2026-10-18T10:05:00.469Z",
+      "artifact": "index-mRzCsG02.js",
+      "metadata": "287a38 dirty birth-offset patch; runtime sources committed unchanged as product; native test was untracked",
+      "diffCheck": "PASS"
+    },
+    "dynamicAcceptance": "LIMITED_PC_VISIBILITY_RECOVERED_PARENT_REPORTED_QUALITY_UNACCEPTED",
+    "experienceAccepted": false
+  },
+  "pcRecoveryObservation": {
+    "version": "bab78be5be4bc6d8cdb9780ac8a4eebb69f697da",
+    "timeAsReported": "2026-10-18 10:21 (parent record)",
+    "provenance": "Parent remote dot PC real play; no screenshot/video attachment received in this child session",
+    "scenario": "Discard8H, candidates10H/KC/3H, select and retain3H",
+    "candidate": "Thin dark-green wakes visible around real candidates",
+    "selected": "Moving short bright trace visible above selected3H",
+    "confirmed": "Avatar source travels only to new3H; later wakes remain visible above and right of3H",
+    "interaction": "Buttons and retain choice operate normally",
+    "visibilityRegressionRecovery": "LIMITED_PC_RECOVERY_CONFIRMED_PARENT_REPORTED",
+    "textureQuality": "UNACCEPTED_STILL_THIN_FAINT_BELOW_USER_GOAL",
+    "mobile": "NOT_RUN",
+    "audio": "NOT_RUN",
+    "physicalDevicePerformance": "NOT_RUN",
+    "experienceAccepted": false,
+    "thisChange": "Documentation only; no runtime parameter patch, software retest/build or extra release"
+  },
+  "nextBatchProposal": {
+    "status": "PROPOSAL_ONLY_NOT_SCHEDULED_OR_IMPLEMENTED",
+    "sample": "First fix an assessable Xin target: normal-size PC and390x844 portrait, over3s without hover/click, ordinary-card contrast, identifiable moving core/ink wake/soft tail, clear candidate versus retained hierarchy and readable/usable cards",
+    "mobileBudget": "Keep Xin3core+6wake per card, max8visible=72; shared scene128; cached32px texture, owner20Hz and native delta; verify hidden/offscreen/exit/reduced and no old-card replay",
+    "coverage": "After Xin sample approval, prefer Liu single saved target to test reuse. Separately audit Su discarded-instance proxy, Qin actual new-card win/loss, Wen actual release range and Hua paid beneficiaries before claiming coverage.",
+    "ruleChanges": false
+  },
+  "next": "Do not keep issuing parameter patches. Agree a testable Xin visual sample and mobile budget/hero coverage first; PC total-disappearance is only partially signed off, texture quality remains unaccepted and portrait/audio/device review remains open. H17/P08 stay in_progress.",
+  "integration": {
+    "status": "engineering_integrated_remote_dynamic_pending",
+    "baseMain": "470091912bc225cfbaec09827cb37abf1ab13704",
+    "sourceHead": "ab0d4eb1d5da260bb3d73c241fb961b91ce014dc",
+    "product": "e0ed4f3d3fde8d5011d0f2fca8c9e135de24333c",
+    "branch": "dev/xin-perimeter-integration-20261018",
+    "runtimeAndTestsExactSource": true,
+    "sourceFilesChecked": [
+      "src/game/HeroSkillParticles.ts",
+      "src/game/HeroTargetAttachment.ts",
+      "src/game/XinPerimeterEnergy.ts",
+      "tests/hero-native-particles.test.ts",
+      "tests/xin-perimeter-energy.test.ts",
+      "tests/xin-seven-candidates.test.ts"
+    ],
+    "sourceChecksReused": {
+      "files": 9,
+      "tests": 70,
+      "typecheck": "PASS",
+      "buildModules": 379,
+      "limits": "Exact source evidence reused; not added to joint count."
+    },
+    "jointChecks": {
+      "files": 4,
+      "tests": 19,
+      "failed": 0,
+      "command": "node node_modules/vitest/vitest.mjs run tests/xin-passive-semantics.test.ts tests/xin-repeat-sequence.test.ts tests/xin-seven-candidates.test.ts tests/hero-retained-ownership.test.ts",
+      "results": [
+        {
+          "file": "hero-retained-ownership.test.ts",
+          "cases": 4,
+          "status": "passed"
+        },
+        {
+          "file": "xin-passive-semantics.test.ts",
+          "cases": 12,
+          "status": "passed"
+        },
+        {
+          "file": "xin-repeat-sequence.test.ts",
+          "cases": 1,
+          "status": "passed"
+        },
+        {
+          "file": "xin-seven-candidates.test.ts",
+          "cases": 2,
+          "status": "passed"
+        }
+      ],
+      "typecheck": "PASS within npm run build",
+      "build": {
+        "status": "PASS",
+        "modules": 379,
+        "artifact": "index-cGmHdb0e.js",
+        "metadata": "base47009191 plus pending normal source merge; only doc receipt follows"
+      },
+      "planAndDiff": "PASS"
+    },
+    "preserved": "GameScene, passive semantics/reminder, source-delta state, latest13 contract tests, domain/application/content, audio/materials, loading/menu, all harness/scripts/gates and dependencies unchanged from latest main",
+    "priorCi": {
+      "head": "470091912bc225cfbaec09827cb37abf1ab13704",
+      "run": "39115601991",
+      "status": "completed/success",
+      "verification": "Parent confirmed; not queried again"
+    },
+    "ownRuntimeOrTestEdits": false,
+    "browser": "NOT_RUN",
+    "fullSuite": "NOT_RUN",
+    "sameVersionRemoteDynamic": "PENDING_PARENT_DOT",
+    "experienceAccepted": false,
+    "H17": "in_progress",
+    "P08": "in_progress",
+    "next": "Remote PC and portrait with full/reduced setting and renderer recorded: real two discards, >3s candidate/retained flow, print readability, second receipt only new-card flight/accent, hide/reduced/exit cleanup. Particle texture/hearing/physical device/performance remain unaccepted."
+  },
+  "visibilityRepairIntegration": {
+    "status": "engineering_integrated_limited_pc_visibility_recovered_quality_unaccepted",
+    "baseMain": "287a38cea83a92195a3a5a9a87ace69100749a94",
+    "sourceHead": "87a9baf16525f134a21435ca35ec36efba489b2e",
+    "product": "b4f4a365103396b07675f159e59cd0370c5c0d7c",
+    "branch": "dev/xin-perimeter-visible-integration-20261018",
+    "runtimeDiff": "src/game/XinPerimeterEnergy.ts",
+    "sourceEquality": [
+      {
+        "file": "src/game/XinPerimeterEnergy.ts",
+        "expected": "efbeb557df8a71517c0d19016608e1ebf9bdd009",
+        "actual": "efbeb557df8a71517c0d19016608e1ebf9bdd009"
+      },
+      {
+        "file": "tests/xin-native-emitter-runtime.test.ts",
+        "expected": "ac2508c5ffc4b3c0b6b3203bb566379f73bd6ee5",
+        "actual": "ac2508c5ffc4b3c0b6b3203bb566379f73bd6ee5"
+      }
+    ],
+    "sourceChecksReused": {
+      "files": 10,
+      "tests": 74,
+      "typecheck": "PASS",
+      "buildModules": 379,
+      "note": "Exact source results reused; not added to joint count."
+    },
+    "joint": {
+      "files": 4,
+      "tests": 19,
+      "failed": 0,
+      "command": "node node_modules/vitest/vitest.mjs run tests/xin-native-emitter-runtime.test.ts tests/xin-passive-semantics.test.ts tests/xin-repeat-sequence.test.ts tests/xin-seven-candidates.test.ts",
+      "results": [
+        {
+          "file": "xin-native-emitter-runtime.test.ts",
+          "cases": 4,
+          "status": "passed"
+        },
+        {
+          "file": "xin-passive-semantics.test.ts",
+          "cases": 12,
+          "status": "passed"
+        },
+        {
+          "file": "xin-repeat-sequence.test.ts",
+          "cases": 1,
+          "status": "passed"
+        },
+        {
+          "file": "xin-seven-candidates.test.ts",
+          "cases": 2,
+          "status": "passed"
+        }
+      ],
+      "typecheck": "PASS in npm run build",
+      "build": {
+        "status": "PASS",
+        "modules": 379,
+        "artifact": "index-mRzCsG02.js",
+        "metadata": "base287a38 plus pending source merge; docs-only receipt followed"
+      },
+      "planAndDiff": "PASS"
+    },
+    "unchanged": [
+      "particle counts/sizes/blending/textures",
+      "death zones and full-footprint alpha masks",
+      "other heroes",
+      "GameScene/passive/reminder/source-delta/save/rules",
+      "original art/audio/loading/menu",
+      "latest green test contracts",
+      "all browser harness/scripts/gates/dependencies"
+    ],
+    "priorCi": {
+      "head": "287a38cea83a92195a3a5a9a87ace69100749a94",
+      "run": "39116628078",
+      "status": "success",
+      "verification": "Parent confirmed; not re-queried",
+      "pixelAcceptance": false
+    },
+    "ownRuntimeOrTestEdits": false,
+    "fullSuite": "NOT_RUN",
+    "localBrowser": "NOT_RUN",
+    "sameVersionRemotePixels": "LIMITED_PC_RECOVERY_PARENT_REPORTED_ON_BAB78BE5_MOBILE_PENDING",
+    "experienceAccepted": false,
+    "H17": "in_progress",
+    "P08": "in_progress"
+  }
+}

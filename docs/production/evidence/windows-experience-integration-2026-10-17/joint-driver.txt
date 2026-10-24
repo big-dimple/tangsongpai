@@ -1,0 +1,11 @@
+building owned-source sample
+compiled sample ready
+pc: loading local compiled page
+pc: title ready
+pc: real public import ready
+{"key":"pc","status":"PASS","frames":853,"events":13,"tiers":["ordinary","multiplier","multiply"]}
+cancel-rebound: loading local compiled page
+cancel-rebound: title ready
+cancel-rebound: real public import ready
+{"key":"cancel-rebound","status":"PASS","frames":796,"events":13,"tiers":["ordinary","multiplier","multiply"]}
+{"status":"PASS","cases":[{"key":"pc","sources":13,"polyFlights":2,"calls":47,"lowCalls":0},{"key":"cancel-rebound","calls":46,"lowCalls":45}],"out":"shots/windows-experience-integration-20261017/joint"}

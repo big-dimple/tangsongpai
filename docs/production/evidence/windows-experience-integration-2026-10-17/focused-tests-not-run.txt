@@ -1,0 +1,6 @@
+
+> tangsongpai@0.1.0 test
+> vitest run tests/audio-music-lifecycle.test.ts tests/music-filter.test.ts tests/music-modal-stack.test.ts tests/joker-score-strike.test.ts tests/owned-joker-score-motion.test.ts tests/score-phrase.test.ts
+
+'vitest' is not recognized as an internal or external command,
+operable program or batch file.

@@ -1,0 +1,34 @@
+{
+  "taskId": "H17-xin-refill-sequence",
+  "testedCommit": "69a16e61be9f718ccf03afd9537a66c88e63589b",
+  "baseCommit": "f46ef5bec0ab244ec70fc8221bf19e5abfe0c47e",
+  "ruleProduct": "0110d725022283d62cd527340728ddae01678f9d",
+  "branch": "dev/xin-refill-sequence-20261018",
+  "testRunState": "Pre-commit final working tree; tested src/tests committed unchanged in testedCommit.",
+  "environment": {"os": "Windows", "browser": "NOT_RUN", "device": "NOT_RUN", "rendering": "Phaser game objects/time mocked in Node tests"},
+  "checks": [
+    {"name": "Xin repeat/presentation and related shared contracts", "status": "PASS", "exitCode": 0, "files": 14, "tests": 105, "command": "Exact 14-file vitest command in README.md"},
+    {"name": "typecheck and Vite build", "status": "PASS", "exitCode": 0, "command": "npm run build", "modules": 377, "builtAtUtc": "2026-10-18T08:27:40.834Z", "buildMetadata": "e3e2ae60 implementation plus dirty view-cleanup patch, committed unchanged as final testedCommit"},
+    {"name": "patch whitespace", "status": "PASS", "exitCode": 0, "command": "git diff --check"},
+    {"name": "PC/mobile continuous presentation, touch and device performance", "status": "NOT_RUN"}
+  ],
+  "secondNormalDiscard": {"test": "tests/xin-repeat-sequence.test.ts", "persistence": "real SavedRun with in-memory SaveStore and checkpoint/restore equality after both choices", "sceneMethods": "actual discardSelected, showXinRefillLockEyes, toggleCard, chooseRefill, showLaohuanPayoff", "ordinaryActions": 2, "explicitLaohuanTrickField": false, "historyFlagBeforeSecond": true, "eyeEventIds": ["xin/repeat/command/4/xin-refill-lock", "xin/repeat/command/6/xin-refill-lock"], "distinctGenerations": true, "normalDiscardsSpent": 2, "journalCommands": 6, "storeCommits": 7},
+  "sevenCandidates": {"test": "tests/xin-seven-candidates.test.ts", "tags": 7, "nativeEmitters": 14, "reservedParticles": 112, "sceneBudget": 128, "ordinaryCardEffects": 0},
+  "unchangedEyeSHA256": "375b308030e5e789f9c8d1d80807c739bb3fc820c73fefb09c330083349a26a1",
+  "ownDomainChanges": false,
+  "humanReview": {"status": "LIMITED_PC_PARENT_REPORTED_ON_BASELINE", "version": "41aef038aede64ddf570bf325545c65333dbbe50", "evidence": "Parent reports two ordinary discards, separate eye pictures and clickable three-card choices; no screenshot or continuous recording supplied here. Particle texture not accepted; corrected product, mobile, audio and physical-device acceptance remain pending."},
+  "sourceDeltaRepair": {
+    "product": "b2c4d3ac432476e700d3f0d8fe06d18ea15fa7b9",
+    "base": "41aef038aede64ddf570bf325545c65333dbbe50",
+    "branch": "fix/xin-retain-source-delta-20261018",
+    "observedBeforeRepair": "PC: first keep J hearts, second keep 9 hearts; both retain ownership, but second receipt sends avatar source streams to both old and new cards. Discards 3 to 2 to 1, plays remain 4.",
+    "cause": "Persistent retained ownership union was also used for each new receipt's source drawing endpoints.",
+    "fix": "Preserve owned targetIds; pass only newly retained saved-instance IDs as sourceTargetIds through ordinary refresh and actual source geometry. Explicit empty sources never fall back to old ownership; other hero defaults remain unchanged.",
+    "checks": {"targetedFiles": 7, "targetedTests": 45, "status": "PASS", "command": "Exact 7-file vitest command in README.md", "regressionFirstRun": "3 new failures reproduced before source repair; a later cadence assertion used 40ms under the existing 20Hz render interval, corrected to 50ms without runtime change.", "build": "typecheck and Vite 377 modules PASS", "builtAtUtc": "2026-10-18T09:02:31.786Z", "buildMetadata": "41aef038 plus dirty source repair, runtime sources committed unchanged as product; subsequent test-only cadence expectation correction", "artifact": "index-6T2L0kMR.js", "diffCheck": "PASS"},
+    "dynamicAfterRepair": "NOT_RUN_PARENT_REMOTE_DOT_PENDING",
+    "particleTextureAccepted": false,
+    "experienceAccepted": false
+  },
+  "limitations": ["No local browser/game run", "No claim of coolness or visual approval from tests", "No physical-device, touch, hearing or performance acceptance", "Other five hero visuals are not expanded by this repair; shared defaults retained"],
+  "nextTask": "Root integrates the minimal source-delta repair, validates two normal Xin discards on the same version through remote dot with continuous evidence, and retains outstanding mobile, touch, reduced-motion, cleanup, audio, performance and particle-texture review. H17/P08 remain in_progress."
+}
