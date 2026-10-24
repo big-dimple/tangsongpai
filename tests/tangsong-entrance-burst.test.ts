@@ -3,6 +3,7 @@ import {
   createShadowCanvasHost,
   mountHeroEntranceBurst,
   mountTangSongEnsembleBurst,
+  resetHeroEntranceForNewRun,
   resetTitleEnsembleForTests,
 } from '../src/game/TangSongEntranceBurst';
 
@@ -188,11 +189,13 @@ describe('TangSongEntranceBurst presentation and shadow isolation', () => {
 
   beforeEach(() => {
     resetTitleEnsembleForTests();
+    resetHeroEntranceForNewRun();
     dom = setupDomDouble();
   });
 
   afterEach(() => {
     resetTitleEnsembleForTests();
+    resetHeroEntranceForNewRun();
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
   });
@@ -248,6 +251,41 @@ describe('TangSongEntranceBurst presentation and shadow isolation', () => {
 
     stop();
     expect(dom.body.querySelector('.qiyu-entrance-burst-canvas')).toBeNull();
+  });
+
+  it('mountHeroEntranceBurst plays once per run and character-select rearms it', () => {
+    const first = mountHeroEntranceBurst(dom.body as unknown as HTMLElement, 'amo', {
+      context: 'stage',
+      reducedMotion: false,
+      playAudio: false,
+    });
+    expect(dom.body.querySelector('.qiyu-entrance-burst-canvas')).not.toBeNull();
+    first();
+
+    for (const context of ['shop', 'boss', 'qiyu'] as const) {
+      const skip = mountHeroEntranceBurst(dom.body as unknown as HTMLElement, 'amo', {
+        context,
+        reducedMotion: false,
+        playAudio: false,
+      });
+      expect(dom.body.querySelector('.qiyu-entrance-burst-canvas')).toBeNull();
+      skip();
+    }
+
+    const ensemble = mountTangSongEnsembleBurst(dom.body as unknown as HTMLElement, {
+      mode: 'character-select',
+      reducedMotion: false,
+      playAudio: false,
+    });
+    ensemble();
+
+    const nextRun = mountHeroEntranceBurst(dom.body as unknown as HTMLElement, 'laohuan', {
+      context: 'stage',
+      reducedMotion: false,
+      playAudio: false,
+    });
+    expect(dom.body.querySelector('.qiyu-entrance-burst-canvas')).not.toBeNull();
+    nextRun();
   });
 
   it('mountTangSongEnsembleBurst mode:title plays only once per session and allows test reset', () => {

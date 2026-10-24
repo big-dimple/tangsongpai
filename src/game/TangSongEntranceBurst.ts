@@ -130,12 +130,11 @@ function roundRectPath(ctx: CanvasRenderingContext2D, x: number, y: number, w: n
   ctx.moveTo(x + rr, y);
   ctx.lineTo(x + w - rr, y);
   ctx.quadraticCurveTo(x + w, y, x + w, y + rr);
-  ctx.lineTo(x + w, y + h - rr);
-  ctx.quadraticCurveTo(x + w, y + h, x + w - rr, y + h);
-  ctx.lineTo(x + rr, y + h);
-  ctx.quadraticCurveTo(x, y + h, x, y + h - rr);
-  ctx.lineTo(x, y + rr);
-  ctx.quadraticCurveTo(x, y, x + rr, y);
+  ctx.lineTo(x + w, y + h, x + w, y + h - rr);
+  ctx.lineTo(x + rr, y + h, x + rr, y + h);
+  ctx.lineTo(x, y + h - rr);
+  ctx.lineTo(x, y, x, y + rr);
+  ctx.lineTo(x, y, x + rr, y);
   ctx.closePath();
 }
 
@@ -351,6 +350,12 @@ function prefersReducedMotion(explicit?: boolean): boolean {
 export type HeroEntranceContext = 'qiyu' | 'stage' | 'boss' | 'shop' | 'select';
 
 let entranceSerial = 0;
+let heroEntrancePlayed = false;
+
+/** Rearm the single hero cut-in when a fresh character-selection/run cycle starts. */
+export function resetHeroEntranceForNewRun(): void {
+  heroEntrancePlayed = false;
+}
 
 /**
  * Shared 6-hero explosive entrance cut-in: ink/gold speed lines, an angled lacquer
@@ -359,6 +364,8 @@ let entranceSerial = 0;
  *
  * The `select` context is a lighter, faster variant for browsing heroes: it keeps the
  * selection screen readable (lighter veil, smaller shake) and plays a single cue.
+ * All contexts share one per-run budget so stage / shop / boss / Qiyu entries cannot
+ * repeatedly interrupt the player after the opening cut-in.
  */
 export function mountHeroEntranceBurst(
   host: HTMLElement | null | undefined,
@@ -371,7 +378,7 @@ export function mountHeroEntranceBurst(
   } = {},
 ): () => void {
   if (typeof window === 'undefined' || typeof document === 'undefined' || !host) return () => {};
-  if (prefersReducedMotion(options.reducedMotion)) return () => {};
+  if (prefersReducedMotion(options.reducedMotion) || heroEntrancePlayed) return () => {};
 
   const context = options.context ?? 'qiyu';
   const light = context === 'select';
@@ -379,6 +386,7 @@ export function mountHeroEntranceBurst(
 
   const shadow = createShadowCanvasHost(`qiyu-entrance-burst-canvas is-${context}`, 960, 540, host === document.body);
   if (!shadow) return () => {};
+  heroEntrancePlayed = true;
   const {hostNode, canvas, ctx} = shadow;
   host.append(hostNode);
 
@@ -690,6 +698,7 @@ let titleEnsemblePlayed = false;
  *   the spectacle hands off seamlessly into the light paper home instead of flashing a
  *   dark screen over it.
  * - `character-select`: dark lacquer & gold palette matching the hero-selection stage.
+ *   Entering this mode also rearms the one hero cut-in available to the coming run.
  *
  * Landscape unrolls a horizontal handscroll (手卷) with the six heroes in one row;
  * portrait unrolls a hanging scroll (立轴) with a 3×2 grid.
@@ -700,6 +709,7 @@ export function mountTangSongEnsembleBurst(
 ): () => void {
   if (typeof window === 'undefined' || typeof document === 'undefined' || !host) return () => {};
   const mode = options.mode ?? 'character-select';
+  if (mode === 'character-select') resetHeroEntranceForNewRun();
   if (mode === 'title') {
     if (titleEnsemblePlayed) return () => {};
     titleEnsemblePlayed = true;
