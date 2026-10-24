@@ -1,0 +1,166 @@
+> 历史快照，清理前基线 `3e01adf897d379b50c4575ba7c21cc77d143866c`。仅保存原日期、SHA、合同与失败记录；不是当前派工、用户批准或授权。相对链接固定到当时版本，原始内容可在[源文件](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/development-handoff.md)核对。
+
+# 当前交接：P08全游戏手绘墨线／纸色主线
+
+## 当前计划入口
+
+2026-10-07执行校准：先完成[首章留人门槛](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/DELIVERY_PLAN.md#11-交付目标)；软件跑通与真实玩家理解/继续行为分列，未达不以角色/后期扩展凑成果。仅此指向当前合同，下方历史保持。
+
+当前完整策划和开发合同统一见[DELIVERY_PLAN](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/DELIVERY_PLAN.md)。本页不复制当前摘要。以下旧“当前”、review、未main、待办和发布覆盖段落按各自原SHA保留为历史，不能作为当前调度；原证据、失败与未通过门槛不删除。
+
+2026-10-16 本机开发整合的当前源码、验证、原失败及下一步统一见[本机整合记录](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/local-windows-integration-2026-10-16/README.md)；P08未整体签收，该并集已正常发布main fa5b30ee。
+
+2026-10-16 后续成长解释小批见[当前新局成长因果](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/current-growth-causality-2026-10-16/README.md)；基线main fa5b30ee已正常发布，本批仍为独立开发分支，加载另路。
+
+2026-10-16 最新先行批次见[加载与加成说明组合](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/loading-growth-integration-2026-10-16/README.md)：当前入口叫“加成从哪来”；加载97279e91与成长组合先独立验证并按最新用户授权正常发布，首页与结算仍各自验证后逐批整合，不混未验证修改。main精确回执以本批交付为准，不查询CI/域名。
+
+2026-10-16 首页/加载/成长当前并集见[新同版记录](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/home-experience-integration-2026-10-16/README.md)，先行加载与成长main8090b58c已核实发布；首页按本批授权接续验证并发布。结算PC回归候选331db92d未混入，冻结分支fix/settlement-layout-performance-20261016由父线程交接独立修复，不以手机改善代签PC性能。
+
+2026-10-16 最新结算批次见[同版整合记录](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/settlement-current-main-integration-2026-10-16/README.md)：main8af3e506上正常合入8bf977e1及前置，114项相关测试、构建和七个原生流程通过，按既有授权正常发布。原PC初版回归及低分返回未归因尾部原证据保留；P08未整体签收。独立指针修复0fd1c113仅开发分支，不混入此批。
+
+2026-10-16 当前指针接续见[同版证据](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/pointer-current-main-integration-2026-10-16/README.md)：main4b8ddbcf上正常合并0fd1c113，194项相关测试、构建、三尺寸中断及普通流程通过，按本批授权正常发布。仅SceneView生产差异；低分返回采样工作树未占用，P08仍in_progress。
+
+2026-10-16 最新实际main为指针批次0c4dab18。下一项已持牌短按时钟缺陷在独立分支fix/owned-card-release-clock-20261016形成产品842cad2d，95项/构建及三尺寸原生前后对照通过，见[独立开发证据](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/owned-card-release-clock-2026-10-16/README.md)。仅持OwnedJokerInput及对应测试/专用harness/证据，不改SceneView、GameScene或结算，不占用低分采样工作树；未合main。
+
+2026-10-16 已持牌d36b63f1按本批授权接续发布，精确源码与本地验证见[发布记录](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/owned-card-current-main-integration-2026-10-16/README.md)。此后仅盘点DELIVERY_PLAN当前“下一批玩家体验事项与依赖”，待父对齐另一会话范围后分工；不认领新的运行时文件，不再自行扩指针边缘项。
+
+2026-10-16 eb580137热区修复已在main3084上独立正常合并，类型构建和九例原生同版复核见[本批记录](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/skill-secondary-current-main-2026-10-16/README.md)，按用户授权正常发布；音频未验证改动未混入，真机未验，P08仍in_progress。
+
+2026-10-16 音频b0fb0773已在最新CSS main0aae0b3b上正常合并并完成[同版复核](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/audio-current-main-integration-2026-10-16/README.md)，按用户授权正常发布，未代签听感/真机。下一项转真实货架与存档成长反馈；不占另一线程GameScene技能提醒接线，不改经济数值或加术语。
+
+2026-10-16 d6036f8e技能提醒已在已发布音频/CSS main06512d5f上正常合并147fe8da并完成38项及[原生同版核验](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/skill-choice-current-main-2026-10-16/README.md)，按用户授权正常发布；未混经营分支，GameScene零修改，P08仍in_progress。
+
+2026-10-16 经营成长候选16fbe514（base06512d5f）已完成[真实货架与存档闭环](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/shop-growth-continuity-2026-10-16/README.md)：51项/构建，3条同种子购入→成长→下一店→取消/确认出售→冷恢复前后领域状态/命令日志一致。只改商店连续提示；牌桌原反馈和GameScene不动，不改经济/术语，未合main。技能提醒新main需在后续合并中保留。
+
+2026-10-16 当前经营/移动并集：成长ea54e7ed与移动54851f65已在最新main034557dc上正常合并并通过185项/构建、三路线12旋转及39移动场景，按用户授权正常发布。唯一当前证据见[同版记录](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/shop-growth-mobile-current-main-2026-10-16/README.md)；挑战者、高光、失败体验的下一批出口见DELIVERY_PLAN当前盘点，未领取新运行时文件。音频/技能提醒/GameScene/规则/原图保持，P08仍in_progress。
+
+2026-10-16 B05交接：独立feat/b05-first-encounter-20261016，产品e42c500b；仅Opponent*与GameScene三处局部调用，30项/构建/14原生通过，详见[证据](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/b05-first-encounter-2026-10-16/README.md)。真实高光队列、HeroClimax/ScoreLanding和失败组件保持，供另一会话高光工作避开本批窗口；专属人物/眼神素材未交付，未签完整镜头。只开发分支push，父顺序整合。
+
+2026-10-16 当前B05已按授权正常整合发布；[同版记录](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/b05-current-main-integration-2026-10-16/README.md)区分精确源码复用与新跑检查。下一项改为用户明确商店自选道具图片/卡顿反馈，独立分支沿缓存链定位与有界后台准备；不占另一会话高光/失败窗口，不把B05人物/眼神素材记完成。
+
+## 共同Joker正常入口/UI交接（PR25，2026-10-05 UTC，仅review）
+
+source92ade25，正常合入PR22 e2fc与PR24 36eff；UI自然证据a8fcd2e与source的src/harness tree相同。六角色普通新局同combo-growth-v1/e7d21，仅阿默助攻；旧身份继续/导入/精确retry与默认createRun v11保留。2377tests/132files、content/type/build/桌面手机smoke/plan冻结全PASS，有限自然d12与阿默路线、四选角视口和7受控正反例通过；15通过PNG与2FAIL图actual view，原FAIL/双方来源保留。证据[summary](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/p08-combo-growth-ui-2026-10-05/summary.json)。精确最终draft CI以PR25交接为准；main仍193c93b，父独审决定发布。P08 in_progress、C04 D32及真机/听感/平衡门槛保持。
+
+## 当前阿默 UI 收尾状态（2026-10-05 UTC，仅 review）
+
+阿默UI有限收尾：正常合入PR18 d6da224；远端source41efea9 / 本地bb02bf1完整tree36e6f777相同。仅修harness真实回首页与desktop文案重叠，14px/44px不减；390/320的8/9/14及短横/桌面六视口、全草稿/双指cancel/保存同候选重试/一次消费/恢复持久trace不重奖及真实v10-v11普通UI通过。最终2315tests/129files、content/type/build/系统Chromium标准双端smoke/plan通过且源码/index/HEAD保持。原FAIL/source及双方历史保留；六通过图和原FAIL图actual view。仅draft PR20；精确reviewCI另报，main父独审串行，默认v11/旧档/其他五人/素材不动。证据docs/production/evidence/p08-amo-assist-ui-closeout-2026-10-05/summary.json。P08 in_progress，C04 D32及原门槛保持。
+
+以下检查点按各自SHA保留。
+
+## 阿默 UI 有限收尾接手（2026-10-05 UTC，仅 PR20）
+
+精确起点 a7870b594244b1a0e0222e5c947c1ebb68b5a52f / tree624ad9b951394ba74587dcb0f4a6ef0b70bf9f82，正常合入已审 PR18 d6da22472d1a1cab0b507803cf7df0e8f52565ed（CI37260193953 success）。七卡 resolver/copy 已接；当前仅修十四牌 harness 回首页逻辑、补有限原生草稿/保存/回看与旧 UI 回归。下方双方检查点及 FAIL 保留原身份，不作为本轮通过。默认v11、旧档、其余五人、领域规则、素材不动；main仅父串行放行。P08 in_progress，C04 D32及既有门槛保持。
+
+## 首个阿默 UI 检查点（2026-10-05 UTC，仅 review）
+
+基于已部署a5及对齐领域1d8400d；UI source c334f7a。显式新profile内联主手/副组、390与短横软件Canvas触控和真实助攻保存结果已过有界检查，两图actual view。58相关tests/type/plan通过，首轮FAIL按原source保留；未main、未完成最终冻结。F七卡resolver/copy、320/14、全草稿撤销/AI/排序和保存重试回看待继续。P08仍in_progress，C04 D32暂停、resumeContract和V01/L01保持。证据 docs/production/evidence/p08-amo-assist-ui-checkpoint-2026-10-05。
+
+以下两项为原UI／领域检查点（原状态按各自SHA保留）
+## 版次导入例外修复（2026-10-05 UTC）
+
+父核七卡73e发现reasonKey的edition前缀可绕过七卡trace校验。已复现15失败/4合法对照；源码 `4ad2005e84017020d41b80243e0cca16f3d79169` 仅checkpoint产品窄修，实际source版次/时点/目标/值/种类/增量与唯一顺序全部匹配才例外。19专项、312相关tests/8files、type/plan通过，冻结源码/index/HEAD保持；证据p08-amo-assist-domain-2026-10-05/edition-exception-fix。七卡原型hash843f、数值、resolver/copy接口、domain/content/game/platform与旧fixtures保持73e；B继续单一UI窗口，main不推。此前73e的CI37257550543/docs37257550532均success，本修复新精确CI另报；旧报告/FAIL按原身份保留。P08 in_progress、C04 D32暂停及原真机/审美/听感门槛保持。
+
+## 七卡适配检查点（2026-10-05 UTC）
+
+正常对齐 AI切 main 的 review `1d8400db2f1667992a13024bf7530ed7615e1a71` 已交B。阿默新原型七卡领域／纯文案首代码 `3acc73906c12730b67b721cc93e57d619317a4f3`，第一相关92tests/type通过；最终GitHub源码 `bf38333afa36bb730e3cc3f622f5f9e73343c742`（与冻结本地5256394全tree同）24专项、2291tests/126files、content/type/build/plan及新hash原生IndexedDB通过；source/index/HEAD保持。原标准local smoke因Playwright可执行文件缺失FAIL，新review精确CI另报；证据p08-amo-assist-domain-2026-10-05/seven-card-profile，旧FAIL与旧报告不改。profile `amo-assist-v1` 新hash `json-fnv-v1:b0dbe7b458ba9338` 纳入七卡定义，旧未发布原型79ddb…明确拒绝；v10/v11与默认v11不变。[接口合同](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/AMO_ASSIST_PROTOTYPE.md)。B是唯一GameScene／selection／role UI owner，本批只domain/content/application及纯文案、必要测试；未main，不把原型通过称为平衡或真机通过。P08仍in_progress，C04 D32暂停、resumeContract及B00/V01/L01、OnePlus/GPU/听感门槛保持。以下对齐／旧交付按各自来源保留。
+
+## 当前调度摘要（2026-10-05 UTC）
+
+已核 main `a5cdc5fcb6394b229ad609104d970de3fa460bb7`，父确认 AI切已发布。本 review 正常合入该基线，AI切/GameScene/选择布局原样保留；阿默领域/严格保存/纯facts及跨普通手持续消费修复 `693d019` 仍只在 review，未接UI、未上线、未推main。[原型合同](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/AMO_ASSIST_PROTOTYPE.md)。下一有界任务只做新profile七卡定义/文案适配，旧v10/v11与其余65卡保持；B随后单一窗口接UI。双方原证据和FAIL按各自SHA保留，不把源码/CI通过称为平衡或真机通过。P08仍in_progress，C04 D32图鉴教程历史联网暂停，resumeContract及B00/V01/L01、OnePlus/GPU/听感门槛保持。
+
+## 以下为历史记录（双方原来源/状态保留，不作为当前调度）
+
+P08 AI切最终有界review（2026-10-05）：基线main8e0daae；source c568b6636b55fbf2671717787f1f728092a78c9f。成牌优先／高牌兜底，公开保底排序／只选牌；旧v10原冻结档与新v11、撤销、三视口44px触控／九牌、未ready出弃／离场取消和完整state-RNG通过。133相关tests/type/plan与一次clean原生构建冻结PASS，三图actual view，第一390位置父方向通过；9/14软切片观测6.9/11.7ms、ready约656/3853ms，非真机无卡顿结论。domain/assets/火/音频保持，旧FAIL／旧source不改；仅review，新证据head精确CI另报，main不推。证据docs/production/evidence/p08-ai-cut-final-2026-10-05/summary.json。P08仍in_progress，C04 D32暂停及resumeContract、V01/L01保持。以下旧“当前”记录仅按各自SHA读取。
+
+## 当前调度摘要（2026-10-05 UTC，替代下方历史调度）
+
+已核main `8e0daae74efd56969886d1fdb2c28df404af27e0`；父核CI37247972270 success，D表现/统计1eb/阿默04d已发布。04d仅阶段性数值补丁，用户已否定继续高牌数值与采购方向，不称六角色玩法完成、不回滚旧局。当前按[P08角色玩法依赖与阿默原型](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/CHARACTER_PLAY_PLAN.md)推进策划review：P0上线质量与B独立AI切，P1共同成牌/成长和阿默独立副组，P2其他五人按依赖分批；本轮不写领域、不侵入GameScene/底部UI、未main。B新排序/发布状态由其窗口及父核，不能预记通过。旧v10/v11、安全保存、真实设备、人物解剖/工具发现性/开源实际采用范围为硬边界；C04图鉴教程历史联网及B00/V01/L01保持。每小时由父协调实际进度，重大阻塞即报。
+
+## 以下为历史记录（原来源/状态保留，不作为当前调度）
+
+
+阿默单张终乘首批review（2026-10-04）：基线main1eb6689，仅新v11局单张×3后置整手Joker，旧v10局按原保存身份续完；其他五人/Lv3/数值/槽序/美术不动。角色政策入新hash，两个完整身份统一验证，旧checkpoint/receipt/分区/导出保留；新建读新、导入读自身、模式继续优先活跃同模式。真实v10冻结fixture与原生新旧来源次序、保存/恢复/重试有界核验；源码ad2eddff冻结2203tests/121files、content/type/build/Canvas双端smoke/plan全PASS且源码/index/HEAD不变，review CI另报，不推main、不称六人平衡完成。D演出源码保持。证据docs/production/evidence/p08-amo-final-multiplier-2026-10-04。
+
+## 当前发布与验收状态
+
+已核 remote main `d1c072dff5055238bd94775a14f2fca44c4d38b8`，精确 [CI37238909688](https://github.com/big-dimple/tangsongpai/actions/runs/37238909688) 与 [production-docs37238909684](https://github.com/big-dimple/tangsongpai/actions/runs/37238909684) success。
+
+| 项目 | 当前状态与边界 |
+| --- | --- |
+| 已发布手绘覆盖 | Joker72/72、原6角色/JQK；P08 165 WebP／4,454,670B。工具39/39、物品12/12，goods102 WebP／1,742,780B；最后十二图已发布。 |
+| 铜钱消费 | 批准单图256²／15,958B；旧atlas归档，保原800ms显示和已保存奖励去重。A03整包planned／humanGate保持。 |
+| 当前点数文案补正 | source 60641fb2ef131f7d9dd984de79b6f5df3753ee08；A：4张／10：4张独立单元，15px、只读与固定关闭保持。三视口实图及21筛选通过，[新证据](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/p08-deck-stat-copy-2026-10-04/summary.json)，旧报告不改，新CI另报。 |
+| 原版牌组查看review | [共享查看器证据](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/p08-deck-inspector-2026-10-04/summary.json)：source 624bc28cae3b3f94e19468e91957446ee5d0c577。13点数与花色、Game全部／剩余及增强筛选；Shop原菜单默认全部持久有效牌，不显示下一场剩余。 |
+| 本次实际检查 | 36相关tests、type、clean构建和320／390／844×300 top12/bottom34原生输入通过；全run／seq／RNG／选牌保持、滚动／关闭／回调释放、真实复制／改点数／改花色／增强与reload计数通过。三图actual view，五次检查器FAIL原身份保留；只有review，新CI另报。 |
+| 原流程证据 | D7b自然流程仍固定runtime7b787773，只到首Boss；T06–T11及S01–S08为原生fixture，不证明自然获取／当前main全流程。既有证据与历史FAIL／NOT_RUN不改。 |
+| 剩余门禁 | P08 in_progress；整体审美、OnePlus、GPU、听感未通过。C04 D32暂停，resumeContract与V01/L01保持。父协调串行main，不自动推gameplay／部署。 |
+
+只读产品改动已完成后才校准上述当前数字；领域、save、RNG、所有素材、手牌布局、火和音频树保持main。主线验收清单见 [P08](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/WORK_PACKAGES.md#p08)。
+
+## 历史检查点（按各自 SHA 保留，不作为当前调度指令）
+
+以下记录逐SHA保留，不作为当前调度。
+
+### 本次校准前的当前记录（原文保留）
+
+P08手绘铜钱有界review：交付f44320be经sourceCI/portable/hash/实际view；单图256²15958B，活跃旧atlas不再消费，旧文件保留。source2ebb590仅RewardCoin.ts，800ms墙钟单次/56-72-96原display scale、5秒截止/取消/迟到不缓存/reduced静态与原clearId奖励去重保持，e07实际9金只展示。49相关tests/type/content及5条Canvas原生路线通过、两张fixture实图actual view；正常合已发布main719保C最后12、工具39/39物品12/12，图片保原build身份不重拍。暂不main、新reviewCI另报；整体/OnePlus/GPU/听感未验。 证据docs/production/evidence/p08-handdrawn-reward-coin-2026-10-04/summary.json。
+
+## 当前发布与验收状态
+
+当前 remote main 基线为 `58e9d223ee5f29b965532551e71afc6fc6785d51`；精确 [CI37231962418](https://github.com/big-dimple/tangsongpai/actions/runs/37231962418) 与 [production-docs37231962445](https://github.com/big-dimple/tangsongpai/actions/runs/37231962445) 均 success。最后十二图目前仅 review，发布覆盖按此 main 读取。
+
+| 项目 | 当前状态与验收边界 |
+| --- | --- |
+| 工具包与窄屏修复 | 工具包7b787773及749a85ee两修复已发布。320十四牌仍五牌分页、390十四牌两行、普通九牌一页；OnePlus真机未通过。 |
+| main 可消费手绘 | Joker72/72、原6角色/JQK；P08 165 WebP／4,454,670B。工具27/39、物品12/12，goods78 WebP／1,266,494B，已含P02–P07。 |
+| 最后十二图候选 | source1cbc3e7的P08/P09/P10/P12/S01/T19及source6d3596b的S03–S08，S04为v2。仅两个指定目录和24图、12个真实ID；候选39/39、102 WebP／1,742,780B，尚未发布。GoodsArt与原缩略图／按需详情消费通路保持，P12/S04各一张实际详情通过。 |
+| 铜钱候选 | RewardCoin.ts的16帧／800ms atlas仍由IntermissionScene消费实际已提交过关奖励；A03整包仍planned／humanGate，人工审美和真机未通过。 |
+| 六工具实际使用 | T06–T11原生fixture已验收；原source f10d2d0、review98b66db4、精确CI37228691506 success，原报告与三图身份保持。fixture不证明自然获取或完整自然流程。 |
+| D7b 有界自然流程 | [e899194原证据](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/p08-natural-run-2026-10-04/README.md)及CI37231091422 success，11文件按原blob/mode纳入。实际runtime固定7b787773，首Boss1018/800、seq26/journal25、奖励2→10金与唯一T16补给、三次恢复通过；T10自然购入和使用。停止首Boss结果，未进入第二章、T16未使用；不扩写为当前main完整八章或设备结论。 |
+| 剩余门禁 | P08仍in_progress，整体审美、OnePlus、GPU、听感未通过。C04 D32暂停、resumeContract和V01/L01人工／多人门禁保持；不自动推进后续gameplay。 |
+
+本批 [最后十二图与证据审计](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/p08-tools-final12-2026-10-04/summary.json) 和D原证据仅交 review，父串行协调main；运行源码、旧资源、严格五动作smoke、六工具原证据保持。历史 [状态校准](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/p08-delivery-state-2026-10-04/summary.json) 的21/39及各旧报告覆盖数字保留原身份。主线验收清单见 [P08](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/WORK_PACKAGES.md#p08)。
+
+
+
+以下旧“待 CI／待发布／下一任务”仅属于记录当时；历史 FAIL、NOT_RUN 与数字不改，当前调度由上表覆盖。
+
+P08两处手持设备修复combined review：正常合已审/精确CI通过B2bca8c8（十四牌计数）与本5ca6a8c（320商店卡条），保mainf10工具15/39及全部资源。合并仅三docs冲突且双记录保留；运行只GameScene.updateHandCount+ShopLayout/ShopScene，逐字节同双方已审代码。147相关tests/8files/type/plan PASS，不重拍双方原图；320十四仍分页、390十四两行，不改手牌位置命中/规则/RNG/save。新combined精确CI另报，main待父放行，整体/OnePlus/GPU/听感未验。 证据docs/production/evidence/p08-shop-rack-320-2026-10-04/combined-fourteen-review.json。
+
+P08 320卡条review正常合入已发布mainf10d2d0（T13–T18六图）：src同已绿c7cd7c5，92相关tests/type及12新增WebP portable/全54runtime hash PASS；工具15/39、道具12/12和朱砂/工具包/失败摘要逐树保main。旧两图不重拍/不改身份，父侧方向通过，独立hit/短横审查另行；未混B14计数候选，不推main，新精确reviewCI另报。 证据docs/production/evidence/p08-shop-rack-320-2026-10-04/f10-main-alignment.json。
+
+P08 320商店卡条独立修复review：main5d54421基线、源码1557d41。实际复现原344宽/首x=-12末332、卡体428.8和命中450.8碰按钮424；54.4×76.16紧凑5:7、14px四字名利用座位间隙、命中止于按钮前4px，三货/工具入口/行动锚点保持。实际短横safeTop造成shop.top24的3.6px旧交叠同预算修；88受影响tests/type/build及320/390/844原生详情取消/工具包/调序状态比对PASS，两图actual view。原图B商店功能仅测试叠加且bd/7b两模块等同；后正常merge已发布main7b78777，88tests/type/build及同三组无overlay原生回归PASS，保持新main GameScene/工具/资源逐树相同；当前只是review，整体/OnePlus/GPU/听感未验。 证据docs/production/evidence/p08-shop-rack-320-2026-10-04/summary.json。
+
+P08 14牌修正父图审后正常main对齐（UTC 2026-10-04）：父实际看320/390两图并读仅updateHandCount diff，局部修正通过；边界为320十四仍5牌分页可逐张操作，390两排全14，普通九牌一页保持。正常无冲突merge sourcea2a2107合已发布mainf10d2d0纯T13–T18资源；GameScene逐字节同已审e96e971，所有public/art与布局/ShopLayout/火/audio/domain/content/规则逐树同f10。59相关tests/4files/type PASS，检查前后source/index/HEAD一致；两目标九牌单页与十四分页/两排几何专项PASS（非新原生），工具15/39、道具12/12、Joker72/72，goods54files870142B/P08 165files4454670B。旧两实图字节/sourcefccddf7身份保持，不重截图/原生/全矩阵。仅新review精确CI待报，main不推进；六工具真实使用仍下一独立任务。证据docs/production/evidence/p08-tools-fourteen-2026-10-04/main-alignment.json。
+
+P08 14牌竖屏缺口有界闭环（UTC 2026-10-04）：基线已发布main7b787773；合法原生14牌/工具2/3 fixture，非自然获取。320真实选J复现计数盖点数8px，原FAIL与局部实际像素检查保留；仅GameScene.updateHandCount将计数/页码分两行移至既有工具包左侧，卡位/命中/底栏/字体/待出区及ShopLayout不改。sourcefccddf7 exact modified=false，55相关tests/3files/type、一次软件Canvas320×568与390×740 PASS，source/index/HEAD一致。320十窗口逐张点全14，390两行全14；全牌点数花色>=14且无遮挡，原生选/取消全28个逐一通过，选5后预览/工具包/出弃bounds互不挡，出弃实际触点命中后取消，工具包开/关选牌与完整run-RNG不变；仅两张完整页已actual view，父独立图审与新精确reviewCI待接。全部资源/规则/save/火/audio保持，main未推；六工具实际目标/使用验收下一任务。证据docs/production/evidence/p08-tools-fourteen-2026-10-04/summary.json。
+
+P08工具包正常对齐C已发布main（UTC 2026-10-04）：父已完整批准review0452e418并独立确认精确CI37224263669 success；正常merge源码ab4d626合入main5d54421，仅AGENTS/handoff/plan三处文档冲突，双方历史/evidence与C completionScope保持。C六张T06–T11资源、两处CSS删除、只读失败摘要及其测试逐树同main；已批准工具包产品/样板逐字节同0452。26相关tests/3files及type PASS，当前runtime逐SHA零不符：72/72 Joker、6角色/JQK，工具9/39、道具12/12；P08 165files4454670B，工具42files643054B。未重截图/原生矩阵/全冻结，旧证据保原源码身份；本新review精确CI另报，main待父串行授权。证据docs/production/evidence/p08-tools-entry-2026-10-04/c-main-alignment.json。
+
+P08失败摘要review已由父侧读完整源码并实际view390 after，局部方向通过；已正常对齐main2d999cd（含朱砂/72人话/12道具），仅UX冲突且双合同保留。合并源码0aa7399，65相关tests/type/build及自然胜败/刷新继续/同种子重试/短摘要详情PASS，GameScene/ScoreFlame/audio/public/art逐对象同main。既有图身份不变，无新截图；320构筑裁切明确OPEN，未修。本review精确CI另报，main不推进；整体/OnePlus/GPU/听感仍待验。 证据docs/production/evidence/p08-failure-summary-2026-10-04/main-alignment.json。
+
+P08 72张人话文案main7d44已正常FF发布，精确main CI37221283754与production-docs37221283740 success；局部方向接受，整体/OnePlus/GPU/听感仍未通过。本次有界失败摘要review源码9e1a176：实际颜色已被共享纸墨映射纠正，无颜色缺陷；真实失败只露差额，补已保存原因/最后一手/剩余资源。35受影响单测/type/build及自然胜败/恢复/重试、390/1280/844有限文字bounds PASS；review新CI另报，main不推进。 证据docs/production/evidence/p08-failure-summary-2026-10-04。
+
+P08工具包CI真实失败与合同修正（UTC 2026-10-04）：父图审/独立合并审查已通过bd3840d，但精确CI37223525814 browser job111498414350 FAIL；真实日志为screenshot.mjs112旧常驻四动作列表，仅多已批准action/tool-inventory。build/domain/docs通过，失败前后source/index/HEAD一致；不是观察竞态或安装故障。保原FAIL/redacted摘录及私有完整log哈希，不重试旧job。仅sourcebb62c1f同步严格五动作列表，并加原生工具包开/关全run-RNG及选牌保持断言；其他断言/timeout不改。系统Chromium151原smoke桌面1280×720/DPR1和手机390×740/DPR3 PASS，校验前后source/index/HEAD同。src/tests/assets/art逐树同bd3840d；不改产品/火/CSS/规则。正常新review+一次精确新CI待报，main禁推待父串行。证据evidence/p08-tools-entry-2026-10-04/ci-failure-resolution.json。
+
+P08工具包正常对齐朱砂main（UTC 2026-10-04）：正常merge0080fb9合main2d999，两处GameScene冲突按main删除旧burst/shockwave/庆祝章，不复活旧效果。sourcedb00121 exact modified=false；仅工具包实际button加入外扩3px保护guard，原action前景收集自动保按钮/纸底/字在墨线上。头像块、refreshScoreFire/ensureScoreFlame/impactAccumulator/keepScoreReadable方法原文同main；ScoreFlame/AudioEngine及跨档/层级测试、CSS/DetailDialog、文案/assets/domain/application等字节同main。46相关/3files、type及320软件Canvas合法原生流程PASS：实际计分ink索引6，avatar7/entry50/art48/label49，29 guards含新按钮，所有maskpieces不相交；计分时原生点工具包/关闭全run-RNG不变，真正Play结果同applyCommand。四张新完整页actual view，字仍71×17完整在88×44/112×44。仅新review精确CI待报，main待父串行；不扩矩阵、14仍单测、不碰C图片CSS修复。证据evidence/p08-tools-entry-2026-10-04/ink-main-alignment.json。
+
+P08工具包字面消歧（UTC 2026-10-04）：父已实际看game320/shop390/game844 bottom34，入口位置与手牌空间通过；仅按反馈把两场景库存、标题和空态统一叫工具包x/y，商品分类仍工具。source9c8e22d exact modified=false，16专项/type及320软件Canvas原生购买/取消/两场景各一次保存使用/reload PASS；文字71×17px完整落在Shop88×44/Game112×44内，三新完整页actual view。与1354的布局/货品/所有按钮frame-font/待出牌工作面逐值相同；GameScene/ShopScene/CSS/DetailDialog和素材本轮字节不变。不重做布局颜色、不扩设备或14矩阵，14避让仍仅单测；CI交父跟进，main仍等待串行放行。证据evidence/p08-tools-entry-2026-10-04/copy-clarification.json。
+
+P08工具入口review检查点（UTC 2026-10-04）：实现0d21cd4；正常合入main7d44保留72 Joker文案、12道具及既有三组底栏。source1354a808 exact modified=false，93相关单测/7files和type PASS；320/390竖屏、844×300 top12/b12及b34的原生零库存、购买计数/扩容、取消/关闭全run-RNG不变、Shop/Game各一次有效使用（连点确认仅一次保存）、商店专用场内禁用、reload全run通过。8场景完整页＋390空态图已actual view，fixture为合法原生导入、非自然连续获取。Game/Shop常驻工具x/y，消耗工具与本局道具分组，复用原目标/确认/保存。手牌和底栏逻辑坐标不改；14牌竖屏仅必要待出牌视觉避让（单测覆盖，未冒称native14），短横safe34进度线上移4px。首轮U04容量误样板、a01不支持及3offer超合同失败留证后修正，未削guard。仅review待新精确CI/根独立图审及串行main放行；P08仍in_progress，不扩矩阵，不全冻结。证据evidence/p08-tools-entry-2026-10-04。
+
+P08底栏三组复核收尾（UTC 2026-10-04）：原三组方向已获根实际看5f4da3两小图通过，未再美化。正常对齐main8888e82保ce299六道具/a11及MIT调序；只有handoff/plan冲突且双方记录保持。禁用余次复用disabledInk至4.51对比度；原生1180排序确认5张手牌盖住手内深青提示，另独立afbb6bf把首用提示移到既有status、14px、普通1860/reduced3000有限寿命，原cancel/离场/偏好保持，其他未知色块同因未证明。source2db4216 exact modified=false：390普通＋844×300 top12/b12、b34三完整页actual view，12长按取消、7排序和7真实出弃、原生DOM菜单/全屏、回载不重播全PASS；实际文字/余次在按钮内、全部非control坐标同88b、全保存结果逐字段同领域applyCommand。191相关tests/type PASS，src/tests同；首轮reload脚本错点新局造成timeout，原FAIL留证后改继续入口，没有放宽保护。public/assets、art/sources、domain/application/content/audio/vendor/license逐树同main。仅新review CI一次push，未全冻结/未推进main，由根看三完整页及提示修复后协调放行；P08仍in_progress。证据evidence/p08-action-groups-2026-10-04。
+
+P08底栏三组第一版检查点（UTC 2026-10-04）：实现e2df9f8，对齐maince299（src仍同88b17）后tested1ee6e7b；88px青蓝纸色整理组内两44px触点，弃牌390由70→106／320由106→114，朱红出牌保主动作；墨线纸牌下落到平放牌堆／牌扇向前送出，文字与真实余次保持。原底栏及全部非control坐标指纹cff0c393…同88b17，主56px、容量回退54/52px不变。89原受影响＋9新增几何/符号/type PASS；320/390软件Canvas DPR1原生合法导入及选牌、实际文字框/可见线图/全run不变PASS，两小图已actual view。根要求先看第一版，停止自行美化和大收尾；844短横实际操作及本皮肤按住/取消/禁用/真实出弃仍NOT_RUN，整体IN_PROGRESS。一次文档锚点补丁未应用，无测试/浏览器失败。public/assets、art/sources完全保maince299六道具/a11追加；不改火/音频/计分/RNG/save/手牌/调序入口。独立review，不自动main，证据evidence/p08-action-groups-2026-10-04。
+
+P08 MIT 调序 review 资源发布顺序对齐（UTC 2026-10-04）：已等六道具＋a11主线正常发布到ce299b8，再正常合入，合并源码8d0efea；整个src逐树同上一绿review9f3db15，public/assets和art/sources逐树同ce299。sortHand清选／Joker调序与原命令保存手势合同不变；仅handoff/plan冲突，主线最新清理文档＋本包evidence保持。205相关tests/content43公开文本/一次生产build（含typecheck）PASS，编译bundle保a11-v2哈希路径＋六道具注册、14dist图片逐字节/SHA同批准源，旧a11 canonical dist路径不存在，全文MIT notice再核同。证据 [resource-main-alignment.json](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/p08-browslatro-joker-reorder-2026-10-04/resource-main-alignment.json)。本轮未重演未受影响UI/无全冻结；新精确reviewCI和普通FF资格交父报告，未抢写main，仍由父单独放行。
+
+P08 MIT 调序 review 对齐排序 main（UTC 2026-10-04）：原663ace1精确CI37213762076 success；正常合入已发布main88b17e2，合并源码254863e。仅handoff/plan冲突且双方记录保持，sortHand先结束手势并清全部选牌/ghost/undo的方法逐字同main，Joker调序同原已审review。305受影响tests/type/plan与一次exact modified=false构建复用于原排序/Joker harness均PASS，原生排序4组/忙态禁排序与自然Joker33检查保持，全文MIT notice再核逐字节相同。证据 [main-alignment.json](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/p08-browslatro-joker-reorder-2026-10-04/main-alignment.json)。新review HEAD精确CI另报；只供父协调串行FF，未写main/未取Goods六道具候选/未重复全冻结，P08仍in_progress，真机/GPU/听感/部署/整体审美NOT_RUN。
+
+P08 GitHub MIT 调序复用独立 review（UTC 2026-10-04）：基线 main3938cee，源码与自然构建8b05042（modified=false），仅复用 browslatro 固定 eb3d51f 的 insertIdAtIndex 与前8测试，全文版权许可跟随 public/licenses → dist/licenses 实核逐字节相同，整体项目许可不变。薄包装统一 GameScene 持有 Joker 详情左右移/拖放及 ShopScene reorder；保 instanceId/expectedSeq/领域排列校验/先存后发，不接 nearestGapIndex，原355ms/10px/槽位命中不变。236受影响 tests/type/build、两组390×740 DPR1软件 Canvas 自然鼠标/原生触摸33检查与 reload PASS；同槽/非法/取消不dispatch，合法seq只增一次，RNG/gold/非默认成长保持。只完成去重一致性，非视觉升级；本地无无关全冻结，最终 feat HEAD 的新精确 CI另报。证据 [MIT 调序复用](https://github.com/big-dimple/tangsongpai/blob/3e01adf897d379b50c4575ba7c21cc77d143866c/docs/production/evidence/p08-browslatro-joker-reorder-2026-10-04/README.md)。独立 feat 分支、main先不推进，父协调串行合并；保并行点数/花色收回选牌及 GoodsArt U01–U06，不碰手牌排序入口/规则/save/资源/火，P08仍in_progress，OnePlus/真GPU/听感/部署/整体审美NOT_RUN。
+
+
+
+
+P08点数／花色放回选牌review（UTC 2026-10-04）：基线已授权发布main3938cee（缺图主题FF15:16:39Z，精确main CI37212391288与docs37212391290 success），本排序独立source bf01aa5暂不推进main。仅GameScene.sortHand：await-input且ready/无presentation时，先cancel手势，再清全部手选／直选／顾问选牌和旧ghost/undo，刷新普通座位后走原单次ReorderHand；原比较器、ID焦点、九牌几何与规则参考保持。历史排序保选合同按最新用户要求覆盖；三旧浏览器样板正确更新，并重新原生选牌保弃／出检查。101受影响单测/type PASS，旧8测试7红1绿保留；390×740 DPR1软件Canvas一个合法九牌native import，手选／顾问3张／空选／重复四排序全归空、原框和全run除order/seq/receipt外不变，271忙帧含270presentation均禁排序且真实点击无新命令PASS；唯一现成PNG actual view。public/assets、art/sources（72原画＋四工具样图）、domain/application树同3938；无美术/火/工具loader/计分/RNG/save-format变化，不重跑无关全冻结/设备/录屏/PC/部署。证据evidence/p08-sort-return-2026-10-04；整体仍IN_PROGRESS，review待根协调放行。

@@ -1,0 +1,567 @@
+{
+  "schemaVersion": 1,
+  "status": "runtime_adopted_identity_scoped",
+  "rulesBaseline": "9fe60fc581227829df6caadc712a5bd0fed74bc4",
+  "audience": "按完整局身份阅读的当前/兼容展示规范；不是规则配置，不得导入领域或改存档。",
+  "sharedRules": [
+    "本次文档修订不改变技术ID、内容身份、命令、价格、RNG、次数/倍率或存档；已发布贬谪是既有批准实现，不在这里再改机制。",
+    "当前普通新苏轼由currentIdentityOverrides.amo描述，为quality-r2-amo-exile-v1；其余五位普通新局为quality-r2-s04-finish-v1。heroes.amo只保留旧助攻展示兼容，旧身份继续读自身规则，不能全局替换。",
+    "六人都是架空青年形象，跨时代相遇不宣称同代；技能名、故事取熟悉作品或可核对事迹。苏轼/辛弃疾宣言为标明出处的诗文摘句，其余为游戏演绎，不伪造历史名言。",
+    "每场=一个stage，非一章或一局；主动草稿需原出牌/弃牌保存确认；禁用态必须展示实际原因。",
+    "故事、主题与技能名不替代skillSummary和detailRules；具体资源、可用性与剩余次数始终来自权威代码。"
+  ],
+  "adoptionTargets": {
+    "identity": [
+      "src/game/HeroIdentity.ts:HERO_CAST",
+      "src/game/characters.ts:getCharacter"
+    ],
+    "runCopy": [
+      "src/game/CharacterRunCopy.ts:characterForNewRun/characterForRun",
+      "src/game/HeroSkillGuide.ts",
+      "src/game/HeroOpeningCopy.ts",
+      "src/game/HeroSignature.ts",
+      "src/game/HeroPayoff.ts",
+      "src/game/HeroAbilityCue.ts"
+    ],
+    "views": [
+      "src/game/HeroExplanation.ts",
+      "src/game/HeroClimax.ts",
+      "src/game/GameScene.ts:局部显示与入口",
+      "src/game/CharacterSelectScene.ts"
+    ]
+  },
+  "heroes": [
+    {
+      "id": "amo",
+      "name": "苏轼",
+      "gender": "male",
+      "era": "北宋",
+      "theme": "风起赤壁",
+      "skillName": "余音袅袅",
+      "motto": "余音袅袅，不绝如缕。",
+      "story": "赤壁舟中，苏轼扣舷而歌，客人吹箫相和；余音未绝，牌局里也让剩余同点牌来相助。",
+      "skillSummary": "每场1次，先选两对及以上主手，再选剩余的同点对子使最终倍率×2，或同点三条使最终倍率×4；助攻牌一起消耗，不算主手或留手。",
+      "oldSkillNames": [
+        "主手＋助攻"
+      ],
+      "mechanics": {
+        "usesPerStage": 1,
+        "pairMultiplier": 2,
+        "threeKindMultiplier": 4,
+        "timing": "after-joker-and-route-growth",
+        "consumesAssistCards": true
+      },
+      "sourcePaths": [
+        "src/domain/r2Assist.ts",
+        "src/domain/r2AssistIdentity.ts",
+        "src/domain/r2QualifiedHands.ts",
+        "src/domain/scoreR2.ts"
+      ],
+      "detailRules": [
+        "主手和助攻不能用同一张牌；助攻必须是没被禁用的同点牌。两对、三条、顺子、同花及更高牌型可用，高牌和对子不能用。",
+        "助攻牌进入已用区，不再获得留手收益；不会额外出一手，也不另算这些牌的增强得分。",
+        "静场和关闭角色能力的挑战不能用。取消不耗次数；正常出牌并保存成功后，才扣次数和助攻牌。"
+      ],
+      "historyBoundary": "北宋文学家、书画家；赤壁作品为1082年黄州时期，青年外观是跨年龄艺术化形象，不声称当时年少，更不声称参加三国赤壁之战。",
+      "historySources": [
+        "https://zh.wikisource.org/wiki/前赤壁賦",
+        "https://www.dpm.org.cn/lemmas/242068.html",
+        "https://theme.npm.edu.tw/selection/Article.aspx?sNo=04009295"
+      ],
+      "mottoAttribution": "苏轼《前赤壁赋》摘句（简体）。"
+    },
+    {
+      "id": "touye",
+      "name": "秦琼",
+      "gender": "male",
+      "era": "隋末唐初",
+      "theme": "踏破山河",
+      "skillName": "跃马冲阵",
+      "motto": "跃马冲阵，我先上！",
+      "story": "《旧唐书》记秦琼跃马持枪、冲入敌阵；牌局借他迎难而上的胆气，先定目标，再用换来的新牌争胜。",
+      "skillSummary": "每场1次，选1–5张弃牌，押下一手牌型并换牌。下一手命中目标，且至少1张刚补回的牌用于凑成牌型的有效计分部分，倍率×2；否则×0.85。不押时×1.15。",
+      "oldSkillNames": [
+        "弃前赌约"
+      ],
+      "mechanics": {
+        "usesPerStage": 1,
+        "discardSelection": [
+          1,
+          5
+        ],
+        "winMultiplier": 2,
+        "lossMultiplier": 0.85,
+        "ordinaryMultiplier": 1.15,
+        "requiresActiveNewCore": true,
+        "timing": "active-after-joker-and-route-growth; ordinary-at-character-clock"
+      },
+      "sourcePaths": [
+        "src/domain/r2TouyeWager.ts",
+        "src/domain/r2TouyeTargets.ts",
+        "src/domain/r2Run.ts",
+        "src/domain/scoreR2.ts"
+      ],
+      "detailRules": [
+        "选好弃牌和目标后一起确认，照付本次弃牌次数和压轴规则要求的金币；押目标不另收金币。",
+        "手里已经凑出的牌型也能押。下一手必须用至少1张刚补回的牌凑成目标；新牌只当配牌、没打出或被禁用，都不算。",
+        "押后不能再弃牌、用改牌工具、更换或调整唐宋牌。返回或继续存档仍保留这次押注，只赌下一次真实出牌。",
+        "静场和关闭角色能力的挑战不能押。取消选目标不花次数；确认换牌并保存成功后才算使用。"
+      ],
+      "historyBoundary": "秦琼字叔宝，隋末唐初武将；门神形象、说唐故事与正史生平分层，预测牌型与押注为游戏机制，不包装为史实赌博或神谕。",
+      "historySources": [
+        "https://zh.wikisource.org/wiki/舊唐書/卷68"
+      ],
+      "mottoAttribution": "据《旧唐书》卷68冲阵事迹作游戏演绎，并非历史原话。"
+    },
+    {
+      "id": "laohuan",
+      "name": "辛弃疾",
+      "gender": "male",
+      "era": "南宋",
+      "theme": "墨影醉里挑灯看剑",
+      "skillName": "众里寻他",
+      "motto": "众里寻他千百度。",
+      "story": "《青玉案·元夕》写灯火中千百遍的寻觅与蓦然回首；牌局借这份寻觅，多看候选，亲手留下所需。",
+      "skillSummary": "每场1次，选1–5张弃牌并照付实际弃牌成本，多看最多2张补牌候选，亲自留下应补张数；没留的牌本场不再抽，候选不足时全留。",
+      "oldSkillNames": [
+        "戏法换牌"
+      ],
+      "mechanics": {
+        "usesPerStage": 1,
+        "extraCandidatesMaximum": 2,
+        "required": "handLimit minus retained hand count",
+        "unselectedZone": "playedPile",
+        "B08Allowed": true
+      },
+      "sourcePaths": [
+        "src/domain/r2LaohuanRefill.ts",
+        "src/domain/r2Run.ts"
+      ],
+      "detailRules": [
+        "先选要弃的牌，再确认换牌；本次弃牌和候选保存后，最多看到应补张数再加2张。",
+        "从候选中选够应补张数，没留的进入已用区，不算再次弃牌。候选不够多、无法取舍时全部补入。",
+        "留够牌之前不能出牌、再次弃牌或用工具。收起、继续存档或保存重试，仍是同一批候选，不会重抽。",
+        "静场可用，关闭角色能力的挑战不能用。"
+      ],
+      "historyBoundary": "南宋词人并有军政经历；主题借《破阵子》剑意，不把“墨影”当古籍称号；挑灯择牌是游戏演绎。",
+      "historySources": [
+        "https://zh.wikisource.org/wiki/青玉案_(辛棄疾)",
+        "https://zh.wikisource.org/wiki/宋史/卷401"
+      ],
+      "mottoAttribution": "辛弃疾《青玉案·元夕》摘句（简体）。"
+    },
+    {
+      "id": "erxiang",
+      "name": "刘娥",
+      "gender": "female",
+      "era": "北宋",
+      "theme": "大宋之母",
+      "skillName": "垂帘听政",
+      "motto": "帘后听政，这一局由我定。",
+      "story": "宋仁宗年幼即位，刘娥垂帘处理军国政事；牌局借她统筹政务的经历，把一张关键牌的普通点数调作倍率。",
+      "skillSummary": "每场1次，先选对子及以上，再指定1张用于凑成牌型的有效计分牌，把它首次计分的普通点数从热度改加同值倍率；A为11，J/Q/K为10，数字牌按点数。",
+      "oldSkillNames": [
+        "交棒"
+      ],
+      "mechanics": {
+        "usesPerStage": 1,
+        "targetCount": 1,
+        "excludedHandType": "high-card",
+        "acePoints": 11,
+        "courtPoints": 10,
+        "ordinaryOccurrence": "first",
+        "enhancementEditionUnchanged": true
+      },
+      "sourcePaths": [
+        "src/domain/r2ErxiangHandoff.ts",
+        "src/domain/scoreR2.ts",
+        "src/domain/r2Run.ts"
+      ],
+      "detailRules": [
+        "只转移指定牌首次计分的普通点数，不转移这张牌的全部热度，也不让整手再计一次。增强、版次和后续重复计分照旧。",
+        "这张牌的普通点数为0、不在本手有效计分部分、本场已用，或角色能力停用时不能选。有增强的牌仍按它的普通点数判断。",
+        "静场和关闭角色能力的挑战不能用。取消不耗次数；正常出牌并保存成功后才使用。"
+      ],
+      "historyBoundary": "北宋章献明肃皇后、宋仁宗朝太后摄政；“大宋之母”是用户选定主题，不是正式谥号；不把狸猫换太子传说、青年外观或游戏点数转换写成史实。",
+      "historySources": [
+        "https://zh.wikisource.org/wiki/宋史/卷242",
+        "https://hub.hku.hk/handle/10722/250719"
+      ],
+      "mottoAttribution": "据刘娥垂帘决事经历作游戏演绎，并非历史原话。"
+    },
+    {
+      "id": "azao",
+      "name": "文成公主",
+      "gender": "female",
+      "era": "唐与吐蕃交往背景",
+      "theme": "藏地迎宾",
+      "skillName": "和亲",
+      "motto": "远赴吐蕃，结两地之好。",
+      "story": "文成公主远赴吐蕃，与松赞干布成婚，成为唐蕃交往中的熟悉身影；牌局借这段远行，让不同牌型接续蓄层，再择机释放。",
+      "skillSummary": "两对及以上首蓄1层，连续换牌型最多蓄3层。有层时可用两对及以上释放全部1/2/3层，使倍率×1.5/2.5/4，释放手不再蓄。同牌型未释放则清空；对子或高牌出牌也清空，弃牌保留、场间清空。",
+      "oldSkillNames": [
+        "蓄势／爆发"
+      ],
+      "mechanics": {
+        "chargeMaximum": 3,
+        "multipliers": [
+          1.5,
+          2.5,
+          4
+        ],
+        "usesPerStage": "not fixed; can rebuild after release",
+        "qualifiedTypes": "AMO_ASSIST_TYPES",
+        "releaseAddsCharge": false,
+        "discardKeepsCharge": true
+      },
+      "sourcePaths": [
+        "src/domain/r2AzaoCharge.ts",
+        "src/domain/r2QualifiedHands.ts",
+        "src/domain/scoreR2.ts",
+        "src/domain/r2Run.ts"
+      ],
+      "detailRules": [
+        "已有层数才可释放；当前重复的两对及以上牌型也可释放。",
+        "不释放时，与上一合格牌型不同才继续蓄，最高3层；同牌型未释放则清空。释放会用掉已有全部层，当前手不再蓄，后面可以重新蓄层。",
+        "不限制每场只能释放一次；每手也不会自动乘倍率。释放倍率在整手唐宋牌与路线加成后计算。",
+        "进入下一场、结束或放弃时清空。静场不蓄不放，关闭角色能力的挑战不能用。"
+      ],
+      "historyBoundary": "唐宗室公主，641年入蕃与松赞干布成婚；不写成唐太宗亲生女儿，不把民间神迹、具体外貌或传授一切文明写成确定史实，牌局与蓄层为游戏演绎。 不把金城公主相关的“和同一家”写作文成公主原话。",
+      "historySources": [
+        "https://www.dpm.org.cn/collection/paint/234620.html",
+        "https://treasuryoflives.org/biographies/view/Wencheng-Kongjo/10811"
+      ],
+      "mottoAttribution": "据文成公主入蕃和亲经历作游戏演绎，并非历史原话。"
+    },
+    {
+      "id": "xiemu",
+      "name": "花蕊夫人",
+      "gender": "female",
+      "era": "五代后蜀至宋初文化背景",
+      "theme": "执剑凌风",
+      "skillName": "赏赐",
+      "motto": "赏赐已备，这一手尽兴。",
+      "story": "传世《花蕊夫人宫词》写到宫中散钱与买花钱；牌局借这份赏赐意象，将金币换作关键一手的倍率，也可留钱收息。",
+      "skillSummary": "主动每场1次，选两对及以上且金币足够时，可付10/20/30金使倍率×2/3/4。也可留钱：过关时，按本次奖励前的余钱每5金另得1金、最多2金。",
+      "oldSkillNames": [
+        "留钱／燃金"
+      ],
+      "mechanics": {
+        "usesPerStage": 1,
+        "goldCosts": [
+          10,
+          20,
+          30
+        ],
+        "multipliers": [
+          2,
+          3,
+          4
+        ],
+        "extraClearInterestPerGold": 5,
+        "extraClearInterestCap": 2,
+        "timing": "active-after-joker-and-route-growth"
+      },
+      "sourcePaths": [
+        "src/domain/r2XiemuBurn.ts",
+        "src/domain/r2QualifiedHands.ts",
+        "src/domain/r2Run.ts",
+        "src/domain/scoreR2.ts"
+      ],
+      "detailRules": [
+        "先选档再正常出牌；选档不扣钱，确认出牌并保存成功才扣真钱和次数。钱不够不能选该档，也不会自动改用低档；取消不花钱、不耗次数。",
+        "持币唐宋牌和关末利息按扣款后的实际余额计算，花钱不保证净增分或过关。",
+        "额外利息与主动分开计算，不把本次过关奖励再拿来生息。静场不能主动花钱，但保留这份利息；关闭角色能力的挑战两者都停用。",
+        "主动不限定最后一手；倍率在整手唐宋牌与路线加成后计算。"
+      ],
+      "historyBoundary": "选取后蜀女诗人花蕊夫人的文化意象，非前蜀同号人物；徐/费姓氏和部分生平叙述存在不同记载，游戏不钉死姓氏、出生年或死因；“执剑”与青年形象是创作，不声称史实女将或刺杀事迹。 传世宫词中有“库中先散与金钱”“月头支给买花钱”，只借宫廷赏赐意象，作者归属有争议，不将这两句钉死为某一位花蕊夫人亲作。",
+      "historySources": [
+        "https://zh.wikisource.org/wiki/花蕊夫人宮詞",
+        "https://zh.wikisource.org/wiki/十國春秋/卷050",
+        "https://pedia.cloud.edu.tw/Entry/Detail?title=花蕊夫人"
+      ],
+      "mottoAttribution": "借传世《花蕊夫人宫词》赏赐意象作游戏演绎，并非历史原话；宫词作者归属有争议。"
+    }
+  ],
+  "legacyRulesBaseline": "8e2174141920ef001b95a30485e70525920d3d9f",
+  "currentIdentityOverrides": {
+    "amo": {
+      "id": "amo",
+      "name": "苏轼",
+      "gender": "male",
+      "era": "北宋",
+      "theme": "风起赤壁",
+      "skillName": "贬谪",
+      "motto": "余音袅袅，不绝如缕。",
+      "story": "苏轼曾谪居黄州，仍创作诗文。牌局借贬谪这一主题，让你主动舍弃余牌，换取这一手的爆发。",
+      "skillSummary": "出牌时，弃掉手里剩下的牌，其中至少须有1张K，这一手普通整数得分变为3倍。每场限用1次。",
+      "oldSkillNames": [
+        "余音袅袅（仅旧助攻身份兼容，不是贬谪别名）"
+      ],
+      "mechanics": {
+        "usesPerStage": 1,
+        "minimumRemainder": 1,
+        "requiresSameRank": false,
+        "sacrificesAllRemainder": true,
+        "normalIntegerScoreMultiplier": 3,
+        "timing": "floor-normal-score-then-times-three-after-normal-score-factors",
+        "normalRefill": true,
+        "extraGoldCost": 0,
+        "extraDiscardCost": 0,
+        "permanentCardRemoval": false,
+        "requiresKingInDiscardedRemainder": true,
+        "mainKingCountsAsCost": false,
+        "clearGoldPenalty": 0
+      },
+      "sourcePaths": [
+        "src/domain/r2AmoExile.ts",
+        "src/domain/r2Run.ts",
+        "src/domain/scoreR2.ts",
+        "src/game/AmoExileCopy.ts",
+        "src/game/CharacterRunCopy.ts"
+      ],
+      "detailRules": [
+        "至少还要有1张余牌可弃；不要求同点，高牌或普通对子也可用。",
+        "弃掉全部余牌，不参与本手计分或留手效果，不触发普通弃牌收益；不额外扣金币、弃牌次数或出牌次数。",
+        "先得到正常整数得分，再将该整数乘3；例如922.5先取整922，再得到2766。",
+        "之后沿既有牌堆正常补牌，不永久删牌、不占手位、不追加惩罚。",
+        "静场和关闭角色能力的挑战不能用；选用/取消只改草稿，确认出牌并保存成功才使用本场次数。",
+        "实际被舍弃的余牌中至少须有1张当前点数为K的牌；主手里的K不算。无K时不能发动，取消不消耗。"
+      ],
+      "historyBoundary": "北宋文学家、书画家；赤壁作品为1082年黄州时期，青年外观是跨年龄艺术化形象，不声称当时年少，更不声称参加三国赤壁之战。",
+      "historySources": [
+        "https://zh.wikisource.org/wiki/前赤壁賦",
+        "https://www.dpm.org.cn/lemmas/242068.html",
+        "https://theme.npm.edu.tw/selection/Article.aspx?sNo=04009295"
+      ],
+      "mottoAttribution": "苏轼《前赤壁赋》摘句（简体）。",
+      "identityScope": {
+        "contentVersion": "quality-r2-amo-exile-v3",
+        "contentHash": "json-fnv-v1:5277be04256d1158",
+        "role": "current-normal-new-run"
+      }
+    },
+    "xiemu": {
+      "id": "xiemu",
+      "name": "花蕊夫人",
+      "gender": "female",
+      "era": "五代后蜀至宋初文化背景",
+      "theme": "执剑凌风",
+      "skillName": "赏赐",
+      "motto": "赏赐已备，这一手尽兴。",
+      "story": "传世《花蕊夫人宫词》写到宫中散钱与买花钱；牌局借这份赏赐意象，将金币换作关键一手的倍率，也可留钱收息。",
+      "skillSummary": "主动每场1次，选两对及以上且金币足够时，可付3/6/10金使倍率×1.5/2/3；留钱过关仍有有限额外利息。",
+      "oldSkillNames": [
+        "留钱／燃金"
+      ],
+      "mechanics": {
+        "usesPerStage": 1,
+        "goldCosts": [
+          3,
+          6,
+          10
+        ],
+        "multipliers": [
+          1.5,
+          2,
+          3
+        ],
+        "extraClearInterestPerGold": 5,
+        "extraClearInterestCap": 2,
+        "timing": "active-after-joker-and-route-growth"
+      },
+      "sourcePaths": [
+        "src/domain/r2XiemuBurn.ts",
+        "src/domain/r2QualifiedHands.ts",
+        "src/domain/r2Run.ts",
+        "src/domain/scoreR2.ts"
+      ],
+      "detailRules": [
+        "先选档再正常出牌；选档不扣钱，确认出牌并保存成功才扣真钱和次数。钱不够不能选该档，也不会自动改用低档；取消不花钱、不耗次数。",
+        "持币唐宋牌和关末利息按扣款后的实际余额计算，花钱不保证净增分或过关。",
+        "额外利息与主动分开计算，不把本次过关奖励再拿来生息。静场不能主动花钱，但保留这份利息；关闭角色能力的挑战两者都停用。",
+        "主动不限定最后一手；倍率在整手唐宋牌与路线加成后计算。"
+      ],
+      "historyBoundary": "选取后蜀女诗人花蕊夫人的文化意象，非前蜀同号人物；徐/费姓氏和部分生平叙述存在不同记载，游戏不钉死姓氏、出生年或死因；“执剑”与青年形象是创作，不声称史实女将或刺杀事迹。 传世宫词中有“库中先散与金钱”“月头支给买花钱”，只借宫廷赏赐意象，作者归属有争议，不将这两句钉死为某一位花蕊夫人亲作。",
+      "historySources": [
+        "https://zh.wikisource.org/wiki/花蕊夫人宮詞",
+        "https://zh.wikisource.org/wiki/十國春秋/卷050",
+        "https://pedia.cloud.edu.tw/Entry/Detail?title=花蕊夫人"
+      ],
+      "mottoAttribution": "借传世《花蕊夫人宫词》赏赐意象作游戏演绎，并非历史原话；宫词作者归属有争议。",
+      "identityScope": {
+        "contentVersion": "quality-r2-xiemu-burn-v3",
+        "contentHash": "json-fnv-v1:85b16fbea725efa2",
+        "role": "current-normal-new-run"
+      }
+    }
+  },
+  "identityProjectionContract": {
+    "currentNormalSuShi": "currentIdentityOverrides.amo",
+    "currentOtherFive": "秦琼/辛弃疾/刘娥/文成公主仍读取heroes相应条目；花蕊夫人读取currentIdentityOverrides.xiemu",
+    "legacyAssistSuShi": "heroes.amo；仅旧助攻身份展示，不是普通新苏轼",
+    "runtimeConsumerBoundary": "src/game/HeroText.ts仍读取heroes用于旧身份兼容；新苏轼/花蕊由CharacterRunCopy/AmoExileCopy按完整v2身份覆盖。heroes数组逐字段不变，不用文档JSON修改旧局运行时展示。",
+    "currentRuntimeSource": "RunLaunch/CharacterRunCopy按完整v3身份采用苏轼弃牌含K与花蕊3/6/10；v1/v2保存身份及重试保留原合同。",
+    "legacyExileSuShi": "legacyIdentityOverrides.quality-r2-amo-exile-v1，整数得分×4"
+  },
+  "legacyIdentityOverrides": {
+    "quality-r2-amo-exile-v1": {
+      "id": "amo",
+      "name": "苏轼",
+      "gender": "male",
+      "era": "北宋",
+      "theme": "风起赤壁",
+      "skillName": "贬谪",
+      "motto": "余音袅袅，不绝如缕。",
+      "story": "苏轼曾谪居黄州，仍创作诗文。牌局借贬谪这一主题，让你主动舍弃余牌，换取这一手的爆发。",
+      "skillSummary": "出牌时，弃掉手里剩下的牌，这一手得分变为4倍。每场限用1次。",
+      "oldSkillNames": [
+        "余音袅袅（仅旧助攻身份兼容，不是贬谪别名）"
+      ],
+      "mechanics": {
+        "usesPerStage": 1,
+        "minimumRemainder": 1,
+        "requiresSameRank": false,
+        "sacrificesAllRemainder": true,
+        "normalIntegerScoreMultiplier": 4,
+        "timing": "floor-normal-score-then-times-four-after-normal-score-factors",
+        "normalRefill": true,
+        "extraGoldCost": 0,
+        "extraDiscardCost": 0,
+        "permanentCardRemoval": false
+      },
+      "sourcePaths": [
+        "src/domain/r2AmoExile.ts",
+        "src/domain/r2Run.ts",
+        "src/domain/scoreR2.ts",
+        "src/game/AmoExileCopy.ts",
+        "src/game/CharacterRunCopy.ts"
+      ],
+      "detailRules": [
+        "至少还要有1张余牌可弃；不要求同点，高牌或普通对子也可用。",
+        "弃掉全部余牌，不参与本手计分或留手效果，不触发普通弃牌收益；不额外扣金币、弃牌次数或出牌次数。",
+        "先得到正常整数得分，再将该整数乘4；例如922.5先取整922，再得到3688。",
+        "之后沿既有牌堆正常补牌，不永久删牌、不占手位、不追加惩罚。",
+        "静场和关闭角色能力的挑战不能用；选用/取消只改草稿，确认出牌并保存成功才使用本场次数。"
+      ],
+      "historyBoundary": "北宋文学家、书画家；赤壁作品为1082年黄州时期，青年外观是跨年龄艺术化形象，不声称当时年少，更不声称参加三国赤壁之战。",
+      "historySources": [
+        "https://zh.wikisource.org/wiki/前赤壁賦",
+        "https://www.dpm.org.cn/lemmas/242068.html",
+        "https://theme.npm.edu.tw/selection/Article.aspx?sNo=04009295"
+      ],
+      "mottoAttribution": "苏轼《前赤壁赋》摘句（简体）。",
+      "identityScope": {
+        "contentVersion": "quality-r2-amo-exile-v1",
+        "contentHash": "json-fnv-v1:0dd93914fd628f68",
+        "role": "legacy-saved-run"
+      }
+    },
+    "quality-r2-amo-exile-v2": {
+      "id": "amo",
+      "name": "苏轼",
+      "gender": "male",
+      "era": "北宋",
+      "theme": "风起赤壁",
+      "skillName": "贬谪",
+      "motto": "余音袅袅，不绝如缕。",
+      "story": "苏轼曾谪居黄州，仍创作诗文。牌局借贬谪这一主题，让你主动舍弃余牌，换取这一手的爆发。",
+      "skillSummary": "出牌时，弃掉手里剩下的牌，这一手得分变为3倍。每场限用1次。",
+      "oldSkillNames": [
+        "余音袅袅（仅旧助攻身份兼容，不是贬谪别名）"
+      ],
+      "mechanics": {
+        "usesPerStage": 1,
+        "minimumRemainder": 1,
+        "requiresSameRank": false,
+        "sacrificesAllRemainder": true,
+        "normalIntegerScoreMultiplier": 3,
+        "timing": "floor-normal-score-then-times-three-after-normal-score-factors",
+        "normalRefill": true,
+        "extraGoldCost": 0,
+        "extraDiscardCost": 0,
+        "permanentCardRemoval": false
+      },
+      "sourcePaths": [
+        "src/domain/r2AmoExile.ts",
+        "src/domain/r2Run.ts",
+        "src/domain/scoreR2.ts",
+        "src/game/AmoExileCopy.ts",
+        "src/game/CharacterRunCopy.ts"
+      ],
+      "detailRules": [
+        "至少还要有1张余牌可弃；不要求同点，高牌或普通对子也可用。",
+        "弃掉全部余牌，不参与本手计分或留手效果，不触发普通弃牌收益；不额外扣金币、弃牌次数或出牌次数。",
+        "先得到正常整数得分，再将该整数乘3；例如922.5先取整922，再得到2766。",
+        "之后沿既有牌堆正常补牌，不永久删牌、不占手位、不追加惩罚。",
+        "静场和关闭角色能力的挑战不能用；选用/取消只改草稿，确认出牌并保存成功才使用本场次数。"
+      ],
+      "historyBoundary": "北宋文学家、书画家；赤壁作品为1082年黄州时期，青年外观是跨年龄艺术化形象，不声称当时年少，更不声称参加三国赤壁之战。",
+      "historySources": [
+        "https://zh.wikisource.org/wiki/前赤壁賦",
+        "https://www.dpm.org.cn/lemmas/242068.html",
+        "https://theme.npm.edu.tw/selection/Article.aspx?sNo=04009295"
+      ],
+      "mottoAttribution": "苏轼《前赤壁赋》摘句（简体）。",
+      "identityScope": {
+        "contentVersion": "quality-r2-amo-exile-v2",
+        "contentHash": "json-fnv-v1:db11f4b55b8dabb9",
+        "role": "legacy-saved-run"
+      }
+    },
+    "quality-r2-xiemu-burn-v2": {
+      "id": "xiemu",
+      "name": "花蕊夫人",
+      "gender": "female",
+      "era": "五代后蜀至宋初文化背景",
+      "theme": "执剑凌风",
+      "skillName": "赏赐",
+      "motto": "赏赐已备，这一手尽兴。",
+      "story": "传世《花蕊夫人宫词》写到宫中散钱与买花钱；牌局借这份赏赐意象，将金币换作关键一手的倍率，也可留钱收息。",
+      "skillSummary": "主动每场1次，选两对及以上且金币足够时，可付5/10/20金使倍率×1.5/2/3；留钱过关仍可获得有限额外利息。",
+      "oldSkillNames": [
+        "留钱／燃金"
+      ],
+      "mechanics": {
+        "usesPerStage": 1,
+        "goldCosts": [
+          5,
+          10,
+          20
+        ],
+        "multipliers": [
+          1.5,
+          2,
+          3
+        ],
+        "extraClearInterestPerGold": 5,
+        "extraClearInterestCap": 2,
+        "timing": "active-after-joker-and-route-growth"
+      },
+      "sourcePaths": [
+        "src/domain/r2XiemuBurn.ts",
+        "src/domain/r2QualifiedHands.ts",
+        "src/domain/r2Run.ts",
+        "src/domain/scoreR2.ts"
+      ],
+      "detailRules": [
+        "先选档再正常出牌；选档不扣钱，确认出牌并保存成功才扣真钱和次数。钱不够不能选该档，也不会自动改用低档；取消不花钱、不耗次数。",
+        "持币唐宋牌和关末利息按扣款后的实际余额计算，花钱不保证净增分或过关。",
+        "额外利息与主动分开计算，不把本次过关奖励再拿来生息。静场不能主动花钱，但保留这份利息；关闭角色能力的挑战两者都停用。",
+        "主动不限定最后一手；倍率在整手唐宋牌与路线加成后计算。"
+      ],
+      "historyBoundary": "选取后蜀女诗人花蕊夫人的文化意象，非前蜀同号人物；徐/费姓氏和部分生平叙述存在不同记载，游戏不钉死姓氏、出生年或死因；“执剑”与青年形象是创作，不声称史实女将或刺杀事迹。 传世宫词中有“库中先散与金钱”“月头支给买花钱”，只借宫廷赏赐意象，作者归属有争议，不将这两句钉死为某一位花蕊夫人亲作。",
+      "historySources": [
+        "https://zh.wikisource.org/wiki/花蕊夫人宮詞",
+        "https://zh.wikisource.org/wiki/十國春秋/卷050",
+        "https://pedia.cloud.edu.tw/Entry/Detail?title=花蕊夫人"
+      ],
+      "mottoAttribution": "借传世《花蕊夫人宫词》赏赐意象作游戏演绎，并非历史原话；宫词作者归属有争议。",
+      "identityScope": {
+        "contentVersion": "quality-r2-xiemu-burn-v2",
+        "contentHash": "json-fnv-v1:6b70f550e44bf564",
+        "role": "legacy-saved-run"
+      }
+    }
+  }
+}

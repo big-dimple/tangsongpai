@@ -1,0 +1,31 @@
+diff --git a/src/game/GameScene.ts b/src/game/GameScene.ts
+index 6345fee9..3f5530f5 100644
+--- a/src/game/GameScene.ts
++++ b/src/game/GameScene.ts
+@@ -1038,7 +1038,7 @@ export class GameScene extends Phaser.Scene {
+       const pending=this.pendingRefill,ids=[...this.selectedIds].filter(id=>pending.candidateIds.includes(id));
+       this.targetAttachment?.preview(!this.refillHidden&&ids.length===pending.required?{key:key(ids),targetId:ids[0],targetIds:ids,kind:'candidate',label:'待留',resolvedLabel:'已留',releaseReason:'laohuan.refill'}:undefined);return;
+     }
+-    if(usesAmoExile(this.run)){const ids=this.selectionPreview()?.activeScoringIds??[];this.targetAttachment?.preview(this.amoExile&&amoExileChoice(this.run,[...this.selectedIds]).available&&ids.length?{key:key(ids),targetId:ids[0],targetIds:ids,kind:'group',label:'本手×4',resolvedLabel:'已×4',releaseReason:'amo.exile'}:undefined);return;}
++    if(usesAmoExile(this.run)){const choice=amoExileChoice(this.run,[...this.selectedIds]);this.targetAttachment?.previewSushiDiscard(this.amoExile&&choice.available?choice.discardedIds:[]);return;}
+     if(this.assistProfile){
+       const assist=validAssistDraft(this.assistInput(),r2AssistAvailability(this.run).available,this.assistIds),ids=assist?.assistIds;
+       this.targetAttachment?.preview(ids?.length?{key:JSON.stringify([this.run.runId,this.run.stage?.index,[...this.selectedIds].sort(),[...ids].sort()]),targetId:ids[0],targetIds:ids,kind:'assist',label:'助',resolvedLabel:'已助',releaseReason:'amo.assist.'}:undefined);return;
+@@ -1999,6 +1999,7 @@ export class GameScene extends Phaser.Scene {
+     // All source reactions wait for the actual packet arrival, including slow frames.
+     let arrive!:()=>void;
+     const impact=new Promise<void>(resolve=>{arrive=()=>{context.signal.removeEventListener('abort',arrive);resolve();};context.signal.addEventListener('abort',arrive,{once:true});});
++    if(event.reasonKey==='amo.exile'&&this.presentation&&!this.presentation.replay){const sink=this.scoreMult.getBounds();this.targetAttachment?.presentSushiDiscard(this.presentation.score,event.eventId,context,impact,(timing.windup+timing.flight)/gameSession().speed,timing.impact/gameSession().speed,{x:sink.x+sink.width/2,y:sink.y+sink.height/2});}
+     const cardResponds=!!card&&this.cardRespondsTo(event,card);
+     if(cardResponds&&card)sourceEffects.push(this.illuminateCard(card,event,timing,context,impact));
+     if(event.sourceType==='character'){
+@@ -2233,7 +2234,8 @@ export class GameScene extends Phaser.Scene {
+       if(attachment){if(attachment.targetIds)this.targetAttachment?.retainTargets(attachment.targetIds);this.targetAttachment?.commit(attachment.event.eventId,context);}else this.targetAttachment?.clear();
+       this.scoreHaptic?.scope.cancel();this.scoreHaptic=replay?undefined:{generation:context.generation,scope:Haptics.shared.createScope(context.signal)};
+       if(!replay)this.audio.playHand();
+-      if(score.amoExile?.use)await Promise.all(this.cardViews.filter(v=>score.amoExile!.discardedIds.includes(v.card.id)).map((v,i)=>{v.hit?.disableInteractive();v.selectionMark?.setText('弃').setVisible(true);return this.animate({targets:v.container,alpha:0,y:v.container.y-(this.reducedMotion?0:24),duration:this.reducedMotion?0:180,delay:this.reducedMotion?0:i*30},context);}));
++      if(!replay&&score.amoExile?.use)this.targetAttachment?.beginSushiDiscard(score,context);
++      if(score.amoExile?.use)await Promise.all(this.cardViews.filter(v=>score.amoExile!.discardedIds.includes(v.card.id)).map((v,i)=>{v.hit?.disableInteractive();v.selectionMark?.setText('弃').setVisible(true);return this.animate({targets:v.container,alpha:0,y:v.container.y-(this.reducedMotion?0:24),duration:this.reducedMotion?0:180,delay:this.reducedMotion?0:i*30,onUpdate:(tween:Phaser.Tweens.Tween)=>{if(!replay)this.targetAttachment?.cutSushiDiscard(v.card.id,tween.progress);},onComplete:()=>{if(!replay)this.targetAttachment?.cutSushiDiscard(v.card.id,1);}},context);}));
+       await Promise.all([...(beforeHands!==undefined&&!replay?[this.pulseResource('play',beforeHands,context,beforeHands-1)]:[]),...landing.map(async({view,box},i)=>{
+         const sx=box.width/Number(view.container.getData('width')),sy=box.height/Number(view.container.getData('height'));
+         const tx=box.x+box.width/2,ty=box.y+box.height/2;
