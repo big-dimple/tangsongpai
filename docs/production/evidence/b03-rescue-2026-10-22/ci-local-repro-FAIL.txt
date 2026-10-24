@@ -1,0 +1,39 @@
+
+> tangsongpai@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /workspace/tangsongpai
+
+ ❯ tests/xin-refill-lock.test.ts (7 tests | 1 failed) 28ms
+   × cancel/failure, legacy ordinary discard, duplicate or stale receipt cannot produce activation eyes 8ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/xin-refill-lock.test.ts > cancel/failure, legacy ordinary discard, duplicate or stale receipt cannot produce activation eyes
+Error: Run invariant: boss rescue profile
+ ❯ check src/domain/r2Run.ts:168:70
+    166|   const activeStage=state.phase==='await-input'||state.phase==='pendin…
+    167|   const R2_JOKERS=r2JokerDefinitionsFor(state);
+    168|   const check=(condition:boolean,label:string)=>{if(!condition)throw n…
+       |                                                                      ^
+    169|   if(state.stage){
+    170|     check(usesBossSuitRescue(state)?!!state.stage.bossSuitRescue:!Obje…
+ ❯ assertR2Invariants src/domain/r2Run.ts:170:5
+ ❯ Module.applyCommand src/domain/run.ts:207:5
+ ❯ execute tests/xin-refill-lock.test.ts:12:46
+ ❯ tests/xin-refill-lock.test.ts:17:121
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 418 passed (419)
+      Tests  1 failed | 5057 passed (5058)
+   Start at  01:32:47
+   Duration  87.89s (transform 13.08s, setup 0ms, import 76.97s, tests 124.45s, environment 51ms)
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.1
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1
+npm notice To update run: npm install -g npm@12.2.1
+npm notice

@@ -1,0 +1,88 @@
+{
+  "taskId": "audio-performance-contract-20261018",
+  "testedCommit": "0fbca930211ee0ea460c640bd76c8a22e5de66cd",
+  "baseCommit": "bab78be5be4bc6d8cdb9780ac8a4eebb69f697da",
+  "visualContractCommit": "d57047488dce447578fcfbc5f61702609a552462",
+  "branch": "dev/audio-performance-contract-20261018",
+  "environment": {
+    "os": "win32",
+    "node": "v22.20.0",
+    "browser": "NOT_RUN; user restriction",
+    "hearing": "NOT_RUN"
+  },
+  "checks": [
+    {
+      "name": "focused audio tests",
+      "status": "PASS",
+      "exitCode": 0,
+      "files": 9,
+      "total": 159,
+      "passed": 159,
+      "failed": 0,
+      "evidence": "tests.json"
+    },
+    {
+      "name": "TypeScript --noEmit",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "Vite production build",
+      "status": "PASS",
+      "exitCode": 0,
+      "modules": 380,
+      "evidence": "build-info.json",
+      "note": "Built exact source hashes before committing; build metadata retains base SHA and dirty."
+    },
+    {
+      "name": "git diff --check",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "protected scene/domain/assets diff",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "joint Scene wiring and native phase/audio observation",
+      "status": "NOT_RUN"
+    },
+    {
+      "name": "physical device and hearing approval",
+      "status": "NOT_RUN"
+    }
+  ],
+  "sourceSha256LF": {
+    "src/audio/AudioEngine.ts": "95cc31da23e7ff73f794f7ee95dc0a886c03fbd831673d696b6857cdc970defb",
+    "src/audio/PerformanceAudio.ts": "5709505757df95dc9dc0b8e689de437429165123192ffc36526ce3a0cd88e27e",
+    "src/audio/foley.ts": "101bc592094d8ab0f482db9c30e9d8bbb6ce6d88cb513e48cacfc016657e835c",
+    "tests/audio-performance.test.ts": "5f832984bd915b979a2b0e26ea898bffc0f80a5078c70a073537a4ac85ec5321",
+    "tests/score-melody-audio.test.ts": "39c0560579e25665ca1de34eeb40725a28c989788db18f0819822d4a6f0b8f89"
+  },
+  "humanReview": {
+    "status": "NOT_RUN"
+  },
+  "limits": {
+    "numericVoices": 6,
+    "numericNominalGain": 0.12,
+    "effectVoices": 16,
+    "eventsPerOwner": 1024
+  },
+  "envelopes": {
+    "pairedTransientMaxMs": 45,
+    "bodyRecipeMs": 140,
+    "actualWindow": "beat.impact / speed; existing 35ms minimum sample window remains",
+    "rebound": "actual caller callback only; no audio retry timer"
+  },
+  "limitations": [
+    "Scene and visual integration belongs to scoring owner.",
+    "Recorded sample bytes and BGM manifests are unchanged.",
+    "Unit mocks do not prove audibility, perceptual balance or hardware synchronization.",
+    "Existing large production chunk warning remains."
+  ],
+  "initialCheckCorrections": [
+    "Initial +M fixture selected the base receipt, then no later +M existed in that multiplier-only fixture; replaced with actual saved Liu E handoff.",
+    "Updated the paired-body expectation to 140ms while retaining the original 40ms compressed-window assertion; the first edit had targeted the wrong assertion."
+  ]
+}

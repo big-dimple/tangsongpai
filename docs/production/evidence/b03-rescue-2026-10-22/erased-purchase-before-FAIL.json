@@ -1,0 +1,6 @@
+{
+  "beforeHead": "1eb07ef139e2a2c30d1f7bfef4500b22949dd6cb",
+  "case": "legitimate used then later ordinary PlayHand; empty journal; status=unbought, purchase=null, play=null; original receipts retained and checksum recomputed",
+  "readCheckpointAccepted": true,
+  "fix": "When optional purchase is absent, bounded current-stage play indexes reconstruct possible BuyBossSuitRescue command fingerprints against permanent receipts; an existing receipt forbids unbought reset."
+}

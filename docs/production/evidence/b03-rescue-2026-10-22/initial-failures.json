@@ -1,0 +1,51 @@
+{
+  "status": "FAIL_RETAINED",
+  "command": "npm test -- tests/b03-rescue.test.ts --reporter=verbose",
+  "passed": 6,
+  "failed": 2,
+  "failures": [
+    {
+      "test": "previews and scores the original heart cards with enhancements/editions/synergy, then restores B03",
+      "error": "invalid-card-instances",
+      "cause": "test fixture used nonexistent silver-paper enhancement; corrected to voice-paper"
+    },
+    {
+      "test": "invalid plays and previews preserve pending opportunity and RNG; pressure uses the same narrow exemption",
+      "error": "invalid-score-version-or-character",
+      "cause": "test preview helper omitted required rulesVersion/runId/rootId; corrected public input"
+    }
+  ],
+  "productPassClaim": false,
+  "secondRun": {
+    "passed": 36,
+    "failed": 1,
+    "failure": "Restored five-card flush actually cleared first-chapter target; incorrect test assumption await-input. Bounded no-guaranteed-clear test corrected to a legal single-card hand."
+  },
+  "thirdRun": {
+    "passed": 36,
+    "failed": 1,
+    "failure": "Test expected held-only voice-paper to execute as played card; corrected active scoring enhancement to heat-paper."
+  },
+  "typecheckFailure": {
+    "cause": "New fixture R2ModeSelection missing explicit difficulty/challengeId; cascading overload errors. Corrected fixture only."
+  },
+  "ownedToolTestFailure": {
+    "passed": 52,
+    "failed": 1,
+    "error": "no-effect",
+    "cause": "T03 dyes hearts, already all hearts; changed fixture owned tool to T04 (different suit)."
+  },
+  "layoutCorrection": "Visual inspection found pending preview over old placeholder, and idle receipt status beside rescue button; confined placeholder and status width for eligible rescue only.",
+  "entryProofIntegrationFailure": {
+    "passed": 32,
+    "failed": 8,
+    "error": "Run invariant: route stage qualification",
+    "cause": "Existing route-stage receipt verifier assumed EnterStage had no parameters; added only the B03 entry token to its exact receipt comparison."
+  },
+  "readyFixtureFailure": {
+    "passed": 42,
+    "failed": 1,
+    "error": "Run invariant: shelf references/capacity",
+    "cause": "Synthetic stage-ready fixture moved stage index but retained first-shop shelf; cleared retained shelf in this controlled test. No product change."
+  }
+}
