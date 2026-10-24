@@ -152,7 +152,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     if(c.portrait){
       const artWidth=Math.min(q.art.width,q.art.height*1122/1402),artHeight=artWidth*1402/1122,artX=q.art.x+(q.art.width-artWidth)/2,artY=q.art.y+(q.art.height-artHeight)/2;
       this.entryArt={x:artX,y:artY,width:artWidth,height:artHeight};
-      v.add(this.add.graphics().fillStyle(0x0d1e22,.32).fillRoundedRect(artX+6,artY+6,artWidth,artHeight).lineStyle(1,0x3f606b,.35).strokeRect(artX-1,artY-1,artWidth+1,artHeight+1));
+      v.add(this.add.graphics().fillStyle(0x0d1e22,.32).fillRect(artX+6,artY+6,artWidth,artHeight).lineStyle(1,SELECTION_INK.line,.5).strokeRect(artX-1,artY-1,artWidth+2,artHeight+2));
       this.queueHeroPortrait(c.id);this.drawPortrait(c.id,q.art,true);
       const artHit=v.rect(q.art).setFillStyle(0,0).setStrokeStyle();
       v.target(artHit,'opening/portrait-full',{tap:()=>this.inspectPortrait(c.id),detail:()=>this.inspectPortrait(c.id)});
@@ -162,7 +162,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     if(!compact||q.identity.height>=150){const title=v.text(ix,iy,HERO_CAST[c.id].title,14,undefined,iw).setColor(SELECTION_INK.muted).setName('opening/title');nameY=title.y+title.height+8;}
     const name=this.singleLine(ix,nameY,c.name,p.short?22:compact?28:48,SELECTION_INK.light,iw,20,true).setColor(SELECTION_INK.light).setFontFamily('Georgia, "Noto Serif SC", SimSun, serif').setName('opening/name');
     const smallIdentity=p.short||q.identity.height<150,quoteY=name.y+name.height+(smallIdentity?4:16);
-    const quote=v.text(ix,quote.y,copy.taunt,smallIdentity?14:p.portrait?17:24,undefined,iw).setColor(SELECTION_INK.light).setName('opening/attitude');
+    const quote=v.text(ix,quoteY,copy.taunt,smallIdentity?14:p.portrait?17:24,undefined,iw).setColor(SELECTION_INK.light).setName('opening/attitude');
     if(!compact)v.text(ix,quote.y+quote.height+24,facts.hook,17,undefined,iw).setColor(SELECTION_INK.muted).setName('opening/play-attitude');
     if(q.identity.height>=170)v.text(ix,iy+q.identity.height-18,'轻点人物看原画',14,undefined,iw).setColor(SELECTION_INK.muted).setName('opening/portrait-hint');
     const paper=v.add(this.add.graphics());
@@ -172,17 +172,17 @@ export class CharacterSelectScene extends Phaser.Scene {
     let next=effect.y+effect.height+6;
     if(abilityEnabled&&c.skillTags.length){
       const visibleTags=compact&&b.height<300?c.skillTags.slice(0,2):c.skillTags;
-      const tags=v.text(x,next,visibleTags.join(' · '),14,'#3F606B',w).setColor(SELECTION_INK.muted).setName('opening/skill-conditions');next=tags.y+tags.height+(compact?4:16);
+      const tags=v.text(x,next,visibleTags.join(' · '),14,'#3F606B',w).setName('opening/skill-conditions');next=tags.y+tags.height+(compact?4:16);
     }
     if(!compact&&abilityEnabled){
-      const when=v.text(x,next,'出手 · '+facts.when,16,'#3F606B',w).setName('opening/play-when');
-      const cost=v.text(x,when.y+when.height+18,'取舍 · '+facts.cost,16,'#26313A',w).setName('opening/play-cost');next=cost.y+cost.height;
+      const when=v.text(x,next,'出手 · '+facts.when,16,'#3F606B',w).setName('opening/when');
+      const cost=v.text(x,when.y+when.height+18,'取舍 · '+facts.cost,16,'#26313A',w).setName('opening/cost');next=cost.y+cost.height;
     }
-    const demo={...q.demo,y:Math.max(q.demo.y,next+(compact?8:20))},half=(demo.width-8)/2;
+    const demo={...q.demo,y:Math.min(q.demo.y,next+(compact?8:20))},half=(demo.width-8)/2;
     const panel={x:q.copy.x-8,y:q.copy.y-8,width:q.copy.width+16,height:demo.y+demo.height-q.copy.y+8};
     paper.fillStyle(0x0d1e22,.28).fillRoundedRect(panel.x+4,panel.y+5,panel.width,panel.height,4).fillStyle(SELECTION_INK.paper).fillRoundedRect(panel.x,panel.y,panel.width,panel.height,4).lineStyle(1,0x9f9987,.35).strokeRoundedRect(panel.x+3,panel.y+3,panel.width-6,panel.height-6,3);
     selectionQuietButton(v,{...demo,width:half},'故事 · 技能','opening/hero-details',()=>this.inspect(c.id),!this.choosing,false);
-    selectionQuietButton(v,{...demo,x:demo.x+half+8},this.step==='hero'?'技能例子':this.selectedRoute?'路线例子':'先选路线','action/opening-sample',()=>{this.audio.select();showSelectionSample(this.dialog,c.name+' · '+(this.step==='hero'?'技能例子':'路线例子'),this.step==='hero'?heroPlaySample(c.id):routePlaySample(this.selectedRoute!,c.id));},!this.choosing&&abilityEnabled&&(this.step==='hero'||!!this.selectedRoute),false);
+    selectionQuietButton(v,{...demo,x:demo.x+half+8,width:half},this.step==='hero'?'技能例子':this.selectedRoute?'路线例子':'先选路线','action/opening-sample',()=>{this.audio.select();showSelectionSample(this.dialog,c.name+' · '+(this.step==='hero'?'技能例子':'路线例子'),this.step==='hero'?heroPlaySample(c.id):routePlaySample(this.selectedRoute!,c.id));},!this.choosing&&abilityEnabled&&(this.step==='hero'||!!this.selectedRoute),false);
     if(this.animateChoice&&!this.reducedMotion()){
       for(const text of [name,quote]){text.setAlpha(.65);this.trackOpening(text,()=>text.active&&text.setAlpha(1));this.tweens.add({targets:text,alpha:1,duration:180,ease:inkSettlingEase(.24)});}
     }
@@ -198,16 +198,16 @@ export class CharacterSelectScene extends Phaser.Scene {
     warmHeroImage(this,id);
   }
   private drawPortrait(id:CharacterId,b:Box,hero=false):void {
-    const holder=this.view.add(this.add.container(0,0));this.portraitTargets.set(holder,{id,b,hero});this.paintPortrait(holder,id,b,hero);
+    const holder=this.view.add(this.add.container(0,0));this.portraitTargets.set(holder,{id,box:b,hero});this.paintPortrait(holder,id,b,hero);
   }
   /** Replace only the picture; late previews must never destroy a pressed action target. */
-  private paintPortrait(holder:Phaser.GameObjects.Container,id:CharacterId,b:Box,hero=false):void {
+  private paintPortrait(holder:Phaser.GameObjects.Container,id:CharacterId,b:Box,hero:boolean):void {
     holder.removeAll(true);
     const key=hero&&this.textures.exists(portraitKey(id))?portraitKey(id):selectionPortraitKey(id);
     if(!this.textures.exists(key)){addAvatar(this,holder,getCharacter(id),b.x+b.width/2,b.y+b.height/2,Math.min(b.width,b.height));return;}
-    const image=this.add.image(b.x+b.width/2,b.y+b.height/2,key),scale=Math.min(b.width/image.width,b.height/image.height);
+    const image=this.add.image(0,0,key),scale=Math.min(b.width/image.width,b.height/image.height);
     if(hero)image.setName('opening/portrait').setData('openingBounds',b);
-    image.setScale(scale);holder.add(image);
+    image.setScale(scale).setPosition(b.x+b.width/2,b.y+b.height/2);holder.add(image);
   }
   /** Card content drawn since `first` is wrapped into one hoverable, liftable container. */
   private wrapCard(first:number,b:Box):{art:Phaser.GameObjects.Container;enter:()=>void;leave:()=>void} {
@@ -220,9 +220,9 @@ export class CharacterSelectScene extends Phaser.Scene {
     v.add(art);
     const glow=this.add.graphics().lineStyle(3,0x3f606b,.92).strokeRoundedRect(-b.width/2-1,-b.height/2-1,b.width+2,b.height+2,8).setAlpha(0);art.add(glow);
     const reduced=()=>gameSession().reducedMotion||window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const leave=()=>{if(!art.active)return;this.tweens.killTweensOf(art);glow.setAlpha(0);if(reduced)art.setPosition(cx,cy).setScale(1);else this.tweens.add({targets:art,x:cx,y:cy,duration:120,ease:'Sine.easeOut'});};
+    const leave=()=>{if(!art.active)return;this.tweens.killTweensOf(art);glow.setAlpha(0);if(reduced())art.setPosition(cx,cy).setScale(1);else this.tweens.add({targets:art,x:cx,y:cy,scaleX:1,scaleY:1,duration:120,ease:'Sine.easeOut'});};
     art.once('destroy',()=>this.tweens.killTweensOf(art));
-    return {art,enter:()=>{if(!art.active||this.choosing)return;this.tweens.killTweensOf(art);glow.setAlpha(1);v.root.bringToTop(art);if(!reduced())this.tweens.add({targets:art,x:cx,y:cy-5,scaleX:1.02,scaleY:1.02,duration:130,ease:'Sine.easeOut'});},leave};
+    return {art,enter:()=>{if(!art.active||this.choosing)return;this.tweens.killTweensOf(art);glow.setAlpha(1);v.root.bringToTop(art);if(!reduced())this.tweens.add({targets:art,y:cy-5,scaleX:1.02,scaleY:1.02,duration:130,ease:'Sine.easeOut'});},leave};
   }
   private singleLine(x:number,y:number,value:string,size:number,color:string,width:number,minSize=14,bold=false):Phaser.GameObjects.Text {
     const text=this.view.text(x,y,value,size,color);if(bold)text.setFontStyle('bold');
