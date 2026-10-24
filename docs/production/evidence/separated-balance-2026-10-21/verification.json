@@ -1,0 +1,16 @@
+{
+  "productionSourceFilesEqualBaseline": 416,
+  "productionSourceChanged": 0,
+  "defaultOHasNoAdapterReplacements": true,
+  "all39PassedFormalInvariantsAndSavedRun": true,
+  "stageColdRestoreChecks": 117,
+  "policyLockUnchanged": true,
+  "qualificationLimits": {
+    "qinBets": 0,
+    "wenReleases": 0,
+    "wenMaximumCharge": 2,
+    "positiveAccumulatedJokerGrowthReads": 0
+  },
+  "ui": "NOT_RUN: headless experiment, no UI/product source changes",
+  "notHumanOrLongTermAcceptance": true
+}

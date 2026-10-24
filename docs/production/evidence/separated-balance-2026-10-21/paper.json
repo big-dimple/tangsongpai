@@ -1,0 +1,394 @@
+{
+  "kind": "paper-arithmetic-only-no-natural-path-no-rate",
+  "twoPair": {
+    "cards": [
+      {
+        "id": "2h",
+        "rank": 2,
+        "suit": "hearts"
+      },
+      {
+        "id": "2s",
+        "rank": 2,
+        "suit": "spades"
+      },
+      {
+        "id": "Ac",
+        "rank": 14,
+        "suit": "clubs"
+      },
+      {
+        "id": "Ad",
+        "rank": 14,
+        "suit": "diamonds"
+      }
+    ],
+    "withoutSkill": "182",
+    "liueFull": "1040",
+    "liueHalf": "600",
+    "liueHalfDerivation": "(91-11)*(2+11/2)=600"
+  },
+  "wencheng": {
+    "progression": [
+      {
+        "before": {
+          "charge": 0,
+          "previousQualifiedType": null
+        },
+        "release": false,
+        "after": {
+          "charge": 1,
+          "previousQualifiedType": "two-pair"
+        },
+        "multiplier": null
+      },
+      {
+        "before": {
+          "charge": 1,
+          "previousQualifiedType": "two-pair"
+        },
+        "release": false,
+        "after": {
+          "charge": 2,
+          "previousQualifiedType": "three-kind"
+        },
+        "multiplier": null
+      },
+      {
+        "before": {
+          "charge": 2,
+          "previousQualifiedType": "three-kind"
+        },
+        "release": false,
+        "after": {
+          "charge": 3,
+          "previousQualifiedType": "straight"
+        },
+        "multiplier": null
+      }
+    ],
+    "releaseTiers": [
+      {
+        "before": {
+          "charge": 1,
+          "previousQualifiedType": "straight"
+        },
+        "release": true,
+        "after": {
+          "charge": 0,
+          "previousQualifiedType": null
+        },
+        "multiplier": "1.5"
+      },
+      {
+        "before": {
+          "charge": 2,
+          "previousQualifiedType": "straight"
+        },
+        "release": true,
+        "after": {
+          "charge": 0,
+          "previousQualifiedType": null
+        },
+        "multiplier": "2.5"
+      },
+      {
+        "before": {
+          "charge": 3,
+          "previousQualifiedType": "straight"
+        },
+        "release": true,
+        "after": {
+          "charge": 0,
+          "previousQualifiedType": null
+        },
+        "multiplier": "4"
+      }
+    ],
+    "conditionalScoresOnSameNakedTwoPair": [
+      "273",
+      "455",
+      "728"
+    ],
+    "note": "requires prior qualified alternation; no such release observed in sampled chains"
+  },
+  "qin": {
+    "hypotheticalPublicCommit": {
+      "target": "two-pair",
+      "snapshotToken": "json-fnv-v1:1b37fe61e7ad72b5",
+      "stageIndex": 1,
+      "duePlayIndex": 1,
+      "discardCommandId": "paper/discard",
+      "expectedSeq": 8,
+      "handBefore": [
+        {
+          "id": "4h",
+          "rank": 4,
+          "suit": "hearts"
+        },
+        {
+          "id": "4d",
+          "rank": 4,
+          "suit": "diamonds"
+        },
+        {
+          "id": "Kc",
+          "rank": 13,
+          "suit": "clubs"
+        },
+        {
+          "id": "2h",
+          "rank": 2,
+          "suit": "hearts"
+        },
+        {
+          "id": "3c",
+          "rank": 3,
+          "suit": "clubs"
+        },
+        {
+          "id": "5d",
+          "rank": 5,
+          "suit": "diamonds"
+        },
+        {
+          "id": "7d",
+          "rank": 7,
+          "suit": "diamonds"
+        },
+        {
+          "id": "9h",
+          "rank": 9,
+          "suit": "hearts"
+        }
+      ],
+      "rules": {
+        "fourStraight": false,
+        "fourFlush": false
+      },
+      "selectedIds": [
+        "2h",
+        "3c",
+        "5d",
+        "7d",
+        "9h"
+      ],
+      "refill": {
+        "handLimit": 8,
+        "handAfter": [
+          "4h",
+          "4d",
+          "Kc",
+          "9c",
+          "9d",
+          "6h",
+          "8d",
+          "Qc"
+        ],
+        "refilledIds": [
+          "9c",
+          "9d",
+          "6h",
+          "8d",
+          "Qc"
+        ]
+      }
+    },
+    "outcomes": [
+      {
+        "commit": null,
+        "outcome": "ordinary",
+        "multiplier": "1.15",
+        "core": {
+          "contract": "new-core-v1",
+          "activeNewIds": [],
+          "lossReason": null
+        }
+      },
+      {
+        "commit": {
+          "target": "two-pair",
+          "snapshotToken": "json-fnv-v1:1b37fe61e7ad72b5",
+          "stageIndex": 1,
+          "duePlayIndex": 1,
+          "discardCommandId": "paper/discard",
+          "expectedSeq": 8,
+          "handBefore": [
+            {
+              "id": "4h",
+              "rank": 4,
+              "suit": "hearts"
+            },
+            {
+              "id": "4d",
+              "rank": 4,
+              "suit": "diamonds"
+            },
+            {
+              "id": "Kc",
+              "rank": 13,
+              "suit": "clubs"
+            },
+            {
+              "id": "2h",
+              "rank": 2,
+              "suit": "hearts"
+            },
+            {
+              "id": "3c",
+              "rank": 3,
+              "suit": "clubs"
+            },
+            {
+              "id": "5d",
+              "rank": 5,
+              "suit": "diamonds"
+            },
+            {
+              "id": "7d",
+              "rank": 7,
+              "suit": "diamonds"
+            },
+            {
+              "id": "9h",
+              "rank": 9,
+              "suit": "hearts"
+            }
+          ],
+          "rules": {
+            "fourStraight": false,
+            "fourFlush": false
+          },
+          "selectedIds": [
+            "2h",
+            "3c",
+            "5d",
+            "7d",
+            "9h"
+          ],
+          "refill": {
+            "handLimit": 8,
+            "handAfter": [
+              "4h",
+              "4d",
+              "Kc",
+              "9c",
+              "9d",
+              "6h",
+              "8d",
+              "Qc"
+            ],
+            "refilledIds": [
+              "9c",
+              "9d",
+              "6h",
+              "8d",
+              "Qc"
+            ]
+          }
+        },
+        "outcome": "won",
+        "multiplier": "2",
+        "core": {
+          "contract": "new-core-v1",
+          "activeNewIds": [
+            "9c",
+            "9d"
+          ],
+          "lossReason": null
+        }
+      },
+      {
+        "commit": {
+          "target": "two-pair",
+          "snapshotToken": "json-fnv-v1:1b37fe61e7ad72b5",
+          "stageIndex": 1,
+          "duePlayIndex": 1,
+          "discardCommandId": "paper/discard",
+          "expectedSeq": 8,
+          "handBefore": [
+            {
+              "id": "4h",
+              "rank": 4,
+              "suit": "hearts"
+            },
+            {
+              "id": "4d",
+              "rank": 4,
+              "suit": "diamonds"
+            },
+            {
+              "id": "Kc",
+              "rank": 13,
+              "suit": "clubs"
+            },
+            {
+              "id": "2h",
+              "rank": 2,
+              "suit": "hearts"
+            },
+            {
+              "id": "3c",
+              "rank": 3,
+              "suit": "clubs"
+            },
+            {
+              "id": "5d",
+              "rank": 5,
+              "suit": "diamonds"
+            },
+            {
+              "id": "7d",
+              "rank": 7,
+              "suit": "diamonds"
+            },
+            {
+              "id": "9h",
+              "rank": 9,
+              "suit": "hearts"
+            }
+          ],
+          "rules": {
+            "fourStraight": false,
+            "fourFlush": false
+          },
+          "selectedIds": [
+            "2h",
+            "3c",
+            "5d",
+            "7d",
+            "9h"
+          ],
+          "refill": {
+            "handLimit": 8,
+            "handAfter": [
+              "4h",
+              "4d",
+              "Kc",
+              "9c",
+              "9d",
+              "6h",
+              "8d",
+              "Qc"
+            ],
+            "refilledIds": [
+              "9c",
+              "9d",
+              "6h",
+              "8d",
+              "Qc"
+            ]
+          }
+        },
+        "outcome": "lost",
+        "multiplier": "0.85",
+        "core": {
+          "contract": "new-core-v1",
+          "activeNewIds": [],
+          "lossReason": "target"
+        }
+      }
+    ],
+    "note": "legal two-pair target; win requires new active core. No sampled bet was made; no hit probability claimed."
+  }
+}

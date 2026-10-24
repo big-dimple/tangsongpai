@@ -1,0 +1,62 @@
+
+ RUN  v4.1.11 C:/Users/wanghongping/AppData/Local/Temp/tangsongpai-shop-purpose-20261017
+
+ ❯ tests/shop-gallery-art.test.ts (8 tests | 2 failed | 6 skipped) 12ms
+   × recovers a failed PC T12 face from appreciation once and ignores old observers after category change 10ms
+   × recovers a failed PC U01 face from appreciation once and ignores old observers after category change 1ms
+ ❯ tests/shop-mobile-offers.test.ts (6 tests | 2 failed | 4 skipped) 34ms
+   × recovers a failed mobile T12 face when appreciation decodes the same detail, without refetching or publishing after teardown 30ms
+   × recovers a failed mobile U01 face when appreciation decodes the same detail, without refetching or publishing after teardown 2ms
+
+ Test Files  2 failed (2)
+      Tests  4 failed | 10 skipped (14)
+   Start at  14:51:03
+   Duration  6.02s (transform 5.36s, setup 0ms, import 5.98s, tests 46ms, environment 0ms)
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/shop-gallery-art.test.ts > recovers a failed PC T12 face from appreciation once and ignores old observers after category change
+AssertionError: expected 'goods-art/T12' to be 'shop-goods-detail/T12' // Object.is equality
+
+Expected: "shop-goods-detail/T12"
+Received: "goods-art/T12"
+
+ ❯ tests/shop-gallery-art.test.ts:36:200
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  tests/shop-gallery-art.test.ts > recovers a failed PC U01 face from appreciation once and ignores old observers after category change
+AssertionError: expected 'goods-art/U01' to be 'shop-goods-detail/U01' // Object.is equality
+
+Expected: "shop-goods-detail/U01"
+Received: "goods-art/U01"
+
+ ❯ tests/shop-gallery-art.test.ts:36:200
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  tests/shop-mobile-offers.test.ts > recovers a failed mobile T12 face when appreciation decodes the same detail, without refetching or publishing after teardown
+AssertionError: expected '/preview.webp' to be 'blob:nodedata:f7fb75a5-41a7-4c31-b36e…' // Object.is equality
+
+Expected: "blob:nodedata:f7fb75a5-41a7-4c31-b36e-2c85b1ca9776"
+Received: "/preview.webp"
+
+ ❯ tests/shop-mobile-offers.test.ts:40:77
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  tests/shop-mobile-offers.test.ts > recovers a failed mobile U01 face when appreciation decodes the same detail, without refetching or publishing after teardown
+AssertionError: expected '/preview.webp' to be 'blob:nodedata:804ef509-1ca3-41e9-be33…' // Object.is equality
+
+Expected: "blob:nodedata:804ef509-1ca3-41e9-be33-9f09634982ac"
+Received: "/preview.webp"
+
+ ❯ tests/shop-mobile-offers.test.ts:40:77
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+exit=1

@@ -1,0 +1,90 @@
+{
+  "baseline": "77bd50fcae0991f021b68219c83de8027424bacb",
+  "checkedProduct": "895bcf4e95bdc7dfc3cf0ed74f5f3260c0a78455",
+  "shopProduct": "9d12ce38c9eea58cb0451a9a37ebe0e7e15c0d20",
+  "sourceSnapshot": {
+    "head": "15cdc0532a2ef5656798bb2429a7a3b2810d8c1d",
+    "recordedAt": "2026-10-18T15:01:38.134Z",
+    "hashes": [
+      {
+        "path": "src/game/ShopScene.ts",
+        "sha256": "e61e3d7a3bbab1198ed1380b6026369d44baff3db1473137cde8ecb35d3b36d9"
+      },
+      {
+        "path": "src/game/BossAtmosphere.ts",
+        "sha256": "96df984a43f1efe31a1c58a56ac44a863e7b19a6ccc792d39aae83dea14f134a"
+      },
+      {
+        "path": "src/game/BossAtmosphereModel.ts",
+        "sha256": "7dae1a4c91f2bc37f49c9e90f93e26b6ae0af806b9178cc68fe5605b1cbba3db"
+      },
+      {
+        "path": "tests/boss-atmosphere.test.ts",
+        "sha256": "714a73572ed616371b496a925b857c825d638f5aefcbd19d431756bdef97b9d7"
+      },
+      {
+        "path": "docs/production/evidence/boss-shop-atmosphere-2026-10-18/GameScene.entry.patch",
+        "sha256": "96ffa2d85d83fc89b7154e54e898fbb05b725c6cccc75f1f4bb7751376f8cd8b"
+      },
+      {
+        "path": "docs/production/evidence/boss-shop-atmosphere-2026-10-18/README.md",
+        "sha256": "5de1e3c66d9de06f9152f387c1c1a569e5bad40230c2a1d289aae99609f4c7c6"
+      }
+    ],
+    "originalStillMatchesSnapshot": true,
+    "localSnapshot": "shots/shop-closeout-20261018/source-snapshot",
+    "sourceIncomplete": "Original draft had only atmosphere injection and particles; new PNG loader/camera/once notice, current copy/alignment and advice mount completed in integration. Old battle entry patch not applied under current pre-Boss-shop scope."
+  },
+  "boss": {
+    "asset": "public/assets/boss/general-95008f17.png",
+    "sha256": "95008f176817479497731891b6418a762c46b8ec53e32756a560a625e00eceb8",
+    "bytes": 1553214,
+    "width": 1774,
+    "height": 887,
+    "alpha": true,
+    "originalBytesPreserved": true,
+    "runtime": "head/shoulder camera inside reserved44px shop band; real current Boss visit only; once1400ms notice; bounded existing DetailArt async, failure/late data never blocks, shutdown cancels; no placeholder"
+  },
+  "straight": {
+    "source": "7bfe19b816fe77b094d51f1c98d1b4ffe3571f35",
+    "exactModuleAndSourceTests": true,
+    "host": "existing WorkshopGoals modify panel only",
+    "contract": "actual live deck/destroyedIds/c08, current quotes/gold/shared quota; counts before/after and retained-connection risk; read-only, no auto selection, buy, rate/stars or new prices"
+  },
+  "table": {
+    "source": "043e536f81821677e18d85bf74710cb32b8d1145",
+    "runtimeFilesExact": 4,
+    "sourceChecks": "14files255 per-file exact source reuse, not a single full suite"
+  },
+  "copy": "道具箱; 花钱换货/免费换货, aligned icon/text and current quote confirmation; stale/cancel/double-submit gates retained, real paid/free command gold checked",
+  "checks": {
+    "firstAttempt": "9files51:50PASS1FAIL, new fixture missing createTextNode; original report retained",
+    "shopBatch": "11files70 PASS",
+    "lastBoss": "2files8 PASS",
+    "joint": {
+      "files": 9,
+      "tests": 108,
+      "passed": 108,
+      "failed": 0
+    },
+    "typecheckBuild": "PASS,390 modules",
+    "harness": "node --check shop-category-refinement.mjs PASS, browser NOT_RUN"
+  },
+  "preserved": "AudioEngine/main/LoadingScreen/domain/application/content exact77bd; GameScene and three table motion/layout files exact043; raw hero and music bytes unchanged",
+  "pending": [
+    "parent dot same-version normal game and recording/review",
+    "new Boss image/portrait phone crop and real layout",
+    "table enlarged clarity/idle naturalness/hover/drag/score",
+    "actual listening and physical devices"
+  ],
+  "P08": "in_progress",
+  "experienceAccepted": false,
+  "followupRepair": {
+    "product": "5ed79e885370e4ccd56c394a0666e7ec6c73a3a4",
+    "evidence": "docs/production/evidence/shop-closeout-repair-2026-10-18/status.json",
+    "status": "engineering_verified_authorized_main_batch",
+    "checks": "9files/125PASS; typecheck; build390",
+    "experienceAccepted": false,
+    "pending": "Parent same-version Boss shop visual/phone review; full-five and idle/hearing/device acceptance remain open"
+  }
+}

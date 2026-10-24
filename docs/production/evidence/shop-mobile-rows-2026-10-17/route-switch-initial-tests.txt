@@ -1,0 +1,28 @@
+
+ RUN  v4.1.11 C:/Users/wanghongping/AppData/Local/Temp/tangsongpai-shop-purpose-20261017
+
+ ❯ tests/make-cards-flow.test.ts (5 tests | 1 failed) 58ms
+   × the live purchase gate rejects saving, read-only, lease loss and an old shop sequence while owned tools route to their existing selector 10ms
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 24 passed (25)
+   Start at  08:13:35
+   Duration  5.84s (transform 8.31s, setup 0ms, import 9.55s, tests 359ms, environment 0ms)
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/make-cards-flow.test.ts > the live purchase gate rejects saving, read-only, lease loss and an old shop sequence while owned tools route to their existing selector
+TypeError: Cannot read properties of undefined (reading 'layout')
+ ❯ ShopScene.geometry src/game/ShopScene.ts:186:23
+    184|   private visibleOffers():R2Offer[]{return this.shelfOffers().slice(th…
+    185|   private geometry(){
+    186|     const l=this.view.layout,style=getComputedStyle(document.documentE…
+       |                       ^
+    187|     const cols=this.shelfKind==='jokers'?this.pageSize:Math.max(1,Math…
+    188|     const menu=document.querySelector('.run-menu-dock,.run-menu-toggle…
+ ❯ ShopScene.inspectMakeCards src/game/ShopScene.ts:598:13
+ ❯ tests/make-cards-flow.test.ts:25:166
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+exit=1

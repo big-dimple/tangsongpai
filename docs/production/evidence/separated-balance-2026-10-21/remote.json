@@ -1,0 +1,14 @@
+{
+  "checkedAt": "2026-10-21T10:58:02.857Z",
+  "baseline": "fe2de5edaea6c3dbcc9a7e0885dfe324bae457be",
+  "initial": {
+    "main": "fe2de5edaea6c3dbcc9a7e0885dfe324bae457be",
+    "pr210": "f6c86f13522c7374963f611dc41dc843c78155f0",
+    "pr210State": "open/not merged",
+    "verifiedBeforePolicyLock": true
+  },
+  "finalLsRemote": "fe2de5edaea6c3dbcc9a7e0885dfe324bae457be\trefs/heads/main\n53c2abd5bd77a2aee12ed43a030314845bac2da9\trefs/pull/210/head",
+  "pr210State": "open/not merged",
+  "pr210Included": false,
+  "sourceScope": "harness/balance-open/** and this evidence only; no production files"
+}

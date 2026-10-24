@@ -1,0 +1,3430 @@
+{
+  "kind": "public-state-policy-simulation-not-human-win-rate",
+  "policyCommit": "c61858ef2034b6bb983cf9117f619a647ef8fff5",
+  "completeChains": 39,
+  "clearedChains": 39,
+  "conditions": {
+    "O": {
+      "chains": 18,
+      "stages": 54,
+      "firstStageFirstHand": 15,
+      "allStageFirstHands": 30,
+      "hands": 80,
+      "discards": 8,
+      "practices": 30,
+      "burn": 10
+    },
+    "A": {
+      "chains": 18,
+      "stages": 54,
+      "firstStageFirstHand": 15,
+      "allStageFirstHands": 27,
+      "hands": 94,
+      "discards": 10,
+      "practices": 28,
+      "burn": 25
+    },
+    "B": {
+      "chains": 3,
+      "stages": 9,
+      "firstStageFirstHand": 3,
+      "allStageFirstHands": 8,
+      "hands": 10,
+      "discards": 0,
+      "practices": 5,
+      "burn": 0
+    }
+  },
+  "entries": [
+    {
+      "key": "O-amo-01",
+      "condition": "O",
+      "character": "amo",
+      "seed": "balance-open-20261021-01",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        1,
+        2
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "688",
+        "1122",
+        "1133"
+      ],
+      "targets": [
+        "400",
+        "600",
+        "800"
+      ],
+      "rewards": [
+        7,
+        9,
+        9
+      ],
+      "gold": 11,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 12,
+          "definitionId": "huimaqiang",
+          "paid": 8
+        }
+      ],
+      "practices": [
+        {
+          "seq": 7,
+          "handType": "straight",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 13,
+          "handType": "two-pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 1,
+      "checkpoint": "O-amo-01.checkpoint.json.gz"
+    },
+    {
+      "key": "O-amo-02",
+      "condition": "O",
+      "character": "amo",
+      "seed": "balance-open-20261021-02",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        1,
+        2
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "704",
+        "1825",
+        "956"
+      ],
+      "targets": [
+        "400",
+        "600",
+        "800"
+      ],
+      "rewards": [
+        7,
+        11,
+        12
+      ],
+      "gold": 14,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 7,
+          "definitionId": "b08",
+          "paid": 8
+        },
+        {
+          "seq": 12,
+          "definitionId": "tiesuanpan",
+          "paid": 6
+        }
+      ],
+      "practices": [
+        {
+          "seq": 13,
+          "handType": "full-house",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 0,
+      "checkpoint": "O-amo-02.checkpoint.json.gz"
+    },
+    {
+      "key": "O-amo-03",
+      "condition": "O",
+      "character": "amo",
+      "seed": "balance-open-20261021-03",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        1,
+        2
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "1074",
+        "798",
+        "902"
+      ],
+      "targets": [
+        "400",
+        "600",
+        "800"
+      ],
+      "rewards": [
+        7,
+        9,
+        10
+      ],
+      "gold": 16,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 12,
+          "definitionId": "pengci",
+          "paid": 4
+        }
+      ],
+      "practices": [
+        {
+          "seq": 7,
+          "handType": "two-pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 13,
+          "handType": "pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 2,
+      "checkpoint": "O-amo-03.checkpoint.json.gz"
+    },
+    {
+      "key": "O-touye-01",
+      "condition": "O",
+      "character": "touye",
+      "seed": "balance-open-20261021-01",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        2,
+        2
+      ],
+      "discards": [
+        0,
+        1,
+        0
+      ],
+      "scores": [
+        "791",
+        "1262",
+        "1385"
+      ],
+      "targets": [
+        "400",
+        "600",
+        "800"
+      ],
+      "rewards": [
+        7,
+        8,
+        9
+      ],
+      "gold": 10,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 14,
+          "definitionId": "huimaqiang",
+          "paid": 8
+        }
+      ],
+      "practices": [
+        {
+          "seq": 7,
+          "handType": "straight",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 15,
+          "handType": "flush",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 1,
+      "checkpoint": "O-touye-01.checkpoint.json.gz"
+    },
+    {
+      "key": "O-touye-02",
+      "condition": "O",
+      "character": "touye",
+      "seed": "balance-open-20261021-02",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        1,
+        2
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "809",
+        "2098",
+        "1098"
+      ],
+      "targets": [
+        "400",
+        "600",
+        "800"
+      ],
+      "rewards": [
+        7,
+        11,
+        12
+      ],
+      "gold": 14,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 7,
+          "definitionId": "b08",
+          "paid": 8
+        },
+        {
+          "seq": 12,
+          "definitionId": "tiesuanpan",
+          "paid": 6
+        }
+      ],
+      "practices": [
+        {
+          "seq": 13,
+          "handType": "full-house",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 0,
+      "checkpoint": "O-touye-02.checkpoint.json.gz"
+    },
+    {
+      "key": "O-touye-03",
+      "condition": "O",
+      "character": "touye",
+      "seed": "balance-open-20261021-03",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        2,
+        2
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "411",
+        "638",
+        "1037"
+      ],
+      "targets": [
+        "400",
+        "600",
+        "800"
+      ],
+      "rewards": [
+        7,
+        8,
+        10
+      ],
+      "gold": 15,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 13,
+          "definitionId": "pengci",
+          "paid": 4
+        }
+      ],
+      "practices": [
+        {
+          "seq": 7,
+          "handType": "two-pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 14,
+          "handType": "pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 2,
+      "checkpoint": "O-touye-03.checkpoint.json.gz"
+    },
+    {
+      "key": "O-laohuan-01",
+      "condition": "O",
+      "character": "laohuan",
+      "seed": "balance-open-20261021-01",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        2,
+        2
+      ],
+      "discards": [
+        0,
+        1,
+        0
+      ],
+      "scores": [
+        "688",
+        "1122",
+        "1205"
+      ],
+      "targets": [
+        "400",
+        "600",
+        "800"
+      ],
+      "rewards": [
+        7,
+        8,
+        9
+      ],
+      "gold": 10,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 15,
+          "definitionId": "huimaqiang",
+          "paid": 8
+        }
+      ],
+      "practices": [
+        {
+          "seq": 7,
+          "handType": "straight",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 16,
+          "handType": "flush",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 1,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 1,
+      "checkpoint": "O-laohuan-01.checkpoint.json.gz"
+    },
+    {
+      "key": "O-laohuan-02",
+      "condition": "O",
+      "character": "laohuan",
+      "seed": "balance-open-20261021-02",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        1,
+        2
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "704",
+        "1825",
+        "956"
+      ],
+      "targets": [
+        "400",
+        "600",
+        "800"
+      ],
+      "rewards": [
+        7,
+        11,
+        12
+      ],
+      "gold": 14,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 7,
+          "definitionId": "b08",
+          "paid": 8
+        },
+        {
+          "seq": 12,
+          "definitionId": "tiesuanpan",
+          "paid": 6
+        }
+      ],
+      "practices": [
+        {
+          "seq": 13,
+          "handType": "full-house",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 0,
+      "checkpoint": "O-laohuan-02.checkpoint.json.gz"
+    },
+    {
+      "key": "O-laohuan-03",
+      "condition": "O",
+      "character": "laohuan",
+      "seed": "balance-open-20261021-03",
+      "status": "THREE_CLEARED",
+      "hands": [
+        2,
+        2,
+        2
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "620",
+        "770",
+        "1056"
+      ],
+      "targets": [
+        "400",
+        "600",
+        "800"
+      ],
+      "rewards": [
+        6,
+        7,
+        9
+      ],
+      "gold": 12,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 14,
+          "definitionId": "pengci",
+          "paid": 4
+        }
+      ],
+      "practices": [
+        {
+          "seq": 8,
+          "handType": "pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 15,
+          "handType": "pair",
+          "before": 2,
+          "after": 3,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 4,
+      "checkpoint": "O-laohuan-03.checkpoint.json.gz"
+    },
+    {
+      "key": "O-erxiang-01",
+      "condition": "O",
+      "character": "erxiang",
+      "seed": "balance-open-20261021-01",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        1,
+        1
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "688",
+        "2288",
+        "2578"
+      ],
+      "targets": [
+        "400",
+        "600",
+        "800"
+      ],
+      "rewards": [
+        7,
+        9,
+        10
+      ],
+      "gold": 12,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 12,
+          "definitionId": "huimaqiang",
+          "paid": 8
+        }
+      ],
+      "practices": [
+        {
+          "seq": 7,
+          "handType": "straight",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 13,
+          "handType": "two-pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 2,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 1,
+      "checkpoint": "O-erxiang-01.checkpoint.json.gz"
+    },
+    {
+      "key": "O-erxiang-02",
+      "condition": "O",
+      "character": "erxiang",
+      "seed": "balance-open-20261021-02",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        1,
+        1
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "704",
+        "1825",
+        "3393"
+      ],
+      "targets": [
+        "400",
+        "600",
+        "800"
+      ],
+      "rewards": [
+        7,
+        11,
+        13
+      ],
+      "gold": 15,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 7,
+          "definitionId": "b08",
+          "paid": 8
+        },
+        {
+          "seq": 12,
+          "definitionId": "tiesuanpan",
+          "paid": 6
+        }
+      ],
+      "practices": [
+        {
+          "seq": 13,
+          "handType": "full-house",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 1,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 0,
+      "checkpoint": "O-erxiang-02.checkpoint.json.gz"
+    },
+    {
+      "key": "O-erxiang-03",
+      "condition": "O",
+      "character": "erxiang",
+      "seed": "balance-open-20261021-03",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        1,
+        1
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "2028",
+        "774",
+        "1875"
+      ],
+      "targets": [
+        "400",
+        "600",
+        "800"
+      ],
+      "rewards": [
+        7,
+        9,
+        11
+      ],
+      "gold": 17,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 12,
+          "definitionId": "pengci",
+          "paid": 4
+        }
+      ],
+      "practices": [
+        {
+          "seq": 7,
+          "handType": "two-pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 13,
+          "handType": "pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 3,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 1,
+      "checkpoint": "O-erxiang-03.checkpoint.json.gz"
+    },
+    {
+      "key": "O-azao-01",
+      "condition": "O",
+      "character": "azao",
+      "seed": "balance-open-20261021-01",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        2,
+        2
+      ],
+      "discards": [
+        0,
+        1,
+        0
+      ],
+      "scores": [
+        "688",
+        "1098",
+        "1205"
+      ],
+      "targets": [
+        "400",
+        "600",
+        "800"
+      ],
+      "rewards": [
+        7,
+        8,
+        9
+      ],
+      "gold": 10,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 14,
+          "definitionId": "huimaqiang",
+          "paid": 8
+        }
+      ],
+      "practices": [
+        {
+          "seq": 7,
+          "handType": "straight",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 15,
+          "handType": "flush",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 2,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 1,
+      "checkpoint": "O-azao-01.checkpoint.json.gz"
+    },
+    {
+      "key": "O-azao-02",
+      "condition": "O",
+      "character": "azao",
+      "seed": "balance-open-20261021-02",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        1,
+        2
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "704",
+        "1825",
+        "956"
+      ],
+      "targets": [
+        "400",
+        "600",
+        "800"
+      ],
+      "rewards": [
+        7,
+        11,
+        12
+      ],
+      "gold": 14,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 7,
+          "definitionId": "b08",
+          "paid": 8
+        },
+        {
+          "seq": 12,
+          "definitionId": "tiesuanpan",
+          "paid": 6
+        }
+      ],
+      "practices": [
+        {
+          "seq": 13,
+          "handType": "full-house",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 1,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 0,
+      "checkpoint": "O-azao-02.checkpoint.json.gz"
+    },
+    {
+      "key": "O-azao-03",
+      "condition": "O",
+      "character": "azao",
+      "seed": "balance-open-20261021-03",
+      "status": "THREE_CLEARED",
+      "hands": [
+        2,
+        2,
+        2
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "620",
+        "770",
+        "1056"
+      ],
+      "targets": [
+        "400",
+        "600",
+        "800"
+      ],
+      "rewards": [
+        6,
+        7,
+        9
+      ],
+      "gold": 12,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 14,
+          "definitionId": "pengci",
+          "paid": 4
+        }
+      ],
+      "practices": [
+        {
+          "seq": 8,
+          "handType": "pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 15,
+          "handType": "pair",
+          "before": 2,
+          "after": 3,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 1,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 4,
+      "checkpoint": "O-azao-03.checkpoint.json.gz"
+    },
+    {
+      "key": "O-xiemu-01",
+      "condition": "O",
+      "character": "xiemu",
+      "seed": "balance-open-20261021-01",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        2,
+        1
+      ],
+      "discards": [
+        0,
+        1,
+        0
+      ],
+      "scores": [
+        "688",
+        "918",
+        "1092"
+      ],
+      "targets": [
+        "400",
+        "600",
+        "800"
+      ],
+      "rewards": [
+        9,
+        11,
+        10
+      ],
+      "gold": 14,
+      "supportPurchases": [
+        {
+          "seq": 13,
+          "definitionId": "mantangcai",
+          "paid": 4
+        }
+      ],
+      "practices": [
+        {
+          "seq": 6,
+          "handType": "straight",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 14,
+          "handType": "flush",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 10,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 0,
+      "checkpoint": "O-xiemu-01.checkpoint.json.gz"
+    },
+    {
+      "key": "O-xiemu-02",
+      "condition": "O",
+      "character": "xiemu",
+      "seed": "balance-open-20261021-02",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        1,
+        3
+      ],
+      "discards": [
+        0,
+        0,
+        1
+      ],
+      "scores": [
+        "704",
+        "1250",
+        "2452"
+      ],
+      "targets": [
+        "400",
+        "600",
+        "800"
+      ],
+      "rewards": [
+        9,
+        10,
+        10
+      ],
+      "gold": 17,
+      "supportPurchases": [
+        {
+          "seq": 6,
+          "definitionId": "pengci",
+          "paid": 4
+        },
+        {
+          "seq": 12,
+          "definitionId": "tiesuanpan",
+          "paid": 6
+        }
+      ],
+      "practices": [
+        {
+          "seq": 7,
+          "handType": "straight",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 13,
+          "handType": "full-house",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 1,
+      "checkpoint": "O-xiemu-02.checkpoint.json.gz"
+    },
+    {
+      "key": "O-xiemu-03",
+      "condition": "O",
+      "character": "xiemu",
+      "seed": "balance-open-20261021-03",
+      "status": "THREE_CLEARED",
+      "hands": [
+        2,
+        3,
+        1
+      ],
+      "discards": [
+        1,
+        1,
+        1
+      ],
+      "scores": [
+        "1383",
+        "1684",
+        "1315"
+      ],
+      "targets": [
+        "400",
+        "600",
+        "800"
+      ],
+      "rewards": [
+        8,
+        8,
+        12
+      ],
+      "gold": 18,
+      "supportPurchases": [
+        {
+          "seq": 8,
+          "definitionId": "huimaqiang",
+          "paid": 8
+        },
+        {
+          "seq": 16,
+          "definitionId": "pengci",
+          "paid": 4
+        }
+      ],
+      "practices": [
+        {
+          "seq": 17,
+          "handType": "two-pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 0,
+      "checkpoint": "O-xiemu-03.checkpoint.json.gz"
+    },
+    {
+      "key": "A-amo-01",
+      "condition": "A",
+      "character": "amo",
+      "seed": "balance-open-20261021-01",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        1,
+        3
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "688",
+        "1122",
+        "2138"
+      ],
+      "targets": [
+        "400",
+        "800",
+        "1200"
+      ],
+      "rewards": [
+        7,
+        9,
+        8
+      ],
+      "gold": 10,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 12,
+          "definitionId": "huimaqiang",
+          "paid": 8
+        }
+      ],
+      "practices": [
+        {
+          "seq": 7,
+          "handType": "straight",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 13,
+          "handType": "two-pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 2,
+      "checkpoint": "A-amo-01.checkpoint.json.gz"
+    },
+    {
+      "key": "A-amo-02",
+      "condition": "A",
+      "character": "amo",
+      "seed": "balance-open-20261021-02",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        1,
+        3
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "704",
+        "1825",
+        "1262"
+      ],
+      "targets": [
+        "400",
+        "800",
+        "1200"
+      ],
+      "rewards": [
+        7,
+        11,
+        11
+      ],
+      "gold": 13,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 7,
+          "definitionId": "b08",
+          "paid": 8
+        },
+        {
+          "seq": 12,
+          "definitionId": "tiesuanpan",
+          "paid": 6
+        }
+      ],
+      "practices": [
+        {
+          "seq": 13,
+          "handType": "full-house",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 0,
+      "checkpoint": "A-amo-02.checkpoint.json.gz"
+    },
+    {
+      "key": "A-amo-03",
+      "condition": "A",
+      "character": "amo",
+      "seed": "balance-open-20261021-03",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        2,
+        3
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "1074",
+        "1056",
+        "1409"
+      ],
+      "targets": [
+        "400",
+        "800",
+        "1200"
+      ],
+      "rewards": [
+        7,
+        8,
+        9
+      ],
+      "gold": 14,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 13,
+          "definitionId": "pengci",
+          "paid": 4
+        }
+      ],
+      "practices": [
+        {
+          "seq": 7,
+          "handType": "two-pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 14,
+          "handType": "pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 3,
+      "checkpoint": "A-amo-03.checkpoint.json.gz"
+    },
+    {
+      "key": "A-touye-01",
+      "condition": "A",
+      "character": "touye",
+      "seed": "balance-open-20261021-01",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        2,
+        2
+      ],
+      "discards": [
+        0,
+        1,
+        0
+      ],
+      "scores": [
+        "791",
+        "1262",
+        "1385"
+      ],
+      "targets": [
+        "400",
+        "800",
+        "1200"
+      ],
+      "rewards": [
+        7,
+        8,
+        9
+      ],
+      "gold": 10,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 14,
+          "definitionId": "huimaqiang",
+          "paid": 8
+        }
+      ],
+      "practices": [
+        {
+          "seq": 7,
+          "handType": "straight",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 15,
+          "handType": "flush",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 1,
+      "checkpoint": "A-touye-01.checkpoint.json.gz"
+    },
+    {
+      "key": "A-touye-02",
+      "condition": "A",
+      "character": "touye",
+      "seed": "balance-open-20261021-02",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        1,
+        3
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "809",
+        "2098",
+        "1449"
+      ],
+      "targets": [
+        "400",
+        "800",
+        "1200"
+      ],
+      "rewards": [
+        7,
+        11,
+        11
+      ],
+      "gold": 13,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 7,
+          "definitionId": "b08",
+          "paid": 8
+        },
+        {
+          "seq": 12,
+          "definitionId": "tiesuanpan",
+          "paid": 6
+        }
+      ],
+      "practices": [
+        {
+          "seq": 13,
+          "handType": "full-house",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 0,
+      "checkpoint": "A-touye-02.checkpoint.json.gz"
+    },
+    {
+      "key": "A-touye-03",
+      "condition": "A",
+      "character": "touye",
+      "seed": "balance-open-20261021-03",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        3,
+        3
+      ],
+      "discards": [
+        0,
+        1,
+        0
+      ],
+      "scores": [
+        "411",
+        "1210",
+        "1620"
+      ],
+      "targets": [
+        "400",
+        "800",
+        "1200"
+      ],
+      "rewards": [
+        7,
+        7,
+        8
+      ],
+      "gold": 12,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 15,
+          "definitionId": "pengci",
+          "paid": 4
+        }
+      ],
+      "practices": [
+        {
+          "seq": 7,
+          "handType": "two-pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 16,
+          "handType": "pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 4,
+      "checkpoint": "A-touye-03.checkpoint.json.gz"
+    },
+    {
+      "key": "A-laohuan-01",
+      "condition": "A",
+      "character": "laohuan",
+      "seed": "balance-open-20261021-01",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        2,
+        2
+      ],
+      "discards": [
+        0,
+        1,
+        0
+      ],
+      "scores": [
+        "688",
+        "1122",
+        "1205"
+      ],
+      "targets": [
+        "400",
+        "800",
+        "1200"
+      ],
+      "rewards": [
+        7,
+        8,
+        9
+      ],
+      "gold": 10,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 15,
+          "definitionId": "huimaqiang",
+          "paid": 8
+        }
+      ],
+      "practices": [
+        {
+          "seq": 7,
+          "handType": "straight",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 16,
+          "handType": "flush",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 1,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 1,
+      "checkpoint": "A-laohuan-01.checkpoint.json.gz"
+    },
+    {
+      "key": "A-laohuan-02",
+      "condition": "A",
+      "character": "laohuan",
+      "seed": "balance-open-20261021-02",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        1,
+        3
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "704",
+        "1825",
+        "1262"
+      ],
+      "targets": [
+        "400",
+        "800",
+        "1200"
+      ],
+      "rewards": [
+        7,
+        11,
+        11
+      ],
+      "gold": 13,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 7,
+          "definitionId": "b08",
+          "paid": 8
+        },
+        {
+          "seq": 12,
+          "definitionId": "tiesuanpan",
+          "paid": 6
+        }
+      ],
+      "practices": [
+        {
+          "seq": 13,
+          "handType": "full-house",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 0,
+      "checkpoint": "A-laohuan-02.checkpoint.json.gz"
+    },
+    {
+      "key": "A-laohuan-03",
+      "condition": "A",
+      "character": "laohuan",
+      "seed": "balance-open-20261021-03",
+      "status": "THREE_CLEARED",
+      "hands": [
+        2,
+        3,
+        3
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "620",
+        "800",
+        "1533"
+      ],
+      "targets": [
+        "400",
+        "800",
+        "1200"
+      ],
+      "rewards": [
+        6,
+        6,
+        8
+      ],
+      "gold": 10,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 15,
+          "definitionId": "pengci",
+          "paid": 4
+        }
+      ],
+      "practices": [
+        {
+          "seq": 8,
+          "handType": "pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 16,
+          "handType": "pair",
+          "before": 2,
+          "after": 3,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 5,
+      "checkpoint": "A-laohuan-03.checkpoint.json.gz"
+    },
+    {
+      "key": "A-erxiang-01",
+      "condition": "A",
+      "character": "erxiang",
+      "seed": "balance-open-20261021-01",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        1,
+        1
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "688",
+        "2288",
+        "2578"
+      ],
+      "targets": [
+        "400",
+        "800",
+        "1200"
+      ],
+      "rewards": [
+        7,
+        9,
+        10
+      ],
+      "gold": 12,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 12,
+          "definitionId": "huimaqiang",
+          "paid": 8
+        }
+      ],
+      "practices": [
+        {
+          "seq": 7,
+          "handType": "straight",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 13,
+          "handType": "two-pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 2,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 1,
+      "checkpoint": "A-erxiang-01.checkpoint.json.gz"
+    },
+    {
+      "key": "A-erxiang-02",
+      "condition": "A",
+      "character": "erxiang",
+      "seed": "balance-open-20261021-02",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        1,
+        1
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "704",
+        "1825",
+        "3393"
+      ],
+      "targets": [
+        "400",
+        "800",
+        "1200"
+      ],
+      "rewards": [
+        7,
+        11,
+        13
+      ],
+      "gold": 15,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 7,
+          "definitionId": "b08",
+          "paid": 8
+        },
+        {
+          "seq": 12,
+          "definitionId": "tiesuanpan",
+          "paid": 6
+        }
+      ],
+      "practices": [
+        {
+          "seq": 13,
+          "handType": "full-house",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 1,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 0,
+      "checkpoint": "A-erxiang-02.checkpoint.json.gz"
+    },
+    {
+      "key": "A-erxiang-03",
+      "condition": "A",
+      "character": "erxiang",
+      "seed": "balance-open-20261021-03",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        2,
+        1
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "2028",
+        "1064",
+        "1875"
+      ],
+      "targets": [
+        "400",
+        "800",
+        "1200"
+      ],
+      "rewards": [
+        7,
+        8,
+        11
+      ],
+      "gold": 16,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 13,
+          "definitionId": "pengci",
+          "paid": 4
+        }
+      ],
+      "practices": [
+        {
+          "seq": 7,
+          "handType": "two-pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 14,
+          "handType": "pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 3,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 1,
+      "checkpoint": "A-erxiang-03.checkpoint.json.gz"
+    },
+    {
+      "key": "A-azao-01",
+      "condition": "A",
+      "character": "azao",
+      "seed": "balance-open-20261021-01",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        2,
+        2
+      ],
+      "discards": [
+        0,
+        1,
+        0
+      ],
+      "scores": [
+        "688",
+        "1098",
+        "1205"
+      ],
+      "targets": [
+        "400",
+        "800",
+        "1200"
+      ],
+      "rewards": [
+        7,
+        8,
+        9
+      ],
+      "gold": 10,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 14,
+          "definitionId": "huimaqiang",
+          "paid": 8
+        }
+      ],
+      "practices": [
+        {
+          "seq": 7,
+          "handType": "straight",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 15,
+          "handType": "flush",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 2,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 1,
+      "checkpoint": "A-azao-01.checkpoint.json.gz"
+    },
+    {
+      "key": "A-azao-02",
+      "condition": "A",
+      "character": "azao",
+      "seed": "balance-open-20261021-02",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        1,
+        2
+      ],
+      "discards": [
+        0,
+        0,
+        1
+      ],
+      "scores": [
+        "704",
+        "1825",
+        "2920"
+      ],
+      "targets": [
+        "400",
+        "800",
+        "1200"
+      ],
+      "rewards": [
+        7,
+        11,
+        12
+      ],
+      "gold": 14,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 7,
+          "definitionId": "b08",
+          "paid": 8
+        },
+        {
+          "seq": 12,
+          "definitionId": "tiesuanpan",
+          "paid": 6
+        }
+      ],
+      "practices": [
+        {
+          "seq": 13,
+          "handType": "full-house",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 2,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 1,
+      "checkpoint": "A-azao-02.checkpoint.json.gz"
+    },
+    {
+      "key": "A-azao-03",
+      "condition": "A",
+      "character": "azao",
+      "seed": "balance-open-20261021-03",
+      "status": "THREE_CLEARED",
+      "hands": [
+        2,
+        3,
+        3
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "620",
+        "800",
+        "1412"
+      ],
+      "targets": [
+        "400",
+        "800",
+        "1200"
+      ],
+      "rewards": [
+        6,
+        6,
+        8
+      ],
+      "gold": 10,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 15,
+          "definitionId": "pengci",
+          "paid": 4
+        }
+      ],
+      "practices": [
+        {
+          "seq": 8,
+          "handType": "pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 16,
+          "handType": "pair",
+          "before": 2,
+          "after": 3,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 0,
+      "wenMax": 1,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 4,
+      "checkpoint": "A-azao-03.checkpoint.json.gz"
+    },
+    {
+      "key": "A-xiemu-01",
+      "condition": "A",
+      "character": "xiemu",
+      "seed": "balance-open-20261021-01",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        2,
+        2
+      ],
+      "discards": [
+        0,
+        1,
+        0
+      ],
+      "scores": [
+        "688",
+        "1306",
+        "1306"
+      ],
+      "targets": [
+        "400",
+        "800",
+        "1200"
+      ],
+      "rewards": [
+        9,
+        7,
+        9
+      ],
+      "gold": 10,
+      "supportPurchases": [
+        {
+          "seq": 13,
+          "definitionId": "mantangcai",
+          "paid": 4
+        }
+      ],
+      "practices": [
+        {
+          "seq": 6,
+          "handType": "straight",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 13,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 0,
+      "checkpoint": "A-xiemu-01.checkpoint.json.gz"
+    },
+    {
+      "key": "A-xiemu-02",
+      "condition": "A",
+      "character": "xiemu",
+      "seed": "balance-open-20261021-02",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        1,
+        3
+      ],
+      "discards": [
+        0,
+        0,
+        1
+      ],
+      "scores": [
+        "704",
+        "1250",
+        "2634"
+      ],
+      "targets": [
+        "400",
+        "800",
+        "1200"
+      ],
+      "rewards": [
+        9,
+        10,
+        8
+      ],
+      "gold": 9,
+      "supportPurchases": [
+        {
+          "seq": 6,
+          "definitionId": "pengci",
+          "paid": 4
+        },
+        {
+          "seq": 12,
+          "definitionId": "tiesuanpan",
+          "paid": 6
+        }
+      ],
+      "practices": [
+        {
+          "seq": 7,
+          "handType": "straight",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 13,
+          "handType": "full-house",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 6,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 1,
+      "checkpoint": "A-xiemu-02.checkpoint.json.gz"
+    },
+    {
+      "key": "A-xiemu-03",
+      "condition": "A",
+      "character": "xiemu",
+      "seed": "balance-open-20261021-03",
+      "status": "THREE_CLEARED",
+      "hands": [
+        2,
+        3,
+        1
+      ],
+      "discards": [
+        1,
+        1,
+        1
+      ],
+      "scores": [
+        "1383",
+        "1870",
+        "1315"
+      ],
+      "targets": [
+        "400",
+        "800",
+        "1200"
+      ],
+      "rewards": [
+        8,
+        6,
+        12
+      ],
+      "gold": 18,
+      "supportPurchases": [
+        {
+          "seq": 8,
+          "definitionId": "huimaqiang",
+          "paid": 8
+        }
+      ],
+      "practices": [],
+      "burn": 6,
+      "liue": 0,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 0,
+      "checkpoint": "A-xiemu-03.checkpoint.json.gz"
+    },
+    {
+      "key": "B-erxiang-01",
+      "condition": "B",
+      "character": "erxiang",
+      "seed": "balance-open-20261021-01",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        1,
+        1
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "688",
+        "1320",
+        "1528"
+      ],
+      "targets": [
+        "400",
+        "600",
+        "800"
+      ],
+      "rewards": [
+        7,
+        9,
+        10
+      ],
+      "gold": 12,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 12,
+          "definitionId": "huimaqiang",
+          "paid": 8
+        }
+      ],
+      "practices": [
+        {
+          "seq": 7,
+          "handType": "straight",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 13,
+          "handType": "two-pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 2,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 1,
+      "checkpoint": "B-erxiang-01.checkpoint.json.gz"
+    },
+    {
+      "key": "B-erxiang-02",
+      "condition": "B",
+      "character": "erxiang",
+      "seed": "balance-open-20261021-02",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        1,
+        1
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "704",
+        "1825",
+        "1957"
+      ],
+      "targets": [
+        "400",
+        "600",
+        "800"
+      ],
+      "rewards": [
+        7,
+        11,
+        13
+      ],
+      "gold": 15,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 7,
+          "definitionId": "b08",
+          "paid": 8
+        },
+        {
+          "seq": 12,
+          "definitionId": "tiesuanpan",
+          "paid": 6
+        }
+      ],
+      "practices": [
+        {
+          "seq": 13,
+          "handType": "full-house",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 1,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 0,
+      "checkpoint": "B-erxiang-02.checkpoint.json.gz"
+    },
+    {
+      "key": "B-erxiang-03",
+      "condition": "B",
+      "character": "erxiang",
+      "seed": "balance-open-20261021-03",
+      "status": "THREE_CLEARED",
+      "hands": [
+        1,
+        2,
+        1
+      ],
+      "discards": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        "1183",
+        "806",
+        "1125"
+      ],
+      "targets": [
+        "400",
+        "600",
+        "800"
+      ],
+      "rewards": [
+        7,
+        8,
+        11
+      ],
+      "gold": 16,
+      "supportPurchases": [
+        {
+          "seq": 2,
+          "definitionId": "mantangcai",
+          "paid": 4
+        },
+        {
+          "seq": 13,
+          "definitionId": "pengci",
+          "paid": 4
+        }
+      ],
+      "practices": [
+        {
+          "seq": 7,
+          "handType": "two-pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        },
+        {
+          "seq": 14,
+          "handType": "pair",
+          "before": 1,
+          "after": 2,
+          "paid": 4
+        }
+      ],
+      "burn": 0,
+      "liue": 3,
+      "wenMax": 0,
+      "wenReleases": 0,
+      "qinBets": 0,
+      "xinChoices": 0,
+      "positiveJokerGrowthReads": 0,
+      "localGrowthPositiveHands": 1,
+      "checkpoint": "B-erxiang-03.checkpoint.json.gz"
+    }
+  ],
+  "pairs": [
+    {
+      "baseline": "O-amo-01",
+      "candidate": "A-amo-01",
+      "priorOnly": "chapter1 targets400/800/1200",
+      "firstDifferentAction": {
+        "ordinal": 17,
+        "candidate": {
+          "type": "PlayHand",
+          "selectedIds": [
+            "clubs-8",
+            "hearts-10",
+            "diamonds-8",
+            "diamonds-10"
+          ]
+        },
+        "stage": 3,
+        "reason": "public-minimum-closes"
+      },
+      "firstScoreDifference": null,
+      "firstObservedAlignedPublicHandDifference": null,
+      "stageOpeningEqual": [
+        true,
+        true,
+        true
+      ],
+      "shopShelfEqual": [
+        true,
+        true,
+        true
+      ],
+      "handsDelta": 1,
+      "goldDelta": -1
+    },
+    {
+      "baseline": "O-amo-02",
+      "candidate": "A-amo-02",
+      "priorOnly": "chapter1 targets400/800/1200",
+      "firstDifferentAction": {
+        "ordinal": 17,
+        "candidate": {
+          "type": "PlayHand",
+          "selectedIds": [
+            "diamonds-3",
+            "clubs-3"
+          ]
+        },
+        "stage": 3,
+        "reason": "public-minimum-closes"
+      },
+      "firstScoreDifference": null,
+      "firstObservedAlignedPublicHandDifference": null,
+      "stageOpeningEqual": [
+        true,
+        true,
+        true
+      ],
+      "shopShelfEqual": [
+        true,
+        true,
+        true
+      ],
+      "handsDelta": 1,
+      "goldDelta": -1
+    },
+    {
+      "baseline": "O-amo-03",
+      "candidate": "A-amo-03",
+      "priorOnly": "chapter1 targets400/800/1200",
+      "firstDifferentAction": {
+        "ordinal": 10,
+        "baseline": {
+          "type": "OpenShop"
+        },
+        "candidate": {
+          "type": "PlayHand",
+          "selectedIds": [
+            "spades-2",
+            "diamonds-2"
+          ]
+        },
+        "stage": 2,
+        "reason": "public-minimum-closes"
+      },
+      "firstScoreDifference": null,
+      "firstObservedAlignedPublicHandDifference": null,
+      "stageOpeningEqual": [
+        true,
+        true,
+        true
+      ],
+      "shopShelfEqual": [
+        true,
+        true,
+        true
+      ],
+      "handsDelta": 2,
+      "goldDelta": -2
+    },
+    {
+      "baseline": "O-touye-01",
+      "candidate": "A-touye-01",
+      "priorOnly": "chapter1 targets400/800/1200",
+      "firstDifferentAction": null,
+      "firstScoreDifference": null,
+      "firstObservedAlignedPublicHandDifference": null,
+      "stageOpeningEqual": [
+        true,
+        true,
+        true
+      ],
+      "shopShelfEqual": [
+        true,
+        true,
+        true
+      ],
+      "handsDelta": 0,
+      "goldDelta": 0
+    },
+    {
+      "baseline": "O-touye-02",
+      "candidate": "A-touye-02",
+      "priorOnly": "chapter1 targets400/800/1200",
+      "firstDifferentAction": {
+        "ordinal": 17,
+        "candidate": {
+          "type": "PlayHand",
+          "selectedIds": [
+            "diamonds-3",
+            "clubs-3"
+          ]
+        },
+        "stage": 3,
+        "reason": "public-minimum-closes"
+      },
+      "firstScoreDifference": null,
+      "firstObservedAlignedPublicHandDifference": null,
+      "stageOpeningEqual": [
+        true,
+        true,
+        true
+      ],
+      "shopShelfEqual": [
+        true,
+        true,
+        true
+      ],
+      "handsDelta": 1,
+      "goldDelta": -1
+    },
+    {
+      "baseline": "O-touye-03",
+      "candidate": "A-touye-03",
+      "priorOnly": "chapter1 targets400/800/1200",
+      "firstDifferentAction": {
+        "ordinal": 11,
+        "baseline": {
+          "type": "OpenShop"
+        },
+        "candidate": {
+          "type": "DiscardHand",
+          "selectedIds": [
+            "hearts-2",
+            "clubs-3",
+            "diamonds-5",
+            "diamonds-7",
+            "hearts-9"
+          ]
+        },
+        "stage": 2,
+        "reason": "below-required-pace"
+      },
+      "firstScoreDifference": null,
+      "firstObservedAlignedPublicHandDifference": null,
+      "stageOpeningEqual": [
+        true,
+        true,
+        true
+      ],
+      "shopShelfEqual": [
+        true,
+        true,
+        true
+      ],
+      "handsDelta": 2,
+      "goldDelta": -3
+    },
+    {
+      "baseline": "O-laohuan-01",
+      "candidate": "A-laohuan-01",
+      "priorOnly": "chapter1 targets400/800/1200",
+      "firstDifferentAction": null,
+      "firstScoreDifference": null,
+      "firstObservedAlignedPublicHandDifference": null,
+      "stageOpeningEqual": [
+        true,
+        true,
+        true
+      ],
+      "shopShelfEqual": [
+        true,
+        true,
+        true
+      ],
+      "handsDelta": 0,
+      "goldDelta": 0
+    },
+    {
+      "baseline": "O-laohuan-02",
+      "candidate": "A-laohuan-02",
+      "priorOnly": "chapter1 targets400/800/1200",
+      "firstDifferentAction": {
+        "ordinal": 17,
+        "candidate": {
+          "type": "PlayHand",
+          "selectedIds": [
+            "diamonds-3",
+            "clubs-3"
+          ]
+        },
+        "stage": 3,
+        "reason": "public-minimum-closes"
+      },
+      "firstScoreDifference": null,
+      "firstObservedAlignedPublicHandDifference": null,
+      "stageOpeningEqual": [
+        true,
+        true,
+        true
+      ],
+      "shopShelfEqual": [
+        true,
+        true,
+        true
+      ],
+      "handsDelta": 1,
+      "goldDelta": -1
+    },
+    {
+      "baseline": "O-laohuan-03",
+      "candidate": "A-laohuan-03",
+      "priorOnly": "chapter1 targets400/800/1200",
+      "firstDifferentAction": {
+        "ordinal": 12,
+        "baseline": {
+          "type": "OpenShop"
+        },
+        "candidate": {
+          "type": "PlayHand",
+          "selectedIds": [
+            "clubs-12"
+          ]
+        },
+        "stage": 2,
+        "reason": "public-minimum-closes"
+      },
+      "firstScoreDifference": null,
+      "firstObservedAlignedPublicHandDifference": null,
+      "stageOpeningEqual": [
+        true,
+        true,
+        true
+      ],
+      "shopShelfEqual": [
+        true,
+        true,
+        true
+      ],
+      "handsDelta": 2,
+      "goldDelta": -2
+    },
+    {
+      "baseline": "O-erxiang-01",
+      "candidate": "A-erxiang-01",
+      "priorOnly": "chapter1 targets400/800/1200",
+      "firstDifferentAction": null,
+      "firstScoreDifference": null,
+      "firstObservedAlignedPublicHandDifference": null,
+      "stageOpeningEqual": [
+        true,
+        true,
+        true
+      ],
+      "shopShelfEqual": [
+        true,
+        true,
+        true
+      ],
+      "handsDelta": 0,
+      "goldDelta": 0
+    },
+    {
+      "baseline": "O-erxiang-02",
+      "candidate": "A-erxiang-02",
+      "priorOnly": "chapter1 targets400/800/1200",
+      "firstDifferentAction": null,
+      "firstScoreDifference": null,
+      "firstObservedAlignedPublicHandDifference": null,
+      "stageOpeningEqual": [
+        true,
+        true,
+        true
+      ],
+      "shopShelfEqual": [
+        true,
+        true,
+        true
+      ],
+      "handsDelta": 0,
+      "goldDelta": 0
+    },
+    {
+      "baseline": "O-erxiang-03",
+      "candidate": "A-erxiang-03",
+      "priorOnly": "chapter1 targets400/800/1200",
+      "firstDifferentAction": {
+        "ordinal": 10,
+        "baseline": {
+          "type": "OpenShop"
+        },
+        "candidate": {
+          "type": "PlayHand",
+          "selectedIds": [
+            "clubs-13",
+            "spades-13"
+          ]
+        },
+        "stage": 2,
+        "reason": "public-minimum-closes"
+      },
+      "firstScoreDifference": null,
+      "firstObservedAlignedPublicHandDifference": null,
+      "stageOpeningEqual": [
+        true,
+        true,
+        true
+      ],
+      "shopShelfEqual": [
+        true,
+        true,
+        true
+      ],
+      "handsDelta": 1,
+      "goldDelta": -1
+    },
+    {
+      "baseline": "O-azao-01",
+      "candidate": "A-azao-01",
+      "priorOnly": "chapter1 targets400/800/1200",
+      "firstDifferentAction": null,
+      "firstScoreDifference": null,
+      "firstObservedAlignedPublicHandDifference": null,
+      "stageOpeningEqual": [
+        true,
+        true,
+        true
+      ],
+      "shopShelfEqual": [
+        true,
+        true,
+        true
+      ],
+      "handsDelta": 0,
+      "goldDelta": 0
+    },
+    {
+      "baseline": "O-azao-02",
+      "candidate": "A-azao-02",
+      "priorOnly": "chapter1 targets400/800/1200",
+      "firstDifferentAction": {
+        "ordinal": 16,
+        "baseline": {
+          "type": "PlayHand",
+          "selectedIds": [
+            "spades-8",
+            "clubs-8",
+            "clubs-5",
+            "hearts-5"
+          ]
+        },
+        "candidate": {
+          "type": "DiscardHand",
+          "selectedIds": [
+            "diamonds-3",
+            "diamonds-6",
+            "diamonds-10",
+            "clubs-3"
+          ]
+        },
+        "stage": 3,
+        "reason": "seek-alternate-qualified"
+      },
+      "firstScoreDifference": {
+        "stage": 3,
+        "play": 2,
+        "baseline": "412",
+        "candidate": "2376",
+        "samePublicHand": false,
+        "sameAction": false
+      },
+      "firstObservedAlignedPublicHandDifference": {
+        "baselineSeq": 17,
+        "candidateSeq": 18,
+        "stage": 3,
+        "phase": "await-input",
+        "baseline": [
+          "diamonds-3",
+          "spades-8",
+          "clubs-8",
+          "clubs-3",
+          "clubs-5",
+          "hearts-5",
+          "diamonds-6",
+          "diamonds-10"
+        ],
+        "candidate": [
+          "spades-8",
+          "clubs-8",
+          "clubs-5",
+          "hearts-5",
+          "spades-5",
+          "spades-12",
+          "diamonds-11",
+          "clubs-9"
+        ],
+        "note": "observed after decision divergence, not a forced same-deal comparison"
+      },
+      "stageOpeningEqual": [
+        true,
+        true,
+        true
+      ],
+      "shopShelfEqual": [
+        true,
+        true,
+        true
+      ],
+      "handsDelta": 0,
+      "goldDelta": 0
+    },
+    {
+      "baseline": "O-azao-03",
+      "candidate": "A-azao-03",
+      "priorOnly": "chapter1 targets400/800/1200",
+      "firstDifferentAction": {
+        "ordinal": 12,
+        "baseline": {
+          "type": "OpenShop"
+        },
+        "candidate": {
+          "type": "PlayHand",
+          "selectedIds": [
+            "clubs-12"
+          ]
+        },
+        "stage": 2,
+        "reason": "public-minimum-closes"
+      },
+      "firstScoreDifference": {
+        "stage": 3,
+        "play": 2,
+        "baseline": "531",
+        "candidate": "362",
+        "samePublicHand": true,
+        "sameAction": false
+      },
+      "firstObservedAlignedPublicHandDifference": null,
+      "stageOpeningEqual": [
+        true,
+        true,
+        true
+      ],
+      "shopShelfEqual": [
+        true,
+        true,
+        true
+      ],
+      "handsDelta": 2,
+      "goldDelta": -2
+    },
+    {
+      "baseline": "O-xiemu-01",
+      "candidate": "A-xiemu-01",
+      "priorOnly": "chapter1 targets400/800/1200",
+      "firstDifferentAction": {
+        "ordinal": 8,
+        "baseline": {
+          "type": "PlayHand",
+          "selectedIds": [
+            "spades-14",
+            "hearts-5",
+            "clubs-14",
+            "diamonds-5"
+          ]
+        },
+        "candidate": {
+          "type": "PlayHand",
+          "selectedIds": [
+            "spades-14",
+            "hearts-5",
+            "clubs-14",
+            "diamonds-5"
+          ],
+          "xiemuBurn": 10
+        },
+        "stage": 2,
+        "reason": "best-public-minimum; no-budgeted-discard"
+      },
+      "firstScoreDifference": {
+        "stage": 2,
+        "play": 1,
+        "baseline": "194",
+        "candidate": "582",
+        "samePublicHand": true,
+        "sameAction": false
+      },
+      "firstObservedAlignedPublicHandDifference": null,
+      "stageOpeningEqual": [
+        true,
+        true,
+        true
+      ],
+      "shopShelfEqual": [
+        true,
+        true,
+        true
+      ],
+      "handsDelta": 1,
+      "goldDelta": -4
+    },
+    {
+      "baseline": "O-xiemu-02",
+      "candidate": "A-xiemu-02",
+      "priorOnly": "chapter1 targets400/800/1200",
+      "firstDifferentAction": {
+        "ordinal": 16,
+        "baseline": {
+          "type": "PlayHand",
+          "selectedIds": [
+            "spades-8",
+            "clubs-8",
+            "clubs-5",
+            "hearts-5"
+          ]
+        },
+        "candidate": {
+          "type": "PlayHand",
+          "selectedIds": [
+            "spades-8",
+            "clubs-8",
+            "clubs-5",
+            "hearts-5"
+          ],
+          "xiemuBurn": 6
+        },
+        "stage": 3,
+        "reason": "best-public-minimum; no-budgeted-discard"
+      },
+      "firstScoreDifference": {
+        "stage": 3,
+        "play": 2,
+        "baseline": "182",
+        "candidate": "364",
+        "samePublicHand": true,
+        "sameAction": false
+      },
+      "firstObservedAlignedPublicHandDifference": null,
+      "stageOpeningEqual": [
+        true,
+        true,
+        true
+      ],
+      "shopShelfEqual": [
+        true,
+        true,
+        true
+      ],
+      "handsDelta": 0,
+      "goldDelta": -8
+    },
+    {
+      "baseline": "O-xiemu-03",
+      "candidate": "A-xiemu-03",
+      "priorOnly": "chapter1 targets400/800/1200",
+      "firstDifferentAction": {
+        "ordinal": 11,
+        "baseline": {
+          "type": "PlayHand",
+          "selectedIds": [
+            "clubs-13",
+            "hearts-4",
+            "diamonds-4",
+            "spades-13"
+          ]
+        },
+        "candidate": {
+          "type": "PlayHand",
+          "selectedIds": [
+            "clubs-13",
+            "hearts-4",
+            "diamonds-4",
+            "spades-13"
+          ],
+          "xiemuBurn": 6
+        },
+        "stage": 2,
+        "reason": "best-public-minimum; no-budgeted-discard"
+      },
+      "firstScoreDifference": {
+        "stage": 2,
+        "play": 1,
+        "baseline": "186",
+        "candidate": "372",
+        "samePublicHand": true,
+        "sameAction": false
+      },
+      "firstObservedAlignedPublicHandDifference": null,
+      "stageOpeningEqual": [
+        true,
+        true,
+        true
+      ],
+      "shopShelfEqual": [
+        true,
+        true,
+        true
+      ],
+      "handsDelta": 0,
+      "goldDelta": 0
+    },
+    {
+      "baseline": "O-erxiang-01",
+      "candidate": "B-erxiang-01",
+      "priorOnly": "ordinary handoff p/2, no ordinary heat",
+      "firstDifferentAction": null,
+      "firstScoreDifference": {
+        "stage": 2,
+        "play": 1,
+        "baseline": "2288",
+        "candidate": "1320",
+        "samePublicHand": true,
+        "sameAction": true
+      },
+      "firstObservedAlignedPublicHandDifference": null,
+      "stageOpeningEqual": [
+        true,
+        true,
+        true
+      ],
+      "shopShelfEqual": [
+        true,
+        true,
+        true
+      ],
+      "handsDelta": 0,
+      "goldDelta": 0
+    },
+    {
+      "baseline": "O-erxiang-02",
+      "candidate": "B-erxiang-02",
+      "priorOnly": "ordinary handoff p/2, no ordinary heat",
+      "firstDifferentAction": null,
+      "firstScoreDifference": {
+        "stage": 3,
+        "play": 1,
+        "baseline": "3393",
+        "candidate": "1957",
+        "samePublicHand": true,
+        "sameAction": true
+      },
+      "firstObservedAlignedPublicHandDifference": null,
+      "stageOpeningEqual": [
+        true,
+        true,
+        true
+      ],
+      "shopShelfEqual": [
+        true,
+        true,
+        true
+      ],
+      "handsDelta": 0,
+      "goldDelta": 0
+    },
+    {
+      "baseline": "O-erxiang-03",
+      "candidate": "B-erxiang-03",
+      "priorOnly": "ordinary handoff p/2, no ordinary heat",
+      "firstDifferentAction": {
+        "ordinal": 10,
+        "baseline": {
+          "type": "OpenShop"
+        },
+        "candidate": {
+          "type": "PlayHand",
+          "selectedIds": [
+            "clubs-13",
+            "spades-13"
+          ]
+        },
+        "stage": 2,
+        "reason": "public-minimum-closes"
+      },
+      "firstScoreDifference": {
+        "stage": 1,
+        "play": 1,
+        "baseline": "2028",
+        "candidate": "1183",
+        "samePublicHand": true,
+        "sameAction": true
+      },
+      "firstObservedAlignedPublicHandDifference": null,
+      "stageOpeningEqual": [
+        true,
+        true,
+        true
+      ],
+      "shopShelfEqual": [
+        true,
+        true,
+        true
+      ],
+      "handsDelta": 1,
+      "goldDelta": -1
+    }
+  ]
+}

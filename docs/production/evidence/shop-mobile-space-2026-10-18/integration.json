@@ -1,0 +1,147 @@
+{
+  "baseCoreHead": "663e753257fc4509dc4d23558c400788c3a75dd6",
+  "coreProduct": "3709d4c8d499993542a8b96057b1434e7e7c5cce",
+  "shopProduct": "3c9eebbb",
+  "menuSource": "c501f56740a62780935fc25368789659da6a17fc",
+  "product": "55989e47d92e92e3633718b9f4a9d39a1ef6e86e",
+  "branch": "dev/shop-mobile-space-closeout-20261018",
+  "publication": "DEVELOPMENT_ONLY; exact pushed HEAD in delivery receipt; main unchanged0e",
+  "input": {
+    "libraryFile": "libfile_000163df3f288191be6656ce42c7fdbb",
+    "name": "16359.jpg",
+    "width": 940,
+    "height": 2048,
+    "actualPixelsViewed": true,
+    "method": "Authorized Library materialization then local view_image; source image kept only under ignored shots, not republished",
+    "observed": "Separate menu band, two green rows, over-emphasized shared1 text, separate original-art row, separate advice footer. No drag hint or held-card row visible; no invented hint added."
+  },
+  "changes": [
+    "Mobile Boss passes the same functional top as ordinary shop; menu guard only reclaims legacy full-row reservation, so no double56 subtraction",
+    "Header avatar/name center follows the same44px row as balance/menu; balance caption shortened, inventory/refresh geometry and labels aligned",
+    "All four category buttons keep equal dimensions/font/baseline and same view action; only active category bold. DIY remaining1/0 comes from actual shared purchase state; used category still inspectable",
+    "Shop mobile offers and both workshop operation lists put independent44px original-art button in existing card info area, keep original14px text; no nested purchase buttons, no image/face overlay or separate view-art row",
+    "Advice lives at lower right in the existing notice strip, distinct from primary entry. Notice uses left remainder. Main action retains56px height, secondary44px; no extra hint bar/imagined drag text",
+    "Stock area now ends above the actual primary action rather than a separate advice row; held-state and safe-inset collision checks retained",
+    "Three internal routes remain freely switchable before real purchase, cancel/insufficient remain unlocked; real commitment alone consumes shared quota. No domain/rules/prices/audio/core changes"
+  ],
+  "checks": {
+    "finalJoint": {
+      "files": 9,
+      "tests": 80,
+      "passed": 80
+    },
+    "latestPerFile": {
+      "files": 10,
+      "tests": 89,
+      "passed": true
+    },
+    "attempts": [
+      {
+        "name": "tests",
+        "tests": 60,
+        "passed": 59,
+        "failed": 1
+      },
+      {
+        "name": "final",
+        "tests": 43,
+        "passed": 43,
+        "failed": 0
+      },
+      {
+        "name": "joint-menu",
+        "tests": 80,
+        "passed": 80,
+        "failed": 0
+      }
+    ],
+    "notes": "First59/60: sole old footer y476 expectation; approved shared strip moves primary to460 at320x568 while height56 remains. Updated exact coordinate plus explicit no-overlap/44px assertions, final43/43 then final menu80/80; FAIL retained.",
+    "typeBuild": "PASS npm run build;395 modules; clean product build-info retained",
+    "core147": "Reused exact unchanged core source; not another full-suite execution",
+    "plan": "32 packages/P08 remains in_progress"
+  },
+  "sourceEquality": {
+    "core": "Prior55989e47 core matched663 except recorded integration hunks; this followup changes only the two shader varying declarations in the core. Other core source unchanged.",
+    "menu": "RunMenu.ts and style.css exactc501; ShopLayout combines its guarded top hunk with shop footer changes",
+    "merge": "Only plan.json textual conflict; structured base/ours/theirs had0 same-path semantic conflicts; both source records retained"
+  },
+  "preview": {
+    "path": "D:\\ai\\tangsongpai\\tangsongpai\\shots\\score-smoke-joint-preview\\tangsongpai-preview-final-55989e47d92e.zip",
+    "bytes": 33336593,
+    "sha256": "afa490e2cc8609bcd8e04784307418dfa018d244d0832cd5c63a5d74f0a4175a",
+    "candidate": "55989e47d92e92e3633718b9f4a9d39a1ef6e86e",
+    "files": 404,
+    "unpackedBytes": 35905573,
+    "buildInfo": {
+      "version": "C03",
+      "builtAt": "2026-10-18T17:17:09.329Z",
+      "revision": "55989e47d92e92e3633718b9f4a9d39a1ef6e86e",
+      "sourceStatus": "clean",
+      "modified": false
+    },
+    "library": {
+      "status": "succeeded",
+      "path": "/tangsongpai-preview-final-55989e47d92e.zip",
+      "file_id": "file_00000000bdb081faa5d813b075e738a7",
+      "library_file_id": "libfile_cb5c0acbd0008191a244ebf7f9dd9619",
+      "file_name": "tangsongpai-preview-final-55989e47d92e.zip",
+      "current_version_number": 1,
+      "file_size_bytes": 33336593
+    },
+    "existingLiveUrl": null,
+    "transfer": "DENIED403 scope_violation on parent materialize. No retry/reupload/alternate channel. Existing55989e47 package does not contain staticRiskFix.",
+    "localMetadata": "Library writes succeeded; Windows xattrs unsupported, identity response persisted privately, no xattr success claimed",
+    "validationStatus": "STALE_FOR_STATIC_RISK_FIX"
+  },
+  "notClaimed": [
+    "Real GL driver compilation or GPU pixels",
+    "Live post-fix PC/mobile layout, quote/appreciation and one saved turn",
+    "Actual double-beat hearing or physical phone performance",
+    "User H17 acceptance/full continuous recording/eight chapters/P08 completion"
+  ],
+  "distBudget": {
+    "files": 404,
+    "bytes": 35905573,
+    "cap": 20971520,
+    "status": "FAIL"
+  },
+  "staticRiskFix": {
+    "base": "93037811e4b7077925b8c78be250c1588e972cd5",
+    "product": "Exact final development HEAD is in the delivery receipt; this record accompanies the product commit",
+    "status": "DEVELOPMENT_VERIFIED_REVIEW_PENDING",
+    "changes": [
+      "Vertex/fragment outTexCoord both explicitly mediump; fragment calculation precision selection unchanged",
+      "Portrait notice starts at panel x and ends at least8px before advice, capped by panel right; nonportrait geometry unchanged"
+    ],
+    "checks": {
+      "red": {
+        "executed": 5,
+        "passed": 2,
+        "failed": 3,
+        "skipped": 36
+      },
+      "green": {
+        "executed": 5,
+        "passed": 5,
+        "failed": 0,
+        "skipped": 36
+      },
+      "typecheck": "PASS npm run typecheck",
+      "build": "NOT_RUN_AFTER_PATCH; previous395-module build belongs to55989e47",
+      "reuse": "Prior147 core and89 UI per-file results remain historical evidence for unchanged ranges. No combined new total or full matrix claim.",
+      "reports": [
+        "risk-fix-red.json.gz",
+        "risk-fix-green.json.gz",
+        "risk-fix-typecheck.txt.gz"
+      ]
+    },
+    "runtime": "Real GL compile/link, GPU output and actual phone layout NOT_RUN",
+    "package": "Existing runtime55989e47 ZIP omits both fixes and is STALE_FOR_THIS_PATCH; no new package built/uploaded",
+    "library": "Parent materialize DENIED403 scope_violation for libfile_cb5c0acbd0008191a244ebf7f9dd9619; no retry, reupload or alternate transfer attempted",
+    "sourceSha256": {
+      "src/game/HeroSmokeShader.ts": "f5226dc40a8b98860543933c5d0b3b83c0e68a5871257a5283e782056c492c29",
+      "src/game/ShopLayout.ts": "92ab80c660835e83c03cdaa25fe2eeb3ca16a42e840324123e21ac2830c4630a",
+      "src/game/ShopScene.ts": "c350e9b35bbb34990a0c21ad9cd1e4eb44e52902a46e7284c200c9eb44806300"
+    }
+  }
+}

@@ -1,0 +1,182 @@
+{
+  "stage": "after",
+  "head": "f6c86f13522c7374963f611dc41dc843c78155f0",
+  "sources": {
+    "src/game/SelectionEntryParticles.ts": "ba4f91b5930591bef0300e63efcc51306b9cf37a1f41549abbe9ecc536517270",
+    "src/game/CharacterSelectScene.ts": "8f1146dab12341d42a44adcdda6b6627a61ff2b9e664083325edc18557f02477"
+  },
+  "browser": "151.0.7922.173",
+  "cases": [
+    {
+      "width": 390,
+      "height": 740,
+      "summary": {
+        "idleHz": 23.16378727922848,
+        "idlePaintMaxMs": 0.30000000074505806,
+        "idlePaintP95Ms": 0.19999999925494194,
+        "idleVisible": [
+          21,
+          24
+        ],
+        "frontRange": [
+          5,
+          6
+        ],
+        "backRange": [
+          15,
+          18
+        ],
+        "switchObservedMs": 816.9000000003725,
+        "confirmObservedMs": 1440.300000000745,
+        "confirmationFrames": 85,
+        "confirmFrameIntervalP95Ms": 29.800000000745058,
+        "maxFeedbackCommands": 2532,
+        "textCrossings": 0
+      },
+      "shots": [
+        {
+          "key": "B-body",
+          "progress": 0.4036585365853659,
+          "at": 7461
+        },
+        {
+          "key": "B-tail",
+          "progress": 0.8085365853658537,
+          "at": 7800.199999999255
+        },
+        {
+          "key": "route-choice",
+          "progress": 0.40869565217391307,
+          "at": 8915.299999998882
+        },
+        {
+          "key": "C-gather",
+          "progress": 0.15379310344827524,
+          "at": 10616.099999999627
+        },
+        {
+          "key": "button-air",
+          "progress": 0.4303448275862063,
+          "at": 11050.299999998882
+        },
+        {
+          "key": "button-land",
+          "progress": 0.521379310344827,
+          "at": 11135.5
+        },
+        {
+          "key": "C-peak",
+          "progress": 0.5551724137931028,
+          "at": 11194.099999999627
+        },
+        {
+          "key": "C-outward",
+          "progress": 0.7048275862068959,
+          "at": 11400.400000000373
+        },
+        {
+          "key": "C-decay",
+          "progress": 0.9137931034482752,
+          "at": 11726.299999998882
+        }
+      ],
+      "savedCharacter": "erxiang",
+      "savedRoute": "straight",
+      "cleanup": {
+        "motion": false,
+        "gather": 0,
+        "trail": 0,
+        "nodes": 0,
+        "listening": false,
+        "destroyed": true
+      }
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "summary": {
+        "idleHz": 37.67919696209822,
+        "idlePaintMaxMs": 4.699999999254942,
+        "idlePaintP95Ms": 0.900000000372529,
+        "idleVisible": [
+          32,
+          36
+        ],
+        "frontRange": [
+          5,
+          7
+        ],
+        "backRange": [
+          27,
+          30
+        ],
+        "switchObservedMs": 802,
+        "confirmObservedMs": 1339.7999999988824,
+        "confirmationFrames": 40,
+        "confirmFrameIntervalP95Ms": 162,
+        "maxFeedbackCommands": 2532,
+        "textCrossings": 0
+      },
+      "shots": [
+        {
+          "key": "B-body",
+          "progress": 0.4024390243902439,
+          "at": 10089
+        },
+        {
+          "key": "B-tail",
+          "progress": 0.8207317073170731,
+          "at": 10463.39999999851
+        },
+        {
+          "key": "route-choice",
+          "progress": 0.41739130434782606,
+          "at": 11758.599999999627
+        },
+        {
+          "key": "C-gather",
+          "progress": 0.1579310344827586,
+          "at": 13105.5
+        },
+        {
+          "key": "button-air",
+          "progress": 0.4220689655172414,
+          "at": 13515.099999999627
+        },
+        {
+          "key": "button-land",
+          "progress": 0.5193103448275862,
+          "at": 13731.5
+        },
+        {
+          "key": "C-peak",
+          "progress": 0.6351724137931034,
+          "at": 13893.39999999851
+        },
+        {
+          "key": "C-outward",
+          "progress": 0.7468965517241379,
+          "at": 13993.599999999627
+        },
+        {
+          "key": "C-decay",
+          "progress": 0.9241379310344827,
+          "at": 14306.89999999851
+        }
+      ],
+      "savedCharacter": "erxiang",
+      "savedRoute": "straight",
+      "cleanup": {
+        "motion": false,
+        "gather": 0,
+        "trail": 0,
+        "nodes": 0,
+        "listening": false,
+        "destroyed": true
+      }
+    }
+  ],
+  "errors": [],
+  "scope": "Native local interaction, unedited original-speed browser video. Idle → hero switch → saved real confirmation → natural end. Keyframes assist inspection; they are not motion acceptance.",
+  "status": "PASS"
+}

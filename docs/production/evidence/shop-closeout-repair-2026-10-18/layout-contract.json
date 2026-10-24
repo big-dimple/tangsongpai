@@ -1,0 +1,65 @@
+{
+  "baselineSource": "77bd50fcae0991f021b68219c83de8027424bacb",
+  "approvedSource": "043e536f81821677e18d85bf74710cb32b8d1145",
+  "integratedSource": "b4a8088650201a159bbf7f452872d1362f4a03fa",
+  "approval": "User14:57-15:00 enlarged full five owned art; source043 adopted in b4. Engineering geometry only.",
+  "profiles": [
+    [
+      390,
+      740,
+      0,
+      0
+    ],
+    [
+      320,
+      568,
+      0,
+      0
+    ],
+    [
+      844,
+      300,
+      12,
+      12
+    ],
+    [
+      844,
+      300,
+      12,
+      34
+    ]
+  ],
+  "previousPresentationSha256": "819f05c6b9b739c8b9382b06c90d42d942e74b6cb6d42a6e0375eb44e0a1ea62",
+  "previousLandscapeSha256": "34b53e04eab60cd94adb73d9de85863b2131736dcbad4b0f44557ed84e12ee4d",
+  "presentationSha256": "4ff12cd63331938e17f832eae487d9c8563e190fa5943123455c04b61ef3cabb",
+  "landscapeSha256": "c87e2d2ed37ccd1e1a5405dcc9f78ea689f6f5aa2508731ff5a1c7666ee0c113",
+  "protectedHandAndScoreSha256": "2fe3520583760075aef4d411223e1c1c579c7336b564b194c3c341a80823a000",
+  "changedLeaves": 156,
+  "changedGroups": {
+    "0.jokers": 1,
+    "0.preview": 2,
+    "0.scoreBoard": 1,
+    "0.playedArea": 1,
+    "0.status": 1,
+    "0.scoreFire": 2,
+    "0.slots": 14,
+    "0.jokerLabels": 14,
+    "1.jokers": 1,
+    "1.preview": 2,
+    "1.scoreBoard": 1,
+    "1.playedArea": 2,
+    "1.status": 1,
+    "1.scoreFire": 1,
+    "1.slots": 14,
+    "1.jokerLabels": 14,
+    "2.jokers": 2,
+    "2.slots": 20,
+    "2.jokerLabels": 20,
+    "3.jokers": 2,
+    "3.slots": 20,
+    "3.jokerLabels": 20
+  },
+  "sourceToMainChangedLeaves": 0,
+  "audit": "layout-audit.json.gz",
+  "visualAcceptance": "NOT_ACCEPTED; no browser/physical-device/hearing signoff"
+}

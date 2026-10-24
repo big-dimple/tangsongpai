@@ -1,0 +1,15 @@
+{
+  "status": "PASS",
+  "kind": "arithmetic-and-boundary-checks-no-sampled-chains",
+  "checks": [
+    "O: targets isolated to D0 chapter1; later/difficulty targets unchanged",
+    "O: bare8 102 -> 430; A exact 11/2 in B; retrigger 8 and one handoff",
+    "O: policy boundary excludes RNG/seed/future order",
+    "A: targets isolated to D0 chapter1; later/difficulty targets unchanged",
+    "A: bare8 102 -> 430; A exact 11/2 in B; retrigger 8 and one handoff",
+    "A: policy boundary excludes RNG/seed/future order",
+    "B: targets isolated to D0 chapter1; later/difficulty targets unchanged",
+    "B: bare8 102 -> 258; A exact 11/2 in B; retrigger 8 and one handoff",
+    "B: policy boundary excludes RNG/seed/future order"
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "typechecks": [
+    {
+      "command": "npm run typecheck",
+      "status": "PASS"
+    },
+    {
+      "command": "npx tsc --noEmit -p harness/balance-open/tsconfig.json",
+      "status": "PASS"
+    }
+  ],
+  "vitest": [
+    {
+      "command": "npm test -- tests/hero-balance.test.ts tests/touye-new-core.test.ts tests/r2-run.test.ts tests/r2-shop.test.ts tests/recovery-save.test.ts tests/r2-command.test.ts",
+      "files": 6,
+      "tests": 80,
+      "status": "PASS",
+      "note": "Initial invocation also named a nonexistent current-new-run-identity.test.ts; Vitest selected these six actual files."
+    },
+    {
+      "command": "npm test -- tests/azao-charge.test.ts tests/erxiang-handoff.test.ts tests/refill-handoff-frequency.test.ts tests/xiemu-burn.test.ts tests/sushi-king-charge.test.ts",
+      "files": 5,
+      "tests": 45,
+      "status": "PASS"
+    }
+  ],
+  "specialized": {
+    "command": "node harness/balance-open/check.mjs --output",
+    "status": "PASS"
+  },
+  "experiment": {
+    "command": "node harness/balance-open/run.mjs",
+    "status": "COMPLETE",
+    "chains": 39,
+    "postLockRetuning": false
+  },
+  "analysis": {
+    "command": "node harness/balance-open/analyze.mjs",
+    "status": "PASS",
+    "note": "Post-run evidence analysis/paper arithmetic only, no additional policy chains."
+  },
+  "build": "NOT_RUN: production inputs byte-identical to baseline; typecheck and related tests used",
+  "ui": "NOT_RUN"
+}

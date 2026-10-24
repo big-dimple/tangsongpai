@@ -1,0 +1,307 @@
+{
+  "schema": "separated-balance-evidence-v1",
+  "kind": "policy simulation, not human win rate",
+  "baseline": "fe2de5edaea6c3dbcc9a7e0885dfe324bae457be",
+  "policyCommit": "c61858ef2034b6bb983cf9117f619a647ef8fff5",
+  "branch": "experiment/separated-balance-20261021",
+  "conditions": {
+    "O": "400/600/800, current heroes",
+    "A": "400/800/1200 only, current heroes",
+    "B": "baseline stages, Liue ordinary handoff p/2 only"
+  },
+  "sampleBudget": 39,
+  "completedChains": 39,
+  "report": "README.md",
+  "protocol": "../../../../harness/balance-open/POLICY.md",
+  "inputLock": "lock.json",
+  "compactPerChainAndPairs": "summary.json",
+  "commandLedgerAndTraces": "results.json",
+  "paperOnly": "paper.json",
+  "defaultSourceAndRestoreProof": "verification.json",
+  "validation": "validation.json",
+  "remote": "remote.json",
+  "checkpoints": "39 *.checkpoint.json.gz; experimental envelope; never import into default game",
+  "evidence": [
+    {
+      "file": "A-amo-01.checkpoint.json.gz",
+      "bytes": 3866,
+      "sha256": "d2d1a1b3fb3ff40a084c61e3c3f09c6b3509435d590b357c96d86a1927d4f3e6"
+    },
+    {
+      "file": "A-amo-02.checkpoint.json.gz",
+      "bytes": 3697,
+      "sha256": "2c360d7c5f2dd3fd8ec9711cbaad2a979a193c4d8f726e026d28724258c5b02c"
+    },
+    {
+      "file": "A-amo-03.checkpoint.json.gz",
+      "bytes": 3689,
+      "sha256": "127de35814ef06770efe8cdd636628783c69a0acbdfc6b1046c9d9dd451ee0f3"
+    },
+    {
+      "file": "A-azao-01.checkpoint.json.gz",
+      "bytes": 3798,
+      "sha256": "98e3aa1319f8f04e4fd14faab74a21f7396ec891df8912c6f138b5d9e2d3cbf3"
+    },
+    {
+      "file": "A-azao-02.checkpoint.json.gz",
+      "bytes": 3825,
+      "sha256": "4865a1e2fed3a0d1b7cee951507fa35a6f8e54ad65d147a90408f36958949428"
+    },
+    {
+      "file": "A-azao-03.checkpoint.json.gz",
+      "bytes": 3692,
+      "sha256": "8fd70f5715fe50725a7ba7409cd2841411441c8dec3c91e2e053118c5ab35971"
+    },
+    {
+      "file": "A-erxiang-01.checkpoint.json.gz",
+      "bytes": 3683,
+      "sha256": "01aeab6096095120f2c0afc92a00b1458a1de5f1ecc4c281b8af65555142311f"
+    },
+    {
+      "file": "A-erxiang-02.checkpoint.json.gz",
+      "bytes": 3814,
+      "sha256": "ff5d6c6e1e7692cbfcfb3898e8a59778eeeaf06eaa2438cb6e76978471cba317"
+    },
+    {
+      "file": "A-erxiang-03.checkpoint.json.gz",
+      "bytes": 3570,
+      "sha256": "d10ba57a7fbc69a040b50eab12eb7fa0c7e63137a21fe3abaa2f02578aa46503"
+    },
+    {
+      "file": "A-laohuan-01.checkpoint.json.gz",
+      "bytes": 3819,
+      "sha256": "00a2608cabacf6bc17f12112b883ef734ef57ab602f462beb378c8d64f24ed9d"
+    },
+    {
+      "file": "A-laohuan-02.checkpoint.json.gz",
+      "bytes": 3690,
+      "sha256": "09b355c0d251160ce02e3dc390002672e6460318d7592b560afd6e5f37db7fe3"
+    },
+    {
+      "file": "A-laohuan-03.checkpoint.json.gz",
+      "bytes": 3662,
+      "sha256": "5af6fd23f18dcb651baa5d4cb4f258f6681d5a16cedbe7f5040cee1baa30961f"
+    },
+    {
+      "file": "A-touye-01.checkpoint.json.gz",
+      "bytes": 3899,
+      "sha256": "68222f75956b43a036c078d4ebdeb77e3a2346edca0c04845c5d9cdecc286d0a"
+    },
+    {
+      "file": "A-touye-02.checkpoint.json.gz",
+      "bytes": 3830,
+      "sha256": "14e399408734ed69d2fb155c36be4bcc6feafc15a93379d3f50eaed1c3b92790"
+    },
+    {
+      "file": "A-touye-03.checkpoint.json.gz",
+      "bytes": 3884,
+      "sha256": "04b78354328b5407af1d089a599e23604280da9e5e6dd8ac8284912c62c6a3c1"
+    },
+    {
+      "file": "A-xiemu-01.checkpoint.json.gz",
+      "bytes": 3758,
+      "sha256": "28668d250248bdbfdd5afa94e614d91030b09fe05e756446818e33690e7588cb"
+    },
+    {
+      "file": "A-xiemu-02.checkpoint.json.gz",
+      "bytes": 3787,
+      "sha256": "980c96514de12d20bbf7e69025f752cdbfab381071bc03da94f40bfef2119e67"
+    },
+    {
+      "file": "A-xiemu-03.checkpoint.json.gz",
+      "bytes": 3693,
+      "sha256": "30c767607b1ba4a7ed8990db9e22f8803b471334f026c0d2d84c6912a918a162"
+    },
+    {
+      "file": "B-erxiang-01.checkpoint.json.gz",
+      "bytes": 3682,
+      "sha256": "4ee6985d3fd9822e49e03f71e507c2bf11a4818d13ac7fee07e9ddfa3301eb66"
+    },
+    {
+      "file": "B-erxiang-02.checkpoint.json.gz",
+      "bytes": 3817,
+      "sha256": "c68986ce4c767e7ba9d3bf2afb8102ea59d7790a1356db1c2d6d9e2708909a09"
+    },
+    {
+      "file": "B-erxiang-03.checkpoint.json.gz",
+      "bytes": 3570,
+      "sha256": "56b2e3041dccb7ea945bff8ff9630a2babe78442291692522040d75b26aefc9f"
+    },
+    {
+      "file": "O-amo-01.checkpoint.json.gz",
+      "bytes": 3691,
+      "sha256": "34ca968631992b90bd34ed47511bb88bf5a79b60062acfb0cdc3e40690e7e2c1"
+    },
+    {
+      "file": "O-amo-02.checkpoint.json.gz",
+      "bytes": 3736,
+      "sha256": "97ca84a804a23fb0a8344547a9a58ff3f1eaa7e08ee25bbad756048e59a44a08"
+    },
+    {
+      "file": "O-amo-03.checkpoint.json.gz",
+      "bytes": 3601,
+      "sha256": "d562b1d61d4114b4a3f265b682c260193398efb7b316a33f31057213f641e202"
+    },
+    {
+      "file": "O-azao-01.checkpoint.json.gz",
+      "bytes": 3797,
+      "sha256": "1bb6c95e95a4e98cf9266d2ed63c872610c9f8d225125adbe41c6de0af3c4ea9"
+    },
+    {
+      "file": "O-azao-02.checkpoint.json.gz",
+      "bytes": 3755,
+      "sha256": "b7cdd9a46619f0a97a628a3d253cfe312e4d78efcf2a8cc23bba4c8204d1f111"
+    },
+    {
+      "file": "O-azao-03.checkpoint.json.gz",
+      "bytes": 3597,
+      "sha256": "67f8985744eba16fca12bb4af6015b00a4f7453711f8260d63398ce84cea1f0f"
+    },
+    {
+      "file": "O-erxiang-01.checkpoint.json.gz",
+      "bytes": 3680,
+      "sha256": "f78821c41cd68ace5950c40940388d8c7029c51b79144c406c2115e5cb2e21cf"
+    },
+    {
+      "file": "O-erxiang-02.checkpoint.json.gz",
+      "bytes": 3814,
+      "sha256": "2fd0d8daa4ef956ef0d5b99fbd4ba7a84649788af8ba31c28303ea3a140d1cc1"
+    },
+    {
+      "file": "O-erxiang-03.checkpoint.json.gz",
+      "bytes": 3531,
+      "sha256": "6c441e2e6d716ce730bff2e1b4c384ec5fcddfc853aa10a4faadd8655e9de6de"
+    },
+    {
+      "file": "O-laohuan-01.checkpoint.json.gz",
+      "bytes": 3819,
+      "sha256": "250e8c9ec6fc5fa1dfb736603219ecd168db383e834c01562db6a821ddd53605"
+    },
+    {
+      "file": "O-laohuan-02.checkpoint.json.gz",
+      "bytes": 3735,
+      "sha256": "fdcad56341acfe09bb7eaae6c541ed18e0c42a3c02568ad59f73f2def500e7b2"
+    },
+    {
+      "file": "O-laohuan-03.checkpoint.json.gz",
+      "bytes": 3579,
+      "sha256": "b8ff2a2acc46ce3574a1ef1a0e0c91c63f888cf01197a6f500c93fbf7d8be0dd"
+    },
+    {
+      "file": "O-touye-01.checkpoint.json.gz",
+      "bytes": 3897,
+      "sha256": "70635e63be1d66f17666fae2f20fe1640853cdc7fa38290c719bb8215a34d30b"
+    },
+    {
+      "file": "O-touye-02.checkpoint.json.gz",
+      "bytes": 3874,
+      "sha256": "c9fd2beea83dd327311c44ef0182d4e629839a6ca1dcfc5c87efbe13e871681f"
+    },
+    {
+      "file": "O-touye-03.checkpoint.json.gz",
+      "bytes": 3749,
+      "sha256": "89f7f0a05177b9c9a46c5aa3b168bd30b7750463f560430141a6e7d0c309ebe0"
+    },
+    {
+      "file": "O-xiemu-01.checkpoint.json.gz",
+      "bytes": 3713,
+      "sha256": "2c4b4c50f028b520dc5748a2e8942ce4036cb4bfdd2a5335f1c990bebc5d524c"
+    },
+    {
+      "file": "O-xiemu-02.checkpoint.json.gz",
+      "bytes": 3827,
+      "sha256": "d208f4e9bbc6e4e08138f79355270254e663269ae0683c2377de658981e76689"
+    },
+    {
+      "file": "O-xiemu-03.checkpoint.json.gz",
+      "bytes": 3806,
+      "sha256": "13fa17ef36231100cc4b5b2693110fb275afcd3dff4b20fc8036d911a49a7b63"
+    },
+    {
+      "file": "README.md",
+      "bytes": 6662,
+      "sha256": "8058050b6c359bfa15be19ef160f10ac7f877741e2121ca857c72e622928d3a8"
+    },
+    {
+      "file": "checks.json",
+      "bytes": 733,
+      "sha256": "02784501f057b409010309c8c08b852d6cc70a3e50874da36e2fa7f52bffb292"
+    },
+    {
+      "file": "lock.json",
+      "bytes": 44183,
+      "sha256": "2777b45ec736f4c0fda1d13e29c7910b087bf5d201be2aeebe766a767118141a"
+    },
+    {
+      "file": "paper.json",
+      "bytes": 8382,
+      "sha256": "937c0b8093ca1f2bf53932489bb773f843c233b3d4174c1302c95e02087412b4"
+    },
+    {
+      "file": "remote.json",
+      "bytes": 602,
+      "sha256": "9e017e9b1098931ea622a03d1cb4487bbf4eb2f7012ab9900f112b8f3cfe4a08"
+    },
+    {
+      "file": "results.json",
+      "bytes": 7240274,
+      "sha256": "ce977d774bb02b38eea022d0809de4f5fef2168a990a0ba6dc988348b7116f18"
+    },
+    {
+      "file": "summary.json",
+      "bytes": 66778,
+      "sha256": "431d7fbd33f3c03d31416c15c8d9a6fd212f46d0d82d5e24addcf00e04876c1b"
+    },
+    {
+      "file": "validation.json",
+      "bytes": 1447,
+      "sha256": "1e28db675f32c890c7f96520eb1744b1b14c689ac624ee6a9c89957dde3248b9"
+    },
+    {
+      "file": "verification.json",
+      "bytes": 492,
+      "sha256": "2f508390786f7c28e14481b338c91e506076c42f32c570fa14e4fc15c517db6d"
+    }
+  ],
+  "scripts": [
+    {
+      "file": "harness/balance-open/POLICY.md",
+      "sha256": "1d158d80e99d5d4127cc5fd0e3900b89be9b8a8d2d01780c85d375d5d8868b33"
+    },
+    {
+      "file": "harness/balance-open/adapters.mjs",
+      "sha256": "25328a3efd6062b040bd35ccb7d13a8d1a5f6c285b01b1343eb0b28e2dc956e5"
+    },
+    {
+      "file": "harness/balance-open/analyze.mjs",
+      "sha256": "7a6cd9c0f779fc214192e5cce91b7a29eba7900cc662db0a1b73e51c80998ccb"
+    },
+    {
+      "file": "harness/balance-open/check.mjs",
+      "sha256": "f50d661799fd147e71dbbf20f4536b3057bfe2d6002ff063060e493c1edf9cb4"
+    },
+    {
+      "file": "harness/balance-open/policy.ts",
+      "sha256": "6962b49aa8b8cc2b81e241412bcdbb64c5160570d2b780bea386a27e6c0b4999"
+    },
+    {
+      "file": "harness/balance-open/run.mjs",
+      "sha256": "3839071bdc4ef9c6a4557c48e3f175ed996f16c7e1778284ac47354fc562ea2a"
+    },
+    {
+      "file": "harness/balance-open/tsconfig.json",
+      "sha256": "1c6c7fdb116b8909c2129e54154415c3e2f1c610895e2f096d20f121520c3208"
+    },
+    {
+      "file": "harness/balance-open/worker.ts",
+      "sha256": "83dc970547ba33f8fee391d32398b90ef58f7e725be9a383ddb309af504d41e2"
+    }
+  ],
+  "remaining": [
+    "3 seeds, one route, fixed conservative public policy; no population/long-term/fun claim",
+    "Qin bets0; Wencheng releases0, max charge2: fairness limit explicitly supplemented with paper checks",
+    "Accumulated Joker growth reads0, natural no-buy comparison absent",
+    "UI/physical device/human/long-term NOT_RUN",
+    "No formal balance or default game change, no merge/deploy"
+  ]
+}

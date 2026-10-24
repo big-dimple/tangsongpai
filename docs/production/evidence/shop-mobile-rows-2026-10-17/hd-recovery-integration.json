@@ -1,0 +1,33 @@
+{
+  "base": "6daca121e0f119575280944520c8a7df3992d6f5",
+  "source": "31c5f884fd37655a2bc665123f1cdb0fe6a94963",
+  "conflicts": "none",
+  "sourceFiles": {
+    "src/game/DetailArt.ts": "361773a784ecbed91a3b71bb291f8a0edea1e1f9",
+    "src/game/ShopJokerGalleryArt.ts": "41a32ee9e33851062e0469691a18b53a66db0b31",
+    "src/game/ShopMobileOffers.ts": "8bb417ad43c6e34605fc9e2d8a19d840cf7fe3be",
+    "tests/detail-art.test.ts": "461d226fcaef945fc2288a255e367a3da3803bce",
+    "tests/shop-gallery-art.test.ts": "8a58f85a540ce82c8ab7a8c22c65316f8bedb54a",
+    "tests/shop-mobile-offers.test.ts": "b142dd34ca6232aaa4b4448962435f072e33cbd4"
+  },
+  "allRuntimeAndTestsEqualSource": true,
+  "sourceChecksReused": {
+    "tests": "4 files/38 PASS; before-repair4 failures preserved",
+    "typecheck": "PASS",
+    "build": "PASS/370 modules",
+    "logs": [
+      "hd-recovery-before-tests.txt",
+      "hd-recovery-tests.txt",
+      "hd-recovery-typecheck.txt",
+      "hd-recovery-build.txt"
+    ]
+  },
+  "protected": "rules/audio/menu/hero copy/particles/layout/materials/dependencies unchanged",
+  "localTests": "NOT_RERUN",
+  "localBrowser": "NOT_RUN",
+  "dynamicNetworkRecovery": "PENDING_PARENT_REMOTE_DOT",
+  "mobile320And390": "PENDING_PARENT_REMOTE_DOT",
+  "aestheticAccepted": false,
+  "H18": "in_progress",
+  "P08": "in_progress"
+}

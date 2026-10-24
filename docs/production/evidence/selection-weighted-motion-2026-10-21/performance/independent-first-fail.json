@@ -1,0 +1,14 @@
+{
+  "stage": "after",
+  "head": "53c2abd5bd77a2aee12ed43a030314845bac2da9",
+  "sources": {
+    "src/game/SelectionEntryParticles.ts": "ba4f91b5930591bef0300e63efcc51306b9cf37a1f41549abbe9ecc536517270",
+    "src/game/CharacterSelectScene.ts": "8f1146dab12341d42a44adcdda6b6627a61ff2b9e664083325edc18557f02477"
+  },
+  "browser": "151.0.7922.173",
+  "cases": [],
+  "errors": [],
+  "scope": "Native local interaction, unedited original-speed browser video. Idle → hero switch → saved real confirmation → natural end. Keyframes assist inspection; they are not motion acceptance.",
+  "status": "FAIL",
+  "error": "browserContext.newPage: Executable doesn't exist at /home/agent/.cache/ms-playwright/ffmpeg-1011/ffmpeg-linux\n╔═════════════════════════════════════════════════════════════════╗\n║ Video rendering requires ffmpeg binary.                         ║\n║ Downloading it will not affect any of the system-wide settings. ║\n║ Please run the following command:                               ║\n║                                                                 ║\n║     npx playwright install ffmpeg                               ║\n║                                                                 ║\n║ <3 Playwright Team                                              ║\n╚═════════════════════════════════════════════════════════════════╝\n    at /tmp/pr210-independent-review.mjs:15:161"
+}

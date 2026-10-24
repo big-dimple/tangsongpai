@@ -1,0 +1,111 @@
+
+ RUN  v4.1.11 C:/Users/wanghongping/AppData/Local/Temp/tangsongpai-shop-purpose-20261017
+
+ ❯ tests/shop-layout.test.ts (22 tests | 2 failed) 91ms
+   × mobile shared content and held cards stay fixed when switching the four categories, regardless of old stock column count 10ms
+   × mobile target has its own header space clear of balance, inventory, refresh, menu and tabs at320/390 1ms
+ ❯ tests/shop-mobile-offers.test.ts (4 tests | 3 failed) 73ms
+   × image, name, rarity and real price open the same single quote path, while appreciation is independent 8ms
+   × disabled, inactive and disposed rows cannot open quotes, including retained callbacks 2ms
+   × opening a quote preserves the native list/opener only in portrait=true and does not submit or change state 46ms
+
+ Test Files  2 failed (2)
+      Tests  5 failed | 21 passed (26)
+   Start at  11:10:42
+   Duration  6.09s (transform 5.47s, setup 0ms, import 6.00s, tests 164ms, environment 0ms)
+
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/shop-layout.test.ts > mobile shared content and held cards stay fixed when switching the four categories, regardless of old stock column count
+AssertionError: expected [ { x: 12, y: 469, …(2) }, …(4) ] to deeply equal [ { x: 12, y: 444, …(2) }, …(4) ]
+
+- Expected
++ Received
+
+  [
+    {
+      "height": 104,
+      "width": 54.4,
+      "x": 12,
+-     "y": 444,
++     "y": 469,
+    },
+    {
+      "height": 104,
+      "width": 54.4,
+      "x": 72.4,
+-     "y": 444,
++     "y": 469,
+    },
+    {
+      "height": 104,
+      "width": 54.4,
+      "x": 132.8,
+-     "y": 444,
++     "y": 469,
+    },
+    {
+      "height": 104,
+      "width": 54.4,
+      "x": 193.2,
+-     "y": 444,
++     "y": 469,
+    },
+    {
+      "height": 104,
+      "width": 54.4,
+      "x": 253.6,
+-     "y": 444,
++     "y": 469,
+    },
+  ]
+
+ ❯ tests/shop-layout.test.ts:26:236
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  tests/shop-layout.test.ts > mobile target has its own header space clear of balance, inventory, refresh, menu and tabs at320/390
+AssertionError: expected undefined to be defined
+ ❯ tests/shop-layout.test.ts:31:20
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  tests/shop-mobile-offers.test.ts > image, name, rarity and real price open the same single quote path, while appreciation is independent
+AssertionError: expected "vi.fn()" to be called with arguments: [ { preventScroll: true } ]
+
+Number of calls: 0
+
+ ❯ tests/shop-mobile-offers.test.ts:27:104
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  tests/shop-mobile-offers.test.ts > disabled, inactive and disposed rows cannot open quotes, including retained callbacks
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      "offer/mobile",
+    ]
+
+
+Number of calls: 1
+
+ ❯ tests/shop-mobile-offers.test.ts:31:291
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  tests/shop-mobile-offers.test.ts > opening a quote preserves the native list/opener only in portrait=true and does not submit or change state
+AssertionError: expected "vi.fn()" to be called +0 times, but got 1 times
+ ❯ tests/shop-mobile-offers.test.ts:36:141
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+exit=1

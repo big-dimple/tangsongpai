@@ -1,0 +1,185 @@
+{
+  "baseline": "b4a8088650201a159bbf7f452872d1362f4a03fa",
+  "product": "5ed79e885370e4ccd56c394a0666e7ec6c73a3a4",
+  "sourceIdentity": "Final product source equals the working candidate checked below; build metadata retained verbatim with actual b4 dirty identifier. No post-build runtime changes.",
+  "environment": {
+    "os": "win32",
+    "node": "v22.20.0",
+    "browser": "NOT_RUN"
+  },
+  "ciInput": {
+    "run": 39140458112,
+    "job": 117713651421,
+    "url": "https://github.com/big-dimple/tangsongpai/actions/runs/39140458112/job/117713651421",
+    "passed": 4820,
+    "failed": 1,
+    "otherJobs": "browser and docs already success; not rerun locally",
+    "diagnosis": "Only hand-action-controls legacy presentation hash; exact source audit preserves old evidence and every changed leaf."
+  },
+  "boss": {
+    "reportedBy": "parent dot same-version b4, PC1180x757, first-chapter Boss preparation shop",
+    "cause": "The decoration +56 top reduces actual geometry height749 to693 and crosses the712 PC/short breakpoint; wider PC still moved and shrank functional regions.",
+    "fix": "No extra top at available PC width>=1000. All returned geometry equals ordinary same-state shop, including0/1/5 held and safe insets. Existing protected-space search may use a108px-high upper-rail gap, never a control/hero/stock region. Compact layout keeps previous band.",
+    "regression": "5 actual ShopScene.geometry cases RED on b4, GREEN after fix; original fixture getter error retained separately. Runtime atmosphere call also checked to avoid forcing the old44px PC area."
+  },
+  "layout": {
+    "source": "043e536f81821677e18d85bf74710cb32b8d1145",
+    "audit": "layout-audit.json.gz",
+    "contract": "layout-contract.json",
+    "changedLeaves": 156,
+    "sourceToMainChangedLeaves": 0,
+    "unchanged": "every hand seat/hit/navigation/HUD plus score height; independently pinned old hash",
+    "noGateRelaxed": true
+  },
+  "checks": {
+    "method": "Latest actual per-file result, no full-suite rerun",
+    "files": 9,
+    "tests": 125,
+    "passed": 125,
+    "results": [
+      {
+        "file": "boss-atmosphere.test.ts",
+        "tests": 9,
+        "passed": 9,
+        "status": "passed"
+      },
+      {
+        "file": "hand-action-controls.test.ts",
+        "tests": 13,
+        "passed": 13,
+        "status": "passed"
+      },
+      {
+        "file": "layout.test.ts",
+        "tests": 54,
+        "passed": 54,
+        "status": "passed"
+      },
+      {
+        "file": "shop-boss-layout.test.ts",
+        "tests": 5,
+        "passed": 5,
+        "status": "passed"
+      },
+      {
+        "file": "shop-layout.test.ts",
+        "tests": 22,
+        "passed": 22,
+        "status": "passed"
+      },
+      {
+        "file": "destination-preparation.test.ts",
+        "tests": 7,
+        "passed": 7,
+        "status": "passed"
+      },
+      {
+        "file": "shop-boss-preparation.test.ts",
+        "tests": 3,
+        "passed": 3,
+        "status": "passed"
+      },
+      {
+        "file": "shop-refresh-confirmation.test.ts",
+        "tests": 5,
+        "passed": 5,
+        "status": "passed"
+      },
+      {
+        "file": "workshop-route-state.test.ts",
+        "tests": 7,
+        "passed": 7,
+        "status": "passed"
+      }
+    ],
+    "attempts": [
+      {
+        "name": "red",
+        "tests": 18,
+        "passed": 12,
+        "failed": 6,
+        "success": false
+      },
+      {
+        "name": "product-red",
+        "tests": 5,
+        "passed": 0,
+        "failed": 5,
+        "success": false
+      },
+      {
+        "name": "green",
+        "tests": 101,
+        "passed": 101,
+        "failed": 0,
+        "success": true
+      },
+      {
+        "name": "adjacent",
+        "tests": 36,
+        "passed": 36,
+        "failed": 0,
+        "success": true
+      },
+      {
+        "name": "final-boss",
+        "tests": 14,
+        "passed": 14,
+        "failed": 0,
+        "success": true
+      }
+    ],
+    "typecheck": "PASS after final test edits",
+    "build": {
+      "status": "PASS",
+      "modules": 390,
+      "artifact": "index-Ccu04Ic8.js",
+      "kb": 3044.97,
+      "gzipKB": 894.64,
+      "actualInfo": {
+        "version": "C03",
+        "builtAt": "2026-10-18T15:44:31.227Z",
+        "revision": "b4a8088650201a159bbf7f452872d1362f4a03fa",
+        "sourceStatus": "dirty",
+        "modified": true,
+        "modifiedFileCount": 4,
+        "modifiedFiles": [
+          "src/game/BossAtmosphereModel.ts",
+          "src/game/ShopScene.ts",
+          "tests/boss-atmosphere.test.ts",
+          "tests/hand-action-controls.test.ts"
+        ]
+      },
+      "log": "build.txt.gz"
+    },
+    "logs": "tests.json.gz"
+  },
+  "preservedExactlyAgainstB4": [
+    "src/audio",
+    "src/domain",
+    "src/game/GameScene.ts",
+    "src/game/layout.ts",
+    "public",
+    "harness",
+    "scripts",
+    "package.json",
+    "package-lock.json",
+    ".github"
+  ],
+  "parentObservationBeforeRepair": {
+    "source": "b4a8088650201a159bbf7f452872d1362f4a03fa",
+    "scope": "Actual first chapter only, PC1180x757; frames, no recording/listening evidence",
+    "facts": [
+      "LiuE ordinary1608/600 and Boss2052/800 then chapter2 warmup shop30gold",
+      "buy14->8gold; unpurchased workshop choices can switch; no optional loading gate observed",
+      "Boss aftermath removes warning/ghost/edges and ordinary PC layout returns",
+      "one enlarged held card appears clear; full-five clarity/idle naturalness not accepted"
+    ],
+    "openFollowup": "本场结束 appears at score start while total remains0; observed, not modified here; deferred behind Boss layout"
+  },
+  "limitations": [
+    "Post-fix browser PC/phone image/geometry review pending parent",
+    "No local browser, natural long game, hearing or physical-device acceptance",
+    "P08 stays in_progress; no overall acceptance or percentage"
+  ]
+}

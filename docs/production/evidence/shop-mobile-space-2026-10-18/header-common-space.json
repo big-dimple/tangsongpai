@@ -1,0 +1,118 @@
+{
+  "recordKind": "PRE_COMMIT_PRE_PUSH_VERIFICATION_SNAPSHOT",
+  "baseMain": "3fa25dfefa6e9c18ac314ccd3e4bd86eb868f57f",
+  "branch": "fix/shop-header-common-space-20261018",
+  "publication": "This record claims no new main publication. Product commit, merge, push result and precise remote SHA must be reported after those actions succeed.",
+  "scope": [
+    "ShopLayout.ts",
+    "ShopScene.ts"
+  ],
+  "changes": [
+    "Normal and short PC use one measured-menu row for hero/target/balance/inventory/paid refresh; existing card faces, owned rail and primary action dimensions preserved",
+    "Portrait460-599 uses two resource rows;600-699 has an explicit target slot; target bounds protect hero title and controls retain44px minimum height",
+    "PC advice shares the existing footer; feedback excludes advice. Short PC DIY opens the shared category workspace",
+    "Four peer tabs reserve the same pagination width across categories including DIY; actual quote/purchase/reroll/shared quota unchanged",
+    "Prior inline original-art14px/44px actions and mobile shared notice/advice retained; no new image overlay or extra original-art row"
+  ],
+  "checks": {
+    "final": {
+      "name": "publish-tests",
+      "files": 7,
+      "counts": {
+        "passed": 70
+      },
+      "failed": []
+    },
+    "typeBuild": "PASS npm run build;TypeScript noEmit and Vite395 modules",
+    "attempts": [
+      {
+        "name": "red",
+        "files": 1,
+        "counts": {
+          "skipped": 27,
+          "failed": 8
+        },
+        "failed": [
+          "PC header controls share the measured menu row and advice shares feedback at 1000x768",
+          "PC header controls share the measured menu row and advice shares feedback at 1180x757",
+          "PC header controls share the measured menu row and advice shares feedback at 1920x1080",
+          "portrait target remains visible between header controls at width 460",
+          "portrait target remains visible between header controls at width 540",
+          "portrait target remains visible between header controls at width 599",
+          "portrait target remains visible between header controls at width 600",
+          "portrait target remains visible between header controls at width 699"
+        ]
+      },
+      {
+        "name": "green",
+        "files": 7,
+        "counts": {
+          "passed": 66,
+          "failed": 1
+        },
+        "failed": [
+          "PC regions preserve left state, upper horizontal owned rail and lower simultaneous sale groups"
+        ]
+      },
+      {
+        "name": "final",
+        "files": 7,
+        "counts": {
+          "passed": 67
+        },
+        "failed": []
+      },
+      {
+        "name": "tab-red",
+        "files": 1,
+        "counts": {
+          "passed": 2,
+          "failed": 1
+        },
+        "failed": [
+          "four entries remain peers and opening used DIY stays read-only (pc=true width=1180)"
+        ]
+      },
+      {
+        "name": "short-red",
+        "files": 1,
+        "counts": {
+          "skipped": 35,
+          "failed": 2
+        },
+        "failed": [
+          "short PC retains the same visible resource header at 1280x640",
+          "short PC retains the same visible resource header at 1024x500"
+        ]
+      },
+      {
+        "name": "final-all",
+        "files": 7,
+        "counts": {
+          "passed": 68,
+          "failed": 1
+        },
+        "failed": [
+          "short PC retains the same visible resource header at 1280x640"
+        ]
+      }
+    ],
+    "notes": [
+      "Initial8 RED cases cover PC alignment and portrait target omission",
+      "Legacy148px menu exclusion retained; fixture now supplies that measured148px box to layout",
+      "Tab RED2/3 fixed stable pager allocation; short-PC RED0/2 then one actual advice/primary overlap fixed before70/70",
+      "No full-repository matrix or local browser run"
+    ]
+  },
+  "unchanged": [
+    "Hero/score/AudioEngine owner files",
+    "Domain/application/public assets/dependencies",
+    "Actual pricing, purchase/confirm/save paths"
+  ],
+  "experience": "Actual PC/phone pixels, physical touch, GL and listening NOT_RUN; P08/H17/M1 remain unaccepted",
+  "otherOwners": "New multilayer hero/score followups remain independent; not integrated in this shop snapshot",
+  "reports": [
+    "header-publish-tests.json.gz",
+    "header-publish-build.txt.gz"
+  ]
+}
