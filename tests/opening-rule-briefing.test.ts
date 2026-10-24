@@ -5,7 +5,7 @@ import type {DetailDialog} from '../src/game/DetailDialog';
 import {OPENING_ROUTES} from '../src/game/HeroOpeningCopy';
 import {OPENING_BASE_HAND_TYPES,openingRuleBriefing,showOpeningRuleBriefing} from '../src/game/OpeningRuleBriefing';
 
-const run=()=>createRun({seed:'opening-rules-17',runId:'opening-rules',characterId:'amo',rulesVersion:'r2',r2Profile:'group-upgrade-v1'});
+const run=(runId='opening-rules')=>createRun({seed:'opening-rules-17',runId,characterId:'amo',rulesVersion:'r2',r2Profile:'group-upgrade-v1'});
 const names=(cards:ReturnType<typeof openingRuleBriefing>['cards'])=>cards.map(card=>card.title.replace(/^已选路线 · /,'').split(' · ')[0]);
 
 describe('opening rule briefing',()=>{
@@ -16,7 +16,7 @@ describe('opening rule briefing',()=>{
   expect(OPENING_BASE_HAND_TYPES).toEqual(['straight-flush','four-kind','full-house','flush','straight','three-kind','two-pair','pair']);
   expect(names(model.cards)).toEqual(['同花顺','四条','葫芦','同花','顺子','三条','两对','对子']);
   expect(names(model.cards)).not.toContain('高牌');
-  const expected=focus==='group'?['对子','两对','三条']:focus==='straight'?['顺子']:['同花'];
+  const expected=focus==='group'?['三条','两对','对子']:focus==='straight'?['顺子']:['同花'];
   expect(names(model.cards.filter(card=>card.stat))).toEqual(expected);
   expect(model.cards.filter(card=>card.stat).every(card=>card.title.startsWith('已选路线 · ')&&card.stat==='当前路线：'+OPENING_ROUTES[focus].title)).toBe(true);
   expect(model.summaryBody).toContain('五条');expect(model.summaryBody).toContain('同花葫芦');expect(model.summaryBody).toContain('同花五条');
@@ -24,9 +24,9 @@ describe('opening rule briefing',()=>{
  });
 
  it('keeps the briefing usable when an older run has no saved opening route',()=>{
-  const model=openingRuleBriefing(run());
+  const model=openingRuleBriefing(run('older-run-no-route'));
   expect(model.effectBody).toContain(OPENING_ROUTES.group.title);
-  expect(names(model.cards.filter(card=>card.stat))).toEqual(['对子','两对','三条']);
+  expect(names(model.cards.filter(card=>card.stat))).toEqual(['三条','两对','对子']);
  });
 
  it('routes the primary action and later duplicate close events through one shop transition',()=>{

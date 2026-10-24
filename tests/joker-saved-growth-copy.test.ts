@@ -1,13 +1,14 @@
 import {expect,it} from 'vitest';
 import {R2_JOKERS,r2GrowthCaps,r2GrowthMinimums} from '../src/content/r2Schema';
+import {R2_COMBO_GROWTH_JOKERS} from '../src/content/r2ComboGrowthJokers';
 import {r2CreateJoker} from '../src/domain/r2Run';
 import {jokerMemoryAbility,type JokerMemoryContext} from '../src/game/JokerMemory';
 import {fractionText} from '../src/game/scoreText';
 
 const hand=[{id:'a',rank:7 as const,suit:'spades' as const},{id:'b',rank:7 as const,suit:'hearts' as const},{id:'c',rank:7 as const,suit:'clubs' as const},{id:'d',rank:2 as const,suit:'spades' as const},{id:'e',rank:4 as const,suit:'hearts' as const}];
-const ctx=():JokerMemoryContext=>({inStage:false,hand,disabledIds:[],scoringLimited:false,gold:3,handsLeft:0,playIndex:0,discardsUsed:0,quadRefundUsed:false,previousHandType:null,stageHeat:'0',target:'1000',transaction:{gold:3,discarded:[],hasStage:false,maxPlayedCount:0,ordinaryStraightSeen:false,ordinaryFlushSeen:false,jokerSold:false,traceType:null,heat:'0',target:'1000'},deckSize:40,jokerSlots:5,jokerCount:2});
-const def=(id:string)=>R2_JOKERS.find(d=>d.id===id)!;
-const copy=(id:string,value?:{n:string;d:string})=>{const j=r2CreateJoker(id,id,0),key=Object.keys(r2GrowthCaps(def(id)))[0];if(value&&key)j.growth[key]=value;return jokerMemoryAbility(def(id),j,ctx());};
+const ctx=():JokerMemoryContext=>({inStage:false,hand,disabledIds:[],scoringLimited:false,gold:3,handsLeft:0,playIndex:0,discardsUsed:0,quadRefundUsed:false,previousHandType:null,stageHeat:'0',target:'1000',transaction:{handType:null,gold:3,discarded:[],hasStage:false,maxPlayedCount:0,ordinaryStraightSeen:false,ordinaryFlushSeen:false,jokerSold:false,traceType:null,heat:'0',target:'1000'},deckSize:40,jokerSlots:5,jokerCount:2});
+const def=(id:string)=>R2_COMBO_GROWTH_JOKERS.find(d=>d.id===id)??R2_JOKERS.find(d=>d.id===id)!;
+const copy=(id:string,value?:{n:string;d:string})=>{const d=def(id),j=r2CreateJoker(id,id,0);j.growth={...r2GrowthMinimums(d),...j.growth};const key=Object.keys(r2GrowthCaps(d))[0];if(value&&key)j.growth[key]=value;return jokerMemoryAbility(d,j,ctx());};
 
 it('every owned growth definition exposes its real current value and cap in both detail status outlets',()=>{
  let checked=0;
