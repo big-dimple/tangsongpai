@@ -1,0 +1,258 @@
+{
+  "setupFailure": {
+    "action": "Playwright context.newPage with recordVideo",
+    "reason": "missing /home/agent/.cache/ms-playwright/ffmpeg-1011/ffmpeg-linux",
+    "resolution": "Use existing /usr/bin/ffmpeg through task-local /tmp/sushi-playwright/ffmpeg-1011/ffmpeg-linux symlink; no package dependency change",
+    "status": "resolved"
+  },
+  "earlierRuns": {
+    "sushi-blue-charge-before": {
+      "head": "9abedd0195881c64c730f13e26b66c54f94b3716",
+      "diff": "",
+      "status": "PASS",
+      "moduleOnly": null,
+      "firstArmed": {
+        "blueIds": [],
+        "at": 4414
+      },
+      "idle": {
+        "frameMs": {
+          "count": 106,
+          "median": 16.5,
+          "p95": 23.29999999998836,
+          "max": 39.399999999965075
+        },
+        "attachmentCpuMs": {
+          "count": 107,
+          "median": 0.1000000000349246,
+          "p95": 0.20000000001164153,
+          "max": 2.7999999999883585
+        },
+        "objects": 306,
+        "graphicsCommands": 6468,
+        "textures": 287
+      },
+      "armedPerformance": {
+        "frameMs": {
+          "count": 109,
+          "median": 16.599999999976717,
+          "p95": 20.699999999953434,
+          "max": 25.20000000001164
+        },
+        "attachmentCpuMs": {
+          "count": 110,
+          "median": 0.09999999997671694,
+          "p95": 0.20000000001164153,
+          "max": 0.3999999999650754
+        },
+        "objects": 306,
+        "graphicsCommands": 6468,
+        "textures": 287
+      },
+      "settledPerformance": {
+        "frameMs": {
+          "count": 108,
+          "median": 16.699999999953434,
+          "p95": 18,
+          "max": 21.099999999976717
+        },
+        "attachmentCpuMs": {
+          "count": 108,
+          "median": 0.09999999997671694,
+          "p95": 0.20000000001164153,
+          "max": 0.40000000002328306
+        },
+        "objects": 242,
+        "graphicsCommands": 5370,
+        "textures": 249
+      }
+    },
+    "sushi-blue-charge-module": {
+      "head": "9abedd0195881c64c730f13e26b66c54f94b3716",
+      "diff": " src/game/SushiDiscardCardPresentation.ts | 14 +++++++++-----\n src/game/SushiKingCharge.ts              | 17 +++++++++++------\n tests/sushi-king-charge.test.ts          |  2 +-\n 3 files changed, 21 insertions(+), 12 deletions(-)\n",
+      "status": "MODULE_PASS_UI_WIRING_PENDING",
+      "moduleOnly": true,
+      "firstArmed": {
+        "blueIds": [],
+        "at": 4868.29999999993
+      },
+      "idle": {
+        "frameMs": {
+          "count": 104,
+          "median": 16.79999999993015,
+          "p95": 26.79999999993015,
+          "max": 44.59999999997672
+        },
+        "attachmentCpuMs": {
+          "count": 105,
+          "median": 0.09999999997671694,
+          "p95": 0.2000000000698492,
+          "max": 0.40000000002328306
+        },
+        "objects": 306,
+        "graphicsCommands": 6468,
+        "textures": 284
+      },
+      "armedPerformance": {
+        "frameMs": {
+          "count": 108,
+          "median": 16.699999999953434,
+          "p95": 21.20000000006985,
+          "max": 31.70000000006985
+        },
+        "attachmentCpuMs": {
+          "count": 109,
+          "median": 0.09999999997671694,
+          "p95": 3.700000000069849,
+          "max": 5.199999999953434
+        },
+        "objects": 306,
+        "graphicsCommands": 6468,
+        "textures": 287
+      },
+      "settledPerformance": {
+        "frameMs": {
+          "count": 108,
+          "median": 16.699999999953434,
+          "p95": 18,
+          "max": 22.20000000006985
+        },
+        "attachmentCpuMs": {
+          "count": 108,
+          "median": 0.09999999997671694,
+          "p95": 0.2000000000698492,
+          "max": 0.30000000004656613
+        },
+        "objects": 242,
+        "graphicsCommands": 5370,
+        "textures": 249
+      }
+    },
+    "sushi-blue-charge-module-r2": {
+      "head": "9abedd0195881c64c730f13e26b66c54f94b3716",
+      "diff": " src/game/SushiDiscardCardPresentation.ts | 14 +++++++++-----\n src/game/SushiKingCharge.ts              | 17 +++++++++++------\n tests/sushi-king-charge.test.ts          |  2 +-\n 3 files changed, 21 insertions(+), 12 deletions(-)\n",
+      "status": "MODULE_PASS_UI_WIRING_PENDING",
+      "moduleOnly": true,
+      "firstArmed": {
+        "blueIds": [],
+        "at": 4669
+      },
+      "idle": {
+        "frameMs": {
+          "count": 108,
+          "median": 16.599999999976717,
+          "p95": 23.20000000006985,
+          "max": 27.099999999976717
+        },
+        "attachmentCpuMs": {
+          "count": 109,
+          "median": 0.09999999997671694,
+          "p95": 0.2000000000698492,
+          "max": 2.699999999953434
+        },
+        "objects": 306,
+        "graphicsCommands": 6468,
+        "textures": 284
+      },
+      "armedPerformance": {
+        "frameMs": {
+          "count": 110,
+          "median": 16.29999999993015,
+          "p95": 20.79999999993015,
+          "max": 25.900000000023283
+        },
+        "attachmentCpuMs": {
+          "count": 111,
+          "median": 0.09999999997671694,
+          "p95": 0.2000000000698492,
+          "max": 6.5
+        },
+        "objects": 311,
+        "graphicsCommands": 7894,
+        "textures": 288
+      },
+      "settledPerformance": {
+        "frameMs": {
+          "count": 109,
+          "median": 16.699999999953434,
+          "p95": 18.399999999906868,
+          "max": 26.099999999976717
+        },
+        "attachmentCpuMs": {
+          "count": 109,
+          "median": 0.09999999997671694,
+          "p95": 0.2999999999301508,
+          "max": 2.800000000046566
+        },
+        "objects": 242,
+        "graphicsCommands": 5370,
+        "textures": 249
+      }
+    },
+    "sushi-blue-charge-real": {
+      "head": "9abedd0195881c64c730f13e26b66c54f94b3716",
+      "diff": " src/game/GameScene.ts                    |  5 +++--\n src/game/SushiDiscardCardPresentation.ts | 14 +++++++++-----\n src/game/SushiKingCharge.ts              | 17 +++++++++++------\n tests/sushi-king-charge.test.ts          |  2 +-\n 4 files changed, 24 insertions(+), 14 deletions(-)\n",
+      "status": "PASS",
+      "moduleOnly": false,
+      "firstArmed": {
+        "blueIds": [
+          "hearts-13",
+          "spades-13"
+        ],
+        "at": 4865.199999999953
+      },
+      "idle": {
+        "frameMs": {
+          "count": 108,
+          "median": 16.400000000023283,
+          "p95": 22.699999999953434,
+          "max": 28.099999999976717
+        },
+        "attachmentCpuMs": {
+          "count": 109,
+          "median": 0.09999999997671694,
+          "p95": 0.2000000000698492,
+          "max": 0.6999999999534339
+        },
+        "objects": 306,
+        "graphicsCommands": 6468,
+        "textures": 279
+      },
+      "armedPerformance": {
+        "frameMs": {
+          "count": 104,
+          "median": 16.600000000093132,
+          "p95": 25.300000000046566,
+          "max": 35.59999999997672
+        },
+        "attachmentCpuMs": {
+          "count": 104,
+          "median": 0.19999999995343387,
+          "p95": 5.099999999976717,
+          "max": 14.79999999993015
+        },
+        "objects": 311,
+        "graphicsCommands": 7894,
+        "textures": 288
+      },
+      "settledPerformance": {
+        "frameMs": {
+          "count": 110,
+          "median": 16.600000000093132,
+          "p95": 20.400000000023283,
+          "max": 21.899999999906868
+        },
+        "attachmentCpuMs": {
+          "count": 110,
+          "median": 0.09999999997671694,
+          "p95": 0.2000000000698492,
+          "max": 0.30000000004656613
+        },
+        "objects": 242,
+        "graphicsCommands": 5370,
+        "textures": 249
+      }
+    }
+  },
+  "interpretation": "Module-only runs explicitly lacked the shared Scene wiring and were never full-UI acceptance. First real run exposed preparation CPU p95 5.1ms; final code avoids repeated whole-art occlusion measurement. Original local reports/videos remain in shots/; this file preserves the bounded measurements and failures without copying historical trees."
+}

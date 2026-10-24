@@ -1,0 +1,943 @@
+{
+  "base": "9fe60fc581227829df6caadc712a5bd0fed74bc4",
+  "browser": "153.0.8010.12",
+  "scope": "Controlled public imports; native touch for phone, mouse for PC. Local source verification only; no domain, cache, physical-device, listening or natural-acquisition claim.",
+  "profiles": [
+    {
+      "width": 1366,
+      "height": 900,
+      "owned": 5,
+      "dpr": 1,
+      "checks": [
+        "only the selected goods category; direct details; no duplicate DIY or phone decorative portrait"
+      ],
+      "errors": [],
+      "initial": {
+        "dpr": 1,
+        "canvas": {
+          "width": 1366,
+          "height": 900
+        },
+        "geometry": {
+          "x": 24,
+          "w": 1318,
+          "top": 8,
+          "pc": {
+            "left": {
+              "x": 24,
+              "y": 8,
+              "width": 224,
+              "height": 884
+            },
+            "ownedRail": {
+              "x": 272,
+              "y": 8,
+              "width": 1070,
+              "height": 188
+            },
+            "inventoryEntry": {
+              "x": 1174,
+              "y": 72,
+              "width": 168,
+              "height": 44
+            },
+            "shopPanel": {
+              "x": 272,
+              "y": 216,
+              "width": 1070,
+              "height": 676
+            },
+            "actionRail": {
+              "x": 1090,
+              "y": 824,
+              "width": 240,
+              "height": 56
+            },
+            "shared": {
+              "x": 284,
+              "y": 280,
+              "width": 1046,
+              "height": 528
+            },
+            "jokerOffers": [
+              {
+                "x": 284,
+                "y": 280,
+                "width": 340.6666666666667,
+                "height": 528
+              },
+              {
+                "x": 636.6666666666667,
+                "y": 280,
+                "width": 340.6666666666667,
+                "height": 528
+              },
+              {
+                "x": 989.3333333333334,
+                "y": 280,
+                "width": 340.6666666666667,
+                "height": 528
+              }
+            ],
+            "toolOffers": {
+              "x": 284,
+              "y": 280,
+              "width": 1046,
+              "height": 528
+            },
+            "itemOffers": {
+              "x": 284,
+              "y": 280,
+              "width": 1046,
+              "height": 528
+            },
+            "workshop": {
+              "x": 284,
+              "y": 280,
+              "width": 1046,
+              "height": 528
+            },
+            "feedback": {
+              "x": 284,
+              "y": 836,
+              "width": 790,
+              "height": 40
+            },
+            "groupY": 280,
+            "guidanceHeight": 0
+          },
+          "desktop": true,
+          "short": false,
+          "copyBeside": false,
+          "inventoryCollapsed": false,
+          "compact": false,
+          "wideHeader": false,
+          "portrait": false,
+          "slots": [
+            {
+              "x": 272,
+              "y": 64,
+              "width": 80,
+              "height": 112
+            },
+            {
+              "x": 364,
+              "y": 64,
+              "width": 80,
+              "height": 112
+            },
+            {
+              "x": 456,
+              "y": 64,
+              "width": 80,
+              "height": 112
+            },
+            {
+              "x": 548,
+              "y": 64,
+              "width": 80,
+              "height": 112
+            },
+            {
+              "x": 640,
+              "y": 64,
+              "width": 80,
+              "height": 112
+            }
+          ],
+          "shelf": [
+            {
+              "x": 310.33333333333337,
+              "y": 288,
+              "width": 288,
+              "height": 360
+            },
+            {
+              "x": 663.0000000000001,
+              "y": 288,
+              "width": 288,
+              "height": 360
+            },
+            {
+              "x": 1015.6666666666667,
+              "y": 288,
+              "width": 288,
+              "height": 360
+            }
+          ],
+          "tabs": {
+            "x": 284,
+            "y": 224,
+            "width": 1046,
+            "height": 44
+          },
+          "chapter": {
+            "x": 24,
+            "y": 184,
+            "width": 224,
+            "height": 44
+          },
+          "items": {
+            "x": 1174,
+            "y": 72,
+            "width": 168,
+            "height": 44
+          },
+          "build": {
+            "x": 744,
+            "y": 14,
+            "width": 132,
+            "height": 44
+          },
+          "reroll": {
+            "x": 1174,
+            "y": 124,
+            "width": 104,
+            "height": 44
+          },
+          "play": {
+            "x": 1090,
+            "y": 824,
+            "width": 240,
+            "height": 56
+          },
+          "noticeY": 836,
+          "menu": {
+            "x": 1322,
+            "y": 12,
+            "width": 44,
+            "height": 44
+          },
+          "headerRows": 1
+        },
+        "workshop": false,
+        "kind": "jokers",
+        "nodes": [
+          {
+            "name": "shop-art/owned",
+            "hit": false
+          },
+          {
+            "name": "shop-art/owned-paper",
+            "hit": false,
+            "bounds": {
+              "x": 276,
+              "y": 12,
+              "width": 1062,
+              "height": 196
+            }
+          },
+          {
+            "name": "shop-art/stock",
+            "hit": false
+          },
+          {
+            "name": "shop-art/stock-paper",
+            "hit": false,
+            "bounds": {
+              "x": 276,
+              "y": 220,
+              "width": 1062,
+              "height": 668
+            }
+          },
+          {
+            "name": "shop/hero-portrait",
+            "hit": false,
+            "bounds": {
+              "x": 28,
+              "y": 411,
+              "width": 216,
+              "height": 270
+            }
+          },
+          {
+            "name": "shop/hero-preparation",
+            "hit": true,
+            "bounds": {
+              "x": 24,
+              "y": 8,
+              "width": 224,
+              "height": 884
+            }
+          },
+          {
+            "name": "shop/hero-caption",
+            "text": "辛弃疾 · 原画与技能 ↗",
+            "hit": false,
+            "bounds": {
+              "x": 65,
+              "y": 861,
+              "width": 142,
+              "height": 17
+            }
+          },
+          {
+            "name": "shop/title",
+            "text": "辛弃疾 · 筹备",
+            "hit": false,
+            "bounds": {
+              "x": 40,
+              "y": 24,
+              "width": 145,
+              "height": 30
+            }
+          },
+          {
+            "name": "shop/target",
+            "text": "400",
+            "hit": false,
+            "bounds": {
+              "x": 40,
+              "y": 112,
+              "width": 56,
+              "height": 37
+            }
+          },
+          {
+            "name": "shop/gold",
+            "text": "金币 40",
+            "hit": false,
+            "bounds": {
+              "x": 66,
+              "y": 153,
+              "width": 85,
+              "height": 30
+            }
+          },
+          {
+            "name": "action/chapter",
+            "text": "节目单 · 关闭",
+            "hit": true,
+            "bounds": {
+              "x": 36,
+              "y": 184,
+              "width": 200,
+              "height": 44
+            }
+          },
+          {
+            "name": "shop/owned-heading",
+            "text": "持有 5/5 · 先加后乘，乘倍率通常靠右",
+            "hit": false,
+            "bounds": {
+              "x": 272,
+              "y": 20,
+              "width": 268,
+              "height": 19
+            }
+          },
+          {
+            "name": "action/build",
+            "text": "同点建议 ›",
+            "hit": true,
+            "bounds": {
+              "x": 744,
+              "y": 14,
+              "width": 132,
+              "height": 44
+            }
+          },
+          {
+            "name": "shop/held-route-fit",
+            "hit": false
+          },
+          {
+            "name": "shop/owned-name",
+            "text": "狭路相逢",
+            "hit": false,
+            "bounds": {
+              "x": 272,
+              "y": 46,
+              "width": 48,
+              "height": 15
+            }
+          },
+          {
+            "name": "shop/owned-identity",
+            "text": "普通",
+            "hit": false,
+            "bounds": {
+              "x": 272,
+              "y": 160,
+              "width": 22,
+              "height": 13
+            }
+          },
+          {
+            "name": "shop/owned-state",
+            "text": "同点",
+            "hit": false,
+            "bounds": {
+              "x": 272,
+              "y": 178,
+              "width": 28,
+              "height": 17
+            }
+          },
+          {
+            "name": "joker/held/pengci",
+            "hit": true,
+            "bounds": {
+              "x": 272,
+              "y": 64,
+              "width": 80,
+              "height": 112
+            }
+          },
+          {
+            "name": "shop/held-route-fit",
+            "hit": false
+          },
+          {
+            "name": "shop/owned-name",
+            "text": "满堂喝彩",
+            "hit": false,
+            "bounds": {
+              "x": 364,
+              "y": 46,
+              "width": 48,
+              "height": 15
+            }
+          },
+          {
+            "name": "shop/owned-identity",
+            "text": "普通",
+            "hit": false,
+            "bounds": {
+              "x": 364,
+              "y": 160,
+              "width": 22,
+              "height": 13
+            }
+          },
+          {
+            "name": "shop/owned-state",
+            "text": "同点",
+            "hit": false,
+            "bounds": {
+              "x": 364,
+              "y": 178,
+              "width": 28,
+              "height": 17
+            }
+          },
+          {
+            "name": "joker/held/mantangcai",
+            "hit": true,
+            "bounds": {
+              "x": 364,
+              "y": 64,
+              "width": 80,
+              "height": 112
+            }
+          },
+          {
+            "name": "shop/held-route-fit",
+            "hit": false
+          },
+          {
+            "name": "shop/owned-name",
+            "text": "精打细算",
+            "hit": false,
+            "bounds": {
+              "x": 456,
+              "y": 46,
+              "width": 48,
+              "height": 15
+            }
+          },
+          {
+            "name": "shop/owned-identity",
+            "text": "特别",
+            "hit": false,
+            "bounds": {
+              "x": 456,
+              "y": 160,
+              "width": 22,
+              "height": 13
+            }
+          },
+          {
+            "name": "shop/owned-state",
+            "text": "同/顺/花",
+            "hit": false,
+            "bounds": {
+              "x": 456,
+              "y": 178,
+              "width": 54,
+              "height": 17
+            }
+          },
+          {
+            "name": "joker/held/tiesuanpan",
+            "hit": true,
+            "bounds": {
+              "x": 456,
+              "y": 64,
+              "width": 80,
+              "height": 112
+            }
+          },
+          {
+            "name": "shop/held-route-fit",
+            "hit": false
+          },
+          {
+            "name": "shop/owned-name",
+            "text": "回马枪",
+            "hit": false,
+            "bounds": {
+              "x": 548,
+              "y": 46,
+              "width": 36,
+              "height": 15
+            }
+          },
+          {
+            "name": "shop/owned-identity",
+            "text": "稀有",
+            "hit": false,
+            "bounds": {
+              "x": 548,
+              "y": 160,
+              "width": 22,
+              "height": 13
+            }
+          },
+          {
+            "name": "shop/owned-state",
+            "text": "同/顺/花",
+            "hit": false,
+            "bounds": {
+              "x": 548,
+              "y": 178,
+              "width": 54,
+              "height": 17
+            }
+          },
+          {
+            "name": "joker/held/huimaqiang",
+            "hit": true,
+            "bounds": {
+              "x": 548,
+              "y": 64,
+              "width": 80,
+              "height": 112
+            }
+          },
+          {
+            "name": "shop/held-route-fit",
+            "hit": false
+          },
+          {
+            "name": "shop/owned-name",
+            "text": "巧借东风",
+            "hit": false,
+            "bounds": {
+              "x": 640,
+              "y": 46,
+              "width": 48,
+              "height": 15
+            }
+          },
+          {
+            "name": "shop/owned-identity",
+            "text": "特别",
+            "hit": false,
+            "bounds": {
+              "x": 640,
+              "y": 160,
+              "width": 22,
+              "height": 13
+            }
+          },
+          {
+            "name": "shop/owned-state",
+            "text": "同/顺/花",
+            "hit": false,
+            "bounds": {
+              "x": 640,
+              "y": 178,
+              "width": 54,
+              "height": 17
+            }
+          },
+          {
+            "name": "joker/held/jiedongfeng",
+            "hit": true,
+            "bounds": {
+              "x": 640,
+              "y": 64,
+              "width": 80,
+              "height": 112
+            }
+          },
+          {
+            "name": "shop/held-purpose",
+            "text": "狭路相逢 · 三条 → 每手一次，倍率+2\n选好牌后查条件",
+            "hit": false,
+            "bounds": {
+              "x": 744,
+              "y": 64,
+              "width": 235,
+              "height": 34
+            }
+          },
+          {
+            "name": "inventory/held-reminder",
+            "hit": false
+          },
+          {
+            "name": "action/tool-inventory",
+            "text": "背包 1/2",
+            "hit": true,
+            "bounds": {
+              "x": 1174,
+              "y": 72,
+              "width": 168,
+              "height": 44
+            }
+          },
+          {
+            "name": "action/reroll",
+            "text": "刷新 2金币",
+            "hit": true,
+            "bounds": {
+              "x": 1174,
+              "y": 124,
+              "width": 104,
+              "height": 44
+            }
+          },
+          {
+            "name": "action/start-stage",
+            "text": "进入牌桌  →",
+            "hit": true,
+            "bounds": {
+              "x": 1090,
+              "y": 824,
+              "width": 240,
+              "height": 56
+            }
+          },
+          {
+            "name": "action/shelf-jokers",
+            "text": "唐宋牌 · 3",
+            "hit": true,
+            "bounds": {
+              "x": 284,
+              "y": 224,
+              "width": 260,
+              "height": 44
+            }
+          },
+          {
+            "name": "action/shelf-tools",
+            "text": "消耗工具 · 1",
+            "hit": true,
+            "bounds": {
+              "x": 546,
+              "y": 224,
+              "width": 260,
+              "height": 44
+            }
+          },
+          {
+            "name": "action/shelf-workshop",
+            "text": "自选做牌 · 共用1次",
+            "hit": true,
+            "bounds": {
+              "x": 808,
+              "y": 224,
+              "width": 260,
+              "height": 44
+            }
+          },
+          {
+            "name": "action/shelf-items",
+            "text": "长期物品 · 1",
+            "hit": true,
+            "bounds": {
+              "x": 1070,
+              "y": 224,
+              "width": 260,
+              "height": 44
+            }
+          },
+          {
+            "name": "shop-art/offer-paper",
+            "hit": false,
+            "bounds": {
+              "x": 288,
+              "y": 284,
+              "width": 332,
+              "height": 520
+            }
+          },
+          {
+            "name": "shop-art/offer",
+            "hit": false
+          },
+          {
+            "name": "shop/offer-name",
+            "text": "宾主尽欢",
+            "hit": false,
+            "bounds": {
+              "x": 292.000010172526,
+              "y": 652,
+              "width": 60,
+              "height": 19
+            }
+          },
+          {
+            "name": "shop/offer-identity",
+            "text": "普通 · 普通版",
+            "hit": false,
+            "bounds": {
+              "x": 292.000010172526,
+              "y": 674,
+              "width": 82,
+              "height": 17
+            }
+          },
+          {
+            "name": "shop/offer-purpose",
+            "text": "每手1次 热度+30\n≥2张都计分",
+            "hit": false,
+            "bounds": {
+              "x": 292.000010172526,
+              "y": 692,
+              "width": 110,
+              "height": 34
+            }
+          },
+          {
+            "name": "shop/price-plate",
+            "hit": false,
+            "bounds": {
+              "x": 292.000010172526,
+              "y": 758,
+              "width": 324.66666666666663,
+              "height": 24
+            }
+          },
+          {
+            "name": "shop/offer-price",
+            "text": "4 金 · 查看详情",
+            "hit": false,
+            "bounds": {
+              "x": 292.000010172526,
+              "y": 758,
+              "width": 112,
+              "height": 19
+            }
+          },
+          {
+            "name": "shop/offer-reason",
+            "text": "槽位已满",
+            "hit": false,
+            "bounds": {
+              "x": 292.000010172526,
+              "y": 782,
+              "width": 56,
+              "height": 17
+            }
+          },
+          {
+            "name": "offer/controlled/workshop-5/shop/0/0/joker/0",
+            "hit": true,
+            "bounds": {
+              "x": 284,
+              "y": 280,
+              "width": 340.66666666666674,
+              "height": 528
+            }
+          },
+          {
+            "name": "shop-art/offer-paper",
+            "hit": false,
+            "bounds": {
+              "x": 640.6666666666667,
+              "y": 284,
+              "width": 332,
+              "height": 520
+            }
+          },
+          {
+            "name": "shop-art/offer",
+            "hit": false
+          },
+          {
+            "name": "shop/offer-name",
+            "text": "挥毫泼墨",
+            "hit": false,
+            "bounds": {
+              "x": 644.9999999999999,
+              "y": 652,
+              "width": 60,
+              "height": 19
+            }
+          },
+          {
+            "name": "shop/offer-identity",
+            "text": "普通 · 普通版",
+            "hit": false,
+            "bounds": {
+              "x": 644.9999999999999,
+              "y": 674,
+              "width": 82,
+              "height": 17
+            }
+          },
+          {
+            "name": "shop/offer-purpose",
+            "text": "每张符合条件的有效计分牌热度+8\n♠/♣计分",
+            "hit": false,
+            "bounds": {
+              "x": 644.9999999999999,
+              "y": 692,
+              "width": 215,
+              "height": 34
+            }
+          },
+          {
+            "name": "shop/price-plate",
+            "hit": false,
+            "bounds": {
+              "x": 644.6666666666666,
+              "y": 758,
+              "width": 324.66666666666663,
+              "height": 24
+            }
+          },
+          {
+            "name": "shop/offer-price",
+            "text": "4 金 · 查看详情",
+            "hit": false,
+            "bounds": {
+              "x": 644.9999999999999,
+              "y": 758,
+              "width": 112,
+              "height": 19
+            }
+          },
+          {
+            "name": "shop/offer-reason",
+            "text": "槽位已满",
+            "hit": false,
+            "bounds": {
+              "x": 644.9999999999999,
+              "y": 782,
+              "width": 56,
+              "height": 17
+            }
+          },
+          {
+            "name": "offer/controlled/workshop-5/shop/0/0/joker/1",
+            "hit": true,
+            "bounds": {
+              "x": 636.6666666666667,
+              "y": 280,
+              "width": 340.66666666666674,
+              "height": 528
+            }
+          },
+          {
+            "name": "shop-art/offer-paper",
+            "hit": false,
+            "bounds": {
+              "x": 993.3333333333334,
+              "y": 284,
+              "width": 332.0000000000001,
+              "height": 520
+            }
+          },
+          {
+            "name": "shop-art/offer",
+            "hit": false
+          },
+          {
+            "name": "shop/offer-name",
+            "text": "满堂喝彩",
+            "hit": false,
+            "bounds": {
+              "x": 996.9999593098958,
+              "y": 652,
+              "width": 60,
+              "height": 19
+            }
+          },
+          {
+            "name": "shop/offer-identity",
+            "text": "普通 · 普通版",
+            "hit": false,
+            "bounds": {
+              "x": 996.9999593098958,
+              "y": 674,
+              "width": 82,
+              "height": 17
+            }
+          },
+          {
+            "name": "shop/offer-purpose",
+            "text": "每手1次 热度+90\n对子等同点组合",
+            "hit": false,
+            "bounds": {
+              "x": 996.9999593098958,
+              "y": 692,
+              "width": 110,
+              "height": 34
+            }
+          },
+          {
+            "name": "shop/price-plate",
+            "hit": false,
+            "bounds": {
+              "x": 997.3332926432291,
+              "y": 758,
+              "width": 324.66666666666663,
+              "height": 24
+            }
+          },
+          {
+            "name": "shop/offer-price",
+            "text": "4 金 · 查看详情",
+            "hit": false,
+            "bounds": {
+              "x": 996.9999593098958,
+              "y": 758,
+              "width": 112,
+              "height": 19
+            }
+          },
+          {
+            "name": "shop/offer-reason",
+            "text": "槽位已满",
+            "hit": false,
+            "bounds": {
+              "x": 996.9999593098958,
+              "y": 782,
+              "width": 56,
+              "height": 17
+            }
+          },
+          {
+            "name": "offer/controlled/workshop-5/shop/0/0/joker/2",
+            "hit": true,
+            "bounds": {
+              "x": 989.3333333333334,
+              "y": 280,
+              "width": 340.66666666666663,
+              "height": 528
+            }
+          }
+        ]
+      },
+      "status": "FAIL",
+      "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n7 !== 4\n\n    at file:///C:/Users/wanghongping/AppData/Local/Temp/tangsongpai-shop-purpose-20261017/harness/shop-purpose.mjs:30:435"
+    }
+  ],
+  "status": "FAIL",
+  "error": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\n\n7 !== 4\n\n    at file:///C:/Users/wanghongping/AppData/Local/Temp/tangsongpai-shop-purpose-20261017/harness/shop-purpose.mjs:30:435"
+}

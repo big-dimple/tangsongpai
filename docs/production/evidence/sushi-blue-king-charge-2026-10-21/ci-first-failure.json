@@ -1,0 +1,15 @@
+{
+  "head": "7c228709d6bfa367e1efd0840d8fe87b474acbc7",
+  "run": 39602626622,
+  "job": 119230703258,
+  "url": "https://github.com/big-dimple/tangsongpai/actions/runs/39602626622/job/119230703258",
+  "result": "failure",
+  "passedFiles": 415,
+  "failedFiles": 1,
+  "passedTests": 5032,
+  "failedTests": 1,
+  "file": "tests/amo-exile-visual.test.ts",
+  "error": "TypeError: this.targetAttachment?.previewSushiKings is not a function",
+  "cause": "Old Su Shi visual test mocked the previous clear-only confirmation behavior and omitted the existing previewSushiKings API now used by the authorized immediate charge seam.",
+  "correction": "Only the Su Shi test mock/expectations were updated: true remainder+actual factor on confirmation, exclude main-hand K, cancel/invalid eligibility clear, no run mutation. No production/render/harness change after the recorded clean code head."
+}

@@ -1,0 +1,35 @@
+{
+  "status": "PASS",
+  "before": "before-02",
+  "after": "after-01",
+  "checks": [
+    {
+      "width": 1366,
+      "exactStateJournalStorageAndActionsUnchanged": true,
+      "layoutAndNativeArtCopyBoundsUnchanged": true,
+      "detailAndWorkshopTextUnchanged": true,
+      "initialPriceColors": {
+        "before": [],
+        "after": []
+      }
+    },
+    {
+      "width": 390,
+      "exactStateJournalStorageAndActionsUnchanged": true,
+      "layoutAndNativeArtCopyBoundsUnchanged": true,
+      "detailAndWorkshopTextUnchanged": true,
+      "initialPriceColors": {
+        "before": [
+          "rgb(155, 53, 44)",
+          "rgb(155, 53, 44)",
+          "rgb(155, 53, 44)"
+        ],
+        "after": [
+          "rgb(32, 63, 59)",
+          "rgb(32, 63, 59)",
+          "rgb(32, 63, 59)"
+        ]
+      }
+    }
+  ]
+}

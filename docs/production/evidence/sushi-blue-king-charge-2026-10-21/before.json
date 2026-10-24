@@ -1,0 +1,6092 @@
+{
+  "head": "9abedd0195881c64c730f13e26b66c54f94b3716",
+  "diff": "",
+  "baseline": true,
+  "browser": "151.0.7922.173",
+  "status": "PASS",
+  "errors": [],
+  "scope": "One software Chromium desktop viewport, 1x speed, controlled validated checkpoint + real UI commands. Same-environment before/after sample only; not physical iPad/GPU/hearing/visual acceptance or an overall FPS guarantee.",
+  "before": {
+    "state": {
+      "routeGrowth": {
+        "clears": 0,
+        "G": 0,
+        "S": 0,
+        "F": 0,
+        "settlements": []
+      },
+      "schemaVersion": 2,
+      "rulesVersion": "r2",
+      "contentVersion": "quality-r2-amo-exile-v3-a11-house-v1",
+      "contentHash": "json-fnv-v1:8f6b2fc182834bcd",
+      "runId": "current/pool/amo",
+      "seed": "group-natural-17",
+      "commandSeq": 3,
+      "difficulty": 0,
+      "characterId": "amo",
+      "openingRoute": "group",
+      "openingShow": {
+        "handsScored": 0,
+        "rootId": null,
+        "eventId": null,
+        "reason": null
+      },
+      "routeStarter": {
+        "instanceId": null,
+        "rootId": null,
+        "eventId": null
+      },
+      "mode": "standard",
+      "challengeId": null,
+      "programsEnabled": false,
+      "programRerollCoupon": false,
+      "chapterDisabledJokerId": null,
+      "chapter": 1,
+      "stageIndex": 0,
+      "phase": "await-input",
+      "deckInstances": [
+        {
+          "id": "spades-2",
+          "suit": "spades",
+          "rank": 2
+        },
+        {
+          "id": "spades-3",
+          "suit": "spades",
+          "rank": 3
+        },
+        {
+          "id": "spades-4",
+          "suit": "spades",
+          "rank": 4
+        },
+        {
+          "id": "spades-5",
+          "suit": "spades",
+          "rank": 5
+        },
+        {
+          "id": "spades-6",
+          "suit": "spades",
+          "rank": 6
+        },
+        {
+          "id": "spades-7",
+          "suit": "spades",
+          "rank": 7
+        },
+        {
+          "id": "spades-8",
+          "suit": "spades",
+          "rank": 8
+        },
+        {
+          "id": "spades-9",
+          "suit": "spades",
+          "rank": 9
+        },
+        {
+          "id": "spades-10",
+          "suit": "spades",
+          "rank": 10
+        },
+        {
+          "id": "spades-11",
+          "suit": "spades",
+          "rank": 11
+        },
+        {
+          "id": "spades-12",
+          "suit": "spades",
+          "rank": 12
+        },
+        {
+          "id": "spades-13",
+          "suit": "spades",
+          "rank": 13
+        },
+        {
+          "id": "spades-14",
+          "suit": "spades",
+          "rank": 14
+        },
+        {
+          "id": "hearts-2",
+          "suit": "hearts",
+          "rank": 2
+        },
+        {
+          "id": "hearts-3",
+          "suit": "hearts",
+          "rank": 3
+        },
+        {
+          "id": "hearts-4",
+          "suit": "hearts",
+          "rank": 4
+        },
+        {
+          "id": "hearts-5",
+          "suit": "hearts",
+          "rank": 5
+        },
+        {
+          "id": "hearts-6",
+          "suit": "hearts",
+          "rank": 6
+        },
+        {
+          "id": "hearts-7",
+          "suit": "hearts",
+          "rank": 7
+        },
+        {
+          "id": "hearts-8",
+          "suit": "hearts",
+          "rank": 8
+        },
+        {
+          "id": "hearts-9",
+          "suit": "hearts",
+          "rank": 9
+        },
+        {
+          "id": "hearts-10",
+          "suit": "hearts",
+          "rank": 10
+        },
+        {
+          "id": "hearts-11",
+          "suit": "hearts",
+          "rank": 11
+        },
+        {
+          "id": "hearts-12",
+          "suit": "hearts",
+          "rank": 12
+        },
+        {
+          "id": "hearts-13",
+          "suit": "hearts",
+          "rank": 13
+        },
+        {
+          "id": "hearts-14",
+          "suit": "hearts",
+          "rank": 14
+        },
+        {
+          "id": "clubs-2",
+          "suit": "clubs",
+          "rank": 2
+        },
+        {
+          "id": "clubs-3",
+          "suit": "clubs",
+          "rank": 3
+        },
+        {
+          "id": "clubs-4",
+          "suit": "clubs",
+          "rank": 4
+        },
+        {
+          "id": "clubs-5",
+          "suit": "clubs",
+          "rank": 5
+        },
+        {
+          "id": "clubs-6",
+          "suit": "clubs",
+          "rank": 6
+        },
+        {
+          "id": "clubs-7",
+          "suit": "clubs",
+          "rank": 7
+        },
+        {
+          "id": "clubs-8",
+          "suit": "clubs",
+          "rank": 8
+        },
+        {
+          "id": "clubs-9",
+          "suit": "clubs",
+          "rank": 9
+        },
+        {
+          "id": "clubs-10",
+          "suit": "clubs",
+          "rank": 10
+        },
+        {
+          "id": "clubs-11",
+          "suit": "clubs",
+          "rank": 11
+        },
+        {
+          "id": "clubs-12",
+          "suit": "clubs",
+          "rank": 12
+        },
+        {
+          "id": "clubs-13",
+          "suit": "clubs",
+          "rank": 13
+        },
+        {
+          "id": "clubs-14",
+          "suit": "clubs",
+          "rank": 14
+        },
+        {
+          "id": "diamonds-2",
+          "suit": "diamonds",
+          "rank": 2
+        },
+        {
+          "id": "diamonds-3",
+          "suit": "diamonds",
+          "rank": 3
+        },
+        {
+          "id": "diamonds-4",
+          "suit": "diamonds",
+          "rank": 4
+        },
+        {
+          "id": "diamonds-5",
+          "suit": "diamonds",
+          "rank": 5
+        },
+        {
+          "id": "diamonds-6",
+          "suit": "diamonds",
+          "rank": 6
+        },
+        {
+          "id": "diamonds-7",
+          "suit": "diamonds",
+          "rank": 7
+        },
+        {
+          "id": "diamonds-8",
+          "suit": "diamonds",
+          "rank": 8
+        },
+        {
+          "id": "diamonds-9",
+          "suit": "diamonds",
+          "rank": 9
+        },
+        {
+          "id": "diamonds-10",
+          "suit": "diamonds",
+          "rank": 10
+        },
+        {
+          "id": "diamonds-11",
+          "suit": "diamonds",
+          "rank": 11
+        },
+        {
+          "id": "diamonds-12",
+          "suit": "diamonds",
+          "rank": 12
+        },
+        {
+          "id": "diamonds-13",
+          "suit": "diamonds",
+          "rank": 13
+        },
+        {
+          "id": "diamonds-14",
+          "suit": "diamonds",
+          "rank": 14
+        }
+      ],
+      "drawPile": [
+        "spades-5",
+        "spades-6",
+        "spades-7",
+        "spades-9",
+        "spades-10",
+        "spades-11",
+        "spades-12",
+        "spades-14",
+        "hearts-5",
+        "hearts-6",
+        "hearts-7",
+        "hearts-9",
+        "hearts-10",
+        "hearts-11",
+        "hearts-12",
+        "hearts-14",
+        "clubs-5",
+        "clubs-6",
+        "clubs-8",
+        "clubs-9",
+        "clubs-10",
+        "clubs-11",
+        "clubs-12",
+        "clubs-13",
+        "clubs-14",
+        "diamonds-5",
+        "diamonds-6",
+        "diamonds-8",
+        "diamonds-9",
+        "diamonds-10",
+        "diamonds-11",
+        "diamonds-12",
+        "diamonds-13",
+        "diamonds-14",
+        "clubs-4",
+        "hearts-4",
+        "spades-4",
+        "diamonds-3",
+        "clubs-3",
+        "hearts-3",
+        "spades-3",
+        "diamonds-2",
+        "hearts-2",
+        "spades-2"
+      ],
+      "handOrder": [
+        "spades-8",
+        "hearts-8",
+        "clubs-7",
+        "diamonds-7",
+        "spades-13",
+        "hearts-13",
+        "clubs-2",
+        "diamonds-4"
+      ],
+      "playedPile": [],
+      "discardPile": [],
+      "destroyedIds": [],
+      "stage": {
+        "amoExileUsed": false,
+        "routeGrowth": {
+          "entry": {
+            "commandId": "current/pool/amo/2",
+            "seq": 3,
+            "type": "EnterStage"
+          },
+          "handTypes": [],
+          "eligible": [],
+          "sources": []
+        },
+        "openingDiscard": null,
+        "index": 0,
+        "targetHeat": "400",
+        "initialTargetHeat": "400",
+        "heat": "0",
+        "handsLeft": 4,
+        "initialHands": 4,
+        "discardsLeft": 3,
+        "initialDiscards": 3,
+        "discardSpent": 0,
+        "discardGained": 0,
+        "doubleDiscardBeforeFirstPlay": false,
+        "discardsUsed": 0,
+        "skipResult": null,
+        "playIndex": 0,
+        "previousHandType": null,
+        "previousHandScore": null,
+        "handLimit": 8,
+        "initialHandLimit": 8,
+        "boss": null,
+        "initialJokerIds": [],
+        "sealedJokerIds": [],
+        "challengeDisabledJokerId": null,
+        "rescueUsed": false,
+        "clearId": null,
+        "goldEarned": 0,
+        "disabledIds": [],
+        "wagerSelected": false,
+        "wagerUsed": false,
+        "maxPlayedCount": 0,
+        "ordinaryStraightSeen": false,
+        "ordinaryFlushSeen": false,
+        "quadRefundUsed": false,
+        "jokerSold": false
+      },
+      "totalHeat": "0",
+      "gold": 40,
+      "jokers": [],
+      "consumables": [],
+      "longTermItems": [],
+      "program": null,
+      "boss": {
+        "definitionId": "B01",
+        "disabledSuit": null
+      },
+      "seenBossIds": [
+        "B01"
+      ],
+      "chapterSkipConsumable": "T04",
+      "purchaseCoupons": 0,
+      "safetyNetUsed": false,
+      "shop": null,
+      "spectralModifiers": {
+        "handsPenalty": 0,
+        "handPenalty": 0,
+        "cleanSlateBonus": 0
+      },
+      "supplyRewardClaimed": false,
+      "chapterHandUsage": {},
+      "normalClearClaimed": false,
+      "tourMode": "normal",
+      "normalCompletion": null,
+      "rng": {
+        "deck": {
+          "algorithm": "fnv1a-mulberry32-v1",
+          "state": 1543819562
+        },
+        "rule": {
+          "algorithm": "fnv1a-mulberry32-v1",
+          "state": 2405713301
+        },
+        "shop": {
+          "algorithm": "fnv1a-mulberry32-v1",
+          "state": 4201739804
+        },
+        "reward": {
+          "algorithm": "fnv1a-mulberry32-v1",
+          "state": 428350038
+        },
+        "program": {
+          "algorithm": "fnv1a-mulberry32-v1",
+          "state": 4127392240
+        },
+        "challenge": {
+          "algorithm": "fnv1a-mulberry32-v1",
+          "state": 111812685
+        }
+      },
+      "receipts": [
+        {
+          "commandId": "current/pool/amo/start",
+          "fingerprint": "json-fnv-v1:328c8b658b1f29d1",
+          "seq": 1
+        },
+        {
+          "commandId": "current/pool/amo/1",
+          "fingerprint": "json-fnv-v1:366d1012937ad3f6",
+          "seq": 2
+        },
+        {
+          "commandId": "current/pool/amo/2",
+          "fingerprint": "json-fnv-v1:ccc3c863109918a7",
+          "seq": 3
+        }
+      ],
+      "lastTrace": null,
+      "handLevels": {},
+      "outcome": null,
+      "chapterTargetPlan": {
+        "policyVersion": "core-build-target-v1",
+        "chapter": 1,
+        "targets": [
+          "400",
+          "600",
+          "800"
+        ],
+        "boss": {
+          "definitionId": "B01",
+          "disabledSuit": null
+        }
+      }
+    },
+    "journal": []
+  },
+  "idle": {
+    "frameMs": {
+      "count": 105,
+      "median": 16.800000000046566,
+      "p95": 25.700000000186265,
+      "max": 33.5
+    },
+    "attachmentCpuMs": {
+      "count": 106,
+      "median": 0.10000000009313226,
+      "p95": 0.20000000018626451,
+      "max": 0.6000000000931323
+    },
+    "objects": 306,
+    "graphicsCommands": 6468,
+    "textures": 287
+  },
+  "armed": {
+    "armed": true,
+    "objects": []
+  },
+  "firstArmed": {
+    "blueIds": [],
+    "at": 4516
+  },
+  "armedPerformance": {
+    "frameMs": {
+      "count": 108,
+      "median": 16.800000000046566,
+      "p95": 20.699999999953434,
+      "max": 36.700000000186265
+    },
+    "attachmentCpuMs": {
+      "count": 109,
+      "median": 0.10000000009313226,
+      "p95": 0.20000000018626451,
+      "max": 0.8999999999068677
+    },
+    "objects": 306,
+    "graphicsCommands": 6468,
+    "textures": 287
+  },
+  "score": "306",
+  "factor": {
+    "n": "3",
+    "d": "1"
+  },
+  "frames": [
+    {
+      "at": 7156.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7164.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7177.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7193.800000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7210.399999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7227.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7244.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7261.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7277.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7294,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7311,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7327.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7344.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7360.399999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7377.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7394.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7411.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7427.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7449.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7460.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7477.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7493.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7510.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7527.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7543.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7561.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7578.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 7594,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 7611.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 7627.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 7644.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 7660.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 7677.399999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 7695.399999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 7710.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 7727.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 7745.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 7760.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 7777.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 7793.800000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 7815.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 7827,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 7843.800000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 7860.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 7877.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 257
+    },
+    {
+      "at": 7894.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 257
+    },
+    {
+      "at": 7910.800000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 257
+    },
+    {
+      "at": 7927.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 257
+    },
+    {
+      "at": 7943.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 257
+    },
+    {
+      "at": 7960.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 257
+    },
+    {
+      "at": 7977.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 258
+    },
+    {
+      "at": 7994.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 258
+    },
+    {
+      "at": 8010.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 258
+    },
+    {
+      "at": 8027.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 258
+    },
+    {
+      "at": 8046,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 258
+    },
+    {
+      "at": 8061,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 258
+    },
+    {
+      "at": 8077.800000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 258
+    },
+    {
+      "at": 8094,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 258
+    },
+    {
+      "at": 8111.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 258
+    },
+    {
+      "at": 8127.399999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 258
+    },
+    {
+      "at": 8144.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 258
+    },
+    {
+      "at": 8160.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 258
+    },
+    {
+      "at": 8177.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 8194.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 8210.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 8227.399999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 8244,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 8260.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 8277.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 8294.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 8310.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 257
+    },
+    {
+      "at": 8327.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 257
+    },
+    {
+      "at": 8344.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 257
+    },
+    {
+      "at": 8360.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 257
+    },
+    {
+      "at": 8377.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 257
+    },
+    {
+      "at": 8393.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 258
+    },
+    {
+      "at": 8411.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 258
+    },
+    {
+      "at": 8428.399999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 258
+    },
+    {
+      "at": 8444.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 258
+    },
+    {
+      "at": 8460.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 258
+    },
+    {
+      "at": 8477.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 258
+    },
+    {
+      "at": 8494.399999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 258
+    },
+    {
+      "at": 8511,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 8529,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 256
+    },
+    {
+      "at": 8544.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 8560.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 8578.399999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8595.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8611.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8627.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8644.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8660.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8678.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8693.800000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8720.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8728.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8745.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8760.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8776.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8793.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8810.399999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8827.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8844.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8860.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8877.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8895.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8912.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8927.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8943.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8960.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 8977.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9000.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9012.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9029.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9045.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9062.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9077.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9094.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9110.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9128.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9144.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9163.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9177,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9194.399999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9214.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9228.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9244.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9260.800000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9277.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9294.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9312.800000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9327.800000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9344.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9360.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9377.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9394,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9410.399999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9427.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9444.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9460.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9477.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9494.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9510.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9527.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9544.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9561.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9577.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9594.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9611.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9629.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9643.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9660.399999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9677.800000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9694,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9711,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9727.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9744.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9760.800000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9778.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9794.399999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9811.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9827.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9843.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 260
+    },
+    {
+      "at": 9861.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "skillText": "余音袅袅",
+      "live": 255
+    },
+    {
+      "at": 9876.800000000047,
+      "blue": 0,
+      "charges": [
+        {
+          "id": "spades-13"
+        },
+        {
+          "id": "hearts-13"
+        }
+      ],
+      "shards": [],
+      "packet": "×3",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 263
+    },
+    {
+      "at": 9898.800000000047,
+      "blue": 0,
+      "charges": [
+        {
+          "id": "spades-13",
+          "phase": "windup"
+        },
+        {
+          "id": "hearts-13",
+          "phase": "windup"
+        }
+      ],
+      "shards": [],
+      "packet": "×3",
+      "phase": "charge",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 263
+    },
+    {
+      "at": 9911.09999999986,
+      "blue": 0,
+      "charges": [
+        {
+          "id": "spades-13",
+          "phase": "windup"
+        },
+        {
+          "id": "hearts-13",
+          "phase": "windup"
+        }
+      ],
+      "shards": [],
+      "packet": "×3",
+      "phase": "charge",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 263
+    },
+    {
+      "at": 9928.59999999986,
+      "blue": 0,
+      "charges": [
+        {
+          "id": "spades-13",
+          "phase": "windup"
+        },
+        {
+          "id": "hearts-13",
+          "phase": "windup"
+        }
+      ],
+      "shards": [],
+      "packet": "×3",
+      "phase": "charge",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 263
+    },
+    {
+      "at": 9945,
+      "blue": 0,
+      "charges": [
+        {
+          "id": "spades-13",
+          "phase": "windup"
+        },
+        {
+          "id": "hearts-13",
+          "phase": "windup"
+        }
+      ],
+      "shards": [],
+      "packet": "×3",
+      "phase": "charge",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 263
+    },
+    {
+      "at": 9960.59999999986,
+      "blue": 0,
+      "charges": [
+        {
+          "id": "spades-13",
+          "phase": "windup"
+        },
+        {
+          "id": "hearts-13",
+          "phase": "windup"
+        }
+      ],
+      "shards": [],
+      "packet": "×3",
+      "phase": "charge",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 263
+    },
+    {
+      "at": 9977.699999999953,
+      "blue": 0,
+      "charges": [
+        {
+          "id": "spades-13",
+          "phase": "windup"
+        },
+        {
+          "id": "hearts-13",
+          "phase": "windup"
+        }
+      ],
+      "shards": [],
+      "packet": "×3",
+      "phase": "charge",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 263
+    },
+    {
+      "at": 9995,
+      "blue": 0,
+      "charges": [
+        {
+          "id": "spades-13",
+          "phase": "windup"
+        },
+        {
+          "id": "hearts-13",
+          "phase": "windup"
+        }
+      ],
+      "shards": [],
+      "packet": "×3",
+      "phase": "charge",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 1,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 1,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 263
+    },
+    {
+      "at": 10014.800000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [
+        "spades-13",
+        "spades-13",
+        "spades-13",
+        "spades-13",
+        "hearts-13",
+        "hearts-13",
+        "hearts-13",
+        "hearts-13"
+      ],
+      "packet": "×3",
+      "phase": "sacrifice",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 269
+    },
+    {
+      "at": 10035.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [
+        "spades-13",
+        "spades-13",
+        "spades-13",
+        "spades-13",
+        "hearts-13",
+        "hearts-13",
+        "hearts-13",
+        "hearts-13"
+      ],
+      "packet": "×3",
+      "phase": "sacrifice",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 269
+    },
+    {
+      "at": 10045.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [
+        "spades-13",
+        "spades-13",
+        "spades-13",
+        "spades-13",
+        "hearts-13",
+        "hearts-13",
+        "hearts-13",
+        "hearts-13"
+      ],
+      "packet": "×3",
+      "phase": "sacrifice",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 269
+    },
+    {
+      "at": 10061.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [
+        "spades-13",
+        "spades-13",
+        "spades-13",
+        "spades-13",
+        "hearts-13",
+        "hearts-13",
+        "hearts-13",
+        "hearts-13"
+      ],
+      "packet": "×3",
+      "phase": "sacrifice",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 269
+    },
+    {
+      "at": 10077.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [
+        "spades-13",
+        "spades-13",
+        "spades-13",
+        "spades-13",
+        "hearts-13",
+        "hearts-13",
+        "hearts-13",
+        "hearts-13"
+      ],
+      "packet": "×3",
+      "phase": "sacrifice",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 269
+    },
+    {
+      "at": 10094.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [
+        "spades-13",
+        "spades-13",
+        "spades-13",
+        "spades-13",
+        "hearts-13",
+        "hearts-13",
+        "hearts-13",
+        "hearts-13"
+      ],
+      "packet": "×3",
+      "phase": "flight",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 269
+    },
+    {
+      "at": 10110.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [
+        "spades-13",
+        "spades-13",
+        "spades-13",
+        "spades-13",
+        "hearts-13",
+        "hearts-13",
+        "hearts-13",
+        "hearts-13"
+      ],
+      "packet": "×3",
+      "phase": "flight",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 269
+    },
+    {
+      "at": 10128.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [
+        "spades-13",
+        "spades-13",
+        "spades-13",
+        "spades-13",
+        "hearts-13",
+        "hearts-13",
+        "hearts-13",
+        "hearts-13"
+      ],
+      "packet": "×3",
+      "phase": "flight",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 269
+    },
+    {
+      "at": 10144.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [
+        "spades-13",
+        "spades-13",
+        "spades-13",
+        "spades-13",
+        "hearts-13",
+        "hearts-13",
+        "hearts-13",
+        "hearts-13"
+      ],
+      "packet": "×3",
+      "phase": "flight",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 269
+    },
+    {
+      "at": 10161.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "flight",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 269
+    },
+    {
+      "at": 10181.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "flight",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 269
+    },
+    {
+      "at": 10195.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "flight",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 269
+    },
+    {
+      "at": 10216.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "flight",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 269
+    },
+    {
+      "at": 10237.800000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "flight",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 269
+    },
+    {
+      "at": 10250.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "flight",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 269
+    },
+    {
+      "at": 10264.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "flight",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 269
+    },
+    {
+      "at": 10278.399999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "flight",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 269
+    },
+    {
+      "at": 10294.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "flight",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": false,
+      "skillText": "余音袅袅",
+      "live": 269
+    },
+    {
+      "at": 10312.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "impact",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 276
+    },
+    {
+      "at": 10334.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "impact",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 276
+    },
+    {
+      "at": 10344.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "impact",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 276
+    },
+    {
+      "at": 10361.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "impact",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 276
+    },
+    {
+      "at": 10378.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "impact",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 276
+    },
+    {
+      "at": 10394.399999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "impact",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 276
+    },
+    {
+      "at": 10410.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "impact",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 276
+    },
+    {
+      "at": 10427.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "impact",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 276
+    },
+    {
+      "at": 10445,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "impact",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 276
+    },
+    {
+      "at": 10465.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "impact",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 276
+    },
+    {
+      "at": 10485,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "impact",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 276
+    },
+    {
+      "at": 10496,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "impact",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 276
+    },
+    {
+      "at": 10511.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "impact",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 276
+    },
+    {
+      "at": 10528.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "packet": "×3",
+      "phase": "impact",
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 276
+    },
+    {
+      "at": 10544.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 265
+    },
+    {
+      "at": 10561.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 265
+    },
+    {
+      "at": 10577.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 265
+    },
+    {
+      "at": 10597.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 265
+    },
+    {
+      "at": 10610.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 265
+    },
+    {
+      "at": 10627.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 265
+    },
+    {
+      "at": 10644.399999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 265
+    },
+    {
+      "at": 10662.399999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 265
+    },
+    {
+      "at": 10677.399999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 265
+    },
+    {
+      "at": 10694.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 255
+    },
+    {
+      "at": 10710.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 255
+    },
+    {
+      "at": 10726.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [
+        {
+          "id": "spades-13",
+          "alpha": 0,
+          "active": true
+        },
+        {
+          "id": "hearts-13",
+          "alpha": 0,
+          "active": true
+        }
+      ],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 255
+    },
+    {
+      "at": 10745.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 139
+    },
+    {
+      "at": 10761,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 139
+    },
+    {
+      "at": 10776.800000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 139
+    },
+    {
+      "at": 10795.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 139
+    },
+    {
+      "at": 10810.800000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 139
+    },
+    {
+      "at": 10826.399999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 139
+    },
+    {
+      "at": 10844.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 139
+    },
+    {
+      "at": 10860.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 10877.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 10893.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 10910.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 10926.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 10944.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 10960.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 10976.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 10993.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11010,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11026.800000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11043.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11062.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11077.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11094.399999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11111.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11127.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11145.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11161.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11177.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11202.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11218.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11232.800000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11248.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11263.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11277.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11294.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11310.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11327.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11349.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11360.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11377.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11394.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11410.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11426.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11443.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11460.699999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11477.199999999953,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 140
+    },
+    {
+      "at": 11493.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 139
+    },
+    {
+      "at": 11510.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 139
+    },
+    {
+      "at": 11526.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 139
+    },
+    {
+      "at": 11543.09999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 139
+    },
+    {
+      "at": 11560.300000000047,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 139
+    },
+    {
+      "at": 11577.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 139
+    },
+    {
+      "at": 11594.59999999986,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 139
+    },
+    {
+      "at": 11609.899999999907,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 139
+    },
+    {
+      "at": 11629.5,
+      "blue": 0,
+      "charges": [],
+      "shards": [],
+      "smoke": 0,
+      "sources": [],
+      "factor": "本次得分 ×3",
+      "arrived": true,
+      "skillText": "本次得分 ×3",
+      "live": 139
+    }
+  ],
+  "settledPerformance": {
+    "frameMs": {
+      "count": 109,
+      "median": 16.699999999953434,
+      "p95": 19,
+      "max": 20.300000000046566
+    },
+    "attachmentCpuMs": {
+      "count": 109,
+      "median": 0.10000000009313226,
+      "p95": 0.30000000004656613,
+      "max": 0.39999999990686774
+    },
+    "objects": 242,
+    "graphicsCommands": 5370,
+    "textures": 249
+  },
+  "final": {
+    "armed": false,
+    "objects": []
+  }
+}

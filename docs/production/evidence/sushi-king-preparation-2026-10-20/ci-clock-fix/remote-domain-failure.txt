@@ -1,0 +1,74 @@
+2026-10-20T05:37:38.5253339Z ##[group]Run actions/checkout@v4
+2026-10-20T05:37:38.5254583Z with:
+2026-10-20T05:37:38.5255094Z   ref: 5d87bd2ad35a30f346db6f1504d14d05f138d69b
+2026-10-20T05:37:38.5255724Z   repository: big-dimple/tangsongpai
+2026-10-20T05:37:38.5259458Z   token: ***
+2026-10-20T05:37:38.5259896Z   ssh-strict: true
+2026-10-20T05:37:38.5260343Z   ssh-user: git
+2026-10-20T05:37:38.5260809Z   persist-credentials: true
+2026-10-20T05:37:38.5261308Z   clean: true
+2026-10-20T05:37:38.5261770Z   sparse-checkout-cone-mode: true
+2026-10-20T05:37:38.5262307Z   fetch-depth: 1
+2026-10-20T05:37:38.5262744Z   fetch-tags: false
+
+2026-10-20T05:40:54.4215347Z  ✓ tests/game-presentation-resize.test.ts (1 test) 4ms
+2026-10-20T05:40:54.4334250Z 
+2026-10-20T05:40:54.4335516Z ⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+2026-10-20T05:40:54.4336240Z 
+2026-10-20T05:40:54.4338853Z  FAIL  tests/hero-live-smoke.test.ts > 'azao'/390 routes ALL actual saved targets through distinct layered uniforms for over3s and releases only on the real event
+2026-10-20T05:40:54.4346318Z AssertionError: expected 3 to be greater than 5
+2026-10-20T05:40:54.4347659Z  ❯ tests/hero-live-smoke.test.ts:84:335
+2026-10-20T05:40:54.4460527Z 
+2026-10-20T05:40:54.4463165Z 
+2026-10-20T05:40:54.4466018Z ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+2026-10-20T05:40:54.4466669Z 
+2026-10-20T05:40:54.4474900Z 
+2026-10-20T05:40:54.4493653Z  Test Files  1 failed | 406 passed (407)
+2026-10-20T05:40:54.4546689Z       Tests  1 failed | 4948 passed (4949)
+2026-10-20T05:40:54.4547838Z    Start at  05:38:48
+2026-10-20T05:40:54.4552652Z    Duration  125.66s (transform 14.20s, setup 0ms, import 95.92s, tests 207.01s, environment 68ms)
+2026-10-20T05:40:54.4554161Z 
+2026-10-20T05:40:54.4604964Z 
+2026-10-20T05:40:54.4636538Z ##[error]AssertionError: expected 3 to be greater than 5
+ ❯ tests/hero-live-smoke.test.ts:84:335
+
+
+
+2026-10-20T05:40:54.4466669Z 
+2026-10-20T05:40:54.4474900Z 
+2026-10-20T05:40:54.4493653Z  Test Files  1 failed | 406 passed (407)
+2026-10-20T05:40:54.4546689Z       Tests  1 failed | 4948 passed (4949)
+2026-10-20T05:40:54.4547838Z    Start at  05:38:48
+2026-10-20T05:40:54.4552652Z    Duration  125.66s (transform 14.20s, setup 0ms, import 95.92s, tests 207.01s, environment 68ms)
+2026-10-20T05:40:54.4554161Z 
+2026-10-20T05:40:54.4604964Z 
+2026-10-20T05:40:54.4636538Z ##[error]AssertionError: expected 3 to be greater than 5
+ ❯ tests/hero-live-smoke.test.ts:84:335
+
+
+
+2026-10-20T05:40:57.1316471Z {
+2026-10-20T05:40:57.1316836Z   "scope": "domain",
+2026-10-20T05:40:57.1317346Z   "testedCommit": "5d87bd2ad35a30f346db6f1504d14d05f138d69b",
+2026-10-20T05:40:57.1317745Z   "status": "FAIL",
+2026-10-20T05:40:57.1317982Z   "exitCode": 1,
+2026-10-20T05:40:57.1318224Z   "before": {
+2026-10-20T05:40:57.1318660Z     "source": "e852d5946a716842e289accec9f1766f45da77c5c575b4af9bbed80ed80f2f87",
+2026-10-20T05:40:57.1319340Z     "index": "04dcb7c854df43af69b39e0f43932eaf96f3af0ac3400d41fdf5942fb34be7ef",
+2026-10-20T05:40:57.1319907Z     "head": "5d87bd2ad35a30f346db6f1504d14d05f138d69b",
+2026-10-20T05:40:57.1320297Z     "branch": null
+2026-10-20T05:40:57.1320527Z   },
+2026-10-20T05:40:57.1320734Z   "after": {
+
+2026-10-20T05:40:57.1323415Z   "steps": [
+2026-10-20T05:40:57.1323632Z     {
+2026-10-20T05:40:57.1323844Z       "name": "test",
+2026-10-20T05:40:57.1324330Z       "status": "FAIL",
+2026-10-20T05:40:57.1324590Z       "childExitCode": 1,
+2026-10-20T05:40:57.1324858Z       "elapsedMs": 128903,
+2026-10-20T05:40:57.1325147Z       "reason": "child exited 1"
+2026-10-20T05:40:57.1325420Z     }
+2026-10-20T05:40:57.1325617Z   ],
+2026-10-20T05:40:57.1325824Z   "notIncluded": [
+2026-10-20T05:40:57.1326047Z     {
+2026-10-20T05:40:57.1326442Z       "name": "extended browser/recovery/fault/asset/simulation diagnostics",

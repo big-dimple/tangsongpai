@@ -1,0 +1,74 @@
+{
+  "baseMain": "9fe60fc581227829df6caadc712a5bd0fed74bc4",
+  "branch": "dev/shop-purpose-20261017",
+  "source": {
+    "src/game/ShopScene.ts": "44397d1dc6e800b1db5ea9e577ae6b2ebefa8b14c7e1eb8867de023f0d710302",
+    "src/game/ShopLayout.ts": "f3df8bd868e5fadaeb3d05aa9b4ae3fa22fbc86fc5b13e7f07961b3752cda425",
+    "src/game/ShopToolbar.css": "f6b02274c402288c5a16a0b2fb0318f0f35d883f584349b171859783d80ea358",
+    "src/game/WorkshopGoals.ts": "7d61e651fe54a51a5b2a33bd1784a7d4b8570c5878307bed1c3c2cdb92a48986",
+    "src/game/WorkshopGoals.css": "853aaffdcdd5f27ea61042cbd5f054adbfe10fcdb18f4a12f205df1883186e96",
+    "tests/workshop-goals.test.ts": "0b6a2107a29d50da0f7c962cdb37911ba1178443947fd44091c214c568ea1e8f",
+    "harness/shop-purpose.mjs": "3428213d1e86ae70081a91afbb69db4fec6de030612b1246bbb874feb37a3b8d"
+  },
+  "normalization": "UTF-8 LF",
+  "protectedPathsUnchanged": [
+    "src/domain",
+    "src/cards",
+    "src/application",
+    "src/content",
+    "src/audio",
+    "public",
+    "src/game/GameScene.ts",
+    "src/game/PointerIntent.ts",
+    "src/game/OwnedJokerInput.ts",
+    "src/game/OwnedJokerDragVisual.ts",
+    "src/game/SceneView.ts",
+    "src/game/PolychromeCardIridescence.ts",
+    "src/game/ShopArt.ts",
+    "src/game/ShopToolbarArt.ts",
+    "src/game/r2ToolInfo.ts",
+    "src/game/ScoreSourceProcess.ts",
+    "package.json",
+    "package-lock.json",
+    "docs/production/DELIVERY_PLAN.md",
+    "docs/production/plan.json"
+  ],
+  "existingFiveEditionAttentionMountsUnchanged": true,
+  "existingMethodsUnchanged": [
+    "drawBalance",
+    "drawInventoryBag",
+    "drawRefresh",
+    "confirmRefresh",
+    "selectOffer",
+    "drawGoodsOffer",
+    "drawPCOffer"
+  ],
+  "validation": {
+    "tests": 50,
+    "profiles": [
+      {
+        "width": 1366,
+        "height": 900,
+        "dpr": 1,
+        "owned": 5,
+        "status": "PASS"
+      },
+      {
+        "width": 390,
+        "height": 740,
+        "dpr": 3,
+        "owned": 0,
+        "status": "PASS"
+      },
+      {
+        "width": 320,
+        "height": 568,
+        "dpr": 2,
+        "owned": 5,
+        "status": "PASS"
+      }
+    ],
+    "physicalDevice": false,
+    "domainCheckedHere": false
+  }
+}

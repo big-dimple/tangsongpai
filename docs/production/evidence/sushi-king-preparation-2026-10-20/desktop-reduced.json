@@ -1,0 +1,486 @@
+{
+  "head": "0d97665a0233e6c8cff5f68badbca1b5ee21e78e",
+  "dirty": " M src/game/GameScene.ts\n M src/game/HeroTargetAttachment.ts\n M src/game/SushiDiscardCardPresentation.ts\n M src/game/SushiDiscardOrigin.ts\n?? harness/sushi-king-preparation.mjs\n?? tests/sushi-king-preparation.test.ts\n",
+  "browser": "151.0.7922.173",
+  "scope": "Controlled current-identity checkpoint seeded via validated IndexedDbSave.commit, ordinary reload/continue and native card/skill/menu/play input. One explicitly controlled card-body destruction. Actual labels/Graphics and exact saved command oracle. Software browser evidence, not natural acquisition, hardware, hearing or visual acceptance.",
+  "cases": [
+    {
+      "width": 1366,
+      "height": 768,
+      "key": "1366-full",
+      "errors": [],
+      "multi": {
+        "holders": [
+          {
+            "id": "spades-13",
+            "visible": true,
+            "preparation": "king"
+          },
+          {
+            "id": "hearts-13",
+            "visible": true,
+            "preparation": "king"
+          }
+        ],
+        "badges": [
+          {
+            "id": "spades-13",
+            "text": "本手 ×3",
+            "visible": true,
+            "bounds": {
+              "x": 734.0697117575771,
+              "y": 511.2246169922596,
+              "width": 53.00912204846259,
+              "height": 19.025460583332574
+            },
+            "cardBounds": {
+              "type": 5,
+              "x": 732.9994188574999,
+              "y": 536.2242648472935,
+              "width": 99.96661638656269,
+              "height": 139.86641171166298
+            },
+            "fontSize": "13px",
+            "input": false
+          },
+          {
+            "id": "hearts-13",
+            "text": "本手 ×3",
+            "visible": true,
+            "bounds": {
+              "x": 841.9128035513345,
+              "y": 511.22144953823806,
+              "width": 53.009522116312155,
+              "height": 19.026577895868854
+            },
+            "cardBounds": {
+              "type": 5,
+              "x": 840.8394158873409,
+              "y": 536.218194383815,
+              "width": 99.97216920188066,
+              "height": 139.87037392768252
+            },
+            "fontSize": "13px",
+            "input": false
+          }
+        ],
+        "smoke": [],
+        "selected": [
+          "spades-8",
+          "hearts-8"
+        ],
+        "armed": true
+      },
+      "stablePositions": [
+        [
+          {
+            "x": 733.996259765625,
+            "y": 511.2213139648438,
+            "width": 53,
+            "height": 18.999999999999943
+          },
+          {
+            "x": 841.8361645507813,
+            "y": 511.2215581054688,
+            "width": 53,
+            "height": 18.999999999999943
+          }
+        ],
+        [
+          {
+            "x": 733.9991284179688,
+            "y": 511.2233891601563,
+            "width": 53,
+            "height": 18.999999999999943
+          },
+          {
+            "x": 841.8390942382813,
+            "y": 511.2234501953125,
+            "width": 53,
+            "height": 18.999999999999943
+          }
+        ],
+        [
+          {
+            "x": 734.000166015625,
+            "y": 511.2241215820313,
+            "width": 53,
+            "height": 18.999999999999943
+          },
+          {
+            "x": 841.8401928710938,
+            "y": 511.2239995117188,
+            "width": 53,
+            "height": 18.999999999999943
+          }
+        ],
+        [
+          {
+            "x": 733.9999829101563,
+            "y": 511.2239995117188,
+            "width": 53,
+            "height": 18.999999999999943
+          },
+          {
+            "x": 841.840009765625,
+            "y": 511.2239995117188,
+            "width": 53,
+            "height": 18.999999999999943
+          }
+        ]
+      ],
+      "single": {
+        "holders": [
+          {
+            "id": "hearts-13",
+            "visible": true,
+            "preparation": "king"
+          }
+        ],
+        "badges": [
+          {
+            "id": "hearts-13",
+            "text": "本手 ×3",
+            "visible": true,
+            "bounds": {
+              "x": 841.924979876791,
+              "y": 511.2210073757841,
+              "width": 53.011115812650246,
+              "height": 19.03102935264485
+            },
+            "cardBounds": {
+              "type": 5,
+              "x": 840.8395013599843,
+              "y": 536.2188006714732,
+              "width": 99.9583263815939,
+              "height": 139.86049436017856
+            },
+            "fontSize": "13px",
+            "input": false
+          }
+        ],
+        "smoke": [],
+        "selected": [
+          "spades-8",
+          "hearts-8",
+          "spades-13"
+        ],
+        "armed": true
+      },
+      "controlledBodyDestruction": true,
+      "phases": [
+        {
+          "owner": "discard",
+          "phase": "committed",
+          "eventId": "current/pool/amo/hand/current/pool/amo/command/4/event/4",
+          "targets": [
+            "spades-13",
+            "hearts-13",
+            "clubs-7",
+            "diamonds-7",
+            "clubs-2",
+            "diamonds-4"
+          ]
+        },
+        {
+          "owner": "discard",
+          "phase": "source",
+          "eventId": "current/pool/amo/hand/current/pool/amo/command/4/event/4",
+          "targets": [
+            "spades-13",
+            "hearts-13",
+            "clubs-7",
+            "diamonds-7",
+            "clubs-2",
+            "diamonds-4"
+          ]
+        },
+        {
+          "owner": "discard",
+          "phase": "attached",
+          "eventId": "current/pool/amo/hand/current/pool/amo/command/4/event/4",
+          "targets": [
+            "spades-13",
+            "hearts-13",
+            "clubs-7",
+            "diamonds-7",
+            "clubs-2",
+            "diamonds-4"
+          ]
+        },
+        {
+          "owner": "discard",
+          "phase": "impact",
+          "eventId": "current/pool/amo/hand/current/pool/amo/command/4/event/4",
+          "targets": [
+            "spades-13",
+            "hearts-13",
+            "clubs-7",
+            "diamonds-7",
+            "clubs-2",
+            "diamonds-4"
+          ]
+        },
+        {
+          "owner": "discard",
+          "phase": "settled",
+          "eventId": "current/pool/amo/hand/current/pool/amo/command/4/event/4",
+          "targets": [
+            "spades-13",
+            "hearts-13",
+            "clubs-7",
+            "diamonds-7",
+            "clubs-2",
+            "diamonds-4"
+          ]
+        }
+      ],
+      "factor": {
+        "n": "3",
+        "d": "1"
+      },
+      "score": "306",
+      "status": "PASS"
+    },
+    {
+      "width": 390,
+      "height": 740,
+      "reduced": true,
+      "key": "390-reduced",
+      "errors": [],
+      "multi": {
+        "holders": [
+          {
+            "id": "spades-13",
+            "visible": true,
+            "preparation": "king"
+          },
+          {
+            "id": "hearts-13",
+            "visible": true,
+            "preparation": "king"
+          }
+        ],
+        "badges": [
+          {
+            "id": "spades-13",
+            "text": "本手 ×3",
+            "visible": true,
+            "bounds": {
+              "x": 167.2857208251953,
+              "y": 506.59998779296876,
+              "width": 53,
+              "height": 18.999999999999943
+            },
+            "cardBounds": {
+              "type": 5,
+              "x": 166.2857208251953,
+              "y": 531.5999877929687,
+              "width": 96,
+              "height": 134.4000000000001
+            },
+            "fontSize": "13px",
+            "input": false
+          },
+          {
+            "id": "hearts-13",
+            "text": "本手 ×3",
+            "visible": true,
+            "bounds": {
+              "x": 246.85714721679688,
+              "y": 506.59998779296876,
+              "width": 53,
+              "height": 18.999999999999943
+            },
+            "cardBounds": {
+              "type": 5,
+              "x": 204.85714721679688,
+              "y": 531.5999877929687,
+              "width": 96,
+              "height": 134.4000000000001
+            },
+            "fontSize": "13px",
+            "input": false
+          }
+        ],
+        "smoke": [],
+        "selected": [
+          "spades-8",
+          "hearts-8"
+        ],
+        "armed": true
+      },
+      "stablePositions": [
+        [
+          {
+            "x": 167.2857208251953,
+            "y": 506.59998779296876,
+            "width": 53,
+            "height": 18.999999999999943
+          },
+          {
+            "x": 246.85714721679688,
+            "y": 506.59998779296876,
+            "width": 53,
+            "height": 18.999999999999943
+          }
+        ],
+        [
+          {
+            "x": 167.2857208251953,
+            "y": 506.59998779296876,
+            "width": 53,
+            "height": 18.999999999999943
+          },
+          {
+            "x": 246.85714721679688,
+            "y": 506.59998779296876,
+            "width": 53,
+            "height": 18.999999999999943
+          }
+        ],
+        [
+          {
+            "x": 167.2857208251953,
+            "y": 506.59998779296876,
+            "width": 53,
+            "height": 18.999999999999943
+          },
+          {
+            "x": 246.85714721679688,
+            "y": 506.59998779296876,
+            "width": 53,
+            "height": 18.999999999999943
+          }
+        ],
+        [
+          {
+            "x": 167.2857208251953,
+            "y": 506.59998779296876,
+            "width": 53,
+            "height": 18.999999999999943
+          },
+          {
+            "x": 246.85714721679688,
+            "y": 506.59998779296876,
+            "width": 53,
+            "height": 18.999999999999943
+          }
+        ]
+      ],
+      "single": {
+        "holders": [
+          {
+            "id": "hearts-13",
+            "visible": true,
+            "preparation": "king"
+          }
+        ],
+        "badges": [
+          {
+            "id": "hearts-13",
+            "text": "本手 ×3",
+            "visible": true,
+            "bounds": {
+              "x": 205.85714721679688,
+              "y": 506.59998779296876,
+              "width": 53,
+              "height": 18.999999999999943
+            },
+            "cardBounds": {
+              "type": 5,
+              "x": 204.85714721679688,
+              "y": 531.5999877929687,
+              "width": 96,
+              "height": 134.4000000000001
+            },
+            "fontSize": "13px",
+            "input": false
+          }
+        ],
+        "smoke": [],
+        "selected": [
+          "spades-8",
+          "hearts-8",
+          "spades-13"
+        ],
+        "armed": true
+      },
+      "controlledBodyDestruction": true,
+      "phases": [
+        {
+          "owner": "discard",
+          "phase": "committed",
+          "eventId": "current/pool/amo/hand/current/pool/amo/command/4/event/4",
+          "targets": [
+            "spades-13",
+            "hearts-13",
+            "clubs-7",
+            "diamonds-7",
+            "clubs-2",
+            "diamonds-4"
+          ]
+        },
+        {
+          "owner": "discard",
+          "phase": "suspended",
+          "eventId": "current/pool/amo/hand/current/pool/amo/command/4/event/4",
+          "targets": [
+            "spades-13",
+            "hearts-13",
+            "clubs-7",
+            "diamonds-7",
+            "clubs-2",
+            "diamonds-4"
+          ]
+        },
+        {
+          "owner": "discard",
+          "phase": "attached",
+          "eventId": "current/pool/amo/hand/current/pool/amo/command/4/event/4",
+          "targets": [
+            "spades-13",
+            "hearts-13",
+            "clubs-7",
+            "diamonds-7",
+            "clubs-2",
+            "diamonds-4"
+          ]
+        },
+        {
+          "owner": "discard",
+          "phase": "impact",
+          "eventId": "current/pool/amo/hand/current/pool/amo/command/4/event/4",
+          "targets": [
+            "spades-13",
+            "hearts-13",
+            "clubs-7",
+            "diamonds-7",
+            "clubs-2",
+            "diamonds-4"
+          ]
+        },
+        {
+          "owner": "discard",
+          "phase": "settled",
+          "eventId": "current/pool/amo/hand/current/pool/amo/command/4/event/4",
+          "targets": [
+            "spades-13",
+            "hearts-13",
+            "clubs-7",
+            "diamonds-7",
+            "clubs-2",
+            "diamonds-4"
+          ]
+        }
+      ],
+      "factor": {
+        "n": "3",
+        "d": "1"
+      },
+      "score": "306",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS"
+}

@@ -1,0 +1,454 @@
+{
+  "label": "before-01",
+  "head": "6892aabf68f3e8d90dfc0a5597cce7f96025e81d",
+  "dirty": "?? docs/production/evidence/shop-reading-hierarchy-2026-10-21/\n?? harness/shop-reading-hierarchy.mjs",
+  "seed": "group-natural-17",
+  "scope": "Local Chromium, real mouse/touch input, natural new game; software rendering only. Normal motion continuous videos, no animation claim from screenshots.",
+  "cases": [
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "touch": false,
+      "steps": [],
+      "errors": [],
+      "initial": {
+        "gold": 6,
+        "seq": 1,
+        "offers": [
+          {
+            "offerId": "run/group-natural-17/amo/shop/0/0/joker/0",
+            "definitionId": "b10",
+            "price": 4,
+            "edition": "none",
+            "consumed": false
+          },
+          {
+            "offerId": "run/group-natural-17/amo/shop/0/0/joker/1",
+            "definitionId": "b11",
+            "price": 6,
+            "edition": "none",
+            "consumed": false
+          },
+          {
+            "offerId": "run/group-natural-17/amo/shop/0/0/joker/2",
+            "definitionId": "mantangcai",
+            "price": 4,
+            "edition": "none",
+            "consumed": false
+          }
+        ]
+      },
+      "initialGeometry": {
+        "layout": {
+          "x": 24,
+          "w": 1318,
+          "top": 8,
+          "pc": {
+            "left": {
+              "x": 24,
+              "y": 8,
+              "width": 224,
+              "height": 884
+            },
+            "ownedRail": {
+              "x": 272,
+              "y": 8,
+              "width": 1070,
+              "height": 52
+            },
+            "inventoryEntry": {
+              "x": 1070,
+              "y": 12,
+              "width": 120,
+              "height": 44
+            },
+            "shopPanel": {
+              "x": 272,
+              "y": 72,
+              "width": 1070,
+              "height": 820
+            },
+            "actionRail": {
+              "x": 1090,
+              "y": 824,
+              "width": 240,
+              "height": 56
+            },
+            "shared": {
+              "x": 284,
+              "y": 136,
+              "width": 1046,
+              "height": 672
+            },
+            "jokerOffers": [
+              {
+                "x": 284,
+                "y": 136,
+                "width": 340.6666666666667,
+                "height": 672
+              },
+              {
+                "x": 636.6666666666667,
+                "y": 136,
+                "width": 340.6666666666667,
+                "height": 672
+              },
+              {
+                "x": 989.3333333333334,
+                "y": 136,
+                "width": 340.6666666666667,
+                "height": 672
+              }
+            ],
+            "toolOffers": {
+              "x": 284,
+              "y": 136,
+              "width": 1046,
+              "height": 672
+            },
+            "itemOffers": {
+              "x": 284,
+              "y": 136,
+              "width": 1046,
+              "height": 672
+            },
+            "workshop": {
+              "x": 284,
+              "y": 136,
+              "width": 1046,
+              "height": 672
+            },
+            "feedback": {
+              "x": 284,
+              "y": 836,
+              "width": 646,
+              "height": 40
+            },
+            "groupY": 136,
+            "guidanceHeight": 0
+          },
+          "desktop": true,
+          "short": false,
+          "copyBeside": false,
+          "inventoryCollapsed": false,
+          "compact": false,
+          "wideHeader": false,
+          "portrait": false,
+          "slots": [
+            {
+              "x": 272,
+              "y": 64,
+              "width": 80,
+              "height": 112
+            },
+            {
+              "x": 364,
+              "y": 64,
+              "width": 80,
+              "height": 112
+            },
+            {
+              "x": 456,
+              "y": 64,
+              "width": 80,
+              "height": 112
+            },
+            {
+              "x": 548,
+              "y": 64,
+              "width": 80,
+              "height": 112
+            },
+            {
+              "x": 640,
+              "y": 64,
+              "width": 80,
+              "height": 112
+            }
+          ],
+          "shelf": [
+            {
+              "x": 310.33333333333337,
+              "y": 144,
+              "width": 288,
+              "height": 360
+            },
+            {
+              "x": 663.0000000000001,
+              "y": 144,
+              "width": 288,
+              "height": 360
+            },
+            {
+              "x": 1015.6666666666667,
+              "y": 144,
+              "width": 288,
+              "height": 360
+            }
+          ],
+          "tabs": {
+            "x": 284,
+            "y": 80,
+            "width": 1046,
+            "height": 44
+          },
+          "chapter": {
+            "x": 24,
+            "y": 184,
+            "width": 224,
+            "height": 44
+          },
+          "items": {
+            "x": 1070,
+            "y": 12,
+            "width": 120,
+            "height": 44
+          },
+          "build": {
+            "x": 946,
+            "y": 830,
+            "width": 132,
+            "height": 44
+          },
+          "reroll": {
+            "x": 1198,
+            "y": 12,
+            "width": 104,
+            "height": 44
+          },
+          "play": {
+            "x": 1090,
+            "y": 824,
+            "width": 240,
+            "height": 56
+          },
+          "noticeY": 836,
+          "menu": {
+            "x": 1310,
+            "y": 12,
+            "width": 44,
+            "height": 44
+          },
+          "headerRows": 1,
+          "desktopHeader": {
+            "hero": {
+              "x": 40,
+              "y": 12,
+              "width": 192,
+              "height": 44
+            },
+            "target": {
+              "x": 272,
+              "y": 12,
+              "width": 634,
+              "height": 44
+            },
+            "purse": {
+              "x": 914,
+              "y": 12,
+              "width": 148,
+              "height": 44
+            },
+            "inventory": {
+              "x": 1070,
+              "y": 12,
+              "width": 120,
+              "height": 44
+            },
+            "reroll": {
+              "x": 1198,
+              "y": 12,
+              "width": 104,
+              "height": 44
+            }
+          }
+        },
+        "host": null,
+        "rows": [],
+        "texts": [
+          {
+            "name": "shop/offer-name",
+            "text": "炉火纯青",
+            "offerId": "run/group-natural-17/amo/shop/0/0/joker/0",
+            "bounds": {
+              "type": 5,
+              "x": 292.000010172526,
+              "y": 508,
+              "width": 61,
+              "height": 17
+            },
+            "color": "#26313A",
+            "fontSize": "15px"
+          },
+          {
+            "name": "shop/offer-identity",
+            "text": "普通 · 普通版",
+            "offerId": "run/group-natural-17/amo/shop/0/0/joker/0",
+            "bounds": {
+              "type": 5,
+              "x": 292.000010172526,
+              "y": 530,
+              "width": 83,
+              "height": 16
+            },
+            "color": "#596B69",
+            "fontSize": "14px"
+          },
+          {
+            "name": "shop/offer-purpose",
+            "text": "打出对子等同点组合后，攒+10热度，下次出牌起…\n最多攒+100热度，跨场保留，出售后清空。",
+            "offerId": "run/group-natural-17/amo/shop/0/0/joker/0",
+            "bounds": {
+              "type": 5,
+              "x": 292.000010172526,
+              "y": 548,
+              "width": 318,
+              "height": 32
+            },
+            "color": "#3F606B",
+            "fontSize": "14px"
+          },
+          {
+            "name": "shop/offer-price",
+            "text": "4 金 · 查看详情",
+            "offerId": "run/group-natural-17/amo/shop/0/0/joker/0",
+            "bounds": {
+              "type": 5,
+              "x": 292.000010172526,
+              "y": 758,
+              "width": 108,
+              "height": 19
+            },
+            "color": "#3F606B",
+            "fontSize": "16px"
+          },
+          {
+            "name": "shop/offer-name",
+            "text": "蓄势待发",
+            "offerId": "run/group-natural-17/amo/shop/0/0/joker/1",
+            "bounds": {
+              "type": 5,
+              "x": 644.9999999999999,
+              "y": 508,
+              "width": 61,
+              "height": 17
+            },
+            "color": "#26313A",
+            "fontSize": "15px"
+          },
+          {
+            "name": "shop/offer-identity",
+            "text": "特别 · 普通版",
+            "offerId": "run/group-natural-17/amo/shop/0/0/joker/1",
+            "bounds": {
+              "type": 5,
+              "x": 644.9999999999999,
+              "y": 530,
+              "width": 83,
+              "height": 16
+            },
+            "color": "#596B69",
+            "fontSize": "14px"
+          },
+          {
+            "name": "shop/offer-purpose",
+            "text": "每张符合条件的有效保留牌倍率+0.5\n留牌与计分牌同点，前3张",
+            "offerId": "run/group-natural-17/amo/shop/0/0/joker/1",
+            "bounds": {
+              "type": 5,
+              "x": 644.9999999999999,
+              "y": 548,
+              "width": 224,
+              "height": 32
+            },
+            "color": "#3F606B",
+            "fontSize": "14px"
+          },
+          {
+            "name": "shop/offer-price",
+            "text": "6 金 · 查看详情",
+            "offerId": "run/group-natural-17/amo/shop/0/0/joker/1",
+            "bounds": {
+              "type": 5,
+              "x": 644.9999999999999,
+              "y": 758,
+              "width": 108,
+              "height": 19
+            },
+            "color": "#3F606B",
+            "fontSize": "16px"
+          },
+          {
+            "name": "shop/offer-name",
+            "text": "满堂喝彩",
+            "offerId": "run/group-natural-17/amo/shop/0/0/joker/2",
+            "bounds": {
+              "type": 5,
+              "x": 996.9999593098958,
+              "y": 508,
+              "width": 61,
+              "height": 17
+            },
+            "color": "#26313A",
+            "fontSize": "15px"
+          },
+          {
+            "name": "shop/offer-identity",
+            "text": "普通 · 普通版",
+            "offerId": "run/group-natural-17/amo/shop/0/0/joker/2",
+            "bounds": {
+              "type": 5,
+              "x": 996.9999593098958,
+              "y": 530,
+              "width": 83,
+              "height": 16
+            },
+            "color": "#596B69",
+            "fontSize": "14px"
+          },
+          {
+            "name": "shop/offer-purpose",
+            "text": "每次出牌 热度+90\n对子等同点组合",
+            "offerId": "run/group-natural-17/amo/shop/0/0/joker/2",
+            "bounds": {
+              "type": 5,
+              "x": 996.9999593098958,
+              "y": 548,
+              "width": 112,
+              "height": 32
+            },
+            "color": "#3F606B",
+            "fontSize": "14px"
+          },
+          {
+            "name": "shop/offer-price",
+            "text": "4 金 · 查看详情",
+            "offerId": "run/group-natural-17/amo/shop/0/0/joker/2",
+            "bounds": {
+              "type": 5,
+              "x": 996.9999593098958,
+              "y": 758,
+              "width": 108,
+              "height": 19
+            },
+            "color": "#3F606B",
+            "fontSize": "16px"
+          }
+        ]
+      },
+      "initialShot": "1366-initial.png",
+      "final": null
+    }
+  ],
+  "status": "FAIL",
+  "browser": "151.0.7922.173",
+  "error": "AssertionError [ERR_ASSERTION]: natural unaffordable stock\n    at file:///workspace/tangsongpai/harness/shop-reading-hierarchy.mjs:32:89",
+  "diagnostic": {
+    "dialogs": [],
+    "scenes": [
+      "shop"
+    ]
+  }
+}

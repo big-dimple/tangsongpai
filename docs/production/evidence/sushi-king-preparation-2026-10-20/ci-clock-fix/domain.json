@@ -1,0 +1,48 @@
+{
+  "scope": "domain",
+  "testedCommit": "bff98837fa284bdc19fc99213f68d6bfca99fefe",
+  "status": "PASS",
+  "exitCode": 0,
+  "before": {
+    "source": "a25f6cc9f8374109a475c9285b226cb6e08da710c18befe64de52b4aea027054",
+    "index": "782b36fdb6544e14e8c00cdb969ad839341bd3fe93a7fbc008c114196809b220",
+    "head": "bff98837fa284bdc19fc99213f68d6bfca99fefe",
+    "branch": "refs/heads/dev/sushi-king-preparation-20261020"
+  },
+  "after": {
+    "source": "a25f6cc9f8374109a475c9285b226cb6e08da710c18befe64de52b4aea027054",
+    "index": "782b36fdb6544e14e8c00cdb969ad839341bd3fe93a7fbc008c114196809b220",
+    "head": "bff98837fa284bdc19fc99213f68d6bfca99fefe",
+    "branch": "refs/heads/dev/sushi-king-preparation-20261020"
+  },
+  "steps": [
+    {
+      "name": "test",
+      "status": "PASS",
+      "childExitCode": 0,
+      "elapsedMs": 142654
+    },
+    {
+      "name": "verify:content",
+      "status": "PASS",
+      "childExitCode": 0,
+      "elapsedMs": 20600
+    }
+  ],
+  "notIncluded": [
+    {
+      "name": "extended browser/recovery/fault/asset/simulation diagnostics",
+      "status": "NOT_INCLUDED",
+      "reason": "run the existing specific command only when its domain changes; P00 removes repeated default execution"
+    },
+    {
+      "name": "balance/benchmark acceptance",
+      "status": "NOT_INCLUDED",
+      "reason": "later work packages; no gameplay approval inferred from checks"
+    },
+    {
+      "name": "physical devices / human / art approval",
+      "status": "NOT_RUN"
+    }
+  ]
+}

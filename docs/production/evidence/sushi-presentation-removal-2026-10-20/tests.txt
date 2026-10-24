@@ -1,0 +1,18 @@
+
+> tangsongpai@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /workspace/tangsongpai
+
+
+ Test Files  407 passed (407)
+      Tests  4951 passed (4951)
+   Start at  13:55:15
+   Duration  116.55s (transform 18.98s, setup 0ms, import 100.51s, tests 175.09s, environment 44ms)
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

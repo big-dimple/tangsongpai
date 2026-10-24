@@ -1,0 +1,757 @@
+{
+  "source": "68145eaab50636e91bc62bea5415000f036034e4",
+  "baseline": true,
+  "scope": "Two existing finite fixtures: controlled multiply public hand/inventory and fixed legal growth source. Same saved event/state, bounded key frames, no recording/audio/human/device/FPS/natural-rate acceptance.",
+  "cases": [
+    {
+      "kind": "multiply",
+      "width": 1366,
+      "height": 768,
+      "mode": "normal",
+      "key": "multiply-1366-normal",
+      "status": "PASS",
+      "requests": [],
+      "errors": [],
+      "impact": {
+        "eventId": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/5",
+        "source": {
+          "type": 5,
+          "x": 710.32,
+          "y": 548.8000000000001,
+          "width": 48,
+          "height": 60
+        },
+        "sourceKey": "p08-joker-f09",
+        "texts": [
+          {
+            "name": "hero/climax-name",
+            "text": "\u963f\u9ed8",
+            "bounds": {
+              "type": 5,
+              "x": 710.32,
+              "y": 149.6064,
+              "width": 137,
+              "height": 77
+            }
+          },
+          {
+            "name": "hero/climax-value",
+            "text": "\u00d73",
+            "bounds": {
+              "type": 5,
+              "x": 954.6800000000001,
+              "y": 341.01419845356827,
+              "width": 85,
+              "height": 104.32470937616887
+            }
+          },
+          {
+            "name": "hero/climax-note",
+            "text": "\u00d71.5 \u500d\u7387",
+            "bounds": {
+              "type": 5,
+              "x": 710.32,
+              "y": 460.90560000000005,
+              "width": 69,
+              "height": 19
+            }
+          },
+          {
+            "name": "hero/climax-source-title",
+            "text": "\u5b9e\u9645\u6765\u6e90 \u00b7 \u4e0d\u6362\u8bcd",
+            "bounds": {
+              "type": 5,
+              "x": 778.32,
+              "y": 548.8000000000001,
+              "width": 142,
+              "height": 21
+            }
+          },
+          {
+            "name": "hero/climax-landing",
+            "text": "\u500d\u7387 2 \u2192 3",
+            "bounds": {
+              "type": 5,
+              "x": 778.32,
+              "y": 578.8000000000001,
+              "width": 80,
+              "height": 19
+            }
+          }
+        ]
+      },
+      "frameSummary": {
+        "count": 101,
+        "eventIds": [
+          "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/5"
+        ],
+        "phases": {
+          "charge": 19,
+          "strike": 70,
+          "release": 12
+        },
+        "sourceKeys": [
+          "p08-joker-f09"
+        ]
+      },
+      "keyFrames": [
+        {
+          "time": 5044.0999999940395,
+          "eventId": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/5",
+          "phase": "charge",
+          "sourceKey": "p08-joker-f09",
+          "source": {
+            "type": 5,
+            "x": -273.20001953124995,
+            "y": 548.8000000000001,
+            "width": 48,
+            "height": 60
+          },
+          "texts": [
+            {
+              "name": "hero/climax-name",
+              "text": "\u963f\u9ed8",
+              "bounds": {
+                "type": 5,
+                "x": -273.20001953124995,
+                "y": 149.6064,
+                "width": 137,
+                "height": 77
+              }
+            },
+            {
+              "name": "hero/climax-value",
+              "text": "\u00d72",
+              "bounds": {
+                "type": 5,
+                "x": -23.740019531249914,
+                "y": 340.90560000000005,
+                "width": 74.80000000000007,
+                "height": 91.51999999999998
+              }
+            },
+            {
+              "name": "hero/climax-note",
+              "text": "\u00d71.5 \u500d\u7387",
+              "bounds": {
+                "type": 5,
+                "x": -273.20001953124995,
+                "y": 460.90560000000005,
+                "width": 69,
+                "height": 19
+              }
+            },
+            {
+              "name": "hero/climax-source-title",
+              "text": "\u5b9e\u9645\u6765\u6e90 \u00b7 \u4e0d\u6362\u8bcd",
+              "bounds": {
+                "type": 5,
+                "x": -205.20001953124995,
+                "y": 548.8000000000001,
+                "width": 142,
+                "height": 21
+              }
+            },
+            {
+              "name": "hero/climax-landing",
+              "text": "\u500d\u7387 2 \u2192 3",
+              "bounds": {
+                "type": 5,
+                "x": -205.20001953124995,
+                "y": 578.8000000000001,
+                "width": 80,
+                "height": 19
+              }
+            }
+          ]
+        },
+        {
+          "time": 5354.299999982119,
+          "eventId": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/5",
+          "phase": "strike",
+          "sourceKey": "p08-joker-f09",
+          "source": {
+            "type": 5,
+            "x": 710.32,
+            "y": 548.8000000000001,
+            "width": 48,
+            "height": 60
+          },
+          "texts": [
+            {
+              "name": "hero/climax-name",
+              "text": "\u963f\u9ed8",
+              "bounds": {
+                "type": 5,
+                "x": 710.32,
+                "y": 149.6064,
+                "width": 137,
+                "height": 77
+              }
+            },
+            {
+              "name": "hero/climax-value",
+              "text": "\u00d73",
+              "bounds": {
+                "type": 5,
+                "x": 954.6800000000001,
+                "y": 348.90560000000005,
+                "width": 85,
+                "height": 127.92000000000002
+              }
+            },
+            {
+              "name": "hero/climax-note",
+              "text": "\u00d71.5 \u500d\u7387",
+              "bounds": {
+                "type": 5,
+                "x": 710.32,
+                "y": 460.90560000000005,
+                "width": 69,
+                "height": 19
+              }
+            },
+            {
+              "name": "hero/climax-source-title",
+              "text": "\u5b9e\u9645\u6765\u6e90 \u00b7 \u4e0d\u6362\u8bcd",
+              "bounds": {
+                "type": 5,
+                "x": 778.32,
+                "y": 548.8000000000001,
+                "width": 142,
+                "height": 21
+              }
+            },
+            {
+              "name": "hero/climax-landing",
+              "text": "\u500d\u7387 2 \u2192 3",
+              "bounds": {
+                "type": 5,
+                "x": 778.32,
+                "y": 578.8000000000001,
+                "width": 80,
+                "height": 19
+              }
+            }
+          ]
+        },
+        {
+          "time": 6518.699999988079,
+          "eventId": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/5",
+          "phase": "release",
+          "sourceKey": "p08-joker-f09",
+          "source": {
+            "type": 5,
+            "x": 710.32,
+            "y": 548.8000000000001,
+            "width": 48,
+            "height": 60
+          },
+          "texts": [
+            {
+              "name": "hero/climax-name",
+              "text": "\u963f\u9ed8",
+              "bounds": {
+                "type": 5,
+                "x": 710.32,
+                "y": 149.6064,
+                "width": 137,
+                "height": 77
+              }
+            },
+            {
+              "name": "hero/climax-value",
+              "text": "\u00d73",
+              "bounds": {
+                "type": 5,
+                "x": 954.6800000000001,
+                "y": 340.90560000000005,
+                "width": 85,
+                "height": 104
+              }
+            },
+            {
+              "name": "hero/climax-note",
+              "text": "\u00d71.5 \u500d\u7387",
+              "bounds": {
+                "type": 5,
+                "x": 710.32,
+                "y": 460.90560000000005,
+                "width": 69,
+                "height": 19
+              }
+            },
+            {
+              "name": "hero/climax-source-title",
+              "text": "\u5b9e\u9645\u6765\u6e90 \u00b7 \u4e0d\u6362\u8bcd",
+              "bounds": {
+                "type": 5,
+                "x": 778.32,
+                "y": 548.8000000000001,
+                "width": 142,
+                "height": 21
+              }
+            },
+            {
+              "name": "hero/climax-landing",
+              "text": "\u500d\u7387 2 \u2192 3",
+              "bounds": {
+                "type": 5,
+                "x": 778.32,
+                "y": 578.8000000000001,
+                "width": 80,
+                "height": 19
+              }
+            }
+          ]
+        },
+        {
+          "time": 6702.0999999940395,
+          "eventId": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/5",
+          "phase": "release",
+          "sourceKey": "p08-joker-f09",
+          "source": {
+            "type": 5,
+            "x": 928.8799975585938,
+            "y": 548.8000000000001,
+            "width": 48,
+            "height": 60
+          },
+          "texts": [
+            {
+              "name": "hero/climax-name",
+              "text": "\u963f\u9ed8",
+              "bounds": {
+                "type": 5,
+                "x": 928.8799975585938,
+                "y": 149.6064,
+                "width": 137.0000000000001,
+                "height": 77
+              }
+            },
+            {
+              "name": "hero/climax-value",
+              "text": "\u00d73",
+              "bounds": {
+                "type": 5,
+                "x": 1173.2399975585938,
+                "y": 340.90560000000005,
+                "width": 85,
+                "height": 104
+              }
+            },
+            {
+              "name": "hero/climax-note",
+              "text": "\u00d71.5 \u500d\u7387",
+              "bounds": {
+                "type": 5,
+                "x": 928.8799975585938,
+                "y": 460.90560000000005,
+                "width": 69,
+                "height": 19
+              }
+            },
+            {
+              "name": "hero/climax-source-title",
+              "text": "\u5b9e\u9645\u6765\u6e90 \u00b7 \u4e0d\u6362\u8bcd",
+              "bounds": {
+                "type": 5,
+                "x": 996.8799975585938,
+                "y": 548.8000000000001,
+                "width": 142.0000000000001,
+                "height": 21
+              }
+            },
+            {
+              "name": "hero/climax-landing",
+              "text": "\u500d\u7387 2 \u2192 3",
+              "bounds": {
+                "type": 5,
+                "x": 996.8799975585938,
+                "y": 578.8000000000001,
+                "width": 80.00000000000011,
+                "height": 19
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "kind": "growth",
+      "width": 390,
+      "height": 740,
+      "mode": "normal",
+      "key": "growth-390-normal",
+      "status": "PASS",
+      "requests": [],
+      "errors": [],
+      "impact": {
+        "eventId": "hero-climax/natural-flush/hand/hero-climax/natural-flush/command/5/event/8",
+        "source": {
+          "type": 5,
+          "x": 20,
+          "y": 506.5,
+          "width": 48,
+          "height": 60
+        },
+        "sourceKey": "p08-joker-c06",
+        "texts": [
+          {
+            "name": "hero/climax-name",
+            "text": "\u4e8c\u54cd",
+            "bounds": {
+              "type": 5,
+              "x": 20,
+              "y": 89.7,
+              "width": 88,
+              "height": 50.999999999999986
+            }
+          },
+          {
+            "name": "hero/climax-value",
+            "text": "0.25",
+            "bounds": {
+              "type": 5,
+              "x": 248.8,
+              "y": 312.7542774567783,
+              "width": 103,
+              "height": 66.29315052047207
+            }
+          },
+          {
+            "name": "hero/climax-note",
+            "text": "\u4e0b\u624b\u751f\u6548 \u00b7 \u4e0d\u52a0\u672c\u624b\u5206",
+            "bounds": {
+              "type": 5,
+              "x": 230.1,
+              "y": 389.508,
+              "width": 81.00000000000003,
+              "height": 38
+            }
+          },
+          {
+            "name": "hero/climax-source-title",
+            "text": "\u5b9e\u9645\u6765\u6e90 \u00b7 \u8d8a\u67d3\u8d8a\u6df1",
+            "bounds": {
+              "type": 5,
+              "x": 88,
+              "y": 506.5,
+              "width": 160,
+              "height": 21
+            }
+          },
+          {
+            "name": "hero/climax-landing",
+            "text": "\u5df2\u5b58\u6210\u957f \u00b7 \u4e0b\u624b\u751f\u6548\uff0c\u672c\u624b\u5206\u6570\u4e0d\u53d8",
+            "bounds": {
+              "type": 5,
+              "x": 88,
+              "y": 536.5,
+              "width": 255,
+              "height": 19
+            }
+          }
+        ]
+      },
+      "frameSummary": {
+        "count": 97,
+        "eventIds": [
+          "hero-climax/natural-flush/hand/hero-climax/natural-flush/command/5/event/8"
+        ],
+        "phases": {
+          "charge": 9,
+          "strike": 70,
+          "release": 18
+        },
+        "sourceKeys": [
+          "p08-joker-c06"
+        ]
+      },
+      "keyFrames": [
+        {
+          "time": 6196.200000017881,
+          "eventId": "hero-climax/natural-flush/hand/hero-climax/natural-flush/command/5/event/8",
+          "phase": "charge",
+          "sourceKey": "p08-joker-c06",
+          "source": {
+            "type": 5,
+            "x": -260.79998779296875,
+            "y": 506.5,
+            "width": 48,
+            "height": 60
+          },
+          "texts": [
+            {
+              "name": "hero/climax-name",
+              "text": "\u4e8c\u54cd",
+              "bounds": {
+                "type": 5,
+                "x": -260.79998779296875,
+                "y": 89.7,
+                "width": 88,
+                "height": 50.999999999999986
+              }
+            },
+            {
+              "name": "hero/climax-value",
+              "text": "0",
+              "bounds": {
+                "type": 5,
+                "x": 6.300012207031273,
+                "y": 311.508,
+                "width": 26.399999999999977,
+                "height": 56.31999999999999
+              }
+            },
+            {
+              "name": "hero/climax-note",
+              "text": "\u4e0b\u624b\u751f\u6548 \u00b7 \u4e0d\u52a0\u672c\u624b\u5206",
+              "bounds": {
+                "type": 5,
+                "x": -50.699987792968756,
+                "y": 389.508,
+                "width": 81.00000000000003,
+                "height": 38
+              }
+            },
+            {
+              "name": "hero/climax-source-title",
+              "text": "\u5b9e\u9645\u6765\u6e90 \u00b7 \u8d8a\u67d3\u8d8a\u6df1",
+              "bounds": {
+                "type": 5,
+                "x": -192.79998779296875,
+                "y": 506.5,
+                "width": 160,
+                "height": 21
+              }
+            },
+            {
+              "name": "hero/climax-landing",
+              "text": "\u5df2\u5b58\u6210\u957f \u00b7 \u4e0b\u624b\u751f\u6548\uff0c\u672c\u624b\u5206\u6570\u4e0d\u53d8",
+              "bounds": {
+                "type": 5,
+                "x": -192.79998779296875,
+                "y": 536.5,
+                "width": 255,
+                "height": 19
+              }
+            }
+          ]
+        },
+        {
+          "time": 6341.5,
+          "eventId": "hero-climax/natural-flush/hand/hero-climax/natural-flush/command/5/event/8",
+          "phase": "strike",
+          "sourceKey": "p08-joker-c06",
+          "source": {
+            "type": 5,
+            "x": 20,
+            "y": 506.5,
+            "width": 48,
+            "height": 60
+          },
+          "texts": [
+            {
+              "name": "hero/climax-name",
+              "text": "\u4e8c\u54cd",
+              "bounds": {
+                "type": 5,
+                "x": 20,
+                "y": 89.7,
+                "width": 88,
+                "height": 50.999999999999986
+              }
+            },
+            {
+              "name": "hero/climax-value",
+              "text": "0.25",
+              "bounds": {
+                "type": 5,
+                "x": 248.8,
+                "y": 319.508,
+                "width": 103,
+                "height": 78.71999999999997
+              }
+            },
+            {
+              "name": "hero/climax-note",
+              "text": "\u4e0b\u624b\u751f\u6548 \u00b7 \u4e0d\u52a0\u672c\u624b\u5206",
+              "bounds": {
+                "type": 5,
+                "x": 230.1,
+                "y": 389.508,
+                "width": 81.00000000000003,
+                "height": 38
+              }
+            },
+            {
+              "name": "hero/climax-source-title",
+              "text": "\u5b9e\u9645\u6765\u6e90 \u00b7 \u8d8a\u67d3\u8d8a\u6df1",
+              "bounds": {
+                "type": 5,
+                "x": 88,
+                "y": 506.5,
+                "width": 160,
+                "height": 21
+              }
+            },
+            {
+              "name": "hero/climax-landing",
+              "text": "\u5df2\u5b58\u6210\u957f \u00b7 \u4e0b\u624b\u751f\u6548\uff0c\u672c\u624b\u5206\u6570\u4e0d\u53d8",
+              "bounds": {
+                "type": 5,
+                "x": 88,
+                "y": 536.5,
+                "width": 255,
+                "height": 19
+              }
+            }
+          ]
+        },
+        {
+          "time": 7507.100000023842,
+          "eventId": "hero-climax/natural-flush/hand/hero-climax/natural-flush/command/5/event/8",
+          "phase": "release",
+          "sourceKey": "p08-joker-c06",
+          "source": {
+            "type": 5,
+            "x": 20,
+            "y": 506.5,
+            "width": 48,
+            "height": 60
+          },
+          "texts": [
+            {
+              "name": "hero/climax-name",
+              "text": "\u4e8c\u54cd",
+              "bounds": {
+                "type": 5,
+                "x": 20,
+                "y": 89.7,
+                "width": 88,
+                "height": 50.999999999999986
+              }
+            },
+            {
+              "name": "hero/climax-value",
+              "text": "0.25",
+              "bounds": {
+                "type": 5,
+                "x": 248.8,
+                "y": 311.508,
+                "width": 103,
+                "height": 64
+              }
+            },
+            {
+              "name": "hero/climax-note",
+              "text": "\u4e0b\u624b\u751f\u6548 \u00b7 \u4e0d\u52a0\u672c\u624b\u5206",
+              "bounds": {
+                "type": 5,
+                "x": 230.1,
+                "y": 389.508,
+                "width": 81.00000000000003,
+                "height": 38
+              }
+            },
+            {
+              "name": "hero/climax-source-title",
+              "text": "\u5b9e\u9645\u6765\u6e90 \u00b7 \u8d8a\u67d3\u8d8a\u6df1",
+              "bounds": {
+                "type": 5,
+                "x": 88,
+                "y": 506.5,
+                "width": 160,
+                "height": 21
+              }
+            },
+            {
+              "name": "hero/climax-landing",
+              "text": "\u5df2\u5b58\u6210\u957f \u00b7 \u4e0b\u624b\u751f\u6548\uff0c\u672c\u624b\u5206\u6570\u4e0d\u53d8",
+              "bounds": {
+                "type": 5,
+                "x": 88,
+                "y": 536.5,
+                "width": 255,
+                "height": 19
+              }
+            }
+          ]
+        },
+        {
+          "time": 7790.300000011921,
+          "eventId": "hero-climax/natural-flush/hand/hero-climax/natural-flush/command/5/event/8",
+          "phase": "release",
+          "sourceKey": "p08-joker-c06",
+          "source": {
+            "type": 5,
+            "x": 82.4000015258789,
+            "y": 506.5,
+            "width": 48,
+            "height": 60
+          },
+          "texts": [
+            {
+              "name": "hero/climax-name",
+              "text": "\u4e8c\u54cd",
+              "bounds": {
+                "type": 5,
+                "x": 82.4000015258789,
+                "y": 89.7,
+                "width": 88,
+                "height": 50.999999999999986
+              }
+            },
+            {
+              "name": "hero/climax-value",
+              "text": "0.25",
+              "bounds": {
+                "type": 5,
+                "x": 311.2000015258789,
+                "y": 311.508,
+                "width": 103,
+                "height": 64
+              }
+            },
+            {
+              "name": "hero/climax-note",
+              "text": "\u4e0b\u624b\u751f\u6548 \u00b7 \u4e0d\u52a0\u672c\u624b\u5206",
+              "bounds": {
+                "type": 5,
+                "x": 292.50000152587893,
+                "y": 389.508,
+                "width": 81,
+                "height": 38
+              }
+            },
+            {
+              "name": "hero/climax-source-title",
+              "text": "\u5b9e\u9645\u6765\u6e90 \u00b7 \u8d8a\u67d3\u8d8a\u6df1",
+              "bounds": {
+                "type": 5,
+                "x": 150.4000015258789,
+                "y": 506.5,
+                "width": 160,
+                "height": 21
+              }
+            },
+            {
+              "name": "hero/climax-landing",
+              "text": "\u5df2\u5b58\u6210\u957f \u00b7 \u4e0b\u624b\u751f\u6548\uff0c\u672c\u624b\u5206\u6570\u4e0d\u53d8",
+              "bounds": {
+                "type": 5,
+                "x": 150.4000015258789,
+                "y": 536.5,
+                "width": 255,
+                "height": 19
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "browser": "151.0.7922.173",
+  "status": "PASS"
+}

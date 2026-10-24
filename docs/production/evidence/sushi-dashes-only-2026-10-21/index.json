@@ -1,0 +1,71 @@
+{
+  "head": "8a0f611d38ee06d49449dcccfb70814d54c79510",
+  "dirty": "",
+  "status": "PASS",
+  "scope": "Single 1366x768 software Chromium, speed1; controlled validated checkpoint then real skill/play UI. Only observe the actual energy draw calls. No performance, device, hearing or user visual acceptance claim.",
+  "browser": "151.0.7922.173",
+  "errors": [],
+  "score": "306",
+  "factor": {
+    "n": "3",
+    "d": "1"
+  },
+  "storageVerified": true,
+  "activeRows": 0,
+  "base": "70b0581d8ac5c9e8c2b877fc95dc4f7328d8854f",
+  "sourceDiff": {
+    "path": "src/game/SushiKingEnergy.ts",
+    "added": 2,
+    "deleted": 9,
+    "otherProductionFilesChanged": []
+  },
+  "unchangedProtectedSha256": {
+    "src/game/GameScene.ts": "206388f0e5f547195bcff6791bf200ba3ce5de1bd7389b288c03ac36f21ab164",
+    "src/game/SushiKingCharge.ts": "8656f4655836cfaae667e8125ce231358d366652d07399175f611cbec4a9c755",
+    "src/game/SushiDiscardCardPresentation.ts": "6b67002b7cb2872b2eac700d5404aefa0a76214de61ae5e7627ad2b9e44f3efe",
+    "src/game/SushiSkillPayoff.ts": "3d2236c07436c9c786f6dab1d178ace83a8555bce307d54661ff17886cf6c462",
+    "src/game/SushiDiscardExit.ts": "ba6b56a90f2422091e302ec064dcf1f8864f09248b8c3815e8318e24a012ed27",
+    "src/domain/r2AmoExile.ts": "1ab1d791395420e281ca447ee2839adf87169dca858a48acc4db16291eaa4743",
+    "src/game/CharacterSelectScene.ts": "941b7ed19f8f9ac2e544c34cb8ee8bade54702dd798bc217f864b824602998c4",
+    "src/game/SelectionEntryParticles.ts": "94634d6ba6184b93e82155c040c9c3e21481bea84c2a579eaedce0b11133b2f5"
+  },
+  "retainedMotesSha256": {
+    "pool": "384b88a9c92cd425db6884d4b0f350bb996ba26c068a5fd8740dd0ccf2c97863",
+    "clock": "aac064897e697c91d79fcde19a2b09c324794ed655589b889b0c98794c41aba4",
+    "motesLoop": "b85ce721b47d92ccebe3660200c24b5e37ddd781c3a7ec0161adcc3e1e707c60"
+  },
+  "exactDrawingReference": {
+    "fixture": "tests/fixtures/sushi-motes-before-core-removal.json",
+    "frames": 3,
+    "callsPerFrame": 72,
+    "result": "identical actual vector calls excluding only the three old core fills"
+  },
+  "shortBrowserCheck": {
+    "energyDrawsObserved": 208,
+    "corePolygons": 0,
+    "fullMoteDraws": 208,
+    "durationSeconds": 15.28,
+    "speed": 1,
+    "viewport": "1366x768"
+  },
+  "notRun": [
+    "new performance comparison",
+    "expanded browser or device matrix"
+  ],
+  "cleanup": "browser/context/Vite closed in harness finally; no live preparation rows after actual play",
+  "mediaSha256": {
+    "armed-b.png": "feed24a8b4cc8eb83c44e157002366dbb4e6a3f09b307c9fd6e3a933e838b5b9",
+    "armed-a.png": "786de55979c786b937fabc46523be4192ea3474d920f647d125f6907bbfb38b5",
+    "process-1x.webm": "73d687365b2fa2f315c4db608d344ebc0a509b705de3018cdecd94a6d7cbd391",
+    "score-dashes.png": "37dc7579473952284d31079acbaafc941b5fd920a52b4af8ab258111a185c428",
+    "process-1x.mp4": "a00430f193c758dc7a34d713560fef7f5f471b0556fafc16aa6e33165e5e5b70"
+  },
+  "postCaptureTestUpdate": {
+    "files": [
+      "tests/sushi-blue-energy.test.ts",
+      "harness/sushi-blue-charge.mjs"
+    ],
+    "scope": "Reduced motion retains one hand multiplier across both cost kings, without a center fill. Production code and captured short harness unchanged.",
+    "targetedTests": 68
+  }
+}

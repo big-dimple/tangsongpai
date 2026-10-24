@@ -1,0 +1,59 @@
+{
+  "baseMain": "485ba12debfed86433466af2213688df4384c8c9",
+  "sourceCi": 39108817666,
+  "jobs": {
+    "domain": {
+      "id": 117620340851,
+      "status": "success"
+    },
+    "docs": {
+      "id": 117620340726,
+      "status": "success"
+    },
+    "browser": {
+      "id": 117620340946,
+      "status": "failure",
+      "build": "PASS/376 modules",
+      "failure": "page.waitForFunction timeout30000ms at harness/screenshot.mjs:89:97",
+      "stage": "after successful current identity and natural shop purchase; waiting for hand views",
+      "runtimeSnapshot": "not present in original failure; cannot infer later browser paths passed"
+    }
+  },
+  "classification": "Existing smoke omitted the current mandatory stage-directory confirmation; current GameScene waits for it before EnterStage/deal. No product change needed for this confirmed harness gap; later runtime issues remain observable.",
+  "sourceEvidence": {
+    "gate": "src/game/GameScene.ts:awaitStageEntry; existing ffab8132708429390342a1af3d5acbec21fcf8ef",
+    "button": "src/game/BlindSelectPresentation.ts: entrance dialog primary action",
+    "approvedFlow": "docs/production/evidence/prebattle-flow-2026-10-17/README.md"
+  },
+  "changes": {
+    "paths": 4,
+    "behavior": "wait game; observe actual entrance directory or already-entered state; click/tap native primary only if directory present; require await-input and real hand views",
+    "diagnostics": "phase/waitingForStage/card count/open dialog context on failure",
+    "timeoutConfigurationChanged": false,
+    "stateMutationOrDirectEnterStage": false,
+    "productSourceChanged": false,
+    "deploymentSyncScriptsOrGatesChanged": false
+  },
+  "checks": {
+    "nodeSyntax": "PASS for screenshot.mjs and stage-entry.mjs",
+    "nodeContractModel": "4 PASS; not browser",
+    "existingDirectoryUnit": "1 file/12 PASS",
+    "vitestVersion": "4.1.11",
+    "initialUnitAttempt": "NOT_RUN before assertions because task node_modules junction was missing; restored link to existing pinned dependencies and invoked local Vitest directly",
+    "fullSuite": "NOT_RUN",
+    "localBrowser": "NOT_RUN",
+    "build": "NOT_RERUN; runtime source unchanged"
+  },
+  "sourceBlobs": {
+    "harness/screenshot.mjs": "37249f381c5bce1eac098306a20660e33c3cc0a1",
+    "harness/stage-entry.mjs": "281493d31474067ac79bffabeb3a9facd91fbfba"
+  },
+  "ruleCandidate": {
+    "head": "f46ef5bec0ab244ec70fc8221bf19e5abfe0c47e",
+    "product": "0110d725022283d62cd527340728ddae01678f9d",
+    "reviewed": true,
+    "integrated": false,
+    "hold": "wait matching hero effects; current XinRefillLock first-use guard blocks second repeated discard"
+  },
+  "P08": "in_progress"
+}

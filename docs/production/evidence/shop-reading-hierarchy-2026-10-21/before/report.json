@@ -1,0 +1,11 @@
+{
+  "label": "before",
+  "head": "6892aabf68f3e8d90dfc0a5597cce7f96025e81d",
+  "dirty": "?? harness/shop-reading-hierarchy.mjs",
+  "seed": "group-natural-17",
+  "scope": "Local Chromium, real mouse/touch input, natural new game; software rendering only. Normal motion continuous videos, no animation claim from screenshots.",
+  "cases": [],
+  "status": "FAIL",
+  "browser": "151.0.7922.173",
+  "error": "browserContext.newPage: Executable doesn't exist at /home/agent/.cache/ms-playwright/ffmpeg-1011/ffmpeg-linux\n╔═════════════════════════════════════════════════════════════════╗\n║ Video rendering requires ffmpeg binary.                         ║\n║ Downloading it will not affect any of the system-wide settings. ║\n║ Please run the following command:                               ║\n║                                                                 ║\n║     npx playwright install ffmpeg                               ║\n║                                                                 ║\n║ <3 Playwright Team                                              ║\n╚═════════════════════════════════════════════════════════════════╝\n    at /workspace/tangsongpai/harness/shop-reading-hierarchy.mjs:21:169"
+}

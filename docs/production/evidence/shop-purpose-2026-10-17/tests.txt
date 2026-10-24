@@ -1,0 +1,8 @@
+
+ RUN  v4.1.11 C:/Users/wanghongping/AppData/Local/Temp/tangsongpai-shop-purpose-20261017
+
+
+ Test Files  5 passed (5)
+      Tests  50 passed (50)
+   Start at  07:33:20
+   Duration  2.55s (transform 5.61s, setup 0ms, import 6.96s, tests 426ms, environment 1ms)

@@ -1,0 +1,157 @@
+{
+  "baseCommit": "3e01adf897d379b50c4575ba7c21cc77d143866c",
+  "sourceCommit": "a48650b5882378f0205b7bb163ca074b428f6216",
+  "runSourceHead": "3e01adf897d379b50c4575ba7c21cc77d143866c",
+  "runSourceDirty": " M src/game/GameScene.ts\n M src/game/SushiDiscardExit.ts\n M tests/amo-exile-visual.test.ts\n M tests/sushi-discard-exit.test.ts\n?? docs/production/evidence/sushi-presentation-removal-2026-10-20/\n?? harness/sushi-presentation-removal.mjs\n?? src/game/DiscardMotion.ts\n",
+  "binding": "All checks ran the exact file bytes listed below. Source was committed after the checks started; build-info and browser reports retain their original base+dirty provenance. Evidence-only follow-up commits do not change these files.",
+  "rulesVersion": "r2",
+  "contentVersion": "quality-r2-amo-exile-v3",
+  "contentHash": "json-fnv-v1:cf857ebc71020ca8",
+  "environment": {
+    "os": "Linux-6.18.55-x86_64-with-glibc2.41",
+    "node": "v24.19.0",
+    "browser": "151.0.7922.173",
+    "device": "software Chromium; physical devices not run"
+  },
+  "sourceSha256": {
+    "harness/sushi-presentation-removal.mjs": "b556f3e9c10c3e95dec4a8ca92239987891412b417f63e2ea13eda58a6a7d8fd",
+    "src/game/DiscardMotion.ts": "7af325e4de5c8cbc3d906d3975dc85e1ce7d4ac8f9dd6db31275fd2ffe2e4c3b",
+    "src/game/GameScene.ts": "abd9af14f1c11efe91e0779a84e7650774402a66453a6a617938b18aaf4a4780",
+    "src/game/SushiDiscardExit.ts": "ba6b56a90f2422091e302ec064dcf1f8864f09248b8c3815e8318e24a012ed27",
+    "tests/amo-exile-visual.test.ts": "806d2f1a5a4e21d8df953fed847edf358da4688b5b4e936aeb0e971295d6c399",
+    "tests/sushi-discard-exit.test.ts": "4b50577db04fbc56e57280af276f393324720949563c976109ce10ba044d3ee1"
+  },
+  "buildSha256": {
+    "dist/build-info.json": "f1a1ac4b49cd69429cdc2f4c5077db830f536ca2b02be0474a3d73b12d9ae853",
+    "dist/assets/index-BIirjDTw.js": "527936e55c90dcbb42a78ad15c0ecbdafc51a7ceccb0ece9474331fff68cf221"
+  },
+  "preservedPaths": [
+    "src/domain",
+    "src/content",
+    "src/application",
+    "src/game/HeroTargetAttachment.ts",
+    "src/game/HandoffEar.ts",
+    "src/game/HeroLiveSmoke.ts",
+    "docs/production/plan.json",
+    "docs/production/DELIVERY_PLAN.md",
+    "docs/production/CHARACTER_PLAY_PLAN.md"
+  ],
+  "checks": [
+    {
+      "name": "npm test",
+      "status": "PASS",
+      "files": 407,
+      "tests": 4951,
+      "exitCode": 0,
+      "evidence": "tests.txt"
+    },
+    {
+      "name": "targeted unit tests",
+      "status": "PASS",
+      "tests": 28,
+      "exitCode": 0,
+      "evidence": "targeted.txt"
+    },
+    {
+      "name": "npm run build (includes typecheck)",
+      "status": "PASS",
+      "exitCode": 0,
+      "evidence": "build.txt"
+    },
+    {
+      "name": "Su Shi native browser paths",
+      "status": "PASS",
+      "cases": [
+        {
+          "key": "1366-full",
+          "status": "PASS",
+          "score": "306",
+          "factor": {
+            "n": "3",
+            "d": "1"
+          },
+          "frames": 120,
+          "decorations": 0
+        },
+        {
+          "key": "390-full",
+          "status": "PASS",
+          "score": "306",
+          "factor": {
+            "n": "3",
+            "d": "1"
+          },
+          "frames": 125,
+          "decorations": 0
+        },
+        {
+          "key": "390-reduced",
+          "status": "PASS",
+          "score": "306",
+          "factor": {
+            "n": "3",
+            "d": "1"
+          },
+          "frames": 49,
+          "decorations": 0
+        },
+        {
+          "key": "390-mid-reduce",
+          "status": "PASS",
+          "score": "306",
+          "factor": {
+            "n": "3",
+            "d": "1"
+          },
+          "frames": 92,
+          "decorations": 0
+        },
+        {
+          "key": "390-refresh",
+          "status": "PASS",
+          "score": "306",
+          "factor": {
+            "n": "3",
+            "d": "1"
+          },
+          "frames": null,
+          "decorations": 0
+        }
+      ],
+      "exitCode": 0,
+      "evidence": "browser.json.gz"
+    },
+    {
+      "name": "Liu E regression",
+      "status": "PASS",
+      "cases": [
+        {
+          "key": "1366-full",
+          "status": "PASS",
+          "score": "328"
+        },
+        {
+          "key": "390-full",
+          "status": "PASS",
+          "score": "328"
+        },
+        {
+          "key": "390-reduced",
+          "status": "PASS",
+          "score": "328"
+        }
+      ],
+      "exitCode": 0,
+      "evidence": "liue-cross.json.gz"
+    },
+    {
+      "name": "protected paths identical to base",
+      "status": "PASS",
+      "exitCode": 0
+    }
+  ],
+  "limitations": [
+    "Controlled legal current-identity checkpoints; no natural-run acquisition or physical device/visual/hearing acceptance.",
+    "No deployment or main merge performed."
+  ]
+}

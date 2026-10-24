@@ -1,0 +1,23 @@
+{
+  "base": "70b0581d8ac5c9e8c2b877fc95dc4f7328d8854f",
+  "stable": "9abedd0195881c64c730f13e26b66c54f94b3716",
+  "methodByteEqual": true,
+  "sortHandSHA256": "b1b1533234d8f31cb325a6b6688ada15650461b17951b20d7eb675d05677cd59",
+  "changedGameSceneMethods": [
+    "sortHand"
+  ],
+  "removedGameSceneFields": [
+    "suitSortTarget",
+    "suitSortRunId"
+  ],
+  "productionPaths": [
+    "src/game/GameScene.ts",
+    "src/game/HandSuitSort.ts"
+  ],
+  "protectedProductionChanges": false,
+  "sharedSmoke": "integration owner reversed only original target-picker patch; screenshot.mjs byte-equal9abedd; shop ui geometry helper preserved",
+  "browser": "Investigation stopped per latest rollback request; no new browser/full matrix claimed.",
+  "taskId": "P08",
+  "testedCommit": "0c1fa34496c331df14195b7e1bc3978c61b6903e",
+  "integrationReview": "integration-review.json"
+}

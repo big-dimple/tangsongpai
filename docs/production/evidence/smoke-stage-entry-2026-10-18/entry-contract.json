@@ -1,0 +1,25 @@
+{
+  "base": "485ba12debfed86433466af2213688df4384c8c9",
+  "checks": [
+    {
+      "name": "fresh entry uses one native mouse confirmation",
+      "status": "PASS"
+    },
+    {
+      "name": "fresh entry uses one native touch confirmation",
+      "status": "PASS"
+    },
+    {
+      "name": "already entered route does not click any extra action",
+      "status": "PASS"
+    },
+    {
+      "name": "real missing-hand condition still fails with phase/card diagnostics",
+      "status": "PASS"
+    }
+  ],
+  "scope": "Node Page contract model only; not browser/visual acceptance",
+  "productStateWrites": false,
+  "timeLimitRaised": false,
+  "browser": "NOT_RUN"
+}

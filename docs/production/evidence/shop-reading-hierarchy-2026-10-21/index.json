@@ -1,0 +1,119 @@
+{
+  "scope": "Second lane only; shop reading hierarchy; local browser only. No merge or deployment.",
+  "baseline": "6892aabf68f3e8d90dfc0a5597cce7f96025e81d",
+  "sourceSha256": {
+    "src/game/ShopScene.ts": "577d64dd8893cf1de9618c2ee90341a3e23167514026d873d292d47c46af795c",
+    "src/game/ShopJokerPresentation.ts": "60e0200cfa8faf498709657ff6f67a74c8b85bfa4bf326ba57498967d6df63ba"
+  },
+  "successfulRuns": [
+    "before-02/report.json",
+    "after-01/report.json"
+  ],
+  "comparison": "comparison.json",
+  "retainedFailures": {
+    "before/report.json": "Missing Playwright ffmpeg binary; installed dependency under /tmp then reran.",
+    "before-01/report.json": "Harness assumed starting natural stock included an unaffordable card; all stock was initially affordable. Corrected observer to check a remaining unaffordable card after the real purchase; no product state injection or seed change."
+  },
+  "continuousVideos": [
+    {
+      "run": "before-02",
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "path": "before-02/videos/page@ecae128b3921144a9b8a4130e5b48b07.webm",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vp8",
+            "width": 1366,
+            "height": 900
+          }
+        ],
+        "format": {
+          "duration": "20.160000"
+        }
+      }
+    },
+    {
+      "run": "before-02",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "path": "before-02/videos/page@75bbedd7bfc6d7a98c70624c35c165f8.webm",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vp8",
+            "width": 390,
+            "height": 844
+          }
+        ],
+        "format": {
+          "duration": "14.240000"
+        }
+      }
+    },
+    {
+      "run": "after-01",
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "path": "after-01/videos/page@ff0fb8ec0048cb17351b2046784f494f.webm",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vp8",
+            "width": 1366,
+            "height": 900
+          }
+        ],
+        "format": {
+          "duration": "18.800000"
+        }
+      }
+    },
+    {
+      "run": "after-01",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "path": "after-01/videos/page@6424132d8735bd8a4e07a334bb953f22.webm",
+      "probe": {
+        "programs": [],
+        "stream_groups": [],
+        "streams": [
+          {
+            "codec_name": "vp8",
+            "width": 390,
+            "height": 844
+          }
+        ],
+        "format": {
+          "duration": "23.320000"
+        }
+      }
+    }
+  ],
+  "visualAcceptance": "PENDING_USER_REVIEW",
+  "physicalDeviceAndHearing": "NOT_RUN",
+  "unrun": "Other heroes, all stock/edition/discount combinations, physical devices, listening, deployed site, whole-game aesthetic and long-term balance.",
+  "validation": {
+    "typecheck": "PASS",
+    "targeted": "8 files / 92 tests PASS",
+    "fullTests": "413 files / 4996 tests PASS",
+    "build": "PASS; existing chunk size warning",
+    "beforeBrowser": "2/2 PASS",
+    "afterBrowser": "2/2 PASS",
+    "beforeAfterComparison": "PASS"
+  }
+}
