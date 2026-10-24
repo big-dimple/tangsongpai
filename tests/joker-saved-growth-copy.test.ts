@@ -16,6 +16,11 @@ it('every owned growth definition exposes its real current value and cap in both
  }
  expect(checked).toBeGreaterThan(10);
 });
+it('every unowned growth definition shows its purchase initial value and cap without changing the ownership state',()=>{
+ for(const d of R2_JOKERS){const caps=r2GrowthCaps(d);if(!Object.keys(caps).length)continue;const c=jokerMemoryAbility(d,undefined,ctx()),initials=r2GrowthMinimums(d);expect(c.state).toBe('尚未购买，买入后才会生效');
+  for(const [key,cap] of Object.entries(caps)){const coefficient=key==='coefficient',label=coefficient?'买入后初始倍率系数':key==='pendingHeat'?'买入后初始待用热度':key==='multiplier'?'买入后初始倍率成长':'买入后初始热度成长',prefix=coefficient?'×':'+';expect(c.plain!.status).toContain(label+'：'+prefix+fractionText(initials[key])+'；上限'+prefix+fractionText(cap));}
+ }
+});
 it('zero, fractional and capped saved growth remain exact and capped growth can still reset when its rules say so',()=>{
  expect(copy('b10').plain!.status).toContain('当前已攒热度：+0');
  const grown=copy('b03',{n:'7',d:'4'});expect(grown.state).toContain('当前已攒倍率：+1.75');expect(grown.plain!.status).toContain('上限+');
@@ -27,8 +32,9 @@ it('pending heat, coefficient growth and coefficient resets explain their differ
  const e11=copy('e11',{n:'7',d:'4'});expect(e11.state).toContain('当前倍率系数：×1.75');expect(e11.plain!.status).toContain('上限×');expect(e11.rules).toContain('出售事件会把倍率系数重置为×1');
  expect(copy('a06').rules).toContain('每场最多成长一次');
 });
-it('direct heat and multiplier effects are explicitly temporary and never presented as saved growth',()=>{
- const d07=copy('d07');expect(d07.state).toContain('只在当次计分生效，不保存、不跨手累计');expect(d07.rules).toContain('不保存、不跨手累计');expect(d07.state).not.toContain('当前已攒');expect(d07.plain!.details).toContain('不保存、不跨手累计');
+it('direct heat and multiplier effects are explicitly temporary before and after purchase, never saved growth',()=>{
+ const d07=copy('d07');expect(d07.state).toContain('只在当次计分生效，不保存、不跨手累计');expect(d07.rules).toContain('不保存、不跨手累计');expect(d07.state).not.toContain('当前已攒');expect(d07.plain!.details).toContain('不保存、不跨手累计');expect(d07.plain!.status).toContain('不保存、不跨手累计');
+ const offer=jokerMemoryAbility(def('d07'),undefined,ctx());expect(offer.plain!.status).toContain('不保存、不跨手累计');expect(offer.state).toBe('尚未购买，买入后才会生效');
 });
 it('historical scoring receipts do not mix in a later current-growth caption and unowned state stays unchanged',()=>{
  const j=r2CreateJoker('b10','receipt',0),receipt=jokerMemoryAbility(def('b10'),j,ctx(),[]);expect(receipt.plain!.status).not.toContain('当前已攒热度');

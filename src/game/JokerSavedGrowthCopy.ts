@@ -6,15 +6,14 @@ export interface JokerSavedGrowthCopy {status:string[];notes:string[]}
 
 /** Read-only saved-growth presentation. Never evaluates conditions, scores or random actions. */
 export function jokerSavedGrowthCopy(definition:R2JokerDefinition,instance:R2JokerInstance|undefined):JokerSavedGrowthCopy|undefined {
- if(!instance)return;
  const caps=r2GrowthCaps(definition),keys=Object.keys(caps);if(!keys.length)return;
- const operations=definition.hooks.flatMap(h=>h.operations),growth={...r2GrowthMinimums(definition),...instance.growth};
+ const operations=definition.hooks.flatMap(h=>h.operations),growth={...r2GrowthMinimums(definition),...instance?.growth};
  const status:string[]=[],notes:string[]=[];
  for(const key of keys){
   const value=growth[key]??{n:'0',d:'1'},cap=caps[key],coefficient=key==='coefficient',pending=key==='pendingHeat';
   const label=coefficient?'倍率系数':pending?'待用热度':key==='multiplier'?'倍率':'热度',prefix=coefficient?'×':'+';
   const capped=Rational.fromJSON(value).compare(Rational.fromJSON(cap))>=0;
-  const current=coefficient?'当前倍率系数':pending?'当前待用热度':'当前已攒'+label;
+  const current=instance?(coefficient?'当前倍率系数':pending?'当前待用热度':'当前已攒'+label):coefficient?'买入后初始倍率系数':pending?'买入后初始待用热度':'买入后初始'+label+'成长';
   status.push(current+'：'+prefix+fractionText(value)+'；上限'+prefix+fractionText(cap)+(capped?'（已到上限）':''));
   const consumed=operations.some(o=>o.kind==='consume-growth'&&o.key===key);
   if(pending||consumed)notes.push(label+'在实际读取后消耗'+(pending?'，场末清空':'')+'；新增从后续出牌生效。');
