@@ -1,0 +1,60 @@
+{
+  "base": "bab78be5be4bc6d8cdb9780ac8a4eebb69f697da",
+  "audioOriginal": [
+    "0fbca930211ee0ea460c640bd76c8a22e5de66cd",
+    "f08b1f03485c5f68c547db94c6d256d068d9e395"
+  ],
+  "audioApplied": [
+    "caaf3b69",
+    "482fe48b"
+  ],
+  "tests": {
+    "files": 27,
+    "passed": 261,
+    "status": "PASS"
+  },
+  "typecheck": "PASS",
+  "build": "PASS",
+  "browser": "NOT_RUN: parent-directed remote verification",
+  "hearing": "NOT_RUN",
+  "physicalDevice": "NOT_RUN",
+  "allSixHeroMotionComplete": false,
+  "P08": "in_progress",
+  "sourceHashes": {
+    "src/game/GameScene.ts": "e5f5160d844f2e74a6bff79116193020b6fa6b732e7f78edee34c54db8f3009e",
+    "src/game/JokerScoreStrike.ts": "fa091a8bcf4078073d47e1cc5918f5c9ee9a0e948312acb01490eb7038765d09",
+    "src/game/ScorePhrase.ts": "41a4e1209e6836cb36d2ff07b74d74132b28899e7f05de2534bcda8b29532d81",
+    "src/game/ScorePerformance.ts": "2ced9f6e9ca2abe7cd15ec5fd37db7b67c80661efd841ce3ff2d024734e901cd",
+    "src/game/HeroAttachmentPhases.ts": "7f314f188f783a3de2c341bf6346c6c968ec55d877d179d94a3d8033edc22b10",
+    "src/game/HeroTargetAttachment.ts": "fb790303197692d0d79a3e24f1d822009597f1244447b2eae546facb36e1867f",
+    "src/game/HeroSkillParticles.ts": "951a6347e88388608f72a64051737d80b55fd067bd0beac5792623f74b8baee2",
+    "src/game/SushiDiscardCardPresentation.ts": "f1521a814d76a65adc2783b899c24f3135c013af1131593e6e935164d8287619",
+    "src/game/XinEnergyTexture.ts": "24ac9efecd0c894957d494171866b1e4bb92814a3f43443c3f7d7464a4fcfd29",
+    "src/game/XinPerimeterEnergy.ts": "f7551ec71c3227eef5adf1de741d436578ed3aed871fa5abf2b17444d4b803d8",
+    "src/audio/PerformanceAudio.ts": "5709505757df95dc9dc0b8e689de437429165123192ffc36526ce3a0cd88e27e",
+    "src/audio/AudioEngine.ts": "95cc31da23e7ff73f794f7ee95dc0a886c03fbd831673d696b6857cdc970defb",
+    "src/audio/foley.ts": "101bc592094d8ab0f482db9c30e9d8bbb6ce6d88cb513e48cacfc016657e835c",
+    "tests/score-performance.test.ts": "e696164373361983cbb8b6270736ecb329b3a2b1ed7ccad0572081e136092610",
+    "tests/score-card-performance.test.ts": "633f274a9b90edba532e96aa946fe8f4599ff27ac6ed32e7229123b49e41ef57",
+    "tests/hero-retained-ownership.test.ts": "894f00a89426dfdbc44fe8373f3a113692b77d5540e4378e7b593e0b0914711b",
+    "tests/xin-repeat-sequence.test.ts": "4c454d55281f7c57f3c88692e8c96795a4b5333d9b18cedc85eef293a07890c6",
+    "tests/hero-action-chain-order.test.ts": "b08b4a7cd64accf9431a40af31bd19fb43af7ce84f7653f4594246f2f7a455f6"
+  },
+  "validatedWorkingTreeParent": "9a2ada2060a094776993b5843e3f1cef0560a132",
+  "ownFirstCommit": "599a41a8c019c61517d7c44dedd080284d47bb09",
+  "visualOriginal": [
+    "32eef8d5",
+    "0d5b5ea2",
+    "d5704748",
+    "6815d80f",
+    "25872095"
+  ],
+  "visualApplied": [
+    "20861f58",
+    "dfb57f42",
+    "38b24c0d",
+    "cd26f98b",
+    "9a2ada20"
+  ],
+  "allSixHeroPhaseWired": true
+}

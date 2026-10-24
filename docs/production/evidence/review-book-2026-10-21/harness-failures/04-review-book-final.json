@@ -1,0 +1,20 @@
+{
+  "base": "9abedd0195881c64c730f13e26b66c54f94b3716",
+  "source": "controlled ownership/levels/history loaded through existing validated session.importJSON, unchanged real scorer and UI inputs for final PlayHand; not natural acquisition or physical device",
+  "cases": [
+    {
+      "key": "desktop",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "reduced": false,
+      "artMode": "normal",
+      "errors": [],
+      "status": "FAIL",
+      "error": "page.evaluate: TypeError: named(...)?.getBounds is not a function\n    at eval (eval at evaluate (:311:30), <anonymous>:6:47)\n    at UtilityScript.evaluate (<anonymous>:313:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at regions (/workspace/tangsongpai/harness/review-book.mjs:26:20)\n    at /workspace/tangsongpai/harness/review-book.mjs:73:20"
+    }
+  ],
+  "status": "FAIL",
+  "error": "page.evaluate: TypeError: named(...)?.getBounds is not a function\n    at eval (eval at evaluate (:311:30), <anonymous>:6:47)\n    at UtilityScript.evaluate (<anonymous>:313:16)\n    at UtilityScript.<anonymous> (<anonymous>:1:44)\n    at regions (/workspace/tangsongpai/harness/review-book.mjs:26:20)\n    at /workspace/tangsongpai/harness/review-book.mjs:73:20"
+}

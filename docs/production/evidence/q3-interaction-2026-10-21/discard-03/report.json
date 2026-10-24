@@ -1,0 +1,500 @@
+{
+  "head": "4c345f93bcd8f3c747b83f0e5e473d3b50b3a3e0",
+  "sourceHash": "cc1771cde836319107fafd523abefe342a72c07661d5744054077c4c359d0a27",
+  "input": {
+    "path": "docs/production/evidence/q3-interaction-2026-10-21/final/full-state.json.gz",
+    "sha256": "55f4da6f13a031b4d31f4e09a92f59242296b43c5f19afa95f31b49c9d7481e6",
+    "checkpointChecksum": "json-fnv-v1:64a30e4c93de4b70",
+    "seq": 6
+  },
+  "scope": "Controlled setup imports the preceding natural journey checkpoint using GameSession.importJSON, then reloads and uses native Continue. Subsequent selection/cancel/discard inputs are native Chromium mouse/CDP touch. No edited state/stock/draws, discard-handler calls or synthetic domain dispatch; not a natural-acquisition or physical-phone acceptance claim.",
+  "cases": [
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "touch": false,
+      "steps": [
+        {
+          "note": "real two-card selection is a draft",
+          "unchanged": true,
+          "ui": {
+            "selected": [
+              "clubs-12",
+              "hearts-13"
+            ],
+            "assist": [],
+            "skill": false,
+            "discards": "3 次",
+            "plays": "4 次",
+            "hand": [
+              "clubs-12",
+              "hearts-13",
+              "hearts-2",
+              "spades-2",
+              "diamonds-11",
+              "diamonds-5",
+              "clubs-14",
+              "diamonds-14"
+            ],
+            "discardEnabled": true
+          }
+        },
+        {
+          "note": "deselect then repeated disabled Discard sends no command or cost",
+          "unchanged": true,
+          "ui": {
+            "selected": [],
+            "assist": [],
+            "skill": false,
+            "discards": "3 次",
+            "plays": "4 次",
+            "hand": [
+              "clubs-12",
+              "hearts-13",
+              "hearts-2",
+              "spades-2",
+              "diamonds-11",
+              "diamonds-5",
+              "clubs-14",
+              "diamonds-14"
+            ],
+            "discardEnabled": false
+          }
+        },
+        {
+          "note": "drag-off Discard cancels and preserves the exact selected draft",
+          "unchanged": true,
+          "ui": {
+            "selected": [
+              "clubs-12",
+              "hearts-13"
+            ],
+            "assist": [],
+            "skill": false,
+            "discards": "3 次",
+            "plays": "4 次",
+            "hand": [
+              "clubs-12",
+              "hearts-13",
+              "hearts-2",
+              "spades-2",
+              "diamonds-11",
+              "diamonds-5",
+              "clubs-14",
+              "diamonds-14"
+            ],
+            "discardEnabled": true
+          }
+        },
+        {
+          "note": "repeated ordinary Discard saved exactly once; 3→2 discards, 4 plays and 2 gold unchanged, two actual replacement cards",
+          "command": {
+            "runId": "run/group-natural-17/amo",
+            "commandId": "run/group-natural-17/amo/command/7",
+            "expectedSeq": 6,
+            "action": {
+              "type": "DiscardHand",
+              "selectedIds": [
+                "clubs-12",
+                "hearts-13"
+              ]
+            }
+          },
+          "drawnIds": [
+            "diamonds-4",
+            "spades-4"
+          ],
+          "ui": {
+            "selected": [],
+            "assist": [],
+            "skill": false,
+            "discards": "2 次",
+            "plays": "4 次",
+            "hand": [
+              "hearts-2",
+              "spades-2",
+              "diamonds-11",
+              "diamonds-5",
+              "clubs-14",
+              "diamonds-14",
+              "diamonds-4",
+              "spades-4"
+            ],
+            "discardEnabled": false
+          }
+        },
+        {
+          "note": "post-refill repeated disabled Discard does not spend or queue another discard",
+          "unchanged": true,
+          "ui": {
+            "selected": [],
+            "assist": [],
+            "skill": false,
+            "discards": "2 次",
+            "plays": "4 次",
+            "hand": [
+              "hearts-2",
+              "spades-2",
+              "diamonds-11",
+              "diamonds-5",
+              "clubs-14",
+              "diamonds-14",
+              "diamonds-4",
+              "spades-4"
+            ],
+            "discardEnabled": false
+          }
+        },
+        {
+          "note": "cold Continue retains the exact discarded/refilled saved tuple and no draft",
+          "unchanged": true
+        }
+      ],
+      "errors": [],
+      "setup": {
+        "lease": true,
+        "imported": true,
+        "notice": "导入成功，已保存完整进度。"
+      },
+      "before": {
+        "seq": 6,
+        "gold": 2,
+        "discards": 3,
+        "hand": [
+          "clubs-12",
+          "hearts-13",
+          "hearts-2",
+          "spades-2",
+          "diamonds-11",
+          "diamonds-5",
+          "clubs-14",
+          "diamonds-14"
+        ]
+      },
+      "beforeUi": {
+        "selected": [],
+        "assist": [],
+        "skill": false,
+        "discards": "3 次",
+        "plays": "4 次",
+        "hand": [
+          "clubs-12",
+          "hearts-13",
+          "hearts-2",
+          "spades-2",
+          "diamonds-11",
+          "diamonds-5",
+          "clubs-14",
+          "diamonds-14"
+        ],
+        "discardEnabled": false
+      },
+      "selectedIds": [
+        "clubs-12",
+        "hearts-13"
+      ],
+      "selectedShot": "1366-selected.png",
+      "canceledShot": "1366-canceled.png",
+      "after": {
+        "seq": 7,
+        "gold": 2,
+        "discards": 2,
+        "hand": [
+          "hearts-2",
+          "spades-2",
+          "diamonds-11",
+          "diamonds-5",
+          "clubs-14",
+          "diamonds-14",
+          "diamonds-4",
+          "spades-4"
+        ]
+      },
+      "drawnIds": [
+        "diamonds-4",
+        "spades-4"
+      ],
+      "afterUi": {
+        "selected": [],
+        "assist": [],
+        "skill": false,
+        "discards": "2 次",
+        "plays": "4 次",
+        "hand": [
+          "hearts-2",
+          "spades-2",
+          "diamonds-11",
+          "diamonds-5",
+          "clubs-14",
+          "diamonds-14",
+          "diamonds-4",
+          "spades-4"
+        ],
+        "discardEnabled": false
+      },
+      "afterShot": "1366-discarded-refilled.png",
+      "restoredShot": "1366-restored.png",
+      "video": "videos/page@b57b1cf4068663787b77edbb2cb6dee3.webm",
+      "status": "PASS"
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "touch": true,
+      "steps": [
+        {
+          "note": "real two-card selection is a draft",
+          "unchanged": true,
+          "ui": {
+            "selected": [
+              "clubs-12",
+              "hearts-13"
+            ],
+            "assist": [],
+            "skill": false,
+            "discards": "3 次",
+            "plays": "4 次",
+            "hand": [
+              "clubs-12",
+              "hearts-13",
+              "hearts-2",
+              "spades-2",
+              "diamonds-11",
+              "diamonds-5",
+              "clubs-14",
+              "diamonds-14"
+            ],
+            "discardEnabled": true
+          }
+        },
+        {
+          "note": "deselect then repeated disabled Discard sends no command or cost",
+          "unchanged": true,
+          "ui": {
+            "selected": [],
+            "assist": [],
+            "skill": false,
+            "discards": "3 次",
+            "plays": "4 次",
+            "hand": [
+              "clubs-12",
+              "hearts-13",
+              "hearts-2",
+              "spades-2",
+              "diamonds-11",
+              "diamonds-5",
+              "clubs-14",
+              "diamonds-14"
+            ],
+            "discardEnabled": false
+          }
+        },
+        {
+          "note": "drag-off Discard cancels and preserves the exact selected draft",
+          "unchanged": true,
+          "ui": {
+            "selected": [
+              "clubs-12",
+              "hearts-13"
+            ],
+            "assist": [],
+            "skill": false,
+            "discards": "3 次",
+            "plays": "4 次",
+            "hand": [
+              "clubs-12",
+              "hearts-13",
+              "hearts-2",
+              "spades-2",
+              "diamonds-11",
+              "diamonds-5",
+              "clubs-14",
+              "diamonds-14"
+            ],
+            "discardEnabled": true
+          }
+        },
+        {
+          "note": "native touchCancel on Discard sends no command or queued action",
+          "unchanged": true,
+          "ui": {
+            "selected": [
+              "clubs-12",
+              "hearts-13"
+            ],
+            "assist": [],
+            "skill": false,
+            "discards": "3 次",
+            "plays": "4 次",
+            "hand": [
+              "clubs-12",
+              "hearts-13",
+              "hearts-2",
+              "spades-2",
+              "diamonds-11",
+              "diamonds-5",
+              "clubs-14",
+              "diamonds-14"
+            ],
+            "discardEnabled": true
+          }
+        },
+        {
+          "note": "repeated ordinary Discard saved exactly once; 3→2 discards, 4 plays and 2 gold unchanged, two actual replacement cards",
+          "command": {
+            "runId": "run/group-natural-17/amo",
+            "commandId": "run/group-natural-17/amo/command/7",
+            "expectedSeq": 6,
+            "action": {
+              "type": "DiscardHand",
+              "selectedIds": [
+                "clubs-12",
+                "hearts-13"
+              ]
+            }
+          },
+          "drawnIds": [
+            "diamonds-4",
+            "spades-4"
+          ],
+          "ui": {
+            "selected": [],
+            "assist": [],
+            "skill": false,
+            "discards": "2 次",
+            "plays": "4 次",
+            "hand": [
+              "hearts-2",
+              "spades-2",
+              "diamonds-11",
+              "diamonds-5",
+              "clubs-14",
+              "diamonds-14",
+              "diamonds-4",
+              "spades-4"
+            ],
+            "discardEnabled": false
+          }
+        },
+        {
+          "note": "post-refill repeated disabled Discard does not spend or queue another discard",
+          "unchanged": true,
+          "ui": {
+            "selected": [],
+            "assist": [],
+            "skill": false,
+            "discards": "2 次",
+            "plays": "4 次",
+            "hand": [
+              "hearts-2",
+              "spades-2",
+              "diamonds-11",
+              "diamonds-5",
+              "clubs-14",
+              "diamonds-14",
+              "diamonds-4",
+              "spades-4"
+            ],
+            "discardEnabled": false
+          }
+        },
+        {
+          "note": "cold Continue retains the exact discarded/refilled saved tuple and no draft",
+          "unchanged": true
+        }
+      ],
+      "errors": [],
+      "setup": {
+        "lease": true,
+        "imported": true,
+        "notice": "导入成功，已保存完整进度。"
+      },
+      "before": {
+        "seq": 6,
+        "gold": 2,
+        "discards": 3,
+        "hand": [
+          "clubs-12",
+          "hearts-13",
+          "hearts-2",
+          "spades-2",
+          "diamonds-11",
+          "diamonds-5",
+          "clubs-14",
+          "diamonds-14"
+        ]
+      },
+      "beforeUi": {
+        "selected": [],
+        "assist": [],
+        "skill": false,
+        "discards": "3 次",
+        "plays": "4 次",
+        "hand": [
+          "clubs-12",
+          "hearts-13",
+          "hearts-2",
+          "spades-2",
+          "diamonds-11",
+          "diamonds-5",
+          "clubs-14",
+          "diamonds-14"
+        ],
+        "discardEnabled": false
+      },
+      "selectedIds": [
+        "clubs-12",
+        "hearts-13"
+      ],
+      "selectedShot": "390-selected.png",
+      "canceledShot": "390-canceled.png",
+      "after": {
+        "seq": 7,
+        "gold": 2,
+        "discards": 2,
+        "hand": [
+          "hearts-2",
+          "spades-2",
+          "diamonds-11",
+          "diamonds-5",
+          "clubs-14",
+          "diamonds-14",
+          "diamonds-4",
+          "spades-4"
+        ]
+      },
+      "drawnIds": [
+        "diamonds-4",
+        "spades-4"
+      ],
+      "afterUi": {
+        "selected": [],
+        "assist": [],
+        "skill": false,
+        "discards": "2 次",
+        "plays": "4 次",
+        "hand": [
+          "hearts-2",
+          "spades-2",
+          "diamonds-11",
+          "diamonds-5",
+          "clubs-14",
+          "diamonds-14",
+          "diamonds-4",
+          "spades-4"
+        ],
+        "discardEnabled": false
+      },
+      "afterShot": "390-discarded-refilled.png",
+      "restoredShot": "390-restored.png",
+      "video": "videos/page@ce8057463abc2e5a98968ae205b213bc.webm",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS",
+  "browser": "151.0.7922.173"
+}

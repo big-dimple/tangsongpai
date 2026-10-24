@@ -1,0 +1,39 @@
+
+ RUN  v4.1.11 /workspace/tangsongpai
+
+ ❯ tests/joker-plain-copy.test.ts (16 tests | 1 failed) 398ms
+   × new growth is for later plays while already saved growth is the current contribution 20ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/joker-plain-copy.test.ts > new growth is for later plays while already saved growth is the current contribution
+AssertionError: expected '每次出牌加入已保存的热度成长；打出对子、两对、三条、葫芦等同点数组合后，热…' to contain '普通顺子、普通同花不增长'
+
+- Expected
++ Received
+
+- 普通顺子、普通同花不增长
++ 每次出牌加入已保存的热度成长；打出对子、两对、三条、葫芦等同点数组合后，热度成长+10，最多+100。
++ 本次出牌使用旧值；新成长从下一次出牌起生效，每次出牌只长一次，额外计分不会多长。
++ 成组指最终牌型为对子、两对、三条、葫芦、四条、五条、同花葫芦、同花五条；普通同花即使含同点牌也不算。
++ 已有成长跨场保留，改打顺子、普通同花或高牌仍可使用，但不增长；出售后丢失，重买初始为0。
++ 计分封禁时不读取加成，非计分成长仍照常判断。
++ 热度是计分的底数；倍率 + 表示增加，倍率 × 表示相乘。各效果按实际顺序结算，最后才算总分。
++ 搭配：同样靠同点组合生效的唐宋牌，或改点工具。
+
+ ❯ tests/joker-plain-copy.test.ts:34:370
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 6 passed (7)
+      Tests  1 failed | 71 passed (72)
+   Start at  04:16:40
+   Duration  4.41s (transform 5.16s, setup 0ms, import 8.44s, tests 1.85s, environment 1ms)
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

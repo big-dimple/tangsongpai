@@ -1,0 +1,13 @@
+
+> tangsongpai@0.1.0 test
+> vitest run tests/score-phrase.test.ts tests/owned-joker-score-motion.test.ts tests/joker-score-strike.test.ts tests/score-table.test.ts tests/singapore-final-adoption.test.ts tests/score-table-haptics.test.ts
+
+
+ RUN  v4.1.11 D:/ai/tangsongpai/tangsongpai/.codex-remote-attachments/owned-joker-score-motion
+
+
+ Test Files  6 passed (6)
+      Tests  35 passed (35)
+   Start at  07:30:30
+   Duration  3.49s (transform 8.40s, setup 0ms, import 11.24s, tests 232ms, environment 1ms)
+

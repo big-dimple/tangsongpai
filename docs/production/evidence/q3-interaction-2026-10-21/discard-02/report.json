@@ -1,0 +1,33 @@
+{
+  "head": "4c345f93bcd8f3c747b83f0e5e473d3b50b3a3e0",
+  "sourceHash": "25bc323a96a04b14f0b129f94c2340bf087edf4bc74d7f5622af51ef19ef2329",
+  "input": {
+    "path": "docs/production/evidence/q3-interaction-2026-10-21/final/full-state.json.gz",
+    "sha256": "55f4da6f13a031b4d31f4e09a92f59242296b43c5f19afa95f31b49c9d7481e6",
+    "checkpointChecksum": "json-fnv-v1:64a30e4c93de4b70",
+    "seq": 6
+  },
+  "scope": "Controlled setup imports the preceding natural journey checkpoint using GameSession.importJSON, then reloads and uses native Continue. Subsequent selection/cancel/discard inputs are native Chromium mouse/CDP touch. No edited state/stock/draws, discard-handler calls or synthetic domain dispatch; not a natural-acquisition or physical-phone acceptance claim.",
+  "cases": [
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "touch": false,
+      "steps": [],
+      "errors": []
+    }
+  ],
+  "status": "FAIL",
+  "browser": "151.0.7922.173",
+  "error": "AssertionError [ERR_ASSERTION]: controlled fixture setup uses existing validated import API\n\nfalse !== true\n\n    at file:///workspace/tangsongpai/harness/q3-discard.mjs:42:177\n    at runNextTicks (node:internal/process/task_queues:65:5)\n    at process.processImmediate (node:internal/timers:502:9)",
+  "diagnostic": {
+    "scenes": [
+      {
+        "key": "title"
+      }
+    ],
+    "dialogs": []
+  }
+}

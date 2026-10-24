@@ -1,0 +1,72 @@
+{
+  "sourceEvidence": "docs/production/evidence/score-phrase-directed-2026-10-17",
+  "baseline": "d351271e43dd3c8b7032b7c68aa8e4940687de12",
+  "sourceHashMatchesHistorical": true,
+  "stats": {
+    "pc": [
+      {
+        "eventId": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/28",
+        "target": "M",
+        "minimum": 0.9795891941610857,
+        "maximum": 1.0253690081686655
+      },
+      {
+        "eventId": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/29",
+        "target": "M",
+        "minimum": 0.9238781431281733,
+        "maximum": 1.062139283312674
+      },
+      {
+        "eventId": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/30",
+        "target": "H",
+        "minimum": 0.9450641655741018,
+        "maximum": 1.030332322314134
+      },
+      {
+        "eventId": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/31",
+        "target": "H",
+        "minimum": 0.9622534951513033,
+        "maximum": 1.030078865724802
+      },
+      {
+        "eventId": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/32",
+        "target": "M",
+        "minimum": 0.8159598080781816,
+        "maximum": 1.3191405845571549
+      }
+    ],
+    "fast": [
+      {
+        "eventId": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/28",
+        "target": "M",
+        "minimum": 0.9663643392628049,
+        "maximum": 1.0037452152059265
+      },
+      {
+        "eventId": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/29",
+        "target": "M",
+        "minimum": 0.9841280961039548,
+        "maximum": 1.006402215462067
+      },
+      {
+        "eventId": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/30",
+        "target": "H",
+        "minimum": 0.9370085063656551,
+        "maximum": 1.01328873969617
+      },
+      {
+        "eventId": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/31",
+        "target": "H",
+        "minimum": 0.958980615968781,
+        "maximum": 1.0130155669030856
+      },
+      {
+        "eventId": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/32",
+        "target": "M",
+        "minimum": 0.8340330293571033,
+        "maximum": 1.1063894278244228
+      }
+    ]
+  },
+  "note": "Reanalysis of earlier recorded frames. This is not a new browser run on d351; identical strike source hash establishes the relevant code path."
+}

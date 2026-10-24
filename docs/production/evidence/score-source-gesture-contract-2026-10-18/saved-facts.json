@@ -1,0 +1,166 @@
+{
+  "base": "bab78be5be4bc6d8cdb9780ac8a4eebb69f697da",
+  "scope": "Controlled legal checkpoint and read-only timing facts. No browser, hearing, or device acceptance.",
+  "action": {
+    "type": "PlayHand",
+    "selectedIds": [
+      "spades-8",
+      "hearts-8"
+    ],
+    "erxiangTargetId": "spades-8"
+  },
+  "eventId": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/2",
+  "sourceId": "controlled/attachment/erxiang/character",
+  "targetIds": [
+    "spades-8"
+  ],
+  "operation": "add-multiplier",
+  "before": {
+    "H": {
+      "n": "35",
+      "d": "1"
+    },
+    "M": {
+      "n": "2",
+      "d": "1"
+    }
+  },
+  "after": {
+    "H": {
+      "n": "35",
+      "d": "1"
+    },
+    "M": {
+      "n": "10",
+      "d": "1"
+    }
+  },
+  "finalEventId": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/5",
+  "finalScore": "430",
+  "events": [
+    {
+      "eventId": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/0",
+      "reasonKey": "pair.base",
+      "operation": "base"
+    },
+    {
+      "eventId": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/1",
+      "reasonKey": "rank-8.add-heat",
+      "operation": "add-heat"
+    },
+    {
+      "eventId": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/2",
+      "reasonKey": "erxiang.handoff",
+      "operation": "add-multiplier"
+    },
+    {
+      "eventId": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/3",
+      "reasonKey": "rank-8.add-heat",
+      "operation": "add-heat"
+    },
+    {
+      "eventId": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/4",
+      "reasonKey": "route-growth.G.factor",
+      "operation": "route-factor"
+    },
+    {
+      "eventId": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/5",
+      "reasonKey": "pair.final-score",
+      "operation": "final-score"
+    },
+    {
+      "eventId": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/6",
+      "reasonKey": "route-growth.clear",
+      "operation": "route-clear"
+    },
+    {
+      "eventId": "controlled/attachment/erxiang/hand/controlled/attachment/erxiang/command/4/event/7",
+      "reasonKey": "route-growth.G.clear",
+      "operation": "route-clear-family"
+    }
+  ],
+  "beats": [
+    {
+      "speed": 1,
+      "beat": {
+        "windup": 110,
+        "flight": 95,
+        "impact": 190,
+        "rest": 25,
+        "strength": "role",
+        "phrase": {
+          "role": "opening",
+          "pulse": 0,
+          "progress": 0,
+          "notePulse": 0,
+          "sourcePulse": 0,
+          "accentWeight": 0.72,
+          "paired": true,
+          "budgetMs": 420,
+          "start": 400,
+          "arrival": 605,
+          "end": 820
+        },
+        "strike": {
+          "hold": 40,
+          "recovery": 150
+        }
+      }
+    },
+    {
+      "speed": 2,
+      "beat": {
+        "windup": 110,
+        "flight": 120,
+        "impact": 230,
+        "rest": 60,
+        "strength": "role",
+        "phrase": {
+          "role": "opening",
+          "pulse": 0,
+          "progress": 0,
+          "notePulse": 0,
+          "sourcePulse": 0,
+          "accentWeight": 0.72,
+          "paired": true,
+          "budgetMs": 520,
+          "start": 400,
+          "arrival": 630,
+          "end": 920
+        },
+        "strike": {
+          "hold": 80,
+          "recovery": 150
+        }
+      }
+    },
+    {
+      "speed": 4,
+      "beat": {
+        "windup": 220,
+        "flight": 240,
+        "impact": 360,
+        "rest": 220,
+        "strength": "role",
+        "phrase": {
+          "role": "opening",
+          "pulse": 0,
+          "progress": 0,
+          "notePulse": 0,
+          "sourcePulse": 0,
+          "accentWeight": 0.72,
+          "paired": true,
+          "budgetMs": 1040,
+          "start": 400,
+          "arrival": 860,
+          "end": 1440
+        },
+        "strike": {
+          "hold": 160,
+          "recovery": 200
+        }
+      }
+    }
+  ],
+  "checkpointImport": "PASS"
+}

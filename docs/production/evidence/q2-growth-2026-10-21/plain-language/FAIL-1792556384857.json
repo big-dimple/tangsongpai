@@ -1,0 +1,41 @@
+{
+  "status": "FAIL",
+  "head": "43dd4db201b99e7d69af4fc0e4990fbd38865b88",
+  "sourceHashes": {
+    "src/game/JokerGrowthDecisionCopy.ts": "4fbc0e2d5bf9bbd4c81ec47985c69d41adf791e76d51186d061db9b04897efb9",
+    "src/game/JokerPlainCopy.ts": "6a2b28f6664eae73b4c227f10abc5cbedd51519cc8c0aaeb1444cd4ae5a851c9",
+    "src/game/ShopDecisionCopy.ts": "f5bc16224929e2407fb5a4f044ec9e8a8689f75be666e50727301136915d9a6d",
+    "src/game/ShopScene.ts": "b68e523bfadda337fd7a5a60e00d0a99a27fda3f836e4c069f7c1629dbe6d1eb",
+    "src/game/GameScene.ts": "af790debd8f283d3641e22807c28995357a36e73a84027890fda01966d187351"
+  },
+  "scope": "Ordinary menu launch and fixed prior seeds; actual pre-purchase view/cancel, one native BuyOffer, owned first-layer view/cancel. No injected checkpoint, no plays, no seed search or acquisition-rate claim.",
+  "cases": [
+    {
+      "key": "1366-c04",
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "id": "c04",
+      "route": "straight",
+      "seed": "policy-valid-groups",
+      "expected": [
+        "顺子或同花顺热度+50",
+        "攒+10热度",
+        "下次出牌起任意牌型都能用"
+      ],
+      "tip": "改点工具",
+      "cap": "最多攒+100热度",
+      "errors": [],
+      "offer": {
+        "offerId": "run/policy-valid-groups/erxiang/shop/0/0/joker/2",
+        "definitionId": "c04",
+        "price": 4,
+        "edition": "none",
+        "consumed": false
+      }
+    }
+  ],
+  "browser": "151.0.7922.173",
+  "error": "AssertionError [ERR_ASSERTION]: Tips are in the first layer, no rule disclosure required\n    at view (file:///workspace/tangsongpai/harness/q2-growth-decision.mjs:27:67)\n    at async file:///workspace/tangsongpai/harness/q2-growth-decision.mjs:39:65"
+}

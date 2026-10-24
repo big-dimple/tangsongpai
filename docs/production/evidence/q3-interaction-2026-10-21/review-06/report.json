@@ -1,0 +1,313 @@
+{
+  "head": "0d1c4cef14e5ee560376f3098f6a8abd043e1717",
+  "dirty": "?? docs/production/evidence/q3-interaction-2026-10-21/\n?? harness/q3-interaction.mjs",
+  "seed": "group-natural-17",
+  "scope": "Natural new run, real public UI only; no imported checkpoint or draw override. IDB failure is separately injected. Chromium software rendering, not physical phone or formal Q3 acceptance.",
+  "cases": [
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "touch": false,
+      "steps": [
+        {
+          "note": "decline optional program; leave budget intact",
+          "actions": [
+            {
+              "type": "ChooseProgram",
+              "programId": null
+            }
+          ],
+          "before": {
+            "seq": 1,
+            "gold": 6
+          },
+          "after": {
+            "seq": 2,
+            "gold": 6
+          }
+        },
+        {
+          "note": "long hold stock only inspects, no purchase",
+          "unchanged": true
+        },
+        {
+          "note": "independent Cancel does not penetrate or spend",
+          "unchanged": true
+        },
+        {
+          "note": "explicit natural tool purchase once",
+          "actions": [
+            {
+              "type": "BuyOffer",
+              "offerId": "run/group-natural-17/amo/shop/0/0/tool/0"
+            }
+          ],
+          "before": {
+            "seq": 2,
+            "gold": 6
+          },
+          "after": {
+            "seq": 3,
+            "gold": 2
+          }
+        },
+        {
+          "note": "cancel target selection keeps purchased unused tool",
+          "unchanged": true
+        },
+        {
+          "note": "leave shop with remaining gold; confirm actual stage and deal",
+          "actions": [
+            {
+              "type": "LeaveShop"
+            },
+            {
+              "type": "EnterStage"
+            }
+          ],
+          "before": {
+            "seq": 3,
+            "gold": 2
+          },
+          "after": {
+            "seq": 5,
+            "gold": 2
+          }
+        },
+        {
+          "note": "long hold hand only inspects; no play",
+          "unchanged": true
+        },
+        {
+          "note": "hand detail close no play or select",
+          "unchanged": true
+        },
+        {
+          "note": "hero explanation/cancel preserves hand draft",
+          "unchanged": true
+        },
+        {
+          "note": "cold restore drops unsubmitted hand and skill draft",
+          "unchanged": true
+        }
+      ],
+      "errors": [],
+      "initial": {
+        "seq": 1,
+        "gold": 6
+      },
+      "shop": "1366-natural-shop.png",
+      "table": "1366-natural-table.png",
+      "available": [
+        {
+          "name": "hero/details"
+        },
+        {
+          "name": "hero/skill-entry"
+        },
+        {
+          "name": "action/sort-rank",
+          "label": "点数"
+        },
+        {
+          "name": "action/sort-suit",
+          "label": "花色"
+        },
+        {
+          "name": "hero/action-shortcut",
+          "label": "余音袅袅"
+        },
+        {
+          "name": "action/tool-inventory",
+          "label": "道具箱 1/2"
+        },
+        {
+          "name": "card/clubs-12"
+        },
+        {
+          "name": "card/hearts-13"
+        },
+        {
+          "name": "card/hearts-2"
+        },
+        {
+          "name": "card/spades-2"
+        },
+        {
+          "name": "card/diamonds-11"
+        },
+        {
+          "name": "card/diamonds-5"
+        },
+        {
+          "name": "card/clubs-14"
+        },
+        {
+          "name": "card/diamonds-14"
+        },
+        {
+          "name": "selection/source-benefits",
+          "label": "本场与选牌帮助"
+        },
+        {
+          "name": "hero/portrait-details"
+        }
+      ],
+      "status": "PROBE"
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "touch": true,
+      "steps": [
+        {
+          "note": "decline optional program; leave budget intact",
+          "actions": [
+            {
+              "type": "ChooseProgram",
+              "programId": null
+            }
+          ],
+          "before": {
+            "seq": 1,
+            "gold": 6
+          },
+          "after": {
+            "seq": 2,
+            "gold": 6
+          }
+        },
+        {
+          "note": "long hold stock only inspects, no purchase",
+          "unchanged": true
+        },
+        {
+          "note": "independent Cancel does not penetrate or spend",
+          "unchanged": true
+        },
+        {
+          "note": "explicit natural tool purchase once",
+          "actions": [
+            {
+              "type": "BuyOffer",
+              "offerId": "run/group-natural-17/amo/shop/0/0/tool/0"
+            }
+          ],
+          "before": {
+            "seq": 2,
+            "gold": 6
+          },
+          "after": {
+            "seq": 3,
+            "gold": 2
+          }
+        },
+        {
+          "note": "cancel target selection keeps purchased unused tool",
+          "unchanged": true
+        },
+        {
+          "note": "leave shop with remaining gold; confirm actual stage and deal",
+          "actions": [
+            {
+              "type": "LeaveShop"
+            },
+            {
+              "type": "EnterStage"
+            }
+          ],
+          "before": {
+            "seq": 3,
+            "gold": 2
+          },
+          "after": {
+            "seq": 5,
+            "gold": 2
+          }
+        },
+        {
+          "note": "long hold hand only inspects; no play",
+          "unchanged": true
+        },
+        {
+          "note": "hand detail close no play or select",
+          "unchanged": true
+        },
+        {
+          "note": "hero explanation/cancel preserves hand draft",
+          "unchanged": true
+        },
+        {
+          "note": "cold restore drops unsubmitted hand and skill draft",
+          "unchanged": true
+        }
+      ],
+      "errors": [],
+      "initial": {
+        "seq": 1,
+        "gold": 6
+      },
+      "shop": "390-natural-shop.png",
+      "table": "390-natural-table.png",
+      "available": [
+        {
+          "name": "hero/details"
+        },
+        {
+          "name": "hero/skill-entry"
+        },
+        {
+          "name": "action/sort-rank",
+          "label": "点数"
+        },
+        {
+          "name": "action/sort-suit",
+          "label": "花色"
+        },
+        {
+          "name": "hero/action-shortcut",
+          "label": "余音袅袅"
+        },
+        {
+          "name": "action/tool-inventory",
+          "label": "道具箱\n1/2"
+        },
+        {
+          "name": "card/clubs-12"
+        },
+        {
+          "name": "card/hearts-13"
+        },
+        {
+          "name": "card/hearts-2"
+        },
+        {
+          "name": "card/spades-2"
+        },
+        {
+          "name": "card/diamonds-11"
+        },
+        {
+          "name": "card/diamonds-5"
+        },
+        {
+          "name": "card/clubs-14"
+        },
+        {
+          "name": "card/diamonds-14"
+        },
+        {
+          "name": "selection/source-benefits",
+          "label": "条件\n帮助"
+        }
+      ],
+      "status": "PROBE"
+    }
+  ],
+  "status": "PROBE",
+  "browser": "151.0.7922.173"
+}

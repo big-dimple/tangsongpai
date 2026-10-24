@@ -1,0 +1,146 @@
+{
+  "stage": "before",
+  "head": "fe2de5edaea6c3dbcc9a7e0885dfe324bae457be",
+  "sources": {
+    "src/game/SelectionEntryParticles.ts": "90f2785a9077cfefb2511213d297a1bbc080b50636f8f7bf90a8c53fac9a7bb3",
+    "src/game/CharacterSelectScene.ts": "cbd6b0f732b853f1fdaf682fe7cc9f0d38922115c704b994691c8de45da5ee43"
+  },
+  "browser": "151.0.7922.173",
+  "cases": [
+    {
+      "width": 390,
+      "height": 740,
+      "summary": {
+        "idleHz": 22.33081976762733,
+        "idlePaintMaxMs": 0.2000000011175871,
+        "idleVisible": [
+          8,
+          11
+        ],
+        "frontRange": [
+          2,
+          3
+        ],
+        "backRange": [
+          5,
+          9
+        ],
+        "switchObservedMs": 549.1999999992549,
+        "confirmObservedMs": 504.5,
+        "confirmationFrames": 31,
+        "maxFeedbackCommands": 408
+      },
+      "shots": [
+        {
+          "key": "B-body",
+          "progress": 0.4160714285714286,
+          "at": 7963.5
+        },
+        {
+          "key": "B-tail",
+          "progress": 0.8017857142857143,
+          "at": 8180.89999999851
+        },
+        {
+          "key": "C-gather",
+          "progress": 0.1596153846153846,
+          "at": 9725.199999999255
+        },
+        {
+          "key": "C-peak",
+          "progress": 0.4807692307692308,
+          "at": 9892.199999999255
+        },
+        {
+          "key": "C-outward",
+          "progress": 0.7057692307692308,
+          "at": 10014.699999999255
+        },
+        {
+          "key": "C-decay",
+          "progress": 0.9326923076923077,
+          "at": 10134.89999999851
+        }
+      ],
+      "savedCharacter": "erxiang",
+      "savedRoute": "straight",
+      "cleanup": {
+        "motion": false,
+        "gather": 0,
+        "trail": 0,
+        "nodes": 0,
+        "listening": false,
+        "destroyed": true
+      }
+    },
+    {
+      "width": 1366,
+      "height": 768,
+      "summary": {
+        "idleHz": 42.685414770389,
+        "idlePaintMaxMs": 1.700000001117587,
+        "idleVisible": [
+          17,
+          20
+        ],
+        "frontRange": [
+          1,
+          1
+        ],
+        "backRange": [
+          16,
+          19
+        ],
+        "switchObservedMs": 551.9000000003725,
+        "confirmObservedMs": 517.5,
+        "confirmationFrames": 32,
+        "maxFeedbackCommands": 408
+      },
+      "shots": [
+        {
+          "key": "B-body",
+          "progress": 0.41964285714285715,
+          "at": 7440
+        },
+        {
+          "key": "B-tail",
+          "progress": 0.8089285714285714,
+          "at": 7663.700000001118
+        },
+        {
+          "key": "C-gather",
+          "progress": 0.16153846153846155,
+          "at": 9353.099999999627
+        },
+        {
+          "key": "C-peak",
+          "progress": 0.4826923076923077,
+          "at": 9518.400000000373
+        },
+        {
+          "key": "C-outward",
+          "progress": 0.7057692307692308,
+          "at": 9636.400000000373
+        },
+        {
+          "key": "C-decay",
+          "progress": 0.9288461538461539,
+          "at": 9747.900000000373
+        }
+      ],
+      "savedCharacter": "erxiang",
+      "savedRoute": "straight",
+      "cleanup": {
+        "motion": false,
+        "gather": 0,
+        "trail": 0,
+        "nodes": 0,
+        "listening": false,
+        "destroyed": true
+      }
+    }
+  ],
+  "errors": [],
+  "scope": "Native local interaction, unedited original-speed browser video. Idle → hero switch → saved real confirmation → natural end. Keyframes assist inspection; they are not motion acceptance.",
+  "status": "PASS"
+}

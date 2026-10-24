@@ -1,0 +1,929 @@
+{
+  "baseline": "9fe60fc581227829df6caadc712a5bd0fed74bc4",
+  "branch": "dev/score-phrase-directed-20261017",
+  "runtimeSources": {
+    "src/game/GameScene.ts": "950cf125a6f681be0c60ef6d01992529d44df87e4e2470708020932c8c95cb43",
+    "src/game/OwnedJokerScoreMotion.ts": "71f00502efce78270829de8e7c6c61c3e9d09875591ccd38b31e08295c1de87d",
+    "src/game/ScorePhrase.ts": "8e33359d2ad60095fc0753b2c67581abde78e6ebf7c8e9642becc0e5ee7d76c1",
+    "src/game/JokerScoreStrike.ts": "0d75f700ac9b11520da7abb74b03d710949954eb22ccb6d758dacbb7b0b55aba",
+    "src/game/ScoreTableCredit.ts": "83c7477a0fb49f23de015b008dd9215844babfa6e40924e65f120082d88b8ae9",
+    "src/game/inkwaveSpring.ts": "78b6d9bfeecb55dfeb1b305561dada352d4a0fbb43e4c8ccd5e066e4645b48bd",
+    "src/game/layout.ts": "334a5c50f5dcef58c2bd3c956674261336f969670c379fd1ba36fd9961a33b15",
+    "src/game/PolychromeCardIridescence.ts": "560b19c18a2c3238d079a2f74d47b9910e268155239c4a8c3ef1d915c249e145",
+    "src/audio/AudioEngine.ts": "8b31d085e1c98a23867e7f3d8e08b44c50d0f9a714bbb761e429ad363d72a638",
+    "src/game/scorePresentation.ts": "8ce5bf3a90380f400051c19d6d902bf8f6b538f89039b05ed3d32c34b5f9f234"
+  },
+  "sameRuntimeSourcesAcrossAfterRuns": true,
+  "baselineSourcesVerified": true,
+  "status": "PASS",
+  "scope": "Controlled public checkpoint + native selection/PlayHand. Software timing/render/state checks only. hearing=false; physicalDevice=false; P08=in_progress.",
+  "before": [
+    {
+      "key": "pc",
+      "frames": 1081,
+      "stateExact": true,
+      "densePlayInput": false,
+      "sourceImpacts": 13,
+      "pairedSources": 6,
+      "reboundCalls": 6,
+      "pairMs": {
+        "min": 81.2,
+        "max": 131.1
+      },
+      "sourceRunArrivalGapMs": {
+        "firstFourMean": 1666.3,
+        "lastFourMean": 767.15
+      },
+      "presentationSpanMs": 17388.9,
+      "phraseObservedSpanMs": 16314,
+      "keyAccent": {
+        "event": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/32",
+        "observedWindupMs": 334.5,
+        "observedEventMs": 733.8,
+        "plannedActualMs": 615
+      },
+      "settle": {
+        "observedMs": 749.2,
+        "plannedConvergeMs": 120
+      },
+      "maxScoreVoices": 3,
+      "maxSharedMaterialEntries": 3,
+      "maxNumericPulseBeforeFinal": 1,
+      "strikes": [
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/28",
+          "target": "M",
+          "kind": "add",
+          "frames": 22,
+          "flightSamples": 7
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/29",
+          "target": "M",
+          "kind": "multiply",
+          "frames": 24,
+          "flightSamples": 8
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/30",
+          "target": "H",
+          "kind": "heat",
+          "frames": 22,
+          "flightSamples": 7
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/31",
+          "target": "H",
+          "kind": "heat",
+          "frames": 22,
+          "flightSamples": 7
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/32",
+          "target": "M",
+          "kind": "multiply",
+          "frames": 27,
+          "flightSamples": 9
+        }
+      ],
+      "sourceVisuals": [],
+      "polychromeFlights": [],
+      "receipts": []
+    },
+    {
+      "key": "fast",
+      "frames": 508,
+      "stateExact": true,
+      "densePlayInput": false,
+      "sourceImpacts": 13,
+      "pairedSources": 6,
+      "reboundCalls": 6,
+      "pairMs": {
+        "min": 80.9,
+        "max": 82
+      },
+      "sourceRunArrivalGapMs": {
+        "firstFourMean": 749.8,
+        "lastFourMean": 425.25
+      },
+      "presentationSpanMs": 7883.2,
+      "phraseObservedSpanMs": 7574.9,
+      "keyAccent": {
+        "event": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/32",
+        "observedWindupMs": 149.3,
+        "observedEventMs": 299.6,
+        "plannedActualMs": 209.75
+      },
+      "settle": {
+        "observedMs": 284.1,
+        "plannedConvergeMs": 70
+      },
+      "maxScoreVoices": 3,
+      "maxSharedMaterialEntries": 3,
+      "maxNumericPulseBeforeFinal": 1,
+      "strikes": [
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/28",
+          "target": "M",
+          "kind": "add",
+          "frames": 12,
+          "flightSamples": 5
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/29",
+          "target": "M",
+          "kind": "multiply",
+          "frames": 12,
+          "flightSamples": 5
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/30",
+          "target": "H",
+          "kind": "heat",
+          "frames": 12,
+          "flightSamples": 5
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/31",
+          "target": "H",
+          "kind": "heat",
+          "frames": 12,
+          "flightSamples": 5
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/32",
+          "target": "M",
+          "kind": "multiply",
+          "frames": 12,
+          "flightSamples": 5
+        }
+      ],
+      "sourceVisuals": [],
+      "polychromeFlights": [],
+      "receipts": []
+    }
+  ],
+  "after": [
+    {
+      "key": "pc",
+      "frames": 839,
+      "stateExact": true,
+      "densePlayInput": true,
+      "sourceImpacts": 13,
+      "pairedSources": 13,
+      "reboundCalls": 13,
+      "pairMs": {
+        "min": 77.2,
+        "max": 132
+      },
+      "sourceRunArrivalGapMs": {
+        "firstFourMean": 1262.13,
+        "lastFourMean": 558.45
+      },
+      "presentationSpanMs": 13539.5,
+      "phraseObservedSpanMs": 12766.1,
+      "keyAccent": {
+        "event": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/32",
+        "observedWindupMs": 317.4,
+        "observedEventMs": 717.6,
+        "plannedActualMs": 640
+      },
+      "settle": {
+        "observedMs": 798.7,
+        "plannedConvergeMs": 160
+      },
+      "maxScoreVoices": 3,
+      "maxSharedMaterialEntries": 3,
+      "maxNumericPulseBeforeFinal": 1,
+      "strikes": [
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/28",
+          "target": "M",
+          "kind": "add",
+          "frames": 15,
+          "flightSamples": 5
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/29",
+          "target": "M",
+          "kind": "multiply",
+          "frames": 15,
+          "flightSamples": 5
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/30",
+          "target": "H",
+          "kind": "heat",
+          "frames": 15,
+          "flightSamples": 5
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/31",
+          "target": "H",
+          "kind": "heat",
+          "frames": 15,
+          "flightSamples": 5
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/32",
+          "target": "M",
+          "kind": "multiply",
+          "frames": 26,
+          "flightSamples": 8
+        }
+      ],
+      "sourceVisuals": [
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/4",
+          "positive": 5.6270967741935465,
+          "negative": -5.6270967741935465,
+          "lift": -18,
+          "pairMs": 113.29999999701977
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/5",
+          "positive": 4.5499999999999545,
+          "negative": -4.5499999999999545,
+          "lift": -18,
+          "pairMs": 115.59999999403954
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/13",
+          "positive": 4.5499999999999545,
+          "negative": -4.5499999999999545,
+          "lift": -18,
+          "pairMs": 114.59999999403954
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/14",
+          "positive": 5.437419354838767,
+          "negative": -5.437419354838767,
+          "lift": -18,
+          "pairMs": 114.8999999910593
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/18",
+          "positive": 5.473548387096798,
+          "negative": -5.473548387096798,
+          "lift": -18,
+          "pairMs": 97.5
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/21",
+          "positive": 4.5499999999999545,
+          "negative": -4.5499999999999545,
+          "lift": -18,
+          "pairMs": 96.8999999910593
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/24",
+          "positive": 5.740000000000009,
+          "negative": -5.740000000000009,
+          "lift": -18,
+          "pairMs": 98.20000000298023
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/25",
+          "positive": 4.5499999999999545,
+          "negative": -4.5499999999999545,
+          "lift": -18,
+          "pairMs": 97.3999999910593
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/28",
+          "positive": 6,
+          "negative": -5.740000000000009,
+          "lift": -18,
+          "pairMs": 84.70000000298023
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/29",
+          "positive": 5.460000000000036,
+          "negative": -6.19512889692021,
+          "lift": -24,
+          "pairMs": 77.19999998807907
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/30",
+          "positive": 5.581935483871121,
+          "negative": -6,
+          "lift": -18,
+          "pairMs": 80.80000001192093
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/31",
+          "positive": 4.5499999999999545,
+          "negative": -6.132900733423753,
+          "lift": -18,
+          "pairMs": 79.90000000596046
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/32",
+          "positive": 7.328178782397458,
+          "negative": -8.399999999999977,
+          "lift": -24,
+          "pairMs": 132
+        }
+      ],
+      "polychromeFlights": [
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/31",
+          "frames": 15
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/32",
+          "frames": 26
+        }
+      ],
+      "receipts": []
+    },
+    {
+      "key": "phone",
+      "frames": 850,
+      "stateExact": true,
+      "densePlayInput": true,
+      "sourceImpacts": 13,
+      "pairedSources": 13,
+      "reboundCalls": 13,
+      "pairMs": {
+        "min": 95.4,
+        "max": 130.4
+      },
+      "sourceRunArrivalGapMs": {
+        "firstFourMean": 1287.25,
+        "lastFourMean": 558.02
+      },
+      "presentationSpanMs": 13723.9,
+      "phraseObservedSpanMs": 12948.7,
+      "keyAccent": {
+        "event": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/32",
+        "observedWindupMs": 318.1,
+        "observedEventMs": 716.8,
+        "plannedActualMs": 640
+      },
+      "settle": {
+        "observedMs": 798.9,
+        "plannedConvergeMs": 160
+      },
+      "maxScoreVoices": 3,
+      "maxSharedMaterialEntries": 3,
+      "maxNumericPulseBeforeFinal": 1,
+      "strikes": [
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/28",
+          "target": "M",
+          "kind": "add",
+          "frames": 15,
+          "flightSamples": 5
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/29",
+          "target": "M",
+          "kind": "multiply",
+          "frames": 15,
+          "flightSamples": 5
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/30",
+          "target": "H",
+          "kind": "heat",
+          "frames": 15,
+          "flightSamples": 5
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/31",
+          "target": "H",
+          "kind": "heat",
+          "frames": 15,
+          "flightSamples": 5
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/32",
+          "target": "M",
+          "kind": "multiply",
+          "frames": 26,
+          "flightSamples": 8
+        }
+      ],
+      "sourceVisuals": [
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/4",
+          "positive": 5.6270967741935465,
+          "negative": -5.6270967741935465,
+          "lift": -11.913598621262748,
+          "pairMs": 114.5
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/5",
+          "positive": 4.5499999999999545,
+          "negative": -4.5499999999999545,
+          "lift": -12.098634110780097,
+          "pairMs": 114.69999998807907
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/13",
+          "positive": 4.5499999999999545,
+          "negative": -4.5499999999999545,
+          "lift": -12.375736030934503,
+          "pairMs": 115.09999999403954
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/14",
+          "positive": 5.437419354838767,
+          "negative": -5.437419354838767,
+          "lift": -12.095893074211823,
+          "pairMs": 115.8999999910593
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/18",
+          "positive": 5.473548387096798,
+          "negative": -5.473548387096798,
+          "lift": -11.991821084037397,
+          "pairMs": 99.29999999701977
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/21",
+          "positive": 4.5499999999999545,
+          "negative": -4.5499999999999545,
+          "lift": -12.323010573774006,
+          "pairMs": 97.70000000298023
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/24",
+          "positive": 5.740000000000009,
+          "negative": -5.740000000000009,
+          "lift": -11.72217312027545,
+          "pairMs": 98.3999999910593
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/25",
+          "positive": 4.5499999999999545,
+          "negative": -4.5499999999999545,
+          "lift": -12.338529581490953,
+          "pairMs": 95.40000000596046
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/28",
+          "positive": 7.4631389384869635,
+          "negative": -5.740000000000009,
+          "lift": -12.886497020721436,
+          "pairMs": 95.3999999910593
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/29",
+          "positive": 5.460000000000036,
+          "negative": -6.490517806104208,
+          "lift": -13.067996978759766,
+          "pairMs": 100.20000000298023
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/30",
+          "positive": 5.581935483871121,
+          "negative": -6.1643198551892056,
+          "lift": -12.833803484516759,
+          "pairMs": 98.29999999701977
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/31",
+          "positive": 4.5499999999999545,
+          "negative": -6.43866524499515,
+          "lift": -12.699046244386766,
+          "pairMs": 97.20000000298023
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/32",
+          "positive": 7.423015648838714,
+          "negative": -8.399999999999977,
+          "lift": -13.667735970538699,
+          "pairMs": 130.3999999910593
+        }
+      ],
+      "polychromeFlights": [
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/31",
+          "frames": 15
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/6/event/32",
+          "frames": 26
+        }
+      ],
+      "receipts": []
+    },
+    {
+      "key": "reduced",
+      "frames": 268,
+      "stateExact": true,
+      "densePlayInput": false,
+      "sourceImpacts": 13,
+      "pairedSources": 0,
+      "reboundCalls": 0,
+      "sourceRunArrivalGapMs": {
+        "firstFourMean": 408.07,
+        "lastFourMean": 175
+      },
+      "presentationSpanMs": 3920.2,
+      "phraseObservedSpanMs": 3818.5,
+      "keyAccent": {
+        "event": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/32",
+        "observedWindupMs": null,
+        "observedEventMs": 98.9,
+        "plannedActualMs": 65
+      },
+      "settle": {
+        "observedMs": 82.7,
+        "plannedConvergeMs": 90
+      },
+      "maxScoreVoices": 3,
+      "maxSharedMaterialEntries": 3,
+      "maxNumericPulseBeforeFinal": 1,
+      "strikes": [],
+      "sourceVisuals": [],
+      "polychromeFlights": [],
+      "receipts": []
+    },
+    {
+      "key": "fast",
+      "frames": 497,
+      "stateExact": true,
+      "densePlayInput": true,
+      "sourceImpacts": 13,
+      "pairedSources": 13,
+      "reboundCalls": 13,
+      "pairMs": {
+        "min": 64.8,
+        "max": 96.6
+      },
+      "sourceRunArrivalGapMs": {
+        "firstFourMean": 716.42,
+        "lastFourMean": 383.25
+      },
+      "presentationSpanMs": 7856.8,
+      "phraseObservedSpanMs": 7623.2,
+      "keyAccent": {
+        "event": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/32",
+        "observedWindupMs": 216.3,
+        "observedEventMs": 450.7,
+        "plannedActualMs": 350
+      },
+      "settle": {
+        "observedMs": 383.6,
+        "plannedConvergeMs": 90
+      },
+      "maxScoreVoices": 3,
+      "maxSharedMaterialEntries": 3,
+      "maxNumericPulseBeforeFinal": 1,
+      "strikes": [
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/28",
+          "target": "M",
+          "kind": "add",
+          "frames": 12,
+          "flightSamples": 5
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/29",
+          "target": "M",
+          "kind": "multiply",
+          "frames": 12,
+          "flightSamples": 5
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/30",
+          "target": "H",
+          "kind": "heat",
+          "frames": 12,
+          "flightSamples": 5
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/31",
+          "target": "H",
+          "kind": "heat",
+          "frames": 12,
+          "flightSamples": 5
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/32",
+          "target": "M",
+          "kind": "multiply",
+          "frames": 17,
+          "flightSamples": 6
+        }
+      ],
+      "sourceVisuals": [
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/4",
+          "positive": 5.6270967741935465,
+          "negative": -5.6270967741935465,
+          "lift": -11.57669571645323,
+          "pairMs": 82
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/5",
+          "positive": 4.5499999999999545,
+          "negative": -4.5499999999999545,
+          "lift": -12.019249467507834,
+          "pairMs": 82
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/13",
+          "positive": 4.5499999999999545,
+          "negative": -4.5499999999999545,
+          "lift": -12.019249467507834,
+          "pairMs": 81
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/14",
+          "positive": 5.437419354838767,
+          "negative": -5.437419354838767,
+          "lift": -11.619357199331809,
+          "pairMs": 65.20000000298023
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/18",
+          "positive": 5.473548387096798,
+          "negative": -5.473548387096798,
+          "lift": -11.649411629110702,
+          "pairMs": 65.40000000596046
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/21",
+          "positive": 4.5499999999999545,
+          "negative": -4.5499999999999545,
+          "lift": -12.019249467507834,
+          "pairMs": 81.5
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/24",
+          "positive": 5.740000000000009,
+          "negative": -5.740000000000009,
+          "lift": -11.474660420460069,
+          "pairMs": 82.8999999910593
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/25",
+          "positive": 4.5499999999999545,
+          "negative": -4.5499999999999545,
+          "lift": -12.05112107587152,
+          "pairMs": 64.79999999701977
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/28",
+          "positive": 6,
+          "negative": -5.740000000000009,
+          "lift": -12.66869707107544,
+          "pairMs": 81.40000000596046
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/29",
+          "positive": 5.460000000000036,
+          "negative": -6,
+          "lift": -12.668697071075538,
+          "pairMs": 82.70000000298023
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/30",
+          "positive": 5.581935483871121,
+          "negative": -6,
+          "lift": -12.66869707107544,
+          "pairMs": 79.40000000596046
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/31",
+          "positive": 4.5499999999999545,
+          "negative": -6,
+          "lift": -12.777597045898437,
+          "pairMs": 80.20000000298023
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/32",
+          "positive": 6,
+          "negative": -8.399999999999977,
+          "lift": -13.02651127406529,
+          "pairMs": 96.59999999403954
+        }
+      ],
+      "polychromeFlights": [
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/31",
+          "frames": 12
+        },
+        {
+          "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/32",
+          "frames": 17
+        }
+      ],
+      "receipts": []
+    },
+    {
+      "key": "billion",
+      "frames": 227,
+      "stateExact": true,
+      "densePlayInput": true,
+      "sourceImpacts": 5,
+      "pairedSources": 5,
+      "reboundCalls": 5,
+      "pairMs": {
+        "min": 79.4,
+        "max": 115.9
+      },
+      "sourceRunArrivalGapMs": [
+        276.8,
+        282.8,
+        282.5
+      ],
+      "presentationSpanMs": 3206.8,
+      "phraseObservedSpanMs": 2839.4,
+      "keyAccent": {
+        "event": "controlled/readable-multiplier/group/hand/controlled/readable-multiplier/group/command/4/event/5",
+        "observedWindupMs": 207.4,
+        "observedEventMs": 432.7,
+        "plannedActualMs": 350
+      },
+      "settle": {
+        "observedMs": 350.7,
+        "plannedConvergeMs": 90
+      },
+      "maxScoreVoices": 6,
+      "maxSharedMaterialEntries": 2,
+      "maxNumericPulseBeforeFinal": 1,
+      "strikes": [
+        {
+          "id": "controlled/readable-multiplier/group/hand/controlled/readable-multiplier/group/command/4/event/5",
+          "target": "M",
+          "kind": "multiply",
+          "frames": 16,
+          "flightSamples": 5
+        },
+        {
+          "id": "controlled/readable-multiplier/group/hand/controlled/readable-multiplier/group/command/4/event/6",
+          "target": "H",
+          "kind": "heat",
+          "frames": 12,
+          "flightSamples": 5
+        },
+        {
+          "id": "controlled/readable-multiplier/group/hand/controlled/readable-multiplier/group/command/4/event/7",
+          "target": "H",
+          "kind": "heat",
+          "frames": 12,
+          "flightSamples": 5
+        },
+        {
+          "id": "controlled/readable-multiplier/group/hand/controlled/readable-multiplier/group/command/4/event/8",
+          "target": "H",
+          "kind": "heat",
+          "frames": 12,
+          "flightSamples": 5
+        },
+        {
+          "id": "controlled/readable-multiplier/group/hand/controlled/readable-multiplier/group/command/4/event/9",
+          "target": "M",
+          "kind": "multiply",
+          "frames": 12,
+          "flightSamples": 5
+        }
+      ],
+      "sourceVisuals": [
+        {
+          "id": "controlled/readable-multiplier/group/hand/controlled/readable-multiplier/group/command/4/event/5",
+          "positive": 7.05138873764588,
+          "negative": -8.399999999999977,
+          "lift": -13.02651127406529,
+          "pairMs": 115.8999999910593
+        },
+        {
+          "id": "controlled/readable-multiplier/group/hand/controlled/readable-multiplier/group/command/4/event/6",
+          "positive": 6,
+          "negative": -5.4950000000000045,
+          "lift": -12.559797096252442,
+          "pairMs": 83.09999999403954
+        },
+        {
+          "id": "controlled/readable-multiplier/group/hand/controlled/readable-multiplier/group/command/4/event/7",
+          "positive": 6,
+          "negative": -4.5499999999999545,
+          "lift": -12.66869707107544,
+          "pairMs": 79.40000000596046
+        },
+        {
+          "id": "controlled/readable-multiplier/group/hand/controlled/readable-multiplier/group/command/4/event/8",
+          "positive": 6,
+          "negative": -5.740000000000009,
+          "lift": -12.777597045898437,
+          "pairMs": 80.20000000298023
+        },
+        {
+          "id": "controlled/readable-multiplier/group/hand/controlled/readable-multiplier/group/command/4/event/9",
+          "positive": 5.460000000000036,
+          "negative": -6,
+          "lift": -12.66869707107544,
+          "pairMs": 80.70000000298023
+        }
+      ],
+      "polychromeFlights": [
+        {
+          "id": "controlled/readable-multiplier/group/hand/controlled/readable-multiplier/group/command/4/event/8",
+          "frames": 12
+        },
+        {
+          "id": "controlled/readable-multiplier/group/hand/controlled/readable-multiplier/group/command/4/event/9",
+          "frames": 12
+        }
+      ],
+      "receipts": [
+        {
+          "id": "controlled/readable-multiplier/group/hand/controlled/readable-multiplier/group/command/4/event/12",
+          "paired": false,
+          "weight": 0.22
+        }
+      ]
+    },
+    {
+      "key": "cancel-windup",
+      "frames": 769,
+      "stateExact": true,
+      "densePlayInput": false,
+      "sourceImpacts": 12,
+      "pairedSources": 12,
+      "reboundCalls": 12,
+      "pairMs": {
+        "min": 79.2,
+        "max": 115.3
+      },
+      "sourceRunArrivalGapMs": {
+        "firstFourMean": 1270.38,
+        "lastFourMean": 562.7
+      },
+      "presentationSpanMs": 12214.2,
+      "keyAccent": {
+        "event": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/32",
+        "observedWindupMs": null,
+        "observedEventMs": 232.9,
+        "plannedActualMs": 640
+      },
+      "maxScoreVoices": 3,
+      "maxSharedMaterialEntries": 3,
+      "maxNumericPulseBeforeFinal": 1,
+      "strikes": [],
+      "sourceVisuals": [],
+      "polychromeFlights": [],
+      "receipts": [],
+      "cancelBoundary": {
+        "at": 14634.90000000596,
+        "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/32",
+        "role": "accent",
+        "phase": "windup"
+      },
+      "cancelCleanup": {
+        "at": 14732.59999999404,
+        "scoreVoices": 0,
+        "strikes": 0,
+        "snapshots": 0
+      }
+    },
+    {
+      "key": "cancel-rebound",
+      "frames": 791,
+      "stateExact": true,
+      "densePlayInput": false,
+      "sourceImpacts": 13,
+      "pairedSources": 13,
+      "reboundCalls": 13,
+      "pairMs": {
+        "min": 80.7,
+        "max": 129.3
+      },
+      "sourceRunArrivalGapMs": {
+        "firstFourMean": 1262.32,
+        "lastFourMean": 558.5
+      },
+      "presentationSpanMs": 12594.1,
+      "keyAccent": {
+        "event": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/32",
+        "observedWindupMs": 316.4,
+        "observedEventMs": 583.8,
+        "plannedActualMs": 640
+      },
+      "maxScoreVoices": 3,
+      "maxSharedMaterialEntries": 3,
+      "maxNumericPulseBeforeFinal": 1,
+      "strikes": [],
+      "sourceVisuals": [],
+      "polychromeFlights": [],
+      "receipts": [],
+      "cancelBoundary": {
+        "at": 16043.40000000596,
+        "id": "controlled/score-energy/multiply/hand/controlled/score-energy/multiply/command/4/event/32",
+        "role": "accent",
+        "phase": "rebound"
+      },
+      "cancelCleanup": {
+        "at": 16075.59999999404,
+        "scoreVoices": 0,
+        "strikes": 0,
+        "snapshots": 0
+      }
+    }
+  ]
+}

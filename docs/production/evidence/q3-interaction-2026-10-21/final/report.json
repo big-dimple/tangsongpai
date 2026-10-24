@@ -1,0 +1,493 @@
+{
+  "head": "0d1c4cef14e5ee560376f3098f6a8abd043e1717",
+  "dirty": "?? docs/production/evidence/q3-interaction-2026-10-21/\n?? harness/q3-interaction.mjs",
+  "seed": "group-natural-17",
+  "sourceHash": "113618e3fe1444f3b480fe8b2fe4f4da918c37a223966280d8fe703c03e1b94b",
+  "scope": "Natural new run, real public UI only; no imported checkpoint or draw override. IDB failure is separately injected. Chromium software rendering, not physical phone or formal Q3 acceptance.",
+  "cases": [
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "touch": false,
+      "steps": [
+        {
+          "note": "decline optional program; leave budget intact",
+          "actions": [
+            {
+              "type": "ChooseProgram",
+              "programId": null
+            }
+          ],
+          "before": {
+            "seq": 1,
+            "gold": 6
+          },
+          "after": {
+            "seq": 2,
+            "gold": 6,
+            "phase": "shop"
+          }
+        },
+        {
+          "note": "long hold stock only inspects, no purchase",
+          "unchanged": true
+        },
+        {
+          "note": "independent Cancel does not penetrate or spend",
+          "unchanged": true
+        },
+        {
+          "note": "explicit natural tool purchase once",
+          "actions": [
+            {
+              "type": "BuyOffer",
+              "offerId": "run/group-natural-17/amo/shop/0/0/tool/0"
+            }
+          ],
+          "before": {
+            "seq": 2,
+            "gold": 6
+          },
+          "after": {
+            "seq": 3,
+            "gold": 2,
+            "phase": "shop"
+          }
+        },
+        {
+          "note": "cancel target selection keeps purchased unused tool",
+          "unchanged": true
+        },
+        {
+          "note": "leave shop with remaining gold; confirm actual stage and deal",
+          "actions": [
+            {
+              "type": "LeaveShop"
+            },
+            {
+              "type": "EnterStage"
+            }
+          ],
+          "before": {
+            "seq": 3,
+            "gold": 2
+          },
+          "after": {
+            "seq": 5,
+            "gold": 2,
+            "phase": "await-input"
+          }
+        },
+        {
+          "note": "long hold hand only inspects; no play",
+          "unchanged": true
+        },
+        {
+          "note": "hand detail close no play or select",
+          "unchanged": true
+        },
+        {
+          "note": "hero explanation/cancel preserves hand draft",
+          "unchanged": true
+        },
+        {
+          "note": "explicit skill draft has no resource cost",
+          "unchanged": true
+        },
+        {
+          "note": "cancel chosen skill has no resource cost",
+          "unchanged": true
+        },
+        {
+          "note": "cold restore drops unsubmitted hand and skill draft",
+          "unchanged": true
+        },
+        {
+          "note": "cancel actual tool target retains tool, gold, RNG and full storage",
+          "unchanged": true
+        },
+        {
+          "note": "controlled quota failure retains exact pre-use published tuple",
+          "unchanged": true
+        },
+        {
+          "note": "retry exact failed use once, no recomputation or double consumption",
+          "actions": [
+            {
+              "type": "UseConsumable",
+              "instanceId": "run/group-natural-17/amo/tool/run/group-natural-17/amo/command/3",
+              "targetIds": [
+                "clubs-12"
+              ]
+            }
+          ],
+          "before": {
+            "seq": 5,
+            "gold": 2
+          },
+          "after": {
+            "seq": 6,
+            "gold": 2,
+            "phase": "await-input"
+          }
+        },
+        {
+          "note": "hand and skill selection only preview",
+          "unchanged": true
+        },
+        {
+          "note": "public hand selection",
+          "turn": 0,
+          "draft": {
+            "selected": [
+              "hearts-2",
+              "spades-2",
+              "clubs-14",
+              "diamonds-14"
+            ],
+            "assist": [],
+            "erxiang": null,
+            "azao": false,
+            "xiemu": 0,
+            "amo": true
+          }
+        },
+        {
+          "note": "drag off Play cancels without spending or changing draft",
+          "unchanged": true
+        },
+        {
+          "note": "actual play 1 commits and resolves once",
+          "actions": [
+            {
+              "type": "PlayHand",
+              "selectedIds": [
+                "hearts-2",
+                "spades-2",
+                "clubs-14",
+                "diamonds-14"
+              ],
+              "amoExile": true
+            }
+          ],
+          "before": {
+            "seq": 6,
+            "gold": 2
+          },
+          "after": {
+            "seq": 7,
+            "gold": 9,
+            "phase": "stage-cleared"
+          }
+        },
+        {
+          "note": "result detail return is read-only",
+          "unchanged": true
+        },
+        {
+          "note": "cold result Continue restores exact committed result",
+          "unchanged": true
+        },
+        {
+          "note": "explicit continue reaches next shop",
+          "actions": [
+            {
+              "type": "OpenShop"
+            }
+          ],
+          "before": {
+            "seq": 7,
+            "gold": 9
+          },
+          "after": {
+            "seq": 8,
+            "gold": 9,
+            "phase": "shop"
+          }
+        },
+        {
+          "note": "next shop cold restore exact",
+          "unchanged": true
+        }
+      ],
+      "errors": [],
+      "initial": {
+        "seq": 1,
+        "gold": 6
+      },
+      "shop": "1366-natural-shop.png",
+      "table": "1366-natural-table.png",
+      "tool": "1366-tool-target-cancel.png",
+      "failedWrites": [
+        {
+          "seq": 6
+        }
+      ],
+      "failure": "1366-save-failed.png",
+      "savedTool": "1366-tool-saved-after-retry.png",
+      "selected": "1366-ready-to-play.png",
+      "result": "1366-actual-result.png",
+      "outcome": {
+        "phase": "stage-cleared",
+        "heat": "546",
+        "target": "400"
+      },
+      "continue": "1366-continued-shop.png",
+      "final": {
+        "seq": 8,
+        "gold": 9,
+        "phase": "shop"
+      },
+      "available": [],
+      "video": "videos/page@fda5808f066dfb54a77182f3436bbf79.webm",
+      "status": "PASS"
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "touch": true,
+      "steps": [
+        {
+          "note": "decline optional program; leave budget intact",
+          "actions": [
+            {
+              "type": "ChooseProgram",
+              "programId": null
+            }
+          ],
+          "before": {
+            "seq": 1,
+            "gold": 6
+          },
+          "after": {
+            "seq": 2,
+            "gold": 6,
+            "phase": "shop"
+          }
+        },
+        {
+          "note": "long hold stock only inspects, no purchase",
+          "unchanged": true
+        },
+        {
+          "note": "independent Cancel does not penetrate or spend",
+          "unchanged": true
+        },
+        {
+          "note": "explicit natural tool purchase once",
+          "actions": [
+            {
+              "type": "BuyOffer",
+              "offerId": "run/group-natural-17/amo/shop/0/0/tool/0"
+            }
+          ],
+          "before": {
+            "seq": 2,
+            "gold": 6
+          },
+          "after": {
+            "seq": 3,
+            "gold": 2,
+            "phase": "shop"
+          }
+        },
+        {
+          "note": "cancel target selection keeps purchased unused tool",
+          "unchanged": true
+        },
+        {
+          "note": "leave shop with remaining gold; confirm actual stage and deal",
+          "actions": [
+            {
+              "type": "LeaveShop"
+            },
+            {
+              "type": "EnterStage"
+            }
+          ],
+          "before": {
+            "seq": 3,
+            "gold": 2
+          },
+          "after": {
+            "seq": 5,
+            "gold": 2,
+            "phase": "await-input"
+          }
+        },
+        {
+          "note": "long hold hand only inspects; no play",
+          "unchanged": true
+        },
+        {
+          "note": "hand detail close no play or select",
+          "unchanged": true
+        },
+        {
+          "note": "hero explanation/cancel preserves hand draft",
+          "unchanged": true
+        },
+        {
+          "note": "explicit skill draft has no resource cost",
+          "unchanged": true
+        },
+        {
+          "note": "cancel chosen skill has no resource cost",
+          "unchanged": true
+        },
+        {
+          "note": "cold restore drops unsubmitted hand and skill draft",
+          "unchanged": true
+        },
+        {
+          "note": "cancel actual tool target retains tool, gold, RNG and full storage",
+          "unchanged": true
+        },
+        {
+          "note": "controlled quota failure retains exact pre-use published tuple",
+          "unchanged": true
+        },
+        {
+          "note": "retry exact failed use once, no recomputation or double consumption",
+          "actions": [
+            {
+              "type": "UseConsumable",
+              "instanceId": "run/group-natural-17/amo/tool/run/group-natural-17/amo/command/3",
+              "targetIds": [
+                "clubs-12"
+              ]
+            }
+          ],
+          "before": {
+            "seq": 5,
+            "gold": 2
+          },
+          "after": {
+            "seq": 6,
+            "gold": 2,
+            "phase": "await-input"
+          }
+        },
+        {
+          "note": "hand and skill selection only preview",
+          "unchanged": true
+        },
+        {
+          "note": "public hand selection",
+          "turn": 0,
+          "draft": {
+            "selected": [
+              "hearts-2",
+              "spades-2",
+              "clubs-14",
+              "diamonds-14"
+            ],
+            "assist": [],
+            "erxiang": null,
+            "azao": false,
+            "xiemu": 0,
+            "amo": true
+          }
+        },
+        {
+          "note": "drag off Play cancels without spending or changing draft",
+          "unchanged": true
+        },
+        {
+          "note": "native touchCancel on Play does not dispatch or queue a hand",
+          "unchanged": true
+        },
+        {
+          "note": "actual play 1 commits and resolves once",
+          "actions": [
+            {
+              "type": "PlayHand",
+              "selectedIds": [
+                "hearts-2",
+                "spades-2",
+                "clubs-14",
+                "diamonds-14"
+              ],
+              "amoExile": true
+            }
+          ],
+          "before": {
+            "seq": 6,
+            "gold": 2
+          },
+          "after": {
+            "seq": 7,
+            "gold": 9,
+            "phase": "stage-cleared"
+          }
+        },
+        {
+          "note": "result detail return is read-only",
+          "unchanged": true
+        },
+        {
+          "note": "cold result Continue restores exact committed result",
+          "unchanged": true
+        },
+        {
+          "note": "explicit continue reaches next shop",
+          "actions": [
+            {
+              "type": "OpenShop"
+            }
+          ],
+          "before": {
+            "seq": 7,
+            "gold": 9
+          },
+          "after": {
+            "seq": 8,
+            "gold": 9,
+            "phase": "shop"
+          }
+        },
+        {
+          "note": "next shop cold restore exact",
+          "unchanged": true
+        }
+      ],
+      "errors": [],
+      "initial": {
+        "seq": 1,
+        "gold": 6
+      },
+      "shop": "390-natural-shop.png",
+      "table": "390-natural-table.png",
+      "tool": "390-tool-target-cancel.png",
+      "failedWrites": [
+        {
+          "seq": 6
+        }
+      ],
+      "failure": "390-save-failed.png",
+      "savedTool": "390-tool-saved-after-retry.png",
+      "selected": "390-ready-to-play.png",
+      "result": "390-actual-result.png",
+      "outcome": {
+        "phase": "stage-cleared",
+        "heat": "546",
+        "target": "400"
+      },
+      "continue": "390-continued-shop.png",
+      "final": {
+        "seq": 8,
+        "gold": 9,
+        "phase": "shop"
+      },
+      "available": [],
+      "video": "videos/page@5d9ea9f71315427c008b41da332c16b4.webm",
+      "status": "PASS"
+    }
+  ],
+  "status": "PASS",
+  "browser": "151.0.7922.173"
+}

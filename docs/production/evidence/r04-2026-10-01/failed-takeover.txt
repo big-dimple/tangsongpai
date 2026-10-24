@@ -1,0 +1,14 @@
+
+> tangsongpai@0.1.0 test:recovery:browser
+> node harness/recovery.mjs
+
+page.waitForFunction: Timeout 30000ms exceeded.
+    at advanced (D:\ai\tangsongpai\tangsongpai\harness\recovery.mjs:22:46)
+    at buy (D:\ai\tangsongpai\tangsongpai\harness\recovery.mjs:32:256)
+    at async tabs (D:\ai\tangsongpai\tangsongpai\harness\recovery.mjs:131:192)
+    at async file:///D:/ai/tangsongpai/tangsongpai/harness/recovery.mjs:153:70 {
+  log: [],
+  name: 'TimeoutError'
+}
+recovery: FAIL; 16 actual scenarios
+EXIT_CODE=1

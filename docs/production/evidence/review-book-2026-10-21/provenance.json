@@ -1,0 +1,31 @@
+{
+  "base": "9abedd0195881c64c730f13e26b66c54f94b3716",
+  "productionCodeCommit": "d80180a1ace84fa52ce7f75527ae6dceb9cf3903",
+  "sourceSha256": {
+    "src/game/ReviewBookReceipt.ts": "3794855c1e68a6e371477a103f57e919b83227281849b783ec60d706310077da",
+    "src/game/SettlementPresentation.ts": "d08cc8472acf27fea72ee8453172025d1c968f7ce7cecb8676c6c48dadee407e",
+    "src/game/IntermissionScene.ts": "0ce33412c707fac2336b9c04d1238eacfd9ccdef0bafe9aea838a93583a9b62f",
+    "tests/review-book-receipt.test.ts": "e2f6d383a4422d0ffbc625fcbb5affd3bc4f43e08d77b4a6992c320772c7a9f3",
+    "harness/fixtures/review-book.ts": "a19f73fb422ec7dcafc5f1c97b92bdcca60a830669315ac94c80d0b93df2f9f5",
+    "harness/review-book.mjs": "db9d888884a47a67897781773517cf16f4f430d080bd9c578bfa1f759cfbf766"
+  },
+  "rawVideo": {
+    "path": "/tmp/review-book-evidence/mobile.webm",
+    "sha256": "9feaf3e998aa343710eac55a559cd1f8c926e97a9169b186356621ef17c69cd2"
+  },
+  "checks": {
+    "npm test": {
+      "exitCode": 0,
+      "files": 416,
+      "tests": 5032
+    },
+    "npm run build": {
+      "exitCode": 0
+    },
+    "browser": {
+      "exitCode": 0,
+      "cases": 8
+    }
+  },
+  "scope": "controlled only; session import API + real browser PlayHand; no domain/save/rule edits; Chromium software browser, not real phone/aesthetic/audio acceptance"
+}

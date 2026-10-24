@@ -1,0 +1,12 @@
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
++ undefined
+- {
+-   d: '2',
+-   n: '1'
+- }
+
+    at lateShopAudit (file:///tmp/q2-growth-audit-8UIoT3/audit.mjs:18711:10)
+    at q2GrowthAudit (file:///tmp/q2-growth-audit-8UIoT3/audit.mjs:18717:90)
+    at file:///workspace/tangsongpai/harness/q2-growth-audit.mjs:16:29

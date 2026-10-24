@@ -1,0 +1,23 @@
+[
+  {
+    "name": "polychrome-flight",
+    "time": 12.163800000011921,
+    "renderAt": 16018.60000000894,
+    "frameStart": 3854.7999999970198,
+    "note": "Decoded from original VP8+Opus WebM by bundled Playwright FFmpeg. Seek estimated from first postrender; original continuous AV retained."
+  },
+  {
+    "name": "polychrome-return",
+    "time": 12.2655,
+    "renderAt": 16120.29999999702,
+    "frameStart": 3854.7999999970198,
+    "note": "Decoded from original VP8+Opus WebM by bundled Playwright FFmpeg. Seek estimated from first postrender; original continuous AV retained."
+  },
+  {
+    "name": "converge",
+    "time": 13.16460000000894,
+    "renderAt": 17019.40000000596,
+    "frameStart": 3854.7999999970198,
+    "note": "Decoded from original VP8+Opus WebM by bundled Playwright FFmpeg. Seek estimated from first postrender; original continuous AV retained."
+  }
+]

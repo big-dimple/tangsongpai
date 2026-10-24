@@ -1,0 +1,86 @@
+{
+  "head": "0d1c4cef14e5ee560376f3098f6a8abd043e1717",
+  "dirty": "?? docs/production/evidence/q3-interaction-2026-10-21/\n?? harness/q3-interaction.mjs",
+  "seed": "group-natural-17",
+  "scope": "Natural new run, real public UI only; no imported checkpoint or draw override. IDB failure is separately injected. Chromium software rendering, not physical phone or formal Q3 acceptance.",
+  "cases": [
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "touch": false,
+      "steps": [
+        {
+          "note": "decline optional program; leave budget intact",
+          "actions": [
+            {
+              "type": "ChooseProgram",
+              "programId": null
+            }
+          ],
+          "before": {
+            "seq": 1,
+            "gold": 6
+          },
+          "after": {
+            "seq": 2,
+            "gold": 6
+          }
+        },
+        {
+          "note": "long hold stock only inspects, no purchase",
+          "unchanged": true
+        },
+        {
+          "note": "independent Cancel does not penetrate or spend",
+          "unchanged": true
+        },
+        {
+          "note": "explicit natural tool purchase once",
+          "actions": [
+            {
+              "type": "BuyOffer",
+              "offerId": "run/group-natural-17/amo/shop/0/0/tool/0"
+            }
+          ],
+          "before": {
+            "seq": 2,
+            "gold": 6
+          },
+          "after": {
+            "seq": 3,
+            "gold": 2
+          }
+        },
+        {
+          "note": "cancel target selection keeps purchased unused tool",
+          "unchanged": true
+        }
+      ],
+      "errors": [],
+      "initial": {
+        "seq": 1,
+        "gold": 6
+      },
+      "shop": "1366-natural-shop.png"
+    }
+  ],
+  "status": "FAIL",
+  "browser": "151.0.7922.173",
+  "error": "page.waitForFunction: Timeout 18000ms exceeded.\n    at command (/workspace/tangsongpai/harness/q3-interaction.mjs:23:53)\n    at /workspace/tangsongpai/harness/q3-interaction.mjs:34:75",
+  "diagnostic": {
+    "scenes": [
+      {
+        "key": "game",
+        "ready": true
+      }
+    ],
+    "dialogs": [
+      {
+        "classes": "detail-dialog blind-select-dialog",
+        "text": "第 1 章\n三场对峙\n苏轼 · 2 金\n壹\n\n当前可战\n\n暖场\n苏轼\n\n目标热度\n400\n\n过关 · 结算奖金 + 利息\n\n跳场 · 买牌减2金券\n\n代价 · 放弃本场结算奖金、利息与过关效果\n\n贰\n\n后续对局\n\n正场\n\n目标热度\n600\n\n过关 · 结算奖金 + 利息\n\n跳场 · 方片染\n\n叁\n\n后续对局\n\n贵宾场\n压轴 · 不可跳过\n\n决战目标\n800\n\n第一手前每次弃牌消耗2次额度；第一手后恢复1次。\n\n应对 · 先判断手牌能否开场，保留足够额度再弃牌。\n\n过关 · 结算奖金 + 利息\n\n进入暖场 ›\n节目单 · 本章不接\n跳过此场\n稍后开战"
+      }
+    ]
+  }
+}

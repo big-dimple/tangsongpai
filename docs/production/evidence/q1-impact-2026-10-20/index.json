@@ -1,0 +1,412 @@
+{
+  "status": "IMPLEMENTED_SOFTWARE_UI_CHECKED_USER_ACCEPTANCE_PENDING",
+  "baseline": "3909cc6437e230ff4c8919994c862f5976f9c4de",
+  "scope": "One actual saved whole-hand multiplier float; no smoke, no per-K stacking, no rules/save/qualification changes. Remaining common-impact and workshop batch in progress.",
+  "sourceHashes": {
+    "src/game/GameScene.ts": "6737fe54d6d95545d4aba88ad93ddf8f315017a5b4b404d266b63ac7cc4185f4",
+    "src/game/SushiMultiplierFloat.ts": "d846f7d227dca0c667930beb6b9fa24a7c143263ff01ba0fa9e37d7098479a56"
+  },
+  "cases": [
+    {
+      "key": "1366-amo",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "status": "PASS",
+      "canonicalSavedResult": "PASS",
+      "actualWholeHandFloat": "整手 ×3",
+      "maximumConcurrentFloats": 1,
+      "observedRiseCssPixels": 30.0,
+      "inputMethod": "validated controlled checkpoint bootstrap then real UI",
+      "comparison": [
+        "1366-amo-before.png",
+        "1366-amo-minimum.png"
+      ],
+      "continuousVideo": "shots/q1-six-hero/sushi-minimum/1366-amo/process.webm"
+    },
+    {
+      "key": "390-amo",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "status": "PASS",
+      "canonicalSavedResult": "PASS",
+      "actualWholeHandFloat": "整手 ×3",
+      "maximumConcurrentFloats": 1,
+      "observedRiseCssPixels": 30.0,
+      "inputMethod": "validated controlled checkpoint bootstrap then real UI",
+      "comparison": [
+        "390-amo-before.png",
+        "390-amo-minimum.png"
+      ],
+      "continuousVideo": "shots/q1-six-hero/sushi-minimum/390-amo/process.webm"
+    }
+  ],
+  "humanVisualAcceptance": "NOT_ACCEPTED",
+  "physicalDeviceGpuHearing": "NOT_RUN",
+  "workshop": {
+    "status": "IMPLEMENTED_SOFTWARE_CHECKED_USER_ACCEPTANCE_PENDING",
+    "tool": "T11 大字号（选1–2张牌，选中牌打出且每次有效计分时，倍率+2）；不是UI字号设置",
+    "behavior": "无折叠入口，默认显示所有原其他改牌工具；大字号前置，路线操作与费用/资格/命令沿原适配器。",
+    "cases": [
+      {
+        "viewport": {
+          "width": 1366,
+          "height": 768
+        },
+        "status": "PASS",
+        "defaultToolIds": [
+          "T11",
+          "T02",
+          "T10"
+        ],
+        "foldCount": 0,
+        "tools": [
+          {
+            "id": "T11",
+            "text": "大字号 · 选1–2张牌，选中牌打出且每次有效计分时，倍率+2\n实付 2 金 ›\n看原图"
+          },
+          {
+            "id": "T02",
+            "text": "精简节目 · 永久删除1–2张牌\n实付 2 金 ›\n看原图"
+          },
+          {
+            "id": "T10",
+            "text": "加厚纸 · 选1–2张牌，选中牌打出且每次有效计分时，热度+20\n实付 2 金 ›\n看原图"
+          }
+        ],
+        "bottom": {
+          "button": {
+            "x": 427,
+            "y": 551,
+            "width": 760,
+            "height": 114,
+            "top": 551,
+            "right": 1187,
+            "bottom": 665,
+            "left": 427
+          },
+          "host": {
+            "x": 284,
+            "y": 136,
+            "width": 1046,
+            "height": 540,
+            "top": 136,
+            "right": 1330,
+            "bottom": 676,
+            "left": 284
+          },
+          "hit": true,
+          "scrollWidth": 1046,
+          "clientWidth": 1046,
+          "documentWidth": 1366
+        },
+        "quote": "现货 · 确认后付款\n大字号 · 基础选购\n查看完整原图\n\n契合同点成组路线\n\n选中牌打出且每次有效计分时，倍率+2\n\n实付 2 金 · 余额 40 → 38 金\n\n高清细节加载中…\n规则与操作\n购买 · 2 金\n返回自选做牌"
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "status": "PASS",
+        "defaultToolIds": [
+          "T11",
+          "T02",
+          "T10"
+        ],
+        "foldCount": 0,
+        "tools": [
+          {
+            "id": "T11",
+            "text": "大字号 · 选1–2张牌，选中牌打出且每次有效计分时，倍率+2\n实付 2 金 ›\n看原图"
+          },
+          {
+            "id": "T02",
+            "text": "精简节目 · 永久删除1–2张牌\n实付 2 金 ›\n看原图"
+          },
+          {
+            "id": "T10",
+            "text": "加厚纸 · 选1–2张牌，选中牌打出且每次有效计分时，热度+20\n实付 2 金 ›\n看原图"
+          }
+        ],
+        "bottom": {
+          "button": {
+            "x": 18,
+            "y": 605,
+            "width": 354,
+            "height": 114,
+            "top": 605,
+            "right": 372,
+            "bottom": 719,
+            "left": 18
+          },
+          "host": {
+            "x": 12,
+            "y": 156,
+            "width": 366,
+            "height": 572,
+            "top": 156,
+            "right": 378,
+            "bottom": 728,
+            "left": 12
+          },
+          "hit": true,
+          "scrollWidth": 366,
+          "clientWidth": 366,
+          "documentWidth": 390
+        },
+        "quote": "现货 · 确认后付款\n大字号 · 基础选购\n查看完整原图\n\n契合同点成组路线\n\n选中牌打出且每次有效计分时，倍率+2\n\n实付 2 金 · 余额 40 → 38 金\n\n高清细节加载中…\n规则与操作\n购买 · 2 金\n返回自选做牌"
+      }
+    ],
+    "sourceHashes": {
+      "src/game/WorkshopGoals.ts": "cc33d430fee88af32e3e9e4783e09d439888da1cedfdef8aff3344914ccab086",
+      "src/game/WorkshopGoals.css": "1c8558d9af52b83144dfd0210ad3b54fa2c79ac6f083dfe8da3f80c467e7fd1d"
+    },
+    "screenshots": [
+      "workshop-1366-before.png",
+      "workshop-1366-top.png",
+      "workshop-1366-bottom.png",
+      "workshop-390-before.png",
+      "workshop-390-top.png",
+      "workshop-390-bottom.png"
+    ]
+  },
+  "commonImpact": {
+    "codeCommit": "be056abf5ff7fe7dc17a3494ef9d1f04b9a28909",
+    "latestUserScope": "保留牌冲击、其余五人现有效果与刘娥耳朵声波；苏轼不恢复烟雾。参考炉石反馈结构，增强蓄力/加速/顿挫/数字爆发，按实际收益分层。",
+    "sourceHashes": {
+      "src/game/GameScene.ts": "28583b094add9fe5c973539e03f3b1026f94d6e562dbbf19e57cc5babc21aa68",
+      "src/game/HeroScoreAction.ts": "e329d30f531ddec40b85a56a9420802caf984e1dd5f1596029198cbd4a410f7a",
+      "src/game/HeroScoreStrike.ts": "8adf2749b68ae0c7fcc948c21678a9192cef9905ed63e367bde5d563c8ffbded",
+      "src/game/JokerScoreStrike.ts": "68607d37fd3e0c13f54e010638b0b20457f498a9cc2ca0222416d0551117a351",
+      "src/game/ScorePhrase.ts": "33cd6216f42c64f29a91e7cfd3c63bbbe6a211e5fe83db01fbcf65e1a7da8847",
+      "src/game/SushiKingCharge.ts": "a1bc8c2f32954b04190637a9d2290decaae97762c922f2c5574a96003b3f437c",
+      "src/game/SushiMultiplierFloat.ts": "d846f7d227dca0c667930beb6b9fa24a7c143263ff01ba0fa9e37d7098479a56"
+    },
+    "cases": [
+      {
+        "key": "1366-amo",
+        "viewport": {
+          "width": 1366,
+          "height": 768
+        },
+        "status": "PASS",
+        "canonicalSavedResult": "PASS",
+        "cost": 0,
+        "maximumMultiplierScale": 1.55,
+        "savedKChargeObserved": true,
+        "images": [
+          "1366-amo-before.png",
+          "1366-amo-after.png"
+        ],
+        "continuousVideo": "shots/q1-six-hero/after/1366-amo/process.webm",
+        "judgment": "合格成本K描边/压缩蓄势，主牌加速冲击，一次实际整手倍率飘字；无旧烟雾。"
+      },
+      {
+        "key": "1366-erxiang",
+        "viewport": {
+          "width": 1366,
+          "height": 768
+        },
+        "status": "PASS",
+        "canonicalSavedResult": "PASS",
+        "cost": 12,
+        "maximumMultiplierScale": 1.2295,
+        "savedKChargeObserved": false,
+        "images": [
+          "1366-erxiang-before.png",
+          "1366-erxiang-after.png"
+        ],
+        "continuousVideo": "shots/q1-six-hero/after/1366-erxiang/process.webm",
+        "judgment": "耳朵/声波基线保留，真实8点转+8倍率；飞牌落于数值下方，数字全程可见。"
+      },
+      {
+        "key": "1366-laohuan",
+        "viewport": {
+          "width": 1366,
+          "height": 768
+        },
+        "status": "PASS",
+        "canonicalSavedResult": "PASS",
+        "cost": 0,
+        "maximumMultiplierScale": 1,
+        "savedKChargeObserved": false,
+        "images": [
+          "1366-laohuan-before.png",
+          "1366-laohuan-after.png"
+        ],
+        "continuousVideo": "shots/q1-six-hero/after/1366-laohuan/process.webm",
+        "judgment": "专属眼神、候选/已留和既有效果保留；实际弃牌→候选选择→保存，未伪造计分倍率。"
+      },
+      {
+        "key": "1366-touye",
+        "viewport": {
+          "width": 1366,
+          "height": 768
+        },
+        "status": "PASS",
+        "canonicalSavedResult": "PASS",
+        "cost": 12,
+        "maximumMultiplierScale": 1.55,
+        "savedKChargeObserved": false,
+        "images": [
+          "1366-touye-before.png",
+          "1366-touye-after.png"
+        ],
+        "continuousVideo": "shots/q1-six-hero/after/1366-touye/process.webm",
+        "judgment": "新牌/待判/已成与有效飞牌保留，真实成功×2共用冲击；失败×0.85另由回归覆盖。"
+      },
+      {
+        "key": "1366-azao",
+        "viewport": {
+          "width": 1366,
+          "height": 768
+        },
+        "status": "PASS",
+        "canonicalSavedResult": "PASS",
+        "cost": 11,
+        "maximumMultiplierScale": 1.55,
+        "savedKChargeObserved": false,
+        "images": [
+          "1366-azao-before.png",
+          "1366-azao-after.png"
+        ],
+        "continuousVideo": "shots/q1-six-hero/after/1366-azao/process.webm",
+        "judgment": "1层→0层、实际×1.5可读，主牌共用冲击/数字爆发，未改规则。"
+      },
+      {
+        "key": "1366-xiemu",
+        "viewport": {
+          "width": 1366,
+          "height": 768
+        },
+        "status": "PASS",
+        "canonicalSavedResult": "PASS",
+        "cost": 4,
+        "maximumMultiplierScale": 1.55,
+        "savedKChargeObserved": false,
+        "images": [
+          "1366-xiemu-before.png",
+          "1366-xiemu-after.png"
+        ],
+        "continuousVideo": "shots/q1-six-hero/after/1366-xiemu/process.webm",
+        "judgment": "实际扣10金40→30与×3可读，主牌共用冲击；既有表现保留。"
+      },
+      {
+        "key": "390-amo",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "status": "PASS",
+        "canonicalSavedResult": "PASS",
+        "cost": 0,
+        "maximumMultiplierScale": 1.55,
+        "savedKChargeObserved": true,
+        "images": [
+          "390-amo-before.png",
+          "390-amo-after.png"
+        ],
+        "continuousVideo": "shots/q1-six-hero/after/390-amo/process.webm",
+        "judgment": "合格成本K描边/压缩蓄势，主牌加速冲击，一次实际整手倍率飘字；无旧烟雾。"
+      },
+      {
+        "key": "390-erxiang",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "status": "PASS",
+        "canonicalSavedResult": "PASS",
+        "cost": 12,
+        "maximumMultiplierScale": 1.2295,
+        "savedKChargeObserved": false,
+        "images": [
+          "390-erxiang-before.png",
+          "390-erxiang-after.png"
+        ],
+        "continuousVideo": "shots/q1-six-hero/after/390-erxiang/process.webm",
+        "judgment": "耳朵/声波基线保留，真实8点转+8倍率；飞牌落于数值下方，数字全程可见。"
+      },
+      {
+        "key": "390-laohuan",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "status": "PASS",
+        "canonicalSavedResult": "PASS",
+        "cost": 0,
+        "maximumMultiplierScale": 1,
+        "savedKChargeObserved": false,
+        "images": [
+          "390-laohuan-before.png",
+          "390-laohuan-after.png"
+        ],
+        "continuousVideo": "shots/q1-six-hero/after/390-laohuan/process.webm",
+        "judgment": "专属眼神、候选/已留和既有效果保留；实际弃牌→候选选择→保存，未伪造计分倍率。"
+      },
+      {
+        "key": "390-touye",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "status": "PASS",
+        "canonicalSavedResult": "PASS",
+        "cost": 12,
+        "maximumMultiplierScale": 1.55,
+        "savedKChargeObserved": false,
+        "images": [
+          "390-touye-before.png",
+          "390-touye-after.png"
+        ],
+        "continuousVideo": "shots/q1-six-hero/after/390-touye/process.webm",
+        "judgment": "新牌/待判/已成与有效飞牌保留，真实成功×2共用冲击；失败×0.85另由回归覆盖。"
+      },
+      {
+        "key": "390-azao",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "status": "PASS",
+        "canonicalSavedResult": "PASS",
+        "cost": 11,
+        "maximumMultiplierScale": 1.55,
+        "savedKChargeObserved": false,
+        "images": [
+          "390-azao-before.png",
+          "390-azao-after.png"
+        ],
+        "continuousVideo": "shots/q1-six-hero/after/390-azao/process.webm",
+        "judgment": "1层→0层、实际×1.5可读，主牌共用冲击/数字爆发，未改规则。"
+      },
+      {
+        "key": "390-xiemu",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "status": "PASS",
+        "canonicalSavedResult": "PASS",
+        "cost": 4,
+        "maximumMultiplierScale": 1.55,
+        "savedKChargeObserved": false,
+        "images": [
+          "390-xiemu-before.png",
+          "390-xiemu-after.png"
+        ],
+        "continuousVideo": "shots/q1-six-hero/after/390-xiemu/process.webm",
+        "judgment": "实际扣10金40→30与×3可读，主牌共用冲击；既有表现保留。"
+      }
+    ],
+    "boundary": "合法受控存档前置后真实鼠标/触摸；software Chromium151。不是自然获取、用户审美、实体GPU/手机或听感验收。",
+    "rawReports": [
+      "before-report.json.gz",
+      "after-report.json.gz"
+    ]
+  }
+}

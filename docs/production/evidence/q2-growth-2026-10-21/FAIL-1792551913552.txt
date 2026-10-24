@@ -1,0 +1,8 @@
+TypeError: Cannot read properties of undefined (reading 'BASE_URL')
+    at assetUrl (file:///tmp/q2-growth-audit-TC1OCl/audit.mjs:15809:29)
+    at jokerArtPreviewUrl (file:///tmp/q2-growth-audit-TC1OCl/audit.mjs:18460:16)
+    at buildGrowthProgress (file:///tmp/q2-growth-audit-TC1OCl/audit.mjs:18476:288)
+    at currentAudit (file:///tmp/q2-growth-audit-TC1OCl/audit.mjs:18693:66)
+    at Array.map (<anonymous>)
+    at q2GrowthAudit (file:///tmp/q2-growth-audit-TC1OCl/audit.mjs:18717:60)
+    at file:///workspace/tangsongpai/harness/q2-growth-audit.mjs:16:29

@@ -1,0 +1,60 @@
+{
+  "head": "0d1c4cef14e5ee560376f3098f6a8abd043e1717",
+  "dirty": "?? docs/production/evidence/q3-interaction-2026-10-21/\n?? harness/q3-interaction.mjs",
+  "seed": "group-natural-17",
+  "scope": "Natural new run, real public UI only; no imported checkpoint or draw override. IDB failure is separately injected. Chromium software rendering, not physical phone or formal Q3 acceptance.",
+  "cases": [
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "touch": false,
+      "steps": [
+        {
+          "note": "decline optional program; leave budget intact",
+          "actions": [
+            {
+              "type": "ChooseProgram",
+              "programId": null
+            }
+          ],
+          "before": {
+            "seq": 1,
+            "gold": 6
+          },
+          "after": {
+            "seq": 2,
+            "gold": 6
+          }
+        },
+        {
+          "note": "long hold stock only inspects, no purchase",
+          "unchanged": true
+        },
+        {
+          "note": "independent Cancel does not penetrate or spend",
+          "unchanged": true
+        }
+      ],
+      "errors": [],
+      "initial": {
+        "seq": 1,
+        "gold": 6
+      },
+      "shop": "1366-natural-shop.png"
+    }
+  ],
+  "status": "FAIL",
+  "browser": "151.0.7922.173",
+  "error": "page.waitForFunction: Timeout 18000ms exceeded.\n    at point (/workspace/tangsongpai/harness/ui.mjs:7:14)\n    at async tapUI (/workspace/tangsongpai/harness/ui.mjs:31:16)\n    at async tapUI (/workspace/tangsongpai/harness/ui.mjs:28:5)\n    at async file:///workspace/tangsongpai/harness/q3-interaction.mjs:31:130",
+  "diagnostic": {
+    "scenes": [
+      {
+        "key": "shop",
+        "ready": true
+      }
+    ],
+    "dialogs": []
+  }
+}

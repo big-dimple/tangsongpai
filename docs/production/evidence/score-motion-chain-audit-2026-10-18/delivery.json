@@ -1,0 +1,94 @@
+{
+  "taskId": "score-motion-chain-audit-2026-10-18",
+  "baseline": "d351271e43dd3c8b7032b7c68aa8e4940687de12",
+  "testedCommit": "51e8516fd72f71c38c5024abc21e15967cbc71db",
+  "branch": "dev/score-motion-chain-audit-20261018",
+  "sourceHashesLF": {
+    "src/game/JokerScoreStrike.ts": "1b978222cc5c7d73d1ddccda26c3acdec8c44e7738d3f1591c004b71e8ba32da",
+    "src/game/OwnedJokerScoreMotion.ts": "2dbeecc832b96c2ff291931f739414347c68ad16e6bed80d3130a254a6fff8a6",
+    "src/game/ScorePhrase.ts": "8e33359d2ad60095fc0753b2c67581abde78e6ebf7c8e9642becc0e5ee7d76c1",
+    "src/game/GameScene.ts": "a5158118aff4ad35ff2d70f057dfa142b3212bef8900e4c079092a368bc43784",
+    "src/game/session.ts": "a3f29b9a618b020a9db0fac36204948b9dc1ee2c60ddc0cac78070b6db194e3f",
+    "src/game/ScoreTableReadouts.ts": "f07c4684588cf113ef16f8ee9a99be057edc9944b7bb6a052b5196e612a8b11a",
+    "src/audio/AudioEngine.ts": "fcde9dd50bc14a9293224f7c5bbb71998d170ace1b58d9d19bca2e44fb0f9f5d",
+    "src/core/EffectQueue.ts": "4097a6a0d18b2d2ed96b63f04ee284b7568838ce956361789a774a0740b7ee68"
+  },
+  "builtBundleHashes": {
+    "dist/assets/index-BYuPjK1O.css": "8dacb26e8e5c776ad37ff720b4da29d7792a26357822a0b8eb9c3e35f1cd48e7",
+    "dist/assets/index-vC4ct1ZL.js": "70db05cd53d574e4aa2876eaa0e57589c25960babb318b1573ebd5fe4583abf3"
+  },
+  "environment": {
+    "os": "Windows",
+    "node": "v22.20.0",
+    "browser": "NOT_RUN by instruction",
+    "physicalDevice": "NOT_RUN"
+  },
+  "checks": [
+    {
+      "name": "Source/number/phrase/haptic narrow tests",
+      "status": "PASS",
+      "exitCode": 0,
+      "files": 5,
+      "tests": 34,
+      "command": "npm test -- tests/joker-score-strike.test.ts tests/score-phrase.test.ts tests/owned-joker-score-motion.test.ts tests/score-table.test.ts tests/score-table-haptics.test.ts",
+      "evidence": "checks/tests.txt"
+    },
+    {
+      "name": "Current audio narrow tests",
+      "status": "PASS",
+      "exitCode": 0,
+      "files": 2,
+      "tests": 39,
+      "command": "npm test -- tests/score-melody-audio.test.ts tests/score-recorded-audio.test.ts",
+      "evidence": "checks/audio-tests.txt"
+    },
+    {
+      "name": "Typecheck + production build",
+      "status": "PASS",
+      "exitCode": 0,
+      "command": "npm run build",
+      "evidence": "checks/build.txt"
+    },
+    {
+      "name": "Harness syntax",
+      "status": "PASS",
+      "exitCode": 0,
+      "command": "node --check harness/owned-joker-score-motion.mjs"
+    },
+    {
+      "name": "Protected source unchanged",
+      "status": "PASS",
+      "exitCode": 0
+    },
+    {
+      "name": "Current same-build browser first-visible requested/applied peak and AV chain",
+      "status": "NOT_RUN",
+      "evidence": "README.md remote steps and existing harness command"
+    }
+  ],
+  "diagnosis": {
+    "historicalSourceBinding": "historical-pulse-analysis.json",
+    "root": "First visible recovery frame samples past spring t=0 after hidden hold; effective 50ms fast recovery skips the visible peak.",
+    "fix": "Anchor readout-only recoil at first visible tween update, consume remaining original impact slot.",
+    "sourceAndAudioReboundTiming": "unchanged",
+    "eventOrderArithmeticAndSavedAfter": "unchanged",
+    "reducedMotion": "Default false; persisted user setting OR OS media query. Not auto-enabled by a low-device heuristic."
+  },
+  "checkpoint": {
+    "path": "remote-repro-checkpoint.json",
+    "sha256": "7fac895a8c65c8771774805bfd810748f381ed96f20b59a7f6cdef77ebd05af9",
+    "formalReadCheckpoint": "PASS",
+    "identity": "quality-r2-s04-finish-v1"
+  },
+  "humanReview": {
+    "status": "NOT_RUN",
+    "heard": false,
+    "visualAndPhysicalDevice": "NOT_RUN"
+  },
+  "limitations": [
+    "Historical AV frames were reanalyzed, not rerun on d351. Only strike source equivalence was used to bind that diagnosis.",
+    "Node step tests cover 1/2/4x and 16.7/33.3/66.7ms; no device FPS or subjective feel claim.",
+    "New browser assertion and remote AV remain pending.",
+    "P08 and three overall dynamic experience goals remain in_progress."
+  ]
+}

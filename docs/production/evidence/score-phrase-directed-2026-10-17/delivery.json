@@ -1,0 +1,93 @@
+{
+  "taskId": "score-phrase-directed-2026-10-17",
+  "testedCommit": "113fbe9260123152e000646d9515dafe06985228",
+  "baseline": "9fe60fc581227829df6caadc712a5bd0fed74bc4",
+  "branch": "dev/score-phrase-directed-20261017",
+  "rulesVersion": "r2",
+  "fixtureIdentities": {
+    "chain": {
+      "rulesVersion": "r2",
+      "contentVersion": "quality-r2-s04-finish-v1",
+      "contentHash": "json-fnv-v1:65b545bd97c0fdf1"
+    },
+    "billion": {
+      "rulesVersion": "r2",
+      "contentVersion": "quality-r2-s04-finish-v1",
+      "contentHash": "json-fnv-v1:65b545bd97c0fdf1"
+    }
+  },
+  "productRuntimeSourcesVerifiedAgainstGit": true,
+  "runtimeSources": {
+    "src/game/GameScene.ts": "950cf125a6f681be0c60ef6d01992529d44df87e4e2470708020932c8c95cb43",
+    "src/game/OwnedJokerScoreMotion.ts": "71f00502efce78270829de8e7c6c61c3e9d09875591ccd38b31e08295c1de87d",
+    "src/game/ScorePhrase.ts": "8e33359d2ad60095fc0753b2c67581abde78e6ebf7c8e9642becc0e5ee7d76c1",
+    "src/game/JokerScoreStrike.ts": "0d75f700ac9b11520da7abb74b03d710949954eb22ccb6d758dacbb7b0b55aba",
+    "src/game/ScoreTableCredit.ts": "83c7477a0fb49f23de015b008dd9215844babfa6e40924e65f120082d88b8ae9",
+    "src/game/inkwaveSpring.ts": "78b6d9bfeecb55dfeb1b305561dada352d4a0fbb43e4c8ccd5e066e4645b48bd",
+    "src/game/layout.ts": "334a5c50f5dcef58c2bd3c956674261336f969670c379fd1ba36fd9961a33b15",
+    "src/game/PolychromeCardIridescence.ts": "560b19c18a2c3238d079a2f74d47b9910e268155239c4a8c3ef1d915c249e145",
+    "src/audio/AudioEngine.ts": "8b31d085e1c98a23867e7f3d8e08b44c50d0f9a714bbb761e429ad363d72a638",
+    "src/game/scorePresentation.ts": "8ce5bf3a90380f400051c19d6d902bf8f6b538f89039b05ed3d32c34b5f9f234"
+  },
+  "environment": {
+    "os": "Windows",
+    "node": "v22.20.0",
+    "browser": "153.0.8010.12",
+    "device": "software viewport 1366x768 / 390x740 DPR 2; physical device NOT_RUN"
+  },
+  "checks": [
+    {
+      "name": "35 targeted unit tests",
+      "status": "PASS",
+      "exitCode": 0,
+      "command": "npm test -- tests/score-phrase.test.ts tests/owned-joker-score-motion.test.ts tests/joker-score-strike.test.ts tests/score-table.test.ts tests/singapore-final-adoption.test.ts tests/score-table-haptics.test.ts",
+      "evidence": "checks/score-phrase-directed-35-tests.txt"
+    },
+    {
+      "name": "TypeScript",
+      "status": "PASS",
+      "exitCode": 0,
+      "command": "npm run typecheck",
+      "evidence": "checks/score-phrase-directed-typecheck.txt"
+    },
+    {
+      "name": "Production build",
+      "status": "PASS",
+      "exitCode": 0,
+      "command": "npm run build",
+      "evidence": "checks/score-phrase-directed-build.txt"
+    },
+    {
+      "name": "Same-source actual browser matrix",
+      "status": "PASS",
+      "cases": [
+        "pc",
+        "phone",
+        "reduced",
+        "fast",
+        "billion",
+        "cancel-windup",
+        "cancel-rebound"
+      ],
+      "command": "OWNED_MOTION_PHRASE=1 OWNED_MOTION_STRIKE=1 OWNED_MOTION_DIRECTED=1 node harness/owned-joker-score-motion.mjs (selected cases, two runs; original failures retained)",
+      "evidence": "summary.json"
+    },
+    {
+      "name": "Current 390 played-title / help pixels",
+      "status": "PASS",
+      "evidence": "after/phone/selected.png",
+      "note": "Visual inspection: full 待出牌 and dynamic 已出牌, helper in right skill row. No new layout change."
+    }
+  ],
+  "humanReview": {
+    "status": "NOT_RUN",
+    "hearing": false,
+    "physicalDevice": false
+  },
+  "limitations": [
+    "Controlled public checkpoint inventory, not natural acquisition or full game",
+    "320/short landscape/background/replay/destroy not rerun in this batch",
+    "Subjective overall feel/hearing and physical device acceptance remain pending; P08 in_progress"
+  ],
+  "retention": "Original continuous AV, raw reports and frame traces committed in this evidence directory; failed reports kept unchanged."
+}

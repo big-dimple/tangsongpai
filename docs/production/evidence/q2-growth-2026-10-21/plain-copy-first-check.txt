@@ -1,0 +1,176 @@
+
+ RUN  v4.1.11 /workspace/tangsongpai
+
+ ❯ tests/joker-plain-copy.test.ts (16 tests | 3 failed) 480ms
+   × new growth is for later plays while already saved growth is the current contribution 18ms
+   × growth headroom and capped default facts agree with actual trace in each content identity 71ms
+   × growth headroom remains separate from a suppressed current read 1ms
+ ❯ tests/c2-description-consistency.test.ts (22 tests | 1 failed) 271ms
+   × C2 fixed score, later growth, sale retention and opening rescue match their public definitions 34ms
+ ❯ tests/joker-plain-quantity.test.ts (6 tests | 1 failed) 39ms
+   × joker-score arithmetic is once per qualified hand rather than per matching card 17ms
+ ❯ tests/player-copy-closeout.test.ts (5 tests | 2 failed) 69ms
+   × c06 separates one effect, growth timing and the actual zero or carried multiplier 37ms
+   × a scoring ban stays explicit while growth timing remains visible 17ms
+ ❯ tests/shop-decision-copy.test.ts (4 tests | 3 failed) 159ms
+   × the photographed choices state new growth, actual cost and conditions without turning the starter into a ranking 82ms
+   × candidate spending and Qin Qiong conflicts remain explicit instead of becoming a positive connection 57ms
+   × new c04 keeps its conditional fixed heat and zero initial growth separate in shelf and purchase copy 9ms
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 10 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/c2-description-consistency.test.ts > C2 fixed score, later growth, sale retention and opening rescue match their public definitions
+AssertionError: expected '顺子或同花顺热度+50；出牌后攒+10热度，下次出牌起任意牌型都能用。' to contain '热度+50；成长+10顶100'
+
+Expected: "热度+50；成长+10顶100"
+Received: "顺子或同花顺热度+50；出牌后攒+10热度，下次出牌起任意牌型都能用。"
+
+ ❯ tests/c2-description-consistency.test.ts:37:58
+     35|  const s=start(),copy=(id:string)=>jokerAbilityCopyForRun(s,id,undefin…
+     36|  expect(fields(copy('mantangcai'))).toContain('热度+90');expect(copy('ma…
+     37|  const straight=copy('c04');expect(straight.plain!.line).toContain('热度…
+       |                                                          ^
+     38|  expect(fields(copy('c06'))).toContain('0.5');for(const hand of ['同花',…
+     39|  expect(copy('jiedongfeng').plain!.essential).toContain('每次出牌只加一次');ex…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/10]⎯
+
+ FAIL  tests/joker-plain-copy.test.ts > new growth is for later plays while already saved growth is the current contribution
+AssertionError: expected '打出对子等同点组合后，攒+10热度，下次出牌起任意牌型都能用。' to contain '成长最多+10'
+
+Expected: "成长最多+10"
+Received: "打出对子等同点组合后，攒+10热度，下次出牌起任意牌型都能用。"
+
+ ❯ tests/joker-plain-copy.test.ts:34:250
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/10]⎯
+
+ FAIL  tests/joker-plain-copy.test.ts > growth headroom and capped default facts agree with actual trace in each content identity
+AssertionError: expected '打出对子等同点组合后，攒+10热度，下次出牌起任意牌型都能用。；当前已攒热…' to contain '上限100'
+
+Expected: "上限100"
+Received: "打出对子等同点组合后，攒+10热度，下次出牌起任意牌型都能用。；当前已攒热度：+0。"
+
+ ❯ tests/joker-plain-copy.test.ts:72:62
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/10]⎯
+
+ FAIL  tests/joker-plain-copy.test.ts > growth headroom remains separate from a suppressed current read
+AssertionError: expected '当前计分暂停；当前已攒热度：+95。' to contain '这次出牌不计入'
+
+Expected: "这次出牌不计入"
+Received: "当前计分暂停；当前已攒热度：+95。"
+
+ ❯ tests/joker-plain-copy.test.ts:90:19
+     88|  const identity=identities.at(-1)!,j=r2CreateJoker('b10','limited-grow…
+     89|  const p=jokerAbilityCopyForRun(identity,'b10',j,ctx({scoringLimited:t…
+     90|  expect(p.status).toContain('这次出牌不计入');expect(p.status).toContain('最多新…
+       |                   ^
+     91| });
+     92| it('C2 e11 shelf fallback sends players to growth; legacy e11 still se…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/10]⎯
+
+ FAIL  tests/joker-plain-quantity.test.ts > joker-score arithmetic is once per qualified hand rather than per matching card
+AssertionError: expected '顺子或同花顺热度+50；出牌后攒+10热度，下次出牌起任意牌型都能用。' to be '顺子/同花顺 → 每次出牌，热度+50；成长+10顶100，新增下次出牌生效' // Object.is equality
+
+Expected: "顺子/同花顺 → 每次出牌，热度+50；成长+10顶100，新增下次出牌生效"
+Received: "顺子或同花顺热度+50；出牌后攒+10热度，下次出牌起任意牌型都能用。"
+
+ ❯ tests/joker-plain-quantity.test.ts:58:43
+     56|   expect(p.line).not.toContain('每张');
+     57|  }
+     58|  const step=copy('c04');expect(step.line).toBe('顺子/同花顺 → 每次出牌，热度+50；成长…
+       |                                           ^
+     59|  expect(copy('e08').line).toContain('倍率×1.8');
+     60| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/10]⎯
+
+ FAIL  tests/player-copy-closeout.test.ts > c06 separates one effect, growth timing and the actual zero or carried multiplier
+AssertionError: expected '新买入从+0倍率开始攒。' to be '未购买；买入后倍率成长从+0开始' // Object.is equality
+
+Expected: "未购买；买入后倍率成长从+0开始"
+Received: "新买入从+0倍率开始攒。"
+
+ ❯ tests/player-copy-closeout.test.ts:16:88
+     14| it('c06 separates one effect, growth timing and the actual zero or car…
+     15|  const s=setup(),d=r2JokerDefinitionFor(s,'c06'),j=r2CreateJoker('c06'…
+     16|  const fresh=jokerAbilityCopyForRun(s,'c06',undefined,ctx).plain!;expe…
+       |                                                                                        ^
+     17|  for(const stored of ['0','2']){
+     18|   j.growth.multiplier={n:stored,d:'1'};const before=structuredClone({s…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/10]⎯
+
+ FAIL  tests/player-copy-closeout.test.ts > a scoring ban stays explicit while growth timing remains visible
+AssertionError: expected '当前计分暂停；当前已攒倍率：+0。' to contain '计分停用'
+
+Expected: "计分停用"
+Received: "当前计分暂停；当前已攒倍率：+0。"
+
+ ❯ tests/player-copy-closeout.test.ts:31:19
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/10]⎯
+
+ FAIL  tests/shop-decision-copy.test.ts > the photographed choices state new growth, actual cost and conditions without turning the starter into a ranking
+AssertionError: expected { …(7) } to match object { now: '新购倍率+0', …(2) }
+(17 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "later": "同花族后+0.5，下次出牌生效",
+-   "now": "新购倍率+0",
++   "later": "同花顺、同花葫芦、同花五条也能攒",
++   "now": "打出同花牌型后，攒+0.5倍率，下次出牌起任意牌型都能用。",
+    "transaction": "购后0金",
+  }
+
+ ❯ tests/shop-decision-copy.test.ts:16:60
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/10]⎯
+
+ FAIL  tests/shop-decision-copy.test.ts > candidate spending and Qin Qiong conflicts remain explicit instead of becoming a positive connection
+AssertionError: expected '最多攒+100热度，跨场保留，出售后清空。' to be '成组后+10，下次出牌生效' // Object.is equality
+
+Expected: "成组后+10，下次出牌生效"
+Received: "最多攒+100热度，跨场保留，出售后清空。"
+
+ ❯ tests/shop-decision-copy.test.ts:22:300
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/10]⎯
+
+ FAIL  tests/shop-decision-copy.test.ts > new c04 keeps its conditional fixed heat and zero initial growth separate in shelf and purchase copy
+AssertionError: expected '顺子或同花顺热度+50；出牌后攒+10热度，下次出牌起任意牌型都能用。' to be '顺子/同花顺热度+50；新购成长+0' // Object.is equality
+
+Expected: "顺子/同花顺热度+50；新购成长+0"
+Received: "顺子或同花顺热度+50；出牌后攒+10热度，下次出牌起任意牌型都能用。"
+
+ ❯ tests/shop-decision-copy.test.ts:29:19
+     27|  s.gold=23;s.jokers=['c06','d07','f09','a08'].map((id,i)=>r2CreateJoke…
+     28|  const offer={offerId:'step-up',definitionId:'c04',price:4,consumed:fa…
+     29|  expect(copy.now).toBe('顺子/同花顺热度+50；新购成长+0');expect(copy.later).toBe('…
+       |                   ^
+     30|  expect(copy.purchaseAbility?.plain).toMatchObject({effectLine:copy.no…
+     31|  expect(copy.purchaseAbility?.plain?.details).toContain('其他牌型不增加成长');e…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/10]⎯
+
+
+ Test Files  5 failed | 1 passed (6)
+      Tests  10 failed | 53 passed (63)
+   Start at  04:13:43
+   Duration  3.13s (transform 3.65s, setup 0ms, import 5.89s, tests 1.32s, environment 1ms)
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

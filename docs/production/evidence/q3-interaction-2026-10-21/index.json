@@ -1,0 +1,672 @@
+{
+  "task": "P08.Q3 bounded interaction review",
+  "baseline": "0d1c4cef14e5ee560376f3098f6a8abd043e1717",
+  "branch": "fix/q3-interaction-20261021",
+  "includesPR202": "467551c11c4c6dcab0026ca9b63016d64846fe5f",
+  "result": "PASS_BOUNDED_SOFTWARE_REVIEW_NO_REPRODUCIBLE_PRODUCT_DEFECT",
+  "productSourceChanges": false,
+  "globalPlanChanges": false,
+  "sourceHash": "113618e3fe1444f3b480fe8b2fe4f4da918c37a223966280d8fe703c03e1b94b",
+  "browser": "151.0.7922.173",
+  "report": "final/report.json",
+  "fullState": "final/full-state.json.gz",
+  "harness": "harness/q3-interaction.mjs",
+  "actionContract": "PROGRESS.md",
+  "scope": "Natural new run, real public UI only; no imported checkpoint or draw override. IDB failure is separately injected. Chromium software rendering, not physical phone or formal Q3 acceptance.",
+  "finalTupleEqualAcrossViewports": true,
+  "cases": [
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "input": "native mouse",
+      "result": "PASS",
+      "outcome": {
+        "phase": "stage-cleared",
+        "heat": "546",
+        "target": "400"
+      },
+      "final": {
+        "seq": 8,
+        "gold": 9,
+        "phase": "shop"
+      },
+      "video": "final/videos/page@fda5808f066dfb54a77182f3436bbf79.webm",
+      "screenshots": [
+        "final/1366-natural-shop.png",
+        "final/1366-natural-table.png",
+        "final/1366-tool-target-cancel.png",
+        "final/1366-save-failed.png",
+        "final/1366-tool-saved-after-retry.png",
+        "final/1366-ready-to-play.png",
+        "final/1366-actual-result.png",
+        "final/1366-continued-shop.png"
+      ]
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "input": "native CDP touch",
+      "result": "PASS",
+      "outcome": {
+        "phase": "stage-cleared",
+        "heat": "546",
+        "target": "400"
+      },
+      "final": {
+        "seq": 8,
+        "gold": 9,
+        "phase": "shop"
+      },
+      "video": "final/videos/page@5d9ea9f71315427c008b41da332c16b4.webm",
+      "screenshots": [
+        "final/390-natural-shop.png",
+        "final/390-natural-table.png",
+        "final/390-tool-target-cancel.png",
+        "final/390-save-failed.png",
+        "final/390-tool-saved-after-retry.png",
+        "final/390-ready-to-play.png",
+        "final/390-actual-result.png",
+        "final/390-continued-shop.png"
+      ]
+    }
+  ],
+  "originalFailures": [
+    {
+      "path": "review-01/report.json",
+      "classification": "HARNESS_SETUP",
+      "reason": "Playwright ffmpeg missing before first page; installed under /tmp with permitted fallback download"
+    },
+    {
+      "path": "review-02/report.json",
+      "classification": "HARNESS_STALE_STEP",
+      "reason": "Program chooser now opens directly; obsolete extra choose button absent"
+    },
+    {
+      "path": "review-03/report.json",
+      "classification": "HARNESS_MISSING_CATEGORY",
+      "reason": "Tool stock must be reached through actual tools shelf tab"
+    },
+    {
+      "path": "review-04/report.json",
+      "classification": "HARNESS_WRONG_SELECTOR",
+      "reason": "Tools shelf is a shelf, not an obsolete make-cards tile"
+    },
+    {
+      "path": "review-05/report.json",
+      "classification": "HARNESS_MISSING_STAGE_CONFIRM",
+      "reason": "Current real stage directory requires explicit Enter warmup confirmation"
+    },
+    {
+      "path": "discard-01/report.json",
+      "classification": "HARNESS_OBSOLETE_IMPORT_UI",
+      "reason": "No current menu import entry; failed before ordinary discard setup"
+    },
+    {
+      "path": "discard-02/report.json",
+      "classification": "HARNESS_MISSING_SETUP_LEASE",
+      "reason": "Empty home holds no writer lease; existing import API correctly refused setup; fixed by normal lease.claim before controlled import"
+    }
+  ],
+  "priorRuns": [
+    {
+      "path": "review-06/report.json",
+      "status": "PROBE",
+      "scope": "both viewports through restored table; not complete result loop"
+    },
+    {
+      "path": "journey-01/report.json.gz",
+      "status": "PASS",
+      "scope": "both complete bounded flows before adding move-off, native touchCancel and repeated Play"
+    }
+  ],
+  "checks": {
+    "typecheck": "PASS",
+    "productionPlan": "PASS: 32 packages; P08 unchanged",
+    "sourceUnchangedDuringFinalRun": "PASS"
+  },
+  "notRun": [
+    "Physical phone/GPU/touch compositor, listening and aesthetic approval",
+    "Formal Q3/P08/H17 acceptance",
+    "Q2 new growth-model wiring; current stable rules only",
+    "Short-screen/rotation matrix (no layout changes; scoped out)",
+    "Other heroes and all paths/items/combinations; no matrix or balance claim",
+    "Browser-native long-hold on explicit primary buttons is existing one-action-on-release UX; this audit tests card holds and close tails for unintended purchases/play",
+    "Quota fault at other commands, including PlayHand/DiscardHand, not exercised in this bounded flow"
+  ],
+  "artifacts": [
+    {
+      "path": "review-03/1366-natural-shop.png",
+      "bytes": 769316,
+      "sha256": "856f80ead42528658e82be5220861e469afb2bb717c0b517edebc8b784ce262b"
+    },
+    {
+      "path": "review-03/FAIL.png",
+      "bytes": 772485,
+      "sha256": "266467813b256b2f2b0d66e4be6518d09c66847458eef28f9f690f14266ce833"
+    },
+    {
+      "path": "review-03/full-state.json.gz",
+      "bytes": 2734,
+      "sha256": "fa1f251a414583b32d20425fd3b108006c83eaf54d06f09e8218f6050ee9f83f"
+    },
+    {
+      "path": "review-03/report.json",
+      "bytes": 1769,
+      "sha256": "72b112a8d5ee7e0daee1d85f65bfc8ed3c2607e48939ba946f0f57b4bf94f813"
+    },
+    {
+      "path": "review-03/videos/page@a0c990ad8ee9c2d32f034ad5139e7b77.webm",
+      "bytes": 2376672,
+      "sha256": "8fcdf4f92d8393f14147325e022397a3555d45d2dad874fa6570b96e567c7d0c"
+    },
+    {
+      "path": "journey-01/1366-actual-result.png",
+      "bytes": 129142,
+      "sha256": "a73930bf8c17e8e087cede185f9e09a1ae39a28fbc25a135b2f222f8415f366d"
+    },
+    {
+      "path": "journey-01/1366-continued-shop.png",
+      "bytes": 843625,
+      "sha256": "c108c64922290405f166be79c212cf53563361d3b599c3fc23f4cbaf043d57e5"
+    },
+    {
+      "path": "journey-01/1366-natural-shop.png",
+      "bytes": 769316,
+      "sha256": "856f80ead42528658e82be5220861e469afb2bb717c0b517edebc8b784ce262b"
+    },
+    {
+      "path": "journey-01/1366-natural-table.png",
+      "bytes": 242430,
+      "sha256": "892581cbfe71ac185e1f49f10ea55b430a3c1e3746f043de9289005607beffbc"
+    },
+    {
+      "path": "journey-01/1366-ready-to-play.png",
+      "bytes": 260043,
+      "sha256": "1a4887cfd5ef61843fb357e0e2e423ea16b3348e99963861cad720ab599d59ac"
+    },
+    {
+      "path": "journey-01/1366-save-failed.png",
+      "bytes": 188420,
+      "sha256": "8015acdbfb5023047a07e43ccae5b93e33fc7175897836b186c4618be8a9f4ba"
+    },
+    {
+      "path": "journey-01/1366-tool-saved-after-retry.png",
+      "bytes": 242128,
+      "sha256": "4f30a07280d22d5bee85fe5dffb303b6d2daf238f2187dc4131b6b3907fe58f5"
+    },
+    {
+      "path": "journey-01/1366-tool-target-cancel.png",
+      "bytes": 188329,
+      "sha256": "e259552d3b61bdfcff8b25c5194087ad22c0a9d347abc86168f9cd82f76a6b99"
+    },
+    {
+      "path": "journey-01/390-actual-result.png",
+      "bytes": 71751,
+      "sha256": "fe455477fff3fa0306ef1450214d634c1a4c6465240884502766aac64abf29ac"
+    },
+    {
+      "path": "journey-01/390-continued-shop.png",
+      "bytes": 257555,
+      "sha256": "675d6f937341160f2dc6628e81cd24f4353a67bf9ff9c5b3e3dbca58a4808e92"
+    },
+    {
+      "path": "journey-01/390-natural-shop.png",
+      "bytes": 235373,
+      "sha256": "0f8269aab2616198ec757ca37f699b0995934f7e32ef24f03477582147596e18"
+    },
+    {
+      "path": "journey-01/390-natural-table.png",
+      "bytes": 64486,
+      "sha256": "d779a27b707604527070d5c9437a281dae4b76ef0fbdac8f8612c1bb89af01e9"
+    },
+    {
+      "path": "journey-01/390-ready-to-play.png",
+      "bytes": 78888,
+      "sha256": "43893a43dd11f84a27b105db379462fa3f515a391de4ac7daa83c34e4f7a9792"
+    },
+    {
+      "path": "journey-01/390-save-failed.png",
+      "bytes": 79285,
+      "sha256": "79e73cdd31a518aab9cd4e5478a50e0299e48ac10d48c4959aed38c996d5f383"
+    },
+    {
+      "path": "journey-01/390-tool-saved-after-retry.png",
+      "bytes": 63971,
+      "sha256": "26fced7d230c4b9642fb8dd0caf2479cd378fe71be60b3ce2819257d7e1a5d84"
+    },
+    {
+      "path": "journey-01/390-tool-target-cancel.png",
+      "bytes": 78941,
+      "sha256": "22f49245eb2e186f3528d247b506f3031184cbcfb03f408f01613a1135655397"
+    },
+    {
+      "path": "journey-01/full-state.json.gz",
+      "bytes": 19673,
+      "sha256": "2a752af4b9d3d2eb7e91508d6b376e1918824fabfe17bb33dd7a64f2bc5f8e43"
+    },
+    {
+      "path": "journey-01/report.json.gz",
+      "bytes": 25790,
+      "sha256": "f0baa6cbd4923a22eee7dac21db61da70ad87d120652ec03ec315093340ddba8"
+    },
+    {
+      "path": "journey-01/videos/page@5b49e17e4437d2ec4115327b3b80ca75.webm",
+      "bytes": 3770787,
+      "sha256": "dee299dada2dbd54fd0475b3432dfb7b3025866bf6cf10d7314096596ff84355"
+    },
+    {
+      "path": "journey-01/videos/page@cf8fd4132581fae7ae298e4a7c25cc28.webm",
+      "bytes": 2105565,
+      "sha256": "6ee10f43368f8c5535cdca8c4891a8b63293e7981dd66e8e0bb8ddce57c7e08a"
+    },
+    {
+      "path": "review-06/1366-natural-shop.png",
+      "bytes": 769316,
+      "sha256": "856f80ead42528658e82be5220861e469afb2bb717c0b517edebc8b784ce262b"
+    },
+    {
+      "path": "review-06/1366-natural-table.png",
+      "bytes": 242430,
+      "sha256": "892581cbfe71ac185e1f49f10ea55b430a3c1e3746f043de9289005607beffbc"
+    },
+    {
+      "path": "review-06/390-natural-shop.png",
+      "bytes": 235373,
+      "sha256": "0f8269aab2616198ec757ca37f699b0995934f7e32ef24f03477582147596e18"
+    },
+    {
+      "path": "review-06/390-natural-table.png",
+      "bytes": 64486,
+      "sha256": "d779a27b707604527070d5c9437a281dae4b76ef0fbdac8f8612c1bb89af01e9"
+    },
+    {
+      "path": "review-06/full-state.json.gz",
+      "bytes": 6980,
+      "sha256": "55e107a4d95f0772a46fd17383c2c3baad8967c2c0b9e19fd9f46d6100c579c0"
+    },
+    {
+      "path": "review-06/report.json",
+      "bytes": 7305,
+      "sha256": "2ffc784f3bd6da5dd584cfa2ad7208d23c1239d6213130c2274b8a346d88d0aa"
+    },
+    {
+      "path": "review-06/videos/page@0f3fb0a65f6bf19c85a170ffbbb9fb73.webm",
+      "bytes": 1925587,
+      "sha256": "c9a27a17993539d6f86baa35779719beab13f08f6678f5e98940eec4c71517a3"
+    },
+    {
+      "path": "review-06/videos/page@f5009597d9f4b49177b7d2fd35c87e49.webm",
+      "bytes": 1037608,
+      "sha256": "1ff3532858d6f529ca80249963f53682f4459ef8646a14c88f82dc016aaa70b3"
+    },
+    {
+      "path": "review-02/1366-natural-shop.png",
+      "bytes": 769316,
+      "sha256": "856f80ead42528658e82be5220861e469afb2bb717c0b517edebc8b784ce262b"
+    },
+    {
+      "path": "review-02/FAIL.png",
+      "bytes": 468825,
+      "sha256": "e00d4af4012f444542827bd9437044f2047e352e65bedd6f6e3003baffa70e2e"
+    },
+    {
+      "path": "review-02/full-state.json.gz",
+      "bytes": 2717,
+      "sha256": "9ac9577bfcec279073b42a9a3713c0266467dd1eebbd905c3e00abeed9c270fb"
+    },
+    {
+      "path": "review-02/report.json",
+      "bytes": 1658,
+      "sha256": "269a206dffee2e3b431521782dde93771679b4475989e2b370382d0e26a97012"
+    },
+    {
+      "path": "review-02/videos/page@78df942e964875e99e2083298af64d91.webm",
+      "bytes": 1689925,
+      "sha256": "2277f686621df3f747d5244498a703d65bfd9e53054751880f23ac1ac492e345"
+    },
+    {
+      "path": "review-04/1366-natural-shop.png",
+      "bytes": 769316,
+      "sha256": "856f80ead42528658e82be5220861e469afb2bb717c0b517edebc8b784ce262b"
+    },
+    {
+      "path": "review-04/FAIL.png",
+      "bytes": 419136,
+      "sha256": "1527af9a5fc058a7acd5f8a2bc263b263ab930cefe02eaa2683d296a09a79b8d"
+    },
+    {
+      "path": "review-04/full-state.json.gz",
+      "bytes": 2771,
+      "sha256": "d8f4d0a21315a3a0c698fb65df4e52788534d7fefb17318754071dc6c036635f"
+    },
+    {
+      "path": "review-04/report.json",
+      "bytes": 1768,
+      "sha256": "16af536754d27cc94c8f858eeb38d883cec43de1efed1564d6b53a9fb73d7d2b"
+    },
+    {
+      "path": "review-04/videos/page@9a14409f583dfe2df40a36cd0e9b35a6.webm",
+      "bytes": 1933464,
+      "sha256": "b2d533337cf9b2021e7f35d42bd4bcf5f6a680bca35f33acfab6ebd8a3899f79"
+    },
+    {
+      "path": "review-01/full-state.json.gz",
+      "bytes": 601,
+      "sha256": "23f40a199d40aa04f5a809032353bff9a013a522eb4ef751c69e1c3222f297d6"
+    },
+    {
+      "path": "review-01/report.json",
+      "bytes": 1559,
+      "sha256": "59726e7a7436d8da5c3efdf7b7e9d8266bcb3a98f4c9640bfd5fe84105a8e61c"
+    },
+    {
+      "path": "final/1366-actual-result.png",
+      "bytes": 129142,
+      "sha256": "a73930bf8c17e8e087cede185f9e09a1ae39a28fbc25a135b2f222f8415f366d"
+    },
+    {
+      "path": "final/1366-continued-shop.png",
+      "bytes": 843625,
+      "sha256": "c108c64922290405f166be79c212cf53563361d3b599c3fc23f4cbaf043d57e5"
+    },
+    {
+      "path": "final/1366-natural-shop.png",
+      "bytes": 769316,
+      "sha256": "856f80ead42528658e82be5220861e469afb2bb717c0b517edebc8b784ce262b"
+    },
+    {
+      "path": "final/1366-natural-table.png",
+      "bytes": 242430,
+      "sha256": "892581cbfe71ac185e1f49f10ea55b430a3c1e3746f043de9289005607beffbc"
+    },
+    {
+      "path": "final/1366-ready-to-play.png",
+      "bytes": 260043,
+      "sha256": "1a4887cfd5ef61843fb357e0e2e423ea16b3348e99963861cad720ab599d59ac"
+    },
+    {
+      "path": "final/1366-save-failed.png",
+      "bytes": 188420,
+      "sha256": "8015acdbfb5023047a07e43ccae5b93e33fc7175897836b186c4618be8a9f4ba"
+    },
+    {
+      "path": "final/1366-tool-saved-after-retry.png",
+      "bytes": 242128,
+      "sha256": "4f30a07280d22d5bee85fe5dffb303b6d2daf238f2187dc4131b6b3907fe58f5"
+    },
+    {
+      "path": "final/1366-tool-target-cancel.png",
+      "bytes": 188329,
+      "sha256": "e259552d3b61bdfcff8b25c5194087ad22c0a9d347abc86168f9cd82f76a6b99"
+    },
+    {
+      "path": "final/390-actual-result.png",
+      "bytes": 71751,
+      "sha256": "fe455477fff3fa0306ef1450214d634c1a4c6465240884502766aac64abf29ac"
+    },
+    {
+      "path": "final/390-continued-shop.png",
+      "bytes": 257555,
+      "sha256": "675d6f937341160f2dc6628e81cd24f4353a67bf9ff9c5b3e3dbca58a4808e92"
+    },
+    {
+      "path": "final/390-natural-shop.png",
+      "bytes": 239467,
+      "sha256": "c237c23188565f59e3afb1d8526ca98bfb3c0104863afe3265295d3e18d96365"
+    },
+    {
+      "path": "final/390-natural-table.png",
+      "bytes": 64486,
+      "sha256": "d779a27b707604527070d5c9437a281dae4b76ef0fbdac8f8612c1bb89af01e9"
+    },
+    {
+      "path": "final/390-ready-to-play.png",
+      "bytes": 78888,
+      "sha256": "43893a43dd11f84a27b105db379462fa3f515a391de4ac7daa83c34e4f7a9792"
+    },
+    {
+      "path": "final/390-save-failed.png",
+      "bytes": 79355,
+      "sha256": "a74ce247f9be140e74024d6d353f0598731fcc24945d11a1aa66a824b3dfc173"
+    },
+    {
+      "path": "final/390-tool-saved-after-retry.png",
+      "bytes": 63971,
+      "sha256": "26fced7d230c4b9642fb8dd0caf2479cd378fe71be60b3ce2819257d7e1a5d84"
+    },
+    {
+      "path": "final/390-tool-target-cancel.png",
+      "bytes": 78721,
+      "sha256": "8d0d59b7a116125ddf350f6b439aafcf99ceda3cb2cf29ea0fd8a2300c3bb87f"
+    },
+    {
+      "path": "final/full-state.json.gz",
+      "bytes": 19950,
+      "sha256": "55f4da6f13a031b4d31f4e09a92f59242296b43c5f19afa95f31b49c9d7481e6"
+    },
+    {
+      "path": "final/report.json",
+      "bytes": 12658,
+      "sha256": "23ac82f9c2f546b04fd440186fba5aec665a65e9498c55f3d419a82b1ec8dcf9"
+    },
+    {
+      "path": "final/videos/page@5d9ea9f71315427c008b41da332c16b4.webm",
+      "bytes": 2145455,
+      "sha256": "79f50ffaa54ce6c8e222c9dc27bd9332a30a98ba0f775deaeb8ed0c0200a520a"
+    },
+    {
+      "path": "final/videos/page@fda5808f066dfb54a77182f3436bbf79.webm",
+      "bytes": 4286583,
+      "sha256": "bb0a8053347e5f316b9e5ff7fbbfa45a6367ebec6daaa060cf5d6965581527f0"
+    },
+    {
+      "path": "review-05/1366-natural-shop.png",
+      "bytes": 769316,
+      "sha256": "856f80ead42528658e82be5220861e469afb2bb717c0b517edebc8b784ce262b"
+    },
+    {
+      "path": "review-05/FAIL.png",
+      "bytes": 381941,
+      "sha256": "d3b95bb36f78fdb64ea13c9da032fa3549cd69f0f3bfed5c517957ae6bbe59fd"
+    },
+    {
+      "path": "review-05/full-state.json.gz",
+      "bytes": 3847,
+      "sha256": "c069ca5c49654dc0785877a8718d5a7ba29aec086fe4af78f3b5a0b1f4d2d205"
+    },
+    {
+      "path": "review-05/report.json",
+      "bytes": 2937,
+      "sha256": "81b798f2fdaf844db0fc44e109e66f14dc7c915ff74f44ef22c9cafb86525cb1"
+    },
+    {
+      "path": "review-05/videos/page@dc2ebe4c0db79cf002018e82f48a689f.webm",
+      "bytes": 2111367,
+      "sha256": "db0d00fa5b35e38ecee7219606669b23d9b5a2865e373e7db9657eace0984e1e"
+    },
+    {
+      "path": "discard-01/FAIL.png",
+      "bytes": 93246,
+      "sha256": "af63e16465f88782a719bc7be1ec0d2597f95ea19e3583859ed54124f3772f6d"
+    },
+    {
+      "path": "discard-01/full-state.json.gz",
+      "bytes": 1019,
+      "sha256": "31ff0597fe94042ade83102e67e22fb100e721057f1500524db2da22cac6804f"
+    },
+    {
+      "path": "discard-01/report.json",
+      "bytes": 1478,
+      "sha256": "9d0b3976884b3f93ec33ff89dbca9f30fe20e466554fc055a18d117d280fd5b6"
+    },
+    {
+      "path": "discard-01/videos/page@b6691fe25cc624d317f52124b6af84db.webm",
+      "bytes": 1209415,
+      "sha256": "e0601dccdc765b2ec86613a017fd7d6c2c0ce8ebaa724be5a64aa3fd6d9f2b33"
+    },
+    {
+      "path": "discard-02/FAIL.png",
+      "bytes": 81259,
+      "sha256": "d569ddf4573eab6222c32bbb12198e47826693b6f519323057a65d8a15e28ae0"
+    },
+    {
+      "path": "discard-02/full-state.json.gz",
+      "bytes": 819,
+      "sha256": "89da955bbded94fae2c2bdf70cf5f0147912945230e6b3b5f045f0ae7f2a5bf6"
+    },
+    {
+      "path": "discard-02/report.json",
+      "bytes": 1409,
+      "sha256": "aa1963eca48439190ae57d97e5bb8d745fb399789bfbe161c1f711ca6bce7778"
+    },
+    {
+      "path": "discard-02/videos/page@69434026c8f6a316284ef35160a07d0e.webm",
+      "bytes": 257538,
+      "sha256": "5726dc103c61203282dfb2e8d2155809ccb2653b39221162d7cd8e0cf6e4a2ff"
+    },
+    {
+      "path": "discard-03/1366-canceled.png",
+      "bytes": 249091,
+      "sha256": "808e8e00101398763386656f03568fc231b871c58cf62dc471eddc509ce121ee"
+    },
+    {
+      "path": "discard-03/1366-discarded-refilled.png",
+      "bytes": 228074,
+      "sha256": "d708468294369df5fc4df98a09d9b63b63745938d1dc5a1939daf95dda7c1236"
+    },
+    {
+      "path": "discard-03/1366-restored.png",
+      "bytes": 229504,
+      "sha256": "359a8380f6d3b3a3a668f0c3bbd52fdf961256e60d1ceb6a49700146f43b5474"
+    },
+    {
+      "path": "discard-03/1366-selected.png",
+      "bytes": 249595,
+      "sha256": "618bde684893ca8bdf5943d2ca8de6900167e504e631efc710e96780ddaf8493"
+    },
+    {
+      "path": "discard-03/390-canceled.png",
+      "bytes": 73626,
+      "sha256": "3a0fce8581ec026b4f546f1f187cac40aff9130682648ed88fdbed988a6d3a18"
+    },
+    {
+      "path": "discard-03/390-discarded-refilled.png",
+      "bytes": 58255,
+      "sha256": "de4d3fb1bcfe420e1f0027bc97484c7b8c0155cad2139b6784cd39febc97d1fe"
+    },
+    {
+      "path": "discard-03/390-restored.png",
+      "bytes": 59289,
+      "sha256": "4af73751750bcb386485c5f1aca851e1cddd9bc6a69dc76e9c2b5c546dd4ee1c"
+    },
+    {
+      "path": "discard-03/390-selected.png",
+      "bytes": 74399,
+      "sha256": "7eb46593201c68ea2225a3f590717a9a6e0178b3dbdf4abb69e31c446f94c49c"
+    },
+    {
+      "path": "discard-03/full-state.json.gz",
+      "bytes": 4537,
+      "sha256": "6d0e3f26517c46034fe072c18d08610b25530515233b989cc44aac761c4c969e"
+    },
+    {
+      "path": "discard-03/report.json",
+      "bytes": 13148,
+      "sha256": "72edbbcb2ce6b15fbeca4db1530e0a6f4e2939733b5bc0fa346d9ea8063f58c6"
+    },
+    {
+      "path": "discard-03/videos/page@b57b1cf4068663787b77edbb2cb6dee3.webm",
+      "bytes": 1054967,
+      "sha256": "49caf4f46c8b48c45791743d9d16220636f411944767480da1ba5c44e6701dd3"
+    },
+    {
+      "path": "discard-03/videos/page@ce8057463abc2e5a98968ae205b213bc.webm",
+      "bytes": 491001,
+      "sha256": "fb1201ead8a7bf132af39922dfa54d39e5deecf852875c3a18324b02254fcf4a"
+    }
+  ],
+  "delivery": {
+    "pr": 204,
+    "url": "https://github.com/big-dimple/tangsongpai/pull/204",
+    "firstEvidenceHead": "39e4966ed7a6a7a4cca1ae0a6bb7f577b8c4a348",
+    "state": "ready_not_merged",
+    "finalHeadAndCI": "see PR and final delivery response"
+  },
+  "ordinaryDiscardSupplement": {
+    "status": "PASS",
+    "report": "discard-03/report.json",
+    "fullState": "discard-03/full-state.json.gz",
+    "harness": "harness/q3-discard.mjs",
+    "scope": "Controlled setup imports the preceding natural journey checkpoint using GameSession.importJSON, then reloads and uses native Continue. Subsequent selection/cancel/discard inputs are native Chromium mouse/CDP touch. No edited state/stock/draws, discard-handler calls or synthetic domain dispatch; not a natural-acquisition or physical-phone acceptance claim.",
+    "sourceHash": "cc1771cde836319107fafd523abefe342a72c07661d5744054077c4c359d0a27",
+    "input": {
+      "path": "docs/production/evidence/q3-interaction-2026-10-21/final/full-state.json.gz",
+      "sha256": "55f4da6f13a031b4d31f4e09a92f59242296b43c5f19afa95f31b49c9d7481e6",
+      "checkpointChecksum": "json-fnv-v1:64a30e4c93de4b70",
+      "seq": 6
+    },
+    "exactDesktopPhoneTupleEqual": true,
+    "cases": [
+      {
+        "viewport": {
+          "width": 1366,
+          "height": 768
+        },
+        "selectedIds": [
+          "clubs-12",
+          "hearts-13"
+        ],
+        "drawnIds": [
+          "diamonds-4",
+          "spades-4"
+        ],
+        "video": "discard-03/videos/page@b57b1cf4068663787b77edbb2cb6dee3.webm",
+        "before": {
+          "seq": 6,
+          "discards": 3,
+          "plays": 4,
+          "gold": 2
+        },
+        "after": {
+          "seq": 7,
+          "discards": 2,
+          "plays": 4,
+          "gold": 2
+        },
+        "status": "PASS"
+      },
+      {
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "selectedIds": [
+          "clubs-12",
+          "hearts-13"
+        ],
+        "drawnIds": [
+          "diamonds-4",
+          "spades-4"
+        ],
+        "video": "discard-03/videos/page@ce8057463abc2e5a98968ae205b213bc.webm",
+        "before": {
+          "seq": 6,
+          "discards": 3,
+          "plays": 4,
+          "gold": 2
+        },
+        "after": {
+          "seq": 7,
+          "discards": 2,
+          "plays": 4,
+          "gold": 2
+        },
+        "status": "PASS"
+      }
+    ]
+  }
+}

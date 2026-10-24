@@ -1,0 +1,236 @@
+{
+  "testedCommit": "0110d725022283d62cd527340728ddae01678f9d",
+  "base": "485ba12debfed86433466af2213688df4384c8c9",
+  "branch": "dev/refill-handoff-frequency-20261018",
+  "identity": {
+    "contentVersion": "quality-r2-refill-handoff-frequency-v2",
+    "contentHash": "json-fnv-v1:6862591707991fbb"
+  },
+  "environment": {
+    "os": "win32",
+    "node": "v22.20.0",
+    "browser": "NOT_RUN"
+  },
+  "sourceBlobs": {
+    "src/application/checkpoint.ts": "011ebf22e0dd3699f0834aa26cf0dbe2d88957ea",
+    "src/domain/r2ErxiangHandoff.ts": "d53569d8d8aaf6a8d34beab003f838e857e9d821",
+    "src/domain/r2GroupUpgrade.ts": "e8ce5b1f11d6281bfd2f967e03ab9db70bb8d1f2",
+    "src/domain/r2LaohuanRefill.ts": "8645e61f0b115e0a5acbf9fdcccd518e53401f8e",
+    "src/domain/r2Run.ts": "28211e0e221f350baf3199a0b01a75f072e87e7a",
+    "src/game/CharacterRunCopy.ts": "8f7bd34b4239a0cb047e41e5dbc934308ee2f998",
+    "src/game/ErxiangHandoffCopy.ts": "4f8cd9934be0ed5d233ef87c2426554d7322651d",
+    "src/game/GameScene.ts": "1073db12c97caa3612e030077a3556b621a8c72b",
+    "src/game/HeroAbilityCue.ts": "3ad4a3cf6b16342cd2b04a10ee643e83dfb4fc62",
+    "src/game/HeroSignature.ts": "e58bcaac91c9e06cf2dd7ad6a5e3cebd9bd003f5",
+    "src/game/HeroSkillGuide.ts": "7749d7836b1440589aeb39f0c01e10452788c107",
+    "src/game/HeroStageContinuity.ts": "f093b1d68f8fb3d84b5c74a71476e09b2863478b",
+    "src/game/OpeningPlaySample.ts": "68d0a65cb9eec94467c6f4022524ac8f9f21060f",
+    "src/game/RunLaunch.ts": "6496760778220dcd5332e19e7263cda4523ebb7d",
+    "src/game/SelectionPresentation.ts": "11791b7f333767fc86ab78c12abc0e214f5b7d79",
+    "tests/refill-handoff-analysis.test.ts": "6e506393a6fd30d4fccc9e59848d86eba0e0b490",
+    "tests/refill-handoff-frequency.test.ts": "af243d0d3227cdf5206469f4e5b1cfe899341682"
+  },
+  "current": {
+    "command": "npm exec vitest run tests/refill-handoff-frequency.test.ts tests/refill-handoff-analysis.test.ts tests/current-hero-display-copy.test.ts",
+    "status": "PASS",
+    "exitCode": 0,
+    "passed": 19,
+    "failed": 0,
+    "skipped": 0,
+    "results": [
+      {
+        "file": "current-hero-display-copy.test.ts",
+        "status": "passed",
+        "cases": [
+          {
+            "name": "amo selection summary and explanation use the same actual new-run effect",
+            "status": "passed"
+          },
+          {
+            "name": "touye selection summary and explanation use the same actual new-run effect",
+            "status": "passed"
+          },
+          {
+            "name": "laohuan selection summary and explanation use the same actual new-run effect",
+            "status": "passed"
+          },
+          {
+            "name": "erxiang selection summary and explanation use the same actual new-run effect",
+            "status": "passed"
+          },
+          {
+            "name": "azao selection summary and explanation use the same actual new-run effect",
+            "status": "passed"
+          },
+          {
+            "name": "xiemu selection summary and explanation use the same actual new-run effect",
+            "status": "passed"
+          },
+          {
+            "name": "Su story and both sample surfaces describe the actual K-gated threefold play",
+            "status": "passed"
+          },
+          {
+            "name": "Flower selection, conditions and example use current real payment tiers",
+            "status": "passed"
+          },
+          {
+            "name": "Su choice puts a short K/score rule and actual discarded cards before collapsed details",
+            "status": "passed"
+          },
+          {
+            "name": "Su event caption reads the real event factor",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "refill-handoff-analysis.test.ts",
+        "status": "passed",
+        "cases": [
+          {
+            "name": "fixed exact probability and real scoring analysis is reproducible without a simulation campaign",
+            "status": "passed"
+          }
+        ]
+      },
+      {
+        "file": "refill-handoff-frequency.test.ts",
+        "status": "passed",
+        "cases": [
+          {
+            "name": "Xin automatically offers candidates on all paid normal discards, with fixed source IDs and strict chosen count",
+            "status": "passed"
+          },
+          {
+            "name": "a short Xin draw stack keeps all actual available cards without inventing two more",
+            "status": "passed"
+          },
+          {
+            "name": "disabled Xin ordinary discard remains ordinary; explicit activation is rejected",
+            "status": "passed"
+          },
+          {
+            "name": "Liu uses exactly two actual successful plays, remains additive and rejects a third atomically",
+            "status": "passed"
+          },
+          {
+            "name": "invalid Liu selection spends no use and a new stage starts with two remaining",
+            "status": "passed"
+          },
+          {
+            "name": "disabled Liu cannot transfer or spend either use",
+            "status": "passed"
+          },
+          {
+            "name": "Liu quota survives saved retry and forged counters cannot disagree with the journal",
+            "status": "passed"
+          },
+          {
+            "name": "current selection and details show repeatable Xin and two-use Liu without changing the other four",
+            "status": "passed"
+          }
+        ]
+      }
+    ]
+  },
+  "analysisFinal": {
+    "command": "npm exec vitest run tests/refill-handoff-analysis.test.ts",
+    "status": "PASS",
+    "exitCode": 0,
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "results": [
+      {
+        "file": "refill-handoff-analysis.test.ts",
+        "status": "passed",
+        "cases": [
+          {
+            "name": "fixed exact probability and real scoring analysis is reproducible without a simulation campaign",
+            "status": "passed"
+          }
+        ]
+      }
+    ],
+    "note": "Final rerun adds actual-target early-stop ledger. Replaces the same analysis case in the current batch count; do not double count."
+  },
+  "existingRefillSafety": {
+    "command": "npm exec vitest run tests/laohuan-refill.test.ts -- --testNamePattern 'pending blocks|N.1 remains|two save failures'",
+    "status": "PASS",
+    "exitCode": 0,
+    "passed": 3,
+    "failed": 0,
+    "skipped": 8,
+    "results": [
+      {
+        "file": "laohuan-refill.test.ts",
+        "status": "passed",
+        "cases": [
+          {
+            "name": "laohuan real discard and fixed refill commits one discard and unique candidate zone, choice moves rejects to used without second hooks",
+            "status": "skipped"
+          },
+          {
+            "name": "laohuan real discard and fixed refill pending blocks ordinary mutations, malformed selection preserves original and abandon never refunds",
+            "status": "passed"
+          },
+          {
+            "name": "laohuan real discard and fixed refill N+1 remains choice, N/short/zero auto finish, zero selection cannot burn",
+            "status": "passed"
+          },
+          {
+            "name": "laohuan real discard and fixed refill two save failures retry exact candidate without revealing or redrawing and restore both phases",
+            "status": "passed"
+          },
+          {
+            "name": "laohuan real discard and fixed refill Q01 refuses, B08 permits non-scoring selection and B14 increases once",
+            "status": "skipped"
+          },
+          {
+            "name": "laohuan real discard and fixed refill only actual discarded card triggers a07 refund, rejects never add count or clear first-discard record",
+            "status": "skipped"
+          },
+          {
+            "name": "laohuan real discard and fixed refill new ability removes old120 in real score/AI context, next entry resets used",
+            "status": "skipped"
+          },
+          {
+            "name": "laohuan real discard and fixed refill cold f10 remains armed through fixed refill (ordinary first=false), then next real play consumes once",
+            "status": "skipped"
+          },
+          {
+            "name": "laohuan real discard and fixed refill cold f10 remains armed through fixed refill (ordinary first=true), then next real play consumes once",
+            "status": "skipped"
+          },
+          {
+            "name": "laohuan real discard and fixed refill pending preserves active pointer, challenge/boss snapshot and live joker identity strictness",
+            "status": "skipped"
+          },
+          {
+            "name": "laohuan real discard and fixed refill strict current parsing refuses phase/gap/duplicate/cost-marker corruption",
+            "status": "skipped"
+          }
+        ]
+      }
+    ],
+    "note": "Three selected safety tests only; eight other historical cases deliberately not run."
+  },
+  "uniqueTestsPassed": 22,
+  "typecheck": {
+    "command": "npm run typecheck",
+    "status": "PASS",
+    "exitCode": 0
+  },
+  "build": {
+    "command": "npm exec vite build -- --outDir shots/frequency-build",
+    "status": "PASS",
+    "exitCode": 0,
+    "modules": 376
+  },
+  "fullSuite": "NOT_RUN",
+  "browser": "NOT_RUN",
+  "naturalBalanceOrWinRate": "NOT_MEASURED",
+  "sourceExecution": "Reviewed working tree immediately before product commit; no source changes after checks. Build-info records pre-commit base and dirty state.",
+  "pendingEffects": "Hero owner must replace the first-use guard in XinRefillLock.ts:13 for repeatable profile. No visual module changed in this task."
+}

@@ -1,0 +1,467 @@
+{
+  "task": "P08.Q2 lane 1",
+  "date": "2026-10-21",
+  "baseline": "0d1c4cef14e5ee560376f3098f6a8abd043e1717",
+  "branch": "feat/q2-growth-explain-20261021",
+  "status": "Q2_GROWTH_FIRST_LAYER_AND_TIPS_SOFTWARE_VERIFIED_LIBRARY_UPLOAD_BLOCKED",
+  "productChanged": true,
+  "domainModelAdded": false,
+  "checklist": {
+    "payments": "PASS",
+    "growthBeforeAndAfter": "PASS",
+    "nextHandGrowthRead": "PASS_straight_and_flush",
+    "practiceNextHandLevel": "PASS_straight_NOT_RUN_group_and_flush_positive",
+    "checkpointRestore": "PASS",
+    "replacementLoss": "PASS_command_counterfactual_not_UI",
+    "cannotAfford": "PASS",
+    "untriggered": "PASS_flush_high_card",
+    "browserUi": "PASS_CONTROLLED_CHECKPOINTS_2_VIEWPORTS_6_CASES",
+    "longTermPlayerOutcome": "NOT_RUN",
+    "physicalAndAudio": "NOT_RUN",
+    "harnessStrictTypecheck": "PASS",
+    "onDemandC04C06": "PASS",
+    "purchaseFirstLayerPlainCopy": "PASS",
+    "compatibleShortTips": "PASS",
+    "libraryScreenshots": "BLOCKED_HELPER_PROXY_403_NO_CREATED_FILES_CONFIRMED"
+  },
+  "routes": [
+    {
+      "route": "group",
+      "seed": "group-natural-17",
+      "plays": 3,
+      "subsequentShops": 1,
+      "source": "b10",
+      "paid": 4,
+      "phase": "shop"
+    },
+    {
+      "route": "straight",
+      "seed": "policy-valid-groups",
+      "plays": 2,
+      "subsequentShops": 1,
+      "source": "c04",
+      "paid": 4,
+      "phase": "stage-cleared"
+    },
+    {
+      "route": "flush",
+      "seed": "policy-valid-suit",
+      "plays": 2,
+      "subsequentShops": 1,
+      "source": "c06",
+      "paid": 6,
+      "phase": "await-input"
+    }
+  ],
+  "deliverables": [
+    {
+      "file": "FAIL-1792551913552.txt",
+      "bytes": 559,
+      "sha256": "2e766322090482a58c508e9a80a0fba942f34139772bd23c826b192c3eecf749"
+    },
+    {
+      "file": "FAIL-1792551926790.txt",
+      "bytes": 363,
+      "sha256": "f4a2bee843e6358ba197444b41add09d079080c74d2c93d388ab54e75bd7198a"
+    },
+    {
+      "file": "FAIL-harness-typecheck.txt",
+      "bytes": 306,
+      "sha256": "74cae2e992bb4cd89324ff693ea9dee0f2dba89e4b759518cb561e3c07fe8e47"
+    },
+    {
+      "file": "FAIL-plain-copy-second-check.txt",
+      "bytes": 1991,
+      "sha256": "22591b6d24cf3f865b2c167abfa5b18aa258f32f9008e17df8a38a4bdd32e418"
+    },
+    {
+      "file": "FAIL-plain-copy-third-check.txt",
+      "bytes": 1565,
+      "sha256": "bc10ac1e3d9048a407a9f631433fd503bb9ed4b4b849a0d61aaf1512285fc1b3"
+    },
+    {
+      "file": "PROGRESS.md",
+      "bytes": 5370,
+      "sha256": "253ea784ff4f218edc16ddcb0573bf6aa0ac1be1631ccecf3e938112980259eb"
+    },
+    {
+      "file": "README.md",
+      "bytes": 19145,
+      "sha256": "8e40a140590bf4b5a61c7032e916281d7bea2b507fcf07e5a6f79facb885015a"
+    },
+    {
+      "file": "audit-run.txt",
+      "bytes": 4302,
+      "sha256": "6e0fd27be027dacbee102a8ed877aa11b9e502a2a8079ca8a799467a2951c4cb"
+    },
+    {
+      "file": "audit.json",
+      "bytes": 676614,
+      "sha256": "cd8f7c8fb3896de22c1de48246164a0d08e58dc2bcae216c931ae9a177890529"
+    },
+    {
+      "file": "checkpoints.json.gz",
+      "bytes": 23494,
+      "sha256": "d147b5d6eb4cdf179c6519eaa810d44c2b12df052903bc8529759ef4e95a0ac0"
+    },
+    {
+      "file": "harness-typecheck.txt",
+      "bytes": 208,
+      "sha256": "76162e465989f3f070a9de8db711fbf358e53b74d09ce1bbdb57c727e4c4a16d"
+    },
+    {
+      "file": "plain-copy-build.txt",
+      "bytes": 1017,
+      "sha256": "a65cbafa17363c6650e950546156cc777f753c2301ca731083ffdf140477aa30"
+    },
+    {
+      "file": "plain-copy-check.txt",
+      "bytes": 415,
+      "sha256": "37825cc9f684eb7171c99bf7bf1094e484fd4c98e550191b2df70de490daa015"
+    },
+    {
+      "file": "plain-copy-first-check.txt",
+      "bytes": 9594,
+      "sha256": "093aedd19a2faa02cfb20ec1b81477806b54a99704b5906a67eed9a36bb1c61e"
+    },
+    {
+      "file": "plain-copy-full-tests.txt",
+      "bytes": 469,
+      "sha256": "339836b3205cc048506a20bddf396a17457e31f3b403a072a0d9ba7198ebb054"
+    },
+    {
+      "file": "plain-copy-typecheck.txt",
+      "bytes": 253,
+      "sha256": "74f919f77aaafd9e103ae561073b59a64c21a6860376204d97779934238403aa"
+    },
+    {
+      "file": "plain-language-run.txt",
+      "bytes": 31,
+      "sha256": "70e3166e628238254b787fd3ebc59da4dfb872d364578cbcf8a6ff71ca5d89b9"
+    },
+    {
+      "file": "plain-language/1366-c04-after.png",
+      "bytes": 1163570,
+      "sha256": "8c3dabe40d87ec7ff4e6faca760461997c08426d22f846738a8885e4bc5af1b5"
+    },
+    {
+      "file": "plain-language/1366-c04-before.png",
+      "bytes": 1111985,
+      "sha256": "d4bd2bc45e6d24ae56056a67d083cef6954481b693d41b2f44c505942dc2afa7"
+    },
+    {
+      "file": "plain-language/1366-c06-after.png",
+      "bytes": 1399108,
+      "sha256": "b4d1e0d8882274faf12079088305a1b59f0e77f5b0053d9fc2337d8a1c7c9931"
+    },
+    {
+      "file": "plain-language/1366-c06-before.png",
+      "bytes": 1315879,
+      "sha256": "9a629ec36fae61be7262eea22974e0d1ba483b099b9c39f936e2fca25d2efa7b"
+    },
+    {
+      "file": "plain-language/390-c04-after.png",
+      "bytes": 360446,
+      "sha256": "b92bcee7752e28e0988927544cdc33824c958d00dcc350710527852c959fc1b0"
+    },
+    {
+      "file": "plain-language/390-c04-before.png",
+      "bytes": 365395,
+      "sha256": "df0c3cc603428ec23996537bc2081ef4e8f3160a2b130a5ba3eee74ed7ac68ab"
+    },
+    {
+      "file": "plain-language/390-c06-after.png",
+      "bytes": 439171,
+      "sha256": "99c826f98f7373f75ba3e9e1f8df59cdb236cc9961f8fd7ffaaebb423d3c5c93"
+    },
+    {
+      "file": "plain-language/390-c06-before.png",
+      "bytes": 447704,
+      "sha256": "aed95a5ce4459a5a9735773f4d78bc29ccf5aaa11b0b5e56a0ebc4caceb0056b"
+    },
+    {
+      "file": "plain-language/FAIL-1792556384389.png",
+      "bytes": 1111985,
+      "sha256": "d4bd2bc45e6d24ae56056a67d083cef6954481b693d41b2f44c505942dc2afa7"
+    },
+    {
+      "file": "plain-language/FAIL-1792556384857.json",
+      "bytes": 1760,
+      "sha256": "16ef12f6e43554aaa652d0bfc20eea6319df9c6016c3a902a8b335ce2e3dbc1f"
+    },
+    {
+      "file": "plain-language/FAIL-1792556504539.png",
+      "bytes": 1134305,
+      "sha256": "bc533078c93784b38eb69e5ff5a7a842468ca121e9e92d38eae50cadef774ade"
+    },
+    {
+      "file": "plain-language/FAIL-1792556504981.json",
+      "bytes": 9666,
+      "sha256": "e41ae2689c5ec5d4ce3227a5448a48023b9ee5c9204b619bce1038c86a19f13f"
+    },
+    {
+      "file": "plain-language/library-status.json",
+      "bytes": 757,
+      "sha256": "44dfbfffe132b772daa4b9c35bc6e0ae689c81d048637b74029a6c3c2034ef32"
+    },
+    {
+      "file": "plain-language/report.json",
+      "bytes": 13884,
+      "sha256": "fa1a389e8f8ec766582045a79a9677d2afc922aa6bcb78353e80eef872cb0d0c"
+    },
+    {
+      "file": "related-checks.txt",
+      "bytes": 415,
+      "sha256": "e26cdb144ed8530f9cb47affeafd5c4c2e08b4232c150aa5ee2e5ac813e3ff89"
+    },
+    {
+      "file": "typecheck.txt",
+      "bytes": 253,
+      "sha256": "74f919f77aaafd9e103ae561073b59a64c21a6860376204d97779934238403aa"
+    },
+    {
+      "file": "ui-browser-run.txt",
+      "bytes": 62,
+      "sha256": "1cde622f19e15a32682854c7237fc4d5a43f34084730946b13785b13b163fc1b"
+    },
+    {
+      "file": "ui-build.txt",
+      "bytes": 1017,
+      "sha256": "568fc88cdc065115b9dd092dd2f3140f3fd24feb119f4b5124e9584cac2cdf2c"
+    },
+    {
+      "file": "ui-compatibility.txt",
+      "bytes": 413,
+      "sha256": "60fb8d93f725ecee16d1a78d96a0edfda89d84bfdf4da44742e1b39846d212ae"
+    },
+    {
+      "file": "ui-detail/1366-c04-shop-restored-top.png",
+      "bytes": 572242,
+      "sha256": "83d3beaa14fa1228c6edfc923e0bed3d9b9ed6e1ec29bb7943a7598aed3cac2b"
+    },
+    {
+      "file": "ui-detail/1366-c04-shop-top.png",
+      "bytes": 572242,
+      "sha256": "83d3beaa14fa1228c6edfc923e0bed3d9b9ed6e1ec29bb7943a7598aed3cac2b"
+    },
+    {
+      "file": "ui-detail/1366-c06-table-restored-top.png",
+      "bytes": 286251,
+      "sha256": "38d470c5811128d88a0fd31e4c4abcc802386565c20e968c4645591c705a7b84"
+    },
+    {
+      "file": "ui-detail/1366-c06-table-top.png",
+      "bytes": 286251,
+      "sha256": "38d470c5811128d88a0fd31e4c4abcc802386565c20e968c4645591c705a7b84"
+    },
+    {
+      "file": "ui-detail/1366-no-history-top.png",
+      "bytes": 565418,
+      "sha256": "add367c422e88159315dd83348658a0e80f7f0efcc591bc98f1e1cb2fed1d3ba"
+    },
+    {
+      "file": "ui-detail/390-c04-shop-bottom.png",
+      "bytes": 89567,
+      "sha256": "4cc774f18ade8fa28ecf68915c505846c095a60809d26465f4153a2768ec443d"
+    },
+    {
+      "file": "ui-detail/390-c04-shop-restored-bottom.png",
+      "bytes": 89567,
+      "sha256": "4cc774f18ade8fa28ecf68915c505846c095a60809d26465f4153a2768ec443d"
+    },
+    {
+      "file": "ui-detail/390-c04-shop-restored-top.png",
+      "bytes": 89567,
+      "sha256": "4cc774f18ade8fa28ecf68915c505846c095a60809d26465f4153a2768ec443d"
+    },
+    {
+      "file": "ui-detail/390-c04-shop-top.png",
+      "bytes": 89567,
+      "sha256": "4cc774f18ade8fa28ecf68915c505846c095a60809d26465f4153a2768ec443d"
+    },
+    {
+      "file": "ui-detail/390-c06-table-bottom.png",
+      "bytes": 88391,
+      "sha256": "b91986215fc8cf540354c3972f04cd64696e24f1422a65da754ba90f25869a7b"
+    },
+    {
+      "file": "ui-detail/390-c06-table-restored-bottom.png",
+      "bytes": 88391,
+      "sha256": "b91986215fc8cf540354c3972f04cd64696e24f1422a65da754ba90f25869a7b"
+    },
+    {
+      "file": "ui-detail/390-c06-table-restored-top.png",
+      "bytes": 88391,
+      "sha256": "b91986215fc8cf540354c3972f04cd64696e24f1422a65da754ba90f25869a7b"
+    },
+    {
+      "file": "ui-detail/390-c06-table-top.png",
+      "bytes": 88391,
+      "sha256": "b91986215fc8cf540354c3972f04cd64696e24f1422a65da754ba90f25869a7b"
+    },
+    {
+      "file": "ui-detail/390-no-history-bottom.png",
+      "bytes": 102584,
+      "sha256": "a445c1701da6615ebe31a6f0f754fd320a5c897719d987dbb86bfc433e8b5ef4"
+    },
+    {
+      "file": "ui-detail/390-no-history-top.png",
+      "bytes": 102584,
+      "sha256": "a445c1701da6615ebe31a6f0f754fd320a5c897719d987dbb86bfc433e8b5ef4"
+    },
+    {
+      "file": "ui-detail/FAIL-1792553108051.png",
+      "bytes": 103713,
+      "sha256": "f3226987b954eea7f4654be68e494ae41f08de91856095e1e41d1930720e6180"
+    },
+    {
+      "file": "ui-detail/FAIL-1792553108178.json",
+      "bytes": 960,
+      "sha256": "6c65e39531aa0f79fd241892367debf20523b3b7b12be30eada65322a93624a3"
+    },
+    {
+      "file": "ui-detail/FAIL-1792553180287.png",
+      "bytes": 106760,
+      "sha256": "7818edc036b53a860974268c9dcb2ef7819a3be6d8b8347af48f63ea676758d4"
+    },
+    {
+      "file": "ui-detail/FAIL-1792553180399.json",
+      "bytes": 960,
+      "sha256": "6c65e39531aa0f79fd241892367debf20523b3b7b12be30eada65322a93624a3"
+    },
+    {
+      "file": "ui-detail/FAIL-1792553258922.png",
+      "bytes": 213480,
+      "sha256": "87a81699ba1133f1b5686cc123e79ad31a8ecd5e4da04ecf436332f16c4608cf"
+    },
+    {
+      "file": "ui-detail/FAIL-1792553259073.json",
+      "bytes": 8853,
+      "sha256": "bf3b82a2d6b87d40468e61841a8260a901263f208e0423bc506d2cab667b0492"
+    },
+    {
+      "file": "ui-detail/FAIL-1792553381824.png",
+      "bytes": 806875,
+      "sha256": "b04a10b54d157ff9898628d09d737d4dc27d53144801d63bf0cfda7e0919deef"
+    },
+    {
+      "file": "ui-detail/FAIL-1792553381994.json",
+      "bytes": 8852,
+      "sha256": "ff736f667c697e848fef50d0c3653fbdc28a1b8929e75992db1d770bfa95c346"
+    },
+    {
+      "file": "ui-detail/FAIL-1792553557831.png",
+      "bytes": 208468,
+      "sha256": "1b39124a6f307db4a6e4d87403fabc53eb1595bf40e353f426053b95c3fe5cd4"
+    },
+    {
+      "file": "ui-detail/FAIL-1792553558044.json",
+      "bytes": 8818,
+      "sha256": "341ef81e443e9731513f73f5dd79fdac40ceffac9d4af0a32becbf9a7e60d538"
+    },
+    {
+      "file": "ui-detail/report.json",
+      "bytes": 16151,
+      "sha256": "c0a6af0f3ae46a5f550d0048047c6108bb8c38828b56a5e582069d828994d148"
+    },
+    {
+      "file": "ui-typecheck.txt",
+      "bytes": 253,
+      "sha256": "74f919f77aaafd9e103ae561073b59a64c21a6860376204d97779934238403aa"
+    },
+    {
+      "file": "ui-unit.txt",
+      "bytes": 415,
+      "sha256": "f5259ff7a094b03a2e44a029745a537e5569608cc746e1d83f4ec5584977f76a"
+    }
+  ],
+  "existingUiEvidence": {
+    "source": "../current-growth-causality-2026-10-16/README.md",
+    "classification": "previous ordinary UI purchase/two hands/cold recovery; not rerun on current head"
+  },
+  "handoff": "README.md#交给父任务的准确-ui-差异和最小接线清单",
+  "constraints": {
+    "srcGameUntouched": false,
+    "contentUntouched": true,
+    "globalPlansUntouched": true,
+    "mainUntouched": true,
+    "noNewServices": true,
+    "srcGameFilesChanged": [
+      "JokerGrowthCausality.ts",
+      "JokerGrowthDecisionCopy.ts",
+      "JokerPlainCopy.ts",
+      "ShopDecisionCopy.ts"
+    ],
+    "sharedScenesUntouched": true
+  },
+  "originalAudit": {
+    "commit": "8a869c84816c6d1961a07d2b84d4d4d94e70c589",
+    "productChanged": false,
+    "auditAndCheckpointsUnchanged": true
+  },
+  "productUpdate": {
+    "scope": [
+      "src/game/JokerGrowthCausality.ts",
+      "tests/q2-growth-causality.test.ts"
+    ],
+    "reuse": "GrowthPayoff.growthPayoffs",
+    "sourceSha256": "9259ff2c11f00c7cca017b613ecc413add494d781cfaf0fef3a2679aae036747",
+    "browserReport": "ui-detail/report.json",
+    "actualUi": "Existing Continue, card/source and on-demand buttons; controlled pre-boot IndexedDbSave commit; no new plays or natural acquisition claim",
+    "checks": {
+      "unitFiles": 6,
+      "unitPassed": 36,
+      "typecheck": "PASS",
+      "build": "PASS",
+      "sourceCardMissingRead": "CONTROLLED_UNIT_ONLY",
+      "sameNameRebuy": "CONTROLLED_UNIT_ONLY_NOT_NATURAL_UI"
+    },
+    "gapClosed": "c04/c06 existing on-demand entry and saved-read/new-growth explanation",
+    "notRun": [
+      "group fourth hand",
+      "flush upgraded-type positive next hand",
+      "natural rebuy",
+      "long-term player feeling/balance",
+      "physical devices/audio"
+    ]
+  },
+  "expressionUpdate": {
+    "scope": [
+      "src/game/JokerGrowthDecisionCopy.ts",
+      "src/game/JokerPlainCopy.ts",
+      "src/game/ShopDecisionCopy.ts"
+    ],
+    "cards": [
+      "b10",
+      "b03",
+      "c04",
+      "c06"
+    ],
+    "sourceHashes": {
+      "src/game/JokerGrowthDecisionCopy.ts": "4fbc0e2d5bf9bbd4c81ec47985c69d41adf791e76d51186d061db9b04897efb9",
+      "src/game/JokerPlainCopy.ts": "6a2b28f6664eae73b4c227f10abc5cbedd51519cc8c0aaeb1444cd4ae5a851c9",
+      "src/game/ShopDecisionCopy.ts": "f5bc16224929e2407fb5a4f044ec9e8a8689f75be666e50727301136915d9a6d",
+      "src/game/ShopScene.ts": "b68e523bfadda337fd7a5a60e00d0a99a27fda3f836e4c069f7c1629dbe6d1eb",
+      "src/game/GameScene.ts": "af790debd8f283d3641e22807c28995357a36e73a84027890fda01966d187351"
+    },
+    "browserReport": "plain-language/report.json",
+    "checks": {
+      "ordinaryPurchaseUi": "PASS_4_CASES_2_VIEWPORTS_NO_INJECTION_NO_PLAYS",
+      "actualPayments": "c04_4_gold_c06_6_gold",
+      "tipsFirstLayerAndNoOverflow": "PASS",
+      "viewAndCancelUnchanged": "PASS",
+      "targetedTests": 72,
+      "fullSuiteFiles": 413,
+      "fullSuiteTests": 4996,
+      "typecheck": "PASS",
+      "build": "PASS",
+      "a11TwoLines": "UNCHANGED"
+    },
+    "library": {
+      "status": "BLOCKED_HELPER_PROXY_403",
+      "files": 8,
+      "libraryIds": [],
+      "detail": "plain-language/library-status.json"
+    }
+  }
+}

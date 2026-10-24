@@ -1,0 +1,10 @@
+{
+  "head": "0d1c4cef14e5ee560376f3098f6a8abd043e1717",
+  "dirty": "?? docs/production/evidence/q3-interaction-2026-10-21/\n?? harness/q3-interaction.mjs",
+  "seed": "group-natural-17",
+  "scope": "Natural new run, real public UI only; no imported checkpoint or draw override. IDB failure is separately injected. Chromium software rendering, not physical phone or formal Q3 acceptance.",
+  "cases": [],
+  "status": "FAIL",
+  "browser": "151.0.7922.173",
+  "error": "browserContext.newPage: Executable doesn't exist at /home/agent/.cache/ms-playwright/ffmpeg-1011/ffmpeg-linux\n╔═════════════════════════════════════════════════════════════════╗\n║ Video rendering requires ffmpeg binary.                         ║\n║ Downloading it will not affect any of the system-wide settings. ║\n║ Please run the following command:                               ║\n║                                                                 ║\n║     npx playwright install ffmpeg                               ║\n║                                                                 ║\n║ <3 Playwright Team                                              ║\n╚═════════════════════════════════════════════════════════════════╝\n    at /workspace/tangsongpai/harness/q3-interaction.mjs:16:192"
+}

@@ -1,0 +1,85 @@
+
+> tangsongpai@0.1.0 verify
+> npm run typecheck && npm test && npm run build
+
+
+> tangsongpai@0.1.0 typecheck
+> tsc --noEmit
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+
+> tangsongpai@0.1.0 test
+> vitest run
+
+
+ RUN  v4.1.11 /workspace/tangsongpai
+
+ ❯ tests/entry-particle-lifecycle.test.ts (6 tests | 3 failed) 21ms
+   × selection uses a fixed mobile CSS-space pool and never covers actual portrait bounds 6ms
+   × selection detaches updates for reduced motion, hidden, dialogs, blur and sleeping, then rebinds without leaking a pool 1ms
+   × selection keeps offscreen pause independent of document visibility and skips a failed brush allocation 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/entry-particle-lifecycle.test.ts > selection uses a fixed mobile CSS-space pool and never covers actual portrait bounds
+TypeError: this.scene.add.graphics is not a function
+ ❯ SelectionEntryParticles.mount src/game/SelectionEntryParticles.ts:32:32
+     30|    const image=this.scene.add.image(0,0,key).setName('opening/particle…
+     31|   }
+     32|   this.feedback=this.scene.add.graphics().setName('opening/choice-feed…
+       |                                ^
+     33|   this.seal=this.scene.add.text(0,0,'定',{fontFamily:'Georgia, "Noto Se…
+     34|   root.add([this.feedback,this.seal]);this.paint(true);this.sync();
+ ❯ selection tests/entry-particle-lifecycle.test.ts:33:529
+ ❯ tests/entry-particle-lifecycle.test.ts:36:10
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/entry-particle-lifecycle.test.ts > selection detaches updates for reduced motion, hidden, dialogs, blur and sleeping, then rebinds without leaking a pool
+TypeError: this.scene.add.graphics is not a function
+ ❯ SelectionEntryParticles.mount src/game/SelectionEntryParticles.ts:32:32
+     30|    const image=this.scene.add.image(0,0,key).setName('opening/particle…
+     31|   }
+     32|   this.feedback=this.scene.add.graphics().setName('opening/choice-feed…
+       |                                ^
+     33|   this.seal=this.scene.add.text(0,0,'定',{fontFamily:'Georgia, "Noto Se…
+     34|   root.add([this.feedback,this.seal]);this.paint(true);this.sync();
+ ❯ selection tests/entry-particle-lifecycle.test.ts:33:529
+ ❯ tests/entry-particle-lifecycle.test.ts:39:10
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/entry-particle-lifecycle.test.ts > selection keeps offscreen pause independent of document visibility and skips a failed brush allocation
+TypeError: this.scene.add.graphics is not a function
+ ❯ SelectionEntryParticles.mount src/game/SelectionEntryParticles.ts:32:32
+     30|    const image=this.scene.add.image(0,0,key).setName('opening/particle…
+     31|   }
+     32|   this.feedback=this.scene.add.graphics().setName('opening/choice-feed…
+       |                                ^
+     33|   this.seal=this.scene.add.text(0,0,'定',{fontFamily:'Georgia, "Noto Se…
+     34|   root.add([this.feedback,this.seal]);this.paint(true);this.sync();
+ ❯ selection tests/entry-particle-lifecycle.test.ts:33:529
+ ❯ tests/entry-particle-lifecycle.test.ts:42:10
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed | 413 passed (414)
+      Tests  3 failed | 4995 passed (4998)
+   Start at  07:08:20
+   Duration  96.05s (transform 14.61s, setup 0ms, import 83.38s, tests 139.06s, environment 48ms)
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

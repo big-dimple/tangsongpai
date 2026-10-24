@@ -1,0 +1,23 @@
+
+> tangsongpai@0.1.0 test
+> vitest run tests/score-phrase.test.ts tests/owned-joker-score-motion.test.ts tests/joker-score-strike.test.ts tests/score-table.test.ts tests/singapore-final-adoption.test.ts tests/score-table-haptics.test.ts
+
+
+ RUN  v4.1.11 D:/ai/tangsongpai/tangsongpai/.codex-remote-attachments/owned-joker-score-motion
+
+ 鉂?tests/score-phrase.test.ts (4 tests | 1 failed) 21ms
+   脳 every real source activation owns one visible double beat while the full 4x run gains density 6ms
+
+鈳幆鈳幆鈳幆鈳?Failed Tests 1 鈳幆鈳幆鈳幆鈳?
+ FAIL  tests/score-phrase.test.ts > every real source activation owns one visible double beat while the full 4x run gains density
+AssertionError: expected 6448 to be less than 5487.900000000001
+ 鉂?tests/score-phrase.test.ts:31:90
+
+
+鈳幆鈳幆鈳幆鈳幆鈳幆鈳幆鈳幆鈳幆鈳幆鈳幆鈳幆鈳幆[1/1]鈳?
+
+ Test Files  1 failed | 5 passed (6)
+      Tests  1 failed | 33 passed (34)
+   Start at  07:15:53
+   Duration  3.43s (transform 8.24s, setup 0ms, import 10.96s, tests 216ms, environment 1ms)
+

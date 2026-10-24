@@ -1,0 +1,403 @@
+{
+  "taskId": "P08",
+  "testedCommit": "7b7e1385ad18d71113d92d035c7daa0e25e26724",
+  "integratedMain": "b19df37eb01e94aad89f36e72ff973e5d860e1d8",
+  "scope": "Native UI on combined205/204 source + PR203 docs. Two fixed prior natural starters, one purchase/ordinary discard/single-card play each. No future draw inspection, injection, seed search, art/listening/device acceptance or long-run claim.",
+  "status": "PASS",
+  "sourceHashes": {
+    "src/game/JokerGrowthCausality.ts": "9259ff2c11f00c7cca017b613ecc413add494d781cfaf0fef3a2679aae036747",
+    "src/game/JokerGrowthDecisionCopy.ts": "4fbc0e2d5bf9bbd4c81ec47985c69d41adf791e76d51186d061db9b04897efb9",
+    "src/game/JokerPlainCopy.ts": "6a2b28f6664eae73b4c227f10abc5cbedd51519cc8c0aaeb1444cd4ae5a851c9",
+    "src/game/ShopDecisionCopy.ts": "f5bc16224929e2407fb5a4f044ec9e8a8689f75be666e50727301136915d9a6d",
+    "src/game/GameScene.ts": "af790debd8f283d3641e22807c28995357a36e73a84027890fda01966d187351",
+    "src/game/ShopScene.ts": "b68e523bfadda337fd7a5a60e00d0a99a27fda3f836e4c069f7c1629dbe6d1eb"
+  },
+  "cases": [
+    {
+      "key": "1366-c04",
+      "status": "PASS",
+      "errors": [],
+      "commands": [
+        {
+          "command": {
+            "runId": "run/policy-valid-groups/erxiang",
+            "commandId": "run/policy-valid-groups/erxiang/command/2",
+            "expectedSeq": 1,
+            "action": {
+              "type": "BuyOffer",
+              "offerId": "run/policy-valid-groups/erxiang/shop/0/0/joker/2"
+            }
+          },
+          "beforeHash": "c888cee96dff70d90d5fb5d1af67e10291bba8182d2c1e58509de8521685b99c",
+          "afterHash": "b4468f651b871dc82deccbe0f0d4b298a9c9351f8966fc0c5fc5f7ecdef178fd",
+          "gold": [
+            6,
+            2
+          ],
+          "phase": "shop"
+        },
+        {
+          "command": {
+            "runId": "run/policy-valid-groups/erxiang",
+            "commandId": "run/policy-valid-groups/erxiang/command/3",
+            "expectedSeq": 2,
+            "action": {
+              "type": "ChooseProgram",
+              "programId": null
+            }
+          },
+          "beforeHash": "b4468f651b871dc82deccbe0f0d4b298a9c9351f8966fc0c5fc5f7ecdef178fd",
+          "afterHash": "0e5183575c69b8a253e0d91a9034f26152b7847c13fda5142c5447b933bea612",
+          "gold": [
+            2,
+            2
+          ],
+          "phase": "shop"
+        },
+        {
+          "command": {
+            "runId": "run/policy-valid-groups/erxiang",
+            "commandId": "run/policy-valid-groups/erxiang/command/4",
+            "expectedSeq": 3,
+            "action": {
+              "type": "LeaveShop"
+            }
+          },
+          "beforeHash": "0e5183575c69b8a253e0d91a9034f26152b7847c13fda5142c5447b933bea612",
+          "afterHash": "596e3a155af69ebc485760293fb86d877c2ad60103cb8484e65d7a0670b81a32",
+          "gold": [
+            2,
+            2
+          ],
+          "phase": "stage-ready"
+        },
+        {
+          "command": {
+            "runId": "run/policy-valid-groups/erxiang",
+            "commandId": "run/policy-valid-groups/erxiang/command/5",
+            "expectedSeq": 4,
+            "action": {
+              "type": "EnterStage"
+            }
+          },
+          "beforeHash": "596e3a155af69ebc485760293fb86d877c2ad60103cb8484e65d7a0670b81a32",
+          "afterHash": "c6db1070128d2a1134e2f9ef3996a9c8405440a256ad7b76592d31628d9d2988",
+          "gold": [
+            2,
+            2
+          ],
+          "phase": "await-input"
+        },
+        {
+          "command": {
+            "runId": "run/policy-valid-groups/erxiang",
+            "commandId": "run/policy-valid-groups/erxiang/command/6",
+            "expectedSeq": 5,
+            "action": {
+              "type": "DiscardHand",
+              "selectedIds": [
+                "spades-14",
+                "hearts-7"
+              ]
+            }
+          },
+          "beforeHash": "c6db1070128d2a1134e2f9ef3996a9c8405440a256ad7b76592d31628d9d2988",
+          "afterHash": "0ad8c6651ca759d9185bbe8c968c7d73b58d37d778c808fd1468a9d0112b60b9",
+          "gold": [
+            2,
+            2
+          ],
+          "phase": "await-input"
+        },
+        {
+          "command": {
+            "runId": "run/policy-valid-groups/erxiang",
+            "commandId": "run/policy-valid-groups/erxiang/command/7",
+            "expectedSeq": 6,
+            "action": {
+              "type": "PlayHand",
+              "selectedIds": [
+                "clubs-12"
+              ]
+            }
+          },
+          "beforeHash": "0ad8c6651ca759d9185bbe8c968c7d73b58d37d778c808fd1468a9d0112b60b9",
+          "afterHash": "6df49cb9a9a4e7ba016dd0a36cf4c7e1cbcf65112ef8602a01d348fbb9c64caf",
+          "gold": [
+            2,
+            2
+          ],
+          "phase": "await-input"
+        }
+      ],
+      "unchanged": [
+        {
+          "note": "first-layer before read only",
+          "fullTupleHash": "c888cee96dff70d90d5fb5d1af67e10291bba8182d2c1e58509de8521685b99c"
+        },
+        {
+          "note": "purchase cancel retains whole tuple",
+          "fullTupleHash": "c888cee96dff70d90d5fb5d1af67e10291bba8182d2c1e58509de8521685b99c"
+        },
+        {
+          "note": "first-layer after read only",
+          "fullTupleHash": "b4468f651b871dc82deccbe0f0d4b298a9c9351f8966fc0c5fc5f7ecdef178fd"
+        },
+        {
+          "note": "growth ledger no-history read only",
+          "fullTupleHash": "b4468f651b871dc82deccbe0f0d4b298a9c9351f8966fc0c5fc5f7ecdef178fd"
+        },
+        {
+          "note": "ledger close no-history read only",
+          "fullTupleHash": "b4468f651b871dc82deccbe0f0d4b298a9c9351f8966fc0c5fc5f7ecdef178fd"
+        },
+        {
+          "note": "purchase-result details do not resave",
+          "fullTupleHash": "b4468f651b871dc82deccbe0f0d4b298a9c9351f8966fc0c5fc5f7ecdef178fd"
+        },
+        {
+          "note": "select/cancel has no command or spend",
+          "fullTupleHash": "c6db1070128d2a1134e2f9ef3996a9c8405440a256ad7b76592d31628d9d2988"
+        },
+        {
+          "note": "growth ledger real-read read only",
+          "fullTupleHash": "6df49cb9a9a4e7ba016dd0a36cf4c7e1cbcf65112ef8602a01d348fbb9c64caf"
+        },
+        {
+          "note": "ledger close real-read read only",
+          "fullTupleHash": "6df49cb9a9a4e7ba016dd0a36cf4c7e1cbcf65112ef8602a01d348fbb9c64caf"
+        },
+        {
+          "note": "post-play ledger does not mutate state",
+          "fullTupleHash": "6df49cb9a9a4e7ba016dd0a36cf4c7e1cbcf65112ef8602a01d348fbb9c64caf"
+        },
+        {
+          "note": "cold restore retains exact integrated tuple",
+          "fullTupleHash": "6df49cb9a9a4e7ba016dd0a36cf4c7e1cbcf65112ef8602a01d348fbb9c64caf"
+        }
+      ],
+      "a11": "葫芦 ×2\n同花葫芦 ×3",
+      "before": {
+        "main": "顺子或同花顺热度+50；出牌后攒+10热度，下次出牌起任意牌型都能用。",
+        "limits": "最多攒+100热度，跨场保留，出售后清空。\n搭配：让普通顺子只需4张的唐宋牌，或改点工具。",
+        "status": "新买入从+0热度开始攒。",
+        "geometry": {
+          "scrollWidth": 439,
+          "clientWidth": 439
+        }
+      },
+      "after": {
+        "main": "顺子或同花顺热度+50；出牌后攒+10热度，下次出牌起任意牌型都能用。",
+        "limits": "最多攒+100热度，跨场保留，出售后清空。\n搭配：让普通顺子只需4张的唐宋牌，或改点工具。",
+        "status": "当前已攒热度：+0。",
+        "geometry": {
+          "scrollWidth": 439,
+          "clientWidth": 439
+        }
+      },
+      "noHistoryLedger": "步步高升 · 加成从哪来\n\n当前已攒热度加成：+0。\n\n还没有这张牌的出牌记录；这里只显示当前已攒加成。\n\n新增只从下次出牌生效，不补算上次出牌。已有成长在出牌时按实际条件读取，计分被禁用时不计入。\n\n成长跟随这张唐宋牌，跨场保留；出售后丢失，重买从0开始。换场或重新进入不会重复成长。\n\n关闭",
+      "score": "30",
+      "growth": {},
+      "readLedger": "步步高升 · 加成从哪来\n\n当前已攒热度加成：+0。\n\n上次出牌：高牌。\n\n上次出牌前已攒热度加成：+0。\n\n上次出牌实际用到热度加成：+0。\n\n上次出牌结算后没有新增成长。\n\n上次出牌结算后已攒热度加成：+0。\n\n新增只从下次出牌生效，不补算上次出牌。已有成长在出牌时按实际条件读取，计分被禁用时不计入。\n\n成长跟随这张唐宋牌，跨场保留；出售后丢失，重买从0开始。换场或重新进入不会重复成长。\n\n关闭",
+      "finalHash": "6df49cb9a9a4e7ba016dd0a36cf4c7e1cbcf65112ef8602a01d348fbb9c64caf"
+    },
+    {
+      "key": "390-c06",
+      "status": "PASS",
+      "errors": [],
+      "commands": [
+        {
+          "command": {
+            "runId": "run/policy-valid-suit/erxiang",
+            "commandId": "run/policy-valid-suit/erxiang/command/2",
+            "expectedSeq": 1,
+            "action": {
+              "type": "ChooseProgram",
+              "programId": null
+            }
+          },
+          "beforeHash": "a7346b946bccd5ae1c26640272fb3a617d37dfc14a6398dde2c6aee1d953f01a",
+          "afterHash": "ecc104b0e8b81f52ab7e885d8f5570a03739a75cecd32b05b4860a0c9cc14c54",
+          "gold": [
+            6,
+            6
+          ],
+          "phase": "shop"
+        },
+        {
+          "command": {
+            "runId": "run/policy-valid-suit/erxiang",
+            "commandId": "run/policy-valid-suit/erxiang/command/3",
+            "expectedSeq": 2,
+            "action": {
+              "type": "BuyOffer",
+              "offerId": "run/policy-valid-suit/erxiang/shop/0/0/joker/2"
+            }
+          },
+          "beforeHash": "ecc104b0e8b81f52ab7e885d8f5570a03739a75cecd32b05b4860a0c9cc14c54",
+          "afterHash": "2011c1e9e62912d3b322617c596b453f6e44d4ab60d2e7311690cba489d78354",
+          "gold": [
+            6,
+            0
+          ],
+          "phase": "shop"
+        },
+        {
+          "command": {
+            "runId": "run/policy-valid-suit/erxiang",
+            "commandId": "run/policy-valid-suit/erxiang/command/4",
+            "expectedSeq": 3,
+            "action": {
+              "type": "LeaveShop"
+            }
+          },
+          "beforeHash": "2011c1e9e62912d3b322617c596b453f6e44d4ab60d2e7311690cba489d78354",
+          "afterHash": "2aa95679d05528b3e567414008c30b33ec57f58ab3b123d3a1b87b9a5ce11cb8",
+          "gold": [
+            0,
+            0
+          ],
+          "phase": "stage-ready"
+        },
+        {
+          "command": {
+            "runId": "run/policy-valid-suit/erxiang",
+            "commandId": "run/policy-valid-suit/erxiang/command/5",
+            "expectedSeq": 4,
+            "action": {
+              "type": "EnterStage"
+            }
+          },
+          "beforeHash": "2aa95679d05528b3e567414008c30b33ec57f58ab3b123d3a1b87b9a5ce11cb8",
+          "afterHash": "422fc3c89c7d15a94162c196196c317092132f878d12a8ec6db24a000eb1f22a",
+          "gold": [
+            0,
+            0
+          ],
+          "phase": "await-input"
+        },
+        {
+          "command": {
+            "runId": "run/policy-valid-suit/erxiang",
+            "commandId": "run/policy-valid-suit/erxiang/command/6",
+            "expectedSeq": 5,
+            "action": {
+              "type": "DiscardHand",
+              "selectedIds": [
+                "spades-9",
+                "diamonds-12"
+              ]
+            }
+          },
+          "beforeHash": "422fc3c89c7d15a94162c196196c317092132f878d12a8ec6db24a000eb1f22a",
+          "afterHash": "ef8461a9e1f30b400b4ceda4e5da05c5c658f6fee4b47e1239ad9d832ae296bd",
+          "gold": [
+            0,
+            0
+          ],
+          "phase": "await-input"
+        },
+        {
+          "command": {
+            "runId": "run/policy-valid-suit/erxiang",
+            "commandId": "run/policy-valid-suit/erxiang/command/7",
+            "expectedSeq": 6,
+            "action": {
+              "type": "PlayHand",
+              "selectedIds": [
+                "clubs-14"
+              ]
+            }
+          },
+          "beforeHash": "ef8461a9e1f30b400b4ceda4e5da05c5c658f6fee4b47e1239ad9d832ae296bd",
+          "afterHash": "3f2609fb4bee9504154dfc727993d731f2cf09862400fd7287c43ff0f722dadc",
+          "gold": [
+            0,
+            0
+          ],
+          "phase": "await-input"
+        }
+      ],
+      "unchanged": [
+        {
+          "note": "first-layer before read only",
+          "fullTupleHash": "ecc104b0e8b81f52ab7e885d8f5570a03739a75cecd32b05b4860a0c9cc14c54"
+        },
+        {
+          "note": "purchase cancel retains whole tuple",
+          "fullTupleHash": "ecc104b0e8b81f52ab7e885d8f5570a03739a75cecd32b05b4860a0c9cc14c54"
+        },
+        {
+          "note": "first-layer after read only",
+          "fullTupleHash": "2011c1e9e62912d3b322617c596b453f6e44d4ab60d2e7311690cba489d78354"
+        },
+        {
+          "note": "growth ledger no-history read only",
+          "fullTupleHash": "2011c1e9e62912d3b322617c596b453f6e44d4ab60d2e7311690cba489d78354"
+        },
+        {
+          "note": "ledger close no-history read only",
+          "fullTupleHash": "2011c1e9e62912d3b322617c596b453f6e44d4ab60d2e7311690cba489d78354"
+        },
+        {
+          "note": "purchase-result details do not resave",
+          "fullTupleHash": "2011c1e9e62912d3b322617c596b453f6e44d4ab60d2e7311690cba489d78354"
+        },
+        {
+          "note": "select/cancel has no command or spend",
+          "fullTupleHash": "422fc3c89c7d15a94162c196196c317092132f878d12a8ec6db24a000eb1f22a"
+        },
+        {
+          "note": "growth ledger real-read read only",
+          "fullTupleHash": "3f2609fb4bee9504154dfc727993d731f2cf09862400fd7287c43ff0f722dadc"
+        },
+        {
+          "note": "ledger close real-read read only",
+          "fullTupleHash": "3f2609fb4bee9504154dfc727993d731f2cf09862400fd7287c43ff0f722dadc"
+        },
+        {
+          "note": "post-play ledger does not mutate state",
+          "fullTupleHash": "3f2609fb4bee9504154dfc727993d731f2cf09862400fd7287c43ff0f722dadc"
+        },
+        {
+          "note": "cold restore retains exact integrated tuple",
+          "fullTupleHash": "3f2609fb4bee9504154dfc727993d731f2cf09862400fd7287c43ff0f722dadc"
+        }
+      ],
+      "a11": "葫芦 ×2\n同花葫芦 ×3",
+      "before": {
+        "main": "打出同花牌型后，攒+0.5倍率，下次出牌起任意牌型都能用。",
+        "limits": "同花顺、同花葫芦、同花五条也能攒；最多攒+6倍率，跨场保留，出售后清空。\n搭配：染色工具，或让普通同花只需4张的唐宋牌。",
+        "status": "新买入从+0倍率开始攒。",
+        "geometry": {
+          "scrollWidth": 326,
+          "clientWidth": 326
+        }
+      },
+      "after": {
+        "main": "打出同花牌型后，攒+0.5倍率，下次出牌起任意牌型都能用。",
+        "limits": "同花顺、同花葫芦、同花五条也能攒；最多攒+6倍率，跨场保留，出售后清空。\n搭配：染色工具，或让普通同花只需4张的唐宋牌。",
+        "status": "当前已攒倍率：+0。",
+        "geometry": {
+          "scrollWidth": 326,
+          "clientWidth": 326
+        }
+      },
+      "noHistoryLedger": "青出于蓝 · 加成从哪来\n\n当前已攒倍率加成：+0。\n\n还没有这张牌的出牌记录；这里只显示当前已攒加成。\n\n新增只从下次出牌生效，不补算上次出牌。已有成长在出牌时按实际条件读取，计分被禁用时不计入。\n\n成长跟随这张唐宋牌，跨场保留；出售后丢失，重买从0开始。换场或重新进入不会重复成长。\n\n关闭",
+      "score": "31",
+      "growth": {},
+      "readLedger": "青出于蓝 · 加成从哪来\n\n当前已攒倍率加成：+0。\n\n上次出牌：高牌。\n\n上次出牌前已攒倍率加成：+0。\n\n上次出牌实际用到倍率加成：+0。\n\n上次出牌结算后没有新增成长。\n\n上次出牌结算后已攒倍率加成：+0。\n\n新增只从下次出牌生效，不补算上次出牌。已有成长在出牌时按实际条件读取，计分被禁用时不计入。\n\n成长跟随这张唐宋牌，跨场保留；出售后丢失，重买从0开始。换场或重新进入不会重复成长。\n\n关闭",
+      "finalHash": "3f2609fb4bee9504154dfc727993d731f2cf09862400fd7287c43ff0f722dadc"
+    }
+  ],
+  "reusedDesktopFrom": "docs/production/evidence/q4-planning-2026-10-21/integration-FAIL-1792557944694.json",
+  "priorFailure": "Phone chapter observer opened current shopping receipt then waited for an unavailable chapter action; move optional chapter decision before purchase, no product change.",
+  "cleanup": "browser and Vite closed in finally",
+  "validation": {
+    "threeRelevantUnitFiles": "PASS 32 tests; Q2 receipts/decision copy and a11 compatibility",
+    "productionSourceEqualsReviewed205": "PASS",
+    "original32PackageStatesAndDependencies": "UNCHANGED",
+    "nextWave": "DISCUSSION_ONLY_NOT_AUTHORIZED; no tasks started",
+    "cleanup": "ports5794/5795 closed; browsers closed in finally"
+  }
+}

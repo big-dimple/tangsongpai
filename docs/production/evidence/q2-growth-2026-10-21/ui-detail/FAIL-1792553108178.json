@@ -1,0 +1,24 @@
+{
+  "status": "FAIL",
+  "head": "8a869c84816c6d1961a07d2b84d4d4d94e70c589",
+  "source": {
+    "file": "src/game/JokerGrowthCausality.ts",
+    "sha256": "9259ff2c11f00c7cca017b613ecc413add494d781cfaf0fef3a2679aae036747"
+  },
+  "scope": "Controlled saved checkpoints via production Import Run UI, actual pointer/touch detail activation and close, native scroll and cold continue. No new plays, no natural acquisition or physical-device claim.",
+  "cases": [
+    {
+      "key": "1366-c04-shop",
+      "id": "c04",
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "touch": false,
+      "checkpointChecksum": "json-fnv-v1:d8c7eab98b7e4e2d",
+      "errors": []
+    }
+  ],
+  "browser": "151.0.7922.173",
+  "error": "locator.evaluate: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('进度与存档', { exact: true }).locator('..')\u001b[22m\n\n    at /workspace/tangsongpai/harness/q2-growth-detail.mjs:49:84"
+}

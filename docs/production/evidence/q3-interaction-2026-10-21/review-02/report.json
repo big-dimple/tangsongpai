@@ -1,0 +1,39 @@
+{
+  "head": "0d1c4cef14e5ee560376f3098f6a8abd043e1717",
+  "dirty": "?? docs/production/evidence/q3-interaction-2026-10-21/\n?? harness/q3-interaction.mjs",
+  "seed": "group-natural-17",
+  "scope": "Natural new run, real public UI only; no imported checkpoint or draw override. IDB failure is separately injected. Chromium software rendering, not physical phone or formal Q3 acceptance.",
+  "cases": [
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "touch": false,
+      "steps": [],
+      "errors": [],
+      "initial": {
+        "seq": 1,
+        "gold": 6
+      },
+      "shop": "1366-natural-shop.png"
+    }
+  ],
+  "status": "FAIL",
+  "browser": "151.0.7922.173",
+  "error": "locator.click: Timeout 18000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '选择节目单', exact: true })\u001b[22m\n\n    at dom (/workspace/tangsongpai/harness/q3-interaction.mjs:17:31)\n    at /workspace/tangsongpai/harness/q3-interaction.mjs:27:92",
+  "diagnostic": {
+    "scenes": [
+      {
+        "key": "shop",
+        "ready": true
+      }
+    ],
+    "dialogs": [
+      {
+        "classes": "detail-dialog",
+        "text": "本章节目单\n\n第 1 章 · 本章可接节目单\n\n谢幕留客\n本章任一场用最后一次出牌过关；压轴过关后，下一家商店可免费换牌一次。离店未用即失效。\n\n换场大师\n本章打出3种不同牌型，压轴过关额外获得4金。\n\n任选一份，也可不接；首次进场后封口。接下后只能放弃。\n\n接受 谢幕留客\n接受 换场大师\n本章不接\n本章对手与规则\n暂不选择"
+      }
+    ]
+  }
+}

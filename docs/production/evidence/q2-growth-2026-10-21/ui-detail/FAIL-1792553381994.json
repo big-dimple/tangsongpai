@@ -1,0 +1,218 @@
+{
+  "status": "FAIL",
+  "head": "8a869c84816c6d1961a07d2b84d4d4d94e70c589",
+  "source": {
+    "file": "src/game/JokerGrowthCausality.ts",
+    "sha256": "9259ff2c11f00c7cca017b613ecc413add494d781cfaf0fef3a2679aae036747"
+  },
+  "scope": "Controlled saved checkpoints written with validated IndexedDbSave.commit before application boot. Actual Continue, pointer/touch detail activation and close, native scroll and cold continue. No new plays, no natural acquisition or physical-device claim.",
+  "cases": [
+    {
+      "key": "1366-c04-shop",
+      "id": "c04",
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "touch": false,
+      "checkpointChecksum": "json-fnv-v1:d8c7eab98b7e4e2d",
+      "errors": [],
+      "detail": {
+        "body": "步步高升 · 加成从哪来\n\n当前已攒热度加成：+10。\n\n上次出牌：顺子。\n\n上次出牌前已攒热度加成：+0。\n\n上次出牌实际用到热度加成：+0。\n\n上次出牌结算后新增热度加成：+10。\n\n上次出牌结算后已攒热度加成：+10。\n\n新增只从下次出牌生效，不补算上次出牌。已有成长在出牌时按实际条件读取，计分被禁用时不计入。\n\n成长跟随这张唐宋牌，跨场保留；出售后丢失，重买从0开始。换场或重新进入不会重复成长。\n\n关闭",
+        "entryBounds": {
+          "x": 204,
+          "y": 793,
+          "width": 185.1875,
+          "height": 44
+        },
+        "geometry": {
+          "x": 423,
+          "y": 152.375,
+          "right": 943,
+          "bottom": 747.625,
+          "scrollWidth": 478,
+          "clientWidth": 478,
+          "fontSize": "16px",
+          "close": {
+            "x": 826,
+            "y": 686.625,
+            "width": 96,
+            "height": 48,
+            "right": 922,
+            "bottom": 734.625
+          }
+        },
+        "top": "1366-c04-shop-top.png",
+        "bottom": null,
+        "entireScrollReached": true,
+        "saveJournalRngAndStorageUnchanged": true,
+        "savedHash": "5fe8a6960bb963f86df7f2aea95b72083cabf1caa5e062ab9cff675ee535dc6a"
+      },
+      "coldRestoreUnchanged": true,
+      "restoredDetail": {
+        "body": "步步高升 · 加成从哪来\n\n当前已攒热度加成：+10。\n\n上次出牌：顺子。\n\n上次出牌前已攒热度加成：+0。\n\n上次出牌实际用到热度加成：+0。\n\n上次出牌结算后新增热度加成：+10。\n\n上次出牌结算后已攒热度加成：+10。\n\n新增只从下次出牌生效，不补算上次出牌。已有成长在出牌时按实际条件读取，计分被禁用时不计入。\n\n成长跟随这张唐宋牌，跨场保留；出售后丢失，重买从0开始。换场或重新进入不会重复成长。\n\n关闭",
+        "entryBounds": {
+          "x": 204,
+          "y": 793,
+          "width": 185.1875,
+          "height": 44
+        },
+        "geometry": {
+          "x": 423,
+          "y": 152.375,
+          "right": 943,
+          "bottom": 747.625,
+          "scrollWidth": 478,
+          "clientWidth": 478,
+          "fontSize": "16px",
+          "close": {
+            "x": 826,
+            "y": 686.625,
+            "width": 96,
+            "height": 48,
+            "right": 922,
+            "bottom": 734.625
+          }
+        },
+        "top": "1366-c04-shop-restored-top.png",
+        "bottom": null,
+        "entireScrollReached": true,
+        "saveJournalRngAndStorageUnchanged": true,
+        "savedHash": "5fe8a6960bb963f86df7f2aea95b72083cabf1caa5e062ab9cff675ee535dc6a"
+      },
+      "status": "PASS"
+    },
+    {
+      "key": "1366-c06-table",
+      "id": "c06",
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "touch": false,
+      "checkpointChecksum": "json-fnv-v1:9a4357576dadd46b",
+      "errors": [],
+      "detail": {
+        "body": "青出于蓝 · 加成从哪来\n\n当前已攒倍率加成：+0.5。\n\n上次出牌：高牌。\n\n上次出牌前已攒倍率加成：+0.5。\n\n上次出牌实际用到倍率加成：+0.5。\n\n上次出牌结算后没有新增成长。\n\n上次出牌结算后已攒倍率加成：+0.5。\n\n新增只从下次出牌生效，不补算上次出牌。已有成长在出牌时按实际条件读取，计分被禁用时不计入。\n\n成长跟随这张唐宋牌，跨场保留；出售后丢失，重买从0开始。换场或重新进入不会重复成长。\n\n关闭",
+        "entryBounds": {
+          "x": 264,
+          "y": 662.75,
+          "width": 235,
+          "height": 48
+        },
+        "geometry": {
+          "x": 423,
+          "y": 152.375,
+          "right": 943,
+          "bottom": 747.625,
+          "scrollWidth": 478,
+          "clientWidth": 478,
+          "fontSize": "16px",
+          "close": {
+            "x": 826,
+            "y": 686.625,
+            "width": 96,
+            "height": 48,
+            "right": 922,
+            "bottom": 734.625
+          }
+        },
+        "top": "1366-c06-table-top.png",
+        "bottom": null,
+        "entireScrollReached": true,
+        "saveJournalRngAndStorageUnchanged": true,
+        "savedHash": "839d92510e0ea423d9c5007d1d0744146aa00df6c635bd2ef87bdba7627987b1"
+      },
+      "coldRestoreUnchanged": true,
+      "restoredDetail": {
+        "body": "青出于蓝 · 加成从哪来\n\n当前已攒倍率加成：+0.5。\n\n上次出牌：高牌。\n\n上次出牌前已攒倍率加成：+0.5。\n\n上次出牌实际用到倍率加成：+0.5。\n\n上次出牌结算后没有新增成长。\n\n上次出牌结算后已攒倍率加成：+0.5。\n\n新增只从下次出牌生效，不补算上次出牌。已有成长在出牌时按实际条件读取，计分被禁用时不计入。\n\n成长跟随这张唐宋牌，跨场保留；出售后丢失，重买从0开始。换场或重新进入不会重复成长。\n\n关闭",
+        "entryBounds": {
+          "x": 264,
+          "y": 662.75,
+          "width": 235,
+          "height": 48
+        },
+        "geometry": {
+          "x": 423,
+          "y": 152.375,
+          "right": 943,
+          "bottom": 747.625,
+          "scrollWidth": 478,
+          "clientWidth": 478,
+          "fontSize": "16px",
+          "close": {
+            "x": 826,
+            "y": 686.625,
+            "width": 96,
+            "height": 48,
+            "right": 922,
+            "bottom": 734.625
+          }
+        },
+        "top": "1366-c06-table-restored-top.png",
+        "bottom": null,
+        "entireScrollReached": true,
+        "saveJournalRngAndStorageUnchanged": true,
+        "savedHash": "839d92510e0ea423d9c5007d1d0744146aa00df6c635bd2ef87bdba7627987b1"
+      },
+      "status": "PASS"
+    },
+    {
+      "key": "1366-no-history",
+      "id": "c06",
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "touch": false,
+      "checkpointChecksum": "json-fnv-v1:16f48b9f620f83ab",
+      "errors": [],
+      "detail": {
+        "body": "青出于蓝 · 加成从哪来\n\n当前已攒倍率加成：+0。\n\n还没有这张牌的出牌记录；这里只显示当前已攒加成。\n\n新增只从下次出牌生效，不补算上次出牌。已有成长在出牌时按实际条件读取，计分被禁用时不计入。\n\n成长跟随这张唐宋牌，跨场保留；出售后丢失，重买从0开始。换场或重新进入不会重复成长。\n\n关闭",
+        "entryBounds": {
+          "x": 204,
+          "y": 793,
+          "width": 185.1875,
+          "height": 44
+        },
+        "geometry": {
+          "x": 423,
+          "y": 251.375,
+          "right": 943,
+          "bottom": 648.625,
+          "scrollWidth": 478,
+          "clientWidth": 478,
+          "fontSize": "16px",
+          "close": {
+            "x": 826,
+            "y": 587.625,
+            "width": 96,
+            "height": 48,
+            "right": 922,
+            "bottom": 635.625
+          }
+        },
+        "top": "1366-no-history-top.png",
+        "bottom": null,
+        "entireScrollReached": true,
+        "saveJournalRngAndStorageUnchanged": true,
+        "savedHash": "9fc77cf17c18cec24bc3dbad50d8c2a640a16a867f5aad6d484ddc01506a1584"
+      },
+      "coldRestoreUnchanged": true,
+      "status": "PASS"
+    },
+    {
+      "key": "390-c04-shop",
+      "id": "c04",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "touch": true,
+      "checkpointChecksum": "json-fnv-v1:d8c7eab98b7e4e2d",
+      "errors": []
+    }
+  ],
+  "browser": "151.0.7922.173",
+  "error": "locator.waitFor: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('button', { name: '加成从哪来', exact: true }) to be visible\u001b[22m\n\n    at inspect (/workspace/tangsongpai/harness/q2-growth-detail.mjs:32:74)\n    at async file:///workspace/tangsongpai/harness/q2-growth-detail.mjs:56:103"
+}

@@ -1,0 +1,96 @@
+{
+  "base": "b658f4787d106397859d907995b9576ded87bbe5",
+  "branch": "dev/score-layered-strike-20261018",
+  "sourceSha256Lf": {
+    "src/game/ImageAfterimages.ts": "149d62c743cfa8f9323a339117c607d0970511aaf57a6637916ffb318d6872a1",
+    "src/game/JokerScoreStrike.ts": "2eb0c3d9246269cd6ece13824a57d30f1cabeb8b1b538df422a83909a1a19818",
+    "src/game/GameScene.ts": "c3424b8f7a2e3a57f8e42da27b416cec4c860616f8c651ba33f30f47aa41a19d",
+    "tests/image-afterimages.test.ts": "6bf3958827d5677942739135c0dcd8ccda60e12a2fc87ee59e85a4964288759e",
+    "tests/score-strike-layers.test.ts": "58ee498c7977a47731fa3d3079a447a908593839d213450888b3fd547a74abd7"
+  },
+  "contract": {
+    "outboundOnly": true,
+    "atImpact": "Dispose all image ghosts synchronously before numeric contact; return never samples/allocates.",
+    "shape": "Source cached texture/frame, origin, flips and tint; stored prior actual pose transformed into common parent coordinates.",
+    "pool": "Desktop3 or phone2 Images per moving original image; lazy allocation and ring reuse.",
+    "clock": "Only existing outbound Tween elapsed samples; no Tween, timer, RAF, update listener or audio added.",
+    "portrait": "Hooks only existing bound positive portrait gestures, including existing saved refill/charge receipt motion. No new whole-portrait flight or HeroPortraitScoreMotion edit.",
+    "reduce": "Clears prior samples and stored slot alpha; restoring motion cannot revive the old trail.",
+    "lifecycle": "Abort/source destroy/parent destroy/shutdown removes all owned nodes and subscriptions.",
+    "assets": "No new texture, bitmap, decode, Library or external effect dependency."
+  },
+  "tests": {
+    "command": "npm test -- tests/image-afterimages.test.ts tests/score-strike-layers.test.ts tests/hero-action-chain-order.test.ts --reporter=json --outputFile=.vite/score-afterimages-tests.json",
+    "success": true,
+    "total": 21,
+    "files": [
+      {
+        "file": "tests/hero-action-chain-order.test.ts",
+        "status": "passed",
+        "total": 8
+      },
+      {
+        "file": "tests/image-afterimages.test.ts",
+        "status": "passed",
+        "total": 7
+      },
+      {
+        "file": "tests/score-strike-layers.test.ts",
+        "status": "passed",
+        "total": 6
+      }
+    ],
+    "rawReportSha256": "35b4fa517561d5082a5c8df38840615aa72ea30d58c875d9db0803755c7c21c9",
+    "initialFailures": "Reduction allowed hidden old slots to revive: stored alpha now cleared; a local-coordinate equality assertion was changed to floating-point closeness. Final same3-file21 tests PASS."
+  },
+  "build": {
+    "command": "npm run build",
+    "exitCode": 0,
+    "includesTypecheck": true,
+    "modules": 398,
+    "seconds": 8.11,
+    "warning": "Existing >500kB chunk warning",
+    "buildInfo": {
+      "version": "C03",
+      "builtAt": "2026-10-18T23:57:45.761Z",
+      "revision": "b658f4787d106397859d907995b9576ded87bbe5",
+      "sourceStatus": "dirty",
+      "modified": true,
+      "modifiedFileCount": 3,
+      "modifiedFiles": [
+        "src/game/GameScene.ts",
+        "src/game/JokerScoreStrike.ts",
+        "tests/score-strike-layers.test.ts"
+      ]
+    },
+    "artifacts": [
+      {
+        "path": "dist/build-info.json",
+        "bytes": 325,
+        "sha256": "f98878aa8994abee02d7024be290e6415891db44b180cc5dfeacff76b674abfa"
+      },
+      {
+        "path": "dist/index.html",
+        "bytes": 14388,
+        "sha256": "4a42e11f1f668a2d7108192bb8506fc0207a7b2e1ad5cdf49683e68c68aa45db"
+      },
+      {
+        "path": "dist/assets/index-BgA0peuQ.js",
+        "bytes": 3072004,
+        "sha256": "feaa60a5dfd86722ed94454a920c2071f53d047ae16f34674633d0b4d4c2a246"
+      },
+      {
+        "path": "dist/assets/index-NohcdGWM.css",
+        "bytes": 133927,
+        "sha256": "59e4bf66945acddd1fe6c5963adca58d54db43083192d3da48d0b913ff2edf8d"
+      }
+    ]
+  },
+  "notRun": [
+    "Whole prior matrix",
+    "Browser pixels/GPU",
+    "Physical device performance",
+    "Hearing",
+    "CI/deployment"
+  ]
+}

@@ -1,0 +1,58 @@
+{
+  "baseline": "6892aabf68f3e8d90dfc0a5597cce7f96025e81d",
+  "sourceCommit": "e5ae348def1dd8d808a7f97c1261175a08af0c6d",
+  "browserReportHead": "e5ae348def1dd8d808a7f97c1261175a08af0c6d",
+  "localValidation": {
+    "verify": "PASS: typecheck + 414 files/4998 tests + production build",
+    "content": "PASS",
+    "browser": "PASS",
+    "lifecycle": "PASS"
+  },
+  "sources": {
+    "src/game/CharacterSelectScene.ts": {
+      "sha256": "cbd6b0f732b853f1fdaf682fe7cc9f0d38922115c704b994691c8de45da5ee43",
+      "sourceCommitMatches": true,
+      "workingTreeMatches": true
+    },
+    "src/game/SelectionEntryParticles.ts": {
+      "sha256": "44485d541aa1d97a8092c7f7484137ce11b61b3d76a9fb9883faa3eca427b4cf",
+      "sourceCommitMatches": true,
+      "workingTreeMatches": true
+    },
+    "src/game/EntryDepthParticles.ts": {
+      "sha256": "d58cb61239d33e8617634164ab05860100c22b43dde9961217e7066d6174abd4",
+      "sourceCommitMatches": true,
+      "workingTreeMatches": true
+    },
+    "src/game/SelectionLayout.ts": {
+      "sha256": "7b6d3269deb575da8295c13aac59ae37340411711a00b8eb67ae224270c681a1",
+      "sourceCommitMatches": true,
+      "workingTreeMatches": true
+    },
+    "src/game/OpeningShowcaseLayout.ts": {
+      "sha256": "cf197ae9be9618fb524aef8d4e17562348cbf63254fa83795d62c1e4230c4f16",
+      "sourceCommitMatches": true,
+      "workingTreeMatches": true
+    }
+  },
+  "media": [
+    {
+      "path": "docs/production/evidence/selection-ink-seal-2026-10-21/after/1366x768-continuous.webm",
+      "sha256": "81bc6cdd94ff434675e0cb502591ddf26f675c266ba563d8b5fc695befb6bc9c",
+      "duration": "25.880000",
+      "size": "3033708"
+    },
+    {
+      "path": "docs/production/evidence/selection-ink-seal-2026-10-21/after/390x740-continuous.webm",
+      "sha256": "e414db94fd8ebaf17d8746f58e355b133bdbaca671342a1af65696f32fca0c27",
+      "duration": "16.000000",
+      "size": "1410735"
+    }
+  ],
+  "limits": [
+    "Local Chromium only; no audio track",
+    "Legacy layout script timeout after 27 geometry cases reproduced before and after; raw FAIL retained",
+    "No aesthetic, physical-device or full-game acceptance",
+    "No deployment checked; no Library upload attempted"
+  ]
+}

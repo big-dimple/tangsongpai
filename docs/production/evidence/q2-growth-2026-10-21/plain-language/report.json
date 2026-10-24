@@ -1,0 +1,422 @@
+{
+  "status": "PASS",
+  "head": "43dd4db201b99e7d69af4fc0e4990fbd38865b88",
+  "sourceHashes": {
+    "src/game/JokerGrowthDecisionCopy.ts": "4fbc0e2d5bf9bbd4c81ec47985c69d41adf791e76d51186d061db9b04897efb9",
+    "src/game/JokerPlainCopy.ts": "6a2b28f6664eae73b4c227f10abc5cbedd51519cc8c0aaeb1444cd4ae5a851c9",
+    "src/game/ShopDecisionCopy.ts": "f5bc16224929e2407fb5a4f044ec9e8a8689f75be666e50727301136915d9a6d",
+    "src/game/ShopScene.ts": "b68e523bfadda337fd7a5a60e00d0a99a27fda3f836e4c069f7c1629dbe6d1eb",
+    "src/game/GameScene.ts": "af790debd8f283d3641e22807c28995357a36e73a84027890fda01966d187351"
+  },
+  "scope": "Ordinary menu launch and fixed prior seeds; actual pre-purchase view/cancel, one native BuyOffer, owned first-layer view/cancel. No injected checkpoint, no plays, no seed search or acquisition-rate claim.",
+  "cases": [
+    {
+      "key": "1366-c04",
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "id": "c04",
+      "route": "straight",
+      "seed": "policy-valid-groups",
+      "expected": [
+        "顺子或同花顺热度+50",
+        "攒+10热度",
+        "下次出牌起任意牌型都能用"
+      ],
+      "tip": "改点工具",
+      "cap": "最多攒+100热度",
+      "errors": [],
+      "offer": {
+        "offerId": "run/policy-valid-groups/erxiang/shop/0/0/joker/2",
+        "definitionId": "c04",
+        "price": 4,
+        "edition": "none",
+        "consumed": false
+      },
+      "before": {
+        "main": "顺子或同花顺热度+50；出牌后攒+10热度，下次出牌起任意牌型都能用。",
+        "limits": "最多攒+100热度，跨场保留，出售后清空。\n搭配：让普通顺子只需4张的唐宋牌，或改点工具。",
+        "status": "新买入从+0热度开始攒。",
+        "geometry": {
+          "ability": {
+            "x": 742.890625,
+            "y": 240.5,
+            "right": 1142,
+            "bottom": 382.78125
+          },
+          "scroll": {
+            "x": 722.890625,
+            "y": 217.5,
+            "right": 1162,
+            "bottom": 770.640625
+          },
+          "scrollWidth": 439,
+          "clientWidth": 439,
+          "tips": {
+            "x": 742.890625,
+            "y": 303.28125,
+            "right": 1081.484375,
+            "bottom": 345.78125
+          }
+        },
+        "screenshot": "1366-c04-before.png",
+        "cancelUnchanged": true,
+        "snapshotHash": "c888cee96dff70d90d5fb5d1af67e10291bba8182d2c1e58509de8521685b99c"
+      },
+      "purchase": {
+        "command": {
+          "runId": "run/policy-valid-groups/erxiang",
+          "commandId": "run/policy-valid-groups/erxiang/command/2",
+          "expectedSeq": 1,
+          "action": {
+            "type": "BuyOffer",
+            "offerId": "run/policy-valid-groups/erxiang/shop/0/0/joker/2"
+          }
+        },
+        "paid": 4,
+        "goldBefore": 6,
+        "goldAfter": 2,
+        "completeDomainStateEqual": true
+      },
+      "after": {
+        "main": "顺子或同花顺热度+50；出牌后攒+10热度，下次出牌起任意牌型都能用。",
+        "limits": "最多攒+100热度，跨场保留，出售后清空。\n搭配：让普通顺子只需4张的唐宋牌，或改点工具。",
+        "status": "当前已攒热度：+0。",
+        "geometry": {
+          "ability": {
+            "x": 742.890625,
+            "y": 272.5,
+            "right": 1142,
+            "bottom": 414.78125
+          },
+          "scroll": {
+            "x": 722.890625,
+            "y": 249.5,
+            "right": 1162,
+            "bottom": 587.578125
+          },
+          "scrollWidth": 439,
+          "clientWidth": 439,
+          "tips": {
+            "x": 742.890625,
+            "y": 335.28125,
+            "right": 1081.484375,
+            "bottom": 377.78125
+          }
+        },
+        "screenshot": "1366-c04-after.png",
+        "cancelUnchanged": true,
+        "snapshotHash": "b4468f651b871dc82deccbe0f0d4b298a9c9351f8966fc0c5fc5f7ecdef178fd"
+      },
+      "status": "PASS"
+    },
+    {
+      "key": "1366-c06",
+      "viewport": {
+        "width": 1366,
+        "height": 900
+      },
+      "id": "c06",
+      "route": "flush",
+      "seed": "policy-valid-suit",
+      "expected": [
+        "同花牌型后",
+        "攒+0.5倍率",
+        "下次出牌起任意牌型都能用"
+      ],
+      "tip": "染色工具",
+      "cap": "最多攒+6倍率",
+      "errors": [],
+      "offer": {
+        "offerId": "run/policy-valid-suit/erxiang/shop/0/0/joker/2",
+        "definitionId": "c06",
+        "price": 6,
+        "edition": "none",
+        "consumed": false
+      },
+      "before": {
+        "main": "打出同花牌型后，攒+0.5倍率，下次出牌起任意牌型都能用。",
+        "limits": "同花顺、同花葫芦、同花五条也能攒；最多攒+6倍率，跨场保留，出售后清空。\n搭配：染色工具，或让普通同花只需4张的唐宋牌。",
+        "status": "新买入从+0倍率开始攒。",
+        "geometry": {
+          "ability": {
+            "x": 742.890625,
+            "y": 240.5,
+            "right": 1142,
+            "bottom": 405.28125
+          },
+          "scroll": {
+            "x": 722.890625,
+            "y": 217.5,
+            "right": 1162,
+            "bottom": 793.140625
+          },
+          "scrollWidth": 439,
+          "clientWidth": 439,
+          "tips": {
+            "x": 742.890625,
+            "y": 303.28125,
+            "right": 1135.0625,
+            "bottom": 368.28125
+          }
+        },
+        "screenshot": "1366-c06-before.png",
+        "cancelUnchanged": true,
+        "snapshotHash": "a7346b946bccd5ae1c26640272fb3a617d37dfc14a6398dde2c6aee1d953f01a"
+      },
+      "purchase": {
+        "command": {
+          "runId": "run/policy-valid-suit/erxiang",
+          "commandId": "run/policy-valid-suit/erxiang/command/2",
+          "expectedSeq": 1,
+          "action": {
+            "type": "BuyOffer",
+            "offerId": "run/policy-valid-suit/erxiang/shop/0/0/joker/2"
+          }
+        },
+        "paid": 6,
+        "goldBefore": 6,
+        "goldAfter": 0,
+        "completeDomainStateEqual": true
+      },
+      "after": {
+        "main": "打出同花牌型后，攒+0.5倍率，下次出牌起任意牌型都能用。",
+        "limits": "同花顺、同花葫芦、同花五条也能攒；最多攒+6倍率，跨场保留，出售后清空。\n搭配：染色工具，或让普通同花只需4张的唐宋牌。",
+        "status": "当前已攒倍率：+0。",
+        "geometry": {
+          "ability": {
+            "x": 742.890625,
+            "y": 272.5,
+            "right": 1142,
+            "bottom": 437.28125
+          },
+          "scroll": {
+            "x": 722.890625,
+            "y": 249.5,
+            "right": 1162,
+            "bottom": 610.078125
+          },
+          "scrollWidth": 439,
+          "clientWidth": 439,
+          "tips": {
+            "x": 742.890625,
+            "y": 335.28125,
+            "right": 1135.0625,
+            "bottom": 400.28125
+          }
+        },
+        "screenshot": "1366-c06-after.png",
+        "cancelUnchanged": true,
+        "snapshotHash": "a38e5030846c14089b0e66bea7936b6007c222eb0eace1d08024fe2f6f279fa1"
+      },
+      "status": "PASS"
+    },
+    {
+      "key": "390-c04",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "id": "c04",
+      "route": "straight",
+      "seed": "policy-valid-groups",
+      "expected": [
+        "顺子或同花顺热度+50",
+        "攒+10热度",
+        "下次出牌起任意牌型都能用"
+      ],
+      "tip": "改点工具",
+      "cap": "最多攒+100热度",
+      "errors": [],
+      "offer": {
+        "offerId": "run/policy-valid-groups/erxiang/shop/0/0/joker/2",
+        "definitionId": "c04",
+        "price": 4,
+        "edition": "none",
+        "consumed": false
+      },
+      "before": {
+        "main": "顺子或同花顺热度+50；出牌后攒+10热度，下次出牌起任意牌型都能用。",
+        "limits": "最多攒+100热度，跨场保留，出售后清空。\n搭配：让普通顺子只需4张的唐宋牌，或改点工具。",
+        "status": "新买入从+0热度开始攒。",
+        "geometry": {
+          "ability": {
+            "x": 48,
+            "y": 395.375,
+            "right": 342,
+            "bottom": 589.546875
+          },
+          "scroll": {
+            "x": 32,
+            "y": 376.375,
+            "right": 358,
+            "bottom": 1047.09375
+          },
+          "scrollWidth": 326,
+          "clientWidth": 326,
+          "tips": {
+            "x": 48,
+            "y": 487.546875,
+            "right": 341.59375,
+            "bottom": 552.546875
+          }
+        },
+        "screenshot": "390-c04-before.png",
+        "cancelUnchanged": true,
+        "snapshotHash": "c888cee96dff70d90d5fb5d1af67e10291bba8182d2c1e58509de8521685b99c"
+      },
+      "purchase": {
+        "command": {
+          "runId": "run/policy-valid-groups/erxiang",
+          "commandId": "run/policy-valid-groups/erxiang/command/2",
+          "expectedSeq": 1,
+          "action": {
+            "type": "BuyOffer",
+            "offerId": "run/policy-valid-groups/erxiang/shop/0/0/joker/2"
+          }
+        },
+        "paid": 4,
+        "goldBefore": 6,
+        "goldAfter": 2,
+        "completeDomainStateEqual": true
+      },
+      "afterPath": "购物结果→查看新牌",
+      "after": {
+        "main": "顺子或同花顺热度+50；出牌后攒+10热度，下次出牌起任意牌型都能用。",
+        "limits": "最多攒+100热度，跨场保留，出售后清空。\n搭配：让普通顺子只需4张的唐宋牌，或改点工具。",
+        "status": "当前已攒热度：+0。",
+        "geometry": {
+          "ability": {
+            "x": 48,
+            "y": 425.375,
+            "right": 342,
+            "bottom": 619.546875
+          },
+          "scroll": {
+            "x": 32,
+            "y": 406.375,
+            "right": 358,
+            "bottom": 788.34375
+          },
+          "scrollWidth": 326,
+          "clientWidth": 326,
+          "tips": {
+            "x": 48,
+            "y": 517.546875,
+            "right": 341.59375,
+            "bottom": 582.546875
+          }
+        },
+        "screenshot": "390-c04-after.png",
+        "cancelUnchanged": true,
+        "snapshotHash": "b4468f651b871dc82deccbe0f0d4b298a9c9351f8966fc0c5fc5f7ecdef178fd"
+      },
+      "status": "PASS"
+    },
+    {
+      "key": "390-c06",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "id": "c06",
+      "route": "flush",
+      "seed": "policy-valid-suit",
+      "expected": [
+        "同花牌型后",
+        "攒+0.5倍率",
+        "下次出牌起任意牌型都能用"
+      ],
+      "tip": "染色工具",
+      "cap": "最多攒+6倍率",
+      "errors": [],
+      "offer": {
+        "offerId": "run/policy-valid-suit/erxiang/shop/0/0/joker/2",
+        "definitionId": "c06",
+        "price": 6,
+        "edition": "none",
+        "consumed": false
+      },
+      "before": {
+        "main": "打出同花牌型后，攒+0.5倍率，下次出牌起任意牌型都能用。",
+        "limits": "同花顺、同花葫芦、同花五条也能攒；最多攒+6倍率，跨场保留，出售后清空。\n搭配：染色工具，或让普通同花只需4张的唐宋牌。",
+        "status": "新买入从+0倍率开始攒。",
+        "geometry": {
+          "ability": {
+            "x": 48,
+            "y": 395.375,
+            "right": 342,
+            "bottom": 612.046875
+          },
+          "scroll": {
+            "x": 32,
+            "y": 376.375,
+            "right": 358,
+            "bottom": 1069.59375
+          },
+          "scrollWidth": 326,
+          "clientWidth": 326,
+          "tips": {
+            "x": 48,
+            "y": 487.546875,
+            "right": 341.59375,
+            "bottom": 575.046875
+          }
+        },
+        "screenshot": "390-c06-before.png",
+        "cancelUnchanged": true,
+        "snapshotHash": "a7346b946bccd5ae1c26640272fb3a617d37dfc14a6398dde2c6aee1d953f01a"
+      },
+      "purchase": {
+        "command": {
+          "runId": "run/policy-valid-suit/erxiang",
+          "commandId": "run/policy-valid-suit/erxiang/command/2",
+          "expectedSeq": 1,
+          "action": {
+            "type": "BuyOffer",
+            "offerId": "run/policy-valid-suit/erxiang/shop/0/0/joker/2"
+          }
+        },
+        "paid": 6,
+        "goldBefore": 6,
+        "goldAfter": 0,
+        "completeDomainStateEqual": true
+      },
+      "afterPath": "购物结果→查看新牌",
+      "after": {
+        "main": "打出同花牌型后，攒+0.5倍率，下次出牌起任意牌型都能用。",
+        "limits": "同花顺、同花葫芦、同花五条也能攒；最多攒+6倍率，跨场保留，出售后清空。\n搭配：染色工具，或让普通同花只需4张的唐宋牌。",
+        "status": "当前已攒倍率：+0。",
+        "geometry": {
+          "ability": {
+            "x": 48,
+            "y": 425.375,
+            "right": 342,
+            "bottom": 642.046875
+          },
+          "scroll": {
+            "x": 32,
+            "y": 406.375,
+            "right": 358,
+            "bottom": 810.84375
+          },
+          "scrollWidth": 326,
+          "clientWidth": 326,
+          "tips": {
+            "x": 48,
+            "y": 517.546875,
+            "right": 341.59375,
+            "bottom": 605.046875
+          }
+        },
+        "screenshot": "390-c06-after.png",
+        "cancelUnchanged": true,
+        "snapshotHash": "a38e5030846c14089b0e66bea7936b6007c222eb0eace1d08024fe2f6f279fa1"
+      },
+      "status": "PASS"
+    }
+  ],
+  "browser": "151.0.7922.173",
+  "reusedDesktopFrom": "docs/production/evidence/q2-growth-2026-10-21/plain-language/FAIL-1792556504981.json"
+}

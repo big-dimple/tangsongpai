@@ -1,0 +1,71 @@
+{
+  "rulesVersion": "r2",
+  "contentVersion": "quality-r2-s04-finish-v1",
+  "contentHash": "json-fnv-v1:65b545bd97c0fdf1",
+  "selectedCards": [
+    {
+      "id": "spades-2",
+      "suit": "clubs",
+      "rank": 7,
+      "enhancement": "multiplier-paper",
+      "edition": "polychrome"
+    },
+    {
+      "id": "spades-3",
+      "suit": "hearts",
+      "rank": 7
+    },
+    {
+      "id": "spades-4",
+      "suit": "spades",
+      "rank": 9
+    },
+    {
+      "id": "spades-5",
+      "suit": "diamonds",
+      "rank": 9
+    },
+    {
+      "id": "spades-6",
+      "suit": "spades",
+      "rank": 7
+    }
+  ],
+  "jokers": [
+    {
+      "instanceId": "controlled/source-process/0",
+      "definitionId": "a11",
+      "paidPrice": 8,
+      "growth": {},
+      "edition": "holographic"
+    },
+    {
+      "instanceId": "controlled/source-process/1",
+      "definitionId": "b06",
+      "paidPrice": 8,
+      "growth": {},
+      "edition": "none"
+    },
+    {
+      "instanceId": "controlled/source-process/2",
+      "definitionId": "f09",
+      "paidPrice": 8,
+      "growth": {},
+      "edition": "none"
+    },
+    {
+      "instanceId": "controlled/source-process/3",
+      "definitionId": "e03",
+      "paidPrice": 8,
+      "growth": {},
+      "edition": "none"
+    },
+    {
+      "instanceId": "controlled/source-process/4",
+      "definitionId": "mantangcai",
+      "paidPrice": 8,
+      "growth": {},
+      "edition": "polychrome"
+    }
+  ]
+}

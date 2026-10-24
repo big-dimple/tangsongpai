@@ -1,0 +1,23 @@
+
+> tangsongpai@0.1.0 test
+> vitest run tests/score-phrase.test.ts tests/owned-joker-score-motion.test.ts tests/joker-score-strike.test.ts tests/score-table.test.ts tests/singapore-final-adoption.test.ts tests/score-table-haptics.test.ts
+
+
+ RUN  v4.1.11 D:/ai/tangsongpai/tangsongpai/.codex-remote-attachments/owned-joker-score-motion
+
+ 鉂?tests/score-phrase.test.ts (5 tests | 1 failed) 36ms
+   脳 keeps actual post-result growth out of the score climax 19ms
+
+鈳幆鈳幆鈳幆鈳?Failed Tests 1 鈳幆鈳幆鈳幆鈳?
+ FAIL  tests/score-phrase.test.ts > keeps actual post-result growth out of the score climax
+AssertionError: expected undefined to be defined
+ 鉂?tests/score-phrase.test.ts:45:128
+
+
+鈳幆鈳幆鈳幆鈳幆鈳幆鈳幆鈳幆鈳幆鈳幆鈳幆鈳幆鈳幆[1/1]鈳?
+
+ Test Files  1 failed | 5 passed (6)
+      Tests  1 failed | 34 passed (35)
+   Start at  07:27:56
+   Duration  3.57s (transform 8.86s, setup 0ms, import 11.44s, tests 234ms, environment 1ms)
+

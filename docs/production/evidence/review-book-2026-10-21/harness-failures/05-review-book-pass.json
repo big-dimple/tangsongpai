@@ -1,0 +1,186 @@
+{
+  "base": "9abedd0195881c64c730f13e26b66c54f94b3716",
+  "source": "controlled ownership/levels/history loaded through existing validated session.importJSON, unchanged real scorer and UI inputs for final PlayHand; not natural acquisition or physical device",
+  "cases": [
+    {
+      "key": "desktop",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "reduced": false,
+      "artMode": "normal",
+      "errors": [],
+      "entry": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 199,
+            "y": 517,
+            "width": 194,
+            "height": 21
+          }
+        },
+        "art": {
+          "asset": "U09",
+          "bounds": {
+            "type": 5,
+            "x": 156.6,
+            "y": 518.4,
+            "width": 28.80000000000001,
+            "height": 36
+          },
+          "interactive": false
+        },
+        "subtitle": {
+          "type": 5,
+          "x": 199,
+          "y": 540,
+          "width": 181,
+          "height": 16
+        },
+        "motion": true,
+        "alpha": 0.023385279995770582,
+        "reward": {
+          "type": 5,
+          "x": 374.5,
+          "y": 586,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "source": {
+        "clearId": "controlled/settlement/boss-win/clear/2",
+        "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+        "handType": "two-pair",
+        "before": 2,
+        "after": 3,
+        "label": "复盘本：两对 Lv2→Lv3"
+      },
+      "settled": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 199,
+            "y": 517,
+            "width": 194,
+            "height": 21
+          }
+        },
+        "art": {
+          "asset": "U09",
+          "bounds": {
+            "type": 5,
+            "x": 156.6,
+            "y": 518.4,
+            "width": 28.80000000000001,
+            "height": 36
+          },
+          "interactive": false
+        },
+        "subtitle": {
+          "type": 5,
+          "x": 199,
+          "y": 540,
+          "width": 181,
+          "height": 16
+        },
+        "motion": false,
+        "reward": {
+          "type": 5,
+          "x": 388.70000000000005,
+          "y": 586,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "resize": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 199,
+            "y": 467,
+            "width": 194,
+            "height": 21
+          }
+        },
+        "art": {
+          "asset": "U09",
+          "bounds": {
+            "type": 5,
+            "x": 156.6,
+            "y": 468.4,
+            "width": 28.80000000000001,
+            "height": 36
+          },
+          "interactive": false
+        },
+        "subtitle": {
+          "type": 5,
+          "x": 199,
+          "y": 490,
+          "width": 181,
+          "height": 16
+        },
+        "motion": false,
+        "reward": {
+          "type": 5,
+          "x": 388.70000000000005,
+          "y": 536,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "restored": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 199,
+            "y": 517,
+            "width": 194,
+            "height": 21
+          }
+        },
+        "art": null,
+        "subtitle": {
+          "type": 5,
+          "x": 199,
+          "y": 540,
+          "width": 181,
+          "height": 16
+        },
+        "motion": false,
+        "reward": {
+          "type": 5,
+          "x": 374.5,
+          "y": 586,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "status": "PASS"
+    }
+  ],
+  "status": "FAIL",
+  "error": "browserContext.newPage: Executable doesn't exist at /home/agent/.cache/ms-playwright/ffmpeg-1011/ffmpeg-linux\n╔═════════════════════════════════════════════════════════════════╗\n║ Video rendering requires ffmpeg binary.                         ║\n║ Downloading it will not affect any of the system-wide settings. ║\n║ Please run the following command:                               ║\n║                                                                 ║\n║     npx playwright install ffmpeg                               ║\n║                                                                 ║\n║ <3 Playwright Team                                              ║\n╚═════════════════════════════════════════════════════════════════╝\n    at /workspace/tangsongpai/harness/review-book.mjs:55:247"
+}

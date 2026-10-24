@@ -1,0 +1,14 @@
+
+ RUN  v4.1.11 /workspace/tangsongpai
+
+
+ Test Files  3 passed (3)
+      Tests  22 passed (22)
+   Start at  10:24:35
+   Duration  319ms (transform 203ms, setup 0ms, import 266ms, tests 128ms, environment 0ms)
+
+npm notice
+npm notice New major version of npm available! 11.9.0 -> 12.2.0
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+npm notice To update run: npm install -g npm@12.2.0
+npm notice

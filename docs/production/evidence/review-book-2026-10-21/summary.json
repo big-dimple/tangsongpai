@@ -1,0 +1,913 @@
+{
+  "base": "d80180a1ace84fa52ce7f75527ae6dceb9cf3903",
+  "source": "controlled ownership/levels/history loaded through existing validated session.importJSON, unchanged real scorer and UI inputs for final PlayHand; not natural acquisition or physical device",
+  "cases": [
+    {
+      "key": "desktop",
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "reduced": false,
+      "artMode": "normal",
+      "errors": [],
+      "entry": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 199,
+            "y": 517,
+            "width": 194,
+            "height": 21
+          }
+        },
+        "art": {
+          "asset": "U09",
+          "bounds": {
+            "type": 5,
+            "x": 156.6,
+            "y": 518.4,
+            "width": 28.80000000000001,
+            "height": 36
+          },
+          "interactive": false
+        },
+        "subtitle": {
+          "type": 5,
+          "x": 199,
+          "y": 540,
+          "width": 181,
+          "height": 16
+        },
+        "motion": true,
+        "alpha": 0.02164039331193523,
+        "reward": {
+          "type": 5,
+          "x": 374.5,
+          "y": 586,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "source": {
+        "clearId": "controlled/settlement/boss-win/clear/2",
+        "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+        "handType": "two-pair",
+        "before": 2,
+        "after": 3,
+        "label": "复盘本：两对 Lv2→Lv3"
+      },
+      "settled": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 199,
+            "y": 517,
+            "width": 194,
+            "height": 21
+          }
+        },
+        "art": {
+          "asset": "U09",
+          "bounds": {
+            "type": 5,
+            "x": 156.6,
+            "y": 518.4,
+            "width": 28.80000000000001,
+            "height": 36
+          },
+          "interactive": false
+        },
+        "subtitle": {
+          "type": 5,
+          "x": 199,
+          "y": 540,
+          "width": 181,
+          "height": 16
+        },
+        "motion": false,
+        "reward": {
+          "type": 5,
+          "x": 388.70000000000005,
+          "y": 586,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "resize": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 199,
+            "y": 467,
+            "width": 194,
+            "height": 21
+          }
+        },
+        "art": {
+          "asset": "U09",
+          "bounds": {
+            "type": 5,
+            "x": 156.6,
+            "y": 468.4,
+            "width": 28.80000000000001,
+            "height": 36
+          },
+          "interactive": false
+        },
+        "subtitle": {
+          "type": 5,
+          "x": 199,
+          "y": 490,
+          "width": 181,
+          "height": 16
+        },
+        "motion": false,
+        "reward": {
+          "type": 5,
+          "x": 388.70000000000005,
+          "y": 536,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "restored": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 199,
+            "y": 517,
+            "width": 194,
+            "height": 21
+          }
+        },
+        "art": null,
+        "subtitle": {
+          "type": 5,
+          "x": 199,
+          "y": 540,
+          "width": 181,
+          "height": 16
+        },
+        "motion": false,
+        "reward": {
+          "type": 5,
+          "x": 374.5,
+          "y": 586,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "status": "PASS"
+    },
+    {
+      "key": "mobile",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "reduced": false,
+      "artMode": "normal",
+      "errors": [],
+      "entry": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 76,
+            "y": 428.5,
+            "width": 172,
+            "height": 19
+          }
+        },
+        "art": {
+          "asset": "U09",
+          "bounds": {
+            "type": 5,
+            "x": 33.6,
+            "y": 429,
+            "width": 28.800000000000004,
+            "height": 36
+          },
+          "interactive": false
+        },
+        "subtitle": {
+          "type": 5,
+          "x": 76,
+          "y": 449.5,
+          "width": 181,
+          "height": 16
+        },
+        "motion": true,
+        "alpha": 0.027572707274778768,
+        "reward": {
+          "type": 5,
+          "x": 56.5,
+          "y": 495.5,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "source": {
+        "clearId": "controlled/settlement/boss-win/clear/2",
+        "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+        "handType": "two-pair",
+        "before": 2,
+        "after": 3,
+        "label": "复盘本：两对 Lv2→Lv3"
+      },
+      "settled": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 76,
+            "y": 428.5,
+            "width": 172,
+            "height": 19
+          }
+        },
+        "art": {
+          "asset": "U09",
+          "bounds": {
+            "type": 5,
+            "x": 33.6,
+            "y": 429,
+            "width": 28.800000000000004,
+            "height": 36
+          },
+          "interactive": false
+        },
+        "subtitle": {
+          "type": 5,
+          "x": 76,
+          "y": 449.5,
+          "width": 181,
+          "height": 16
+        },
+        "motion": false,
+        "reward": {
+          "type": 5,
+          "x": 70.69999999999999,
+          "y": 495.5,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "resize": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 76,
+            "y": 378.5,
+            "width": 172,
+            "height": 19
+          }
+        },
+        "art": {
+          "asset": "U09",
+          "bounds": {
+            "type": 5,
+            "x": 33.6,
+            "y": 379,
+            "width": 28.800000000000004,
+            "height": 36
+          },
+          "interactive": false
+        },
+        "subtitle": {
+          "type": 5,
+          "x": 76,
+          "y": 399.5,
+          "width": 181,
+          "height": 16
+        },
+        "motion": false,
+        "reward": {
+          "type": 5,
+          "x": 70.69999999999999,
+          "y": 445.5,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "restored": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 76,
+            "y": 428.5,
+            "width": 172,
+            "height": 19
+          }
+        },
+        "art": null,
+        "subtitle": {
+          "type": 5,
+          "x": 76,
+          "y": 449.5,
+          "width": 181,
+          "height": 16
+        },
+        "motion": false,
+        "reward": {
+          "type": 5,
+          "x": 56.5,
+          "y": 495.5,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "status": "PASS"
+    },
+    {
+      "key": "mobile-reduced",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "reduced": true,
+      "artMode": "normal",
+      "errors": [],
+      "entry": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 76,
+            "y": 428.5,
+            "width": 172,
+            "height": 19
+          }
+        },
+        "art": {
+          "asset": "U09",
+          "bounds": {
+            "type": 5,
+            "x": 33.6,
+            "y": 429,
+            "width": 28.800000000000004,
+            "height": 36
+          },
+          "interactive": false
+        },
+        "subtitle": {
+          "type": 5,
+          "x": 76,
+          "y": 449.5,
+          "width": 181,
+          "height": 16
+        },
+        "motion": false,
+        "reward": {
+          "type": 5,
+          "x": 56.5,
+          "y": 495.5,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "source": {
+        "clearId": "controlled/settlement/boss-win/clear/2",
+        "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+        "handType": "two-pair",
+        "before": 2,
+        "after": 3,
+        "label": "复盘本：两对 Lv2→Lv3"
+      },
+      "settled": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 76,
+            "y": 428.5,
+            "width": 172,
+            "height": 19
+          }
+        },
+        "art": {
+          "asset": "U09",
+          "bounds": {
+            "type": 5,
+            "x": 33.6,
+            "y": 429,
+            "width": 28.800000000000004,
+            "height": 36
+          },
+          "interactive": false
+        },
+        "subtitle": {
+          "type": 5,
+          "x": 76,
+          "y": 449.5,
+          "width": 181,
+          "height": 16
+        },
+        "motion": false,
+        "reward": {
+          "type": 5,
+          "x": 70.69999999999999,
+          "y": 495.5,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "resize": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 76,
+            "y": 378.5,
+            "width": 172,
+            "height": 19
+          }
+        },
+        "art": {
+          "asset": "U09",
+          "bounds": {
+            "type": 5,
+            "x": 33.6,
+            "y": 379,
+            "width": 28.800000000000004,
+            "height": 36
+          },
+          "interactive": false
+        },
+        "subtitle": {
+          "type": 5,
+          "x": 76,
+          "y": 399.5,
+          "width": 181,
+          "height": 16
+        },
+        "motion": false,
+        "reward": {
+          "type": 5,
+          "x": 70.69999999999999,
+          "y": 445.5,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "restored": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 76,
+            "y": 428.5,
+            "width": 172,
+            "height": 19
+          }
+        },
+        "art": {
+          "asset": "U09",
+          "bounds": {
+            "type": 5,
+            "x": 33.6,
+            "y": 429,
+            "width": 28.800000000000004,
+            "height": 36
+          },
+          "interactive": false
+        },
+        "subtitle": {
+          "type": 5,
+          "x": 76,
+          "y": 449.5,
+          "width": 181,
+          "height": 16
+        },
+        "motion": false,
+        "reward": {
+          "type": 5,
+          "x": 56.5,
+          "y": 495.5,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "status": "PASS"
+    },
+    {
+      "key": "mobile-slow-art",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "reduced": false,
+      "artMode": "slow",
+      "errors": [],
+      "entry": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 76,
+            "y": 428.5,
+            "width": 172,
+            "height": 19
+          }
+        },
+        "art": null,
+        "subtitle": {
+          "type": 5,
+          "x": 76,
+          "y": 449.5,
+          "width": 181,
+          "height": 16
+        },
+        "motion": true,
+        "alpha": 0.024432178152653153,
+        "reward": {
+          "type": 5,
+          "x": 56.5,
+          "y": 495.5,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "source": {
+        "clearId": "controlled/settlement/boss-win/clear/2",
+        "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+        "handType": "two-pair",
+        "before": 2,
+        "after": 3,
+        "label": "复盘本：两对 Lv2→Lv3"
+      },
+      "settled": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 76,
+            "y": 428.5,
+            "width": 172,
+            "height": 19
+          }
+        },
+        "art": {
+          "asset": "U09",
+          "bounds": {
+            "type": 5,
+            "x": 33.6,
+            "y": 429,
+            "width": 28.800000000000004,
+            "height": 36
+          },
+          "interactive": false
+        },
+        "subtitle": {
+          "type": 5,
+          "x": 76,
+          "y": 449.5,
+          "width": 181,
+          "height": 16
+        },
+        "motion": false,
+        "reward": {
+          "type": 5,
+          "x": 70.69999999999999,
+          "y": 495.5,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "resize": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 76,
+            "y": 378.5,
+            "width": 172,
+            "height": 19
+          }
+        },
+        "art": {
+          "asset": "U09",
+          "bounds": {
+            "type": 5,
+            "x": 33.6,
+            "y": 379,
+            "width": 28.800000000000004,
+            "height": 36
+          },
+          "interactive": false
+        },
+        "subtitle": {
+          "type": 5,
+          "x": 76,
+          "y": 399.5,
+          "width": 181,
+          "height": 16
+        },
+        "motion": false,
+        "reward": {
+          "type": 5,
+          "x": 70.69999999999999,
+          "y": 445.5,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "restored": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 76,
+            "y": 428.5,
+            "width": 172,
+            "height": 19
+          }
+        },
+        "art": null,
+        "subtitle": {
+          "type": 5,
+          "x": 76,
+          "y": 449.5,
+          "width": 181,
+          "height": 16
+        },
+        "motion": false,
+        "reward": {
+          "type": 5,
+          "x": 56.5,
+          "y": 495.5,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "status": "PASS"
+    },
+    {
+      "key": "mobile-missing-art",
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "reduced": false,
+      "artMode": "missing",
+      "errors": [],
+      "entry": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 76,
+            "y": 428.5,
+            "width": 172,
+            "height": 19
+          }
+        },
+        "art": null,
+        "subtitle": {
+          "type": 5,
+          "x": 76,
+          "y": 449.5,
+          "width": 181,
+          "height": 16
+        },
+        "motion": true,
+        "alpha": 0.03280630243579823,
+        "reward": {
+          "type": 5,
+          "x": 56.5,
+          "y": 495.5,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "source": {
+        "clearId": "controlled/settlement/boss-win/clear/2",
+        "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+        "handType": "two-pair",
+        "before": 2,
+        "after": 3,
+        "label": "复盘本：两对 Lv2→Lv3"
+      },
+      "settled": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 76,
+            "y": 428.5,
+            "width": 172,
+            "height": 19
+          }
+        },
+        "art": null,
+        "subtitle": {
+          "type": 5,
+          "x": 76,
+          "y": 449.5,
+          "width": 181,
+          "height": 16
+        },
+        "motion": false,
+        "reward": {
+          "type": 5,
+          "x": 70.69999999999999,
+          "y": 495.5,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "resize": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 76,
+            "y": 378.5,
+            "width": 172,
+            "height": 19
+          }
+        },
+        "art": null,
+        "subtitle": {
+          "type": 5,
+          "x": 76,
+          "y": 399.5,
+          "width": 181,
+          "height": 16
+        },
+        "motion": false,
+        "reward": {
+          "type": 5,
+          "x": 70.69999999999999,
+          "y": 445.5,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "restored": {
+        "receipt": {
+          "text": "复盘本：两对 Lv2→Lv3",
+          "eventId": "controlled/settlement/boss-win/hand/controlled/settlement/boss-win/command/5/event/16",
+          "clearId": "controlled/settlement/boss-win/clear/2",
+          "bounds": {
+            "type": 5,
+            "x": 76,
+            "y": 428.5,
+            "width": 172,
+            "height": 19
+          }
+        },
+        "art": null,
+        "subtitle": {
+          "type": 5,
+          "x": 76,
+          "y": 449.5,
+          "width": 181,
+          "height": 16
+        },
+        "motion": false,
+        "reward": {
+          "type": 5,
+          "x": 56.5,
+          "y": 495.5,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 1
+      },
+      "status": "PASS"
+    },
+    {
+      "key": "ordinary-owned",
+      "status": "PASS",
+      "regions": {
+        "receipt": null,
+        "art": null,
+        "motion": false,
+        "reward": {
+          "type": 5,
+          "x": 99,
+          "y": 464,
+          "width": 192,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 0
+      }
+    },
+    {
+      "key": "boss-loss-owned",
+      "status": "PASS",
+      "regions": {
+        "receipt": null,
+        "art": null,
+        "motion": false,
+        "button": true,
+        "receipts": 0
+      }
+    },
+    {
+      "key": "boss-win-unowned",
+      "status": "PASS",
+      "regions": {
+        "receipt": null,
+        "art": null,
+        "motion": false,
+        "reward": {
+          "type": 5,
+          "x": 56.5,
+          "y": 464,
+          "width": 277,
+          "height": 19
+        },
+        "button": true,
+        "receipts": 0
+      }
+    }
+  ],
+  "status": "PASS"
+}

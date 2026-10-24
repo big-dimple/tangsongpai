@@ -1,0 +1,147 @@
+{
+  "status": "PASS",
+  "routes": [
+    {
+      "route": "group",
+      "plays": 3,
+      "shops": 1,
+      "phase": "shop",
+      "practice": {
+        "quote": {
+          "handType": "two-pair",
+          "levelBefore": 1,
+          "levelAfter": 2,
+          "basePrice": 4,
+          "price": 4,
+          "goldAfter": 3,
+          "shopSeq": 8,
+          "expectedSeq": 8,
+          "available": true,
+          "reason": null
+        },
+        "receipt": {
+          "type": "hand-practiced",
+          "handType": "two-pair",
+          "levelBefore": 1,
+          "levelAfter": 2,
+          "paidPrice": 4,
+          "goldBefore": 7,
+          "goldAfter": 3
+        },
+        "effect": "两对 Lv.1 → Lv.2\n基础热度 65 → 85（+20）\n基础倍率 2 → 2.5（+0.5）\n仅打出该牌型时读取；实际手分还取决于计分牌、效果与关卡规则。",
+        "secondRejected": {
+          "command": {
+            "runId": "q2-current/group",
+            "commandId": "q2-current/group/rejected/9",
+            "expectedSeq": 9,
+            "action": {
+              "type": "PracticeHand",
+              "handType": "two-pair",
+              "expectedLevel": 2,
+              "shopSeq": 8
+            }
+          },
+          "code": "basic-choice-consumed",
+          "unchanged": true,
+          "stateHash": "json-fnv-v1:fec740651391c3c9"
+        }
+      }
+    },
+    {
+      "route": "straight",
+      "plays": 2,
+      "shops": 1,
+      "phase": "stage-cleared",
+      "practice": {
+        "quote": {
+          "handType": "straight",
+          "levelBefore": 1,
+          "levelAfter": 2,
+          "basePrice": 4,
+          "price": 4,
+          "goldAfter": 5,
+          "shopSeq": 9,
+          "expectedSeq": 9,
+          "available": true,
+          "reason": null
+        },
+        "receipt": {
+          "type": "hand-practiced",
+          "handType": "straight",
+          "levelBefore": 1,
+          "levelAfter": 2,
+          "paidPrice": 4,
+          "goldBefore": 9,
+          "goldAfter": 5
+        },
+        "effect": "顺子 Lv.1 → Lv.2\n基础热度 125 → 160（+35）\n基础倍率 4 → 4.5（+0.5）\n仅打出该牌型时读取；实际手分还取决于计分牌、效果与关卡规则。",
+        "secondRejected": {
+          "command": {
+            "runId": "q2-current/straight",
+            "commandId": "q2-current/straight/rejected/10",
+            "expectedSeq": 10,
+            "action": {
+              "type": "PracticeHand",
+              "handType": "straight",
+              "expectedLevel": 2,
+              "shopSeq": 9
+            }
+          },
+          "code": "basic-choice-consumed",
+          "unchanged": true,
+          "stateHash": "json-fnv-v1:6fa58d40c1362d6c"
+        }
+      }
+    },
+    {
+      "route": "flush",
+      "plays": 2,
+      "shops": 1,
+      "phase": "await-input",
+      "practice": {
+        "quote": {
+          "handType": "flush",
+          "levelBefore": 1,
+          "levelAfter": 2,
+          "basePrice": 4,
+          "price": 4,
+          "goldAfter": 3,
+          "shopSeq": 7,
+          "expectedSeq": 7,
+          "available": true,
+          "reason": null
+        },
+        "receipt": {
+          "type": "hand-practiced",
+          "handType": "flush",
+          "levelBefore": 1,
+          "levelAfter": 2,
+          "paidPrice": 4,
+          "goldBefore": 7,
+          "goldAfter": 3
+        },
+        "effect": "同花 Lv.1 → Lv.2\n基础热度 140 → 170（+30）\n基础倍率 4 → 4.5（+0.5）\n仅打出该牌型时读取；实际手分还取决于计分牌、效果与关卡规则。",
+        "secondRejected": {
+          "command": {
+            "runId": "q2-current/flush",
+            "commandId": "q2-current/flush/rejected/8",
+            "expectedSeq": 8,
+            "action": {
+              "type": "PracticeHand",
+              "handType": "flush",
+              "expectedLevel": 2,
+              "shopSeq": 7
+            }
+          },
+          "code": "basic-choice-consumed",
+          "unchanged": true,
+          "stateHash": "json-fnv-v1:f633d196214df5f2"
+        }
+      }
+    }
+  ],
+  "outputs": [
+    "docs/production/evidence/q2-growth-2026-10-21/audit.json",
+    "docs/production/evidence/q2-growth-2026-10-21/checkpoints.json.gz"
+  ]
+}

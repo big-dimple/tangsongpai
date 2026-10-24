@@ -1,0 +1,35 @@
+{
+  "head": "4c345f93bcd8f3c747b83f0e5e473d3b50b3a3e0",
+  "sourceHash": "64acb84426fd0720757d4e0320e63e4c187a3235cdb64299a1545865119de551",
+  "input": {
+    "path": "docs/production/evidence/q3-interaction-2026-10-21/final/full-state.json.gz",
+    "sha256": "55f4da6f13a031b4d31f4e09a92f59242296b43c5f19afa95f31b49c9d7481e6",
+    "checkpointChecksum": "json-fnv-v1:64a30e4c93de4b70",
+    "seq": 6
+  },
+  "scope": "Controlled replay of the preceding natural journey checkpoint, imported through production UI. Native Chromium mouse/CDP touch. No state/stock/draw changes, handler calls or synthetic domain dispatch; not natural acquisition or physical phone acceptance.",
+  "cases": [
+    {
+      "viewport": {
+        "width": 1366,
+        "height": 768
+      },
+      "touch": false,
+      "steps": [],
+      "errors": []
+    }
+  ],
+  "status": "FAIL",
+  "browser": "151.0.7922.173",
+  "error": "locator.evaluate: Timeout 18000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByText('进度与存档', { exact: true }).locator('..')\u001b[22m\n\n    at /workspace/tangsongpai/harness/q3-discard.mjs:42:79",
+  "diagnostic": {
+    "scenes": [
+      {
+        "key": "title"
+      }
+    ],
+    "dialogs": [
+      "‹\n游戏菜单\n开始新局\n声音与画面\n演出速度\n1×\n2×\n4×\n减少动态\n触觉反馈\n已启用；是否有振动仍取决于设备及系统设置。\n背景音量\n30%\n音效音量\n80%\n音量拖到 0% 即可关闭。\n更多"
+    ]
+  }
+}
