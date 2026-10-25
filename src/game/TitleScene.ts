@@ -24,7 +24,7 @@ export class TitleScene extends Phaser.Scene {
     this.leaving=false;this.audio.setScene('menu');this.cameras.main.setBackgroundColor('#F3EADB');
     this.home?.destroy();this.home=new HomePage({start:()=>this.enterNew(),resume:()=>this.continueRun()});this.render();warmOpeningImages(this);
     this.entranceDispose?.();
-    this.entranceDispose=mountTangSongEnsembleBurst(document.body,{mode:'title',reducedMotion:this.reducedMotion()});
+    this.entranceDispose=mountTangSongEnsembleBurst(document.body,{reducedMotion:this.reducedMotion()});
     this.game.canvas.setAttribute('aria-label',GAME_NAME+' · 首页');this.game.canvas.setAttribute('aria-hidden','true');
     const keyboardOpen=(event:KeyboardEvent)=>{
       const element=document.activeElement;

@@ -60,6 +60,7 @@ try {
       assert.equal(await full.getAttribute('aria-pressed'),'true');await openMenuSection(page,'more',true);await page.getByRole('button',{name:'退出全屏',exact:true}).tap();await page.waitForFunction(()=>document.fullscreenElement===null&&!document.querySelector('.run-menu-modal').open);fullscreen='PASS (menu browser API; physical toolbar/orientation NOT_RUN)';
     }
     await tapUI(page,'title','action/title-start',touch);await waitScene(page,'character-select');
+    assert.equal(await page.locator('.qiyu-ensemble-burst-canvas').count(),0,'hero selection does not replay the opening ensemble');
     const count=await page.evaluate(()=>{const s=window.__harness.game.scene.getScene('character-select');const walk=list=>list.reduce((n,o)=>n+(o.name.startsWith('character/')?1:0)+(o.list?walk(o.list):0),0);return walk(s.children.list);});assert.equal(count,6);
     if(saveScreens&&engine===selected[0])await page.screenshot({path:`shots/${name}-select.png`});
     await tapUI(page,'character-select','character/amo',touch);

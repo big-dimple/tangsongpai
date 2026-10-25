@@ -253,7 +253,7 @@ describe('TangSongEntranceBurst presentation and shadow isolation', () => {
     expect(dom.body.querySelector('.qiyu-entrance-burst-canvas')).toBeNull();
   });
 
-  it('mountHeroEntranceBurst plays once per run and character-select rearms it', () => {
+  it('mountHeroEntranceBurst rearms for a new run without replaying the ensemble', () => {
     const first = mountHeroEntranceBurst(dom.body as unknown as HTMLElement, 'amo', {
       context: 'stage',
       reducedMotion: false,
@@ -272,12 +272,8 @@ describe('TangSongEntranceBurst presentation and shadow isolation', () => {
       skip();
     }
 
-    const ensemble = mountTangSongEnsembleBurst(dom.body as unknown as HTMLElement, {
-      mode: 'character-select',
-      reducedMotion: false,
-      playAudio: false,
-    });
-    ensemble();
+    resetHeroEntranceForNewRun();
+    expect(dom.body.querySelector('.qiyu-ensemble-burst-canvas')).toBeNull();
 
     const nextRun = mountHeroEntranceBurst(dom.body as unknown as HTMLElement, 'laohuan', {
       context: 'stage',
@@ -288,9 +284,8 @@ describe('TangSongEntranceBurst presentation and shadow isolation', () => {
     nextRun();
   });
 
-  it('mountTangSongEnsembleBurst mode:title plays only once per session and allows test reset', () => {
+  it('mountTangSongEnsembleBurst plays only once per page load and allows test reset', () => {
     const stop1 = mountTangSongEnsembleBurst(dom.body as unknown as HTMLElement, {
-      mode: 'title',
       reducedMotion: false,
       playAudio: false,
     });
@@ -300,17 +295,15 @@ describe('TangSongEntranceBurst presentation and shadow isolation', () => {
 
     // Second call without resetTitleEnsembleForTests must be a no-op
     const stop2 = mountTangSongEnsembleBurst(dom.body as unknown as HTMLElement, {
-      mode: 'title',
       reducedMotion: false,
       playAudio: false,
     });
     expect(dom.body.querySelector('.qiyu-ensemble-burst-canvas')).toBeNull();
     stop2();
 
-    // After reset, title mode plays again
+    // After reset, a fresh page load can play the opening again.
     resetTitleEnsembleForTests();
     const stop3 = mountTangSongEnsembleBurst(dom.body as unknown as HTMLElement, {
-      mode: 'title',
       reducedMotion: false,
       playAudio: false,
     });
@@ -319,9 +312,9 @@ describe('TangSongEntranceBurst presentation and shadow isolation', () => {
     expect(dom.body.querySelector('.qiyu-ensemble-burst-canvas')).toBeNull();
   });
 
-  it('mountTangSongEnsembleBurst mode:character-select mounts and disposes cleanly', () => {
+  it('holds the complete cast for an extra second and removes the opening at 2600ms', () => {
+    vi.spyOn(performance, 'now').mockReturnValue(0);
     const stop = mountTangSongEnsembleBurst(dom.body as unknown as HTMLElement, {
-      mode: 'character-select',
       reducedMotion: false,
       playAudio: false,
     });
@@ -330,13 +323,34 @@ describe('TangSongEntranceBurst presentation and shadow isolation', () => {
     expect(host).not.toBeNull();
     expect(dom.doc.querySelectorAll('canvas').length).toBe(0);
 
+    const ctx = host!.shadowRoot!.querySelector('canvas')!.getContext!('2d') as {
+      fillText: ReturnType<typeof vi.fn>;
+      translate: ReturnType<typeof vi.fn>;
+    };
+    const frame = (now: number) => dom.win.requestAnimationFrame.mock.calls.at(-1)![0](now);
+    ctx.fillText.mockClear();
+    ctx.translate.mockClear();
+    frame(1300);
+    const heldText = ctx.fillText.mock.calls.slice();
+    const heldPositions = ctx.translate.mock.calls.slice();
+    expect(heldText.map(call => call[0])).toEqual(expect.arrayContaining(['苏轼', '辛弃疾', '刘娥', '文成公主', '花蕊夫人', '秦琼']));
+    ctx.fillText.mockClear();
+    ctx.translate.mockClear();
+    frame(2200);
+    expect(ctx.fillText.mock.calls).toEqual(heldText);
+    expect(ctx.translate.mock.calls).toEqual(heldPositions);
+    ctx.translate.mockClear();
+    frame(2400);
+    expect(ctx.translate.mock.calls).not.toEqual(heldPositions);
+    expect(dom.body.querySelector('.qiyu-ensemble-burst-canvas')).toBe(host);
+    frame(2600);
+    expect(dom.body.querySelector('.qiyu-ensemble-burst-canvas')).toBeNull();
     stop();
     expect(dom.body.querySelector('.qiyu-ensemble-burst-canvas')).toBeNull();
   });
 
   it('mountTangSongEnsembleBurst respects reducedMotion and does not mount', () => {
     const stop = mountTangSongEnsembleBurst(dom.body as unknown as HTMLElement, {
-      mode: 'character-select',
       reducedMotion: true,
       playAudio: false,
     });

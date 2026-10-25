@@ -694,79 +694,50 @@ let titleEnsemblePlayed = false;
 /**
  * Grand six-hero Tang-Song scroll entrance.
  *
- * - `title`: plays once per page load right after the first load finishes. Uses the
- *   home page's own Xuan-paper palette (cream paper, ink, vermilion, antique gold) so
- *   the spectacle hands off seamlessly into the light paper home instead of flashing a
- *   dark screen over it.
- * - `character-select`: dark lacquer & gold palette matching the hero-selection stage.
- *   Entering this mode also rearms the one hero cut-in available to the coming run.
+ * Plays once per page load after loading, in the home page's Xuan-paper palette
+ * (cream paper, ink, vermilion, antique gold). The complete cast holds for one
+ * extra second before the original fade into the home page. Hero selection does
+ * not replay the ensemble; it rearms its individual hero cut-in separately.
  *
  * Landscape unrolls a horizontal handscroll (手卷) with the six heroes in one row;
  * portrait unrolls a hanging scroll (立轴) with a 3×2 grid.
  */
 export function mountTangSongEnsembleBurst(
   host: HTMLElement | null | undefined,
-  options: {mode?: 'title' | 'character-select'; reducedMotion?: boolean; playAudio?: boolean} = {},
+  options: {reducedMotion?: boolean; playAudio?: boolean} = {},
 ): () => void {
   if (typeof window === 'undefined' || typeof document === 'undefined' || !host) return () => {};
-  const mode = options.mode ?? 'character-select';
-  if (mode === 'character-select') resetHeroEntranceForNewRun();
-  if (mode === 'title') {
-    if (titleEnsemblePlayed) return () => {};
-    titleEnsemblePlayed = true;
-  }
+  if (titleEnsemblePlayed) return () => {};
+  titleEnsemblePlayed = true;
   if (prefersReducedMotion(options.reducedMotion)) return () => {};
 
   host.querySelectorAll('.qiyu-ensemble-burst-canvas').forEach(node => node.remove());
-  const shadow = createShadowCanvasHost(`qiyu-ensemble-burst-canvas is-${mode}`, 960, 540, host === document.body);
+  const shadow = createShadowCanvasHost('qiyu-ensemble-burst-canvas is-title', 960, 540, host === document.body);
   if (!shadow) return () => {};
   const {hostNode, canvas, ctx} = shadow;
   host.append(hostNode);
 
-  const paper = mode === 'title';
-  const theme = paper
-    ? {
-        veilCenter: 'rgba(243, 234, 219, 0.96)',
-        veilEdge: 'rgba(243, 234, 219, 0.82)',
-        scrollTop: '#fdf8ee',
-        scrollBottom: '#f4ead6',
-        mount: TEAL,
-        text: INK,
-        heading: INK,
-        muted: '#5d6b6e',
-        sub: TEAL,
-        lines: [INK, VERMILION, GOLD_DEEP],
-        rings: [VERMILION, GOLD_DEEP, TEAL],
-        droplet: 'rgba(38, 49, 58, 1)',
-        plaque: 'rgba(255, 251, 242, 0.96)',
-        plaqueLine: 'rgba(155, 139, 113, 0.65)',
-        medalRing: GOLD_DEEP,
-        medalFallback: '#e9dfcb',
-        medalInk: INK,
-        mountain: ['rgba(63, 96, 107, 0.16)', 'rgba(63, 96, 107, 0.05)'],
-        glow: 'rgba(184, 71, 58, 0.22)',
-      }
-    : {
-        veilCenter: 'rgba(12, 24, 28, 0.86)',
-        veilEdge: 'rgba(10, 18, 22, 0.55)',
-        scrollTop: 'rgba(26, 40, 46, 0.97)',
-        scrollBottom: 'rgba(15, 25, 30, 0.97)',
-        mount: GOLD_DEEP,
-        text: '#fff8ea',
-        heading: '#fff8ea',
-        muted: '#9ecbc3',
-        sub: '#bfe3dc',
-        lines: [GOLD, '#3ba896', '#d84b37'],
-        rings: ['#d84b37', GOLD, '#4ec7b2'],
-        droplet: 'rgba(245, 215, 130, 1)',
-        plaque: 'rgba(14, 23, 28, 0.92)',
-        plaqueLine: 'rgba(230, 193, 104, 0.4)',
-        medalRing: GOLD,
-        medalFallback: '#24383f',
-        medalInk: '#fff8ea',
-        mountain: ['rgba(62, 168, 148, 0.22)', 'rgba(16, 28, 33, 0.04)'],
-        glow: 'rgba(230, 193, 104, 0.22)',
-      };
+  const theme = {
+    veilCenter: 'rgba(243, 234, 219, 0.96)',
+    veilEdge: 'rgba(243, 234, 219, 0.82)',
+    scrollTop: '#fdf8ee',
+    scrollBottom: '#f4ead6',
+    mount: TEAL,
+    text: INK,
+    heading: INK,
+    muted: '#5d6b6e',
+    sub: TEAL,
+    lines: [INK, VERMILION, GOLD_DEEP],
+    rings: [VERMILION, GOLD_DEEP, TEAL],
+    droplet: 'rgba(38, 49, 58, 1)',
+    plaque: 'rgba(255, 251, 242, 0.96)',
+    plaqueLine: 'rgba(155, 139, 113, 0.65)',
+    medalRing: GOLD_DEEP,
+    medalFallback: '#e9dfcb',
+    medalInk: INK,
+    mountain: ['rgba(63, 96, 107, 0.16)', 'rgba(63, 96, 107, 0.05)'],
+    glow: 'rgba(184, 71, 58, 0.22)',
+  };
 
   const heroes = ENSEMBLE_IDS.map(id => ({
     id,
@@ -774,14 +745,12 @@ export function mountTangSongEnsembleBurst(
     avatar: cachedImage(characterArt(id, 'avatar')?.url),
   }));
 
-  const particles = buildParticles(paper ? 64 : 84, paper
-    ? [() => INK, () => VERMILION, () => GOLD_DEEP, () => TEAL]
-    : [() => '#e04834', () => '#f5d782', (p, seed) => hexColor(iridescenceColor((seed + p * 1.7) % 1)), () => '#4ec7b2']);
+  const particles = buildParticles(64, [() => INK, () => VERMILION, () => GOLD_DEEP, () => TEAL]);
 
-  const eyebrow = paper ? '一纸纳山河 · 落子会群英' : '◆ 点将登坛 ◆';
-  const heading = paper ? '唐宋牌' : '六位群英 · 候君点将';
-  const sub = paper ? '唐宋群英 · 牌局争锋' : heroes.map(hero => hero.profile.sealText).join(' · ');
-  const centralSeal = paper ? '唐宋' : '点将';
+  const eyebrow = '一纸纳山河 · 落子会群英';
+  const heading = '唐宋牌';
+  const sub = '唐宋群英 · 牌局争锋';
+  const centralSeal = '唐宋';
 
   const playAudio = options.playAudio ?? true;
   const abort = new AbortController();
@@ -797,14 +766,19 @@ export function mountTangSongEnsembleBurst(
     }
   }
 
-  const totalMs = paper ? 1600 : 1400;
+  const motionMs = 1600;
+  const holdMs = 1000;
+  const holdAt = motionMs * 0.76;
+  const totalMs = motionMs + holdMs;
   const sealAt = 0.2;
   const start = performance.now();
   let disposed = false;
   let rafId = 0;
 
   const render = (elapsed: number) => {
-    const p = clamp01(elapsed / totalMs);
+    // Hold the fully revealed scroll before fading; reveal and cue timings stay intact.
+    const motionElapsed = elapsed - Math.min(holdMs, Math.max(0, elapsed - holdAt));
+    const p = clamp01(motionElapsed / motionMs);
     const s = prepareStage(hostNode, canvas, ctx);
     const {w, h, portrait} = s;
 
@@ -832,15 +806,15 @@ export function mountTangSongEnsembleBurst(
     const alpha = fadeIn * fadeOut;
     const impactT = p >= sealAt ? clamp01((p - sealAt) / 0.6) : 0;
     const shakeT = p >= sealAt ? clamp01((p - sealAt) / 0.16) : 1;
-    const shakeAmp = shakeT < 1 ? (1 - shakeT) * (paper ? 7 : 11) : 0;
+    const shakeAmp = shakeT < 1 ? (1 - shakeT) * 7 : 0;
     const shakeX = shakeAmp ? Math.sin(elapsed * 0.095) * shakeAmp : 0;
     const shakeY = shakeAmp ? Math.cos(elapsed * 0.115) * shakeAmp * 0.6 : 0;
 
-    // 1. Full-bleed veil (paper wash or lacquer night).
+    // 1. Full-bleed paper wash.
     const veil = ctx.createRadialGradient(s.vw / 2, s.vh / 2, 0, s.vw / 2, s.vh / 2, Math.max(s.vw, s.vh) * 0.75);
     veil.addColorStop(0, theme.veilCenter);
     veil.addColorStop(1, theme.veilEdge);
-    ctx.globalAlpha = alpha * (paper ? 0.78 : 1);
+    ctx.globalAlpha = alpha * 0.78;
     ctx.fillStyle = veil;
     ctx.fillRect(0, 0, s.vw, s.vh);
     ctx.globalAlpha = 1;
@@ -850,18 +824,18 @@ export function mountTangSongEnsembleBurst(
     const cy = h / 2;
 
     // 2. Speed lines + impact layer behind the scroll.
-    drawSpeedLines(ctx, cx, cy, p, impactT, fadeOut * (paper ? 0.55 : 1), 32, theme.lines, portrait ? 480 : 440);
+    drawSpeedLines(ctx, cx, cy, p, impactT, fadeOut * 0.55, 32, theme.lines, portrait ? 480 : 440);
     if (impactT > 0) {
-      drawRings(ctx, cx, cy, impactT, fadeOut * (paper ? 0.7 : 1), Math.max(w, h) * 0.52, theme.rings);
+      drawRings(ctx, cx, cy, impactT, fadeOut * 0.7, Math.max(w, h) * 0.52, theme.rings);
       for (const d of inkBurstFrame(Math.min(1, impactT * 1.25), portrait ? 230 : 220, 22)) {
-        ctx.globalAlpha = d.alpha * fadeOut * (paper ? 0.5 : 0.85);
+        ctx.globalAlpha = d.alpha * fadeOut * 0.5;
         ctx.fillStyle = theme.droplet;
         ctx.beginPath();
         ctx.arc(cx + d.x * 1.7, cy + d.y * 1.3, d.r * 1.4, 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.globalAlpha = 1;
-      drawParticles(ctx, particles, cx, cy, impactT, fadeOut * (paper ? 0.75 : 0.95));
+      drawParticles(ctx, particles, cx, cy, impactT, fadeOut * 0.75);
     }
 
     // 3. Unrolling scroll: horizontal handscroll (landscape) / hanging scroll (portrait).
@@ -880,9 +854,9 @@ export function mountTangSongEnsembleBurst(
     const left = -scrollW / 2;
     const top = portrait ? -fullH / 2 : -scrollH / 2;
 
-    // Paper / lacquer body with a soft drop shadow.
+    // Paper body with a soft drop shadow.
     ctx.save();
-    ctx.shadowColor = paper ? 'rgba(38, 49, 58, 0.22)' : 'rgba(0, 0, 0, 0.45)';
+    ctx.shadowColor = 'rgba(38, 49, 58, 0.22)';
     ctx.shadowBlur = 24;
     ctx.shadowOffsetY = 8;
     const body = ctx.createLinearGradient(0, top, 0, top + scrollH);
@@ -901,10 +875,10 @@ export function mountTangSongEnsembleBurst(
     // Mounting borders (装裱): outer band + inner hairline.
     ctx.strokeStyle = theme.mount;
     ctx.lineWidth = 6;
-    ctx.globalAlpha = alpha * (paper ? 0.85 : 0.9);
+    ctx.globalAlpha = alpha * 0.85;
     ctx.strokeRect(-fullW / 2 + 3, top + 3, fullW - 6, fullH - 6);
     ctx.lineWidth = 1;
-    ctx.strokeStyle = paper ? GOLD_DEEP : 'rgba(230, 193, 104, 0.6)';
+    ctx.strokeStyle = GOLD_DEEP;
     ctx.strokeRect(-fullW / 2 + 12, top + 12, fullW - 24, fullH - 24);
     ctx.globalAlpha = alpha;
 
@@ -931,25 +905,18 @@ export function mountTangSongEnsembleBurst(
     ctx.globalAlpha = alpha * contentIn;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillStyle = paper ? '#7b7365' : GOLD;
+    ctx.fillStyle = '#7b7365';
     fitFont(ctx, eyebrow, 'normal', 13, SERIF, fullW - 120, 10);
-    drawSpaced(ctx, eyebrow, 0, headerY, paper ? 4 : 2);
+    drawSpaced(ctx, eyebrow, 0, headerY, 4);
     ctx.fillStyle = theme.heading;
-    if (paper) {
-      ctx.font = `bold ${portrait ? 54 : 46}px ${SERIF}`;
-      ctx.shadowColor = theme.glow;
-      ctx.shadowBlur = 14;
-      drawSpaced(ctx, heading, 0, headerY + (portrait ? 50 : 40), portrait ? 18 : 22);
-    } else {
-      fitFont(ctx, heading, 'bold', portrait ? 30 : 28, SERIF, fullW - 150, 18);
-      ctx.shadowColor = 'rgba(204, 66, 48, 0.7)';
-      ctx.shadowBlur = 12;
-      ctx.fillText(heading, 0, headerY + (portrait ? 40 : 32));
-    }
+    ctx.font = `bold ${portrait ? 54 : 46}px ${SERIF}`;
+    ctx.shadowColor = theme.glow;
+    ctx.shadowBlur = 14;
+    drawSpaced(ctx, heading, 0, headerY + (portrait ? 50 : 40), portrait ? 18 : 22);
     ctx.shadowBlur = 0;
     ctx.fillStyle = theme.sub;
     fitFont(ctx, sub, 'normal', 13, SANS, fullW - 140, 10);
-    drawSpaced(ctx, sub, 0, headerY + (portrait ? (paper ? 92 : 76) : paper ? 76 : 62), paper ? 3 : 1);
+    drawSpaced(ctx, sub, 0, headerY + (portrait ? 92 : 76), 3);
 
     // 4. Six hero plaques.
     const cols = portrait ? 3 : 6;
@@ -957,7 +924,7 @@ export function mountTangSongEnsembleBurst(
     const gridW = Math.min(fullW - (portrait ? 40 : 60), portrait ? 460 : 830);
     const cardW = (gridW - gap * (cols - 1)) / cols;
     const cardH = portrait ? 190 : 158;
-    const gridTop = top + (portrait ? (paper ? 148 : 134) : paper ? 134 : 118);
+    const gridTop = top + (portrait ? 148 : 134);
     heroes.forEach((hero, idx) => {
       const col = idx % cols;
       const row = Math.floor(idx / cols);
@@ -989,7 +956,7 @@ export function mountTangSongEnsembleBurst(
       ctx.fillStyle = theme.text;
       fitFont(ctx, hero.profile.name, 'bold', 16, SERIF, cardW - 12, 11);
       ctx.fillText(hero.profile.name, mx, my + mr + 22);
-      ctx.fillStyle = paper ? VERMILION : GOLD;
+      ctx.fillStyle = VERMILION;
       fitFont(ctx, hero.profile.title, 'normal', 12, SANS, cardW - 12, 9);
       ctx.fillText(hero.profile.title, mx, my + mr + 43);
       ctx.fillStyle = theme.muted;
@@ -1006,7 +973,7 @@ export function mountTangSongEnsembleBurst(
     const sweepPos = -fullW * 0.65 + clamp01((p - 0.18) / 0.6) * fullW * 1.3;
     const sweep = ctx.createLinearGradient(sweepPos - 120, 0, sweepPos + 120, 0);
     sweep.addColorStop(0, 'rgba(255, 248, 220, 0)');
-    sweep.addColorStop(0.5, paper ? 'rgba(230, 193, 104, 0.18)' : 'rgba(255, 240, 185, 0.22)');
+    sweep.addColorStop(0.5, 'rgba(230, 193, 104, 0.18)');
     sweep.addColorStop(1, 'rgba(255, 248, 220, 0)');
     ctx.fillStyle = sweep;
     ctx.fillRect(left, top, scrollW, scrollH);
@@ -1014,8 +981,8 @@ export function mountTangSongEnsembleBurst(
 
     // Rollers (轴头) on the unrolling edges.
     ctx.globalAlpha = alpha;
-    const rollerColor = paper ? '#6b4a2e' : '#d9b45b';
-    const capColor = paper ? GOLD_DEEP : '#f5d782';
+    const rollerColor = '#6b4a2e';
+    const capColor = GOLD_DEEP;
     if (portrait) {
       for (const ry of [top - 7, top + scrollH - 7]) {
         ctx.fillStyle = rollerColor;
