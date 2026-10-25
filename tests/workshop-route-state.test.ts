@@ -35,9 +35,11 @@ function switchable(ui:ReturnType<typeof mount>){for(const id of ['upgrade','mod
 function dye(run:R2RunState){return workshopChoices(run).find(r=>r.group==='dyes'&&!r.duplicate)!;}
 function command(run:R2RunState,action:Action){return {runId:run.runId,commandId:run.runId+'/command/'+(run.commandSeq+1),expectedSeq:run.commandSeq,action};}
 
-it('directly switches all three routes before commitment, highlights only the current route and does not quote or mutate the run',()=>{
+it('defaults to upgrade, keeps one selected route on repeat clicks and switches without quoting or mutating the run',()=>{
  const run=fixture(),before=structuredClone(run),ui=mount(run);switchable(ui);
- for(const id of ['dyes','modify','upgrade','dyes'] as const){ui.route(id).click();expect(ui.view.workshopTab).toBe(id);expect(ui.route(id).attributes['aria-pressed']).toBe('true');switchable(ui);}
+ expect(ui.view.workshopTab).toBe('upgrade');expect(ui.route('upgrade').attributes['aria-pressed']).toBe('true');expect(ui.host.querySelector('.workshop-service')).toBeTruthy();
+ for(const id of ['upgrade','dyes','dyes','modify','upgrade','dyes'] as const){ui.route(id).click();expect(ui.view.workshopTab).toBe(id);expect(ui.route(id).attributes['aria-pressed']).toBe('true');expect(ui.host.querySelectorAll('button').filter(b=>b.attributes['aria-pressed']==='true')).toHaveLength(1);expect(ui.host.querySelector('.workshop-route-root')!.textContent).toBe('本店共享 1 次');expect(ui.host.querySelectorAll('.workshop-route-purpose')).toHaveLength(3);switchable(ui);}
+ const restored=mount(run,ui.view);expect(restored.view.workshopTab).toBe('dyes');expect(restored.route('dyes').attributes['aria-pressed']).toBe('true');
  expect(ui.basic).not.toHaveBeenCalled();expect(ui.offer).not.toHaveBeenCalled();expect(ui.service).not.toHaveBeenCalled();expect(run).toEqual(before);
  ui.gate.active=false;ui.route('modify').click();expect(ui.view.workshopTab).toBe('dyes');
 });
@@ -64,7 +66,7 @@ it('keeps each dye title and from/to preview in red or dark suit ink, with a vis
 });
 it.each(['BuyBasicTool','PracticeHand'] as const)('locks routes only after successful %s, and replay charges/records exactly once',type=>{
  const run=fixture(),action:Action=type==='BuyBasicTool'?{type,definitionId:dye(run).id,shopSeq:run.shop!.basicChoice!.shopSeq}:{type,handType:'pair',expectedLevel:1,shopSeq:run.shop!.basicChoice!.shopSeq},c=command(run,action),result=applyCommand(run,c);expect(result.ok).toBe(true);if(!result.ok)return;
- const after=result.state,ui=mount(after);for(const id of ['upgrade','modify','dyes'] as const){expect(ui.route(id).disabled).toBe(true);expect(ui.route(id).dataset.crossed).toBe('true');ui.route(id).click();}expect(ui.view.workshopTab).toBeUndefined();
+ const after=result.state,ui=mount(after);for(const id of ['upgrade','modify','dyes'] as const){expect(ui.route(id).disabled).toBe(true);expect(ui.route(id).dataset.crossed).toBe('true');ui.route(id).click();}expect(ui.view.workshopTab).toBe('upgrade');
  expect(after.shop!.basicChoice!.purchase).toBeTruthy();expect(after.shop!.purchases).toBe(run.shop!.purchases+1);expect(after.commandSeq).toBe(run.commandSeq+1);expect(run.gold-after.gold).toBe(after.shop!.basicChoice!.purchase!.paidPrice);
  const saved=structuredClone(after),replayed=applyCommand(after,c);expect(replayed).toMatchObject({ok:true,duplicate:true,state:saved});expect(after).toEqual(saved);
 });

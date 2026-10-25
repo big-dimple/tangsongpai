@@ -13,6 +13,7 @@ import './WorkshopGoals.css';
 interface WorkshopActions {ready:()=>boolean;purchaseReason:(offer:R2Offer)=>string|undefined;basic:(id:string,intent?:WorkshopIntent)=>void;offer:(id:string,intent?:WorkshopIntent)=>void;services:readonly ShopServiceEntry[];active:()=>boolean}
 /** Goal selection and optional directory filters only. Existing adapters own every quote and command. */
 export function mountWorkshopGoals(host:HTMLElement,run:R2RunState,view:MakeCardsView,actions:WorkshopActions):()=>void {
+  view.workshopTab??=isR2CoreBuild(run)?'upgrade':'modify';
   const choices=workshopChoices(run),nav=document.createElement('nav'),workspace=document.createElement('section');nav.className='workshop-goal-nav';nav.setAttribute('aria-label','自选做牌目标');workspace.className='workshop-goal-workspace';
   const root=document.createElement('div');root.className='workshop-route-root';root.textContent=run.shop?.basicChoice?.purchase?'本店机会已用':'本店共享 1 次';host.append(root);
   let opened:HTMLDialogElement|undefined;
@@ -29,14 +30,13 @@ export function mountWorkshopGoals(host:HTMLElement,run:R2RunState,view:MakeCard
     opened?.close();workspace.replaceChildren();
     const used=!!run.shop?.basicChoice?.purchase,goal=WORKSHOP_GOALS.find(g=>g.id===view.workshopTab);host.classList.toggle('has-workshop-goal',!!goal);
     nav.dataset.selected=goal?.id??'';nav.dataset.used=String(used);
-    for(const b of nav.querySelectorAll<HTMLButtonElement>('button')){const selected=b.dataset.workshopGoal===goal?.id,unsupported=b.dataset.workshopGoal==='upgrade'?!isR2CoreBuild(run):b.dataset.workshopGoal==='dyes'?!choices.some(c=>c.group==='dyes'):false,blocked=used||unsupported;b.setAttribute('aria-pressed',String(selected));b.disabled=blocked;b.dataset.crossed=String(used);b.querySelector('.workshop-route-state')!.textContent=used?'已用 ×':unsupported?'此局未开放':selected?'当前路线':'选择';}
+    for(const b of nav.querySelectorAll<HTMLButtonElement>('button')){const selected=b.dataset.workshopGoal===goal?.id,unsupported=b.dataset.workshopGoal==='upgrade'?!isR2CoreBuild(run):b.dataset.workshopGoal==='dyes'?!choices.some(c=>c.group==='dyes'):false,blocked=used||unsupported;b.setAttribute('aria-pressed',String(selected));b.disabled=blocked;b.dataset.crossed=String(used);b.querySelector('.workshop-route-state')!.textContent=used?'已用 ×':unsupported?'此局未开放':selected?'已选中 ✓':'点击切换 ›';}
     const choose=(id:string,intent:WorkshopIntent|undefined,next:()=>void)=>{if(!live())return;view.focusId=id;view.intent=intent;next();};
     const renderOther=(entries:typeof choices,title:string)=>{if(!entries.length)return;const more=document.createElement('section'),label=document.createElement('h3');more.className='workshop-other';more.setAttribute('aria-label',title);label.textContent=title;more.append(label);
       for(const row of entries){const line=document.createElement('div'),text=document.createElement('span'),price=document.createElement('span'),b=document.createElement('button');line.className='workshop-other-row';line.dataset.makeId=row.id;text.textContent=row.info.name+' · '+row.purpose;const reason=row.duplicate?(row.duplicate.consumed?'随机现货已售':actions.purchaseReason(row.duplicate)):row.reason;price.className='workshop-row-price';price.textContent=reason??`实付 ${row.price} 金 ›`;b.type='button';b.className='workshop-operation-main';b.append(art(row),text,price);b.disabled=!!reason||!live();b.onclick=()=>choose(row.id,undefined,()=>row.duplicate?actions.offer(row.duplicate!.offerId):actions.basic(row.id));line.append(b);const z=zoom(row);if(z){line.className+=' has-art-zoom';line.append(z);}more.append(line);}workspace.append(more);};
     const other=choices.filter(row=>row.group==='other');
     if(!goal){const hint=document.createElement('p');hint.className='workshop-route-hint';hint.textContent=used?'下一店恢复共享机会。':'选一路，查看目标与实付费用。';workspace.append(hint);}
     if(goal){
-    if(!used){const back=document.createElement('button');back.type='button';back.className='workshop-route-back';back.textContent='‹ 返回选择路线';back.onclick=()=>{view.workshopTab=undefined;view.intent=undefined;render();};workspace.append(back);}
     const title=document.createElement('h3'),description=document.createElement('p');title.textContent=goal.title;description.textContent=goal.description;description.className='workshop-goal-description';workspace.append(title,description);
     const list=document.createElement('div');list.className='workshop-operations';workspace.append(list);
     if(goal.id==='upgrade'){
@@ -71,6 +71,6 @@ export function mountWorkshopGoals(host:HTMLElement,run:R2RunState,view:MakeCard
     // 大字号 leads only its original group, after the selected route's controls.
     renderOther([...other.filter(row=>row.id==='T11'),...other.filter(row=>row.id!=='T11')],'其他改牌工具');
   };
-  for(const goal of WORKSHOP_GOALS){const b=document.createElement('button'),title=document.createElement('strong'),purpose=document.createElement('span'),state=document.createElement('span');b.type='button';title.textContent=goal.id==='upgrade'?'升级牌型':goal.id==='modify'?'改牌':'染色';purpose.className='workshop-route-purpose';purpose.textContent=goal.id==='upgrade'?'强化牌型':goal.title;state.className='workshop-route-state';b.append(title,purpose,state);b.dataset.workshopGoal=goal.id;b.onclick=()=>{if(!actions.active()||b.disabled)return;view.workshopTab=view.workshopTab===goal.id?undefined:goal.id;view.intent=undefined;render();};nav.append(b);}
+  for(const goal of WORKSHOP_GOALS){const b=document.createElement('button'),title=document.createElement('strong'),purpose=document.createElement('span'),state=document.createElement('span');b.type='button';title.textContent=goal.id==='upgrade'?'升级牌型':goal.id==='modify'?'改牌':'染色';purpose.className='workshop-route-purpose';purpose.textContent=goal.id==='upgrade'?'强化牌型':goal.title;state.className='workshop-route-state';b.append(title,purpose,state);b.dataset.workshopGoal=goal.id;b.onclick=()=>{if(!actions.active()||b.disabled||view.workshopTab===goal.id)return;view.workshopTab=goal.id;view.intent=undefined;render();};nav.append(b);}
   host.append(nav,workspace);render();return()=>{opened?.close();};
 }

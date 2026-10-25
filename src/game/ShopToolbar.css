@@ -17,9 +17,6 @@
  .shop-inline-workshop .workshop-route-root { margin-bottom:18px; }
  .shop-inline-workshop .workshop-goal-nav { gap:6px;margin-bottom:12px; }
  .shop-inline-workshop .workshop-goal-nav button { min-height:84px;font-size:14px; }
- .shop-inline-workshop.has-workshop-goal .workshop-route-root,.shop-inline-workshop.has-workshop-goal .workshop-route-purpose,.shop-inline-workshop.has-workshop-goal .workshop-route-back,.shop-inline-workshop.has-workshop-goal .workshop-goal-nav:before,.shop-inline-workshop.has-workshop-goal .workshop-goal-nav button:before { display:none; }
- .shop-inline-workshop.has-workshop-goal .workshop-goal-nav button { min-height:52px;padding:6px 4px; }
- .shop-inline-workshop.has-workshop-goal .workshop-route-state { font-size:12px;margin-top:2px; }
  .shop-inline-workshop.has-workshop-goal .workshop-goal-filter { font-size:0;gap:0;margin-bottom:8px; }
  .shop-inline-workshop.has-workshop-goal .workshop-goal-filter select { width:100%;font-size:14px; }
 }
