@@ -13,6 +13,10 @@
 
 ## 任务入口和工程纪律
 
+### 本机验证与交付（2026-10-25 用户更新）
+
+本机配置低，默认不在这里运行构建、类型检查、单元测试或浏览器跑批；用户另行要求时再执行。完成代码审查后直接提交并 push，由 GitHub CI 核验，每分钟自动同步任务负责构建发布。CI 失败时查看日志并修复；分别报告 push、CI 与线上状态，不将提交成功视为验证通过。本条覆盖旧文档中要求本地先构建、先测试的流程。
+
 当前执行范围以本页最新用户指令和奇遇专项合同为先。[旧统一交付计划](docs/production/DELIVERY_PLAN.md)、[plan.json](docs/production/plan.json)、[ROADMAP](ROADMAP.md) 保留旧 Q1–Q4 包状态与历史证据；其中仍写着 P08/Q1 的“当前项”只是尚未完成同版机器状态迁移的历史快照，**不能据此开新任务**。在奇遇实际合并/落库时由该项 owner 统一更新状态，避免并行覆盖共享文件。
 
 不改坏现有存档或真实计分；成功与失败证据分列，不用 CI、截图、脚本假冒玩家/设备签收；不要擅自修改或删除未合并的独有成果。按照当前任务读取必要的 [规则](docs/production/RULES.md)、[角色玩法](docs/production/CHARACTER_PLAY_PLAN.md)、[交互](docs/production/UX.md)、[工程](docs/production/ENGINEERING.md) 和 [美术](docs/production/ART.md)，无需重读所有历史档案。

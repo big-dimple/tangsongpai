@@ -58,7 +58,7 @@ export function openingRuleBriefing(run:R2RunState){
   const baseScore=Math.floor(currentHeat*multNum);
   return {
    title:card.title.split(' · ')[0],
-   body:`基准分 ${baseScore.toLocaleString()} (${currentHeat} × ${multStr}倍)`,
+   body:`${baseScore.toLocaleString()} (${currentHeat} × ${multStr}倍)`,
    example:EXAMPLES[type],
    selected:selected.has(type),
    rank:index+1,
@@ -68,27 +68,51 @@ export function openingRuleBriefing(run:R2RunState){
    baseScore,
   };
  });
- return {title:'牌型示例',body:'',cards,primaryLabel:'进入商店'};
+ return {title:'主要牌型',body:'',cards,primaryLabel:'进入商店'};
+}
+
+/** Touch keeps native scrolling; mouse dragging also works over the poker examples. */
+function enableHandScroll(scroll:HTMLElement):()=>void {
+ scroll.tabIndex=0;
+ scroll.setAttribute('role','region');
+ scroll.setAttribute('aria-label','主要牌型，按强度从高到低');
+ const controller=new AbortController(),options={signal:controller.signal};
+ let drag:{id:number;y:number;top:number}|undefined;
+ const stop=()=>{
+  const id=drag?.id;drag=undefined;delete scroll.dataset.dragging;
+  if(id!==undefined&&scroll.hasPointerCapture(id))scroll.releasePointerCapture(id);
+ };
+ scroll.addEventListener('pointerdown',event=>{
+  if(event.pointerType!=='mouse'||event.button!==0||scroll.scrollHeight<=scroll.clientHeight)return;
+  // Leave the native scrollbar thumb available for dragging too.
+  if(event.clientX>=scroll.getBoundingClientRect().left+scroll.clientLeft+scroll.clientWidth)return;
+  drag={id:event.pointerId,y:event.clientY,top:scroll.scrollTop};
+  scroll.setPointerCapture(event.pointerId);scroll.dataset.dragging='true';
+  scroll.focus({preventScroll:true});event.preventDefault();
+ },options);
+ scroll.addEventListener('pointermove',event=>{
+  if(!drag||event.pointerId!==drag.id)return;
+  if(!(event.buttons&1)){stop();return;}
+  scroll.scrollTop=drag.top+drag.y-event.clientY;
+ },options);
+ for(const type of ['pointerup','pointercancel','lostpointercapture'])scroll.addEventListener(type,stop,options);
+ window.addEventListener('blur',stop,options);
+ return ()=>{stop();controller.abort();};
 }
 
 /** One visible action; native cancel follows the same guarded shop transition. */
 export function showOpeningRuleBriefing(dialog:DetailDialog,run:R2RunState,onEnterShop:()=>void):HTMLDialogElement{
- const model=openingRuleBriefing(run);let finished=false;
- const finish=()=>{if(finished)return;finished=true;dialog.close();onEnterShop();};
+ const model=openingRuleBriefing(run);let finished=false,stopScroll:(()=>void)|undefined;
+ const finish=()=>{if(finished)return;finished=true;stopScroll?.();dialog.close();onEnterShop();};
  const element=dialog.open(model.title,model.body,[{label:model.primaryLabel,primary:true,run:finish}],{
   cards:model.cards,
-  onClose:()=>{if(finished)return;finished=true;onEnterShop();},
+  onClose:()=>{stopScroll?.();if(finished)return;finished=true;onEnterShop();},
  });
  element.classList.add('opening-rule-briefing');
  const close=element.querySelector<HTMLButtonElement>('.dialog-close');if(close)close.hidden=true;
- const header=element.querySelector('.dialog-header');
- if(header&&!header.querySelector('.opening-header-sub')){
-  const sub=document.createElement('p');
-  sub.className='opening-header-sub';
-  sub.textContent='主要牌型 · 基准分＝基础热度 × 基础倍率';
-  header.append(sub);
- }
- element.querySelector('.experience-cards')?.setAttribute('aria-label','牌型示例，按强度从高到低');
+ const scroll=element.querySelector<HTMLElement>('.dialog-scroll');
+ if(scroll)stopScroll=enableHandScroll(scroll);
+ element.querySelector('.experience-cards')?.setAttribute('aria-label','主要牌型，按强度从高到低');
  const items=[...element.querySelectorAll<HTMLElement>('.experience-card')];
  for(const [index,item] of items.entries()){
   const card=model.cards[index];if(!card)continue;
@@ -125,10 +149,6 @@ export function showOpeningRuleBriefing(dialog:DetailDialog,run:R2RunState,onEnt
    const scoreRow=document.createElement('div');
    scoreRow.className='opening-hand-score-row';
 
-   const scoreLabel=document.createElement('span');
-   scoreLabel.className='opening-score-label';
-   scoreLabel.textContent='基准分';
-
    const scoreNum=document.createElement('strong');
    scoreNum.className='opening-score-num';
    scoreNum.textContent=card.baseScore.toLocaleString();
@@ -137,7 +157,7 @@ export function showOpeningRuleBriefing(dialog:DetailDialog,run:R2RunState,onEnt
    formula.className='opening-score-formula';
    formula.textContent=`(${card.heat} × ${card.mult}倍)`;
 
-   scoreRow.append(scoreLabel,scoreNum,formula);
+   scoreRow.append(scoreNum,formula);
    copy.append(titleRow,scoreRow);
   }
 
