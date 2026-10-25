@@ -1,16 +1,22 @@
-# 策划入口
+# 策划文档入口
 
-本页是路由，不再将所有稳定规则挤在一篇短文里。新会话先读根 AGENTS 和 handoff，再按当前任务读取对应合同。
+唐宋牌是一款唐宋历史人物题材的扑克构筑 H5 游戏。项目简介、运行方式和当前功能见根目录 [README](../README.md)。
 
-- 产品目标、范围与核心循环：[`production/PRODUCT.md`](production/PRODUCT.md)
-- 决策及旧规则迁移：[`production/DECISIONS.md`](production/DECISIONS.md)
-- 出牌、计分、角色、关卡和经济：[`production/RULES.md`](production/RULES.md)
-- 唐宋牌、消耗品、长期道具与 Boss 定义：[`production/CONTENT.md`](production/CONTENT.md)
-- 工程、命令、存档、随机和演出接口：[`production/ENGINEERING.md`](production/ENGINEERING.md)
-- 桌面/触控、信息层级、音效和反馈：[`production/UX.md`](production/UX.md)
-- 当前东方美术方向与独立子Agent委托：[`production/ART.md`](production/ART.md)
-- 开发依赖与验收：[`production/WORK_PACKAGES.md`](production/WORK_PACKAGES.md)、[`production/QUALITY.md`](production/QUALITY.md)
+## 现行设计
 
-用户早先提出的塔罗/星球/幻灵、牌组升级、玻璃/幸运、闪箔/全息/多彩与盲注限制，统一追踪在CONTENT第8节和C01/C03包内步骤，不再散落为口头待办。当前冻结与真机认可后的恢复路径见plan/handoff及D21，不能把新会话本身当作批准。
+- [产品目标与核心循环](production/PRODUCT.md)
+- [出牌、计分、角色、关卡和经济规则](production/RULES.md)
+- [唐宋牌、消耗品、长期道具与 Boss 内容](production/CONTENT.md)
+- [六英雄决策与表现设计](production/CHARACTER_PLAY_PLAN.md)
+- [扑克奇遇规则与实现边界](production/POKER_POLYCHROME_ENCOUNTER_IMPLEMENTATION.md)
+- [桌面、触控、信息层级与反馈](production/UX.md)
+- [美术方向与素材约束](production/ART.md)
 
-旧 GDD 在 `archive/2026-09-30-pre-audit/GDD.md`。r2 新规则明确替代其中部分计算与视觉硬约束，不得同时混用。所有尚未验证的参数都保持“初始参数”标识；策划存在不等于代码完成。
+完整分类见[策划与工程文档索引](production/INDEX.md)，当前方向和待办分别见 [ROADMAP](../ROADMAP.md) 与 [TODO](../TODO.md)。
+
+## 使用约定
+
+- 具体实现以 `main` 代码为准；文档中的初始参数不等于已经完成平衡验证。
+- 修改规则或内容前，同时核对相关类型、目录数据、存档版本和测试，不只修改策划文本。
+- 日期化交接、旧 PR 描述、`docs/archive/` 和历史工作包只用于追溯，不作为当前功能或任务依据。
+- 工程检查、真人审美、听感、实体设备和自然对局平衡分别验收，不相互替代。
