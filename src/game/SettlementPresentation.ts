@@ -1,3 +1,4 @@
+import {pcResultViewport,drawPcSettlement,mountPcSettlementMotion} from './PcSettlementPresentation';
 import {cardDefinitionName} from './tangsongCardNames';
 import type Phaser from 'phaser';
 import type {R2RunState} from '../domain/r2Run';
@@ -83,7 +84,9 @@ function fit(view:SceneView,x:number,y:number,text:string,size:number,width:numb
 
 /** Read only: every caption comes from the saved trace; optional art never moves a fact. */
 export function drawSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2RunState,cleared:boolean,skipped:boolean,formulaOverride?:string,rewardLabel?:string){
- const facts=settlementFacts(run,cleared,skipped),lost=!cleared&&!skipped,p=settlementPlan(b,view.layout.height<500);
+ const facts=settlementFacts(run,cleared,skipped);
+ if(pcResultViewport(view.layout.width,view.layout.height))return drawPcSettlement(scene,view,b,run,cleared,skipped,facts,formulaOverride,rewardLabel);
+ const lost=!cleared&&!skipped,p=settlementPlan(b,view.layout.height<500);
  const paper=scene.add.graphics().setName('result-art/stage').setData('bounds',b);
  view.add(paper);
  const paperTexture=scene.textures.exists('p00-paper')?view.add(scene.add.tileSprite(b.x+3,b.y+3,b.width-6,b.height-6,'p00-paper').setOrigin(0).setAlpha(.08)):undefined;
@@ -181,6 +184,7 @@ export function mountReviewBookMotion(scene:Phaser.Scene,root:Phaser.GameObjects
 
 /** One real second, independent of Phaser's acceleration. No input or command callback. */
 export function mountSettlementMotion(scene:Phaser.Scene,root:Phaser.GameObjects.Container,stage:Box,score:Phaser.GameObjects.Text,hero:Phaser.GameObjects.Image|undefined,tier:number,lost:boolean){
+ if(score.getData('pcPoster'))return mountPcSettlementMotion(scene,score,hero,lost);
  const group=scene.add.container(0,0).setName(lost?'result/failure-motion':'result/victory-motion').setData('startedAt',performance.now());
  // Insert behind every fact; geometry stays strictly inside the result paper.
  const paperIndex=root.list.findIndex(o=>o.name==='result-art/stage');root.addAt(group,Math.max(0,paperIndex+2));const strokes=scene.add.graphics();group.add(strokes);
@@ -199,3 +203,4 @@ export function mountSettlementMotion(scene:Phaser.Scene,root:Phaser.GameObjects
  };
  scene.events.on('update',update);update();return {dispose};
 }
+

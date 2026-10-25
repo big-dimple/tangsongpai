@@ -1,4 +1,5 @@
 import {handActionControls} from './HandActionControls';
+import {pcTableAreas,type PcTableOptions} from './PcTableLayout';
 import {continuousScoreAreas} from './ScoreTableLayout';
 export interface Box {x:number;y:number;width:number;height:number}
 export interface Insets {top:number;right:number;bottom:number;left:number}
@@ -127,7 +128,7 @@ function phoneTableAreas(l:ReturnType<typeof capacityLayout>,safe:Insets,start=0
   handLabel:box(x,hand.y-18,116,18),piles:box(x+116,hand.y-18,w-116,18),status:box(scoreBoard.x+10,scoreBoard.y+4,w-20,18),
   handNavigation:{previous:box(x,hand.y+(hand.height-44)/2,44,44),next:box(x+w-44,hand.y+(hand.height-44)/2,44,44)},heroAction,helpEntry,inventory,heroPortraitSlot};
 }
-export function layout(viewport:{width:number;height:number},safe:Insets,requested?:LayoutMode,handWindow:HandWindow={count:8}){
+export function layout(viewport:{width:number;height:number},safe:Insets,requested?:LayoutMode,handWindow:HandWindow={count:8},options:PcTableOptions={}){
   // A narrow, tall tablet cannot afford the desktop's 240px sidebar. Opt only
   // this table into the existing vertical bands; landscape/PC and phone rules stay intact.
   const usableWidth=viewport.width-safe.left-safe.right,usableHeight=viewport.height-safe.top-safe.bottom;
@@ -188,7 +189,8 @@ export function layout(viewport:{width:number;height:number},safe:Insets,request
   const heroAction=phone?.heroAction??(l.mode==='landscape'?box(l.hud.x+76,l.hud.y+64,l.hud.width-88,44):box(l.hand.x,l.hand.y-48,132,44));
   const playedArea=desktop?{...l.playedArea,height:Math.max(0,Math.min(l.playedArea.height,heroAction.y-4-l.playedArea.y))}:l.playedArea;
   const table=continuousScoreAreas({...l,playedArea});
-  return {...l,...footer,toolsInHud:false,heroAction,helpEntry:phone?.helpEntry,inventoryEntry:phone?.inventory,heroPortraitSlot:phone?.heroPortraitSlot,scoreBoard:table.scoreBoard,playedArea:table.playedArea,scoreEyes:table.eyes};
+  const pc=l.mode==='desktop'?pcTableAreas(viewport,safe,handWindow,options.pc):undefined;
+  return {...l,...footer,toolsInHud:false,heroAction,helpEntry:phone?.helpEntry,inventoryEntry:phone?.inventory,heroPortraitSlot:phone?.heroPortraitSlot,scoreBoard:table.scoreBoard,playedArea:table.playedArea,scoreEyes:table.eyes,...pc,pc:pc?.pc};
 }
 export type TableLayout=ReturnType<typeof layout>;
 
@@ -197,3 +199,4 @@ export function playedFootprint(area:Box,portrait:boolean):Box {
  const scale=portrait?1:Math.min(1.25,Math.max(1,area.width/900),Math.max(1,area.height/500));
  const width=Math.min(area.width,portrait?316:Math.min(600,540*scale)),height=Math.min(area.height,portrait?100:160*scale);return box(area.x+(area.width-width)/2,area.y+(area.height-height)/2,width,height);
 }
+

@@ -1,3 +1,4 @@
+import {pcResultViewport} from './PcSettlementPresentation';
 import {cardDefinitionName} from './tangsongCardNames';
 import {warmNextSceneImages} from './StageImageWarmup';
 import {heroText} from './HeroIdentity';
@@ -35,7 +36,7 @@ import {stageOutcome} from './stageOutcome';
 import {failureSummary,failureGuidance} from './FailureSummary';
 import {finaleKeepsake} from './FinaleKeepsake';
 import {endlessContinuationCopy} from './EndlessContinuationCopy';
-import {selectionPortraitKey,selectionPortraitURL} from './portraits';
+import {selectionPortraitKey,selectionPortraitURL,portraitKey,portraitURL} from './portraits';
 import {showHeroExplanation} from './HeroExplanation';
 import {EffectQueue} from '../core/EffectQueue';
 import {REWARD_COIN,RewardCoinCue,loadRewardCoin,addRewardCoin,animateRewardCoin} from './RewardCoin';
@@ -62,6 +63,7 @@ export class IntermissionScene extends Phaser.Scene {
   private resultContent?:Phaser.GameObjects.Container;
   private releaseViewport?:()=>void;
   private resultScroll=0;
+  private resultReceiptBottom=0;
   private readonly rewardCue=new RewardCoinCue();
   private readonly reviewBookCue=new ReviewBookCue();
   private reviewBookMotion?:{dispose:()=>void};
@@ -77,9 +79,11 @@ export class IntermissionScene extends Phaser.Scene {
   private requestSourceArt():void {
     // Optional transport belongs to a mounted result view, independent of ending audio.
     if(!this.paintSourceArt)return;
-    const controller=runController(this),run=controller?.state;if(!controller||!run?.stage||run.stage.skipResult)return;
+    const controller=runController(this),run=controller?.state;if(!controller||!run?.stage||(run.stage.skipResult&&!pcResultViewport(this.view.layout.width,this.view.layout.height)))return;
     const facts=settlementFacts(run,this.result.cleared,!!run.stage.skipResult),source=facts.card;
-    const candidates=[{key:selectionPortraitKey(run.characterId),url:selectionPortraitURL(run.characterId)},...(source?[{key:jokerArtKey(source.id),url:jokerArtPreviewUrl(source.id)}]:[]),...(facts.reviewBook?[{key:goodsArtKey('U09'),url:itemInfo('U09').artUrl}]:[])].filter((item):item is {key:string;url:string}=>!!item.key&&!!item.url&&!this.textures.exists(item.key));
+    const pc=pcResultViewport(this.view.layout.width,this.view.layout.height);
+    // The PC spread renders only the portrait; source and review-book art belong to the legacy view.
+    const candidates=[{key:pc?portraitKey(run.characterId):selectionPortraitKey(run.characterId),url:pc?portraitURL(run.characterId):selectionPortraitURL(run.characterId)},...(!pc&&source?[{key:jokerArtKey(source.id),url:jokerArtPreviewUrl(source.id)}]:[]),...(!pc&&facts.reviewBook?[{key:goodsArtKey('U09'),url:itemInfo('U09').artUrl}]:[])].filter((item):item is {key:string;url:string}=>!!item.key&&!!item.url&&!this.textures.exists(item.key));
     if(!candidates.length)return;
     this.stopSourceArt();const request=this.sourceArtRequest=new AbortController(),lifecycle=this.lifecycle;
     const current=()=>this.sourceArtRequest===request&&!request.signal.aborted&&lifecycle===this.lifecycle&&this.sys.settings.active&&!this.busy&&runController(this)===controller&&controller.state===run;
@@ -118,7 +122,8 @@ export class IntermissionScene extends Phaser.Scene {
     const v=this.view,l=v.layout,bottom=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-bottom'))||0;
     const run=runController(this)!.state,resultFacts=settlementFacts(run,this.result.cleared,!!run.stage?.skipResult),stage={...getR2Stage(this.result.stageIndex,run.tourMode,run.difficulty,run)!,targetHeat:run.stage!.targetHeat},character=getCharacter(run.characterId);
     const preferred=settlementContentHeight(l.width,!!resultFacts.hero,resultFacts.tier>=2);
-    let p=resultLayout(l.width,l.height,0,preferred);
+    const pc=pcResultViewport(l.width,l.height);
+    let p=resultLayout(l.width,l.height,0,preferred,pc);
     const nextStage=this.result.cleared&&run.phase==='stage-cleared'?getR2Stage(run.stageIndex,run.tourMode,run.difficulty,run):undefined,skipped=run.phase==='run-lost'?null:run.stage?.skipResult,won=run.phase==='run-won',capped=this.result.cleared&&run.phase==='stage-cleared'&&!nextStage,lost=!this.result.cleared&&!skipped&&!won;
     const animateIn=this.firstRender&&!gameSession().reducedMotion&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.releaseViewport?.();this.releaseViewport=undefined;this.stopCelebration();v.clear();this.paintSourceArt=undefined;this.sourceArtLayer=undefined;v.paperBackground();const backgroundCount=v.root.length;
@@ -127,11 +132,12 @@ export class IntermissionScene extends Phaser.Scene {
     v.text(p.x,p.top,(run.tourMode==='endless'?'无尽 · ':'')+stage.name+' · '+character.name,14,identity.isBoss?PAPER_CSS.red:PAPER_CSS.jade,p.w-116).setName('stage-identity/result');
     const guidance=lost?failureGuidance(run):undefined;
     const title=capped?'本局暂止于此':skipped?'换一场，再对局':won?(run.mode==='tutorial'?'教学对局完成！':run.mode==='challenge'?'挑战完成！':'八章通关'):this.result.cleared?(identity.isBoss?'压轴过关 · '+identity.title:'本场获胜'):guidance?.title??'此局结束，再来一局';
-    v.text(p.x,p.top+(p.short?22:28),title,p.short||p.portrait&&identity.isBoss?22:p.portrait?26:34,identity.isBoss&&this.result.cleared?PAPER_CSS.red:PAPER_CSS.ink,p.w).setName('result/title').setFontFamily('Georgia, "Noto Serif SC", SimSun, serif').setFontStyle('bold');
+    const titleText=v.text(p.x,p.top+(p.short?22:28),title,p.pc?(l.width<1500?40:48):p.short||p.portrait&&identity.isBoss?22:p.portrait?26:34,identity.isBoss&&this.result.cleared?PAPER_CSS.red:PAPER_CSS.ink,p.w).setName('result/title').setFontFamily('Georgia, "Noto Serif SC", SimSun, serif').setFontStyle('bold');
+    if(p.pc){titleText.setWordWrapWidth(0);for(let size=l.width<1500?40:48;titleText.width>p.w&&size>24;)titleText.setFontSize(--size);}
     const paperHeight=this.drawResultHero(p.score,!!skipped,lost,animateIn);
-    p=resultLayout(l.width,l.height,0,paperHeight);
+    p=resultLayout(l.width,l.height,0,paperHeight,pc);
     const trace=run.lastTrace;
-    const n=p.nextText;
+    const n=p.pc?{...p.nextText,y:Math.max(p.nextText.y,this.resultReceiptBottom+24)}:p.nextText;
     let heading='下一步',body='';
     if(skipped){
       const reward=skipped.kind==='coupon'?'下次买牌减2金券':skipped.kind==='gold'?'库存已满，+1金币':SKIP_ITEM_LABELS[skipped.definitionId];
@@ -158,12 +164,22 @@ export class IntermissionScene extends Phaser.Scene {
       const prompt=run.outcome?.reason==='abandoned'?'主动结束，可以重新选择':run.outcome?.reason==='no-legal-cards'?'先查牌组，再准备开局':'先看末手，再选下一步';
       this.auxiliary({...n,height:52},'再战建议 ›\n'+prompt,'action/failure-guidance',()=>this.inspectFailure(),!this.busy);nextBottom=n.y+52;
     }else {
-      v.add(this.add.graphics().lineStyle(1,T.divider,.75).beginPath().moveTo(p.next.x,p.next.y-2).lineTo(p.next.x+p.next.width,p.next.y-2).strokePath());
+      v.add(this.add.graphics().lineStyle(1,T.divider,.75).beginPath().moveTo(p.next.x,n.y-2).lineTo(p.next.x+p.next.width,n.y-2).strokePath());
       const nextHeading=v.text(n.x,n.y+2,heading,p.portrait&&p.tight?16:18,PAPER_CSS.ink,n.width).setFontStyle('bold').setName('result/next-heading');
       const bodyY=nextHeading.y+nextHeading.height+3;
       const nextBody=v.text(n.x,bodyY,body,14,PAPER_CSS.jade,n.width).setLineSpacing(1).setName('result/next-body');nextBottom=nextBody.y+nextBody.height;
+      if(p.pc&&nextBottom>p.primary.y-24){
+        // Keep the real destination/target visible and the complete copy in the existing modal.
+        const summary=nextStage?`${nextStage.name} · 目标 ${heatText(nextStage.targetHeat)}`:won?'本模式结果已保存。':capped?'已达数值上限，进度已保存。':body.split('\n')[0];
+        nextBody.setText(summary);nextBottom=nextBody.y+nextBody.height;
+        const detail={x:n.x,y:nextBottom+4,width:n.width,height:44};
+        this.auxiliary(detail,'查看完整去向与记录 ›','action/result-next-details',()=>this.dialog.open(heading,body,[],{closeLabel:'返回结算'}),!this.busy);
+        nextBottom=detail.y+detail.height;
+      }
     }
-    if(p.portrait||p.wide||p.short){const shift=nextBottom+(p.wide?20:8)-p.primary.y;p.primary.y+=shift;p.left.y+=shift;p.right.y+=shift;p.noticeY+=shift;}
+    // Keep desktop actions on their baseline; only genuinely overflowing copy may expand it.
+    if(p.pc){const shift=Math.max(0,nextBottom+24-p.primary.y);p.primary.y+=shift;p.left.y+=shift;p.right.y+=shift;p.noticeY+=shift;}
+    if(!p.pc&&(p.portrait||p.wide||p.short)){const shift=nextBottom+(p.wide?20:8)-p.primary.y;p.primary.y+=shift;p.left.y+=shift;p.right.y+=shift;p.noticeY+=shift;}
     if(nextStage){
       this.auxiliary(p.left,'本场详情','action/result-details',()=>this.inspectResult());
       v.button(p.primary,'前往筹备商店','action/continue-stage',()=>void this.next(),this.ready,true);
@@ -184,7 +200,7 @@ export class IntermissionScene extends Phaser.Scene {
     content.add(v.root.list.slice(backgroundCount));v.add(content);
     const safeTop=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-top'))||0;
     this.releaseViewport=mountResultViewport(this,v,content,Math.max(l.hud.y,safeTop+60),l.height-bottom-16,this.resultScroll,offset=>{this.resultScroll=offset;});
-    this.firstRender=false;
+    this.firstRender=false;if(pc)this.requestSourceArt();
   }
   private auxiliary(b:Box,label:string,name:string,action:()=>void,enabled=true):void {
     const v=this.view,text=v.text(b.x+b.width/2,b.y+b.height/2,label,14,PAPER_CSS.jade,b.width-4).setOrigin(.5).setAlpha(enabled?1:.55);
@@ -211,6 +227,7 @@ export class IntermissionScene extends Phaser.Scene {
     const interest=!lost&&!skipped?run.lastTrace?.events.find(e=>e.sourceType==='character'&&e.sourceDefinitionId==='xiemu'&&e.phase==='onStageClear'):undefined;
     const rewardCopy=[giftCopy,interest?'含关末息'+interest.value.n+'金':undefined].filter(Boolean).join(' · ');
     const presentation=drawSettlement(this,v,b,run,this.result.cleared,skipped,formula,'奖励  +'+this.result.goldEarned+' 金'+(rewardCopy?' · '+rewardCopy:''));
+    this.resultReceiptBottom=presentation.reviewBookBand?presentation.reviewBookBand.y+presentation.reviewBookBand.height:presentation.reward.y+presentation.reward.height;
     const explainHero=(image:Phaser.GameObjects.Image|undefined)=>{
       if(!image)return;
       const hit=v.rect(image.getData('bounds')).setFillStyle(0,0).setStrokeStyle();image.parentContainer.add(hit);
@@ -324,3 +341,4 @@ export class IntermissionScene extends Phaser.Scene {
     }finally {if(lifecycle===this.lifecycle&&this.scene.isActive()){this.busy=false;this.render();}}
   }
 }
+

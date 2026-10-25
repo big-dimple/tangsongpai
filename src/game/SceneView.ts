@@ -110,7 +110,8 @@ export class SceneView {
   }
   get layout():TableLayout {
     const style=getComputedStyle(document.documentElement),n=(key:string)=>parseFloat(style.getPropertyValue(key))||0;
-    return layout(cssViewport(this.scene),{top:n('--safe-top'),right:n('--safe-right'),bottom:n('--safe-bottom'),left:n('--safe-left')},undefined,this.handWindow?.());
+    const pc=this.scene.sys.settings.key==='game'&&!window.matchMedia('(pointer: coarse)').matches;
+    return layout(cssViewport(this.scene),{top:n('--safe-top'),right:n('--safe-right'),bottom:n('--safe-bottom'),left:n('--safe-left')},undefined,this.handWindow?.(),{pc});
   }
   clear():void {this.cancel();this.gestures.clear();this.root.removeAll(true);}
   add<T extends Phaser.GameObjects.GameObject>(object:T):T {this.root.add(object);return object;}
@@ -192,3 +193,4 @@ export class SceneView {
     sortRefresh?.();
   }
 }
+

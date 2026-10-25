@@ -11,6 +11,10 @@ export interface StageTableArtPlan {surface:Box;program:Box;rack:Box;hand:Box;st
 const fit=(l:TableLayout,b:Box):Box=>{const x=Math.max(0,b.x),y=Math.max(0,b.y);return{x,y,width:Math.max(0,Math.min(l.width,b.x+b.width)-x),height:Math.max(0,Math.min(l.height,b.y+b.height)-y)};};
 /** Decoration follows final published rectangles. It never allocates seats or moves targets. */
 export function stageTableArtPlan(l:TableLayout):StageTableArtPlan {
+ if(l.pc){
+  const {frame}=l.pc;
+  return {surface:frame,program:{...l.hud,height:frame.height},rack:l.jokers,hand:l.hand,stage:playedFootprint(l.playedArea,false)};
+ }
  const portrait=l.mode==='portrait',slots=l.slots,rackLeft=Math.min(...slots.map(b=>b.x)),rackRight=Math.max(...slots.map(b=>b.x+b.width)),rackBottom=Math.max(...slots.map(b=>b.y+b.height));
  const mainX=portrait?l.hand.x:l.jokers.x,mainRight=Math.max(l.hand.x+l.hand.width,l.jokers.x+l.jokers.width),top=l.jokers.y-8,bottom=l.actions.y+l.actions.height+4;
  const surface=fit(l,{x:mainX-8,y:top,width:mainRight-mainX+16,height:bottom-top});
@@ -23,6 +27,21 @@ export function stageTableArtPlan(l:TableLayout):StageTableArtPlan {
 /** Existing paper/character art; an optional hero entry owns only its portrait bounds. */
 export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:CharacterId,inspectHero?:()=>void,legacyPortrait=true):void {
  const plan=stageTableArtPlan(view.layout);
+ if(view.layout.pc){
+  const l=view.layout,{frame,main}=l.pc!,g=scene.add.graphics().setName('table-art/pc-paper').setData('bounds',frame);
+  // One continuous sheet, not a green mat beside a boxed sidebar. All accents
+  // are quiet dividers; the actual cards and the red play action own contrast.
+  g.fillStyle(T.paper,.96).fillRect(frame.x,frame.y,frame.width,frame.height);
+  g.fillStyle(T.paperLight,.38).fillRect(main.x,main.y,main.width,main.height);
+  g.lineStyle(1,T.jade,.22).lineBetween(main.x-16,frame.y+8,main.x-16,frame.y+frame.height-8);
+  const rackBottom=l.jokers.y+l.jokers.height+8;
+  g.lineStyle(1,T.ink,.14).lineBetween(main.x,rackBottom,main.x+main.width,rackBottom);
+  g.lineStyle(1,T.ink,.18).lineBetween(main.x,l.hand.y-8,main.x+main.width,l.hand.y-8);
+  // Five understated source ticks preserve the real left-to-right slot order.
+  for(const slot of l.slots)g.lineStyle(1,T.jade,.3).lineBetween(slot.x+slot.width/2-8,rackBottom,slot.x+slot.width/2+8,rackBottom);
+  view.add(g);
+  return;
+ }
  function sheet(name:string,b:Box,color:number,edge:number,shadow=false):void {
   if(b.width<=0||b.height<=0)return;
   const g=scene.add.graphics().setName('table-art/'+name).setData('bounds',{...b});
@@ -50,3 +69,4 @@ export function playedCaptionBox(l:TableLayout,stage:Box):Box|undefined {
  const caption={x:stage.x,y:stage.y-18,width:Math.min(80,stage.width),height:18};
  return l.mode==='landscape'||caption.y<0||[l.hud,l.scoreBoard,...l.slots].some(b=>intersects(caption,b))?undefined:caption;
 }
+
