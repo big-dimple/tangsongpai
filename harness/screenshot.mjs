@@ -9,6 +9,7 @@ import {waitScene,tapUI,point,tapMenuAction,confirmHeroRoute,enterOpeningShop,to
 import {armResourcePulse,waitResourcePulse} from './resource-pulse.mjs';
 import {currentNewRunIdentity} from './fixtures/current-new-run-identity.mjs';
 import {enterCurrentStage} from './stage-entry.mjs';
+import {handIndexOcclusion} from './hand-index-occlusion.mjs';
 const root=process.cwd(),port=Number(process.env.SHOT_PORT||5199),outDir=path.join(root,'shots/smoke-build'),verify=process.argv.includes('--verify-smoke');
 const saveScreens=!verify||process.env.SMOKE_SHOTS==='1';
 const engines={chromium,firefox,webkit},selected=(process.env.SMOKE_BROWSERS||'chromium').split(',');
@@ -101,17 +102,8 @@ try {
       for(const order of [row,[...row].reverse()]){
         for(const id of order)await tapUI(page,'game','card/'+id,true);
         await page.waitForTimeout(260);
-        const blocked=await page.evaluate(()=>{
-          const s=window.__harness.game.scene.getScene('game'),views=s.cardViews.filter(c=>c.container.visible);
-          return views.filter(c=>c.container.getData('selected')).filter(c=>{
-            const body=c.container.getData('cardBodyRoot')??c.container,a=body.list.find(o=>o.name==='rank-index').getBounds(),z=s.view.root.getIndex(c.container);
-            return views.some(other=>{
-              if(other===c||s.view.root.getIndex(other.container)<=z)return false;
-              const b=other.background.getBounds();
-              return Math.max(0,Math.min(a.right,b.right)-Math.max(a.left,b.left))*Math.max(0,Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top))>a.width*a.height*.06;
-            });
-          }).map(c=>c.card.id);
-        });
+        const occlusion=await page.evaluate(handIndexOcclusion),blocked=occlusion.filter(card=>card.coveredBy.length).map(card=>card.id);
+        if(blocked.length)console.error(JSON.stringify({observation:'hand-index-occlusion',engine,profile:name,occlusion}));
         assert.deepEqual(blocked,[],'touching cards in either direction keeps all selected rank/suit indices visible');
         for(const id of row)await tapUI(page,'game','card/'+id,true);
       }

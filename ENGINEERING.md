@@ -122,6 +122,8 @@ CI 只保留两类常规门禁：
 
 `npm run verify:ci -- --scope=domain|browser|all` 可执行对应组合。专项恢复、布局、故障和素材检查只在相关改动时运行。测试使用的 JSON／压缩夹具属于代码输入，不为追求目录整洁而删除。
 
+牌面遮挡检查测量包含父容器变换的实际四边形相交面积；旋转后的外接矩形包含牌外空白，不能代替真实遮挡。
+
 `main` 的 `Production build` 工作流生成 `tangsongpai-dist-<完整提交 SHA>` 产物。服务器每分钟运行自动发布，只下载远端 `main` 对应提交的成功构建，不在服务器本地构建。脚本源文件为 `scripts/tangsongpai-autodeploy.sh`，安装于 `/usr/local/bin/tangsongpai-autodeploy.sh`；日志为 `/var/log/tangsongpai-autodeploy.log`。修改仓库脚本不会自动更新已安装脚本或 crontab。
 
 发布状态以 `/var/lib/tangsongpai-deploy/deployed-revision` 为准，公开域名 `https://pai.hp666.cc/build-info.json` 必须返回同一 revision，且 `sourceStatus=clean`、`modified=false`；域名核验成功后才更新成功记录。不能只比较本机 HEAD 和远端 `main`，也不能把 push 或构建成功当成线上已更新。
