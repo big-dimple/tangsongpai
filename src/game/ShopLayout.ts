@@ -37,19 +37,19 @@ function shortShopLayout(width:number,height:number,top:number,bottom:number,col
 
 /** Left state, upper owned resources, lower sale panel. Short PC reuses the short branch. */
 function desktopShopLayout(width:number,height:number,top:number,bottom:number,_cols:number,ownedCount:number){
-  const w=Math.min(1480,width-48),x=(width-w)/2,leftWidth=width>=1600?248:224,gap=width>=1600?32:24,rightX=x+leftWidth+gap,rightWidth=w-leftWidth-gap;
+  const w=Math.min(1540,width-48),x=(width-w)/2,leftWidth=width>=1600?264:236,gap=width>=1600?40:28,rightX=x+leftWidth+gap,rightWidth=w-leftWidth-gap;
   const usableHeight=height-top-bottom;
   const compactRail=usableHeight<800,railGap=compactRail?24:40;
-  const ownedWidth=compactRail?64:width>=1600&&usableHeight>=800?96:80,ownedHeight=ownedWidth*1.4,slotY=top+56;
+  const ownedWidth=compactRail?64:width>=1600&&usableHeight>=800?104:86,ownedHeight=ownedWidth*1.4,slotY=top+60;
   const slots:Box[]=Array.from({length:5},(_,i)=>({x:rightX+i*(ownedWidth+12),y:slotY,width:ownedWidth,height:ownedHeight}));
   const empty=ownedCount===0;
-  const ownedRail={x:rightX,y:top,width:rightWidth,height:empty?52:56+ownedHeight+railGap-20};
+  const ownedRail={x:rightX,y:top,width:rightWidth,height:empty?56:60+ownedHeight+railGap-16};
   const inventoryEntry={x:rightX+rightWidth-168,y:top+(empty?4:64),width:168,height:44};
-  const panelY=empty?top+64:slotY+ownedHeight+railGap;
+  const panelY=empty?top+72:slotY+ownedHeight+railGap;
   const shopPanel={x:rightX,y:panelY,width:rightWidth,height:height-bottom-8-panelY};
   const goodsX=shopPanel.x+12,goodsWidth=shopPanel.width-24;
   const play={x:shopPanel.x+shopPanel.width-252,y:shopPanel.y+shopPanel.height-68,width:240,height:56};
-  const shared={x:goodsX,y:shopPanel.y+64,width:goodsWidth,height:play.y-16-shopPanel.y-64};
+  const shared={x:goodsX,y:shopPanel.y+72,width:goodsWidth,height:play.y-20-shopPanel.y-72};
   const seat=(goodsWidth-24)/3,jokerOffers:Box[]=Array.from({length:3},(_,i)=>({x:goodsX+i*(seat+12),y:shared.y,width:seat,height:shared.height}));
   const shelf=jokerOffers.map(b=>shopOfferGeometry(b,'jokers')!.art);
   const groupY=shared.y,toolOffers=shared,workshop=shared,itemOffers=shared;

@@ -32,8 +32,9 @@ export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2R
  // Open editorial spread: one quiet vertical seam, no outer panel or card frame.
  paper.fillStyle(lost?T.jadeSoft:T.paperLight,.65).fillCircle(heroBox.x+heroBox.width*.52,b.y+heroHeight*.38,Math.min(heroWidth*.42,heroHeight*.38))
   .lineStyle(3,lost?T.jade:T.red,.6).lineBetween(x,b.y-12,x+48,b.y-12)
+  .lineStyle(1,lost?T.jade:T.red,.32).lineBetween(heroBox.x+heroBox.width*.74,b.y+18,heroBox.x+heroBox.width*.74,b.y+heroHeight-6)
   .lineStyle(1,T.divider,.8).beginPath().moveTo(l.next.x-gap/2,b.y).lineTo(l.next.x-gap/2,b.y+b.height).strokePath();
- const tag=text(x,b.y+8,skipped?'本场跳过':'本场总热度',16,width,C.jade,'result/hand');
+ const tag=text(x,b.y+8,skipped?'本场跳过':lost?'本局结果':'本场总热度',16,width,C.jade,'result/hand');
  const exactScore=facts.stageTotal,copy=(exactScore.length>15&&/[1-9]/.test(exactScore.slice(3))?'≈':'')+heatText(exactScore);
  const size=compact?(facts.tier>=2?76:68):(facts.tier>=2?104:88);
  const score=view.text(x,tag.y+tag.height+16,copy,size,lost?C.ink:facts.tier>=2?C.red:C.ink).setFontFamily(SCORE_FONT).setFontStyle('bold').setName('result/score').setData('exactScore',exactScore).setData('pcPoster',true);
@@ -70,6 +71,7 @@ export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2R
  const hero=paint();
  const reward={x:l.next.x,y:b.y+40,width:l.next.width,height:68};
  text(reward.x,b.y+8,lost?'本局留档':skipped?'换场记录':'本场所得',16,reward.width,C.jade,'result/reward-heading');
+ view.add(scene.add.graphics().lineStyle(1,lost?T.jade:T.red,.65).lineBetween(reward.x,reward.y-8,reward.x+Math.min(reward.width,56),reward.y-8).setName('result/reward-rule'));
  let rewardText:Phaser.GameObjects.Text|undefined;
  if(cleared&&!skipped&&rewardLabel){
   rewardText=text(reward.x+reward.width/2,reward.y+8,rewardLabel,22,reward.width-48,C.ink,'result/reward').setOrigin(.5,0).setFontStyle('bold');
