@@ -37,13 +37,18 @@ if [ "$REMOTE_HASH" = "$DEPLOYED_HASH" ] && [ "${1:-}" != --force ]; then
     exit 0
 fi
 
+# Use the latest push CI result, so an older green attempt cannot hide a new failure.
+CI_RUN_ID=$(gh run list --repo "$REPOSITORY" --workflow ci.yml --event push \
+    --branch main --commit "$REMOTE_HASH" --limit 1 \
+    --json databaseId,status,conclusion \
+    --jq '.[0] | select(.status == "completed" and .conclusion == "success") | .databaseId')
 RUN_ID=$(gh run list --repo "$REPOSITORY" --workflow production-build.yml \
     --branch main --commit "$REMOTE_HASH" --status success --limit 1 \
     --json databaseId --jq '.[0].databaseId // empty')
-if [ -z "$RUN_ID" ]; then
+if [ -z "$CI_RUN_ID" ] || [ -z "$RUN_ID" ]; then
     WAITING_HASH=$(cat "$STATE_DIR/waiting-revision" 2>/dev/null || true)
     if [ "$WAITING_HASH" != "$REMOTE_HASH" ]; then
-        log "Waiting for GitHub Production build of $REMOTE_HASH; no local build."
+        log "Waiting for GitHub CI and Production build of $REMOTE_HASH; no local build."
         printf '%s\n' "$REMOTE_HASH" >"$STATE_DIR/waiting-revision"
     fi
     exit 0
@@ -78,7 +83,7 @@ if [ "${1:-}" != --force ] && verify_public >/dev/null 2>&1; then
     exit 0
 fi
 
-log "Downloading GitHub build $RUN_ID for $REMOTE_HASH (last deployed=${DEPLOYED_HASH:-unknown})."
+log "Downloading GitHub build $RUN_ID for $REMOTE_HASH (CI=$CI_RUN_ID; last deployed=${DEPLOYED_HASH:-unknown})."
 gh run download "$RUN_ID" --repo "$REPOSITORY" \
     --name "tangsongpai-dist-$REMOTE_HASH" --dir "$ARTIFACT_DIR"
 
