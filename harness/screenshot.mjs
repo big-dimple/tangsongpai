@@ -5,7 +5,7 @@ import {access,mkdir,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {chromium,firefox,webkit} from 'playwright';
 import {build,preview} from 'vite';
-import {waitScene,tapUI,point,tapMenuAction,confirmHeroRoute,toggleRunMenu,openRunMenu,openMenuSection} from './ui.mjs';
+import {waitScene,tapUI,point,tapMenuAction,confirmHeroRoute,enterOpeningShop,toggleRunMenu,openRunMenu,openMenuSection} from './ui.mjs';
 import {armResourcePulse,waitResourcePulse} from './resource-pulse.mjs';
 import {currentNewRunIdentity} from './fixtures/current-new-run-identity.mjs';
 import {enterCurrentStage} from './stage-entry.mjs';
@@ -70,7 +70,7 @@ try {
     await dom(page,'回到选角',touch);
     await tapUI(page,'character-select','action/cancel-character',touch);
     assert.equal((await point(page,'character-select','action/confirm-character')).enabled,false);
-    await tapUI(page,'character-select','character/amo',touch);await confirmHeroRoute(page,touch);await waitScene(page,'shop');
+    await tapUI(page,'character-select','character/amo',touch);await confirmHeroRoute(page,touch);await enterOpeningShop(page,touch);
     assert.equal((await state(page)).characterId,'amo');
     const initialSupply=await state(page);
     assert.equal(initialSupply.contentVersion,expectedAmoIdentity.contentVersion);
@@ -193,7 +193,7 @@ try {
     const viewport={width:390,height:740},context=await browser.newContext({viewport,hasTouch:true,deviceScaleFactor:3}),page=await context.newPage(),errors=[];activePage=page;
     page.on('pageerror',e=>errors.push(String(e)));await page.goto(`http://127.0.0.1:${port}/?harness=1&seed=p04-golden-02`);await waitScene(page,'title');
     await tapUI(page,'title','action/title-start',true);await waitScene(page,'character-select');
-    await tapUI(page,'character-select','character/touye',true);await confirmHeroRoute(page,true);await waitScene(page,'shop');
+    await tapUI(page,'character-select','character/touye',true);await confirmHeroRoute(page,true);await enterOpeningShop(page,true);
     // Confirm and Start-stage overlap on portrait. Respect the production350ms
     // click-through guard before this feedback-only route's next deliberate tap.
     await page.waitForFunction(()=>window.__harness.game.scene.getScene('shop').ready);await page.waitForTimeout(370);
@@ -276,7 +276,7 @@ try {
     for(const fixture of fixtures){
       const viewport={width:390,height:740},context=await browser.newContext({viewport,hasTouch:true,deviceScaleFactor:3}),page=await context.newPage(),errors=[];activePage=page;page.on('pageerror',e=>errors.push(String(e)));
       await page.goto(`http://127.0.0.1:${port}/?harness=1&seed=${fixture.seed}`);await waitScene(page,'title');
-      await tapUI(page,'title','action/title-start',true);await waitScene(page,'character-select');await tapUI(page,'character-select','character/'+fixture.character,true);await confirmHeroRoute(page,true);await waitScene(page,'shop');
+      await tapUI(page,'title','action/title-start',true);await waitScene(page,'character-select');await tapUI(page,'character-select','character/'+fixture.character,true);await confirmHeroRoute(page,true);await enterOpeningShop(page,true);
       const shop=await state(page),offer=shop.shop.offers.find(o=>o.definitionId===fixture.joker&&!o.consumed);assert.ok(offer&&offer.price===6&&shop.gold===6,'natural shelf permits the target purchase without injected state');
       await tapUI(page,'shop','offer/'+offer.offerId,true);await dom(page,/^(邀请|购买) · \d+ 金$/,true);await next(page,shop.commandSeq);assert.equal((await state(page)).gold,0);
       await tapUI(page,'shop','action/start-stage',true);await enterCurrentStage(page,true);await ready(page);

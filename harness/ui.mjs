@@ -87,5 +87,12 @@ export async function confirmHeroRoute(page,touch=false,focus='group'){
   await tapUI(page,'character-select','route/'+focus,touch);
   await tapUI(page,'character-select','action/confirm-character',touch);
 }
-export async function chooseCharacter(page,id,touch=false){await openSelector(page,touch);await tapUI(page,'character-select','character/'+id,touch);await confirmHeroRoute(page,touch);await waitScene(page,'shop');}
+/** The saved new run pauses at the poker examples before its first shop. */
+export async function enterOpeningShop(page,touch=false){
+  const briefing=page.locator('.opening-rule-briefing[open]');await briefing.waitFor();
+  const enter=briefing.getByRole('button',{name:'进入商店',exact:true});
+  if(touch)await enter.tap();else await enter.click();
+  await waitScene(page,'shop');
+}
+export async function chooseCharacter(page,id,touch=false){await openSelector(page,touch);await tapUI(page,'character-select','character/'+id,touch);await confirmHeroRoute(page,touch);await enterOpeningShop(page,touch);}
 export async function buyOffer(page,id,touch=false){await tapUI(page,'shop','offer/'+id,touch);const button=page.getByRole('button',{name:/^(邀请|购买) · \d+ 金$/});if(touch)await button.tap();else await button.click();}
