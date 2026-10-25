@@ -66,9 +66,8 @@
 .opening-rule-briefing .experience-card:last-child { border-bottom:0; }
 .opening-rule-briefing .experience-card[data-route-selected="true"] {
  padding-left:12px;
- background:#edd9cc;
- background:rgba(174,73,60,.16);
- box-shadow:inset 4px 0 0 #ae493c;
+ background:#e6eef2;
+ box-shadow:inset 4px 0 0 #397899;
  transform:none;
 }
 .opening-rule-briefing .experience-card > div:first-child,
@@ -93,6 +92,7 @@
  justify-content:center;
  width:20px;
  height:20px;
+ box-sizing:border-box;
  border-radius:3px;
  font:700 12px/1 "Noto Serif CJK SC","Noto Serif SC",serif;
  background:#e8deca;
@@ -115,18 +115,20 @@
  letter-spacing:.06em;
  white-space:nowrap;
 }
-.opening-rule-briefing .experience-card[data-route-selected="true"] .opening-hand-name { color:#8c2e22;font-weight:800; }
-.opening-route-tag {
- display:inline-block;
- padding:1px 6px;
- font-size:10px;
- line-height:1.4;
- border-radius:3px;
- background:#ae493c;
- color:#fffcf5;
- font-weight:500;
- letter-spacing:.04em;
- white-space:nowrap;
+.opening-rule-briefing .experience-card[data-route-selected="true"] .opening-hand-name { color:#2e647d;font-weight:800; }
+.opening-route-mark {
+ display:inline-flex;
+ align-items:center;
+ justify-content:center;
+ width:20px;
+ height:20px;
+ flex:0 0 20px;
+ box-sizing:border-box;
+ border:1px solid #7eabc3;
+ border-radius:50%;
+ background:#e2eef5;
+ color:#2772a0;
+ font:700 16px/1 Arial,sans-serif;
 }
 .opening-hand-score-row {
  display:flex;
@@ -189,10 +191,12 @@
  .opening-rule-briefing .experience-cards { display:flex;flex-direction:column; }
  .opening-rule-briefing .experience-card { min-height:62px;gap:12px;padding:7px 12px;border-bottom:1px solid #d8ccb8; }
  .opening-rule-briefing .experience-card:last-child { border-bottom:0; }
- .opening-rule-briefing .experience-card[data-route-selected="true"] { padding:7px 12px 7px 9px;box-shadow:inset 3px 0 0 #ae493c; }
+ .opening-rule-briefing .experience-card[data-route-selected="true"] { padding:7px 12px 7px 9px;box-shadow:inset 3px 0 0 #397899; }
  .opening-rule-briefing .experience-card > div:first-child { flex:1 1 auto; }
  .opening-rule-briefing .opening-hand-name { font-size:14px; }
  .opening-hand-rank { width:18px; height:18px; font-size:11px; }
+ .opening-hand-title-row { column-gap:4px; }
+ .opening-route-mark { width:16px;height:16px;flex-basis:16px;font-size:13px; }
  .opening-score-num { font-size:13px; }
  .opening-score-formula { font-size:10px; }
  .opening-rule-briefing .opening-hand-example { min-height:50px;padding-left:9px; }

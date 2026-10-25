@@ -25,10 +25,11 @@ export interface OpeningRuleCard {
 export const OPENING_BASE_HAND_TYPES=[
  'straight-flush','four-kind','full-house','flush','straight','three-kind','two-pair','pair',
 ] as const;
-const ROUTE_HAND_TYPES={
- group:['pair','two-pair','three-kind'],
- straight:['straight'],
- flush:['flush'],
+// Development links in this visual guide; scoring families stay in the domain.
+const ROUTE_DEVELOPMENT_HAND_TYPES={
+ group:['pair','two-pair','three-kind','full-house','four-kind'],
+ straight:['straight','flush','straight-flush'],
+ flush:['flush','full-house','straight-flush'],
 } as const;
 const RANK_TEXTS=['壹','贰','叁','肆','伍','陆','柒','捌'] as const;
 const EXAMPLES:Record<typeof OPENING_BASE_HAND_TYPES[number],readonly string[]>={
@@ -46,7 +47,7 @@ const EXAMPLES:Record<typeof OPENING_BASE_HAND_TYPES[number],readonly string[]>=
 export function openingRuleBriefing(run:R2RunState){
  const focus=currentBuildFocus(run,run.openingRoute)??'group';
  const rules=readR2Modifiers(run.jokers,r2JokerDefinitionsFor(run));
- const selected=new Set<R2HandType>(ROUTE_HAND_TYPES[focus]);
+ const selected=new Set<R2HandType>(ROUTE_DEVELOPMENT_HAND_TYPES[focus]);
  const cards:OpeningRuleCard[]=handTypeRuleCards(run.handLevels,rules,OPENING_BASE_HAND_TYPES).map((card,index)=>{
   const type=OPENING_BASE_HAND_TYPES[index];
   const [heat,mult,heatStep,multStep]=R2_BASE_SCORES[type];
@@ -141,8 +142,11 @@ export function showOpeningRuleBriefing(dialog:DetailDialog,run:R2RunState,onEnt
 
    if(card.selected){
     const routeTag=document.createElement('span');
-    routeTag.className='opening-route-tag';
-    routeTag.textContent='已选路线';
+    routeTag.className='opening-route-mark';
+    routeTag.textContent='↗';
+    routeTag.title='本路线可发展';
+    routeTag.setAttribute('role','img');
+    routeTag.setAttribute('aria-label','本路线可发展');
     titleRow.append(routeTag);
    }
 

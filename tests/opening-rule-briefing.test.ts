@@ -8,7 +8,7 @@ const run=(runId='opening-rules')=>createRun({seed:'opening-rules-17',runId,char
 const names=(cards:ReturnType<typeof openingRuleBriefing>['cards'])=>cards.map(card=>card.title);
 
 describe('opening rule briefing',()=>{
- it.each(BUILD_FOCUS)('shows eight visual poker examples in strength order and highlights only the selected %s route',focus=>{
+ it.each(BUILD_FOCUS)('shows eight visual poker examples and marks development hands for the %s route',focus=>{
   const state=run();chooseBuildFocus(state,focus);const before=JSON.stringify(state),model=openingRuleBriefing(state);
   expect(model.title).toBe('主要牌型');expect(model.body).toBe('');expect(model.primaryLabel).toBe('进入商店');
   expect(OPENING_BASE_HAND_TYPES).toEqual(['straight-flush','four-kind','full-house','flush','straight','three-kind','two-pair','pair']);
@@ -16,7 +16,7 @@ describe('opening rule briefing',()=>{
   expect(names(model.cards)).not.toContain('高牌');
   expect(model.cards.every(card=>card.example.length===5&&card.example.every(label=>/^(?:10|[2-9AJQK])[♠♥♣♦]$/.test(label)))).toBe(true);
   expect(model.cards[0].example).toEqual(['10♠','J♠','Q♠','K♠','A♠']);
-  expect(names(model.cards.filter(card=>card.selected))).toEqual(focus==='group'?['三条','两对','对子']:focus==='straight'?['顺子']:['同花']);
+  expect(names(model.cards.filter(card=>card.selected))).toEqual(focus==='group'?['四条','葫芦','三条','两对','对子']:focus==='straight'?['同花顺','同花','顺子']:['同花顺','葫芦','同花']);
   expect(model.cards.map(card=>card.rank)).toEqual([1,2,3,4,5,6,7,8]);
   expect(model.cards.map(card=>card.rankText)).toEqual(['壹','贰','叁','肆','伍','陆','柒','捌']);
   expect(model.cards.map(card=>card.baseScore)).toEqual([4050,2240,1050,560,500,270,130,70]);
@@ -26,7 +26,7 @@ describe('opening rule briefing',()=>{
 
  it('keeps the visual briefing usable when an older run has no saved opening route',()=>{
   const model=openingRuleBriefing(run('older-run-no-route'));
-  expect(names(model.cards.filter(card=>card.selected))).toEqual(['三条','两对','对子']);
+  expect(names(model.cards.filter(card=>card.selected))).toEqual(['四条','葫芦','三条','两对','对子']);
  });
 
  it('offers one visible shop action and routes duplicate close events through one transition',()=>{
