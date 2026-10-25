@@ -32,11 +32,13 @@ export function pcTableAreas(viewport:{width:number;height:number},safe:Insets,h
  const slots=Array.from({length:5},(_,i)=>box(main.x+(main.width-rackWidth)/2+i*(rackCardWidth+24),jokers.y,rackCardWidth,rackCardWidth*1.4));
  const preview=box(main.x,jokers.y+jokers.height+16,main.width,heroAction.y-16-jokers.y-jokers.height-16);
  const scoreHeight=Math.min(128,Math.max(80,preview.height-112));
- // At low desktop heights, put the readout beside the landing lane instead
- // of squeezing five played faces into the remaining vertical sliver.
- const shortFocus=height<700,scoreWidth=shortFocus?320:main.width;
- const scoreBoard=box(main.x,preview.y,scoreWidth,shortFocus?preview.height:scoreHeight);
- const playedArea=shortFocus?box(scoreBoard.x+scoreWidth+16,preview.y,main.width-scoreWidth-16,preview.height):box(main.x,scoreBoard.y+scoreHeight+8,main.width,Math.max(0,preview.height-scoreHeight-8));
+ // Keep the score as a narrow vertical spine beside the played-card landing
+ // lane so the eye can follow build → score → hand without scanning a second
+ // stacked panel. The hand remains the foreground and keeps its old budget.
+ const shortFocus=height<700,focusGap=20;
+ const scoreWidth=shortFocus?320:Math.min(440,Math.max(320,Math.round(main.width*.36)));
+ const scoreBoard=box(main.x,preview.y,Math.min(scoreWidth,Math.max(280,main.width-focusGap-220)),shortFocus?preview.height:scoreHeight);
+ const playedArea=box(scoreBoard.x+scoreBoard.width+focusGap,preview.y,Math.max(0,main.width-scoreBoard.width-focusGap),preview.height);
  const handOverflow=count>Math.floor((hand.width-cardWidth)/36)+1;
  const cardArea=handOverflow?box(hand.x+48,hand.y,hand.width-96,hand.height):hand;
  const visibleCardCount=Math.min(count,Math.max(1,Math.floor((cardArea.width-cardWidth)/36)+1));
@@ -55,7 +57,8 @@ export function pcTableAreas(viewport:{width:number;height:number},safe:Insets,h
  // Legacy effect consumers still receive a bounded final-board anchor even
  // though the PC paper treatment does not draw the old fire decoration.
  const scoreFire=box(scoreBoard.x+8,scoreBoard.y+scoreBoard.height-24,scoreBoard.width-16,20);
+ const focusSpine=box(scoreBoard.x+scoreBoard.width+Math.floor(focusGap/2)-1,preview.y,2,preview.height);
  return {hud,jokers,slots,jokerLabels:slots,preview,scoreBoard,playedArea,scoreEyes,scoreFire,hand,handLabel,piles,status,heroAction,cards,handRows:1,handOverflow,visibleCardCount,handStart,labelHeight:18,inventoryEntry:utilities.inventory,helpEntry:utilities.help,...footer,
   handNavigation:{previous:box(hand.x,hand.y+(hand.height-44)/2,44,44),next:box(hand.x+hand.width-44,hand.y+(hand.height-44)/2,44,44)},
-  pc:{frame,main,rail,heroPortrait,heroRows,utilities,compact}};
+  pc:{frame,main,rail,heroPortrait,heroRows,utilities,compact,focusSpine,focusGap}};
 }

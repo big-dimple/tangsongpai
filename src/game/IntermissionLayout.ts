@@ -9,12 +9,12 @@ export function resultPlacement(top:number,bottom:number,content:Pick<Box,'y'|'h
 
 export function resultLayout(width:number,height:number,top:number,contentHeight:number,pc=false){
   if(pc){
-    const margin=width<1500?32:48,w=Math.min(1600,width-margin*2),x=(width-w)/2;
-    const gap=width<1500?32:48,sideWidth=Math.floor(w*.28),bodyY=top+88;
+    const margin=width<1500?32:48,w=Math.min(1640,width-margin*2),x=(width-w)/2;
+    const gap=width<1500?36:56,sideWidth=Math.floor(w*.31),bodyY=top+72;
     // Coordinates are local to the top-anchored safe viewport, not the browser.
     const bodyHeight=Math.max(360,Math.min(740,height-210)),rightX=x+w-sideWidth;
     const score:Box={x,y:bodyY,width:w-sideWidth-gap,height:bodyHeight};
-    const next:Box={x:rightX,y:bodyY+196,width:sideWidth,height:116};
+    const next:Box={x:rightX,y:bodyY+176,width:sideWidth,height:132};
     const primary:Box={x:rightX,y:Math.max(next.y+next.height+24,height-236),width:sideWidth,height:56};
     const auxY=primary.y+primary.height+8,auxWidth=(sideWidth-8)/2;
     return {x,w,top,short:false,portrait:false,tight:false,wide:true,pc:true,score,next,nextText:next,primary,

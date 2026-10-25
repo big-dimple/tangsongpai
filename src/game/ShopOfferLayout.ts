@@ -47,6 +47,8 @@ export function shopOfferGeometry(tile:Box,kind:keyof typeof SHOP_CATEGORIES,has
       const art={x:tile.x+padding,y:tile.y+padding,width,height:width/aspect};
       return {art,title:{x,y:tile.y+padding,width:copyWidth,height:titleHeight},identity:{x,y:tile.y+padding+24,width:copyWidth,height:16},summary:{x,y:tile.y+padding+46,width:copyWidth,height:priceY-tile.y-padding-50-extraHeight},...(hasExtra?{extra:{x,y:priceY-extraHeight,width:copyWidth,height:extraHeight-4}}:{}),price:{x,y:priceY,width:copyWidth,height:priceHeight},reason:{x,y:priceY+priceHeight,width:copyWidth,height:reasonHeight}};
     }
+    // Keep enough measured copy space for the summary to remain two lines at
+    // the compact desktop width; the artwork still fills the remaining shelf.
     const copyHeight=124+extraHeight;
     const width=Math.min(288,tile.width-padding*2,(tile.height-padding*2-copyHeight)*aspect);
     if(width<64)return;

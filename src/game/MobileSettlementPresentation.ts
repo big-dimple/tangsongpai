@@ -18,8 +18,9 @@ export function drawMobileSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run
  };
  const paper=view.add(scene.add.graphics().setName('result-art/stage').setData('bounds',b));
  paper.fillStyle(lost?T.jadeSoft:T.paperLight,.65).fillCircle(b.x+b.width*.68,b.y+artHeight*.46,Math.min(b.width*.31,artHeight*.43));
- paper.lineStyle(2,lost?T.jade:T.red,.7).lineBetween(b.x,b.y+4,b.x+36,b.y+4);
- const tag=fit(b.x,b.y+16,skipped?'本场跳过':'本场总热度',14,textWidth,C.jade,'result/hand');
+ paper.lineStyle(2,lost?T.jade:T.red,.7).lineBetween(b.x,b.y+4,b.x+36,b.y+4)
+  .lineStyle(1,lost?T.jade:T.red,.3).lineBetween(b.x,b.y+artHeight+1,b.x+b.width,b.y+artHeight+1);
+ const tag=fit(b.x,b.y+16,skipped?'本场跳过':lost?'本局结果':'本场总热度',14,textWidth,C.jade,'result/hand');
  const score=fit(b.x,tag.y+tag.height+8,heatText(facts.stageTotal),compact?38:48,textWidth,lost?C.ink:facts.tier>=2?C.red:C.ink,'result/score').setFontFamily(SCORE_FONT).setFontStyle('bold').setData('exactScore',facts.stageTotal).setData('pcPoster',true);
  if(score.width>textWidth)score.setScale(textWidth/score.width);
  const formula=formulaOverride?.split(' · ')[0]??(skipped?'没有本场计分':lost?'目标 '+heatText(run.stage!.targetHeat):'目标 '+heatText(run.stage!.targetHeat)+'\n已过关');
@@ -36,8 +37,10 @@ export function drawMobileSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run
   hero.setData('bounds',{x:hero.x-hero.displayWidth/2,y:hero.y-hero.displayHeight/2,width:hero.displayWidth,height:hero.displayHeight});artLayer.add(hero);return hero;
  };
  const hero=paint(),reward={x:b.x,y:b.y+artHeight+8,width:b.width,height:36};
+ view.add(scene.add.graphics().lineStyle(1,lost?T.jade:T.red,.65).lineBetween(reward.x,reward.y-4,reward.x+Math.min(reward.width,52),reward.y-4).setName('result/reward-rule'));
  const rewardText=fit(reward.x+reward.width/2,reward.y+4,cleared&&!skipped?rewardLabel??'本场奖励已保存':skipped?'换场所得见下方记录':'成绩已记录',16,reward.width-44,C.ink,'result/reward').setOrigin(.5,0).setFontStyle('bold');
  reward.height=Math.max(36,rewardText.height+8);
+ paper.fillStyle(lost?T.jadeSoft:T.paperLight,.82).fillRoundedRect(reward.x,reward.y-2,reward.width,reward.height+8,4);
  let reviewBookBand:Box|undefined;
  if(facts.reviewBook){reviewBookBand={x:b.x,y:reward.y+reward.height+6,width:b.width,height:24};fit(b.x,reviewBookBand.y,facts.reviewBook.label,14,b.width,C.jade,'result/review-book').setData('sourceEventId',facts.reviewBook.eventId).setData('clearId',facts.reviewBook.clearId);}
  const height=(reviewBookBand?reviewBookBand.y+reviewBookBand.height:reward.y+reward.height)-b.y;
