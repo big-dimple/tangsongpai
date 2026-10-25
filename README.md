@@ -72,10 +72,13 @@ docs/            策划、规则与工程文档
 ## 文档
 
 - [策划文档入口](docs/GDD.md)
+- [策划与工程文档索引](docs/production/INDEX.md)
+- [产品路线](ROADMAP.md)
+- [当前待办](TODO.md)
 - [现行规则](docs/production/RULES.md)
 - [内容定义](docs/production/CONTENT.md)
 - [工程说明](docs/production/ENGINEERING.md)
 - [交互说明](docs/production/UX.md)
 - [开发协作约定](AGENTS.md)
 
-`ROADMAP.md`、`TODO.md` 及 `docs/archive/` 中的部分内容是历史计划或阶段记录，不应视为当前功能清单或开发排期。
+`docs/archive/`、日期化交接记录及旧工作包用于历史追溯，不应视为当前功能清单或开发排期。
