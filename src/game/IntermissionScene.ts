@@ -1,3 +1,5 @@
+import {mobileResultViewport} from './MobileSettlementPresentation';
+import {pcHeroKey,pcHeroURL} from './PcHeroArt';
 import {pcResultViewport} from './PcSettlementPresentation';
 import {cardDefinitionName} from './tangsongCardNames';
 import {warmNextSceneImages} from './StageImageWarmup';
@@ -36,7 +38,7 @@ import {stageOutcome} from './stageOutcome';
 import {failureSummary,failureGuidance} from './FailureSummary';
 import {finaleKeepsake} from './FinaleKeepsake';
 import {endlessContinuationCopy} from './EndlessContinuationCopy';
-import {selectionPortraitKey,selectionPortraitURL,portraitKey,portraitURL} from './portraits';
+import {selectionPortraitKey,selectionPortraitURL} from './portraits';
 import {showHeroExplanation} from './HeroExplanation';
 import {EffectQueue} from '../core/EffectQueue';
 import {REWARD_COIN,RewardCoinCue,loadRewardCoin,addRewardCoin,animateRewardCoin} from './RewardCoin';
@@ -79,11 +81,11 @@ export class IntermissionScene extends Phaser.Scene {
   private requestSourceArt():void {
     // Optional transport belongs to a mounted result view, independent of ending audio.
     if(!this.paintSourceArt)return;
-    const controller=runController(this),run=controller?.state;if(!controller||!run?.stage||(run.stage.skipResult&&!pcResultViewport(this.view.layout.width,this.view.layout.height)))return;
+    const controller=runController(this),run=controller?.state;if(!controller||!run?.stage||(run.stage.skipResult&&!pcResultViewport(this.view.layout.width,this.view.layout.height)&&!mobileResultViewport(this.view.layout.width,this.view.layout.height)))return;
     const facts=settlementFacts(run,this.result.cleared,!!run.stage.skipResult),source=facts.card;
-    const pc=pcResultViewport(this.view.layout.width,this.view.layout.height);
-    // The PC spread renders only the portrait; source and review-book art belong to the legacy view.
-    const candidates=[{key:pc?portraitKey(run.characterId):selectionPortraitKey(run.characterId),url:pc?portraitURL(run.characterId):selectionPortraitURL(run.characterId)},...(!pc&&source?[{key:jokerArtKey(source.id),url:jokerArtPreviewUrl(source.id)}]:[]),...(!pc&&facts.reviewBook?[{key:goodsArtKey('U09'),url:itemInfo('U09').artUrl}]:[])].filter((item):item is {key:string;url:string}=>!!item.key&&!!item.url&&!this.textures.exists(item.key));
+    const pc=pcResultViewport(this.view.layout.width,this.view.layout.height)||mobileResultViewport(this.view.layout.width,this.view.layout.height);
+    // The PC spread renders only the transparent hero; source and review-book art belong to the legacy view.
+    const candidates=[{key:pc?pcHeroKey(run.characterId):selectionPortraitKey(run.characterId),url:pc?pcHeroURL(run.characterId):selectionPortraitURL(run.characterId)},...(!pc&&source?[{key:jokerArtKey(source.id),url:jokerArtPreviewUrl(source.id)}]:[]),...(!pc&&facts.reviewBook?[{key:goodsArtKey('U09'),url:itemInfo('U09').artUrl}]:[])].filter((item):item is {key:string;url:string}=>!!item.key&&!!item.url&&!this.textures.exists(item.key));
     if(!candidates.length)return;
     this.stopSourceArt();const request=this.sourceArtRequest=new AbortController(),lifecycle=this.lifecycle;
     const current=()=>this.sourceArtRequest===request&&!request.signal.aborted&&lifecycle===this.lifecycle&&this.sys.settings.active&&!this.busy&&runController(this)===controller&&controller.state===run;
@@ -121,7 +123,7 @@ export class IntermissionScene extends Phaser.Scene {
     if(this.busy)this.stopSourceArt();
     const v=this.view,l=v.layout,bottom=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-bottom'))||0;
     const run=runController(this)!.state,resultFacts=settlementFacts(run,this.result.cleared,!!run.stage?.skipResult),stage={...getR2Stage(this.result.stageIndex,run.tourMode,run.difficulty,run)!,targetHeat:run.stage!.targetHeat},character=getCharacter(run.characterId);
-    const preferred=settlementContentHeight(l.width,!!resultFacts.hero,resultFacts.tier>=2);
+    const mobile=mobileResultViewport(l.width,l.height),preferred=mobile?Math.max(200,Math.min(342,l.height-350)):settlementContentHeight(l.width,!!resultFacts.hero,resultFacts.tier>=2);
     const pc=pcResultViewport(l.width,l.height);
     let p=resultLayout(l.width,l.height,0,preferred,pc);
     const nextStage=this.result.cleared&&run.phase==='stage-cleared'?getR2Stage(run.stageIndex,run.tourMode,run.difficulty,run):undefined,skipped=run.phase==='run-lost'?null:run.stage?.skipResult,won=run.phase==='run-won',capped=this.result.cleared&&run.phase==='stage-cleared'&&!nextStage,lost=!this.result.cleared&&!skipped&&!won;
@@ -133,7 +135,7 @@ export class IntermissionScene extends Phaser.Scene {
     const guidance=lost?failureGuidance(run):undefined;
     const title=capped?'本局暂止于此':skipped?'换一场，再对局':won?(run.mode==='tutorial'?'教学对局完成！':run.mode==='challenge'?'挑战完成！':'八章通关'):this.result.cleared?(identity.isBoss?'压轴过关 · '+identity.title:'本场获胜'):guidance?.title??'此局结束，再来一局';
     const titleText=v.text(p.x,p.top+(p.short?22:28),title,p.pc?(l.width<1500?40:48):p.short||p.portrait&&identity.isBoss?22:p.portrait?26:34,identity.isBoss&&this.result.cleared?PAPER_CSS.red:PAPER_CSS.ink,p.w).setName('result/title').setFontFamily('Georgia, "Noto Serif SC", SimSun, serif').setFontStyle('bold');
-    if(p.pc){titleText.setWordWrapWidth(0);for(let size=l.width<1500?40:48;titleText.width>p.w&&size>24;)titleText.setFontSize(--size);}
+    if(p.pc||mobile){titleText.setWordWrapWidth(0);for(let size=mobile?26:l.width<1500?40:48;titleText.width>p.w&&size>(mobile?18:24);)titleText.setFontSize(--size);}
     const paperHeight=this.drawResultHero(p.score,!!skipped,lost,animateIn);
     p=resultLayout(l.width,l.height,0,paperHeight,pc);
     const trace=run.lastTrace;
@@ -168,6 +170,10 @@ export class IntermissionScene extends Phaser.Scene {
       const nextHeading=v.text(n.x,n.y+2,heading,p.portrait&&p.tight?16:18,PAPER_CSS.ink,n.width).setFontStyle('bold').setName('result/next-heading');
       const bodyY=nextHeading.y+nextHeading.height+3;
       const nextBody=v.text(n.x,bodyY,body,14,PAPER_CSS.jade,n.width).setLineSpacing(1).setName('result/next-body');nextBottom=nextBody.y+nextBody.height;
+      if(mobile&&nextBottom>n.y+n.height){
+        nextBody.setText(nextStage?`${nextStage.name} · 目标 ${heatText(nextStage.targetHeat)}`:body.split('\n')[0]);nextBottom=nextBody.y+nextBody.height;
+        nextHeading.setText(heading+' ›');const hit=v.rect({...n,height:Math.max(44,nextBottom-n.y)}).setFillStyle(0,0).setStrokeStyle();v.target(hit,'action/result-next-details',{tap:()=>this.dialog.open(heading,body,[],{closeLabel:'返回结算'})});
+      }
       if(p.pc&&nextBottom>p.primary.y-24){
         // Keep the real destination/target visible and the complete copy in the existing modal.
         const summary=nextStage?`${nextStage.name} · 目标 ${heatText(nextStage.targetHeat)}`:won?'本模式结果已保存。':capped?'已达数值上限，进度已保存。':body.split('\n')[0];
@@ -200,7 +206,7 @@ export class IntermissionScene extends Phaser.Scene {
     content.add(v.root.list.slice(backgroundCount));v.add(content);
     const safeTop=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-top'))||0;
     this.releaseViewport=mountResultViewport(this,v,content,Math.max(l.hud.y,safeTop+60),l.height-bottom-16,this.resultScroll,offset=>{this.resultScroll=offset;});
-    this.firstRender=false;if(pc)this.requestSourceArt();
+    this.firstRender=false;if(pc||mobile)this.requestSourceArt();
   }
   private auxiliary(b:Box,label:string,name:string,action:()=>void,enabled=true):void {
     const v=this.view,text=v.text(b.x+b.width/2,b.y+b.height/2,label,14,PAPER_CSS.jade,b.width-4).setOrigin(.5).setAlpha(enabled?1:.55);

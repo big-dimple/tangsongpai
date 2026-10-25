@@ -35,10 +35,13 @@ function runtimeFiles():Set<string> {
 
 it('keeps every current card, tool, portrait, eye strip, head fallback and support URL loadable',()=>{
   expect(JOKER_ART).toHaveLength(72);expect(GOODS_ART).toHaveLength(51);
-  expect(CHARACTER_ART).toHaveLength(30);expect(CHARACTER_ART.filter(a=>a.purpose==='eyes')).toHaveLength(6);
-  expect(CHARACTER_ART.filter(a=>a.purpose==='focus')).toHaveLength(6);
-  // Eight current music deliveries replace the five recordings in the dated cleanup baseline.
-  const files=runtimeFiles();expect(files.size).toBe(cleanup.protected.runtimeFiles+gamefeel.assets.length+3);
+  expect(CHARACTER_ART).toHaveLength(36);
+  for(const purpose of ['avatar','selection','portrait','focus','eyes','pc'] as const){
+    expect(CHARACTER_ART.filter(a=>a.purpose===purpose).map(a=>a.id).sort(),purpose)
+      .toEqual(['amo','azao','erxiang','laohuan','touye','xiemu']);
+  }
+  // Eight music deliveries replace five baseline recordings; six transparent hero files are new.
+  const files=runtimeFiles();expect(files.size).toBe(cleanup.protected.runtimeFiles+gamefeel.assets.length+3+6);
   for(const file of files){expect(fs.existsSync(file),file).toBe(true);expect(fs.statSync(file).size,file).toBeGreaterThan(0);}
 });
 

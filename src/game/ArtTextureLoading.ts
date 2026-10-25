@@ -1,5 +1,5 @@
 import type Phaser from 'phaser';
-import {assertCharacterArtReference,assertCharacterArtDimensions} from './CharacterArt';
+import {assertCharacterArtReference,assertCharacterArtDimensions,characterArtByKey} from './CharacterArt';
 
 /** At most four transfers (original separate pools allowed six), two per lane: visible faces > optional detail > speculative stage images.
  * Preempted optional work keeps its subscribers and resumes after the visible faces.
@@ -54,6 +54,7 @@ export function promoteArtTexture(game:Phaser.Game,key:string):void {
 /** Texture manager is the only thumbnail cache. Jobs are shared across scene/warmup owners. */
 export function loadArtTexture(game:Phaser.Game,key:string,url:string,signal:AbortSignal,visible=true):Promise<void> {
   if(signal.aborted)return Promise.reject(Error('art-aborted'));
+  const cutout=characterArtByKey(key)?.purpose==='pc',maxBytes=cutout?400000:128*1024,maxPixels=cutout?896*1120:600000;
   try{assertCharacterArtReference(key,url);}catch(error){return Promise.reject(error);}
   if(game.textures.exists(key))return Promise.resolve();
   let jobs=games.get(game);if(!jobs){jobs=new Map();games.set(game,jobs);}
@@ -70,17 +71,17 @@ export function loadArtTexture(game:Phaser.Game,key:string,url:string,signal:Abo
       try {
         const response=await fetch(url,{signal:transferSignal,credentials:'same-origin',priority:priority.value===2?'high':'low'});
         if(!response.ok)throw Object.assign(Error('art-http-'+response.status),{retryable:response.status===408||response.status===429||response.status>=500});
-        if(Number(response.headers.get('content-length'))>128*1024)throw Object.assign(Error('art-budget'),{retryable:false});
+        if(Number(response.headers.get('content-length'))>maxBytes)throw Object.assign(Error('art-budget'),{retryable:false});
         const reader=response.body?.getReader();if(!reader)throw Error('art-body');
         const chunks:Uint8Array[]=[];let bytes=0;
-        try{while(true){const next=await reader.read();if(next.done)break;bytes+=next.value.byteLength;if(bytes>128*1024){await reader.cancel();throw Object.assign(Error('art-budget'),{retryable:false});}chunks.push(next.value);}}finally{reader.releaseLock();}
+        try{while(true){const next=await reader.read();if(next.done)break;bytes+=next.value.byteLength;if(bytes>maxBytes){await reader.cancel();throw Object.assign(Error('art-budget'),{retryable:false});}chunks.push(next.value);}}finally{reader.releaseLock();}
         if(transferSignal.aborted)throw Error('art-aborted');
         source=URL.createObjectURL(new Blob(chunks as BlobPart[],{type:response.headers.get('content-type')??'image/webp'}));
         image=new Image();image.decoding='async';image.src=source;
         try{await image.decode();}catch{throw Object.assign(Error('art-decode'),{retryable:false});}
         if(transferSignal.aborted)throw Error('art-aborted');
         assertCharacterArtDimensions(url,image.naturalWidth,image.naturalHeight);
-        if(image.naturalWidth*image.naturalHeight>600000)throw Object.assign(Error('art-pixels'),{retryable:false});
+        if(image.naturalWidth*image.naturalHeight>maxPixels)throw Object.assign(Error('art-pixels'),{retryable:false});
         if(!game.textures.exists(key))game.textures.addImage(key,image);
       }finally{clearTimeout(deadline);transferSignal.removeEventListener('abort',cleanup);if(source)URL.revokeObjectURL(source);}
     },priority.value,controller.signal,key.startsWith('goods-art/')?'goods':key.includes('joker-')?'joker':'optional').finally(()=>{if(jobs!.get(key)===current)jobs!.delete(key);});

@@ -47,7 +47,7 @@ export function pcTableAreas(viewport:{width:number;height:number},safe:Insets,h
   const col=i-handStart,x=bandX+(visibleCardCount===1?(bandWidth-cardWidth)/2:col*pitch),last=col===visibleCardCount-1;
   return {visible:i>=handStart&&i<handStart+visibleCardCount,visual:box(x,hand.y+22,cardWidth,cardWidth*1.4),hit:box(x,hand.y,last?cardWidth:Math.min(cardWidth,pitch),handHeight)};
  });
- const portraitHeight=compact?144:224,heroPortrait=box(hud.x+12,hud.y+96,hud.width-24,portraitHeight);
+ const portraitHeight=compact?164:256,heroPortrait=box(hud.x+12,hud.y+96,hud.width-24,portraitHeight);
  const rowTop=heroPortrait.y+heroPortrait.height+8,row=(offset:number,tall:number)=>box(hud.x+12,rowTop+offset,hud.width-24,tall);
  const heroRows={status:row(0,36),stage:row(40,18),heat:row(64,30),target:row(100,18),gold:row(124,36),progress:row(164,5)};
  const utilities={inventory:box(hud.x+12,footer.actions.y-48,hud.width-24,44),help:box(hud.x+12,footer.actions.y,hud.width-24,44)};

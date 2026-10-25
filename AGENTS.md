@@ -40,7 +40,8 @@
 | --- | --- |
 | 游戏启动与场景 | `src/main.ts`、`src/game/*Scene.ts` |
 | PC 牌桌布局与装饰 | `src/game/PcTableLayout.ts`、`src/game/layout.ts`、`src/game/ScoreTableLayout.ts`、`src/game/StageTableArt.ts` |
-| PC 结算与过场 | `src/game/PcSettlementPresentation.ts`、`src/game/IntermissionLayout.ts`、`src/game/IntermissionScene.ts`、`src/game/IntermissionScroll.ts` |
+| 透明人物资产（PC 牌桌、桌面/手机结算） | `src/game/PcHeroArt.ts`、`src/game/CharacterArt.ts`、`public/assets/tangsong-pc-heroes/manifest.json`、`tools/build-pc-hero-art.mjs` |
+| 桌面/手机结算与过场 | `src/game/PcSettlementPresentation.ts`、`src/game/MobileSettlementPresentation.ts`、`src/game/IntermissionLayout.ts`、`src/game/IntermissionScene.ts`、`src/game/IntermissionScroll.ts` |
 | 领域命令入口 | `src/domain/run.ts` |
 | 对局与商店 | `src/domain/r2Run.ts`、`src/domain/r2Shop.ts` |
 | 计分 | `src/domain/scoreR2.ts`、`src/scoring/` |
