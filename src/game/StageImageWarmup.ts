@@ -1,3 +1,4 @@
+import {pcHeroKey,pcHeroURL} from './PcHeroArt';
 import {sceneResources} from './SceneResources';
 import type Phaser from 'phaser';
 import type {R2RunState} from '../domain/r2Run';
@@ -61,6 +62,7 @@ export function warmOpeningImages(scene:Phaser.Scene):void {
   if(speculative()){warmRunImages(scene);warmCatalogBackground(scene);}
   warmNextSceneImages(scene,'character-select');
 }
+export function warmPcHeroImage(scene:Phaser.Scene,id:CharacterId):void {queue(scene).request([{key:pcHeroKey(id),url:pcHeroURL(id),visible:true}],true);}
 export function warmHeroImage(scene:Phaser.Scene,id:CharacterId):void {if(!portraitURL(id))return;queue(scene).request([{key:heroEyesKey(id),url:heroEyesURL(id),visible:true},{key:portraitKey(id),url:portraitURL(id),visible:true},{key:portraitFocusKey(id),url:portraitFocusURL(id),visible:true}].filter(a=>!!a.url),true);}
 export function warmTableImages(scene:Phaser.Scene,id:CharacterId):void {
   warmRunImages(scene);

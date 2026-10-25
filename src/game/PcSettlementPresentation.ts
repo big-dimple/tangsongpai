@@ -4,7 +4,7 @@ import type {SceneView} from './SceneView';
 import type {Box} from './layout';
 import type {settlementFacts} from './SettlementPresentation';
 import {getCharacter} from './characters';
-import {portraitKey,selectionPortraitKey} from './portraits';
+import {pcHeroKey,PC_HERO_COMPOSITION} from './PcHeroArt';
 import {heatText} from './scoreText';
 import {HAND_LABELS} from '../content/handLabels';
 import {failureSummary} from './FailureSummary';
@@ -19,8 +19,8 @@ export function pcResultViewport(width:number,height:number){
 /** Existing saved facts only. No commands, thresholds, reward issuance or timers. */
 export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2RunState,cleared:boolean,skipped:boolean,facts:ReturnType<typeof settlementFacts>,formulaOverride?:string,rewardLabel?:string){
  const l=resultLayout(view.layout.width,view.layout.height,0,b.height,true),lost=!cleared&&!skipped;
- const compact=view.layout.height<850,gap=compact?24:32,heroWidth=Math.min(compact?344:440,b.width*.43),heroHeight=Math.min(b.height-68,heroWidth*768/615);
- const heroBox={x:b.x,y:b.y,width:heroWidth,height:heroHeight};
+ const compact=view.layout.height<850,gap=compact?24:32,heroWidth=b.width*.58,heroHeight=b.height-64;
+ const heroBox={x:b.x-16,y:b.y+4,width:heroWidth+8,height:heroHeight};
  const x=b.x+heroWidth+gap,width=b.width-heroWidth-gap;
  const text=(x:number,y:number,copy:string,size:number,width:number,color=C.ink,name='')=>{
   const item=view.text(x,y,copy,size,color).setName(name);
@@ -30,7 +30,8 @@ export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2R
  };
  const paper=view.add(scene.add.graphics().setName('result-art/stage').setData('bounds',b));
  // Open editorial spread: one quiet vertical seam, no outer panel or card frame.
- paper.fillStyle(lost?T.jadeSoft:T.paperLight,.7).fillRect(x-12,b.y,width+12,b.height)
+ paper.fillStyle(lost?T.jadeSoft:T.paperLight,.65).fillCircle(heroBox.x+heroBox.width*.52,b.y+heroHeight*.38,Math.min(heroWidth*.42,heroHeight*.38))
+  .lineStyle(3,lost?T.jade:T.red,.6).lineBetween(x,b.y-12,x+48,b.y-12)
   .lineStyle(1,T.divider,.8).beginPath().moveTo(l.next.x-gap/2,b.y).lineTo(l.next.x-gap/2,b.y+b.height).strokePath();
  const tag=text(x,b.y+8,skipped?'本场跳过':'本场总热度',16,width,C.jade,'result/hand');
  const exactScore=facts.stageTotal,copy=(exactScore.length>15&&/[1-9]/.test(exactScore.slice(3))?'≈':'')+heatText(exactScore);
@@ -53,16 +54,17 @@ export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2R
  const artLayer=view.add(scene.add.container(0,0).setName('result-art/source-layer'));
  const paint=()=>{
   artLayer.removeAll(true);const start=view.root.length;
-  const key=scene.textures.exists(portraitKey(run.characterId))?portraitKey(run.characterId):selectionPortraitKey(run.characterId);
+  const key=pcHeroKey(run.characterId),composition=PC_HERO_COMPOSITION[run.characterId];
   let hero:Phaser.GameObjects.Image|undefined;
   if(scene.textures.exists(key)){
-   hero=view.add(scene.add.image(heroBox.x+heroBox.width/2,heroBox.y+heroBox.height/2,key).setName('result-art/hero').setData('assetId',run.characterId+'.portrait'));
-   // Never enlarge a low-resolution fallback. The high-quality asset loads asynchronously.
-   hero.setScale(Math.min(1,heroBox.width/hero.width,heroBox.height/hero.height));
+   hero=view.add(scene.add.image(0,0,key).setName('result-art/hero').setData('assetId',run.characterId+'.pc'));
+   // Full source frame: no clipping of hands, hair, sleeves or weapons.
+   hero.setScale(Math.min(1,heroBox.width/hero.width,heroBox.height/hero.height)*composition.scale);
+   hero.setPosition(heroBox.x+hero.displayWidth/2+(heroBox.width-hero.displayWidth)*composition.align,heroBox.y+heroBox.height-hero.displayHeight/2);
    hero.setData('bounds',{x:hero.x-hero.displayWidth/2,y:hero.y-hero.displayHeight/2,width:hero.displayWidth,height:hero.displayHeight});
   }
   text(heroBox.x,heroBox.y+heroBox.height+12,getCharacter(run.characterId).name,compact?24:30,heroBox.width,C.ink,'result/hero-name').setFontFamily('Georgia, "Noto Serif SC", SimSun, serif').setFontStyle('bold');
-  if(facts.hero)text(heroBox.x,heroBox.y+heroBox.height+48,'末手 · '+(facts.heroSkill??'')+' '+facts.heroCopy.replace('本手兑现 · ',''),14,heroBox.width,C.jade,'result/hero-effect');
+  if(facts.hero)text(heroBox.x,heroBox.y+heroBox.height+44,'末手 · '+(facts.heroSkill??'')+' '+facts.heroCopy.replace('本手兑现 · ',''),14,heroBox.width,C.jade,'result/hero-effect');
   artLayer.add(view.root.list.slice(start));return hero;
  };
  const hero=paint();

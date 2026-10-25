@@ -1,3 +1,4 @@
+import {pcResultViewport} from './PcSettlementPresentation';
 import {type WorkshopIntent,type WorkshopTab} from './WorkshopModel';
 import {shopBossPreparation,currentShopNotice} from './ShopBossPreparation';
 import {syncBossAtmosphere} from './BossAtmosphere';
@@ -626,6 +627,7 @@ export class ShopScene extends Phaser.Scene {
   }
   private drawInventoryBag(b:Box):void {
     const compact=b.width<100,onInk=this.geometry().portrait||!!this.geometry().desktopHeader&&this.geometry().short,count=this.run.consumables.length+'/'+r2ConsumableCapacity(this.run),button=this.shopButton(b,compact?'道具箱\n'+count:'道具箱 '+count,'action/tool-inventory',()=>showConsumables(this.dialog,this.run,this.ready,(a,seq)=>this.send(a,seq)),!this.busy);
+    if(pcResultViewport(this.view.layout.width,this.view.layout.height)){inventoryFeedback(this,button,this.run,this.ready,this.resultReduced,true);return;}
     button.setData('chest',true);inventoryFeedback(this,button,this.run,this.ready,this.resultReduced);
     const art=button.getData('buttonArt') as Phaser.GameObjects.Container;(art.list[0] as Phaser.GameObjects.Graphics).clear();(art.list[1] as Phaser.GameObjects.Graphics).clear();shopToolbarGlyph(this,art,'bag',compact?2:14,14,onInk?0xe7cc8c:0x42665d,compact?18:24);
     (button.getData('label') as Phaser.GameObjects.Text).setText(compact?'道具箱\n'+count:'道具箱 '+count).setFontSize(compact?12:14).setFontStyle(this.run.consumables.length?'bold':'normal').setAlign('center').setX(b.x+(compact?46:b.width/2+8)).setColor(onInk?this.run.consumables.length?'#f2db9f':'#f7f1df':'#3F606B');

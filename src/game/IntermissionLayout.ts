@@ -10,15 +10,23 @@ export function resultPlacement(top:number,bottom:number,content:Pick<Box,'y'|'h
 export function resultLayout(width:number,height:number,top:number,contentHeight:number,pc=false){
   if(pc){
     const margin=width<1500?32:48,w=Math.min(1600,width-margin*2),x=(width-w)/2;
-    const gap=width<1500?32:48,sideWidth=Math.floor(w*.34),bodyY=top+88;
+    const gap=width<1500?32:48,sideWidth=Math.floor(w*.28),bodyY=top+88;
     // Coordinates are local to the top-anchored safe viewport, not the browser.
-    const bodyHeight=Math.max(320,Math.min(620,height-260)),rightX=x+w-sideWidth;
+    const bodyHeight=Math.max(360,Math.min(740,height-210)),rightX=x+w-sideWidth;
     const score:Box={x,y:bodyY,width:w-sideWidth-gap,height:bodyHeight};
     const next:Box={x:rightX,y:bodyY+196,width:sideWidth,height:116};
     const primary:Box={x:rightX,y:Math.max(next.y+next.height+24,height-236),width:sideWidth,height:56};
     const auxY=primary.y+primary.height+8,auxWidth=(sideWidth-8)/2;
     return {x,w,top,short:false,portrait:false,tight:false,wide:true,pc:true,score,next,nextText:next,primary,
       left:{x:rightX,y:auxY,width:auxWidth,height:44},right:{x:rightX+auxWidth+8,y:auxY,width:auxWidth,height:44},noticeY:auxY+48};
+  }
+  if(width<700&&height>width){
+    const x=12,w=width-24,bodyY=top+64,tight=height<700;
+    const score:Box={x,y:bodyY,width:w,height:contentHeight};
+    const next:Box={x,y:score.y+score.height+8,width:w,height:tight?52:68};
+    const primary:Box={x,y:next.y+next.height+8,width:w,height:48},auxY=primary.y+52,auxWidth=(w-8)/2;
+    return {x,w,top,short:false,portrait:true,tight,wide:false,pc:false,score,next,nextText:next,primary,
+      left:{x,y:auxY,width:auxWidth,height:44},right:{x:x+auxWidth+8,y:auxY,width:auxWidth,height:44},noticeY:auxY+48};
   }
   const short=height<500,portrait=width<700&&height>width,tight=portrait&&height<=700;
   const wide=width>=1100&&!short,w=Math.min(wide?1120:900,width-(wide?96:24)),x=(width-w)/2;

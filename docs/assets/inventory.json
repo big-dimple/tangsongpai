@@ -6,11 +6,11 @@
   "sourceReferences": [
     {
       "source": "src/audio/AudioEngine.ts",
-      "expression": "../../public/assets/audio/p06/recording.json"
+      "expression": "../../public/assets/audio/bgm/manifest.json"
     },
     {
       "source": "src/audio/AudioEngine.ts",
-      "expression": "../../public/assets/audio/bgm/manifest.json"
+      "expression": "assets/audio/bgm/user-20261018/tianhu-begin.mp3"
     },
     {
       "source": "src/audio/AudioEngine.ts",
@@ -21,8 +21,20 @@
       "expression": "../../public/assets/audio/foley-v1/sources.json"
     },
     {
+      "source": "src/audio/foley.ts",
+      "expression": "../../public/assets/audio/gamefeel-rfc/sources.json"
+    },
+    {
+      "source": "src/game/BossAtmosphere.ts",
+      "expression": "assets/boss/general-95008f17.png"
+    },
+    {
       "source": "src/game/CharacterArt.ts",
       "expression": "../../public/assets/tangsong-portraits/manifest.json"
+    },
+    {
+      "source": "src/game/CharacterArt.ts",
+      "expression": "../../public/assets/tangsong-pc-heroes/manifest.json"
     },
     {
       "source": "src/game/CharacterArt.ts",
@@ -79,9 +91,11 @@
   ],
   "staticRuntimePaths": [
     "public/assets/audio/bgm/manifest.json",
+    "public/assets/audio/bgm/user-20261018/tianhu-begin.mp3",
     "public/assets/audio/foley-v1/sources.json",
-    "public/assets/audio/p06/recording.json",
+    "public/assets/audio/gamefeel-rfc/sources.json",
     "public/assets/audio/score-impact/cloth2.ogg",
+    "public/assets/boss/general-95008f17.png",
     "public/assets/effects/coin-reward/coin-reward-handdrawn.webp",
     "public/assets/fonts/score/tangsongpai-score-numbers.woff",
     "public/assets/handdrawn-climax/manifest.json",
@@ -92,6 +106,7 @@
     "public/assets/p00/mark-times.svg",
     "public/assets/p00/paper.svg",
     "public/assets/tangsong-eyes/manifest.json",
+    "public/assets/tangsong-pc-heroes/manifest.json",
     "public/assets/tangsong-portraits/manifest.json"
   ],
   "parameterizedSourceReferences": [
@@ -516,13 +531,7 @@
       "evidence": "directory-prefix-match-only"
     }
   ],
-  "indirectRuntimePaths": [
-    {
-      "source": "public/assets/audio/p06/recording.json",
-      "field": "runtimePath",
-      "path": "public/assets/audio/p06/serenade-schubert-216755.mp3"
-    }
-  ],
+  "indirectRuntimePaths": [],
   "runtimeObservationStatus": "NOT_OBSERVED",
   "runtimeCurrentlyLoaded": [],
   "publicationAllowlist": [],
@@ -532,14 +541,19 @@
     "No new visual or rights approval. Decoded RGBA sizes are estimates, not measured GPU memory."
   ],
   "totals": {
-    "files": 423,
-    "bytes": 47644126,
-    "decodedRgbaBytes": 298751632,
+    "files": 441,
+    "bytes": 47629046,
+    "decodedRgbaBytes": 329130264,
     "groups": {
       "audio": {
-        "count": 36,
-        "bytes": 13947666,
+        "count": 46,
+        "bytes": 10579330,
         "decodedRgbaBytes": 0
+      },
+      "boss": {
+        "count": 1,
+        "bytes": 1553214,
+        "decodedRgbaBytes": 6294152
       },
       "effects": {
         "count": 1,
@@ -548,7 +562,7 @@
       },
       "fonts": {
         "count": 3,
-        "bytes": 11076,
+        "bytes": 11078,
         "decodedRgbaBytes": 0
       },
       "handdrawn-climax": {
@@ -586,6 +600,11 @@
         "bytes": 690069,
         "decodedRgbaBytes": 5308416
       },
+      "tangsong-pc-heroes": {
+        "count": 7,
+        "bytes": 1800040,
+        "decodedRgbaBytes": 24084480
+      },
       "tangsong-portraits": {
         "count": 25,
         "bytes": 1758734,
@@ -595,32 +614,52 @@
   },
   "assets": [
     {
-      "path": "public/assets/audio/bgm/boss-dark-things.mp3",
-      "bytes": 384723,
-      "sha256": "bd99bc0d86649fe84cb416003d4309428a2a9b0fb5fdd4b8dfd98453abd7b9c4"
-    },
-    {
       "path": "public/assets/audio/bgm/manifest.json",
-      "bytes": 2746,
-      "sha256": "8200201d3d5f3affb48c3ebdb90844d3b8e60a7b4d3d2cb606067d3729393b78",
+      "bytes": 2948,
+      "sha256": "6720f7cf1240cc99364ab5d1b4d5cc42d277644c071525654dd55bcd9233d9b0",
       "textNormalization": "LF",
-      "canonicalBytes": 2666,
-      "canonicalSha256": "f1430e3e3610b39254c5e22c5f2f3641f185275537689e49679faeac7a3d605e"
+      "canonicalBytes": 2869,
+      "canonicalSha256": "46c4d477425fc4f0604a9fa90af92647e52dde18e1375780d0deb9d647cda252"
     },
     {
-      "path": "public/assets/audio/bgm/menu-chinese-yangguan.mp3",
-      "bytes": 4201788,
-      "sha256": "e2a565db0f514b0c41e350b3ccc4924e27439fafdd8a16e3310a426d9efbcc22"
+      "path": "public/assets/audio/bgm/user-20261018/go-cake.mp3",
+      "bytes": 1663533,
+      "sha256": "aa186c94edaf63aa5a8a6fa5d2f2489fefd3b03337054ed58f09b3afa4d2c53b"
     },
     {
-      "path": "public/assets/audio/bgm/table-chinese-zuiyu.mp3",
-      "bytes": 3444133,
-      "sha256": "edc667ee985f73e2e6f2cbcec39554856744dda2e816c53fe5f913ebb17dd125"
+      "path": "public/assets/audio/bgm/user-20261018/go-cake.ogg",
+      "bytes": 1402264,
+      "sha256": "7fdba489a6d7e8c8033273d747446d93e0b0102faa9dd9567379ca9afc86fd42"
     },
     {
-      "path": "public/assets/audio/bgm/table-tango.mp3",
-      "bytes": 2190408,
-      "sha256": "0a274655d6da0747cbc28ee91439536605b129ce7ed2f6346fc39ed5ffa25dac"
+      "path": "public/assets/audio/bgm/user-20261018/moon-shop.mp3",
+      "bytes": 1118061,
+      "sha256": "ff00399200ae04bf2dde38e15f0488f51e6342f8286689ad3bc5611597c351b0"
+    },
+    {
+      "path": "public/assets/audio/bgm/user-20261018/moon-shop.ogg",
+      "bytes": 841256,
+      "sha256": "b7f6a11c21c4d6dcb99341b79e499dc57be2663ac661182bff943154322bf179"
+    },
+    {
+      "path": "public/assets/audio/bgm/user-20261018/tianhu-begin.mp3",
+      "bytes": 1293165,
+      "sha256": "d9dbe1c025346c1b24b9f3d31cb0a26fe9602a334f7879e725f797b48ba68346"
+    },
+    {
+      "path": "public/assets/audio/bgm/user-20261018/tianhu-begin.ogg",
+      "bytes": 1080836,
+      "sha256": "27de1b3d69592b970f1ca6b2548a779b1d2b9ee4a03c7f2062e5d453117e2116"
+    },
+    {
+      "path": "public/assets/audio/bgm/user-20261018/vsboss.mp3",
+      "bytes": 1619181,
+      "sha256": "6412815ad81481a4bbf84c5ba94f57033528883b837a8c667a8a3c8133dc1073"
+    },
+    {
+      "path": "public/assets/audio/bgm/user-20261018/vsboss.ogg",
+      "bytes": 1243497,
+      "sha256": "d211fbd67d8b3dec22c725dcbf76331aca375b8dfd660c0d43693ddccd8fea34"
     },
     {
       "path": "public/assets/audio/foley-v1/License.txt",
@@ -757,17 +796,47 @@
       "canonicalSha256": "015a2065f1b39587e02c4bf1e39bf8f59e5d09e57634e6c472aca01c6a5adbfc"
     },
     {
-      "path": "public/assets/audio/p06/recording.json",
-      "bytes": 2274,
-      "sha256": "243caa9aec4538b95dc8bef043a064e67d7e77ead4c5268983d4e44fd75250f8",
-      "textNormalization": "LF",
-      "canonicalBytes": 2239,
-      "canonicalSha256": "dfb139a918cbdd3a2c2947fefd391e21979908e60a2330575661f6358b16958b"
+      "path": "public/assets/audio/gamefeel-rfc/sfx-penta-1-gong.ogg",
+      "bytes": 8580,
+      "sha256": "9a31ab0febdda292ee98bd6a162a848db95b871ad7732e5f94ab632771002a77"
     },
     {
-      "path": "public/assets/audio/p06/serenade-schubert-216755.mp3",
-      "bytes": 3487912,
-      "sha256": "e07b53322fd650fb5929215cef3b07b34977a2c486e140f8b71c5a23017daead"
+      "path": "public/assets/audio/gamefeel-rfc/sfx-penta-2-shang.ogg",
+      "bytes": 8474,
+      "sha256": "7dbc78c474ab9dead6f7065841976f7867a17c3401ab028fc513a2cf50365e45"
+    },
+    {
+      "path": "public/assets/audio/gamefeel-rfc/sfx-penta-3-jiao.ogg",
+      "bytes": 8504,
+      "sha256": "672ae79f1b7ff725c9e763972c497018f12f68a818758a915ef7b63afbeb14ec"
+    },
+    {
+      "path": "public/assets/audio/gamefeel-rfc/sfx-penta-4-zhi.ogg",
+      "bytes": 8316,
+      "sha256": "5f774605a41db2c142c9f73de9bb8e52f612b18109b2a8c839c30fcc8088a4a5"
+    },
+    {
+      "path": "public/assets/audio/gamefeel-rfc/sfx-penta-5-yu.ogg",
+      "bytes": 8163,
+      "sha256": "5f23c46816483c53e5929943e6b92fac452818d0a8af9449fd659c9853580e0a"
+    },
+    {
+      "path": "public/assets/audio/gamefeel-rfc/sfx-temple-bell-victory.ogg",
+      "bytes": 22870,
+      "sha256": "6722fea0dd66f00b3cf7a41b74caeffe63c269c7ddfb3c1d2d24d15f49a430f5"
+    },
+    {
+      "path": "public/assets/audio/gamefeel-rfc/sfx-wardrum-mult-hit.ogg",
+      "bytes": 13478,
+      "sha256": "a3cb86cc24018c1a5de8b6bbdfaf7eceb7ee6fc421a0632ec8ba1c0eb1c08a90"
+    },
+    {
+      "path": "public/assets/audio/gamefeel-rfc/sources.json",
+      "bytes": 2542,
+      "sha256": "6602e7096f4003f2ea113ccc3b9d4dbe9ce6ba7298283cb1a73c14c72d0096ac",
+      "textNormalization": "LF",
+      "canonicalBytes": 2486,
+      "canonicalSha256": "f46ec2b296802d6ac8a7b21e0bab4f94205d36424363fb111696fa00225bb5f3"
     },
     {
       "path": "public/assets/audio/score-impact/License.txt",
@@ -779,8 +848,8 @@
     },
     {
       "path": "public/assets/audio/score-impact/README.md",
-      "bytes": 269,
-      "sha256": "31868b09a2e4d1a56486295485e0c3c2d7f69bde85871f75b91f413e996a4a52",
+      "bytes": 272,
+      "sha256": "d52991f57a94dea4ae08c778073d014218cadd2a6804dd0dbf2598b14b2a4063",
       "textNormalization": "LF",
       "canonicalBytes": 269,
       "canonicalSha256": "31868b09a2e4d1a56486295485e0c3c2d7f69bde85871f75b91f413e996a4a52"
@@ -792,11 +861,21 @@
     },
     {
       "path": "public/assets/audio/score-impact/sources.json",
-      "bytes": 271,
-      "sha256": "b54f1f7cc4642701f7b4c15b9ae1cd273ac189c7b061ab1f634110bf15c69f6b",
+      "bytes": 280,
+      "sha256": "8b46d2d42c34c1dfab1b887c414aa1fa929fb1cdccc1f67969bca69fcf6d7434",
       "textNormalization": "LF",
       "canonicalBytes": 271,
       "canonicalSha256": "b54f1f7cc4642701f7b4c15b9ae1cd273ac189c7b061ab1f634110bf15c69f6b"
+    },
+    {
+      "path": "public/assets/boss/general-95008f17.png",
+      "bytes": 1553214,
+      "sha256": "95008f176817479497731891b6418a762c46b8ec53e32756a560a625e00eceb8",
+      "width": 1774,
+      "height": 887,
+      "alpha": true,
+      "decodedRgbaBytes": 6294152,
+      "format": "png"
     },
     {
       "path": "public/assets/effects/coin-reward/coin-reward-handdrawn.webp",
@@ -818,11 +897,11 @@
     },
     {
       "path": "public/assets/fonts/score/README.md",
-      "bytes": 480,
-      "sha256": "d05f397cec1fc780e9abbb4fd63fb935fcb435ccdff64b9724014bcce03a705d",
+      "bytes": 482,
+      "sha256": "dd71148658a6bdb647e03635ba46f5050636066cf0d19f8a88d185be3aad82d4",
       "textNormalization": "LF",
-      "canonicalBytes": 479,
-      "canonicalSha256": "4b1a506e3d0ee5a988ad8c515778334b312bfff7435e90ad364845c16d8841ad"
+      "canonicalBytes": 481,
+      "canonicalSha256": "e28aed1798f7eca6b24b57cff2fe2eaec85c7bc1de38d20ea92e508f76a87302"
     },
     {
       "path": "public/assets/fonts/score/tangsongpai-score-numbers.woff",
@@ -2839,11 +2918,11 @@
     },
     {
       "path": "public/assets/handdrawn-p08/manifest.json",
-      "bytes": 95776,
-      "sha256": "8a255b7d868ea3048b1615424ef7aaab8d42dcc2234ed89b242ac04ed26d9290",
+      "bytes": 98404,
+      "sha256": "2d7142fece756fa53f7ffff8f3927902648331150b080bb2c60ca8aba986c02e",
       "textNormalization": "LF",
       "canonicalBytes": 95776,
-      "canonicalSha256": "8a255b7d868ea3048b1615424ef7aaab8d42dcc2234ed89b242ac04ed26d9290"
+      "canonicalSha256": "da0989f5c4b17de91627122f6e4dccb666a44762b8ecd470677fbc5c0493feae"
     },
     {
       "path": "public/assets/handdrawn-tools/item-u01-v3-02e7d633fc47.thumbnail.webp",
@@ -3883,11 +3962,11 @@
     },
     {
       "path": "public/assets/models/asset-pack-v1.json",
-      "bytes": 24640,
-      "sha256": "9f18e08bf92cfd63d78ddeb0a2f527047347a9b0c0abdaa2642eb22ea2da5ffe",
+      "bytes": 25666,
+      "sha256": "ef0fc38dd04ed0eaa9af2bda2e2bfaf595d7a83f4a3a33e4338fbc0840cb44a7",
       "textNormalization": "LF",
       "canonicalBytes": 24640,
-      "canonicalSha256": "9f18e08bf92cfd63d78ddeb0a2f527047347a9b0c0abdaa2642eb22ea2da5ffe"
+      "canonicalSha256": "eaf1e770563d2dde46b7be9846c1b1e4aa9a21c4ca2c9f268f579a778c841fb9"
     },
     {
       "path": "public/assets/models/card-animation-templates.glb",
@@ -4829,8 +4908,8 @@
     },
     {
       "path": "public/assets/p00/manifest.json",
-      "bytes": 3192,
-      "sha256": "0aeb131d4ada2d6ab65dfbe6e778f00e2b5f737013430188344bf598aa570a5a",
+      "bytes": 3280,
+      "sha256": "309d20ddad9045345faf28ed09f17ab5d1125bdf33e1066afabb17c124ca2257",
       "textNormalization": "LF",
       "canonicalBytes": 3192,
       "canonicalSha256": "0aeb131d4ada2d6ab65dfbe6e778f00e2b5f737013430188344bf598aa570a5a"
@@ -4933,6 +5012,74 @@
       "height": 288,
       "alpha": true,
       "decodedRgbaBytes": 884736,
+      "format": "webp"
+    },
+    {
+      "path": "public/assets/tangsong-pc-heroes/amo.pc.webp",
+      "bytes": 273356,
+      "sha256": "3ece86d8c7b26fdb0ec94f9a89d13140e777287adc9e1fb37d549acb9f925282",
+      "width": 896,
+      "height": 1120,
+      "alpha": true,
+      "decodedRgbaBytes": 4014080,
+      "format": "webp"
+    },
+    {
+      "path": "public/assets/tangsong-pc-heroes/azao.pc.webp",
+      "bytes": 256704,
+      "sha256": "c781197d8b5ca633d48c686f66db6489e1b45e0c360d97f6c079779ce8d89777",
+      "width": 896,
+      "height": 1120,
+      "alpha": true,
+      "decodedRgbaBytes": 4014080,
+      "format": "webp"
+    },
+    {
+      "path": "public/assets/tangsong-pc-heroes/erxiang.pc.webp",
+      "bytes": 210950,
+      "sha256": "64100c2ceaa7f8f161aabc13ab77ae6518f9076c1928488016bdc9b609976944",
+      "width": 896,
+      "height": 1120,
+      "alpha": true,
+      "decodedRgbaBytes": 4014080,
+      "format": "webp"
+    },
+    {
+      "path": "public/assets/tangsong-pc-heroes/laohuan.pc.webp",
+      "bytes": 364702,
+      "sha256": "65232f750ce6486fa958932d5ab3c678469aad2668a732ecf5f40de99d8c24e1",
+      "width": 896,
+      "height": 1120,
+      "alpha": true,
+      "decodedRgbaBytes": 4014080,
+      "format": "webp"
+    },
+    {
+      "path": "public/assets/tangsong-pc-heroes/manifest.json",
+      "bytes": 5090,
+      "sha256": "c4d1be960bd8a0bd0e5c1c59694ad228477db9bc82b20ca0bfbf795a79572b11",
+      "textNormalization": "LF",
+      "canonicalBytes": 5090,
+      "canonicalSha256": "c4d1be960bd8a0bd0e5c1c59694ad228477db9bc82b20ca0bfbf795a79572b11"
+    },
+    {
+      "path": "public/assets/tangsong-pc-heroes/touye.pc.webp",
+      "bytes": 366912,
+      "sha256": "2e2841ab4c3df4f9c77ed826274fd461f3c7b8c417eb2a335b49c7612bbab316",
+      "width": 896,
+      "height": 1120,
+      "alpha": true,
+      "decodedRgbaBytes": 4014080,
+      "format": "webp"
+    },
+    {
+      "path": "public/assets/tangsong-pc-heroes/xiemu.pc.webp",
+      "bytes": 322326,
+      "sha256": "3d3fd2c4b44b5d295f1d66aef43e316a0592ae2c231b152341a1e58f608b29cf",
+      "width": 896,
+      "height": 1120,
+      "alpha": true,
+      "decodedRgbaBytes": 4014080,
       "format": "webp"
     },
     {

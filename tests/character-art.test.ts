@@ -6,7 +6,10 @@ const catalog=CHARACTER_ART as CharacterArtAsset[],approved=[...catalog];
 afterEach(()=>{catalog.splice(0,catalog.length,...approved);vi.unstubAllGlobals();vi.restoreAllMocks();});
 const register=()=>{catalog.splice(0);const a:CharacterArtAsset={id:'amo',purpose:'portrait',key:characterArtKey('amo','portrait'),path:'test-approved-art.webp',url:'https://game.example/test-approved-art.webp',width:615,height:768,bytes:64,sha256:'test-fixture',format:'webp'};catalog.push(a);return a;};
 it('all six identities resolve approved assets, with optional focus outside the startup faces',()=>{
- expect(catalog).toHaveLength(30);for(const c of CHARACTERS)for(const p of ['avatar','selection','portrait','focus','eyes'] as const){const a=characterArt(c.id,p)!;expect(a).toBeDefined();expect(a.url).toContain(p==='eyes'?'/assets/tangsong-eyes/':'/assets/tangsong-portraits/');expect(a.bytes).toBeLessThanOrEqual(128*1024);expect(a.width*a.height).toBeLessThanOrEqual(600000);expect(characterArtKey(c.id,p)).toContain(c.id);if(p==='eyes')expect(a.width/a.height).toBe(8/3);}
+ expect(catalog).toHaveLength(36);for(const c of CHARACTERS)for(const p of ['avatar','selection','portrait','focus','eyes'] as const){const a=characterArt(c.id,p)!;expect(a).toBeDefined();expect(a.url).toContain(p==='eyes'?'/assets/tangsong-eyes/':'/assets/tangsong-portraits/');expect(a.bytes).toBeLessThanOrEqual(128*1024);expect(a.width*a.height).toBeLessThanOrEqual(600000);expect(characterArtKey(c.id,p)).toContain(c.id);if(p==='eyes')expect(a.width/a.height).toBe(8/3);}
+});
+it('PC cutouts have a separate full-frame alpha manifest and bounded publication budget',()=>{
+ for(const c of CHARACTERS){const a=characterArt(c.id,'pc')!;expect(a).toBeDefined();expect(a.key).toBe('pc-hero-'+c.id);expect(a.width).toBe(896);expect(a.height).toBe(1120);expect(a.bytes).toBeLessThan(400000);expect(()=>assertCharacterArtReference(a.key,a.url)).not.toThrow();}
 });
 it('every derived hero image uses its own content hash to invalidate replaced artwork',()=>{
  for(const asset of approved)expect(new URL(asset.url,'https://game.example').searchParams.get('v')).toBe(asset.sha256.slice(0,12));
@@ -28,4 +31,13 @@ it('actual transfer still rejects wrong dimensions before publishing and explici
  const {loadArtTexture}=await import('../src/game/ArtTextureLoading'),signal=new AbortController().signal;
  await expect(loadArtTexture(game,a.key,a.url,signal)).rejects.toMatchObject({retryable:false,message:expect.stringContaining('character-art-dimensions')});expect(addImage).not.toHaveBeenCalled();width=615;height=768;
  await loadArtTexture(game,a.key,a.url,signal);expect(addImage).toHaveBeenCalledOnce();await loadArtTexture(game,a.key,a.url,signal);expect(fetch).toHaveBeenCalledTimes(2);
+});
+
+it('registered cutouts pass their larger transfer budget without relaxing legacy artwork limits',async()=>{
+ const a=characterArt('touye','pc')!,addImage=vi.fn(),game={textures:{exists:()=>false,addImage}} as any;
+ vi.stubGlobal('Image',class{src='';decoding='async';naturalWidth=896;naturalHeight=1120;async decode(){}removeAttribute(){}});
+ vi.stubGlobal('fetch',vi.fn(async()=>new Response(new Uint8Array(200000),{headers:{'content-type':'image/webp','content-length':'200000'}})));
+ const {loadArtTexture}=await import('../src/game/ArtTextureLoading');
+ await loadArtTexture(game,a.key,a.url,new AbortController().signal);expect(addImage).toHaveBeenCalledOnce();
+ const legacy=characterArt('touye','portrait')!;await expect(loadArtTexture(game,legacy.key,legacy.url,new AbortController().signal)).rejects.toMatchObject({message:'art-budget'});
 });

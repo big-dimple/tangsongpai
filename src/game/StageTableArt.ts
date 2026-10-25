@@ -29,16 +29,35 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
  const plan=stageTableArtPlan(view.layout);
  if(view.layout.pc){
   const l=view.layout,{frame,main}=l.pc!,g=scene.add.graphics().setName('table-art/pc-paper').setData('bounds',frame);
-  // One continuous sheet, not a green mat beside a boxed sidebar. All accents
-  // are quiet dividers; the actual cards and the red play action own contrast.
-  g.fillStyle(T.paper,.96).fillRect(frame.x,frame.y,frame.width,frame.height);
-  g.fillStyle(T.paperLight,.38).fillRect(main.x,main.y,main.width,main.height);
-  g.lineStyle(1,T.jade,.22).lineBetween(main.x-16,frame.y+8,main.x-16,frame.y+frame.height-8);
-  const rackBottom=l.jokers.y+l.jokers.height+8;
-  g.lineStyle(1,T.ink,.14).lineBetween(main.x,rackBottom,main.x+main.width,rackBottom);
-  g.lineStyle(1,T.ink,.18).lineBetween(main.x,l.hand.y-8,main.x+main.width,l.hand.y-8);
-  // Five understated source ticks preserve the real left-to-right slot order.
-  for(const slot of l.slots)g.lineStyle(1,T.jade,.3).lineBetween(slot.x+slot.width/2-8,rackBottom,slot.x+slot.width/2+8,rackBottom);
+  // A single open sheet: the darker identity edge and pale landing lane lead
+  // the eye toward the foreground hand without adding independent card panels.
+  const bottom=frame.y+frame.height,right=main.x+main.width;
+  const rackBottom=l.jokers.y+l.jokers.height+8,handTop=l.hand.y-8;
+  g.fillStyle(T.paper,.98).fillRect(frame.x,frame.y,frame.width,frame.height);
+  g.fillStyle(T.paperEdge,.36).beginPath().moveTo(frame.x,frame.y)
+    .lineTo(main.x-22,frame.y).lineTo(main.x-8,bottom).lineTo(frame.x,bottom).closePath().fillPath();
+  g.fillStyle(T.paperLight,.58).fillRect(main.x,main.y,main.width,main.height);
+  // The cool, quiet centre makes the warm card faces read as the active layer.
+  const focusTop=Math.min(handTop,rackBottom+12);
+  g.fillStyle(T.jadeSoft,.48).beginPath().moveTo(main.x,focusTop)
+    .lineTo(right,focusTop).lineTo(right,handTop).lineTo(main.x+18,handTop).closePath().fillPath();
+  // The hand rises out of a white paper lip. All geometry still comes from layout.
+  g.fillStyle(T.ink,.045).fillRect(main.x,handTop,main.width,5);
+  g.fillStyle(T.paperLight,.94).beginPath().moveTo(main.x+18,handTop+5)
+    .lineTo(right,handTop+5).lineTo(right,bottom).lineTo(main.x,bottom)
+    .lineTo(main.x,handTop+23).closePath().fillPath();
+  g.lineStyle(1,T.jade,.24).lineBetween(main.x-16,frame.y+8,main.x-16,bottom-8);
+  g.lineStyle(3,T.red,.65).lineBetween(frame.x+12,frame.y,frame.x+54,frame.y);
+  g.lineStyle(1,T.ink,.16).lineBetween(main.x,rackBottom,right,rackBottom);
+  // Short repeated marks belong to the five real build slots, not extra seats.
+  for(const slot of l.slots){
+    const cx=slot.x+slot.width/2;
+    g.lineStyle(2,T.jade,.32).lineBetween(cx-12,rackBottom,cx+12,rackBottom);
+    g.lineStyle(1,T.jade,.16).lineBetween(cx,rackBottom,cx,rackBottom+4);
+  }
+  g.lineStyle(1,T.ink,.17).lineBetween(main.x+24,handTop+5,right,handTop+5);
+  // One measured accent at the action edge echoes the red result seal.
+  g.lineStyle(2,T.red,.45).lineBetween(right-44,bottom,right,bottom);
   view.add(g);
   return;
  }

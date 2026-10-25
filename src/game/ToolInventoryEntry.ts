@@ -29,3 +29,9 @@ export function shopToolInventoryRow(tabs:Box){
 export function shopInventoryEntry(tabs:Box,pcEntry?:Box|null):Box {
   return pcEntry??shopToolInventoryRow(tabs).inventory;
 }
+
+/** PC utilities reserve a real icon rail instead of shifting a centred label. */
+export function pcToolInventoryContent(b:Box){
+  return {glyph:{x:b.x+14,y:b.y+(b.height-22)/2,width:22,height:22},
+    text:{x:b.x+48,y:b.y+4,width:Math.max(0,b.width-60),height:b.height-8}};
+}

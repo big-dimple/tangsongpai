@@ -1,3 +1,4 @@
+import {mobileResultViewport} from './MobileSettlementPresentation';
 import {pcResultViewport} from './PcSettlementPresentation';
 import type Phaser from 'phaser';
 import type {SceneView} from './SceneView';
@@ -22,7 +23,7 @@ function measuredContent(content:Phaser.GameObjects.Container):Box {
 
 /** Local result scrolling; no saved state, camera movement or shared scene input changes. */
 export function mountResultViewport(scene:Phaser.Scene,view:SceneView,content:Phaser.GameObjects.Container,top:number,bottom:number,offset:number,remember:(offset:number)=>void){
-  const pc=pcResultViewport(view.layout.width,view.layout.height);
+  const pc=pcResultViewport(view.layout.width,view.layout.height)||mobileResultViewport(view.layout.width,view.layout.height);
   const bounds=measuredContent(content),initial=resultPlacement(top,bottom,bounds,offset,pc);
   const readingBottom=bottom-(initial.overflow>0?22:0),placement=resultPlacement(top,readingBottom,bounds,offset,pc);
   const canvas=scene.game.canvas,mask=view.add(scene.add.graphics().setVisible(false));

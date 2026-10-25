@@ -111,11 +111,16 @@ tools/          离线素材工具
 - 跳过、快进、静音、减少动态、后台切换和 resize 不改变规则结果，也不重复奖励。
 - 群英卷轴仅在每次页面加载后的首页播放一次：保留浅色纸卷，六人完整亮相后额外停留 1 秒，总长 2.6 秒，展开、落印与淡出保持原节奏；可直接操作离开首页，减少动态时跳过。选角页不重播群英卷轴，仅重置本局单人登场演出的播放额度。
 - 桌面横屏与手机竖屏共用 CSS 坐标和明确命中区域；触控、键盘与标准手柄均为正式输入路径。
-- PC 牌桌新版由 SceneView 的 game 场景显式启用，几何函数 PcTableLayout 只消费尺寸/安全区/手牌数据，默认不开启；实际入口排除 primary coarse pointer，要求至少 1180×640 可用横向空间。其他场景、手机/触控平板与小窗口保留原布局。
+- PC 牌桌新版由 SceneView 的 game 场景显式启用，几何函数 PcTableLayout 只消费尺寸/安全区/手牌数据，默认不开启；实际入口排除 primary coarse pointer，要求至少 1180×640 可用横向空间。手机对局牌桌、触控平板与小窗口保留原牌桌布局。
 - PC 的 hud 覆盖完整侧栏，heroRows、heroPortrait、inventoryEntry/helpEntry 与最终 scoreBoard/playedArea 一起从布局输出；渲染、命中、手柄焦点与计分来源避让共用这些几何，不能只移动可见图片。
 - PC 结算由 IntermissionLayout、PcSettlementPresentation 和 IntermissionScroll 配合实现上锚画幅海报，不对整块内容二次垂直居中。长去向文字可进入现有只读详情弹窗，真实分数/收益仍来自原 settlementFacts。
 - beginPcSettlementCut 是 PC-only 非阻塞暖纸 DOM 衔接，不是旧牌桌截图，不修改 PaperFlow 或奇遇切场。它不等待动画再执行导航，减少动态时不播放，拥有明确清理上限；结算入场同样不决定规则或奖励。
-- 当前结算使用已有高分辨率 portrait 画幅；selection 小图只作不放大的回退。用户另行提供透明立绘前，不把不透明画幅当作透明人物抠图，不为本轮自动生成新人物资源。
+- PC 牌桌与 PC/手机竖屏结算使用独立 `pc` purpose（沿用技术键，不替换既有 portrait/selection）：`public/assets/tangsong-pc-heroes/manifest.json` 注册六张 896×1120 带 alpha WebP（合计 1,794,950 字节）。`PcHeroArt` 按各自衣袖、双锤和剑的轮廓定义比例与水平落点，完整保留源画幅；结算人物向左越出文字版心，成绩与收益/按钮分列，上锚而非整组居中。
+- 透明图只在实际 PC 牌桌或 PC/手机竖屏结算请求当前英雄；复用原有受控图片队列与结果取消生命周期，不加入首页六人预加载。`portrait`、`selection` 与手机对局资源/演出保持原路径。角色详情仍使用原 portrait。
+- 手机竖屏结算由 `MobileSettlementPresentation` 独立绘制：人物/成绩主区、全宽奖励、去向和稳定按钮，紧凑屏压缩人物区而非把 PC 三栏缩小。长去向可点标题展开全文；失败、跳场、通关仍走真实既有操作。
+- 通用图片加载器只对注册的 `pc` purpose 使用 400,000 字节、896×1120 像素限额，并继续校验键/URL/真实尺寸；其他图片保留原 128 KiB / 600,000 像素限额。
+- PC 牌桌与商店道具箱共用 `pcToolInventoryContent` 的 22px 图标轨道与独立文字区，12px 间隔、绝对定位，保留原按钮功能和手机样式。
+- `node tools/build-pc-hero-art.mjs <原图目录>` 可重建运行图及 SHA/alpha/来源映射。源图为用户 Desktop/lihui/table 六张 1122×1402 PNG，原文件保留在外部；不向 public 复制原图，不生成新人物，不裁头手或武器。WebP quality 84、alphaQuality 100、无放大。
 - 手柄采用浏览器 [Gamepad 标准映射](https://www.w3.org/TR/gamepad/#remapping)：方向键／左摇杆移动焦点，底部键确认或选牌，右侧键返回或取消选择，左侧键出牌，顶部键弃牌；Xbox 分别显示 A／B／X／Y，Sony、Nintendo 按设备显示对应键名。LB／RB 调整聚焦手牌或唐宋牌顺序，在商店其它位置切换货架，在弹窗中逐项导航；LT／RT 按点数／花色整理，View 查看聚焦牌详情，Start 开关菜单；右摇杆滚动。
 - `GamepadInput` 只让方向导航连发，确认、出牌、弃牌、调序等按键每次按下仅执行一次；首次连接、断线重连和后台恢复须回到中立位置。未知映射不猜测键位。`GamepadNavigation` 只调用 `SceneView` 注册的有效操作及顶层原生弹窗控件，不模拟键盘、不绕过现有命令校验。关闭、切场景和换回鼠标／键盘会清理焦点表现；手柄提示显示时为牌桌保留独立底栏。
 - 有独立操作按钮的选择卡片通过 `WholeActionSurface` 将标题、说明与留白接入同一按钮；嵌套控件、禁用按钮及文本选择保持各自行为。点击选择卡片仍由原有确认流程决定是否提交。

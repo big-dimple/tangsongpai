@@ -1,3 +1,4 @@
+import {pcHeroKey,PC_HERO_COMPOSITION} from './PcHeroArt';
 import {beginPcSettlementCut} from './PcSettlementPresentation';
 import {previewR2Hand} from '../domain/scoreR2';
 import {usesBossSuitRescue,bossSuitRescueQualified,bossSuitRescueActive,bossSuitDisabledCards} from '../domain/r2BossSuitRescue';
@@ -26,7 +27,7 @@ import {opponentChoices,opponentCuePlan,opponentSavedStatus,remainingScoreEvents
 import {presentOpponentEntrance,showOpponentChoices,presentOpponentBeat} from './OpponentPresentation';
 import {opponentChallenge} from './OpponentChallenge';
 import {whenTextureReady} from './LateTextureArt';
-import {warmTableImages} from './StageImageWarmup';
+import {warmTableImages,warmPcHeroImage} from './StageImageWarmup';
 import {isR2ActiveMultTiming} from '../domain/r2GroupUpgrade';
 import {touyeComboCue} from './TouyeComboCue';
 import {azaoReleaseLabel,heroSkillGuide,heroOperationSteps,mountHeroSkillGuide} from './HeroSkillGuide';
@@ -723,23 +724,26 @@ export class GameScene extends Phaser.Scene {
     this.playAura=v.add(this.add.graphics().lineStyle(2,T.red,.7).strokeRoundedRect(play.x-3,play.y-3,play.width+6,play.height+6,9).setAlpha(0));
     this.statusText=v.text(l.status.x,l.status.y,'',14,'#f3d5ab',l.status.width);
     this.inventoryButton=v.button(l.pc?.utilities.inventory??heroSidebarUtilities(l)?.inventory??gameToolInventoryBox(l),toolInventoryLabel(this.run),'action/tool-inventory',()=>this.inspectInventory());
-    inventoryFeedback(this,this.inventoryButton,this.run,this.ready,this.reducedMotion);
+    inventoryFeedback(this,this.inventoryButton,this.run,this.ready,this.reducedMotion,!!l.pc);
     this.controlsLive=true;
     this.updateHud();this.renderHand();this.ownedDrag?.rebind();this.mountSceneHeroPortrait();this.mountStageGiftDelivery();
   }
   private mountSceneHeroPortrait():void {
     const l=this.view.layout,area=l.pc?.heroPortrait??heroPortraitArea(l),holder=this.view.add(this.add.container(0,0).setName('hero/portrait-holder'));
-    const key=portraitKey(this.characterId);
+    const key=l.pc?pcHeroKey(this.characterId):portraitKey(this.characterId);
+    if(l.pc)warmPcHeroImage(this,this.characterId);
     whenTextureReady(this,holder,key,()=>{
       const protectedBounds:Box[]=this.view.root.list.filter(object=>object instanceof Phaser.GameObjects.Text&&object.visible)
         .map(object=>(object as Phaser.GameObjects.Text).getBounds());
       for(const object of [this.roleAvatar,this.inventoryButton,...(l.mode==='portrait'?[]:[this.heroActionButton??this.passiveHeroSkill?.anchor]),this.progressBar])
         if(object?.active&&object.visible)protectedBounds.push(object.getBounds());
       protectedBounds.push(this.tableHelpBox());
-      const image=this.add.image(0,0,key),placement=heroPortraitLayout(area,{width:image.width,height:image.height},protectedBounds,l.mode==='portrait'?3:6);
+      const composition=l.pc?PC_HERO_COMPOSITION[this.characterId]:undefined;
+      const artArea=composition?{...area,x:area.x+area.width*(1-composition.scale)*composition.align,width:area.width*composition.scale}:area;
+      const image=this.add.image(0,0,key),placement=heroPortraitLayout(artArea,{width:image.width,height:image.height},protectedBounds,l.mode==='portrait'?3:6);
       if(!placement){image.destroy();return;}
       image.setPosition(placement.x,placement.y).setScale(placement.scale).setName('hero/portrait')
-        .setData('heroId',this.characterId).setData('assetId',this.characterId+'.portrait').setData('bounds',placement.imageBounds);
+        .setData('heroId',this.characterId).setData('assetId',this.characterId+(l.pc?'.pc':'.portrait')).setData('bounds',placement.imageBounds);
       holder.add(image);this.heroPortrait=image;
       this.heroPortraitMotion=mountHeroPortraitScoreMotion(this,image,{heroId:this.characterId,bounds:placement.safeBounds,reducedMotion:()=>this.reducedMotion});
       if(l.mode!=='portrait'){
