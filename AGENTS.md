@@ -14,7 +14,7 @@
 - 72 个唐宋牌定义、39 种工具、12 种长期道具。
 - 牌组改造、牌型升级、增强、版次、商店、节目单与 Boss。
 - D0–D3 难度、12 个固定挑战、三步教程和无尽模式。
-- 扑克奇遇、本地保存恢复、键盘触控、桌面与移动布局。
+- 扑克奇遇、本地保存恢复、键盘触控与标准手柄、桌面与移动布局。
 - 音效、音乐、震动、跳过和减少动态。
 
 这些是实现范围，不代表数值平衡、所有设备或真人体验已经验收。
@@ -51,6 +51,7 @@
 | 扑克奇遇规则与事务 | `src/domain/r2PokerEncounter.ts`、`src/domain/r2PokerEncounterIdentity.ts` |
 | 奇遇演出 | `src/domain/qiyuEvent.ts`、`src/game/QiyuAnimationPresentation.ts` |
 | 音频与震动 | `src/audio/`、`src/haptics/` |
+| 手柄输入与界面焦点 | `src/platform/GamepadInput.ts`、`src/game/GamepadNavigation.ts`、`src/game/ControllerScene.ts`、`src/game/SceneView.ts` |
 | 测试 | `tests/`、`harness/`、`package.json` |
 
 ## 4. 修改规则

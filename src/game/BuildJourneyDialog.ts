@@ -8,6 +8,7 @@ import {BUILD_FOCUS,BUILD_LABEL,buildJourneyFacts,currentBuildFocus,chooseBuildF
 import {jokerArtPreviewUrl} from './jokerArt';
 import {r2JokerDefinitionFor} from '../domain/r2ContentProfiles';
 import type {R2PracticeQuote} from '../domain/r2Practice';
+import {wholeActionSurface} from './WholeActionSurface';
 interface JourneyActions {onFocus?:()=>void;tools:()=>void;tool:(id:string)=>void;source:(id:string)=>void;deck:()=>void;offers?:(id:string,kind:'jokers'|'tools'|'items')=>void;compare?:(offerId:string,heldId:string)=>void;continue:()=>void;continueLabel:string;ready:boolean;publicHands?:()=>void;manage?:()=>void;chapter?:()=>void;basicTool?:(id?:string)=>void;practice?:(quote:R2PracticeQuote,all?:boolean)=>void}
 /** Independent inspection choices; the receiving confirmation owns every transaction. */
 function mountPractices(d:HTMLDialogElement|undefined,facts:ReturnType<typeof buildJourneyFacts>,actions:JourneyActions,all:boolean):void {
@@ -20,7 +21,7 @@ function mountPractices(d:HTMLDialogElement|undefined,facts:ReturnType<typeof bu
   const card=document.createElement('article'),copy=document.createElement('div'),name=document.createElement('h3'),price=document.createElement('strong'),body=document.createElement('p'),button=document.createElement('button');
   card.className='experience-card build-practice-option';card.dataset.handType=p.quote.handType;card.dataset.practiceHand=p.quote.handType;card.dataset.affordable=String(p.affordable);
   name.textContent=p.title;price.className='experience-card-stat';price.textContent=p.decision;body.textContent=p.body;button.type='button';button.textContent=p.affordable?'查看升级 · '+p.quote.price+'金':'查看差额与条件';button.disabled=!actions.ready||!actions.practice;button.onclick=()=>actions.practice?.(p.quote,all);
-  copy.append(name,price,body,button);card.append(copy);cards.append(card);
+  copy.append(name,price,body,button);card.append(copy);wholeActionSurface(card,button);cards.append(card);
  }
  const existing=intro.querySelector(':scope > .experience-cards');
  if(existing){if(all)existing.before(section);else existing.after(section);}else intro.prepend(section);

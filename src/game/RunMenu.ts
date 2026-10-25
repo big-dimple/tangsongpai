@@ -65,6 +65,9 @@ export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|un
     if(source==='click'){const action=[takeover,resume,retry,reload,start].find(button=>!button.hidden&&!button.disabled);(action??toggle).focus({preventScroll:true});}
   };
   const interaction=createRunMenuInteraction({hoverCapable:!!(primaryHover?.matches||anyHover?.matches),initialHover:!!primaryHover?.matches,protected:protectedInteraction,open:showMenu,close:hideMenu,change:updateToggle});
+  const controllerInput=()=>{keyboardInput=true;pointerHeld=false;interaction.input('gamepad');interaction.focusKeyboard(insideMenu(document.activeElement));};
+  const controllerMenu=()=>{controllerInput();if(interaction.state().open)interaction.dismiss();else interaction.show();};
+  globalThis.addEventListener?.('tangsongpai-controller-input',controllerInput);globalThis.addEventListener?.('tangsongpai-controller-menu',controllerMenu);
   const close=(returnToGame=false)=>{interaction.dismiss();if(returnToGame)game.canvas.focus({preventScroll:true});};
   const open=()=>interaction.show();
   const inPointerRegion=(event:PointerEvent)=>{
@@ -89,6 +92,7 @@ export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|un
   modal.addEventListener('cancel',event=>{if(event.target===modal){event.preventDefault();close();}});
   modal.addEventListener('close',()=>{if(!closing&&toggle.parentElement===modal)close();});
   const removeInteraction=()=>{
+    globalThis.removeEventListener?.('tangsongpai-controller-input',controllerInput);globalThis.removeEventListener?.('tangsongpai-controller-menu',controllerMenu);
     document.removeEventListener?.('pointermove',pointerMove,true);document.removeEventListener?.('pointerdown',pointerDown,true);document.removeEventListener?.('pointerup',pointerEnd,true);document.removeEventListener?.('pointercancel',pointerEnd,true);
     document.removeEventListener?.('keydown',keydown,true);document.removeEventListener?.('focusin',focusIn);document.removeEventListener?.('focusout',focusOut);
     primaryHover?.removeEventListener?.('change',mediaChanged);anyHover?.removeEventListener?.('change',mediaChanged);coarsePointer?.removeEventListener?.('change',mediaChanged);globalThis.removeEventListener?.('blur',pointerEnd);interaction.dispose();

@@ -218,6 +218,17 @@ export class ShopScene extends Phaser.Scene {
     const owner=runController(this),run=owner?.state;if(!owner||!run||run.phase!=='shop'){this.scene.start('character-select');return;}this.run=run;
     this.menuActions={viewDeck:()=>this.inspectDeck()};this.registry.set('runMenuActions',this.menuActions);
     this.cameras.main.setBackgroundColor('#F3EADB');this.view=new SceneView(this,()=>this.render());
+    this.view.controllerAction=(action,targetId)=>{
+      if(action!=='previous'&&action!=='next')return false;
+      if(!this.ready)return true;
+      if(targetId?.startsWith('joker/')){
+        const from=this.run.jokers.findIndex(j=>j.instanceId===targetId.slice(6)),to=from+(action==='previous'?-1:1);
+        if(from>=0&&to>=0&&to<this.run.jokers.length)void this.reorder(from,to,this.run.commandSeq);
+        return true;
+      }
+      const kinds=['jokers','tools','items'] as const,index=kinds.indexOf(this.shelfKind);
+      this.workshopSelected=false;this.shelfKind=kinds[(index+(action==='previous'?2:1))%3];this.shelfPage=0;this.selectedOfferId=undefined;this.render();return true;
+    };
     const clearPreview=()=>this.clearSynergyHighlights(),outside=(event:PointerEvent)=>{if(event.target!==this.game.canvas)clearPreview();},visibility=()=>{if(document.hidden)clearPreview();};
     const otherTarget=(_pointer:Phaser.Input.Pointer,over:Phaser.GameObjects.GameObject[])=>{if(!over.some(o=>o.name==='offer/'+this.synergyOfferId||o.name==='shop/selected-details'))clearPreview();};
     const motion=window.matchMedia('(prefers-reduced-motion: reduce)');motion.addEventListener('change',clearPreview);

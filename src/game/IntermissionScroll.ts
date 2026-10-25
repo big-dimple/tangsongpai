@@ -36,6 +36,12 @@ export function mountResultViewport(scene:Phaser.Scene,view:SceneView,content:Ph
     if(rail){const h=readingBottom-top,thumb=Math.max(32,h*h/bounds.height);rail.clear().fillStyle(PAPER_THEME.jade,.35).fillRoundedRect(Math.min(view.layout.width-5,bounds.x+bounds.width+5),top+(h-thumb)*scroll/p.overflow,3,thumb,1.5);}
   };
   update(scroll);
+  const controllerScroll=(delta:number)=>update(scroll+delta);
+  view.controllerScroll=controllerScroll;
+  content.setData('controllerReveal',(box:Box)=>{
+    if(box.y<top)update(scroll+box.y-top-4);
+    else if(box.y+box.height>readingBottom)update(scroll+box.y+box.height-readingBottom+4);
+  });
   const blocked=(e:PointerEvent|WheelEvent)=>modalBlocksCanvas(e.clientX,e.clientY,undefined,e.type==='pointerdown'?{pointerId:(e as PointerEvent).pointerId,startedAt:e.timeStamp,phase:e.type,trusted:e.isTrusted}:undefined);
   const wheel=(e:WheelEvent)=>{if(!placement.overflow||blocked(e))return;e.preventDefault();view.cancelInteraction();update(scroll+e.deltaY*(e.deltaMode===1?18:e.deltaMode===2?readingBottom-top:1));};
   const down=(e:PointerEvent)=>{
@@ -58,5 +64,5 @@ export function mountResultViewport(scene:Phaser.Scene,view:SceneView,content:Ph
   };
   canvas.addEventListener('wheel',wheel,{passive:false});canvas.addEventListener('pointerdown',down,true);
   window.addEventListener('pointermove',move,{capture:true,passive:false});window.addEventListener('pointerup',end,true);window.addEventListener('pointercancel',end,true);window.addEventListener('blur',end);window.addEventListener('keydown',key);
-  return ()=>{canvas.removeEventListener('wheel',wheel);canvas.removeEventListener('pointerdown',down,true);window.removeEventListener('pointermove',move,true);window.removeEventListener('pointerup',end,true);window.removeEventListener('pointercancel',end,true);window.removeEventListener('blur',end);window.removeEventListener('keydown',key);content.clearMask(true);};
+  return ()=>{if(view.controllerScroll===controllerScroll)view.controllerScroll=undefined;content.setData('controllerReveal',undefined);canvas.removeEventListener('wheel',wheel);canvas.removeEventListener('pointerdown',down,true);window.removeEventListener('pointermove',move,true);window.removeEventListener('pointerup',end,true);window.removeEventListener('pointercancel',end,true);window.removeEventListener('blur',end);window.removeEventListener('keydown',key);content.clearMask(true);};
 }

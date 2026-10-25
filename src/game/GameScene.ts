@@ -493,6 +493,28 @@ export class GameScene extends Phaser.Scene {
     this.menuActions={viewDeck:()=>this.inspectDeck(),viewRules:inspectOpponent};
     this.registry.set('runMenuActions',this.menuActions);
     window.addEventListener('keydown',this.keyboard);
+    this.view.controllerAction=(action,targetId)=>{
+      if(this.presentation||this.xinRefillSequence?.active){if(action==='confirm'||action==='back'||action==='play')this.fastForward();return true;}
+      if(!this.ready)return true;
+      if((action==='left'||action==='right')&&targetId?.startsWith('card/')&&this.hand.length){
+        const index=this.hand.findIndex(card=>card.id===targetId.slice(5));
+        this.focusIndex=(Math.max(0,index)+(action==='left'?this.hand.length-1:1))%this.hand.length;
+        this.showFocusedCard();return 'card/'+this.hand[this.focusIndex].id;
+      }
+      if(action==='back'){
+        if(this.selectedIds.size||this.assistIds.length){this.selectedIds.clear();this.assistIds=[];this.erxiangTargetId=null;this.azaoRelease=false;this.xiemuBurn=0;this.amoExile=false;this.refreshSelection();return true;}
+        return false;
+      }
+      if((action==='previous'||action==='next')&&this.ready){
+        const delta=action==='previous'?-1:1;
+        if(targetId?.startsWith('card/')){void this.moveHandCard(targetId.slice(5),delta);return true;}
+        if(targetId?.startsWith('joker/')&&this.ownedReady){
+          const ids=this.run.jokers.map(j=>j.instanceId),index=ids.indexOf(targetId.slice(6)),to=index+delta;
+          if(index>=0&&to>=0&&to<ids.length){const [id]=ids.splice(index,1);ids.splice(to,0,id);void this.command({type:'ReorderJokers',ids},this.run.commandSeq);}return true;
+        }
+      }
+      return false;
+    };
     this.game.canvas.setAttribute('data-hand-input','pointer');
     window.addEventListener('pointerdown',this.pointerFocus,true);document.addEventListener('focusin',this.focusFeedback);document.addEventListener('focusout',this.focusFeedback);window.addEventListener('blur',this.stopHandHint);document.addEventListener('visibilitychange',this.hintVisibility);
     if(this.run.stage.boss?.definitionId==='B05')this.statusMessage=opponentSavedStatus(this.run.lastTrace);
@@ -1022,7 +1044,7 @@ export class GameScene extends Phaser.Scene {
     this.hand.forEach((card,i)=>{
       const area=l.cards[i],b=area.visual,hit=area.hit,cv=this.cardPiece(card,b);cv.container.setVisible(area.visible);
       const target=v.rect(hit,T.ink).setFillStyle(T.ink,.001).setStrokeStyle().setVisible(area.visible);cv.hit=target;
-      v.target(target,'card/'+card.id,{tap:()=>this.toggleCard(card.id),detail:()=>this.inspectCard(card.id),enter:()=>this.hoverCard(card.id,true),leave:()=>this.hoverCard(card.id,false)});this.cardViews.push(cv);
+      v.target(target,'card/'+card.id,{tap:()=>this.toggleCard(card.id),detail:()=>this.inspectCard(card.id),focus:()=>{this.focusIndex=i;this.keyboardFocus=true;this.game.canvas.setAttribute('data-hand-input','gamepad');this.showFocusedCard();this.focusFeedback();},blur:()=>{this.keyboardFocus=false;this.focusFeedback();},enter:()=>this.hoverCard(card.id,true),leave:()=>this.hoverCard(card.id,false)});this.cardViews.push(cv);
     });
     if(l.handOverflow){
       this.handNavigationButtons=[v.button(l.handNavigation.previous,'‹','action/hand-previous',()=>this.scrollHand(-1),this.ready&&l.handStart>0),v.button(l.handNavigation.next,'›','action/hand-next',()=>this.scrollHand(1),this.ready&&l.handStart+l.visibleCardCount<this.hand.length)];

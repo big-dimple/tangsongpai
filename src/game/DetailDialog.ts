@@ -14,6 +14,7 @@ import {createJokerRarityElement,type JokerRarity} from './JokerRarity';
 import {openCardArtZoom} from './CardArtZoomModal';
 import {portraitCardArt} from './CardArtSource';
 import './DetailDialog.css';
+import {wholeActionSurface} from './WholeActionSurface';
 import './DetailArtBackground.css';
 /** Native modal owns focus and readable, scrollable details independently of canvas resize. */
 export interface ModalCanvasPress {pointerId:number;startedAt:number;phase:string;trusted:boolean}
@@ -197,7 +198,7 @@ export class DetailDialog {
         const item=document.createElement('article'),title=document.createElement('h3'),text=document.createElement('p'),copy=document.createElement('div');
         item.className='experience-card';title.textContent=card.title;text.textContent=card.body;copy.append(title);if(card.stat){const stat=document.createElement('strong');stat.className='experience-card-stat';stat.textContent=card.stat;copy.append(stat);}copy.append(text);
         if(card.url){const image=document.createElement('img');image.src=card.url;image.alt=card.title+'卡面';image.width=80;image.height=112;image.decoding='async';image.onerror=()=>{image.hidden=true;};item.append(image);cleanups.push(()=>{image.onerror=null;});}
-        if(card.action){const b=document.createElement('button');b.type='button';b.textContent=card.action.label;b.disabled=!!card.action.disabled;b.onclick=card.action.run;copy.append(b);}
+        if(card.action){const b=document.createElement('button');b.type='button';b.textContent=card.action.label;b.disabled=!!card.action.disabled;b.onclick=card.action.run;copy.append(b);cleanups.push(wholeActionSurface(item,b));}
         if(card.details){const details=document.createElement('details'),label=document.createElement('summary'),text=document.createElement('p');details.className='card-rules';label.textContent='条件、配合与完整损失';text.textContent=playerText(card.details);details.append(label,text);copy.append(details);}
         item.append(copy);gallery.append(item);
       }intro.append(gallery);
@@ -205,7 +206,7 @@ export class DetailDialog {
     if(options.guideSteps){const steps=document.createElement('ol');steps.className='operation-guide';steps.setAttribute('aria-label','操作步骤');options.guideSteps.labels.forEach((label,index)=>{const item=document.createElement('li');item.textContent=label;if(index===options.guideSteps!.current){item.className='is-current';item.setAttribute('aria-current','step');}steps.append(item);});intro.prepend(steps);}
     if(options.choices?.length){
       const choices=document.createElement('section');choices.className='dialog-choice-actions';choices.setAttribute('aria-label','当前可选操作');
-      for(const action of options.choices){const item=document.createElement('div');item.append(actionButton(action));if(action.detail){const detail=document.createElement('p');detail.textContent=playerText(action.detail);item.append(detail);}choices.append(item);}intro.append(choices);
+      for(const action of options.choices){const item=document.createElement('div'),button=actionButton(action);item.append(button);if(action.detail){const detail=document.createElement('p');detail.textContent=playerText(action.detail);item.append(detail);}cleanups.push(wholeActionSurface(item,button));choices.append(item);}intro.append(choices);
     }
     if(options.secondaryActions?.length){
       const more=document.createElement('details'),label=document.createElement('summary'),buttons=document.createElement('div');more.className='dialog-secondary-actions';label.textContent='其它查看';

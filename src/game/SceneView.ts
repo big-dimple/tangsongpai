@@ -10,12 +10,16 @@ import {alignViewportCamera,cssViewport} from '../platform/Viewport';
 import {crispText} from './TextRaster';
 import {drawHandActionGlyph,type HandButtonSkin} from './HandActionArt';
 import {attachHandSortVisual,isHandSortControl} from './HandSortButtonVisual';
+import {registerControllerScene,type ControllerTarget} from './ControllerScene';
+import type {PadAction} from '../platform/GamepadInput';
 
-type TouchActions={tap:()=>void;detail?:()=>void;drag?:(x:number,y:number)=>void;dragMove?:(x:number,y:number)=>void;swipe?:(dx:number,dy:number)=>void;cancel?:()=>void;press?:()=>void;release?:()=>void;enter?:()=>void;leave?:()=>void;holdToDrag?:boolean};
+type TouchActions={tap:()=>void;detail?:()=>void;focus?:()=>void;blur?:()=>void;drag?:(x:number,y:number)=>void;dragMove?:(x:number,y:number)=>void;swipe?:(dx:number,dy:number)=>void;cancel?:()=>void;press?:()=>void;release?:()=>void;enter?:()=>void;leave?:()=>void;holdToDrag?:boolean};
 // A repeated release can outlive its scene and hit a different action in the next view.
 const sceneTaps=new WeakMap<Phaser.Game,{scene:Phaser.Scene;x:number;y:number;nativeUp:number;handledAt:number}>();
 export class SceneView {
   readonly root:Phaser.GameObjects.Container;
+  controllerAction?:(action:PadAction,targetId:string|undefined)=>boolean|string;
+  controllerScroll?:(delta:number)=>void;
   private gestures=new Map<Phaser.GameObjects.GameObject,TouchActions>();
   private intent=new PointerIntent();
   private pressed?:{object:Phaser.GameObjects.GameObject;actions:TouchActions;id:number;held:boolean;touch:boolean;x:number;y:number;dragging:boolean;at:number;downTime:number};
@@ -80,10 +84,28 @@ export class SceneView {
   constructor(private readonly scene:Phaser.Scene,private readonly redraw:()=>void,private readonly handWindow?:()=>HandWindow){
     alignViewportCamera(scene);
     this.root=scene.add.container(0,0).setName('view');
+    const stopController=registerControllerScene(scene,{targets:()=>this.controllerTargets(),action:(action,id)=>this.controllerAction?.(action,id)??false,scroll:delta=>this.controllerScroll?.(delta)});
+    scene.events.once('shutdown',stopController);
     scene.input.on('pointerdown',this.down);scene.input.on('pointermove',this.move);scene.input.on('pointerup',this.up);scene.input.on('pointerupoutside',this.cancel);
     scene.game.canvas.addEventListener('pointercancel',this.cancel);scene.scale.on('resize',this.resize);
     window.addEventListener('pointerdown',this.contactDown,true);window.addEventListener('pointerup',this.contactEnd,true);window.addEventListener('pointercancel',this.contactEnd,true);window.addEventListener('blur',this.contactBlur);document.addEventListener('visibilitychange',this.visibility);
     scene.events.once('shutdown',()=>{this.cancel();scene.input.off('pointerdown',this.down);scene.input.off('pointermove',this.move);scene.input.off('pointerup',this.up);scene.input.off('pointerupoutside',this.cancel);scene.game.canvas.removeEventListener('pointercancel',this.cancel);scene.scale.off('resize',this.resize);this.gestures.clear();window.removeEventListener('pointerdown',this.contactDown,true);window.removeEventListener('pointerup',this.contactEnd,true);window.removeEventListener('pointercancel',this.contactEnd,true);window.removeEventListener('blur',this.contactBlur);document.removeEventListener('visibilitychange',this.visibility);this.contacts.clear();this.presses.clear();});
+  }
+  private controllerTargets():ControllerTarget[] {
+    if(!this.scene.input.enabled)return [];
+    const result:ControllerTarget[]=[];
+    for(const [object,actions]of this.gestures){
+      const target=object as Phaser.GameObjects.Rectangle;
+      if(!target.active||!target.visible||!target.input?.enabled)continue;
+      let hidden=false;for(let parent=target.parentContainer;parent;parent=parent.parentContainer)if(!parent.visible||!parent.active){hidden=true;break;}
+      if(hidden)continue;
+      const bounds=target.getBounds();
+      if(bounds.width<=0||bounds.height<=0)continue;
+      result.push({id:target.name,box:{x:bounds.x,y:bounds.y,width:bounds.width,height:bounds.height},primary:!!target.getData('buttonPrimary'),
+        activate:()=>{if(target.active&&target.input?.enabled){this.cancelInteraction();actions.tap();}},
+        detail:actions.detail,blur:actions.blur,focus:()=>{actions.focus?.();for(let parent=target.parentContainer;parent;parent=parent.parentContainer){const reveal=parent.getData('controllerReveal') as ((box:Box)=>void)|undefined;reveal?.(target.getBounds());}}});
+    }
+    return result;
   }
   get layout():TableLayout {
     const style=getComputedStyle(document.documentElement),n=(key:string)=>parseFloat(style.getPropertyValue(key))||0;

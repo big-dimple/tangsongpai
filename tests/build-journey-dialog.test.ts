@@ -37,10 +37,10 @@ it('a no-buy decision keeps entry primary and an explicitly opened ledger retain
  showBuildJourney({open} as unknown as DetailDialog,s,actions,false,true);expect(open.mock.calls[1][3].keepsakeCompact).toBeUndefined();expect(open.mock.calls[1][3].keepsake).toBeTruthy();
 });
 
-interface PracticeNode {tag:string;className:string;dataset:Record<string,string>;textContent:string;disabled:boolean;onclick?:()=>void;children:PracticeNode[];classList:{add:ReturnType<typeof vi.fn>};append:(...nodes:PracticeNode[])=>void;prepend:(...nodes:PracticeNode[])=>void;querySelector:()=>null;setAttribute:ReturnType<typeof vi.fn>}
+interface PracticeNode {tag:string;className:string;dataset:Record<string,string>;textContent:string;disabled:boolean;onclick?:()=>void;children:PracticeNode[];classList:{add:ReturnType<typeof vi.fn>};append:(...nodes:PracticeNode[])=>void;prepend:(...nodes:PracticeNode[])=>void;querySelector:()=>null;setAttribute:ReturnType<typeof vi.fn>;addEventListener:ReturnType<typeof vi.fn>;removeEventListener:ReturnType<typeof vi.fn>}
 function practiceRender(s:R2RunState,all=false,ready=true){
  const nodes:PracticeNode[]=[];
- const createElement=(tag:string):PracticeNode=>{const n:PracticeNode={tag,className:'',dataset:{},textContent:'',disabled:false,children:[],classList:{add:vi.fn()},append:(...children)=>n.children.push(...children),prepend:(...children)=>n.children.unshift(...children),querySelector:()=>null,setAttribute:vi.fn()};nodes.push(n);return n;};
+ const createElement=(tag:string):PracticeNode=>{const n:PracticeNode={tag,className:'',dataset:{},textContent:'',disabled:false,children:[],classList:{add:vi.fn()},append:(...children)=>n.children.push(...children),prepend:(...children)=>n.children.unshift(...children),querySelector:()=>null,setAttribute:vi.fn(),addEventListener:vi.fn(),removeEventListener:vi.fn()};nodes.push(n);return n;};
  const intro=createElement('intro'),element={classList:{add:vi.fn()},dataset:{} as Record<string,string>,querySelector:()=>intro},open=vi.fn(()=>element),practice=vi.fn();
  vi.stubGlobal('document',{querySelector:()=>null,createElement});
  chooseBuildFocus(s,'group');showBuildJourney({open} as unknown as DetailDialog,s,{tools:()=>{},tool:()=>{},source:()=>{},deck:()=>{},continue:()=>{},continueLabel:'继续',ready,practice},false,all);

@@ -13,6 +13,7 @@ import {AudioEngine} from './audio/AudioEngine';
 import {installOpeningAudio} from './audio/OpeningAudio';
 import {installViewport,viewportMetrics} from './platform/Viewport';
 import {prefersCanvasRenderer} from './platform/Renderer';
+import {installGamepadNavigation} from './game/GamepadNavigation';
 
 const viewport=viewportMetrics();
 
@@ -40,6 +41,7 @@ game.canvas.tabIndex=0;
 document.title=GAME_NAME;document.querySelector('meta[name=description]')?.setAttribute('content',GAME_NAME+' · '+GAME_DESCRIPTION);
 game.canvas.setAttribute('aria-label',GAME_NAME+'牌桌，方向键聚焦手牌，空格选牌，Enter 查看详情');
 installRunMenu(game);
+installGamepadNavigation(game);
 const audio=AudioEngine.shared;
 const stopOpeningAudio=installOpeningAudio(audio);
 const suspendAudio=()=>audio.setSuspended(document.hidden);

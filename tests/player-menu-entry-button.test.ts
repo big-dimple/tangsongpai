@@ -47,6 +47,13 @@ it('one fixed arrow repeatedly opens/closes the same panel and Escape restores i
  button.focus();button.click();modal.dispatchEvent(new Event('cancel',{cancelable:true}));expect(modal.open).toBe(false);expect(dom.activeElement).toBe(button);expect(button.attrs.get('aria-expanded')).toBe('false');
  session.notice='存储暂时不可用';session.storageUnavailable=true;notify();expect(modal.open).toBe(false);expect(button.hidden).toBe(false);expect(button.attrs.get('aria-label')).toBe('展开菜单，有进度提示待处理');
 });
+it('controller menu input opens a stable click panel and removes its bindings when destroyed',()=>{
+ vi.useFakeTimers();const bus=new EventTarget();vi.stubGlobal('addEventListener',bus.addEventListener.bind(bus));vi.stubGlobal('removeEventListener',bus.removeEventListener.bind(bus));
+ const {button,modal,destroy}=mount({primary:true,any:true,coarse:false});
+ bus.dispatchEvent(new Event('tangsongpai-controller-menu'));expect(modal.open).toBe(true);expect(button.attrs.get('aria-label')).toBe('收起菜单');
+ bus.dispatchEvent(new Event('tangsongpai-controller-input'));vi.advanceTimersByTime(500);expect(modal.open).toBe(true);
+ bus.dispatchEvent(new Event('tangsongpai-controller-menu'));expect(modal.open).toBe(false);destroy();bus.dispatchEvent(new Event('tangsongpai-controller-menu'));expect(modal.open).toBe(false);
+});
 it('pointer/blur and state updates do not collapse an open panel; detail actions retain it',async()=>{
  const {button,modal,find,actions}=mount();button.click();modal.dispatchEvent(new Event('pointerdown'));modal.dispatchEvent(new Event('blur'));notify();expect(modal.open).toBe(true);
  await find('图鉴查询').onclick?.();expect(showCatalog).toHaveBeenCalledOnce();expect(modal.open).toBe(true);

@@ -71,6 +71,11 @@ export class CharacterSelectScene extends Phaser.Scene {
     this.choosing=false;this.confirming=false;this.notice='';this.animateChoice=false;this.lifecycle++;
     this.cameras.main.setBackgroundColor('#192D32');this.audio.setScene('menu');
     this.view=new SceneView(this,()=>this.render());
+    this.view.controllerAction=action=>{
+      if(action==='back'){void this.cancelChoice();return true;}
+      if(this.choosing){if(action==='confirm'&&this.confirming)this.entryParticles?.skipConfirm();return true;}
+      return false;
+    };
     this.entryParticles=new SelectionEntryParticles(this,()=>this.reducedMotion());
     this.ensembleDispose?.();
     this.ensembleDispose=mountTangSongEnsembleBurst(document.body,{mode:'character-select',reducedMotion:this.reducedMotion()});
