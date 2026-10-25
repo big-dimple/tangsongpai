@@ -1,3 +1,4 @@
+import {beginPcSettlementCut} from './PcSettlementPresentation';
 import {previewR2Hand} from '../domain/scoreR2';
 import {usesBossSuitRescue,bossSuitRescueQualified,bossSuitRescueActive,bossSuitDisabledCards} from '../domain/r2BossSuitRescue';
 import {bossSuitRescueLabel,showBossSuitRescue} from './BossSuitRescue';
@@ -640,9 +641,9 @@ export class GameScene extends Phaser.Scene {
     const v=this.view,l=v.layout;this.hoveredCardId=undefined;this.hoveredJokerId=undefined;this.jokerHoverPreview=undefined;v.clear();this.settlementChrome.clear();this.handNavigationButtons=[];v.paperBackground();drawStageTableArt(this,v,this.characterId,undefined,false);this.settledCards.clear();this.previewCards=undefined;
     this.playAuraPulse?.remove();this.playAuraPulse=undefined;this.playAura=undefined;
     if(this.progressBar)this.tweens.killTweensOf(this.progressBar);this.progressTarget=Number.NaN;
-    const h=l.hud,c=getCharacter(this.characterId),portrait=l.mode==='portrait',short=l.mode==='landscape',heroRoom=portrait?Math.min(108,Math.max(74,h.width-252)):108,sidebar=heroSidebarRows(h);
+    const h=l.hud,c=getCharacter(this.characterId),portrait=l.mode==='portrait',short=l.mode==='landscape',heroRoom=portrait?Math.min(108,Math.max(74,h.width-252)):108,sidebar=l.pc?.heroRows??heroSidebarRows(h);
     this.game.canvas.setAttribute('aria-label',GAME_NAME+' · '+c.name+'牌桌；方向键聚焦手牌，空格选牌，Enter查看详情。');
-    if(!portrait)v.add(this.add.graphics().lineStyle(1,T.jade,.22).lineBetween(h.x+h.width+8,h.y,h.x+h.width+8,h.y+h.height));
+    if(!portrait&&!l.pc)v.add(this.add.graphics().lineStyle(1,T.jade,.22).lineBetween(h.x+h.width+8,h.y,h.x+h.width+8,h.y+h.height));
 
     const avatarSize=portrait?30:44,avatarY=h.y+(portrait?6:short?34:42);
     this.roleAvatar=v.add(this.add.container(h.x+12+avatarSize/2,avatarY+avatarSize/2)).setData('baseY',avatarY+avatarSize/2);
@@ -721,13 +722,13 @@ export class GameScene extends Phaser.Scene {
     const play=l.tableActions.play;
     this.playAura=v.add(this.add.graphics().lineStyle(2,T.red,.7).strokeRoundedRect(play.x-3,play.y-3,play.width+6,play.height+6,9).setAlpha(0));
     this.statusText=v.text(l.status.x,l.status.y,'',14,'#f3d5ab',l.status.width);
-    this.inventoryButton=v.button(heroSidebarUtilities(l)?.inventory??gameToolInventoryBox(l),toolInventoryLabel(this.run),'action/tool-inventory',()=>this.inspectInventory());
+    this.inventoryButton=v.button(l.pc?.utilities.inventory??heroSidebarUtilities(l)?.inventory??gameToolInventoryBox(l),toolInventoryLabel(this.run),'action/tool-inventory',()=>this.inspectInventory());
     inventoryFeedback(this,this.inventoryButton,this.run,this.ready,this.reducedMotion);
     this.controlsLive=true;
     this.updateHud();this.renderHand();this.ownedDrag?.rebind();this.mountSceneHeroPortrait();this.mountStageGiftDelivery();
   }
   private mountSceneHeroPortrait():void {
-    const l=this.view.layout,area=heroPortraitArea(l),holder=this.view.add(this.add.container(0,0).setName('hero/portrait-holder'));
+    const l=this.view.layout,area=l.pc?.heroPortrait??heroPortraitArea(l),holder=this.view.add(this.add.container(0,0).setName('hero/portrait-holder'));
     const key=portraitKey(this.characterId);
     whenTextureReady(this,holder,key,()=>{
       const protectedBounds:Box[]=this.view.root.list.filter(object=>object instanceof Phaser.GameObjects.Text&&object.visible)
@@ -1245,6 +1246,7 @@ export class GameScene extends Phaser.Scene {
   private selectionQuickInScore(_score:Box):boolean {return false;}
   private tableHelpBox():Box {
     const l=this.view.layout;
+    if(l.pc)return l.pc.utilities.help;
     if(l.mode==='desktop')return heroSidebarUtilities(l)!.help;
     if(l.mode==='landscape')return {x:l.hud.x+4,y:l.status.y-95,width:112,height:44};
     if(l.helpEntry)return l.helpEntry;
@@ -2575,6 +2577,7 @@ export class GameScene extends Phaser.Scene {
 
     this.tweens.add({targets:{t:0},t:1,duration:1000,onComplete:() => {
       if(lifecycle!==this.lifecycle||!this.scene.isActive())return;
+      if(this.view.layout.pc)beginPcSettlementCut(this,gameSession().reducedMotion);
       paperSceneStart(this,'intermission', {
         cleared,
         stageIndex: completedIndex,
@@ -2589,7 +2592,7 @@ export class GameScene extends Phaser.Scene {
 
   private fitHudReadouts():void {
     const l=this.view.layout;if(!this.roleText?.active)return;
-    if(l.mode==='desktop'){const area=heroSidebarRows(l.hud).status;this.roleText.setFontSize(14).setScale(1).setOrigin(0,0).setPosition(area.x,area.y);if(this.roleText.style.wordWrapWidth!==area.width||!this.roleText.style.wordWrapUseAdvanced)this.roleText.setWordWrapWidth(area.width,true);crispText(this.roleText);return;}
+    if(l.mode==='desktop'){const area=(l.pc?.heroRows??heroSidebarRows(l.hud)).status;this.roleText.setFontSize(14).setScale(1).setOrigin(0,0).setPosition(area.x,area.y);if(this.roleText.style.wordWrapWidth!==area.width||!this.roleText.style.wordWrapUseAdvanced)this.roleText.setWordWrapWidth(area.width,true);crispText(this.roleText);return;}
     if(l.mode!=='portrait')return;const h=l.hud,roleX=h.x+64+(this.mobileHeroName?.width??40)+8;
     this.roleText.setWordWrapWidth(0).setFontSize(13).setScale(1).setOrigin(0,0).setPosition(roleX,h.y+6);
     this.fitMobileHeroCaption();crispText(this.roleText);
@@ -2624,7 +2627,7 @@ export class GameScene extends Phaser.Scene {
     this.goldText.setText(l.shortLandscape?gold+' 金':'金币 '+gold+(l.mode==='desktop'?'\n还需 '+heatText(remaining)+' 热度':''));
     if(l.mode==='desktop'&&this.progressBar?.active){
       // Keep the two actual text rows within the HUD's dedicated gold region.
-      const sidebar=heroSidebarRows(l.hud);fitScoreLine(this.goldText,sidebar.gold,14);
+      const sidebar=l.pc?.heroRows??heroSidebarRows(l.hud);fitScoreLine(this.goldText,sidebar.gold,14);
       const progressY=Math.max(sidebar.progress.y,this.goldText.getBounds().bottom+4);
       this.progressBar.setY(progressY+2.5);
     }
@@ -2643,3 +2646,4 @@ export class GameScene extends Phaser.Scene {
     if(!this.presentation)this.refreshJokerLabels(this.selectionPreview());
   }
 }
+

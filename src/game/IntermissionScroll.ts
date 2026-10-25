@@ -1,3 +1,4 @@
+import {pcResultViewport} from './PcSettlementPresentation';
 import type Phaser from 'phaser';
 import type {SceneView} from './SceneView';
 import {modalBlocksCanvas} from './DetailDialog';
@@ -21,8 +22,9 @@ function measuredContent(content:Phaser.GameObjects.Container):Box {
 
 /** Local result scrolling; no saved state, camera movement or shared scene input changes. */
 export function mountResultViewport(scene:Phaser.Scene,view:SceneView,content:Phaser.GameObjects.Container,top:number,bottom:number,offset:number,remember:(offset:number)=>void){
-  const bounds=measuredContent(content),initial=resultPlacement(top,bottom,bounds,offset);
-  const readingBottom=bottom-(initial.overflow>0?22:0),placement=resultPlacement(top,readingBottom,bounds,offset);
+  const pc=pcResultViewport(view.layout.width,view.layout.height);
+  const bounds=measuredContent(content),initial=resultPlacement(top,bottom,bounds,offset,pc);
+  const readingBottom=bottom-(initial.overflow>0?22:0),placement=resultPlacement(top,readingBottom,bounds,offset,pc);
   const canvas=scene.game.canvas,mask=view.add(scene.add.graphics().setVisible(false));
   mask.fillStyle(0xffffff).fillRect(0,top,view.layout.width,readingBottom-top);
   content.setMask(mask.createGeometryMask());
@@ -30,7 +32,7 @@ export function mountResultViewport(scene:Phaser.Scene,view:SceneView,content:Ph
   const rail=placement.overflow>0?view.add(scene.add.graphics()).setName('result-scroll/rail'):undefined;
   let scroll=placement.scroll,drag:{id:number;y:number;offset:number;moving:boolean}|undefined;
   const update=(next:number)=>{
-    const p=resultPlacement(top,readingBottom,bounds,next);scroll=p.scroll;content.y=p.y;remember(scroll);
+    const p=resultPlacement(top,readingBottom,bounds,next,pc);scroll=p.scroll;content.y=p.y;remember(scroll);
     content.setData('viewport',{top,bottom:readingBottom,contentTop:bounds.y,contentHeight:bounds.height,overflow:p.overflow,scroll});
     if(hint)hint.setText(scroll>=p.overflow-1?'已到末尾 · 可继续':'上下滑动查看结算');
     if(rail){const h=readingBottom-top,thumb=Math.max(32,h*h/bounds.height);rail.clear().fillStyle(PAPER_THEME.jade,.35).fillRoundedRect(Math.min(view.layout.width-5,bounds.x+bounds.width+5),top+(h-thumb)*scroll/p.overflow,3,thumb,1.5);}
@@ -66,3 +68,4 @@ export function mountResultViewport(scene:Phaser.Scene,view:SceneView,content:Ph
   window.addEventListener('pointermove',move,{capture:true,passive:false});window.addEventListener('pointerup',end,true);window.addEventListener('pointercancel',end,true);window.addEventListener('blur',end);window.addEventListener('keydown',key);
   return ()=>{if(view.controllerScroll===controllerScroll)view.controllerScroll=undefined;content.setData('controllerReveal',undefined);canvas.removeEventListener('wheel',wheel);canvas.removeEventListener('pointerdown',down,true);window.removeEventListener('pointermove',move,true);window.removeEventListener('pointerup',end,true);window.removeEventListener('pointercancel',end,true);window.removeEventListener('blur',end);window.removeEventListener('keydown',key);content.clearMask(true);};
 }
+

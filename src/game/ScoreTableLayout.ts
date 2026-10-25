@@ -1,5 +1,5 @@
 import type {Box,LayoutMode} from './layout';
-interface ScoreTableInput {mode:LayoutMode;playedArea:Box;scoreBoard:Box;hud:Box;heroAction?:Box}
+interface ScoreTableInput {mode:LayoutMode;playedArea:Box;scoreBoard:Box;hud:Box;heroAction?:Box;pc?:unknown;scoreEyes?:Box}
 
 /** Idle cards use the hidden readout band. Saved scoring restores the separate landing lane. */
 export function idlePlayedArea(l:ScoreTableInput):Box {
@@ -10,6 +10,9 @@ export function idlePlayedArea(l:ScoreTableInput):Box {
 
 /** Score and played cards stay on one table; the sidebar remains context. */
 export function continuousScoreAreas(l:ScoreTableInput){
+ // PC publishes the final readout and landing lane together. Never run the
+ // legacy desktop allocator over them a second time (including on restore).
+ if(l.pc)return {scoreBoard:l.scoreBoard,playedArea:l.playedArea,eyes:l.scoreEyes};
  const original=l.playedArea;
  if(l.mode==='desktop'){
   const width=Math.min(760,original.width),scoreBoard={x:original.x+(original.width-width)/2,y:original.y,width,height:Math.min(128,Math.max(80,original.height-116))};
@@ -45,3 +48,4 @@ export function localHeroEyeSlot(l:ScoreTableInput&{scoreEyes?:Box;slots:Box[]},
  const a=empty.at(-2)!,b=empty.at(-1)!,width=Math.min(160,b.x+b.width-a.x),height=width*3/8;
  return {x:(a.x+b.x+b.width-width)/2,y:a.y+(Math.min(a.height,b.height)-height)/2,width,height};
 }
+
