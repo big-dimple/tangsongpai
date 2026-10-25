@@ -475,11 +475,21 @@ export class ShopScene extends Phaser.Scene {
     const v=this.view,first=v.root.length,d=kind==='jokers'?this.jokerDefinition(o.definitionId):undefined,info=kind==='tools'?toolInfo(o.definitionId,this.run):kind==='items'?itemInfo(o.definitionId):undefined;
     const g=shopOfferGeometry(tile,kind,kind==='jokers'&&(o.edition??'none')!=='none',this.run.chapterDisabledJokerId===o.definitionId?2:1);if(!g){this.shopButton(tile,'查看 '+(d?.name??info!.name),'offer/'+o.offerId,()=>this.inspectOffer(o.offerId));return;}
     shopSheet(this,v,'offer',tile,PAPER_THEME.paperLight);
+    // A card is presented as a shop object with a framed illustration and a
+    // separate value strip. The art owns the first read; copy and price follow
+    // on the paper shelf instead of competing with the image.
+    v.add(this.add.graphics().lineStyle(1.5,kind==='jokers'?PAPER_THEME.brass:PAPER_THEME.jade,.72)
+      .strokeRoundedRect(g.art.x-3,g.art.y-3,g.art.width+6,g.art.height+6,5)
+      .setName('shop/offer-art-frame').setData('offerId',o.offerId));
     if(this.selectedOfferId===o.offerId)v.add(this.add.graphics().lineStyle(1.5,0x42665d,1).strokeRoundedRect(tile.x+.75,tile.y+.75,tile.width-1.5,tile.height-1.5,6).setName('shop/offer-selected').setData('offerId',o.offerId));
     let summary=d?this.shopJokerSummary(d.id):info!.summary;
     if(d&&!this.jokerCopy(d.id)?.minimal){const decision=shopOfferGuidance(this.run,o).decision;summary=shopOfferSynopsis(decision.now,decision.later);}
     const heroTradeoff=d?shopCandidateTradeoff(this.run,d.id):undefined;if(heroTradeoff)summary=heroTradeoff;
     if(d)this.drawJokerPicture(d.id,g.art);else this.drawGoodsArt(o.definitionId,info!.artUrl,g.art,1,info!.fallbackArtUrl);
+    v.add(this.add.graphics().fillStyle(kind==='jokers'?PAPER_THEME.red:PAPER_THEME.jade,.9)
+      .fillRoundedRect(tile.x+8,tile.y+8,34,18,4)
+      .setName('shop/offer-index').setData('offerId',o.offerId));
+    v.text(tile.x+25,tile.y+11,`${this.shelfOffers(kind).findIndex(row=>row.offerId===o.offerId)+1}` ,11,'#fff9ee').setOrigin(.5,0).setName('shop/offer-index-label').setData('offerId',o.offerId);
     const name=v.text(g.title.x,g.title.y,d?.name??info!.name,18,'#203f3b').setFontStyle('bold').setName('shop/offer-name').setData('offerId',o.offerId);this.ellipsis(name,g.title.width);
     if(g.identity)v.text(g.identity.x,g.identity.y,d?shopIdentityText(d.rarity,o.edition):kind==='tools'?'买后收入背包 · 使用后消耗':'本局持续生效',14,'#596B69',g.identity.width).setName('shop/offer-identity').setData('offerId',o.offerId);
     const purpose=v.text(g.summary.x,g.summary.y,summary,14,'#3F606B',g.summary.width).setName('shop/offer-purpose').setData('offerId',o.offerId);purpose.setWordWrapWidth(0).setText(d?shopOfferSummary(summary,g.summary.width,s=>this.measureShopText(s)):shopSummaryWrap(summary,g.summary.width,s=>this.measureShopText(s),2)).setData('fullText',summary);
