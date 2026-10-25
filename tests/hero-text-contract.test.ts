@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import spec from '../docs/production/HERO_TEXT_SPEC_20261015.json';
+import spec from '../src/content/hero-text-spec.json';
 import {CHARACTER_IDS} from '../src/domain/characters';
 import {createRun,applyCommand,type R2RunState,type Action} from '../src/domain/run';
 import {R2_TOUYE_WAGER_VERSION,R2_TOUYE_WAGER_HASH} from '../src/domain/r2GroupUpgrade';

@@ -46,9 +46,10 @@
 | 模式、难度、挑战、节目单 | `src/content/r2Modes.ts` |
 | 工具、道具、增强与版次 | `src/content/r2Tools.ts` |
 | 唐宋牌内容 | `src/content/r2-*.json`、`src/domain/r2PublishedContent.*` |
-| 存档与恢复 | `src/application/checkpoint.ts`、`src/application/SavedRun.ts` |
-| 英雄身份与文案 | `src/game/HeroIdentity.ts`、`src/game/HeroText.ts` |
-| 扑克奇遇 | `src/domain/qiyuEvent.ts`、`src/game/QiyuAnimationPresentation.ts` |
+| 存档与恢复 | `src/application/checkpoint.ts`、`src/application/SavedRun.ts`、`src/platform/IndexedDbSave.ts` |
+| 英雄身份与文案 | `src/game/HeroIdentity.ts`、`src/game/HeroText.ts`、`src/content/hero-text-spec.json` |
+| 扑克奇遇规则与事务 | `src/domain/r2PokerEncounter.ts`、`src/domain/r2PokerEncounterIdentity.ts` |
+| 奇遇演出 | `src/domain/qiyuEvent.ts`、`src/game/QiyuAnimationPresentation.ts` |
 | 音频与震动 | `src/audio/`、`src/haptics/` |
 | 测试 | `tests/`、`harness/`、`package.json` |
 
@@ -61,13 +62,15 @@
 5. 新内容必须具有真实实现和获取路径，不把候选参数、测试角色或未完成能力发布给玩家。
 6. 保持规则与表现分离；动画、声音和布局不能决定分数、消耗或奖励。
 7. 测试夹具是代码输入。清理文档时保留被源码、测试、harness 或素材工具引用的数据。
-8. 按影响范围运行检查，并如实说明未运行项；不删断言、不改规则或放宽超时来制造通过。
+8. 本机 `/var/www/tangsongpai` 配置低，默认不运行构建、类型检查、单元测试或浏览器跑批，用户另行要求时再执行。审查后按授权提交、push，由 GitHub CI 核验；失败查看日志并修复，不删断言、不改规则或放宽超时来制造通过。
+9. 多人或多 AI 接手前先看 `git status` 和最新提交，保留他人有效修改；提交前复查差异，只提交本任务文件，不重置或强推共享分支。
+10. 在获授权的分支整理中，删除远端分支前重新比较 `main`，确认 ahead=0、非受保护分支、非开放 PR 的 head，且没有其他工作使用；有独有提交的成果先保留。
 
 详细工程约束和命令见 [ENGINEERING](ENGINEERING.md)。
 
 ## 5. 当前工作与文档纪律
 
-- 当前工作只看 [TODO](TODO.md)，完成后删除条目。
+- 当前工作以用户本次要求为准；[TODO](TODO.md) 记录待办，不能据此自行启动其他产品任务，完成后删除对应条目。
 - 规则、架构、测试或发布变化直接更新 [ENGINEERING](ENGINEERING.md)。
 - 项目知识或代码入口变化直接更新本文件。
 - 不新增 ROADMAP、plan.json、DELIVERY_PLAN、WORK_PACKAGES、INDEX、GDD、SCOPE、handoff、review 或证据 README。

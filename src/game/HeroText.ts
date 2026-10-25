@@ -1,4 +1,4 @@
-import spec from '../../docs/production/HERO_TEXT_SPEC_20261015.json';
+import spec from '../content/hero-text-spec.json';
 import type {CharacterId} from '../domain/characters';
 
 /** Display copy only. Saved identities and ability availability remain authoritative. */

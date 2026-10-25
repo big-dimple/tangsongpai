@@ -2,7 +2,7 @@ import {r2HouseBase} from '../src/domain/r2GroupUpgrade';
 import {R2_HERO_FREQUENCY_VERSION,R2_HERO_FREQUENCY_HASH} from '../src/domain/r2GroupUpgrade';
 import {R2_AMO_BALANCE_VERSION,R2_AMO_BALANCE_HASH,R2_XIEMU_BALANCE_VERSION,R2_XIEMU_BALANCE_HASH} from '../src/domain/r2GroupUpgrade';
 // Prior v2 contract remains a save compatibility regression; current v3 is covered in hero-economy-revision.
-import textSpec from '../docs/production/HERO_TEXT_SPEC_20261015.json';
+import textSpec from '../src/content/hero-text-spec.json';
 import {expect,it} from 'vitest';
 import {createRun,applyCommand,type Action,type Command,type R2RunState} from '../src/domain/run';
 import {r2CreateJoker,r2ScoreContext} from '../src/domain/r2Run';
