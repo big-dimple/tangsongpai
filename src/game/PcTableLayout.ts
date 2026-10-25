@@ -16,7 +16,9 @@ export function pcTableAreas(viewport:{width:number;height:number},safe:Insets,h
  const rail=box(viewport.width-safe.right-railWidth,safe.top,railWidth,height);
  const sidebarWidth=Math.max(208,Math.min(256,Math.round(frame.width*.18/8)*8)),gap=32;
  const main=box(frame.x+sidebarWidth+gap,frame.y,frame.width-sidebarWidth-gap,frame.height);
- const hud=box(frame.x,frame.y,sidebarWidth,250);
+ // This is also the shared exclusion rectangle for score-source captions.
+ // Cover the entire identity/context column, including rows below the portrait.
+ const hud=box(frame.x,frame.y,sidebarWidth,frame.height);
  const count=Number.isSafeInteger(handWindow.count)&&handWindow.count>=0?handWindow.count:8;
  const status=box(main.x,frame.y+frame.height-20,main.width,20);
  const footer=handActionControls(box(main.x+main.width-Math.min(600,main.width),status.y-66,Math.min(600,main.width),58),'desktop');
@@ -53,7 +55,7 @@ export function pcTableAreas(viewport:{width:number;height:number},safe:Insets,h
  // Legacy effect consumers still receive a bounded final-board anchor even
  // though the PC paper treatment does not draw the old fire decoration.
  const scoreFire=box(scoreBoard.x+8,scoreBoard.y+scoreBoard.height-24,scoreBoard.width-16,20);
- return {hud,jokers,slots,jokerLabels:slots,preview,scoreBoard,playedArea,scoreEyes,scoreFire,hand,handLabel,piles,status,heroAction,cards,handRows:1,handOverflow,visibleCardCount,handStart,labelHeight:18,...footer,
+ return {hud,jokers,slots,jokerLabels:slots,preview,scoreBoard,playedArea,scoreEyes,scoreFire,hand,handLabel,piles,status,heroAction,cards,handRows:1,handOverflow,visibleCardCount,handStart,labelHeight:18,inventoryEntry:utilities.inventory,helpEntry:utilities.help,...footer,
   handNavigation:{previous:box(hand.x,hand.y+(hand.height-44)/2,44,44),next:box(hand.x+hand.width-44,hand.y+(hand.height-44)/2,44,44)},
   pc:{frame,main,rail,heroPortrait,heroRows,utilities,compact}};
 }
