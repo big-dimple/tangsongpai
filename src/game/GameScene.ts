@@ -524,7 +524,13 @@ export class GameScene extends Phaser.Scene {
     this.render();
     const unsubscribeInventory=gameSession().subscribe(()=>{this.updateInventoryControl();if(this.controlsLive)this.updateHeroControl();});
     this.events.once('shutdown',unsubscribeInventory);
-    if(enteredStage)this.revealDrawnCards([]);
+    if(enteredStage){
+      this.revealDrawnCards([]);
+      // The entry beat is a short, non-blocking ink trace over the final
+      // published geometry. It never moves hit targets or gates the first
+      // selection, and reduced-motion mode simply keeps the static table.
+      if(this.view.layout.pc)this.playPcTableEntryTrace();
+    }
     const notice=stageNotice(this.run);
     const introduceBoss=!!this.run.stage.boss&&!bossRulesSeen(this.run)&&!document.querySelector('dialog[open]');
     if(introduceBoss&&this.run.stage.boss?.definitionId==='B05')inspectOpponent();
@@ -536,6 +542,17 @@ export class GameScene extends Phaser.Scene {
     }
     if(introduceBoss&&this.dialog.current){const modal=this.dialog.current,stop=trackBossRulesVisible(this.run,modal,()=>this.lifecycle===lifecycle&&this.scene.isActive()&&controller.state===this.run&&this.dialog.active(modal));this.events.once('shutdown',stop);}
     if(enteredStage){const stopBurst=mountHeroEntranceBurst(this.dialog.current??document.body,this.run.characterId,{context:this.run.stage.boss?'boss':'stage',stageIndex:this.run.stage.index,reducedMotion:this.reducedMotion});this.events.once('shutdown',stopBurst);}
+  }
+
+  private playPcTableEntryTrace():void {
+    const l=this.view.layout,pc=l.pc;if(!pc)return;
+    const spine=pc.focusSpine,trace=this.add.graphics().setName('table-art/pc-entry-trace');
+    trace.lineStyle(3,T.red,.62).lineBetween(spine.x,spine.y+12,spine.x,spine.y+spine.height-12);
+    trace.lineStyle(1,T.jade,.35).lineBetween(l.jokers.x,l.jokers.y+l.jokers.height+8,l.playedArea.x,l.playedArea.y);
+    this.view.add(trace);
+    if(this.reducedMotion){trace.setAlpha(.38);return;}
+    trace.setAlpha(0);
+    this.tweens.add({targets:trace,alpha:{from:0,to:.72},duration:180,hold:160,yoyo:true,ease:'Sine.easeOut',onComplete:()=>{if(trace.active)trace.destroy();}});
   }
 
   /** Closing the directory keeps this stage-ready run mounted until the player reopens it. */
@@ -675,7 +692,7 @@ export class GameScene extends Phaser.Scene {
     }
     this.renderJokerRack();
     const s=l.scoreBoard;
-    this.resultText=v.text(s.x+8,s.y+6,'选牌，准备开演',17,C.ink).setName('score/source');
+    this.resultText=v.text(s.x+8,s.y+6,l.pc?'本手计分 · 等待选牌':'选牌，准备开演',17,C.ink).setName('score/source');
     this.bossSuitRescueButton=undefined;this.bossSuitRescuePreview=undefined;
     if(usesBossSuitRescue(this.run)&&bossSuitRescueQualified(this.run.stage!.boss,this.run.stage!.bossSuitRescue)){
       this.bossSuitRescueButton=v.button({x:s.x+s.width-150,y:s.y+3,width:144,height:44},bossSuitRescueLabel(this.run),'boss/suit-rescue',()=>this.inspectBossSuitRescue(),this.ready);

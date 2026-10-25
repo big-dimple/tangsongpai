@@ -28,19 +28,27 @@ export function stageTableArtPlan(l:TableLayout):StageTableArtPlan {
 export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:CharacterId,inspectHero?:()=>void,legacyPortrait=true):void {
  const plan=stageTableArtPlan(view.layout);
  if(view.layout.pc){
-  const l=view.layout,{frame,main}=l.pc!,g=scene.add.graphics().setName('table-art/pc-paper').setData('bounds',frame);
-  // A single open sheet: the darker identity edge and pale landing lane lead
-  // the eye toward the foreground hand without adding independent card panels.
+  const l=view.layout,{frame,main,focusSpine,focusGap}=l.pc!,g=scene.add.graphics().setName('table-art/pc-paper').setData('bounds',frame);
+  // One open sheet, with a darker identity edge and two live lanes. The
+  // score spine and landing lane carry different weights so the current hand
+  // remains the foreground instead of becoming another equal card panel.
   const bottom=frame.y+frame.height,right=main.x+main.width;
   const rackBottom=l.jokers.y+l.jokers.height+8,handTop=l.hand.y-8;
+  const score=l.scoreBoard,played=l.playedArea;
   g.fillStyle(T.paper,.98).fillRect(frame.x,frame.y,frame.width,frame.height);
   g.fillStyle(T.paperEdge,.36).beginPath().moveTo(frame.x,frame.y)
     .lineTo(main.x-22,frame.y).lineTo(main.x-8,bottom).lineTo(frame.x,bottom).closePath().fillPath();
-  g.fillStyle(T.paperLight,.58).fillRect(main.x,main.y,main.width,main.height);
+  g.fillStyle(T.paperLight,.56).fillRect(main.x,main.y,main.width,main.height);
   // The cool, quiet centre makes the warm card faces read as the active layer.
   const focusTop=Math.min(handTop,rackBottom+12);
-  g.fillStyle(T.jadeSoft,.48).beginPath().moveTo(main.x,focusTop)
+  g.fillStyle(T.jadeSoft,.42).beginPath().moveTo(main.x,focusTop)
     .lineTo(right,focusTop).lineTo(right,handTop).lineTo(main.x+18,handTop).closePath().fillPath();
+  // Score and played cards share one working plane, but the score lane is
+  // quieter and narrower than the broad landing lane.
+  g.fillStyle(T.redSoft,.26).fillRoundedRect(score.x,score.y,score.width,score.height,10);
+  g.fillStyle(T.paperLight,.72).fillRoundedRect(played.x,played.y,played.width,played.height,10);
+  g.lineStyle(1,T.red,.28).strokeRoundedRect(score.x+.5,score.y+.5,Math.max(0,score.width-1),Math.max(0,score.height-1),10);
+  g.lineStyle(1,T.jade,.26).strokeRoundedRect(played.x+.5,played.y+.5,Math.max(0,played.width-1),Math.max(0,played.height-1),10);
   // The hand rises out of a white paper lip. All geometry still comes from layout.
   g.fillStyle(T.ink,.045).fillRect(main.x,handTop,main.width,5);
   g.fillStyle(T.paperLight,.94).beginPath().moveTo(main.x+18,handTop+5)
@@ -55,6 +63,10 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
     g.lineStyle(2,T.jade,.32).lineBetween(cx-12,rackBottom,cx+12,rackBottom);
     g.lineStyle(1,T.jade,.16).lineBetween(cx,rackBottom,cx,rackBottom+4);
   }
+  const spine=focusSpine??{x:score.x+score.width+focusGap/2,y:score.y,width:2,height:score.height};
+  g.lineStyle(2,T.red,.52).lineBetween(spine.x,spine.y+10,spine.x,spine.y+spine.height-10);
+  g.fillStyle(T.red,.75).fillCircle(spine.x+1,score.y+10,3);
+  g.fillStyle(T.jade,.55).fillCircle(spine.x+1,played.y+played.height-10,3);
   g.lineStyle(1,T.ink,.17).lineBetween(main.x+24,handTop+5,right,handTop+5);
   // One measured accent at the action edge echoes the red result seal.
   g.lineStyle(2,T.red,.45).lineBetween(right-44,bottom,right,bottom);
