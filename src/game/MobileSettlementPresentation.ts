@@ -40,6 +40,7 @@ export function drawMobileSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run
  view.add(scene.add.graphics().lineStyle(1,lost?T.jade:T.red,.65).lineBetween(reward.x,reward.y-4,reward.x+Math.min(reward.width,52),reward.y-4).setName('result/reward-rule'));
  const rewardText=fit(reward.x+reward.width/2,reward.y+4,cleared&&!skipped?rewardLabel??'本场奖励已保存':skipped?'换场所得见下方记录':'成绩已记录',16,reward.width-44,C.ink,'result/reward').setOrigin(.5,0).setFontStyle('bold');
  reward.height=Math.max(36,rewardText.height+8);
+ paper.fillStyle(lost?T.jadeSoft:T.paperLight,.82).fillRoundedRect(reward.x,reward.y-2,reward.width,reward.height+8,4);
  let reviewBookBand:Box|undefined;
  if(facts.reviewBook){reviewBookBand={x:b.x,y:reward.y+reward.height+6,width:b.width,height:24};fit(b.x,reviewBookBand.y,facts.reviewBook.label,14,b.width,C.jade,'result/review-book').setData('sourceEventId',facts.reviewBook.eventId).setData('clearId',facts.reviewBook.clearId);}
  const height=(reviewBookBand?reviewBookBand.y+reviewBookBand.height:reward.y+reward.height)-b.y;

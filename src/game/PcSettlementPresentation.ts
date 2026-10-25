@@ -77,6 +77,7 @@ export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2R
   rewardText=text(reward.x+reward.width/2,reward.y+8,rewardLabel,22,reward.width-48,C.ink,'result/reward').setOrigin(.5,0).setFontStyle('bold');
   reward.height=Math.max(reward.height,rewardText.height+16);
  }else text(reward.x,reward.y+8,lost?'成绩已记录，下一局重新启程。':'跳场所得见下方记录。',16,reward.width,C.ink,'result/receipt-state');
+ paper.fillStyle(lost?T.jadeSoft:T.paperLight,.82).fillRoundedRect(reward.x,reward.y-2,reward.width,reward.height+8,4);
  let reviewBookBand:Box|undefined;
  if(facts.reviewBook){
   reviewBookBand={x:reward.x,y:reward.y+reward.height+8,width:reward.width,height:52};

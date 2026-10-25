@@ -47,7 +47,9 @@ export function shopOfferGeometry(tile:Box,kind:keyof typeof SHOP_CATEGORIES,has
       const art={x:tile.x+padding,y:tile.y+padding,width,height:width/aspect};
       return {art,title:{x,y:tile.y+padding,width:copyWidth,height:titleHeight},identity:{x,y:tile.y+padding+24,width:copyWidth,height:16},summary:{x,y:tile.y+padding+46,width:copyWidth,height:priceY-tile.y-padding-50-extraHeight},...(hasExtra?{extra:{x,y:priceY-extraHeight,width:copyWidth,height:extraHeight-4}}:{}),price:{x,y:priceY,width:copyWidth,height:priceHeight},reason:{x,y:priceY+priceHeight,width:copyWidth,height:reasonHeight}};
     }
-    const copyHeight=124+extraHeight;
+    // The artwork is the shelf anchor. Reserve only the measured copy rows below
+    // it so desktop goods feel like a market display instead of three tiny cards.
+    const copyHeight=108+extraHeight;
     const width=Math.min(288,tile.width-padding*2,(tile.height-padding*2-copyHeight)*aspect);
     if(width<64)return;
     const art={x:tile.x+(tile.width-width)/2,y:tile.y+padding,width,height:width/aspect};
