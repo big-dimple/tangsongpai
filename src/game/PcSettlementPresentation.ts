@@ -19,7 +19,7 @@ export function pcResultViewport(width:number,height:number){
 /** Existing saved facts only. No commands, thresholds, reward issuance or timers. */
 export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2RunState,cleared:boolean,skipped:boolean,facts:ReturnType<typeof settlementFacts>,formulaOverride?:string,rewardLabel?:string){
  const l=resultLayout(view.layout.width,view.layout.height,0,b.height,true),lost=!cleared&&!skipped;
- const compact=view.layout.height<850,gap=compact?24:32,heroWidth=b.width*.58,heroHeight=b.height-64;
+ const compact=view.layout.height<850,gap=compact?24:32,heroWidth=b.width*.58,heroHeight=b.height-24;
  const heroBox={x:b.x-16,y:b.y+4,width:heroWidth+8,height:heroHeight};
  const x=b.x+heroWidth+gap,width=b.width-heroWidth-gap;
  const text=(x:number,y:number,copy:string,size:number,width:number,color=C.ink,name='')=>{
@@ -29,9 +29,17 @@ export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2R
   return item;
  };
  const paper=view.add(scene.add.graphics().setName('result-art/stage').setData('bounds',b));
- // Open editorial spread: one quiet vertical seam, no outer panel or card frame.
- paper.fillStyle(lost?T.jadeSoft:T.paperLight,.65).fillCircle(heroBox.x+heroBox.width*.52,b.y+heroHeight*.38,Math.min(heroWidth*.42,heroHeight*.38))
-  .lineStyle(3,lost?T.jade:T.red,.6).lineBetween(x,b.y-12,x+48,b.y-12)
+ // The desktop spread uses a broad paper wash behind the full cutout. Its
+ // torn left edge carries the crop without boxing the hero into a badge.
+ const washLeft=heroBox.x+heroBox.width*.12,washRight=heroBox.x+heroBox.width-8,washTop=b.y+8,washBottom=b.y+heroHeight-10;
+ const wash=[
+  {x:washLeft+20,y:washTop},{x:washRight-12,y:washTop+4},{x:washRight+2,y:washTop+24},
+  {x:washRight-3,y:washBottom-20},{x:washRight-18,y:washBottom},{x:washLeft+28,y:washBottom-6},
+  {x:washLeft+6,y:washBottom-22},{x:washLeft+18,y:washTop+heroHeight*.48},{x:washLeft+4,y:washTop+40},
+ ];
+ const accent=lost?T.jade:facts.tier>=2?T.red:T.jade;
+ paper.fillStyle(lost?T.jadeSoft:T.paperLight,.72).fillPoints(wash,true)
+  .lineStyle(3,accent,.34).lineBetween(washRight-54,washTop+7,washRight-18,washTop+10)
   .lineStyle(1,T.divider,.8).beginPath().moveTo(l.next.x-gap/2,b.y).lineTo(l.next.x-gap/2,b.y+b.height).strokePath();
  const tag=text(x,b.y+8,skipped?'本场跳过':'本场总热度',16,width,C.jade,'result/hand');
  const exactScore=facts.stageTotal,copy=(exactScore.length>15&&/[1-9]/.test(exactScore.slice(3))?'≈':'')+heatText(exactScore);
