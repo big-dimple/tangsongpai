@@ -64,6 +64,6 @@ it('keeps frozen boss and challenge text as hash input while their player projec
 
 it('retains no display-source old-name literals outside the explicit alias adapter',()=>{
  for(const file of readdirSync('src/game').filter(f=>/\.(ts|json)$/.test(f)&&f!=='Brand.ts'))expect(readFileSync('src/game/'+file,'utf8'),file).not.toMatch(/大丑/);
- clean(readFileSync('README.md','utf8'));clean(readFileSync('docs/production/PRODUCT.md','utf8'));clean(readFileSync('docs/production/HERO_TEXT_SPEC_20261015.json','utf8'));
+ clean(readFileSync('README.md','utf8'));clean(readFileSync('AGENTS.md','utf8'));clean(readFileSync('docs/production/HERO_TEXT_SPEC_20261015.json','utf8'));
  expect(readFileSync('package.json','utf8')).toContain('"name": "tangsongpai"');
 });

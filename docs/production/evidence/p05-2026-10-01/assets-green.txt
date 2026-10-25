@@ -1,8 +1,0 @@
-{
-  "status": "PASS",
-  "assets": 179,
-  "mode": "read-only",
-  "visualApproval": "NOT_GRANTED",
-  "rightsApproval": "UNKNOWN",
-  "errors": []
-}

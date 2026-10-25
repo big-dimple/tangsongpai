@@ -1,9 +1,0 @@
-{
-  "src/game/GameScene.ts": "2c6ecf1aa1b58ce2928e3b70a776fe22027a5d8df5e3345f98b866a20dd86913",
-  "src/game/LiueListeningStage.ts": "08645b5811ee3ea3249372b3c363b751047bae94714e564e62ebda2c484327d7",
-  "src/game/LiueSkillPayoff.ts": "3de84e8cf735d03497a9d8c7755781f73eaad0efe58e08b9522d2934de8faf0c",
-  "tests/liue-listening-stage.test.ts": "b6832ebb5426710260d05411d4b0a15874e7daa072893243a6ab5dc8862a32bd",
-  "tests/liue-skill-payoff.test.ts": "3400ecb1c32177f023d4b5376f1db1bbbe74db10e79c80faa7f4edba15c5d724",
-  "harness/fixtures/liue-skill-payoff.ts": "9b1bec18c8c8d55aa48695a7788c9daf5d9393afa35f19e4d073e1b3f1ad9715",
-  "harness/liue-skill-payoff.mjs": "b58c425fc5c8e5a582813e05d6bae364f6a64bee9a03e07cf47b30b6765e564d"
-}

@@ -3,7 +3,7 @@ import type {InkBox,InkPoint} from './AssistInkGeometry';
 import preset from './presets/lempo-sword-slash.json';
 
 // Lempo-FX@755ec9a3, Sword Slash parameters, MIT (c) 2026 EG dev.
-// Source and platform adaptation: docs/production/evidence/sushi-lempo-slash-2026-10-18/README.md.
+// Adapted from the upstream Lempo-FX Sword Slash preset; see the bundled preset and license.
 export const SUSHI_SWORD_SLASH=preset.settings;
 export const SUSHI_SLASH_LIFETIME_MS=SUSHI_SWORD_SLASH.lifetime*1000;
 const widthStops=SUSHI_SWORD_SLASH.widthCurve.map(p=>[Number(p[0]),Number(p[1])] as const);

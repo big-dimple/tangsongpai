@@ -1,8 +1,0 @@
-
- RUN  v4.1.11 C:/Users/wanghongping/AppData/Local/Temp/tangsongpai-windows-integration-20261017
-
-
- Test Files  14 passed (14)
-      Tests  80 passed (80)
-   Start at  11:25:29
-   Duration  7.76s (transform 35.06s, setup 0ms, import 47.93s, tests 1.66s, environment 2ms)

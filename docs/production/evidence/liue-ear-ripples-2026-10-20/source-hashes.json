@@ -1,8 +1,0 @@
-{
-  "src/game/GameScene.ts": "0322b1f4733350e69bb2eb77b224c8b09b52114e6b0d687ddc619a84cc6df2f4",
-  "src/game/HandoffEar.ts": "e7b37e97e10b0522bc1e9079f1de71e69cbde31ed7a20d0c2386d8c2e5a3060c",
-  "src/game/HeroTargetAttachment.ts": "472aad98254f6e66009b98e9e1ad23136279b064a5447f63dbb7e6e81dafb6ff",
-  "tests/handoff-ear.test.ts": "538040a51649e0bbee4ba5c0c5d87eecde61af6e957869f71e6816fb72b27f76",
-  "tests/hero-live-smoke.test.ts": "6c1b19f97abba02f2ccb0cb17277fdea5692bec500d5199708eea26993cd8bf1",
-  "harness/liue-ear-ripples.mjs": "7ab7eea2f451e3592768eb199e7c106618be945a50a31774e1dbe909117f2ae0"
-}

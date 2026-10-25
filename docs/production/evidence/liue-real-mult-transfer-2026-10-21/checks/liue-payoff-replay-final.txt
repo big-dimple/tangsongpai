@@ -1,2 +1,0 @@
-390-2-replay PASS charge/flight/impact/settled score=148
-390-8-speed4 PASS charge/flight/impact/settled score=430

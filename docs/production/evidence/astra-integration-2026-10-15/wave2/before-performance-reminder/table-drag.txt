@@ -1,1 +1,0 @@
-PASS /tmp/astra-integration-wave2/table-drag

@@ -1,4 +1,0 @@
-FAIL page.waitForFunction: Timeout 18000ms exceeded.
-    at waitScene (/workspace/tangsongpai/harness/ui.mjs:3:41)
-    at imp (/workspace/tangsongpai/harness/hero-explanation.mjs:20:501)
-    at async file:///workspace/tangsongpai/harness/hero-explanation.mjs:47:62 72

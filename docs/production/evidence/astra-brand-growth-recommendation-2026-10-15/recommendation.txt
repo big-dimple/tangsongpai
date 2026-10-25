@@ -1,1 +1,0 @@
-PASS /tmp/astra-integration-evidence/recommendation 

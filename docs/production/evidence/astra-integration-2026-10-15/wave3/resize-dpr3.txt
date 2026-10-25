@@ -1,6 +1,0 @@
-touch-0-320x568 PASS
-touch-1-740x320 PASS
-touch-2-390x740 PASS
-FAIL AssertionError [ERR_ASSERTION]: hand width
-    at aligned (file:///workspace/tangsongpai/harness/viewport-touch-resize.mjs:33:459)
-    at file:///workspace/tangsongpai/harness/viewport-touch-resize.mjs:44:270

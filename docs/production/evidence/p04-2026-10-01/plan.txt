@@ -1,1 +1,0 @@
-PLAN_VALID: 28 work packages; current=A01; not a gameplay acceptance

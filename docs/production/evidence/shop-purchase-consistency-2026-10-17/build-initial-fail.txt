@@ -1,5 +1,0 @@
-
-> tangsongpai@0.1.0 build
-> tsc --noEmit && vite build
-
-src/game/ShopScene.ts(936,64): error TS2304: Cannot find name 'createShopOfferValue'.

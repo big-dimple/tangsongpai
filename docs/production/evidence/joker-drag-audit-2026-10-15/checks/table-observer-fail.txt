@@ -1,7 +1,0 @@
-page.waitForFunction: Timeout 30000ms exceeded.
-    at waitScene (/workspace/tangsongpai/harness/ui.mjs:3:41)
-    at /workspace/tangsongpai/harness/table-owned-joker-drag.mjs:38:751 {
-  log: [],
-  name: 'TimeoutError'
-}
-FAIL docs/production/evidence/joker-drag-audit-2026-10-15/table

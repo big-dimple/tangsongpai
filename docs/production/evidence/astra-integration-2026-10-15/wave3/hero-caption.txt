@@ -1,2 +1,0 @@
-PASS xiemu-390-fast [ '燃金' ]
-{"status":"PASS","cases":1}

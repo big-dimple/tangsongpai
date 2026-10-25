@@ -1,4 +1,0 @@
-# Preserve original evidence bytes and SHA256SUMS across Windows checkouts.
-* -text
-# Raw Windows command output keeps CRLF and its final blank lines.
-checks/*.txt whitespace=cr-at-eol,-blank-at-eof

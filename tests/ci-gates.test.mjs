@@ -35,7 +35,7 @@ describe('executable CI and read-only gates',()=>{
   it('CI uses locked packages and verified preinstalled engines, runs gates and retains failed browser artifacts',()=>{
     const workflow=text('.github/workflows/ci.yml');
     expect(workflow).toMatch(/npm ci/);expect(workflow).not.toMatch(/npm install\s*$/m);
-    const browser=workflow.split('  browser:\n')[1]?.split('  docs:\n')[0];expect(browser).toBeTruthy();
+    const browser=workflow.split(/  browser:\r?\n/)[1];expect(browser).toBeTruthy();
     const version=JSON.parse(text('package-lock.json')).packages['node_modules/playwright'].version;
     expect(browser).toContain('image: mcr.microsoft.com/playwright:v'+version+'-noble@sha256:');
     expect(browser).toMatch(/-noble@sha256:[a-f0-9]{64}/);

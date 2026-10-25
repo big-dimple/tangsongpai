@@ -1,2 +1,0 @@
-FAIL AssertionError [ERR_ASSERTION]: cached scene transitions must reuse decoded thumbnail textures
-    at file:///workspace/tangsongpai/harness/loading-preload.mjs:34:604
