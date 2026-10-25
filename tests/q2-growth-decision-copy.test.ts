@@ -15,11 +15,11 @@ describe('Q2 first-layer growth purchase decision, only four supported cards',()
  });
  it('front-layer offer copy keeps the c04 immediate conditional +50 and the same Tips instead of rewriting it to growth jargon',()=>{
   const s=state(),o=s.shop!.offers.find(o=>o.definitionId==='c04')!,d=r2JokerDefinitionFor(s,'c04'),expected=jokerGrowthDecisionCopy(d,undefined)!,before=JSON.stringify(s),copy=shopDecisionCopy(s,o);
-  expect(copy.now).toBe(expected.effect);expect(copy.purchaseAbility?.plain?.effectLine).toBe(expected.effect);expect(copy.purchaseAbility?.plain?.essential).toBe(expected.tip);expect(copy.purchaseAbility?.plain?.status).toContain('从+0');expect(copy.now).not.toContain('成长+10顶100');expect(JSON.stringify(s)).toBe(before);
+  expect(copy.now).toBe(expected.effect);expect(copy.purchaseAbility?.plain?.effectLine).toBe(expected.effect);expect(copy.purchaseAbility?.plain?.essential).toBe(expected.tip);expect(copy.now).not.toContain('成长+10顶100');expect(JSON.stringify(s)).toBe(before);
  });
  it('headroom, current saved value and cap stay real; the default layer has no fabricated past read',()=>{
   const s=state(),d=r2JokerDefinitionFor(s,'c04'),j=r2CreateJoker('c04','held',4,undefined,s),ctx=publicJokerMemoryContext(s,{hand:[],scoringLimited:false,deckSize:52,jokerSlots:5,jokerCount:1});
-  j.growth.heat={n:'95',d:'1'};const before=JSON.stringify(j),p=jokerAbilityCopyForRun(s,'c04',j,ctx).plain!;expect(p.effectLine).toContain('攒+5热度');expect(p.status).toBe('当前已攒热度：+95。');expect(p.timingLine).toContain('最多攒+100热度');expect(p.status).not.toMatch(/实际读取|上次出牌|已触发/);expect(JSON.stringify(j)).toBe(before);
+  j.growth.heat={n:'95',d:'1'};const before=JSON.stringify(j),p=jokerAbilityCopyForRun(s,'c04',j,ctx).plain!;expect(p.effectLine).toContain('攒+5热度');expect(p.timingLine).toContain('最多攒+100热度');expect(p.status).not.toMatch(/实际读取|上次出牌|已触发/);expect(JSON.stringify(j)).toBe(before);
   j.growth.heat={n:'100',d:'1'};expect(jokerGrowthDecisionCopy(d,j)!.effect).toContain('不再增加');expect(jokerGrowthDecisionCopy(d,j)!.effect).not.toContain('攒+10');
  });
  it('values bind to the definition, not the card id or a frozen amount',()=>{

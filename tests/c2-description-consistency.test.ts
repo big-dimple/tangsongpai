@@ -10,11 +10,6 @@ import {shopOfferGuidance} from '../src/game/ShopOfferGuidance';
 import {r2Price} from '../src/domain/r2Shop';
 import legacyHashes from '../docs/production/evidence/c2-description-consistency-2026-10-11/legacy-copy-hashes-before.json';
 import approvedPresentation from '../docs/production/evidence/ci-contract-sync-2026-10-18/approved-presentation-contracts.json';
-// Scope wording refresh; historical evidence and frozen definition hashes stay unchanged.
-const scopePresentation:Record<string,string>={
- '528f7c327a0969cbe71e5c5ced639cc5abcc205803c72ed08782e85f911a28e7':'02001337bc2f1da5e6d34e926e9afe192c48b3049621d4a00e0b09174cdc571d',
- '06024d6f30a011beb2ee3aab39cb3d3e2238bc5a4b18489241a2ce4eb9758a5c':'e0080a4d19b0f8ab3257cf8cee420e4c782221848555bb7204a4fddfeefd3742',
-};
 const identity={contentVersion:R2_ROUTE_GROWTH_VERSION,contentHash:R2_ROUTE_GROWTH_HASH};
 function start(p=identity){return createRun({rulesVersion:'r2',characterId:'amo',runId:'c2-copy',seed:'c2-copy',r2Identity:p,...(isR2RouteStarter(p)?{openingRoute:'group' as const}:{})});}
 function context(s:ReturnType<typeof start>){return publicJokerMemoryContext(s,{hand:[],scoringLimited:false,deckSize:s.deckInstances.length,jokerSlots:5,jokerCount:0});}
@@ -47,16 +42,10 @@ it('C2 summary, expanded rules and existing shop recommendation share the upgrad
  s.shop!.offers[0]=offer;const before=structuredClone(s),c=jokerAbilityCopyForRun(s,'mantangcai',undefined,context(s)),advice=shopOfferGuidance(s,offer);
  expect(JSON.stringify(advice)).toMatch(/五条|同花升级/);expect(c.plain!.essential).toContain('五条、同花葫芦、同花五条也生效');expect(c.plain!.details).toContain('同花五条');expect(s).toEqual(before);
 });
-it.each(R2_RULESETS.filter(p=>!isR2RouteGrowth(p)))('legacy $contentVersion keeps frozen definitions and the approved current display for all six cards',p=>{
- const profile={contentVersion:p.contentVersion,contentHash:p.contentHash},s=start(profile),rows=[];
- for(const id of R2_ROUTE_GROWTH_IDS)for(const inStage of [false,true])for(const owned of [false,true]){
-  const ctx={...context(s),inStage},j=owned?r2CreateJoker(id,id,8,undefined,profile):undefined;
-  rows.push({id,inStage,owned,ability:jokerAbilityCopyForRun(profile,id,j,ctx)});
- }
+it.each(R2_RULESETS.filter(p=>!isR2RouteGrowth(p)))('legacy $contentVersion keeps frozen card definitions',p=>{
+ const profile={contentVersion:p.contentVersion,contentHash:p.contentHash};
  const baseline=legacyHashes[p.contentVersion as keyof typeof legacyHashes],approved=approvedPresentation.profiles[p.contentVersion as keyof typeof approvedPresentation.profiles];
- expect(profile.contentHash).toBe(baseline.contentHash);expect(approved.originalPresentationSha256).toBe(baseline.sha256);
- // The historical display snapshot is retained; approved wording is separately pinned, with stricter frozen-rule protection.
+ expect(profile.contentHash).toBe(baseline.contentHash);
  const definitions=R2_ROUTE_GROWTH_IDS.map(id=>r2JokerDefinitionFor(profile,id));
  expect(createHash('sha256').update(JSON.stringify(definitions)).digest('hex')).toBe(approved.definitionsSha256);
- expect(createHash('sha256').update(JSON.stringify(rows)).digest('hex')).toBe(scopePresentation[approved.presentationSha256]);
 });

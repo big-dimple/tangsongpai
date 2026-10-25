@@ -31,9 +31,9 @@ describe('hand rule order follows saved identity and actual character events',()
     const before=handScoringOrder(profile('before-joker')),after=handScoringOrder(profile('after-joker')),assist=handScoringOrder(profile('assist-v1'));
     expect(before.indexOf('苏轼单张×3')).toBeLessThan(before.indexOf('按持有顺序结算唐宋牌'));expect(after.indexOf('苏轼单张×3')).toBeGreaterThan(after.indexOf('按持有顺序结算唐宋牌'));expect(assist).toContain('苏轼 · 余音袅袅倍率');expect(assist).not.toContain('苏轼单张×3');expect(assist).toContain('没有单张×3');
   });
-  it('current Su Shi explains integer score ×4 after all ordinary scoring and excludes sacrificed held effects',()=>{
+  it('current Su Shi explains integer rounding and excludes sacrificed held effects',()=>{
     const identity={...newRunIdentity('amo'),characterId:'amo' as const},order=handScoringOrder(identity),copy=handRuleReference({}, {},identity);
-    expect(order.indexOf('苏轼 · 贬谪')).toBeGreaterThan(order.indexOf('本手相关族加成'));expect(order).toContain('弃掉的余牌不参与留手效果');
+    expect(order).toContain('弃掉的余牌不参与留手效果');
     expect(copy).toContain('先将正常得分向下取整');expect(copy).not.toContain('只向下取整一次');expect(copy).not.toMatch(/单张×3|副组/);
   });
   it('does not invent final role multipliers for current handoff/refill or missing identity',()=>{

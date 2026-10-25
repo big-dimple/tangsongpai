@@ -90,7 +90,7 @@ export async function confirmHeroRoute(page,touch=false,focus='group'){
 /** The saved new run pauses at the poker examples before its first shop. */
 export async function enterOpeningShop(page,touch=false){
   const briefing=page.locator('.opening-rule-briefing[open]');await briefing.waitFor();
-  const enter=briefing.getByRole('button',{name:'进入商店',exact:true});
+  const enter=briefing.locator('.dialog-primary');
   if(touch)await enter.tap();else await enter.click();
   await waitScene(page,'shop');
 }

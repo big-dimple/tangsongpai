@@ -49,13 +49,41 @@ if [ -z "$RUN_ID" ]; then
     exit 0
 fi
 
-log "Downloading GitHub build $RUN_ID for $REMOTE_HASH (last deployed=${DEPLOYED_HASH:-unknown})."
 TEMP_DIR=$(mktemp -d /tmp/tangsongpai-deploy.XXXXXX)
+ARTIFACT_DIR="$TEMP_DIR/dist"
+verify_public() {
+    curl -fsS --max-time 10 -H 'Cache-Control: no-cache' \
+        "https://pai.hp666.cc/build-info.json?revision=$REMOTE_HASH" >"$TEMP_DIR/served-build-info.json" || return 1
+    python3 - "$TEMP_DIR/served-build-info.json" "$REMOTE_HASH" <<'PY'
+import json
+import sys
+from pathlib import Path
+
+info = json.loads(Path(sys.argv[1]).read_text())
+if info.get("revision") != sys.argv[2] or info.get("sourceStatus") != "clean" or info.get("modified") is not False:
+    raise SystemExit("Public domain has not served the expected clean revision")
+print("Verified public domain revision:", info["revision"])
+PY
+}
+record_success() {
+    printf '%s\n' "$REMOTE_HASH" >"$STATE_DIR/deployed-revision.tmp"
+    mv "$STATE_DIR/deployed-revision.tmp" "$STATE_DIR/deployed-revision"
+    rm -f "$STATE_DIR/waiting-revision"
+    log "Successfully deployed $REMOTE_HASH from GitHub run $RUN_ID to Cloudflare Pages."
+}
+
+# A prior upload may have finished before the public domain propagated.
+if [ "${1:-}" != --force ] && verify_public >/dev/null 2>&1; then
+    record_success
+    exit 0
+fi
+
+log "Downloading GitHub build $RUN_ID for $REMOTE_HASH (last deployed=${DEPLOYED_HASH:-unknown})."
 gh run download "$RUN_ID" --repo "$REPOSITORY" \
-    --name "tangsongpai-dist-$REMOTE_HASH" --dir "$TEMP_DIR"
+    --name "tangsongpai-dist-$REMOTE_HASH" --dir "$ARTIFACT_DIR"
 
 # Never publish an artifact from a different revision or a modified source tree.
-python3 - "$TEMP_DIR/build-info.json" "$REMOTE_HASH" <<'PY'
+python3 - "$ARTIFACT_DIR/build-info.json" "$REMOTE_HASH" <<'PY'
 import json
 import sys
 from pathlib import Path
@@ -69,20 +97,13 @@ if not (path.parent / "index.html").is_file():
 print("Verified clean artifact revision:", info["revision"])
 PY
 
-/usr/local/bin/deploy-to-cloudflare-pages.py "$TEMP_DIR" dachoupai
-curl -fsS --max-time 20 -H 'Cache-Control: no-cache' \
-    "https://pai.hp666.cc/build-info.json?revision=$REMOTE_HASH" >"$TEMP_DIR/served-build-info.json"
-python3 - "$TEMP_DIR/served-build-info.json" "$REMOTE_HASH" <<'PY'
-import json
-import sys
-from pathlib import Path
-
-info = json.loads(Path(sys.argv[1]).read_text())
-if info.get("revision") != sys.argv[2]:
-    raise SystemExit("Public domain has not served the expected revision; retry next minute")
-print("Verified public domain revision:", info["revision"])
-PY
-printf '%s\n' "$REMOTE_HASH" >"$STATE_DIR/deployed-revision.tmp"
-mv "$STATE_DIR/deployed-revision.tmp" "$STATE_DIR/deployed-revision"
-rm -f "$STATE_DIR/waiting-revision"
-log "Successfully deployed $REMOTE_HASH from GitHub run $RUN_ID to Cloudflare Pages."
+/usr/local/bin/deploy-to-cloudflare-pages.py "$ARTIFACT_DIR" dachoupai
+for attempt in 1 2 3 4 5 6; do
+    if verify_public; then
+        record_success
+        exit 0
+    fi
+    [ "$attempt" -eq 6 ] || sleep 5
+done
+log "Public domain propagation still pending; next minute will check it before another upload."
+exit 1

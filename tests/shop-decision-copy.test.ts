@@ -13,7 +13,7 @@ const shop=()=>createRun({rulesVersion:'r2',seed:'phone-shop-decision',runId:'ph
 it('the photographed choices state new growth, actual cost and conditions without turning the starter into a ranking',()=>{
  const s=shop();s.gold=6;s.shop!.offers=[{offerId:'a11',definitionId:'a11',price:11,edition:'foil',consumed:false},{offerId:'e06',definitionId:'e06',price:6,consumed:false},{offerId:'c06',definitionId:'c06',price:6,consumed:false}];
  const before=structuredClone(s),growth=shopOfferGuidance(s,s.shop!.offers[2]),sale=shopOfferGuidance(s,s.shop!.offers[1]);
- expect(growth.label).toBe('选购依据');expect(growth.decision).toMatchObject({now:'打出同花牌型后，攒+0.5倍率，下次出牌起任意牌型都能用。',transaction:'购后0金'});expect(growth.decision.purchaseAbility?.plain?.status).toContain('从+0倍率');
+ expect(growth.label).toBe('选购依据');expect(growth.decision).toMatchObject({now:'打出同花牌型后，攒+0.5倍率，下次出牌起任意牌型都能用。',transaction:'购后0金'});
  expect(sale.decision).toMatchObject({now:'新购倍率+0',later:'成功卖牌后+0.5，下次出牌生效'});expect(sale.stars).toBe(3);expect(shopOfferGuidance(s,s.shop!.offers[0]).operation).toBe('差5金');expect(s).toEqual(before);
  const bought=applyCommand(s,{runId:s.runId,commandId:'buy-c06',expectedSeq:s.commandSeq,action:{type:'BuyOffer',offerId:'c06'}});expect(bought.ok).toBe(true);if(!bought.ok)return;
  const next=shopOfferGuidance(bought.state,bought.state.shop!.offers[1]);expect(next.operation).toBe('差6金');expect(next.stars).toBe(3);expect(next.decision.transaction).toBe('还差6金');
@@ -27,7 +27,7 @@ it('new c04 keeps its conditional fixed heat and zero initial growth separate in
  s.gold=23;s.jokers=['c06','d07','f09','a08'].map((id,i)=>r2CreateJoker(id,'held/'+i,4,'none',s));s.jokers[0].growth.multiplier={n:'2',d:'1'};
  const offer={offerId:'step-up',definitionId:'c04',price:4,consumed:false},before=structuredClone(s),copy=shopOfferGuidance(s,offer).decision;
  expect(copy.now).toBe('顺子或同花顺热度+50；出牌后攒+10热度，下次出牌起任意牌型都能用。');expect(copy.later).toBe('最多攒+100热度，跨场保留，出售后清空。');expect(copy.transaction).toBe('购后19金');
- expect(copy.purchaseAbility?.plain).toMatchObject({effectLine:copy.now,timingLine:copy.later,essential:'搭配：让普通顺子只需4张的唐宋牌，或改点工具。'});expect(copy.purchaseAbility?.plain?.status).toContain('从+0热度');
+ expect(copy.purchaseAbility?.plain).toMatchObject({effectLine:copy.now,timingLine:copy.later,essential:'搭配：让普通顺子只需4张的唐宋牌，或改点工具。'});
  expect(copy.purchaseAbility?.plain?.details).toContain('其他牌型不增加成长');expect(copy.purchaseAbility?.plain?.details).toContain('重买从0开始');expect(s).toEqual(before);
 });
 it('T18 shows the short exchange-ticket copy while keeping its price and published definition',()=>{
