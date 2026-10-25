@@ -38,7 +38,7 @@ export function mountShopMobileOffers(host:HTMLElement,rows:readonly MobileShopO
   }else main.classList.add('without-art');
   const heading=document.createElement('span');heading.className='shop-mobile-offer-heading';copy.className='shop-mobile-offer-copy';name.textContent=row.name;identity.className='shop-mobile-offer-identity';identity.textContent=row.identity;summary.className='shop-mobile-offer-summary';summary.textContent=row.summary;heading.append(name,identity);copy.append(heading,summary);
   if(row.extra){const extra=document.createElement('span');extra.className='shop-mobile-offer-extra';extra.textContent=row.extra;copy.append(extra);}
-  price.className='shop-mobile-offer-price';price.textContent=row.consumed?'已收入':row.reason?row.price+' 金 · 不可购':row.price+' 金 · 查看详情 ›';copy.append(price);
+  price.className='shop-mobile-offer-price';price.textContent=row.consumed?'已收入':row.reason?row.price+' 金 · 不可购':row.price+' 金 · 详情 ›';copy.append(price);
   if(row.reason&&!row.consumed){const reason=document.createElement('span');reason.className='shop-mobile-offer-reason';reason.textContent=row.reason;copy.append(reason);}
   main.append(copy);article.append(main);cleanups.push(mountForgetTechniqueAttentionElement(main,row.definitionId));
   if(cardArtSource(row.definitionId)){const view=document.createElement('button');view.type='button';view.className='shop-mobile-offer-zoom';view.textContent='看原图';view.title='看原图';view.setAttribute('aria-label','放大鉴赏'+row.name);view.setAttribute('aria-haspopup','dialog');view.onclick=()=>{if(disposed||!active())return;view.focus({preventScroll:true});zoom=openCardArtZoom(row.definitionId,row.name);};article.append(view);}
