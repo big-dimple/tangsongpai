@@ -68,7 +68,7 @@ try{
     await page.waitForFunction(seq=>window.__harness.game.registry.get('runController').state.commandSeq===seq+1,before.commandSeq);
     assert.equal((await read(page)).stage.handsLeft,before.stage.handsLeft-1,'holding X commits one hand');
     await press(page,'confirm');await page.waitForFunction(()=>!window.__harness.game.scene.getScene('game').playing);
-    await press(page,'right');await page.waitForTimeout(90);const order=await read(page),card=(await snapshot(page)).focusId.slice(5),index=order.handOrder.indexOf(card),move=index<order.handOrder.length-1?'next':'previous';
+    await press(page,'right');await page.waitForTimeout(90);const order=await read(page),focusedCard=(await snapshot(page)).focusId;assert.ok(focusedCard?.startsWith('card/'),'table focus returns to the hand after score animation');const card=focusedCard.slice(5),index=order.handOrder.indexOf(card),move=index<order.handOrder.length-1?'next':'previous';
     await press(page,move,500);await page.waitForFunction(seq=>window.__harness.game.registry.get('runController').state.commandSeq===seq+1,order.commandSeq);
     assert.equal((await read(page)).handOrder.indexOf(card),index+(move==='next'?1:-1),'shoulder moves the focused card exactly one seat');
     const sorted=await read(page);await press(page,'rank',500);await page.waitForFunction(seq=>window.__harness.game.registry.get('runController').state.commandSeq===seq+1,sorted.commandSeq);

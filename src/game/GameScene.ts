@@ -493,6 +493,7 @@ export class GameScene extends Phaser.Scene {
     this.menuActions={viewDeck:()=>this.inspectDeck(),viewRules:inspectOpponent};
     this.registry.set('runMenuActions',this.menuActions);
     window.addEventListener('keydown',this.keyboard);
+    this.view.controllerBusy=()=>!this.ready||!!this.presentation||!!this.xinRefillSequence?.active;
     this.view.controllerAction=(action,targetId)=>{
       if(this.presentation||this.xinRefillSequence?.active){if(action==='confirm'||action==='back'||action==='play')this.fastForward();return true;}
       if(!this.ready)return true;

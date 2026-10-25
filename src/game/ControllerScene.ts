@@ -9,6 +9,7 @@ export interface ControllerScene {
   targets:()=>ControllerTarget[];
   action?:(action:PadAction,targetId:string|undefined)=>boolean|string;
   scroll?:(delta:number)=>void;
+  busy?:()=>boolean;
 }
 const scenes=new WeakMap<Phaser.Scene,ControllerScene>();
 export function registerControllerScene(scene:Phaser.Scene,provider:ControllerScene):()=>void {

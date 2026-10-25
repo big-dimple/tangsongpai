@@ -49,6 +49,7 @@ export function installGamepadNavigation(game:Phaser.Game):()=>void {
   const refresh=()=>{
     modal=[...document.querySelectorAll<HTMLDialogElement>('dialog[open]')].at(-1);
     scene=[...game.scene.getScenes(true)].reverse().find(candidate=>controllerScene(candidate));
+    const provider=scene?controllerScene(scene):undefined;
     const nextContext=modal??scene??game;
     if(context!==nextContext){clearFocus();context=nextContext;focusId=remembered.get(context);}
     const parent=modal??document.body;
@@ -64,12 +65,13 @@ export function installGamepadNavigation(game:Phaser.Game):()=>void {
         focus:()=>{element.focus({preventScroll:true});element.scrollIntoView({block:'nearest',inline:'nearest',behavior:'instant'});}};
     });
     const nativeIds=new Set(native.map(target=>target.id));
-    const canvas:Target[]=modal||!scene?[]:(controllerScene(scene)?.targets()??[]).filter(target=>!nativeIds.has(`${scene!.sys.settings.key}/${target.id}`)).map(target=>{
+    const canvas:Target[]=modal||!scene?[]:(provider?.targets()??[]).filter(target=>!nativeIds.has(`${scene!.sys.settings.key}/${target.id}`)).map(target=>{
       const viewport=cssViewport(scene!),r=game.canvas.getBoundingClientRect(),b=target.box;
       return {...target,box:{x:r.x+b.x*r.width/viewport.width,y:r.y+b.y*r.height/viewport.height,width:b.width*r.width/viewport.width,height:b.height*r.height/viewport.height}};
     });
     targets=[...canvas,...native];
-    if(!targets.some(target=>target.id===focusId)){
+    // A saved hand's animation temporarily disables its targets. Keep the hand focus until it settles.
+    if((modal||!provider?.busy?.())&&!targets.some(target=>target.id===focusId)){
       const nativeFocus=native.find(target=>target.element===document.activeElement);
       focusId=(nativeFocus??targets.find(target=>target.id.startsWith('card/'))??targets.find(target=>target.id.startsWith('character/'))??targets.find(target=>target.primary)??targets[0])?.id;
     }

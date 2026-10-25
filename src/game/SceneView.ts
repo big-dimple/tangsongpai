@@ -20,6 +20,7 @@ export class SceneView {
   readonly root:Phaser.GameObjects.Container;
   controllerAction?:(action:PadAction,targetId:string|undefined)=>boolean|string;
   controllerScroll?:(delta:number)=>void;
+  controllerBusy?:()=>boolean;
   private gestures=new Map<Phaser.GameObjects.GameObject,TouchActions>();
   private intent=new PointerIntent();
   private pressed?:{object:Phaser.GameObjects.GameObject;actions:TouchActions;id:number;held:boolean;touch:boolean;x:number;y:number;dragging:boolean;at:number;downTime:number};
@@ -84,7 +85,7 @@ export class SceneView {
   constructor(private readonly scene:Phaser.Scene,private readonly redraw:()=>void,private readonly handWindow?:()=>HandWindow){
     alignViewportCamera(scene);
     this.root=scene.add.container(0,0).setName('view');
-    const stopController=registerControllerScene(scene,{targets:()=>this.controllerTargets(),action:(action,id)=>this.controllerAction?.(action,id)??false,scroll:delta=>this.controllerScroll?.(delta)});
+    const stopController=registerControllerScene(scene,{targets:()=>this.controllerTargets(),action:(action,id)=>this.controllerAction?.(action,id)??false,scroll:delta=>this.controllerScroll?.(delta),busy:()=>this.controllerBusy?.()??false});
     scene.events.once('shutdown',stopController);
     scene.input.on('pointerdown',this.down);scene.input.on('pointermove',this.move);scene.input.on('pointerup',this.up);scene.input.on('pointerupoutside',this.cancel);
     scene.game.canvas.addEventListener('pointercancel',this.cancel);scene.scale.on('resize',this.resize);
