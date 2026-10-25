@@ -422,6 +422,13 @@ export class ShopScene extends Phaser.Scene {
   private renderPC(p:ReturnType<typeof shopLayout>):void {
     const pc=p.pc!;const v=this.view,stage=getR2Stage(this.run.stageIndex,this.run.tourMode,this.run.difficulty,this.run)!;
     drawShopArt(this,v,p);this.drawShopPortrait(p);
+    // The desktop shop reads as one workbench: a quiet preparation rail on the
+    // left, then a single market shelf on the right. These marks are decoration
+    // only; the existing boxes remain the hit and focus geometry.
+    v.add(this.add.graphics().lineStyle(1,0x42665d,.28).lineBetween(pc.left.x+pc.left.width+14,pc.left.y+8,pc.left.x+pc.left.width+14,pc.left.y+pc.left.height-8).setName('shop-art/workbench-divider'));
+    v.add(this.add.graphics().lineStyle(2,0xb8473a,.72).lineBetween(pc.shopPanel.x,pc.shopPanel.y-10,pc.shopPanel.x+56,pc.shopPanel.y-10).setName('shop-art/market-rule'));
+    v.text(pc.left.x+16,pc.left.y+6,'经营台',13,'#596B69',pc.left.width-32).setName('shop/workbench-label');
+    v.text(pc.shopPanel.x+64,pc.shopPanel.y-19,'本店货架 · 先看效果，再决定',13,'#596B69',pc.shopPanel.width-76).setName('shop/market-label');
     const header=p.desktopHeader!,character=getCharacter(this.run.characterId);
     const title=v.text(header.hero.x,header.hero.y+22,character.name+(this.run.tourMode==='endless'?' · 无尽筹备':' · 筹备'),this.run.tourMode==='endless'?20:24,'#26313A').setOrigin(0,.5).setFontStyle('bold').setName('shop/title');this.ellipsis(title,header.hero.width);
     v.text(p.x+16,p.top+58,stage.name,16,'#3F606B',pc.left.width-32);
@@ -489,9 +496,9 @@ export class ShopScene extends Phaser.Scene {
     const purpose=v.text(g.summary.x,g.summary.y,summary,14,'#3F606B',g.summary.width).setName('shop/offer-purpose').setData('offerId',o.offerId);purpose.setWordWrapWidth(0).setText(d?shopOfferSummary(summary,g.summary.width,s=>this.measureShopText(s)):shopSummaryWrap(summary,g.summary.width,s=>this.measureShopText(s),2)).setData('fullText',summary);
     if(g.extra)this.drawOfferExtra(o,g.extra);
     const priceInk=this.offerPricePlate(o,g.price);
-    const priceLabel=v.text(g.price.x+4,g.price.y,o.consumed?'已购':`${r2PurchasePrice(this.run,o)} 金`,18,priceInk).setFontStyle('bold').setName('shop/offer-price').setData('offerId',o.offerId);
+    const priceLabel=v.text(g.price.x+4,g.price.y,o.consumed?'已收入':`${r2PurchasePrice(this.run,o)} 金`,18,priceInk).setFontStyle('bold').setName('shop/offer-price').setData('offerId',o.offerId);
     if(!o.consumed&&g.price.width-priceLabel.width>=90)v.text(g.price.x+g.price.width-4,g.price.y+2,'查看详情 ›',14,'#47665d').setOrigin(1,0).setName('shop/offer-detail').setData('offerId',o.offerId);
-    const reason=o.consumed?'':this.purchaseReason(o,true);if(reason){const note=v.text(g.reason.x,g.reason.y,reason,14,'#B8473A').setName('shop/offer-reason').setData('offerId',o.offerId);this.ellipsis(note,g.reason.width);}
+    const reason=o.consumed?'':this.purchaseReason(o,true);if(reason){const note=v.text(g.reason.x,g.reason.y,reason,14,'#8A6B61').setName('shop/offer-reason').setData('offerId',o.offerId);this.ellipsis(note,g.reason.width);}
     const hover=this.hoverCard(first,tile,d?.id,d?o.offerId:undefined),hit=v.rect(tile).setFillStyle(0,0).setStrokeStyle().setData('selected',this.selectedOfferId===o.offerId);
     const artBox={...g.art,x:g.art.x-hover.art.x,y:g.art.y-hover.art.y};
     if(d)mountPolychromeCardIridescence(this,hover.art,artBox,o.edition);
@@ -902,9 +909,11 @@ export class ShopScene extends Phaser.Scene {
     if(!occupied&&this.textures.exists('p00-card-back'))v.add(this.add.image(b.x+b.width/2,b.y+b.height/2,'p00-card-back').setDisplaySize(b.width-6,b.height-6).setAlpha(.14));
   }
   private offerPricePlate(o:R2Offer,b:Box):string {
-    const unavailable=!o.consumed&&!!this.purchaseReason(o,true),tone=o.consumed?PAPER_THEME.paper:unavailable?0xf0ddd2:PAPER_THEME.jadeSoft;
-    this.view.material(b,tone,tone,3).setAlpha(this.geometry().portrait?0:1).setName('shop/price-plate').setData('offerId',o.offerId).setData('availability',o.consumed?'owned':unavailable?'unavailable':'available');
-    return unavailable?'#9f3228':o.consumed?'#736b5e':'#203f3b';
+    const reason=o.consumed?'':this.purchaseReason(o,true),unavailable=!!reason;
+    const state=o.consumed?'owned':!unavailable?'available':/差\s*\d+金|金币不足|差\s*\d+/.test(reason)?'insufficient':/槽位已满|库存已满|道具已满|种道具已满/.test(reason)?'full':/同名|已持有|已装备/.test(reason)?'duplicate':'unavailable';
+    const tone=state==='available'?PAPER_THEME.jadeSoft:state==='insufficient'?0xf4e7bf:state==='duplicate'?0xe6e8df:state==='owned'?PAPER_THEME.paper:0xf0ddd2;
+    this.view.material(b,tone,tone,3).setAlpha(this.geometry().portrait?0:1).setName('shop/price-plate').setData('offerId',o.offerId).setData('availability',state);
+    return state==='available'?'#203f3b':state==='insufficient'?'#96743a':state==='duplicate'||state==='owned'?'#6f756c':'#9f3228';
   }
 
   private drawJokerPicture(definitionId:string,b:Box,alpha=1):void {
