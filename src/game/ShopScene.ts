@@ -117,6 +117,9 @@ export class ShopScene extends Phaser.Scene {
   private workshopSelected=false;
   private inlineWorkshop?:{host:HTMLElement;dispose:()=>void};
   private mobileOffers?:{host:HTMLElement;dispose:()=>void};
+  /** Native mobile shelves are presentation-only, but their scroll position is part of the user's task context. */
+  private mobileOffersKind?:ShelfKind;
+  private mobileOffersScrollTop:Record<ShelfKind,number>={jokers:0,tools:0,items:0};
   private refreshDialog?:HTMLDialogElement;
   private shelfPage=0;
   private makeCardsView:MakeCardsView={pane:'purchase',positions:{owned:0,purchase:0}};
@@ -210,6 +213,7 @@ export class ShopScene extends Phaser.Scene {
     this.savedPractice=undefined;this.practiceOrigin=undefined;
     this.busy=false;this.selectedOfferId=undefined;this.shelfKind='jokers';this.shelfPage=0;this.pcPages={jokers:0,tools:0,items:0};this.notice='';this.lifecycle++;
     this.workshopSelected=false;this.refreshDialog=undefined;
+    this.mobileOffersKind=undefined;this.mobileOffersScrollTop={jokers:0,tools:0,items:0};
     this.events.once('shutdown',()=>{this.clearInlineWorkshop();this.clearMobileOffers();});
     this.pendingRerollFlip=false;this.pendingPurchaseFlight=undefined;this.pendingToolCue=undefined;this.pendingTransactions=[];this.lastTransactionNotes=[];this.lastPurchaseReceipt=undefined;this.pendingPayment=undefined;
     this.resultFeedback=new ShopResultFeedback();this.resultKey=undefined;this.resultNote=undefined;this.resultPlate=undefined;
@@ -501,7 +505,12 @@ export class ShopScene extends Phaser.Scene {
     this.noticeLabel?.setVisible(!result);if(!result)return;
     const p=this.geometry(),bottom=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-bottom'))||0,b=shopResultBox(p,this.view.layout.height,bottom);
     const layer=this.add.container(0,0).setName('shop/result-layer');this.resultLayer=layer;
-    this.resultPlate=this.add.graphics().fillStyle(PAPER_THEME.paperLight,1).fillRoundedRect(b.x,b.y,b.width,b.height,4).lineStyle(1,PAPER_THEME.divider,.7).strokeRoundedRect(b.x+.5,b.y+.5,b.width-1,b.height-1,4).setAlpha(result.alpha).setName('shop/result-plate').setData('bounds',b);
+    // Keep the feedback slot quiet, but let the transaction state read at a glance
+    // even when reduced motion is enabled or the player never opens the receipt.
+    const unavailable=/不足|差\d|售罄|已满|不可/.test(result.text),saved=/已保存|已入|已售|已赋予|已更新/.test(result.text);
+    const fill=unavailable?0xf0ddd2:saved?0xe6efe7:PAPER_THEME.paperLight;
+    const edge=unavailable?0x9b352c:saved?0x5b806f:PAPER_THEME.divider;
+    this.resultPlate=this.add.graphics().fillStyle(fill,1).fillRoundedRect(b.x,b.y,b.width,b.height,4).lineStyle(1,edge,.7).strokeRoundedRect(b.x+.5,b.y+.5,b.width-1,b.height-1,4).setAlpha(result.alpha).setName('shop/result-plate').setData('bounds',b).setData('status',unavailable?'unavailable':saved?'saved':'info');
     // Use the shared text constructor; detach only the feedback from full-table
     // redraw so expiry cannot cancel an in-progress press on a shop action.
     const note=this.resultNote=this.view.text(b.x+6,b.y+2,'',14,PAPER_CSS.ink).setName(result.name).setAlpha(result.alpha).setData('resultKey',result.key);
@@ -589,7 +598,11 @@ export class ShopScene extends Phaser.Scene {
     this.view.text(b.x,b.y,copy,14,copy.includes('×')?'#783D7F':'#8A5B2D',b.width).setFontStyle('bold').setName('shop/offer-extra').setData('offerId',offer.offerId).setData('edition',offer.edition);
   }
   private clearInlineWorkshop():void {const old=this.inlineWorkshop;this.inlineWorkshop=undefined;old?.dispose();old?.host.remove();}
-  private clearMobileOffers():void {const old=this.mobileOffers;this.mobileOffers=undefined;old?.dispose();old?.host.remove();}
+  private clearMobileOffers():void {
+    const old=this.mobileOffers;this.mobileOffers=undefined;
+    if(old&&this.mobileOffersKind)this.mobileOffersScrollTop[this.mobileOffersKind]=old.host.scrollTop;
+    old?.dispose();old?.host.remove();this.mobileOffersKind=undefined;
+  }
   private drawMobileOffers(b:Box):void {
     const host=document.createElement('section'),app=document.getElementById('app')!.getBoundingClientRect(),l=this.view.layout,run=this.run,kind=this.shelfKind;
     host.className='shop-mobile-offers';host.dataset.category=kind;host.setAttribute('aria-label',({jokers:'唐宋牌',tools:'消耗工具',items:'长期物品'}[kind])+'商品');Object.assign(host.style,{left:app.x+b.x*app.width/l.width+'px',top:app.y+b.y*app.height/l.height+'px',width:b.width*app.width/l.width+'px',height:b.height*app.height/l.height+'px'});document.body.append(host);
@@ -600,12 +613,20 @@ export class ShopScene extends Phaser.Scene {
     if(!rows.length)host.textContent=kind==='items'?'本店暂无长期物品。':'本货架暂无商品。';
     const nativeDown=()=>{if(active())this.view.noteNativeInteraction();};host.addEventListener('pointerdown',nativeDown,{capture:true});
     const dispose=mountShopMobileOffers(host,rows,active,id=>this.selectOffer(id));
+    // A successful purchase or a category redraw must not throw the user's thumb
+    // back to the first card. Restore after layout has measured the native list.
+    const savedScrollTop=(this.mobileOffersScrollTop??={jokers:0,tools:0,items:0})[kind];
+    if(savedScrollTop>0){
+      host.scrollTop=savedScrollTop;
+      requestAnimationFrame(()=>{if(host.isConnected)host.scrollTop=savedScrollTop;});
+    }
     styleShopMobileOfferInk(host,this.selectedOfferId);
     // Reuse the existing canvas edge component around DOM artwork; scroll only moves its owner.
     const edges=[...host.querySelectorAll<HTMLImageElement>('img[data-edition="polychrome"]')].map(image=>{const rect=image.getBoundingClientRect(),frame=this.view.add(this.add.container());mountPolychromeCardIridescence(this,frame,{x:0,y:0,width:(rect.width+4)*l.width/app.width,height:(rect.height+4)*l.height/app.height},'polychrome');return {image,frame};});
     const sync=()=>{const visible=host.getBoundingClientRect();for(const {image,frame}of edges){const r=image.getBoundingClientRect();frame.setPosition((r.x-app.x-2)*l.width/app.width,(r.y-app.y-2)*l.height/app.height).setVisible(image.isConnected&&r.top>=visible.top+6&&r.bottom<=visible.bottom-6);}};
     host.addEventListener('scroll',sync,{passive:true});sync();
-    this.mobileOffers={host,dispose:()=>{dispose();host.removeEventListener('pointerdown',nativeDown,{capture:true});host.removeEventListener('scroll',sync);for(const {frame}of edges)if(frame.active)frame.destroy();}};
+    this.mobileOffersKind=kind;
+    this.mobileOffers={host,dispose:()=>{(this.mobileOffersScrollTop??={jokers:0,tools:0,items:0})[kind]=host.scrollTop;dispose();host.removeEventListener('pointerdown',nativeDown,{capture:true});host.removeEventListener('scroll',sync);for(const {frame}of edges)if(frame.active)frame.destroy();}};
   }
   private drawInlineWorkshop(b:Box):void {
     const host=document.createElement('section'),app=document.getElementById('app')!.getBoundingClientRect(),l=this.view.layout,run=this.run,seq=run.commandSeq,shopSeq=run.shop!.basicChoice?.shopSeq;
@@ -1070,7 +1091,6 @@ export class ShopScene extends Phaser.Scene {
     g.lineStyle(2,0xe4c186).strokeRoundedRect(-50,-66,100,132,7);
     card.add([g,this.add.text(0,-51,name,{fontFamily:UI_FONT,fontSize:'15px',fontStyle:'bold',color:'#fff2d4',resolution:Math.min(window.devicePixelRatio||1,3)}).setOrigin(.5),this.add.text(0,8,'✓',{fontFamily:UI_FONT,fontSize:'34px',fontStyle:'bold',color:'#367f75',resolution:Math.min(window.devicePixelRatio||1,3)}).setOrigin(.5)]);
     const tx=to.x+to.width/2,ty=to.y+to.height/2,mx=(cx+tx)/2,my=Math.min(cy,ty)-80,flight={t:0};
-    this.audio.coin();
     this.tweens.add({targets:flight,t:1,duration:340,ease:'Cubic.easeIn',onUpdate:()=>{
       if(!card.active)return;const t=flight.t,u=1-t;
       card.setPosition(u*u*cx+2*u*t*mx+t*t*tx,u*u*cy+2*u*t*my+t*t*ty).setScale(1-t*.6).setAngle(t*9);
