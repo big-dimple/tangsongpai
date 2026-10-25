@@ -82,7 +82,8 @@ export class IntermissionScene extends Phaser.Scene {
     const controller=runController(this),run=controller?.state;if(!controller||!run?.stage||(run.stage.skipResult&&!pcResultViewport(this.view.layout.width,this.view.layout.height)))return;
     const facts=settlementFacts(run,this.result.cleared,!!run.stage.skipResult),source=facts.card;
     const pc=pcResultViewport(this.view.layout.width,this.view.layout.height);
-    const candidates=[{key:pc?portraitKey(run.characterId):selectionPortraitKey(run.characterId),url:pc?portraitURL(run.characterId):selectionPortraitURL(run.characterId)},...(source?[{key:jokerArtKey(source.id),url:jokerArtPreviewUrl(source.id)}]:[]),...(facts.reviewBook?[{key:goodsArtKey('U09'),url:itemInfo('U09').artUrl}]:[])].filter((item):item is {key:string;url:string}=>!!item.key&&!!item.url&&!this.textures.exists(item.key));
+    // The PC spread renders only the portrait; source and review-book art belong to the legacy view.
+    const candidates=[{key:pc?portraitKey(run.characterId):selectionPortraitKey(run.characterId),url:pc?portraitURL(run.characterId):selectionPortraitURL(run.characterId)},...(!pc&&source?[{key:jokerArtKey(source.id),url:jokerArtPreviewUrl(source.id)}]:[]),...(!pc&&facts.reviewBook?[{key:goodsArtKey('U09'),url:itemInfo('U09').artUrl}]:[])].filter((item):item is {key:string;url:string}=>!!item.key&&!!item.url&&!this.textures.exists(item.key));
     if(!candidates.length)return;
     this.stopSourceArt();const request=this.sourceArtRequest=new AbortController(),lifecycle=this.lifecycle;
     const current=()=>this.sourceArtRequest===request&&!request.signal.aborted&&lifecycle===this.lifecycle&&this.sys.settings.active&&!this.busy&&runController(this)===controller&&controller.state===run;

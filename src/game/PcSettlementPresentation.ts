@@ -83,15 +83,14 @@ export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2R
 }
 
 /** Facts are present from the first frame; reveal motion never gates the controls. */
-export function mountPcSettlementMotion(scene:Phaser.Scene,root:Phaser.GameObjects.Container,score:Phaser.GameObjects.Text,hero:Phaser.GameObjects.Image|undefined,lost:boolean){
+export function mountPcSettlementMotion(scene:Phaser.Scene,score:Phaser.GameObjects.Text,hero:Phaser.GameObjects.Image|undefined,lost:boolean){
  const sx=score.scaleX,sy=score.scaleY,alpha=score.alpha,hx=hero?.x,ha=hero?.alpha,started=performance.now();let disposed=false;
- const wash=scene.add.graphics().fillStyle(T.paper,.16).fillRect(0,0,scene.scale.width,scene.scale.height).setName('result/pc-transition');root.addAt(wash,0);
  const restore=()=>{if(score.active)score.setScale(sx,sy).setAlpha(alpha);if(hero?.active)hero.setX(hx!).setAlpha(ha!);};
- const dispose=()=>{if(disposed)return;disposed=true;scene.events.off('update',update);scene.events.off('shutdown',dispose);restore();if(wash.active)wash.destroy();};
+ const dispose=()=>{if(disposed)return;disposed=true;scene.events.off('update',update);scene.events.off('shutdown',dispose);restore();};
  const update=()=>{const elapsed=performance.now()-started,t=Math.min(1,elapsed/900),entry=1-Math.pow(1-Math.min(1,elapsed/420),3),land=Math.min(1,Math.max(0,(elapsed-140)/300));
   if(hero?.active)hero.setX(hx!-12*(1-entry)).setAlpha(ha!*(.7+.3*entry));
   if(score.active)score.setAlpha(alpha*(.72+.28*land)).setScale(sx*(lost?1:.97+.03*land),sy*(lost?1:.97+.03*land));
-  wash.setAlpha(1-t);if(t===1)dispose();
+  if(t===1)dispose();
  };
  scene.events.on('update',update);scene.events.once('shutdown',dispose);update();return {dispose};
 }
