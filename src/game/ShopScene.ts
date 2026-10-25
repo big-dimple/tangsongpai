@@ -499,6 +499,14 @@ export class ShopScene extends Phaser.Scene {
     this.pcOfferBoxes.set(o.offerId,tile);this.offerArts.push(hover.art);v.target(hit,'offer/'+o.offerId,{tap:()=>this.selectOffer(o.offerId),detail:()=>this.inspectOffer(o.offerId),...hover});
   }
   private get resultReduced():boolean{return gameSession().reducedMotion||window.matchMedia('(prefers-reduced-motion: reduce)').matches;}
+  private mobileOfferBox(offerId:string):Box|undefined {
+    const host=this.mobileOffers?.host;if(!host)return;
+    const row=Array.from(host.querySelectorAll<HTMLElement>('[data-offer-id]')).find(node=>node.dataset.offerId===offerId);
+    const app=document.getElementById('app')?.getBoundingClientRect();if(!row||!app||!app.width||!app.height)return;
+    const rect=row.getBoundingClientRect(),l=this.view.layout;
+    if(!rect.width||!rect.height)return;
+    return {x:(rect.x-app.x)*l.width/app.width,y:(rect.y-app.y)*l.height/app.height,width:rect.width*l.width/app.width,height:rect.height*l.height/app.height};
+  }
   private drawResultCue():void {
     const result=this.resultFeedback.snapshot(performance.now(),this.resultReduced);this.resultKey=result?.key;
     this.resultLayer?.destroy(true);this.resultLayer=undefined;this.resultNote=undefined;this.resultPlate=undefined;
@@ -507,7 +515,8 @@ export class ShopScene extends Phaser.Scene {
     const layer=this.add.container(0,0).setName('shop/result-layer');this.resultLayer=layer;
     // Keep the feedback slot quiet, but let the transaction state read at a glance
     // even when reduced motion is enabled or the player never opens the receipt.
-    const unavailable=/不足|差\d|售罄|已满|不可/.test(result.text),saved=/已保存|已入|已售|已赋予|已更新/.test(result.text);
+    const unavailable=/金币不足|差\s*\d|售罄|不可购买|槽位已满|消耗品库存已满|长期道具已满/.test(result.text);
+    const saved=/已购|已保存|已入|已售|已赋予|已更新|已用|库存已满转\s*\+\s*\d+\s*金/.test(result.text);
     const fill=unavailable?0xf0ddd2:saved?0xe6efe7:PAPER_THEME.paperLight;
     const edge=unavailable?0x9b352c:saved?0x5b806f:PAPER_THEME.divider;
     this.resultPlate=this.add.graphics().fillStyle(fill,1).fillRoundedRect(b.x,b.y,b.width,b.height,4).lineStyle(1,edge,.7).strokeRoundedRect(b.x+.5,b.y+.5,b.width-1,b.height-1,4).setAlpha(result.alpha).setName('shop/result-plate').setData('bounds',b).setData('status',unavailable?'unavailable':saved?'saved':'info');
@@ -1131,7 +1140,8 @@ export class ShopScene extends Phaser.Scene {
     const cancelHaptic=()=>haptic.cancel();owner?.addEventListener('close',cancelHaptic,{once:true});owner?.addEventListener('cancel',cancelHaptic,{once:true});
     const purchase=action.type==='BuyOffer'?this.findOffer(action.offerId):undefined;
     const buyIndex=action.type==='BuyOffer'?this.visibleOffers().findIndex(o=>o.offerId===action.offerId):-1;
-    const buyBox=this.geometry().pc?this.pcOfferBoxes.get(action.type==='BuyOffer'?action.offerId:''):buyIndex>=0?this.geometry().shelf[buyIndex]:undefined;
+    const buyBox=(action.type==='BuyOffer'&&this.geometry().portrait?this.mobileOfferBox(action.offerId):undefined)
+      ??(this.geometry().pc?this.pcOfferBoxes.get(action.type==='BuyOffer'?action.offerId:''):buyIndex>=0?this.geometry().shelf[buyIndex]:undefined);
     const landSlot=purchase?.kind==='jokers'?this.geometry().slots[Math.min(previous.jokers.length,r2JokerCapacity(previous)-1)]:purchase?this.geometry().items:undefined;
     const pendingDrag=action.type==='ReorderJokers'&&this.ownedDrag?.saving?this.ownedDrag:undefined,inputEnabled=this.input.enabled;
     if(pendingDrag)this.input.enabled=false;else this.render();
@@ -1159,7 +1169,7 @@ export class ShopScene extends Phaser.Scene {
       if(action.type==='BuyOffer'&&purchase&&!result.duplicate){
         const {kind,offer}=purchase,name=kind==='jokers'?this.jokerDefinition(offer.definitionId).name:kind==='tools'?toolInfo(offer.definitionId,this.run).name:itemInfo(offer.definitionId).name;this.audio.purchase();
         this.lastPurchaseReceipt=shopPurchaseReceipt(previous,this.run,kind,offer);
-        if(this.lastPurchaseReceipt?.payment?.saved)this.pendingPayment=this.lastPurchaseReceipt.payment.summary;
+        this.pendingPayment=`已购 ${name} · 实付 ${r2PurchasePrice(previous,offer)} 金 · 已保存`+(this.lastPurchaseReceipt?.payment?.saved?` · ${this.lastPurchaseReceipt.payment.summary}`:'');
         this.notice=(kind==='jokers'?`已入第 ${this.run.jokers.length} 槽`:kind==='tools'?'已入道具箱，未使用':'已持有长期道具')+' · 点购物结果查看';
 
         if(buyBox&&landSlot)this.pendingPurchaseFlight={from:buyBox,to:landSlot,name};
