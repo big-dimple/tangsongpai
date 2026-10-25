@@ -8,7 +8,7 @@ import {enterCurrentStage} from './stage-entry.mjs';
 
 const server=await createServer({mode:'e2e',server:{host:'127.0.0.1',port:5218,strictPort:true}});
 const output='shots/gamepad',report={testedCommit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),checks:[],physicalController:'NOT_RUN'};
-let browser;
+let browser,activePage;
 const buttons={left:14,right:15,up:12,down:13,confirm:0,back:1,play:2,discard:3,previous:4,next:5,rank:6,suit:7,detail:8,menu:9};
 const frames=page=>page.evaluate(()=>new Promise((resolve,reject)=>{let count=0;const game=window.__harness.game,timer=setTimeout(()=>{game.events.off('poststep',step);reject(Error('controller frame timeout'));},5000),step=()=>{if(++count===3){clearTimeout(timer);game.events.off('poststep',step);resolve();}};game.events.on('poststep',step);}));
 const read=page=>page.evaluate(()=>window.__harness.game.registry.get('runController')?.state);
@@ -35,7 +35,7 @@ async function navigate(page,predicate){
 try{
   await mkdir(output,{recursive:true});({nextControllerTarget}=await server.ssrLoadModule('/src/game/ControllerFocus.ts'));await server.listen();browser=await chromium.launch();
   for(const viewport of [{width:1280,height:800},{width:390,height:844}]){
-    const context=await browser.newContext({viewport}),page=await context.newPage(),errors=[];page.on('pageerror',error=>errors.push(String(error)));
+    const context=await browser.newContext({viewport}),page=await context.newPage(),errors=[];activePage=page;page.on('pageerror',error=>errors.push(String(error)));
     await page.addInitScript(()=>{
       window.__testPad={index:0,id:'Xbox test controller',connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
       Object.defineProperty(navigator,'getGamepads',{value:()=>[window.__testPad]});
@@ -61,6 +61,10 @@ try{
     assert.equal(await page.evaluate(()=>window.__harness.game.scene.getScene('game').selectedIds.size),1,'holding A selects only once');assert.deepEqual(await read(page),before,'selection leaves domain state and RNG unchanged');
     await press(page,'back');assert.equal(await page.evaluate(()=>window.__harness.game.scene.getScene('game').selectedIds.size),0);
     await press(page,'confirm');await press(page,'play',600);
+    if(await page.locator('.hero-play-reminder[open]').count()){
+      assert.deepEqual(await read(page),before,'holding X cannot bypass the hero ability reminder');
+      await navigate(page,target=>target.id.endsWith('/继续出牌'));await press(page,'confirm');
+    }
     await page.waitForFunction(seq=>window.__harness.game.registry.get('runController').state.commandSeq===seq+1,before.commandSeq);
     assert.equal((await read(page)).stage.handsLeft,before.stage.handsLeft-1,'holding X commits one hand');
     await press(page,'confirm');await page.waitForFunction(()=>!window.__harness.game.scene.getScene('game').playing);
@@ -82,11 +86,18 @@ try{
     await page.screenshot({path:`${output}/${viewport.width}.png`});assert.deepEqual(errors,[]);report.checks.push({viewport,status:'PASS'});await context.close();
   }
   // Exercise real text/padding clicks through the same native dialog used by game choices.
-  const page=await browser.newPage();await page.goto('http://127.0.0.1:5218/?harness=1');await page.waitForFunction(()=>window.__harness?.game.scene.isActive('title'));
+  const page=await browser.newPage();activePage=page;await page.goto('http://127.0.0.1:5218/?harness=1');await page.waitForFunction(()=>window.__harness?.game.scene.isActive('title'));
   await page.evaluate(async()=>{const {DetailDialog}=await import('/src/game/DetailDialog.ts');window.__tileClicks=0;new DetailDialog().open('点击范围检查','',[],{choices:[{label:'打开选择',detail:'说明文字也可以点击',run:()=>{window.__tileClicks++;}}]});});
   await page.getByText('说明文字也可以点击',{exact:true}).click();assert.equal(await page.evaluate(()=>window.__tileClicks),1);
   const tile=page.locator('.dialog-choice-actions > div');await tile.click({position:{x:3,y:3}});assert.equal(await page.evaluate(()=>window.__tileClicks),2);
   await tile.locator('button').click();assert.equal(await page.evaluate(()=>window.__tileClicks),3,'button bubbling cannot double activate');
   report.checks.push({name:'whole-choice-surface',status:'PASS'});
-}catch(error){report.error=String(error);throw error;}
+}catch(error){
+  report.error=String(error);
+  if(activePage&&!activePage.isClosed()){
+    report.failure=await activePage.evaluate(()=>({navigation:window.__harness?.game.registry.get('controllerNavigation'),state:window.__harness?.game.registry.get('runController')?.state,dialogs:[...document.querySelectorAll('dialog[open]')].map(dialog=>({title:dialog.getAttribute('aria-label'),className:dialog.className,buttons:[...dialog.querySelectorAll('button')].map(button=>({label:button.textContent,disabled:button.disabled}))}))})).catch(()=>({unavailable:true}));
+    await activePage.screenshot({path:`${output}/failure.png`}).catch(()=>{});
+  }
+  throw error;
+}
 finally{await writeFile(`${output}/result.json`,JSON.stringify(report,null,2)+'\n');await browser?.close();await server.close();}
