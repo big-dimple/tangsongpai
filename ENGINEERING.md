@@ -92,6 +92,7 @@ tools/          离线素材工具
 - 重复命令幂等，过期序号拒绝，成功奖励只能发放一次。
 - 实例 ID 唯一，同一活动实例只能位于一个牌区；整数资源非负，槽位与事件数量有上限。
 - 相同版本、内容哈希、种子和命令序列应得到相同结果。
+- `CHROMIUM_PATH=/usr/bin/chromium node harness/pc-landscape.mjs` 对实际预览运行四尺寸新局、购买、两手出牌、结算和继续；`PC_URL`、`PC_OUT`、`PC_SIZES` 可指定前后版本与输出。截图和 report 存入忽略的 shots，自动通过不代表审美验收。
 - 规则 RNG 与视觉 RNG 分离；预览使用只读快照或克隆，不能推进真实随机流，也不能泄露未来牌堆和货架。
 
 ## 6. 存档与恢复
@@ -113,10 +114,10 @@ tools/          离线素材工具
 - 群英卷轴仅在每次页面加载后的首页播放一次：保留浅色纸卷，六人完整亮相后额外停留 1 秒，总长 2.6 秒，展开、落印与淡出保持原节奏；可直接操作离开首页，减少动态时跳过。选角页不重播群英卷轴，仅重置本局单人登场演出的播放额度。
 - 桌面横屏与手机竖屏共用 CSS 坐标和明确命中区域；触控、键盘与标准手柄均为正式输入路径。
 - PC 牌桌新版由 SceneView 的 game 场景显式启用，几何函数 PcTableLayout 只消费尺寸/安全区/手牌数据，默认不开启；实际入口排除 primary coarse pointer，要求至少 1180×640 可用横向空间。移动牌桌保留正式触控几何，同时由 StageTableArt 绘制当前英雄的透明纸面层。
-- PC 的 hud 覆盖完整侧栏，heroRows、heroPortrait、inventoryEntry/helpEntry 与最终 scoreBoard/playedArea 一起从布局输出；渲染、命中、手柄焦点与计分来源避让共用这些几何，不能只移动可见图片。
-- PC 结算由 IntermissionLayout、PcSettlementPresentation 和 IntermissionScroll 配合实现上锚画幅海报，不对整块内容二次垂直居中。长去向文字可进入现有只读详情弹窗，真实分数/收益仍来自原 settlementFacts。
+- PC 以 1920×1080 为主画幅，1920×924 可用高度和 1366×768 兼容。`PcLandscapeFrame` 统一外距40/28、侧栏292/244、栏距32/24；牌桌从上到下为构筑牌、计分/出牌、手牌、操作。hud、heroRows、heroPortrait、inventoryEntry/helpEntry 与最终 scoreBoard/playedArea 一起输出；渲染、命中、手柄焦点与计分来源避让共用几何。
+- PC 商店固定上方持牌轨道，三件现货各自整合图、规则、报价和购买入口；购买继续使用现有确认与命令校验。PC 结算由 IntermissionLayout、PcSettlementPresentation 和 IntermissionScroll 展示实际末手组合、已保存热度/倍率/入账和奖励，右侧提供下一步操作；长去向文字保留详情入口，事实来自 settlementFacts，禁止表现层重新计分。
 - beginPcSettlementCut 是 PC-only 非阻塞暖纸 DOM 衔接，不是旧牌桌截图，不修改 PaperFlow 或奇遇切场。它不等待动画再执行导航，减少动态时不播放，拥有明确清理上限；结算入场同样不决定规则或奖励。
-- PC 牌桌与 PC/手机竖屏结算使用独立 `pc` purpose（沿用技术键，不替换既有 portrait/selection）：`public/assets/tangsong-pc-heroes/manifest.json` 注册六张 896×1120 带 alpha WebP（合计 1,794,950 字节）。`PcHeroArt` 按各自衣袖、双锤和剑的轮廓定义比例与水平落点，完整保留源画幅；结算人物向左越出文字版心，成绩与收益/按钮分列，上锚而非整组居中。
+- PC 牌桌与 PC/手机竖屏结算使用独立 `pc` purpose（沿用技术键，不替换既有 portrait/selection）：`public/assets/tangsong-pc-heroes/manifest.json` 注册六张 896×1120 带 alpha WebP（合计 1,794,950 字节）。`PcHeroArt` 按各自衣袖、双锤和剑的轮廓定义比例与水平落点，完整保留源画幅；PC 人物完整源画幅落在窄侧栏内并贴底，无人物背景色块；成绩与收益/按钮分列。
 - 透明图只在实际 PC 牌桌、商店英雄席、移动牌桌或 PC/手机竖屏结算请求当前英雄；复用原有受控图片队列与结果取消生命周期，不加入首页六人预加载。`portrait`、`selection` 与角色详情仍使用原路径，存档身份和玩法规则不变。
 - 手机竖屏结算由 `MobileSettlementPresentation` 独立绘制：人物/成绩主区、全宽奖励、去向和稳定按钮，紧凑屏压缩人物区而非把 PC 三栏缩小。长去向可点标题展开全文；失败、跳场、通关仍走真实既有操作。
 - 通用图片加载器只对注册的 `pc` purpose 使用 400,000 字节、896×1120 像素限额，并继续校验键/URL/真实尺寸；其他图片保留原 128 KiB / 600,000 像素限额。

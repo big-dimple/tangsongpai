@@ -1,0 +1,26 @@
+import assert from 'node:assert/strict';
+import {build} from 'esbuild';
+import {createServer} from 'vite';
+import path from 'node:path';
+import {pathToFileURL} from 'node:url';
+import {existsSync} from 'node:fs';
+import {chromium} from 'playwright';
+import {waitScene,tapUI} from './ui.mjs';
+import {mkdir,writeFile} from 'node:fs/promises';
+// Controlled edge cases complement the fresh-run PC interaction matrix.
+const out=process.env.PC_SETTLEMENT_OUT??'shots/pc-landscape/settlement-edges';
+await mkdir(out,{recursive:true});
+const fixtureFile=path.resolve(out,'fixtures.mjs');
+await build({stdin:{contents:"export {climaxSettlementReady,settlementReady} from './harness/fixtures/settlement';export {reviewBookReady} from './harness/fixtures/review-book';export {energySend} from './harness/fixtures/hero-climax';export {makeCheckpoint,readCheckpoint} from './src/application/checkpoint';export {createRun} from './src/domain/run';export {newRunIdentity} from './src/game/RunLaunch';",resolveDir:process.cwd()},bundle:true,platform:'node',format:'esm',define:{'import.meta.env.BASE_URL':JSON.stringify('./')},outfile:fixtureFile,logLevel:'error'});
+const f=await import(pathToFileURL(fixtureFile));
+const states=[];
+for(const [name,fixture] of [['loss',f.settlementReady('boss-loss','current')],['long',f.climaxSettlementReady('long')],['reviewbook',f.reviewBookReady()]])states.push({name,state:f.energySend(fixture.state,fixture.action)});
+let skip=f.createRun({seed:'pc-skip-review',runId:'controlled/pc-skip-review',characterId:'erxiang',rulesVersion:'r2',r2Identity:f.newRunIdentity('erxiang','group'),openingRoute:'group',modeConfig:{mode:'standard',difficulty:0,challengeId:null,programsEnabled:false}});skip=f.energySend(skip,{type:'LeaveShop'});skip=f.energySend(skip,{type:'SkipStage'});states.push({name:'skip',state:skip});
+const port=Number(process.env.PC_SETTLEMENT_PORT??5176),server=await createServer({mode:'e2e',server:{host:'127.0.0.1',port,strictPort:true,hmr:false},logLevel:'error'});await server.listen();
+const executablePath=process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE??(existsSync('/usr/bin/chromium')?'/usr/bin/chromium':undefined);
+const browser=await chromium.launch({...(executablePath?{executablePath}:{}),args:['--no-sandbox']});const rows=[];
+try{for(const {name,state} of states){
+assert.ok(f.readCheckpoint(f.makeCheckpoint(state,[])).ok,name+' valid checkpoint');const p=await browser.newPage({viewport:{width:1366,height:768},reducedMotion:'reduce'});const errors=[];p.on('pageerror',e=>errors.push(e.message));p.on('dialog',d=>d.accept());
+await p.goto('http://127.0.0.1:'+port+'/?harness=1');await waitScene(p,'title');assert.equal(await p.evaluate(async checkpoint=>{const {gameSession}=await import('/src/game/session.ts'),{routeSavedRun}=await import('/src/game/RunMenu.ts');if(!gameSession().lease.writable)await gameSession().takeOver();const ok=await gameSession().importJSON(checkpoint);if(!ok)throw Error(gameSession().notice);if(ok)routeSavedRun(window.__harness.game);return ok;},JSON.stringify(f.makeCheckpoint(state,[]))),true);await waitScene(p,'intermission');await p.waitForTimeout(800);await p.evaluate(()=>document.fonts.ready);assert.deepEqual(await p.evaluate(()=>window.__harness.game.registry.get('runController').state),state,'presentation preserves saved state');
+const row=await p.evaluate(()=>{const s=window.__harness.game.scene.getScene('intermission'),all=[];function walk(xs){for(const o of xs){all.push(o);if(o.list)walk(o.list)}}walk(s.view.root.list);return{hero:all.find(o=>o.name==='result-art/hero')?.getBounds(),cards:all.filter(o=>o.name==='result/card-face').map(o=>o.getData('cardId')),viewport:s.resultContent.getData('viewport'),texts:all.filter(o=>o.type==='Text'&&o.visible&&o.text).map(o=>({name:o.name,text:o.text,bounds:o.getBounds()})),controls:all.filter(o=>o.input?.enabled&&o.name.startsWith('action/')).map(o=>({name:o.name,primary:!!o.getData('buttonPrimary'),bounds:o.getBounds()}))}});row.name=name;row.errors=errors;rows.push(row);await p.screenshot({path:out+'/controlled-'+name+'-1366x768.png'});assert.equal(row.viewport.overflow,0,name+' stays first screen');for(const c of row.controls)assert.ok(c.bounds.y>=60&&c.bounds.y+c.bounds.height<=752,name+' '+c.name+' on screen');assert.deepEqual(errors,[]);if(row.hero){assert.ok(row.hero.x>=28&&row.hero.x+row.hero.width<=272,'whole hero source is inside compact sidebar');}if(name==='long'||name==='reviewbook')assert.deepEqual(row.cards,state.lastTrace.sets.playedIds,'actual saved played combination');if(name==='loss'){await tapUI(p,'intermission','action/retry-seed');await waitScene(p,'shop');row.retry='passed';}if(name==='skip'){await tapUI(p,'intermission','action/continue-stage');await waitScene(p,'shop');row.continue='passed';}console.log('PASS',name,row.viewport);await p.close();
+}}finally{await writeFile(out+'/controlled-edge-report.json',JSON.stringify({scope:'Controlled legal checkpoints loaded through production session.importJSON, not natural UI acquisition. Browser rendering, first-screen controls and retry/skip navigation. Not natural full-tour acquisition.',rows},null,2));await browser.close();await server.close()}
