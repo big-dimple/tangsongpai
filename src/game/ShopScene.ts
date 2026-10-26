@@ -144,6 +144,8 @@ export class ShopScene extends Phaser.Scene {
   private transactionGrowthLines=new WeakMap<Extract<DomainEvent,{type:'joker-transaction'}>,string>();
   private pendingPayment?:string;
   private lastPurchaseReceipt?:ShopPurchaseReceipt;
+  /** The purchased rail is intentionally folded after a new card lands. */
+  private ownedCollapsed=false;
 
   private pendingRerollFlip=false;
   private pendingPurchaseFlight?:{from:Box;to:Box;name:string};
@@ -200,7 +202,7 @@ export class ShopScene extends Phaser.Scene {
     const menu=document.querySelector('.run-menu-dock,.run-menu-toggle')?.getBoundingClientRect(),app=document.getElementById('app')!.getBoundingClientRect();
     const menuBox=menu&&menu.width&&menu.height?{x:(menu.x-app.x)*l.width/app.width,y:(menu.y-app.y)*l.height/app.height,width:menu.width*l.width/app.width,height:menu.height*l.height/app.height}:undefined;
     // Decoration never changes the functional shop bounds.
-    return shopLayout(l.width,l.height,l.hud.y,inset('bottom'),cols,this.run.jokers.some(j=>!!this.jokerCopy(j.definitionId)),!!firstChapterShopPrompt(this.run)&&this.ready,inset('left'),inset('right'),this.run.jokers.length,menuBox);
+    return shopLayout(l.width,l.height,l.hud.y,inset('bottom'),cols,this.run.jokers.some(j=>!!this.jokerCopy(j.definitionId)),!!firstChapterShopPrompt(this.run)&&this.ready,inset('left'),inset('right'),this.run.jokers.length,menuBox,this.ownedCollapsed);
   }
   create():void {
     this.hapticLife?.abort();this.hapticLife=new AbortController();
@@ -212,7 +214,7 @@ export class ShopScene extends Phaser.Scene {
     this.makeCardsView={pane:'purchase',positions:{owned:0,purchase:0}};
     this.comparisonView={scrollTop:0};
     this.savedPractice=undefined;this.practiceOrigin=undefined;
-    this.busy=false;this.selectedOfferId=undefined;this.shelfKind='jokers';this.shelfPage=0;this.pcPages={jokers:0,tools:0,items:0};this.notice='';this.lifecycle++;
+    this.busy=false;this.selectedOfferId=undefined;this.shelfKind='jokers';this.shelfPage=0;this.pcPages={jokers:0,tools:0,items:0};this.notice='';this.ownedCollapsed=false;this.lifecycle++;
     this.workshopSelected=false;this.refreshDialog=undefined;
     this.mobileOffersKind=undefined;this.mobileOffersScrollTop={jokers:0,tools:0,items:0};
     this.events.once('shutdown',()=>{this.clearInlineWorkshop();this.clearMobileOffers();});
@@ -359,6 +361,7 @@ export class ShopScene extends Phaser.Scene {
     const allowed=r2RunModeConfig(this.run).reroll.allowed,cost=this.run.shop?.freeRerolls?0:r2PaidRerollPrice(this.run);
     this.drawRefresh(portraitHeader?.reroll??p.reroll);
     this.shopButton(p.play,'进入牌桌','action/start-stage',()=>void this.send({type:'LeaveShop'}),this.ready,true);
+    this.drawOwnedToggle(p);
     if(p.portrait)this.drawBuildEntry(p);
     else this.shopButton(p.build,this.lastPurchaseReceipt?'购物结果':p.portrait&&p.copyBeside?'培养':p.inventoryCollapsed?`培养 ${this.run.jokers.length}/${r2JokerCapacity(this.run)}`:this.buildLabel(),'action/build',()=>this.lastPurchaseReceipt?this.openPurchaseReceipt():this.inspectJourney());
     const reason=!this.ready?'当前进度未保存或只读，请查看菜单。':allowed&&this.run.gold<cost?`换牌还差 ${cost-this.run.gold} 金。可直接入场。`:this.shelfKind==='jokers'&&this.run.jokers.length===r2JokerCapacity(this.run)?`${r2JokerCapacity(this.run)}槽已满，点随身牌出售后再买。`:this.shelfKind==='tools'?'购买后收入库存；查看详情，再确认使用。':this.shelfKind==='items'?'道具本局生效；换牌不重抽道具货架。':p.portrait?'点商品直接看详情；确认后才扣款。':'点卡牌不会扣钱；点随身牌可出售或左移、右移。';
@@ -385,14 +388,17 @@ export class ShopScene extends Phaser.Scene {
     if(guide)this.view.add(this.add.graphics().fillStyle(PAPER_THEME.paperLight,.96).fillRoundedRect(guide.box.x-4,guide.box.y-4,guide.box.width+8,guide.box.height+8,6));
     const hit=this.view.add(this.add.rectangle(b.x+b.width/2,b.y+b.height/2,b.width,b.height,0,0));
     this.view.target(hit,'shop/hero-preparation',{tap:()=>showHeroExplanation(this.dialog,character.id,{run:this.run,closeLabel:'返回商店'}),detail:()=>showHeroExplanation(this.dialog,character.id,{run:this.run,closeLabel:'返回商店'})});
-    this.view.text(b.x+b.width/2,b.y+b.height-31,character.name+' · 原画与技能 ↗',14,'#3F606B').setOrigin(.5,0).setName('shop/hero-caption');
+    this.view.add(this.add.text(b.x+b.width/2,b.y+b.height-31,character.name+' · 原画与技能 ↗',{fontFamily:UI_FONT,fontSize:'14px',color:'#f2db9f'}).setOrigin(.5,0).setName('shop/hero-caption'));
   }
   /** Phone keeps the hero as a translucent ink subject behind the shelf. */
   private drawMobileHeroArt(p:ReturnType<typeof shopLayout>):void {
     if(!p.portrait)return;
     const character=getCharacter(this.run.characterId),key=pcHeroKey(character.id);
     if(!this.textures.exists(key))return;
-    const stage={x:p.x+p.w*.42,y:p.top+28,width:p.w*.62,height:Math.min(220,p.play.y-p.top-24)},composition=PC_HERO_COMPOSITION[character.id];
+    // Keep the cutout below the complete header and category row. Its paper
+    // wash may sit behind the gallery, but never behind balance/target/tabs.
+    const stageTop=p.tabs.y+p.tabs.height+8,stage={x:p.x+p.w*.42,y:stageTop,width:p.w*.62,height:Math.min(220,p.play.y-stageTop-8)},composition=PC_HERO_COMPOSITION[character.id];
+    if(stage.height<=24)return;
     // The cutout is carried by an asymmetrical ink sweep rather than a
     // circular avatar plate. Its open side leaves the shelf copy readable.
     const wash=this.add.graphics().fillStyle(0x203f3b,.12).beginPath()
@@ -454,6 +460,18 @@ export class ShopScene extends Phaser.Scene {
       const b=p.slots[i];this.drawSlot(b,false);v.text(b.x+b.width/2,b.y+b.height-21,p.portrait?String(i+1):`空槽 ${i+1}`,14,'#a6bab0').setOrigin(.5,0);
     }
   }
+  /** A fixed, small control keeps the folded rail reversible without stealing the entry action. */
+  private drawOwnedToggle(p:ReturnType<typeof shopLayout>):void {
+    if(p.pc||!p.ownedToggle||!this.run.jokers.length)return;
+    const button=this.shopButton(p.ownedToggle,this.ownedCollapsed?'展开已购牌':'收起已购牌','action/toggle-owned',()=>{
+      if(this.busy)return;
+      this.ownedCollapsed=!this.ownedCollapsed;
+      this.render();
+    },!this.busy);
+    const label=button.getData('label') as Phaser.GameObjects.Text|undefined;
+    label?.setText(this.ownedCollapsed?'⌃':'⌄').setFontSize(18).setFontStyle('bold').setColor('#203f3b');
+    button.setData('ownedCollapsed',this.ownedCollapsed);
+  }
   private renderPC(p:ReturnType<typeof shopLayout>):void {
     const pc=p.pc!;const v=this.view,stage=getR2Stage(this.run.stageIndex,this.run.tourMode,this.run.difficulty,this.run)!;
     drawShopArt(this,v,p);this.drawShopPortrait(p);
@@ -465,13 +483,13 @@ export class ShopScene extends Phaser.Scene {
     v.text(pc.left.x+16,pc.left.y+6,'经营台',13,'#596B69',pc.left.width-32).setName('shop/workbench-label');
     v.text(pc.shopPanel.x+64,pc.shopPanel.y-19,'本店货架 · 先看效果，再决定',13,'#596B69',pc.shopPanel.width-76).setName('shop/market-label');
     const header=p.desktopHeader!,character=getCharacter(this.run.characterId);
-    const title=v.text(header.hero.x,header.hero.y+22,character.name+(this.run.tourMode==='endless'?' · 无尽筹备':' · 筹备'),this.run.tourMode==='endless'?20:24,'#26313A').setOrigin(0,.5).setFontStyle('bold').setName('shop/title');this.ellipsis(title,header.hero.width);
-    v.text(p.x+16,p.top+58,stage.name,16,'#3F606B',pc.left.width-32);
+    const title=this.add.text(header.hero.x,header.hero.y+22,character.name+(this.run.tourMode==='endless'?' · 无尽筹备':' · 筹备'),{fontFamily:UI_FONT,fontSize:`${this.run.tourMode==='endless'?20:24}px`,color:'#f2db9f',fontStyle:'bold'}).setOrigin(0,.5).setName('shop/title');v.add(title);this.ellipsis(title,header.hero.width);
+    v.add(this.add.text(p.x+16,p.top+58,stage.name,{fontFamily:UI_FONT,fontSize:'16px',color:'#f2db9f',wordWrap:{width:pc.left.width-32,useAdvancedWrap:true}}));
     const target=v.text(header.target.x,header.target.y+22,'目标 '+heatText(stage.targetHeat),20,'#A33E2E').setOrigin(0,.5).setFontStyle('bold').setName('shop/target');
     for(let size=20;target.width>header.target.width&&size>14;)target.setFontSize(--size);
     this.drawBalance(header.purse,false,20,true);
     v.button({...p.chapter,x:p.chapter.x+12,width:p.chapter.width-24},programEntryLabel(this.run),'action/chapter',()=>this.inspectChapter());
-    v.text(p.x+16,p.top+96,`已持唐宋牌 ${this.run.jokers.length}/${r2JokerCapacity(this.run)} · 从左向右结算`,14,'#26313A',pc.left.width-32).setName('shop/owned-heading');
+    v.add(this.add.text(p.x+16,p.top+96,`已持唐宋牌 ${this.run.jokers.length}/${r2JokerCapacity(this.run)} · 从左向右结算`,{fontFamily:UI_FONT,fontSize:'14px',color:'#f7f1df',wordWrap:{width:pc.left.width-32,useAdvancedWrap:true}}).setName('shop/owned-heading'));
     this.drawBuildEntry(p);this.drawOwned(p);
     this.drawInventoryBag(pc.inventoryEntry);this.drawRefresh(p.reroll);
     this.shopButton(p.play,'进入牌桌  →','action/start-stage',()=>void this.send({type:'LeaveShop'}),this.ready,true);
@@ -708,7 +726,7 @@ export class ShopScene extends Phaser.Scene {
     (art.list[0] as Phaser.GameObjects.Graphics).clear();(art.list[1] as Phaser.GameObjects.Graphics).clear();(button.getData('label') as Phaser.GameObjects.Text).setFontSize(14).setFontStyle('normal').setAlign('center').setColor('#3F606B');
   }
   private drawInventoryBag(b:Box):void {
-    const compact=b.width<100,onInk=this.geometry().portrait||!!this.geometry().desktopHeader&&this.geometry().short,count=this.run.consumables.length+'/'+r2ConsumableCapacity(this.run),button=this.shopButton(b,compact?'道具箱\n'+count:'道具箱 '+count,'action/tool-inventory',()=>showConsumables(this.dialog,this.run,this.ready,(a,seq)=>this.send(a,seq)),!this.busy);
+    const compact=b.width<100,onInk=!!this.geometry().desktopHeader&&this.geometry().short,count=this.run.consumables.length+'/'+r2ConsumableCapacity(this.run),button=this.shopButton(b,compact?'道具箱\n'+count:'道具箱 '+count,'action/tool-inventory',()=>showConsumables(this.dialog,this.run,this.ready,(a,seq)=>this.send(a,seq)),!this.busy);
     if(pcResultViewport(this.view.layout.width,this.view.layout.height)){inventoryFeedback(this,button,this.run,this.ready,this.resultReduced,true);return;}
     button.setData('chest',true);inventoryFeedback(this,button,this.run,this.ready,this.resultReduced);
     const art=button.getData('buttonArt') as Phaser.GameObjects.Container;(art.list[0] as Phaser.GameObjects.Graphics).clear();(art.list[1] as Phaser.GameObjects.Graphics).clear();shopToolbarGlyph(this,art,'bag',compact?2:14,14,onInk?0xe7cc8c:0x42665d,compact?18:24);
@@ -720,7 +738,7 @@ export class ShopScene extends Phaser.Scene {
   }
   private drawRefresh(b:Box):void {
     const allowed=r2RunModeConfig(this.run).reroll.allowed,cost=this.run.shop?.freeRerolls?0:r2PaidRerollPrice(this.run),enabled=this.ready&&allowed&&this.run.gold>=cost&&r2Pool(this.run.jokers.map(j=>j.definitionId),this.run.safetyNetUsed?['f07']:[]).length>0;
-    const compact=b.width<100,onInk=this.geometry().portrait||!!this.geometry().desktopHeader&&this.geometry().short,price=allowed?(cost?cost+'金币':'免费'):'禁用',button=this.shopButton(b,compact?'花钱换货\n'+price:'花钱换货 '+price,'action/reroll',()=>this.confirmRefresh(),enabled),art=button.getData('buttonArt') as Phaser.GameObjects.Container;
+    const compact=b.width<100,onInk=!!this.geometry().desktopHeader&&this.geometry().short,price=allowed?(cost?cost+'金币':'免费'):'禁用',button=this.shopButton(b,compact?'花钱换货\n'+price:'花钱换货 '+price,'action/reroll',()=>this.confirmRefresh(),enabled),art=button.getData('buttonArt') as Phaser.GameObjects.Container;
     (art.list[0] as Phaser.GameObjects.Graphics).clear();(art.list[1] as Phaser.GameObjects.Graphics).clear();shopToolbarGlyph(this,art,'refresh',compact?2:8,14,onInk?0xe7cc8c:0x42665d,compact?18:20);
     const label=button.getData('label') as Phaser.GameObjects.Text;label.setText((cost?'花钱换货':'免费换货')+'\n'+price).setFontSize(compact?12:14).setFontStyle('normal').setAlign('center').setX(b.x+(compact?46:b.width/2+12)).setColor(onInk?'#f7f1df':'#36594f');
   }
@@ -1223,6 +1241,7 @@ export class ShopScene extends Phaser.Scene {
       if(!result.duplicate&&transactions.length){this.pendingTransactions=transactions;this.lastTransactionNotes=transactions.map(event=>{const growth=transactionGrowthChange(previous,this.run,event);if(growth)this.transactionGrowthLines.set(event,transactionGrowthChange(previous,this.run,event,true)!);return growth??r2TransactionText(event,this.jokerDefinition(event.definitionId));});}
       if(action.type==='BuyOffer'&&purchase&&!result.duplicate){
         const {kind,offer}=purchase,name=kind==='jokers'?this.jokerDefinition(offer.definitionId).name:kind==='tools'?toolInfo(offer.definitionId,this.run).name:itemInfo(offer.definitionId).name;this.audio.purchase();
+        if(kind==='jokers')this.ownedCollapsed=true;
         this.lastPurchaseReceipt=shopPurchaseReceipt(previous,this.run,kind,offer);
         this.pendingPayment=`已购 ${name} · 实付 ${r2PurchasePrice(previous,offer)} 金 · 已保存`+(this.lastPurchaseReceipt?.payment?.saved?` · ${this.lastPurchaseReceipt.payment.summary}`:'');
         this.notice=(kind==='jokers'?`已入第 ${this.run.jokers.length} 槽`:kind==='tools'?'已入道具箱，未使用':'已持有长期道具')+' · 点购物结果查看';

@@ -20,7 +20,8 @@ export function drawMobileSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run
  // The hero owns the right side of the composition. The wash is an irregular
  // paper edge rather than a portrait frame, so the silhouette can breathe
  // past it without looking pasted into a badge.
- const washLeft=b.x+b.width*.31,washRight=b.x+b.width-4,washTop=b.y+5,washBottom=b.y+artHeight-7;
+ const heroStart=b.x+Math.max(b.width*.48,textWidth+16);
+ const washLeft=heroStart-8,washRight=b.x+b.width-4,washTop=b.y+5,washBottom=b.y+artHeight-7;
  const wash=[
   {x:washLeft+13,y:washTop},{x:washRight-10,y:washTop+4},{x:washRight,y:washTop+22},
   {x:washRight-5,y:washBottom-16},{x:washRight-19,y:washBottom},{x:washLeft+22,y:washBottom-4},
@@ -40,7 +41,7 @@ export function drawMobileSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run
  const artLayer=view.add(scene.add.container(0,0).setName('result-art/source-layer'));
  const paint=()=>{
   artLayer.removeAll(true);const key=pcHeroKey(run.characterId);if(!scene.textures.exists(key))return;
-  const c=PC_HERO_COMPOSITION[run.characterId],box={x:b.x+b.width*.32,y:b.y-2,width:b.width*.68,height:artHeight+2};
+  const c=PC_HERO_COMPOSITION[run.characterId],box={x:heroStart,y:b.y-2,width:Math.max(1,b.x+b.width-heroStart),height:artHeight+2};
   const hero=scene.add.image(0,0,key).setName('result-art/hero').setData('assetId',run.characterId+'.pc');
   hero.setScale(Math.min(1,box.width/hero.width,box.height/hero.height)*c.scale);
   hero.setPosition(box.x+hero.displayWidth/2+(box.width-hero.displayWidth)*c.align,box.y+box.height-hero.displayHeight/2);

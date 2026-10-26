@@ -10,14 +10,14 @@ export function shopOwnedNameArea(card:Box,nextX:number|undefined,viewportWidth:
   const x=card.x+1;
   return {x,width:Math.min((nextX??card.x+card.width+6)-x-1,viewportWidth-8-x)};
 }
-function shortShopLayout(width:number,height:number,top:number,bottom:number,cols:number){
-  const x=12,w=width-24,collapsed=width<760,inventoryWidth=collapsed?0:252,goodsX=x+(collapsed?0:268),goodsWidth=w-(collapsed?0:268),seat=(goodsWidth-8*(cols-1))/cols;
+function shortShopLayout(width:number,height:number,top:number,bottom:number,cols:number,ownedCollapsed=false){
+  const x=12,w=width-24,collapsed=ownedCollapsed||width<760,inventoryWidth=collapsed?0:252,goodsX=x+(collapsed?0:268),goodsWidth=w-(collapsed?0:268),seat=(goodsWidth-8*(cols-1))/cols;
   if(collapsed){
     // One header for purse/categories/menu and one footer for actions. A
     // full-width entry button below a second toolbar covered the price row.
     const shelf:Box[]=Array.from({length:cols},(_,i)=>({x:x+i*(seat+8),y:top+50,width:88,height:123.2}));
     const actionY=height-bottom-68,auxWidth=Math.min(120,(w-160)/2);
-    return {x,w,top,pc:null,desktop:false,short:true,compact:true,wideHeader:false,portrait:false,copyBeside:true,inventoryCollapsed:true,slots:[],shelf,
+    return {x,w,top,pc:null,desktop:false,short:true,compact:true,wideHeader:false,portrait:false,copyBeside:true,inventoryCollapsed:true,ownedToggle:{x:x+w-36,y:actionY-36,width:32,height:28},slots:[],shelf,
       tabs:{x:x+124,y:top,width:w-200,height:44},chapter:{x,y:actionY,width:0,height:44},items:{x,y:actionY,width:0,height:44},
       reroll:{x,y:actionY,width:auxWidth,height:44},build:{x:x+auxWidth+8,y:actionY,width:auxWidth,height:44},
       play:{x:x+2*(auxWidth+8),y:actionY,width:w-2*(auxWidth+8),height:44},noticeY:actionY+48};
@@ -29,7 +29,7 @@ function shortShopLayout(width:number,height:number,top:number,bottom:number,col
   const playY=height-bottom-80,secondaryY=playY-52;
   const slotY=Math.min(top+52,secondaryY-61.6-4);
   const slots:Box[]=Array.from({length:5},(_,i)=>({x:x+i*52,y:slotY,width:44,height:61.6}));
-  return {x,w,top,pc:null,desktop:false,short:true,compact:true,wideHeader:false,portrait:false,copyBeside:true,inventoryCollapsed:collapsed,slots,shelf,
+  return {x,w,top,pc:null,desktop:false,short:true,compact:true,wideHeader:false,portrait:false,copyBeside:true,inventoryCollapsed:collapsed,ownedToggle:{x:x+w-36,y:Math.min(playY-36,slotY+61.6+4),width:32,height:28},slots,shelf,
     tabs:{x:goodsX,y:tabsY,width:goodsWidth,height:44},chapter:{x,y:secondaryY,width:inventoryWidth,height:44},items:{x,y:secondaryY,width:inventoryWidth,height:44},
     reroll:{x:collapsed?x+60:x,y:collapsed?top:secondaryY,width:collapsed?104:122,height:44},build:{x:collapsed?x+172:x+130,y:collapsed?top:secondaryY,width:120,height:44},
     play:{x:collapsed||height<600?x:width-156,y:playY,width:collapsed?w:height<600?inventoryWidth:144,height:56},noticeY:playY+60};
@@ -62,22 +62,22 @@ function desktopShopLayout(width:number,height:number,top:number,bottom:number,_
     tabs:{x:goodsX,y:shopPanel.y+8,width:goodsWidth,height:44},chapter,items:inventoryEntry,build,reroll,play,noticeY:feedback.y};
 }
 
-export function shopLayout(width:number,height:number,top:number,bottom:number,cols:number,ownedCopy=false,guideActions=false,left=0,right=0,ownedCount=5,menu?:Box){
+export function shopLayout(width:number,height:number,top:number,bottom:number,cols:number,ownedCopy=false,guideActions=false,left=0,right=0,ownedCount=5,menu?:Box,ownedCollapsed=false){
   const availableWidth=width-left-right,portrait=availableWidth<700&&height>availableWidth;
   // A fixed compact menu belongs to the existing header. Reclaim a whole reserved
   // row above it; the portrait canvas header starts 4px before the DOM anchor.
   const contentTop=menu&&availableWidth<1000&&top>=menu.y+menu.height?Math.max(0,menu.y-(portrait?4:0)):top;
   // Native portrait categories share one region; legacy canvas stock columns cannot move its bounds.
-  const p=shiftLayout(shopContentLayout(availableWidth,height,contentTop,bottom,portrait?3:cols,ownedCopy,guideActions,ownedCount),left);
+  const p=shiftLayout(shopContentLayout(availableWidth,height,contentTop,bottom,portrait?3:cols,ownedCopy,guideActions,ownedCount,ownedCollapsed),left);
   const headerRows=p.portrait&&width-left-right<600?2:1;
   if(headerRows===2){p.tabs={...p.tabs,y:p.tabs.y+44};p.shelf=p.shelf.map(b=>({...b,y:b.y+44}));}
-  if(p.portrait)p.play={...p.play,y:p.play.y-16};
+  if(p.portrait){p.play={...p.play,y:p.play.y-16};if('ownedToggle' in p&&p.ownedToggle)p.ownedToggle={...p.ownedToggle,y:p.ownedToggle.y-16};}
   if(p.portrait){
     // Dock the owned rail immediately above the entry action. It must not be
     // anchored to legacy stock art/copy heights or leave a large unused gap.
     // Full names/rarity and complete thumbnails remain directly inspectable.
     const width=Math.min(68,(p.w-24)/5),height=78,y=p.play.y-height-8;
-    p.inventoryCollapsed=false;
+    p.inventoryCollapsed=ownedCollapsed;
     p.slots=p.slots.map((b,i)=>({...b,x:p.x+(p.w-(width*5+24))/2+i*(width+6),y,width,height}));
   }
   const desktopHeader=p.pc||p.short&&availableWidth>=1000?shopDesktopHeader(p,menu):undefined;
@@ -102,15 +102,15 @@ function shiftLayout<T>(value:T,left:number):T {
   if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).map(([k,v])=>[k,k==='x'&&typeof v==='number'?v+left:shiftLayout(v,left)])) as T;
   return value;
 }
-function shopContentLayout(width:number,height:number,top:number,bottom:number,cols:number,ownedCopy=false,guideActions=false,ownedCount=5){
-  if(width>=1000){if(height-top-bottom<712)return shortShopLayout(width,height,top,bottom,cols);return desktopShopLayout(width,height,top,bottom,cols,ownedCount);}
+function shopContentLayout(width:number,height:number,top:number,bottom:number,cols:number,ownedCopy=false,guideActions=false,ownedCount=5,ownedCollapsed=false){
+  if(width>=1000){if(height-top-bottom<712)return shortShopLayout(width,height,top,bottom,cols,ownedCollapsed);return desktopShopLayout(width,height,top,bottom,cols,ownedCount);}
   if(height<=width&&height-top-bottom<500)return shortShopLayout(width,height,top,bottom,cols);
   const portrait=width<700&&height>width,x=12,w=width-24,seat=(Math.min(w,420)-8*(cols-1))/cols;
   // Browser toolbar height changes keep the same three-card gallery.
   const slotGap=6,slotWidth=Math.min(portrait&&height-top-bottom>=650?52:64,(w-4*slotGap)/5),slotHeight=portrait?slotWidth*1.25+36:slotWidth*1.4;
   // Fit the visible owned rail before the fixed action row; only art shrinks.
   const portraitFaceBudget=(height-top-bottom-564)/1.4;
-  const inventoryCollapsed=portrait&&height-top-bottom<650;
+  const inventoryCollapsed=ownedCollapsed||portrait&&height-top-bottom<650;
   const cardWidth=Math.min(Math.max(88,Math.min(108,seat-8)),portrait&&!inventoryCollapsed?Math.max(76,portraitFaceBudget):Infinity),cardHeight=cardWidth*(portrait?1.25:1.4);
   const shelfWidth=cols*seat+8*(cols-1),shelfX=x+(w-shelfWidth)/2,shelfTop=top+104;
   const shelf:Box[]=Array.from({length:cols},(_,i)=>({x:shelfX+i*(seat+8)+(seat-cardWidth)/2,y:shelfTop,width:cardWidth,height:cardHeight}));
@@ -121,10 +121,10 @@ function shopContentLayout(width:number,height:number,top:number,bottom:number,c
   const guidanceBelow=false;
   const slotY=portrait?Math.min(originalSlotY,height-bottom-144-78-slotHeight):originalSlotY+(guidanceBelow?54:0);
   const slots:Box[]=Array.from({length:5},(_,i)=>({x:slotX+i*(slotWidth+slotGap),y:slotY,width:slotWidth,height:slotHeight}));
-  const secondaryY=portrait?height-bottom-144:Math.min(height-bottom-144,slotY+slotHeight+20),toolWidth=(Math.min(w,420)-8)/2,actionX=x+(w-Math.min(w,420))/2,inventoryY=slotY+slotHeight+(portrait?24:8);
-  return {x,w,top,pc:null,desktop:false,short:false,copyBeside:false,inventoryCollapsed,compact:portrait,wideHeader:false,portrait,guidanceBelow,slots,shelf,tabs:{x:actionX,y:top+52,width:Math.min(w,420),height:44},
+  const secondaryY=portrait?height-bottom-144:Math.min(height-bottom-144,slotY+slotHeight+20),toolWidth=(Math.min(w,420)-8)/2,actionX=x+(w-Math.min(w,420))/2,inventoryY=slotY+slotHeight+(portrait?24:8),play={x:actionX,y:secondaryY+52,width:Math.min(w,420),height:56},ownedToggle={x:x+w-36,y:portrait&&inventoryCollapsed?play.y-36:Math.min(play.y-36,slotY+slotHeight+4),width:32,height:28};
+  return {x,w,top,pc:null,desktop:false,short:false,copyBeside:false,inventoryCollapsed,ownedToggle,compact:portrait,wideHeader:false,portrait,guidanceBelow,slots,shelf,tabs:{x:actionX,y:top+52,width:Math.min(w,420),height:44},
     chapter:{x:portrait?actionX:x,y:portrait?inventoryY:top+104,width:portrait?toolWidth:sideActionWidth,height:44},items:{x:portrait?actionX+toolWidth+8:x,y:portrait?inventoryY:top+156,width:portrait?toolWidth:sideActionWidth,height:44},
-    reroll:{x:actionX,y:secondaryY,width:toolWidth,height:44},build:{x:actionX+toolWidth+8,y:secondaryY,width:toolWidth,height:44},play:{x:actionX,y:secondaryY+52,width:Math.min(w,420),height:56},noticeY:secondaryY+116};
+    reroll:{x:actionX,y:secondaryY,width:toolWidth,height:44},build:{x:actionX+toolWidth+8,y:secondaryY,width:toolWidth,height:44},play,noticeY:secondaryY+116};
 }
 
 /** Use existing empty inventory/rail space, never goods, live owned cards or primary actions. */
@@ -233,6 +233,6 @@ export function shopSharedContent(p:ReturnType<typeof shopLayout>,ownedCount:num
  if(p.pc)return p.pc.shared;
  if(p.desktopHeader){const y=p.shelf[0].y;return {x:p.tabs.x,y,width:p.tabs.width,height:Math.max(44,p.play.y-8-y)};}
  if(!p.portrait)return;
- const y=p.tabs.y+p.tabs.height+8,bottom=ownedCount&&!p.inventoryCollapsed?p.slots[0].y-28:p.play.y-8;
+ const y=p.tabs.y+p.tabs.height+8,bottom=ownedCount&&!p.inventoryCollapsed?p.slots[0].y-28:p.inventoryCollapsed&&p.ownedToggle?p.ownedToggle.y-8:p.play.y-8;
  return {x:p.x,y,width:p.w,height:Math.max(44,bottom-y)};
 }

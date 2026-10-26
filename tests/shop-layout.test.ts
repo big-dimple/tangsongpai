@@ -66,6 +66,20 @@ it('portrait stock geometry and the compact owned rail stay clear of primary act
  }
 });
 
+it('a purchased mobile rail folds into extra shelf space while the fixed arrow and entry remain reachable',()=>{
+ const expanded=shopLayout(390,740,12,0,3,true,false,0,0,5,undefined,false);
+ const folded=shopLayout(390,740,12,0,3,true,false,0,0,5,undefined,true);
+ expect(expanded.inventoryCollapsed).toBe(false);
+ expect(folded.inventoryCollapsed).toBe(true);
+ const toggle='ownedToggle' in folded?folded.ownedToggle:undefined;
+ expect(toggle).toBeDefined();
+ expect(toggle!.y+toggle!.height).toBeLessThanOrEqual(folded.play.y);
+ expect(intersects(toggle!,folded.play)).toBe(false);
+ expect(intersects(toggle!,shopSharedContent(folded,5)!)).toBe(false);
+ expect(folded.play).toEqual(expanded.play);
+ expect(shopSharedContent(folded,5)!.height).toBeGreaterThan(shopSharedContent(expanded,5)!.height);
+});
+
 it('short landscape has three discoverable goods/copy clear of every action through safe34',()=>{
  for(const bottom of [0,12,34]){const l=shopLayout(844,300,12,bottom,3);
   const toolbar={x:684,y:l.top,width:148,height:44};
