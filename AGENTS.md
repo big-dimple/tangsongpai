@@ -39,7 +39,7 @@
 | 要查什么 | 优先位置 |
 | --- | --- |
 | 游戏启动与场景 | `src/main.ts`、`src/game/*Scene.ts` |
-| PC/移动牌桌布局与装饰 | `src/game/PcTableLayout.ts`、`src/game/layout.ts`、`src/game/ScoreTableLayout.ts`、`src/game/StageTableArt.ts` |
+| PC/移动牌桌布局与装饰 | `src/game/PcLandscapeFrame.ts`、`src/game/PcTableLayout.ts`、`src/game/layout.ts`、`src/game/ScoreTableLayout.ts`、`src/game/StageTableArt.ts` |
 | PC/手机商店布局与表现 | `src/game/ShopLayout.ts`、`src/game/ShopScene.ts`、`src/game/ShopArt.ts`、`src/game/ShopMobileOffers.ts`、`src/game/ShopMobileOffers.css` |
 | 透明人物资产（牌桌、商店、桌面/手机结算） | `src/game/PcHeroArt.ts`、`src/game/CharacterArt.ts`、`public/assets/tangsong-pc-heroes/manifest.json`、`tools/build-pc-hero-art.mjs` |
 | 桌面/手机结算与过场 | `src/game/PcSettlementPresentation.ts`、`src/game/MobileSettlementPresentation.ts`、`src/game/IntermissionLayout.ts`、`src/game/IntermissionScene.ts`、`src/game/IntermissionScroll.ts` |
@@ -76,7 +76,7 @@
 ## 5. 当前工作与文档纪律
 
 - 当前工作以用户本次要求为准；[TODO](TODO.md) 记录待办，不能据此自行启动其他产品任务，完成后删除对应条目。
-- 三条视觉重做线已整合到同一实现入口：牌桌、商店和结算共用真实布局、命中、焦点与动画锚点；六张 `pc` 透明立绘是异形结构主视觉，不替换存档身份或玩法规则。
+- 三条视觉重做线已整合到同一实现入口：牌桌、商店和结算共用真实布局、命中、焦点与动画锚点；六张 `pc` 透明立绘是窄侧栏辅助视觉，不替换存档身份或玩法规则。
 - 当前唯一产品待办是用户试玩后反馈可复现问题；自动检查和 CI 不能写成审美或听感验收。
 - 规则、架构、测试或发布变化直接更新 [ENGINEERING](ENGINEERING.md)。
 - 项目知识或代码入口变化直接更新本文件。

@@ -116,7 +116,12 @@ try {
       assert.deepEqual(await state(page),initial,'selection order cannot spend resources or advance RNG');
       await tapUI(page,'game','card/'+chosen,true);
     }
-    assert.ok(await page.evaluate(id=>{const s=window.__harness.game.scene.getScene('game'),c=s.cardViews.find(c=>c.card.id===id);const f=s.selectionPreview();return s.selectedIds.has(id)&&c.container.getData('selected')&&s.resultText.visible&&!!f&&s.resultText.text.endsWith(' · 已选'+f.playedIds.length+'张')&&!s.scoreTotal.visible&&!s.scoreTotal.text&&!s.scoreTotal.getData('fullText');},chosen),'selection immediately changes both card and preview');
+    const selection=await page.evaluate(id=>{const s=window.__harness.game.scene.getScene('game'),c=s.cardViews.find(c=>c.card.id===id),f=s.selectionPreview();return {selected:s.selectedIds.has(id)&&c.container.getData('selected'),caption:s.resultText.visible&&!!f&&s.resultText.text.endsWith(' · 已选'+f.playedIds.length+'张'),pcPlaceholders:!!s.view.layout.pc&&!s.bossSuitRescueButton,readouts:[s.scoreHeat,s.scoreMult,s.scoreTotal].map(t=>({visible:t.visible,text:t.text,fullText:t.getData('fullText')}))};},chosen);
+    assert.ok(selection.selected&&selection.caption,'selection immediately changes both card and hand-type preview');
+    for(const value of selection.readouts){
+      if(selection.pcPlaceholders)assert.deepEqual(value,{visible:true,text:'—',fullText:'—'},'PC selection shows only a neutral placeholder, never a guessed score');
+      else{assert.equal(value.visible,false,'existing non-PC selection hides score readouts');assert.equal(value.text,'');assert.ok(!value.fullText);}
+    }
     await openRunMenu(page,touch);
     if(saveScreens&&touch&&engine===selected[0])await page.screenshot({path:`shots/${name}-menu.png`});
     await dom(page,'继续游戏',touch);

@@ -29,38 +29,14 @@ export function stageTableArtPlan(l:TableLayout):StageTableArtPlan {
 export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:CharacterId,inspectHero?:()=>void,legacyPortrait=true):void {
  const plan=stageTableArtPlan(view.layout);
  if(view.layout.pc){
-  const l=view.layout,{frame,main,stage,build}=l.pc!,g=scene.add.graphics().setName('table-art/pc-paper').setData('bounds',frame);
-  const bottom=frame.y+frame.height,right=main.x+main.width,handTop=l.hand.y-8;
-  g.fillStyle(T.paper,.98).fillRect(frame.x,frame.y,frame.width,frame.height);
-  // Hero wing: a paper field and ink wash make the transparent character feel
-  // supported by the table instead of floating beside it.
-  g.fillStyle(T.paperEdge,.9).fillRect(frame.x,frame.y,main.x-frame.x-14,frame.height);
-  // An ink wash follows the lower silhouette instead of boxing the hero in a
-  // rectangular panel; the transparent art supplies the actual contour.
-  g.fillStyle(T.ink,.16).beginPath().moveTo(frame.x,frame.y+frame.height*.68)
-    .lineTo(main.x-14,frame.y+frame.height*.52).lineTo(main.x-14,bottom)
-    .lineTo(frame.x,bottom).closePath().fillPath();
-  g.fillStyle(T.jade,.5).fillRect(main.x-14,frame.y,14,frame.height);
-  g.fillStyle(T.paperLight,.94).fillRoundedRect(main.x,main.y,main.width,main.height,10);
-  // Build row and target plate are deliberately separate cards of the paper.
-  g.fillStyle(T.jadeSoft,.52).fillRoundedRect(build.x,build.y,build.width,build.height,10);
-  g.lineStyle(1,T.jade,.4).strokeRoundedRect(build.x+.5,build.y+.5,build.width-1,build.height-1,10);
-  g.fillStyle(T.redSoft,.48).fillRoundedRect(l.scoreBoard.x,l.scoreBoard.y,l.scoreBoard.width,l.scoreBoard.height,10);
-  g.lineStyle(2,T.red,.5).strokeRoundedRect(l.scoreBoard.x+1,l.scoreBoard.y+1,l.scoreBoard.width-2,l.scoreBoard.height-2,10);
-  // The centre stage is the largest uninterrupted surface. Its corner marks
-  // and red seal give a clear landing point for the played hand.
-  g.fillStyle(T.paper,.88).fillRoundedRect(stage.x,stage.y,stage.width,stage.height,12);
-  g.lineStyle(1,T.jade,.46).strokeRoundedRect(stage.x+.5,stage.y+.5,stage.width-1,stage.height-1,12);
-  g.lineStyle(1,T.jade,.2).lineBetween(stage.x+18,stage.y+28,stage.x+stage.width-18,stage.y+28);
-  g.lineStyle(1,T.jade,.18).lineBetween(stage.x+18,stage.y+stage.height-24,stage.x+stage.width-18,stage.y+stage.height-24);
-  const sealX=stage.x+stage.width-30,sealY=stage.y+30;
-  g.lineStyle(2,T.red,.66).strokeCircle(sealX,sealY,12);g.lineStyle(1,T.red,.45).lineBetween(sealX-7,sealY,sealX+7,sealY);
-  // Hand and action band sit on a bright foreground lip, keeping the next
-  // interaction visually distinct from the stage without changing hit areas.
-  g.fillStyle(T.paperLight,.98).fillRect(main.x,handTop,main.width,bottom-handTop);
-  g.lineStyle(2,T.ink,.2).lineBetween(main.x,handTop,right,handTop);
-  g.lineStyle(2,T.red,.52).lineBetween(right-64,bottom,right,bottom);
-  g.lineStyle(1,T.jade,.25).lineBetween(main.x+20,handTop+7,right-20,handTop+7);
+  const l=view.layout,{frame,main,build}=l.pc!,g=scene.add.graphics().setName('table-art/pc-paper').setData('bounds',frame);
+  const right=main.x+main.width;
+  g.lineStyle(1,T.divider,.8).lineBetween(main.x-16,frame.y,main.x-16,frame.y+frame.height);
+  g.lineStyle(1,T.divider,.8).lineBetween(main.x,build.y+build.height+8,right,build.y+build.height+8);
+  g.fillStyle(T.paperLight,.8).fillRoundedRect(l.scoreBoard.x,l.scoreBoard.y,l.scoreBoard.width,l.scoreBoard.height,8);
+  g.lineStyle(1,T.divider,.75).strokeRoundedRect(l.scoreBoard.x,l.scoreBoard.y,l.scoreBoard.width,l.scoreBoard.height,8);
+  g.lineStyle(1,T.divider,.8).lineBetween(main.x,l.actions.y-10,right,l.actions.y-10);
+  g.lineStyle(2,T.red,.65).lineBetween(main.x,frame.y-14,main.x+48,frame.y-14);
   view.add(g);
   return;
  }

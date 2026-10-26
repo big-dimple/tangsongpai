@@ -16,5 +16,8 @@ it.each([[320,568],[390,740],[844,300]])('keeps the compact menu in the existing
 });
 it('preserves normal header placement and PC layout when the anchor already shares the top area',()=>{
  const menu=menuAt(390),normal=shopLayout(390,740,20,34,3,false,false,8,16,0,menu);expect(normal.top).toBe(20);
- const pc=shopLayout(1180,757,24,0,3,false,false,0,0,0,{x:1124,y:12,width:44,height:44});expect(pc.top).toBe(24);expect(pc.pc).toBeTruthy();
+ const anchor={x:1124,y:12,width:44,height:44};
+ const pc=shopLayout(1180,800,24,0,3,false,false,0,0,0,anchor);expect(pc.top).toBe(24);expect(pc.pc).toBeTruthy();
+ const short=shopLayout(1180,757,24,0,3,false,false,0,0,0,anchor);expect(short.top).toBe(24);expect(short.short).toBe(true);expect(short.pc).toBeNull();
+ for(const control of [short.items,short.reroll,short.build,short.play])expect(intersects(control,anchor)).toBe(false);
 });

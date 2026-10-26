@@ -1,4 +1,5 @@
 import type {Box} from './layout';
+import {pcLandscapeFrame} from './PcLandscapeFrame';
 
 /** Measure the complete result, then place it inside the safe reading viewport. */
 export function resultPlacement(top:number,bottom:number,content:Pick<Box,'y'|'height'>,offset=0,anchorTop=false){
@@ -9,16 +10,15 @@ export function resultPlacement(top:number,bottom:number,content:Pick<Box,'y'|'h
 
 export function resultLayout(width:number,height:number,top:number,contentHeight:number,pc=false){
   if(pc){
-    const margin=width<1500?32:48,w=Math.min(1640,width-margin*2),x=(width-w)/2;
-    const gap=width<1500?36:56,sideWidth=Math.floor(w*.31),bodyY=top+72;
-    // Coordinates are local to the top-anchored safe viewport, not the browser.
-    const bodyHeight=Math.max(360,Math.min(740,height-210)),rightX=x+w-sideWidth;
-    const score:Box={x,y:bodyY,width:w-sideWidth-gap,height:bodyHeight};
-    const next:Box={x:rightX,y:bodyY+176,width:sideWidth,height:132};
-    const primary:Box={x:rightX,y:Math.max(next.y+next.height+24,height-236),width:sideWidth,height:56};
-    const auxY=primary.y+primary.height+8,auxWidth=(sideWidth-8)/2;
+    const grid=pcLandscapeFrame(width,height),gap=grid.gap,x=grid.main.x,w=grid.main.width;
+    const sideWidth=width<1500?292:368,rightX=x+w-sideWidth,bodyY=top+102;
+    // Result content is later translated below the browser/menu safe row.
+    const primary:Box={x:rightX,y:height-224,width:sideWidth,height:56};
+    const score:Box={x,y:bodyY,width:w-sideWidth-gap,height:primary.y-bodyY+56};
+    const next:Box={x:rightX,y:bodyY+208,width:sideWidth,height:132};
+    const auxY=primary.y+primary.height+8,auxWidth=(sideWidth-12)/2;
     return {x,w,top,short:false,portrait:false,tight:false,wide:true,pc:true,score,next,nextText:next,primary,
-      left:{x:rightX,y:auxY,width:auxWidth,height:44},right:{x:rightX+auxWidth+8,y:auxY,width:auxWidth,height:44},noticeY:auxY+48};
+      left:{x:rightX,y:auxY,width:auxWidth,height:44},right:{x:rightX+auxWidth+12,y:auxY,width:auxWidth,height:44},noticeY:auxY+48};
   }
   if(width<700&&height>width){
     const x=12,w=width-24,bodyY=top+64,tight=height<700;

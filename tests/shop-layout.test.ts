@@ -125,7 +125,7 @@ it('actual short-safe-top24 inventory reserves its whole61.6px frame above the a
 
 
 it('PC regions preserve left state, upper horizontal owned rail and lower simultaneous sale groups',()=>{
- for(const [width,height] of [[1000,768],[1024,768],[1280,720],[1366,768],[1912,954],[1920,1080]]){
+ for(const [width,height] of [[1000,768],[1024,768],[1366,768],[1912,954],[1920,1080]]){
   const menu={x:width-148,y:8,width:148,height:44},l=shopLayout(width,height,8,0,3,true,false,0,0,5,menu),p=l.pc!;expect(p).toBeTruthy();expect(l.slots.every(b=>b.y===l.slots[0].y)).toBe(true);
   expect(p.left.x+p.left.width).toBeLessThan(p.ownedRail.x);expect(l.slots[0].y+l.slots[0].height).toBeLessThan(p.shopPanel.y);
   const actions=[l.chapter,l.build,l.play,l.reroll,p.inventoryEntry];
@@ -137,8 +137,8 @@ it('PC regions preserve left state, upper horizontal owned rail and lower simult
  }
 });
 
-it('short PC uses the existing broad short layout, while mobile keeps its exact layout',()=>{
- for(const [width,height,top,bottom] of [[1280,640,8,0],[1280,720,24,34],[1024,500,24,34],[1912,710,8,0]]){const l=shopLayout(width,height,top,bottom,3,true);expect(l.pc).toBeNull();expect(l.short).toBe(true);expect(l.tabs.width).toBeGreaterThan(420);}
+it('very short PC retains the fallback while mobile keeps its exact layout',()=>{
+ for(const [width,height,top,bottom] of [[1280,640,8,0],[1280,720,24,34],[1024,500,24,34]]){const l=shopLayout(width,height,top,bottom,3,true);expect(l.pc).toBeNull();expect(l.short).toBe(true);expect(l.tabs.width).toBeGreaterThan(420);}
  for(const [width,height] of [[320,568],[360,640],[390,740],[430,932],[844,300]])expect(shopLayout(width,height,8,0,3,true).pc).toBeNull();
 });
 
@@ -178,7 +178,7 @@ it('short landscape stock, tabs and the shared action row fit inside top/bottom/
 });
 
 it('PC uses one shared gallery below four tabs and spends its height on larger complete art',()=>{
- for(const [width,height] of [[1000,768],[1280,720],[1366,768],[1920,1080]]){
+ for(const [width,height] of [[1000,768],[1180,757],[1366,768],[1920,1080]]){
   const p=shopLayout(width,height,8,0,3,true);expect(p.shelf).toHaveLength(3);
   expect(p.tabs.height).toBe(44);expect(p.tabs.y+p.tabs.height).toBeLessThanOrEqual(p.pc!.shared.y);
   for(const face of p.shelf){expect(face.width).toBeGreaterThan(88);expect(face.width).toBeLessThanOrEqual(288);expect(face.height/face.width).toBeCloseTo(1.25);expect(face.y+face.height).toBeLessThan(p.pc!.shared.y+p.pc!.shared.height);}
@@ -239,4 +239,16 @@ it('iPad portrait chapter and inventory targets have a separate column from ever
    for(const face of p.shelf)expect(intersects(action,shopOfferCopy(p,face,true).tile)).toBe(false);
   }
  }
+});
+
+
+it('PC shelf eligibility uses actual content height and preserves main designs with worst-case edition rows',()=>{
+ for(const [width,height,top,bottom] of [[1920,710,8,0],[1920,700,8,0],[1280,720,8,0],[1920,768,24,34]]){const p=shopLayout(width,height,top,bottom,3);expect(p.pc).toBeNull();expect(p.short).toBe(true);}
+ for(const [width,height] of [[1920,1080],[1920,924],[1366,768]]){const p=shopLayout(width,height,8,0,3);expect(p.pc).toBeTruthy();expect(p.pc!.shared.height).toBeGreaterThanOrEqual(276);}
+});
+
+
+it('content-height fallback preserves the existing owned-rail collapse control',()=>{
+ const expanded=shopLayout(1920,710,8,0,3,true,false,0,0,5,undefined,false),collapsed=shopLayout(1920,710,8,0,3,true,false,0,0,5,undefined,true);
+ expect(expanded.pc).toBeNull();expect(expanded.inventoryCollapsed).toBe(false);expect(collapsed.inventoryCollapsed).toBe(true);expect(collapsed.slots).toHaveLength(0);
 });

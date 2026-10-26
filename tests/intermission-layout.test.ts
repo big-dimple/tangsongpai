@@ -20,3 +20,18 @@ it.each([[320,568],[390,844],[740,320],[1024,768]])('keeps readable touch contro
  for(const box of [p.score,p.next,p.primary,p.left,p.right]){expect(box.x).toBeGreaterThanOrEqual(12);expect(box.x+box.width).toBeLessThanOrEqual(width-12);expect(box.width).toBeGreaterThan(0);}
  expect(p.primary.height).toBeGreaterThanOrEqual(48);expect(p.left.height).toBeGreaterThanOrEqual(44);
 });
+
+it.each([[1920,1080],[1920,924],[1366,768]])('PC result reserves a real hand column and first-screen continuation at %sx%s',(width,height)=>{
+ const p=resultLayout(width,height,0,301,true),safeTop=60;
+ expect(p.pc).toBe(true);
+ expect(p.score.width).toBeGreaterThanOrEqual(700);
+ expect(p.next.x).toBeGreaterThanOrEqual(p.score.x+p.score.width+24);
+ expect(p.score.y).toBeGreaterThanOrEqual(96);
+ expect(p.next.y+p.next.height+24).toBeLessThanOrEqual(p.primary.y);
+ for(const b of [p.primary,p.left,p.right]){
+  expect(b.y+safeTop).toBeGreaterThan(0);
+  expect(b.y+b.height+safeTop).toBeLessThanOrEqual(height-16);
+  expect(b.x+b.width).toBeLessThanOrEqual(width-28);
+ }
+ expect(resultPlacement(safeTop,height-16,{y:0,height:p.noticeY+24},0,true).overflow).toBe(0);
+});
