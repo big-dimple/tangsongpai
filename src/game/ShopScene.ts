@@ -476,19 +476,19 @@ export class ShopScene extends Phaser.Scene {
       this.render();
     };
     if(p.portrait&&entry){
-      const b=p.play,art=entry.getData('buttonArt') as Phaser.GameObjects.Container,label=entry.getData('label') as Phaser.GameObjects.Text;
-      // Keep the arrow in a dark, high-contrast end-cap. Its 56px segment
-      // exceeds the touch target minimum while the rest of the button still
-      // submits LeaveShop.
-      const cap=this.add.graphics().fillStyle(0x203f3b,1).fillRoundedRect(b.width-56,0,56,b.height,6)
-        .lineStyle(1,0xf2db9f,.9).lineBetween(b.width-56,7,b.width-56,b.height-7);
-      art.add(cap);
+      const b=p.play,label=entry.getData('label') as Phaser.GameObjects.Text;
+      // Independent fixed end-cap: entry press animation cannot move the icon.
+      // Draw the chevron as geometry, without device font fallback or text cropping.
+      const x=b.x+b.width-56,cx=x+28,cy=b.y+b.height/2,d=this.ownedCollapsed?-1:1;
+      const arrow=this.view.add(this.add.graphics().fillStyle(0xfff9ee,1).fillRoundedRect(x,b.y,56,b.height,6)
+        .lineStyle(2,0x203f3b,1).strokeRoundedRect(x+1,b.y+1,54,b.height-2,5)
+        .lineStyle(4,0x203f3b,1).beginPath().moveTo(cx-10,cy-d*5).lineTo(cx,cy+d*5).lineTo(cx+10,cy-d*5).strokePath()
+        .setName('shop/owned-toggle-arrow').setData('direction',this.ownedCollapsed?'up':'down'));
       label.setX(b.x+(b.width-56)/2).setData('restY',b.y+b.height/2-1);
-      const arrow=this.view.text(b.x+b.width-28,b.y+b.height/2,this.ownedCollapsed?'⌃':'⌄',24,'#F7F1DF').setOrigin(.5).setFontStyle('bold').setName('shop/owned-toggle-arrow').setColor('#fff9ee');
       entry.setSize(b.width-56,b.height).setPosition(b.x+(b.width-56)/2,b.y+b.height/2);
       entry.input!.hitArea.setTo(0,0,b.width-56,b.height);
       const hit=this.view.rect({x:b.x+b.width-56,y:b.y,width:56,height:b.height},0).setFillStyle(0,0).setStrokeStyle();
-      hit.setData('label',arrow).setData('ownedCollapsed',this.ownedCollapsed);
+      hit.setData('ownedCollapsed',this.ownedCollapsed).setData('toggleArt',arrow);
       this.view.target(hit,'action/toggle-owned',{tap:toggle});
       return;
     }
