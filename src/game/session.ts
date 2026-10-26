@@ -35,6 +35,7 @@ export class GameSession {
   /** A suspended IndexedDB open must never own the first-run route forever. */
   private saveStore:SaveStore=this.storage;
   private restoreGeneration=0;
+  private restoreInFlight=false;
   private readonly restoreTimeoutMs=2500;
   constructor(){
     this.storage.canWrite=()=>this.lease.writable;
@@ -42,9 +43,13 @@ export class GameSession {
     try {const s=JSON.parse(localStorage.getItem('tangsongpai-presentation-v1')??'null');if(s&&[1,2,4].includes(s.speed))this.speed=s.speed;if(typeof s?.reducedMotion==='boolean')this.reducedMotion=s.reducedMotion;}catch{/* Optional preferences cannot block a run. */}
     document.addEventListener('visibilitychange',()=>{if(document.hidden){void this.run?.flush();void this.replacement?.flush();}});
   }
+  get temporaryRun():boolean {return this.saveStore!==this.storage&&!!this.run;}
   get pendingRun():SavedRun|undefined {return this.replacement;}
   subscribe(listener:()=>void):()=>void {this.listeners.add(listener);return ()=>this.listeners.delete(listener);}
-  private changed():void {this.listeners.forEach(listener=>listener());}
+  private changed():void {
+    if(this.saveStore!==this.storage&&!this.notice.includes('暂存于内存'))this.notice+=' 本页新局暂存于内存，本局暂未保存，刷新会丢失；旧存档保留。';
+    this.listeners.forEach(listener=>listener());
+  }
   private pendingNotice():string {
     return this.replacement?.status==='readonly'?'这次操作还没保存，请先取消，再在这里继续。原进度保留。':'新局或导入候选尚未保存，请重试保存、导出候选或取消。原进度保留。';
   }
@@ -56,8 +61,9 @@ export class GameSession {
     if(!this.replacement)return false;this.notice=this.pendingNotice();this.changed();return true;
   }
   async initialize():Promise<void> {
-    if(this.working||this.blockPending())return;
-    this.working=true;this.changed();const generation=++this.restoreGeneration;
+    if(this.working||this.restoreInFlight||this.run||this.blockPending())return;
+    // Boot recovery is background work; the home new-game action must stay enabled.
+    this.restoreInFlight=true;const generation=++this.restoreGeneration;this.changed();
     let timeout:ReturnType<typeof setTimeout>|undefined;
     try {
       const completed=await Promise.race([
@@ -66,36 +72,41 @@ export class GameSession {
       ]);
       if(!completed&&generation===this.restoreGeneration)this.enableVolatileStartup();
     }
-    finally {if(timeout!==undefined)clearTimeout(timeout);this.working=false;this.changed();}
+    finally {if(timeout!==undefined)clearTimeout(timeout);if(generation===this.restoreGeneration){this.restoreInFlight=false;this.working=false;this.changed();}}
   }
-  private enableVolatileStartup():void {
+  private enableVolatileStartup(timedOut=true):void {
     // In-memory saves keep the run playable while a wedged old IndexedDB
     // request is left to settle in the background. The old checkpoint is not
     // replaced or discarded; a later reload can still retry normal restore.
-    this.restoreGeneration++;
+    this.restoreGeneration++;this.restoreInFlight=false;
     this.saveStore=new VolatileSaveStore();
     this.run=undefined;this.loaded=true;this.storageUnavailable=false;
-    this.notice='旧存档读取超时，已先进入新局；本页进度暂存于内存。稍后可刷新重试读取。';
-    this.lease.drop();this.changed();
+    this.notice=timedOut?'旧存档读取超时。':'';
+    this.lease.drop();this.working=false;this.changed();
   }
   private async loadSavedRun(generation=this.restoreGeneration):Promise<boolean> {
+    const store=this.saveStore;
     try {
-      let slots=await this.saveStore.read(),restored=restoreSlots(slots);
+      let slots=await store.read(),restored=restoreSlots(slots);
       if(generation!==this.restoreGeneration)return false;
       // An empty home has no progress to protect and must not reserve the only writer.
-      if(restored.checkpoint&&await this.lease.claim()){slots=await this.saveStore.read();restored=restoreSlots(slots);}
-      if(generation!==this.restoreGeneration){if(this.lease.writable)this.lease.drop();return false;}
-      this.saveStore=this.storage;
+      if(restored.checkpoint){
+        const claimed=await this.lease.claim();
+        if(generation!==this.restoreGeneration)return false;
+        if(claimed){slots=await store.read();restored=restoreSlots(slots);}
+      }
+      if(generation!==this.restoreGeneration)return false;
+      // Keep a memory-backed controller bound to its memory store on takeover.
       this.storageUnavailable=false;
       this.notice=restored.status==='backup'?'当前存档损坏，已读取上次有效备份；原数据仍保留，可导出。':restored.status==='invalid'?'存档损坏或版本不兼容，原数据已保留。可导出保留数据，或确认后开始新局。':'';
       if(restored.checkpoint)this.attach(SavedRun.restore(this.saveStore,slots));else this.run=undefined;
       this.loaded=true;
       return true;
-    }catch{this.storageUnavailable=true;this.notice='浏览器暂时无法读取进度，请重试。';return false;}
-    finally {this.changed();}
+    }catch{if(generation===this.restoreGeneration){this.storageUnavailable=true;this.notice='浏览器暂时无法读取进度，请重试。';}return false;}
+    finally {if(generation===this.restoreGeneration)this.changed();}
   }
   private recordProgress(run:SavedRun):void {
-    if(this.run!==run||this.replacement===run||run.status!=='idle'||!this.lease.writable)return;
+    if(this.run!==run||this.replacement===run||run.status!=='idle'||this.saveStore!==this.storage||!this.lease.writable)return;
     if(run.state.mode!=='standard'||run.state.tourMode!=='normal'||run.state.phase!=='run-won')return;
     const result=recordSavedRunProgress(run.state);
     if(!result.ok)this.notice='本局已保存，解锁记录暂无法更新；恢复已保存的通关进度后可重试。';
@@ -109,6 +120,8 @@ export class GameSession {
     this.notice=this.pendingNotice();this.changed();return false;
   }
   async start(seed:string,characterId:CharacterId,modeConfig?:R2ModeSelection,intent:RunLaunchIntent={kind:'new'}):Promise<SavedRun|undefined> {
+    // Explicit new play supersedes only boot recovery, never an active save.
+    if(intent.kind==='new'&&!this.run&&!this.replacement&&(this.restoreInFlight||(!this.working&&this.storageUnavailable)))this.enableVolatileStartup(false);
     if(this.working||this.blockPending())return;
     if(!this.loaded||this.storageUnavailable){this.notice='浏览器暂时无法保存，请重试。';this.changed();return;}
     this.working=true;this.notice='';this.changed();
@@ -133,14 +146,14 @@ export class GameSession {
     finally {this.working=false;this.changed();}
   }
   async takeOver():Promise<boolean> {
-    if(this.working||this.blockPending())return false;this.working=true;this.changed();
+    if(this.restoreInFlight||this.working||this.blockPending())return false;this.working=true;this.changed();
     try {
       if(!await this.lease.claim()&&!await this.lease.claim(true)){this.notice='暂时无法在这里继续，请关闭另一游戏页面后重试。';return false;}
       return await this.loadSavedRun()&&this.lease.writable;
     }finally {this.working=false;this.changed();}
   }
   async importJSON(text:string):Promise<boolean> {
-    if(this.working||this.blockPending())return false;
+    if(this.restoreInFlight||this.working||this.blockPending())return false;
     if(!this.lease.writable){this.notice='游戏已在另一页打开。可在这里继续。';this.changed();return false;}
     this.working=true;this.changed();
     try {

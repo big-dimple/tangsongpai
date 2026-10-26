@@ -14,6 +14,8 @@ button:active { transform:translateY(2px);box-shadow:inset 0 1px 3px #10232b80; 
 button:disabled { opacity:.5;cursor:default;box-shadow:none; }
 :focus-visible { outline:3px solid #e0b979;outline-offset:3px; }
 .run-menu { position:fixed;top:calc(var(--safe-top) + 12px);right:calc(var(--safe-right) + 12px);width:64px;height:44px;z-index:80;pointer-events:none;font:14px/1.5 "Microsoft YaHei","PingFang SC",system-ui,sans-serif;color:#203744; }
+.run-memory-notice { position:fixed;top:var(--safe-top);left:50%;transform:translateX(-50%);max-width:calc(100vw - var(--safe-left) - var(--safe-right) - 112px);margin:0;padding:0 5px;border-radius:0 0 3px 3px;background:#fff9ee;color:#8b322c;font:12px/14px "Microsoft YaHei","PingFang SC",sans-serif;white-space:nowrap;pointer-events:none; }
+.run-memory-notice[hidden] { display:none; }
 .run-menu-toggle,.run-fullscreen-toggle { position:fixed;top:calc(var(--safe-top) + 12px);width:64px;height:44px;min-height:44px;padding:4px;background:linear-gradient(#496a6b,#1a3946);color:#fff2d4;border-color:#d0b57c; }
 .run-menu-toggle { right:calc(var(--safe-right) + 12px);min-width:44px;pointer-events:auto;touch-action:manipulation; }
 .run-fullscreen-toggle { position:static;width:100%;font-size:14px; }

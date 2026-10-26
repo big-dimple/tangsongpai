@@ -4,7 +4,7 @@ import {showCatalog} from '../src/game/CatalogDialog';
 import type {SavedRun} from '../src/application/SavedRun';
 const {audio,fullscreen}=vi.hoisted(()=>({audio:{setVolume:vi.fn(),getVolume:()=>.5,select:vi.fn(),cancel:vi.fn(),unlock:vi.fn().mockResolvedValue(undefined)},fullscreen:{subscribe:vi.fn((fn:Function)=>{fn({active:false,pending:false,message:''});return ()=>{};}),dispose:vi.fn(),toggle:vi.fn().mockResolvedValue(undefined),getState:()=>({message:''})}}));
 let notify:()=>void=()=>{};
-const session={loaded:true,working:false,storageUnavailable:false,lease:{writable:false,elsewhere:false},notice:'',run:undefined as SavedRun|undefined,pendingRun:undefined as SavedRun|undefined,speed:1,reducedMotion:false,subscribe:(fn:()=>void)=>{notify=fn;return ()=>{};},preferences:vi.fn(),initialize:vi.fn().mockResolvedValue(undefined),retry:vi.fn().mockResolvedValue(true),cancelPending:vi.fn().mockImplementation(()=>{session.pendingRun=undefined;return true;}),takeOver:vi.fn().mockImplementation(async()=>{session.lease.writable=true;if(session.run)session.run.status='idle';return true;})};
+const session={temporaryRun:false,loaded:true,working:false,storageUnavailable:false,lease:{writable:false,elsewhere:false},notice:'',run:undefined as SavedRun|undefined,pendingRun:undefined as SavedRun|undefined,speed:1,reducedMotion:false,subscribe:(fn:()=>void)=>{notify=fn;return ()=>{};},preferences:vi.fn(),initialize:vi.fn().mockResolvedValue(undefined),retry:vi.fn().mockResolvedValue(true),cancelPending:vi.fn().mockImplementation(()=>{session.pendingRun=undefined;return true;}),takeOver:vi.fn().mockImplementation(async()=>{session.lease.writable=true;if(session.run)session.run.status='idle';return true;})};
 vi.mock('../src/game/session',()=>({gameSession:()=>session}));
 vi.mock('../src/game/LoadingScreen',()=>({prepareDestination:vi.fn().mockResolvedValue(true)}));
 vi.mock('../src/game/DetailDialog',()=>({DetailDialog:class{close(){}}}));
@@ -33,7 +33,7 @@ const all=(e:Element):Element[]=>[e,...e.children.flatMap(all)];
 const walk=(e:Element,accept:(e:Element)=>boolean):Element|undefined=>accept(e)?e:e.children.map(x=>walk(x,accept)).find(Boolean);
 function mount(pointer?:{primary:boolean;any:boolean;coarse:boolean}){
  const media={primary:new Media(pointer?.primary??false),any:new Media(pointer?.any??false),coarse:new Media(pointer?.coarse??false)};if(pointer)vi.stubGlobal('matchMedia',(query:string)=>query.includes('any-pointer: coarse')?media.coarse:query.includes('any-hover')?media.any:media.primary);
- session.notice='';session.storageUnavailable=false;session.working=false;session.loaded=true;session.run=undefined;session.pendingRun=undefined;session.lease.writable=false;vi.clearAllMocks();
+ session.temporaryRun=false;session.notice='';session.storageUnavailable=false;session.working=false;session.loaded=true;session.run=undefined;session.pendingRun=undefined;session.lease.writable=false;vi.clearAllMocks();
  dom=Object.assign(new EventTarget(),{querySelectorAll:()=>all(dom.body).filter(e=>e.tagName==='dialog'&&e.open),body:new Element('body'),activeElement:undefined,createElement:(tag:string)=>new Element(tag),createTextNode:(text:string)=>{const e=new Element('text');e.textContent=text;return e;}});
  vi.stubGlobal('document',dom);vi.stubGlobal('HTMLElement',Element);
  let activeScene='game';const events={on:vi.fn(),off:vi.fn(),once:vi.fn()},actions={viewDeck:vi.fn(),viewRules:vi.fn(),viewLastHand:vi.fn()},game={events,canvas:new Element('canvas'),input:{enabled:true},scene:{stop:vi.fn(),start:vi.fn((key:string)=>{activeScene=key;}),isActive:()=>true,getScenes:()=>[{sys:{settings:{key:activeScene}}}]},registry:{events,get:(key:string)=>key==='runController'?session.run:undefined,set:vi.fn(),remove:vi.fn()}};
@@ -131,4 +131,13 @@ it('keyboard Escape restores focus without protecting the next mouse hover from 
 it('a pending save action holds hover until its result returns without changing scenes',async()=>{
  vi.useFakeTimers();const {button,modal,find,game}=mount({primary:true,any:true,coarse:false});let finish!:(saved:boolean)=>void;const flushed=new Promise<boolean>(resolve=>{finish=resolve;});session.run={status:'idle',state:{phase:'shop'},flush:()=>flushed} as SavedRun;session.lease.writable=true;notify();
  fire(button,'pointerenter',{pointerType:'mouse'});const pending=find('开始新局').onclick?.();fire(dom,'pointermove',{pointerType:'mouse',clientX:100,clientY:700});vi.advanceTimersByTime(500);expect(modal.open).toBe(true);expect(game.scene.start).not.toHaveBeenCalled();finish(false);await pending;vi.advanceTimersByTime(220);expect(modal.open).toBe(false);expect(game.scene.start).not.toHaveBeenCalled();
+});
+
+it('keeps the temporary-save risk visible outside the closed menu and removes it for durable play',()=>{
+ const {host,button,modal}=mount();const notice=host.children.find(e=>e.className==='run-memory-notice')!;
+ expect(notice.hidden).toBe(true);session.temporaryRun=true;notify();
+ expect(modal.open).toBe(false);expect(host.children).toContain(notice);expect(notice.hidden).toBe(false);
+ expect(notice.textContent).toBe('本局暂未保存，刷新会丢失');expect(notice.attrs.get('role')).toBe('status');expect(button.attrs.get('aria-label')).toContain('有进度提示');
+ button.click();button.click();expect(modal.open).toBe(false);expect(notice.hidden).toBe(false);
+ session.temporaryRun=false;notify();expect(notice.hidden).toBe(true);
 });
