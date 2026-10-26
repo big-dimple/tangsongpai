@@ -26,10 +26,34 @@ export function shopSheet(scene:Phaser.Scene,view:SceneView,name:string,b:Box,co
 export function drawShopArt(scene:Phaser.Scene,view:SceneView,p:ReturnType<typeof shopLayout>):void {
   const pc=p.pc;
   if(pc){
-    shopSheet(scene,view,'owned',{...pc.ownedRail,height:pc.ownedRail.height+16},T.jadeSoft);
-    shopSheet(scene,view,'stock',pc.shopPanel,T.paperLight,true);
+    // PC uses a workbench composition: the hero rail is a dark ink mat and
+    // the stock is a separate paper shelf. This keeps the resource/decision
+    // columns legible at a glance instead of rendering every region as the
+    // same floating form.
+    view.add(scene.add.rectangle(0,0,view.layout.width,view.layout.height,0xe7ded0).setOrigin(0).setName('shop-art/pc-ground'));
+    const wash=scene.add.graphics().setName('shop-art/pc-wash');
+    wash.fillStyle(0x203f3b,.96).fillRoundedRect(pc.left.x,pc.left.y,pc.left.width,pc.left.height,12);
+    wash.fillStyle(0x9c3b30,.7).fillRect(pc.left.x,pc.left.y+6,4,Math.min(116,pc.left.height-12));
+    view.add(wash);
+    shopSheet(scene,view,'owned',{...pc.ownedRail,height:pc.ownedRail.height+16},T.jadeSoft,true,true);
+    shopSheet(scene,view,'stock',pc.shopPanel,T.paperLight,true,true);
+    const shelf=scene.add.graphics().setName('shop-art/pc-shelf-lines');
+    shelf.lineStyle(2,0x9e8256,.45);
+    for(const offer of pc.jokerOffers) {
+      shelf.lineBetween(offer.x+6,offer.y+offer.height-7,offer.x+offer.width-6,offer.y+offer.height-7);
+    }
+    view.add(shelf);
+    view.text(pc.left.x+18,pc.left.y+132,'随身席位',12,'#d7e4dc',pc.left.width-36).setName('shop/hero-rail-label');
+    view.text(pc.shopPanel.x+16,pc.shopPanel.y+14,'今日货架',12,'#80633d',pc.shopPanel.width-32).setName('shop/shelf-label');
   }else if(p.short){
     shopSheet(scene,view,'stock',{x:p.tabs.x-4,y:p.tabs.y-4,width:p.tabs.width+8,height:Math.max(...p.shelf.map(b=>b.y+b.height))+6-p.tabs.y},T.paperLight);
     shopSheet(scene,view,'entry',{x:p.play.x-4,y:p.play.y-4,width:p.play.width+8,height:p.play.height+8},T.jadeSoft);
+  }else if(p.portrait){
+    // On phones the native list scrolls inside one continuous sheet. The
+    // sheet is deliberately broader than the cards so the safe-area gutter
+    // remains visible while the user scrolls the shelf.
+    const bottom=Math.min(view.layout.height,p.play.y-8);
+    shopSheet(scene,view,'mobile-shelf',{x:p.x-4,y:p.tabs.y-4,width:p.w+8,height:Math.max(44,bottom-p.tabs.y+8)},T.paperLight,true,true);
+    shopSheet(scene,view,'mobile-actions',{x:p.x-4,y:p.reroll.y-4,width:p.w+8,height:view.layout.height-p.reroll.y+4},T.jadeSoft,true,false);
   }
 }
