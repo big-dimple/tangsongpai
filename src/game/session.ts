@@ -35,6 +35,7 @@ export class GameSession {
   /** A suspended IndexedDB open must never own the first-run route forever. */
   private saveStore:SaveStore=this.storage;
   private restoreGeneration=0;
+  private restoreInFlight=false;
   private readonly restoreTimeoutMs=2500;
   constructor(){
     this.storage.canWrite=()=>this.lease.writable;
@@ -57,7 +58,7 @@ export class GameSession {
   }
   async initialize():Promise<void> {
     if(this.working||this.blockPending())return;
-    this.working=true;this.changed();const generation=++this.restoreGeneration;
+    this.working=true;this.restoreInFlight=true;this.changed();const generation=++this.restoreGeneration;
     let timeout:ReturnType<typeof setTimeout>|undefined;
     try {
       const completed=await Promise.race([
@@ -66,7 +67,7 @@ export class GameSession {
       ]);
       if(!completed&&generation===this.restoreGeneration)this.enableVolatileStartup();
     }
-    finally {if(timeout!==undefined)clearTimeout(timeout);this.working=false;this.changed();}
+    finally {if(timeout!==undefined)clearTimeout(timeout);this.restoreInFlight=false;if(generation===this.restoreGeneration)this.working=false;this.changed();}
   }
   private enableVolatileStartup():void {
     // In-memory saves keep the run playable while a wedged old IndexedDB
@@ -76,7 +77,7 @@ export class GameSession {
     this.saveStore=new VolatileSaveStore();
     this.run=undefined;this.loaded=true;this.storageUnavailable=false;
     this.notice='旧存档读取超时，已先进入新局；本页进度暂存于内存。稍后可刷新重试读取。';
-    this.lease.drop();this.changed();
+    this.lease.drop();this.working=false;this.changed();
   }
   private async loadSavedRun(generation=this.restoreGeneration):Promise<boolean> {
     try {
@@ -109,6 +110,12 @@ export class GameSession {
     this.notice=this.pendingNotice();this.changed();return false;
   }
   async start(seed:string,characterId:CharacterId,modeConfig?:R2ModeSelection,intent:RunLaunchIntent={kind:'new'}):Promise<SavedRun|undefined> {
+    // Boot restores the previous run in the background. A fresh mobile launch
+    // must be able to supersede that read immediately; keep the old IndexedDB
+    // request isolated and use the same page-local store as the timeout path.
+    if(this.working&&this.restoreInFlight&&!this.run&&intent.kind==='new'){
+      this.restoreGeneration++;this.restoreInFlight=false;this.saveStore=new VolatileSaveStore();this.run=undefined;this.loaded=true;this.storageUnavailable=false;this.notice='';this.lease.drop();this.working=false;this.changed();
+    }
     if(this.working||this.blockPending())return;
     if(!this.loaded||this.storageUnavailable){this.notice='浏览器暂时无法保存，请重试。';this.changed();return;}
     this.working=true;this.notice='';this.changed();

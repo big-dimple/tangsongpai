@@ -32,8 +32,12 @@ export function drawShopArt(scene:Phaser.Scene,view:SceneView,p:ReturnType<typeo
     // same floating form.
     view.add(scene.add.rectangle(0,0,view.layout.width,view.layout.height,0xe7ded0).setOrigin(0).setName('shop-art/pc-ground'));
     const wash=scene.add.graphics().setName('shop-art/pc-wash');
-    wash.fillStyle(0x203f3b,.96).fillRoundedRect(pc.left.x,pc.left.y,pc.left.width,pc.left.height,12);
-    wash.fillStyle(0x9c3b30,.7).fillRect(pc.left.x,pc.left.y+6,4,Math.min(116,pc.left.height-12));
+    // The hero is a transparent cutout. Keep the preparation rail paper-led so
+    // the character reads as its own layer instead of being trapped in a green
+    // card-sized block.
+    wash.fillStyle(T.paperLight,.98).fillRoundedRect(pc.left.x,pc.left.y,pc.left.width,pc.left.height,12);
+    wash.lineStyle(1,T.jade,.36).strokeRoundedRect(pc.left.x+.5,pc.left.y+.5,pc.left.width-1,pc.left.height-1,12);
+    wash.fillStyle(0x9c3b30,.72).fillRect(pc.left.x,pc.left.y+6,4,Math.min(116,pc.left.height-12));
     view.add(wash);
     shopSheet(scene,view,'owned',{...pc.ownedRail,height:pc.ownedRail.height+16},T.jadeSoft,true,true);
     shopSheet(scene,view,'stock',pc.shopPanel,T.paperLight,true,true);
@@ -43,9 +47,9 @@ export function drawShopArt(scene:Phaser.Scene,view:SceneView,p:ReturnType<typeo
       shelf.lineBetween(offer.x+6,offer.y+offer.height-7,offer.x+offer.width-6,offer.y+offer.height-7);
     }
     view.add(shelf);
-    // SceneView intentionally normalizes pale ink colors for paper surfaces;
-    // this label sits on the dark rail, so keep its light color explicit.
-    view.add(scene.add.text(pc.left.x+18,pc.left.y+132,'随身席位',{fontFamily:'"Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif',fontSize:'12px',color:'#d7e4dc',wordWrap:{width:pc.left.width-36,useAdvancedWrap:true}}).setName('shop/hero-rail-label'));
+    // Keep this direct text node so the light-paper rail retains a dark ink
+    // label even when SceneView normalizes the palette for paper surfaces.
+    view.add(scene.add.text(pc.left.x+18,pc.left.y+132,'随身席位',{fontFamily:'"Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif',fontSize:'12px',color:'#596b69',wordWrap:{width:pc.left.width-36,useAdvancedWrap:true}}).setName('shop/hero-rail-label'));
     view.text(pc.shopPanel.x+16,pc.shopPanel.y+14,'今日货架',12,'#80633d',pc.shopPanel.width-32).setName('shop/shelf-label');
   }else if(p.short){
     shopSheet(scene,view,'stock',{x:p.tabs.x-4,y:p.tabs.y-4,width:p.tabs.width+8,height:Math.max(...p.shelf.map(b=>b.y+b.height))+6-p.tabs.y},T.paperLight);

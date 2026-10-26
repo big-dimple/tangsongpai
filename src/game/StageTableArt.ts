@@ -34,13 +34,10 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
   g.fillStyle(T.paper,.98).fillRect(frame.x,frame.y,frame.width,frame.height);
   // Hero wing: a paper field and ink wash make the transparent character feel
   // supported by the table instead of floating beside it.
-  g.fillStyle(T.paperEdge,.9).fillRect(frame.x,frame.y,main.x-frame.x-14,frame.height);
-  // An ink wash follows the lower silhouette instead of boxing the hero in a
-  // rectangular panel; the transparent art supplies the actual contour.
-  g.fillStyle(T.ink,.16).beginPath().moveTo(frame.x,frame.y+frame.height*.68)
-    .lineTo(main.x-14,frame.y+frame.height*.52).lineTo(main.x-14,bottom)
-    .lineTo(frame.x,bottom).closePath().fillPath();
-  g.fillStyle(T.jade,.5).fillRect(main.x-14,frame.y,14,frame.height);
+  // The hero is painted separately by GameScene. Leave the identity wing as
+  // quiet paper so the transparent cutout supplies the only character mass.
+  g.fillStyle(T.paperLight,.98).fillRect(frame.x,frame.y,main.x-frame.x-14,frame.height);
+  g.lineStyle(1,T.jade,.3).lineBetween(main.x-14,frame.y+12,main.x-14,bottom-12);
   g.fillStyle(T.paperLight,.94).fillRoundedRect(main.x,main.y,main.width,main.height,10);
   // Build row and target plate are deliberately separate cards of the paper.
   g.fillStyle(T.jadeSoft,.52).fillRoundedRect(build.x,build.y,build.width,build.height,10);

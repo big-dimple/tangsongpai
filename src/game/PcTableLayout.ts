@@ -17,7 +17,7 @@ export function pcTableAreas(viewport:{width:number;height:number},safe:Insets,h
  const menuRail=148,frameWidth=Math.min(1680,width-margin*2-menuRail);
  const frame=box(safe.left+margin+(width-margin*2-menuRail-frameWidth)/2,safe.top+vertical,frameWidth,height-vertical*2);
  const rail=box(viewport.width-safe.right-menuRail,safe.top,menuRail,height);
- const sidebarWidth=Math.max(248,Math.min(292,Math.round(frame.width*.2/8)*8)),gap=28;
+ const sidebarWidth=Math.max(248,Math.min(292,Math.round(frame.width*.2/8)*8)),gap=32;
  const main=box(frame.x+sidebarWidth+gap,frame.y,frame.width-sidebarWidth-gap,frame.height);
  const hud=box(frame.x,frame.y,sidebarWidth,frame.height);
  const count=Number.isSafeInteger(handWindow.count)&&handWindow.count>=0?handWindow.count:8;
@@ -31,15 +31,15 @@ export function pcTableAreas(viewport:{width:number;height:number},safe:Insets,h
  const handLabel=box(main.x+heroAction.width+18,hand.y-24,116,18);
  const piles=box(handLabel.x+116,handLabel.y,Math.max(0,main.width-heroAction.width-134),18);
 
- const headerY=main.y+10;
- const buildWidth=Math.min(main.width*.58,main.width-310);
+ const headerY=main.y+14;
+ const buildWidth=Math.min(main.width*.56,main.width-326);
  const rackCardWidth=Math.min(compact?100:124,(buildWidth-4*22)/5),rackWidth=rackCardWidth*5+4*22;
  const headerHeight=Math.max(compact?172:206,rackCardWidth*1.4+30);
  const jokers=box(main.x,headerY,buildWidth,headerHeight);
  const slots=Array.from({length:5},(_,i)=>box(main.x+(buildWidth-rackWidth)/2+i*(rackCardWidth+22),jokers.y+26,rackCardWidth,rackCardWidth*1.4));
  const scoreWidth=Math.min(340,Math.max(286,main.width-buildWidth-20));
  const scoreBoard=box(main.x+main.width-scoreWidth,headerY,scoreWidth,headerHeight);
- const stageX=main.x,stageY=headerY+headerHeight+16,stageWidth=main.width-scoreWidth-20;
+ const stageX=main.x,stageY=headerY+headerHeight+20,stageWidth=main.width-scoreWidth-24;
  const stageHeight=Math.max(108,hand.y-stageY-20);
  const playedArea=box(stageX,stageY,stageWidth,stageHeight);
  const preview=box(main.x,headerY,main.width,hand.y-headerY-12);

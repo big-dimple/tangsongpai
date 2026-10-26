@@ -42,6 +42,13 @@ describe('new player and persisted-run entry',()=>{
    const run=await s.start('timeout-new','amo');expect(run?.status).toBe('idle');expect(run?.state.seed).toBe('timeout-new');
   } finally {vi.useRealTimers();}
  });
+ it('lets a new mobile launch supersede an in-flight restore immediately',async()=>{
+  hangRead=true;
+  const s=new GameSession(),initializing=s.initialize();
+  const run=await s.start('immediate-new','amo');
+  expect(run?.state.seed).toBe('immediate-new');expect(s.loaded).toBe(true);expect(s.notice).toBe('');
+  await Promise.race([initializing,new Promise(resolve=>setTimeout(resolve,20))]);
+ });
  it('a failed first save remains pending and retries the same run exactly once',async()=>{
   const s=new GameSession();await s.initialize();failWrite=true;expect(await s.start('quota-case','amo')).toBeUndefined();expect(slots.current).toBeNull();const pending=s.pendingRun!.exportJSON();
   failWrite=false;expect(await s.retry()).toBe(true);expect(s.run!.exportJSON()).toBe(pending);expect(slots.revision).toBe(1);
