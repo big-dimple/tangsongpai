@@ -639,7 +639,15 @@ export class GameScene extends Phaser.Scene {
     this.stage={...this.stage,targetHeat:this.run.stage!.targetHeat};
     this.controlsLive=false;this.stopScoreFire();
     this.heroPortraitMotion?.destroy();this.heroPortraitMotion=undefined;this.heroPortrait=undefined;this.giftDelivery?.destroy();this.giftDelivery=undefined;
-    const v=this.view,l=v.layout;this.hoveredCardId=undefined;this.hoveredJokerId=undefined;this.jokerHoverPreview=undefined;v.clear();this.settlementChrome.clear();this.handNavigationButtons=[];v.paperBackground();drawStageTableArt(this,v,this.characterId,undefined,false);this.settledCards.clear();this.previewCards=undefined;
+    const v=this.view,l=v.layout;this.hoveredCardId=undefined;this.hoveredJokerId=undefined;this.jokerHoverPreview=undefined;v.clear();this.settlementChrome.clear();this.handNavigationButtons=[];v.paperBackground();if(l.mode==='portrait')warmPcHeroImage(this,this.characterId);drawStageTableArt(this,v,this.characterId,undefined,false);
+    if(l.pc){
+      // These short rails make the PC reading order explicit before any score
+      // or card art animates in: build → target → stage → hand → action.
+      v.text(l.pc.build.x+16,l.pc.build.y+8,'当前构筑',13,C.jade).setName('pc/section-build');
+      v.text(l.pc.stage.x+18,l.pc.stage.y+8,'主舞台 · 出牌落点',13,C.jade).setName('pc/section-stage');
+      v.text(l.hand.x+8,l.hand.y-22,'手牌 · 选中后进入操作带',13,C.mutedInk).setName('pc/section-hand');
+    }
+    this.settledCards.clear();this.previewCards=undefined;
     this.playAuraPulse?.remove();this.playAuraPulse=undefined;this.playAura=undefined;
     if(this.progressBar)this.tweens.killTweensOf(this.progressBar);this.progressTarget=Number.NaN;
     const h=l.hud,c=getCharacter(this.characterId),portrait=l.mode==='portrait',short=l.mode==='landscape',heroRoom=portrait?Math.min(108,Math.max(74,h.width-252)):108,sidebar=l.pc?.heroRows??heroSidebarRows(h);

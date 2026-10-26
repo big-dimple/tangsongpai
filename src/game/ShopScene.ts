@@ -6,7 +6,7 @@ import {canCarryTool,type ToolCarryIntent} from './ToolCarryIntent';
 import {heroText} from './HeroIdentity';
 import {showShopComparison,type ShopComparisonView} from './ShopComparisonDialog';
 import {createShopOfferValue,createShopIdentityTags,styleShopMobileOfferInk} from './ShopJokerPresentation';
-import {warmTableImages} from './StageImageWarmup';
+import {warmTableImages,warmPcHeroImage} from './StageImageWarmup';
 import {warmShopToolImages,warmShopToolPanel} from './ShopToolImageWarmup';
 import {showHeroExplanation} from './HeroExplanation';
 import {bossRulesSeen,presentBossPreparation} from './BossPreparationPresentation';
@@ -80,6 +80,7 @@ import {toolInfo,itemInfo,goodsArtPortrait,jokerExtraBonusCopy,toolFamilyLabel} 
 import {SceneView} from './SceneView';
 import {getCharacter} from './characters';
 import {selectionPortraitKey,avatarKey} from './portraits';
+import {pcHeroKey,PC_HERO_COMPOSITION} from './PcHeroArt';
 import {DetailDialog} from './DetailDialog';
 import {showDeckInspection} from './DeckInspector';
 import type {RunMenuActions} from './RunMenu';
@@ -364,11 +365,11 @@ export class ShopScene extends Phaser.Scene {
     syncBossAtmosphere(this,this.view.root,()=>this.run,'preparation',{reduced:()=>this.resultReduced});
   }
   private drawShopPortrait(p:ReturnType<typeof shopLayout>):void {
-    const pc=p.pc;if(!pc)return;const character=getCharacter(this.run.characterId),key=selectionPortraitKey(character.id);
+    const pc=p.pc;if(!pc)return;const character=getCharacter(this.run.characterId),key=pcHeroKey(character.id);warmPcHeroImage(this,character.id);
     if(!this.textures.exists(key))return;
     const b=pc.left,guide=firstChapterShopPrompt(this.run)&&this.ready?shopFirstGuideLayout(p,this.view.layout.height,this.run.jokers.length===0):undefined;
-    const artY=b.y+236,artHeight=Math.max(80,b.height-280),image=this.add.image(b.x+b.width/2,artY+artHeight/2,key);
-    image.setScale(Math.min((b.width-8)/image.width,artHeight/image.height)).setName('shop/hero-portrait');this.view.add(image);
+    const artY=b.y+196,artHeight=Math.max(120,b.height-238),composition=PC_HERO_COMPOSITION[character.id],image=this.add.image(b.x+b.width*.54,artY+artHeight/2,key);
+    image.setScale(Math.min((b.width+34)/image.width,artHeight/image.height)*composition.scale).setAlpha(.98).setName('shop/hero-portrait').setData('assetId',character.id+'.pc');this.view.add(image);
     if(guide)this.view.add(this.add.graphics().fillStyle(PAPER_THEME.paperLight,.96).fillRoundedRect(guide.box.x-4,guide.box.y-4,guide.box.width+8,guide.box.height+8,6));
     const hit=this.view.add(this.add.rectangle(b.x+b.width/2,b.y+b.height/2,b.width,b.height,0,0));
     this.view.target(hit,'shop/hero-preparation',{tap:()=>showHeroExplanation(this.dialog,character.id,{run:this.run,closeLabel:'返回商店'}),detail:()=>showHeroExplanation(this.dialog,character.id,{run:this.run,closeLabel:'返回商店'})});
