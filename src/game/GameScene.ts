@@ -641,11 +641,7 @@ export class GameScene extends Phaser.Scene {
     this.heroPortraitMotion?.destroy();this.heroPortraitMotion=undefined;this.heroPortrait=undefined;this.giftDelivery?.destroy();this.giftDelivery=undefined;
     const v=this.view,l=v.layout;this.hoveredCardId=undefined;this.hoveredJokerId=undefined;this.jokerHoverPreview=undefined;v.clear();this.settlementChrome.clear();this.handNavigationButtons=[];v.paperBackground();if(l.mode==='portrait')warmPcHeroImage(this,this.characterId);drawStageTableArt(this,v,this.characterId,undefined,false);
     if(l.pc){
-      // These short rails make the PC reading order explicit before any score
-      // or card art animates in: build → target → stage → hand → action.
-      v.text(l.pc.build.x+16,l.pc.build.y+8,'当前构筑',13,C.jade).setName('pc/section-build');
-      v.text(l.pc.stage.x+18,l.pc.stage.y+8,'主舞台 · 出牌落点',13,C.jade).setName('pc/section-stage');
-      v.text(l.hand.x+8,l.hand.y-22,'手牌 · 选中后进入操作带',13,C.mutedInk).setName('pc/section-hand');
+      v.text(l.pc.build.x+16,l.pc.build.y,'唐宋牌 · '+this.run.jokers.length+'/'+r2JokerCapacity(this.run),18,C.jade).setName('pc/section-build');
     }
     this.settledCards.clear();this.previewCards=undefined;
     this.playAuraPulse?.remove();this.playAuraPulse=undefined;this.playAura=undefined;
@@ -666,12 +662,12 @@ export class GameScene extends Phaser.Scene {
     this.roleText=v.text(l.mode==='desktop'?sidebar.status.x:h.x+(portrait?64:76),l.mode==='desktop'?sidebar.status.y:avatarY+(portrait?23:28),this.roleCaption(),14,C.mutedInk,l.mode==='desktop'?sidebar.status.width:portrait?h.width-160:h.width-88).setName('hero/status-caption');
     const skillEntry=v.rect({x:this.roleText.x,y:this.roleText.y,width:portrait?heroRoom:l.mode==='desktop'?sidebar.status.width:h.width-88,height:l.mode==='desktop'?sidebar.status.height:20}).setFillStyle(0,0).setStrokeStyle();v.target(skillEntry,'hero/skill-entry',{tap:()=>this.inspectHeroExplanation(),detail:()=>this.inspectHeroExplanation()});
     if(!portrait&&!l.shortLandscape)v.text(h.x+12,l.mode==='desktop'?sidebar.stage.y:h.y+96,identity.isBoss?identity.title:identity.stageName,14,C.paper,h.width-24).setName('stage-identity/current');
-    this.heatText=v.text(h.x+12,portrait?h.y+27:l.shortLandscape?h.y+94:short?h.y+108:sidebar.heat.y,'',portrait?20:short?28:24,C.paper,h.width-24).setFontStyle('bold');
+    this.heatText=v.text(h.x+12,portrait?h.y+27:l.shortLandscape?h.y+94:short?h.y+108:sidebar.heat.y,'',portrait?20:short?28:l.pc?36:24,C.paper,h.width-24).setFontStyle('bold');
     const goldY=portrait?h.y+31:l.shortLandscape?h.y+11:l.mode==='desktop'?sidebar.gold.y:h.y+180;
     this.goldText=l.shortLandscape?v.text(h.x+h.width-12,goldY,'',14,C.brass).setOrigin(1,0):v.text(h.x+12,goldY,'',14,C.brass,h.width-24);
     if(!portrait){
 
-      v.text(h.x+12,l.mode==='desktop'?sidebar.target.y:h.y+(l.shortLandscape?130:146),'目标 '+heatText(this.stage.targetHeat),14,C.jade,h.width-24).setName('hud/target');
+      v.text(h.x+12,l.mode==='desktop'?sidebar.target.y:h.y+(l.shortLandscape?130:146),'目标 '+heatText(this.stage.targetHeat),l.pc?24:14,C.jade,h.width-24).setName('hud/target');
       const progressY=toolInventoryProgressY(l,l.mode==='desktop'?sidebar.progress.y:h.y+(l.shortLandscape?152:168));v.rect({x:h.x+12,y:progressY,width:h.width-24,height:5},0x45595b).setStrokeStyle();
       this.progressBar=v.rect({x:h.x+12,y:progressY,width:1,height:5},T.jade).setOrigin(0,.5).setPosition(h.x+12,progressY+2.5).setStrokeStyle();
     }
@@ -727,6 +723,7 @@ export class GameScene extends Phaser.Scene {
       const label=button.getData('label') as Phaser.GameObjects.Text;
       label.setFontSize(kind==='play'?16:14).setPosition(content.centerX,content.labelY).setData('restY',content.labelY);
       this.resourceCounts[kind]=v.text(content.centerX,content.countY,'',14,kind==='play'?C.paperLight:C.jade).setOrigin(.5).setName('button/'+kind+'-left');
+      if(l.pc)v.text(l.hud.x+12+(kind==='discard'?l.hud.width/2:0),l.pc.heroRows.stage.y+30,'',18,C.ink).setName('hud/'+kind+'-left');
     }
     const play=l.tableActions.play;
     this.playAura=v.add(this.add.graphics().lineStyle(2,T.red,.7).strokeRoundedRect(play.x-3,play.y-3,play.width+6,play.height+6,9).setAlpha(0));
@@ -750,6 +747,7 @@ export class GameScene extends Phaser.Scene {
       const artArea=composition?{...area,x:area.x+area.width*(1-composition.scale)*composition.align,width:area.width*composition.scale}:area;
       const image=this.add.image(0,0,key),placement=heroPortraitLayout(artArea,{width:image.width,height:image.height},protectedBounds,l.mode==='portrait'?3:6);
       if(!placement){image.destroy();return;}
+      if(l.pc){placement.y=placement.safeBounds.y+placement.safeBounds.height-image.height*placement.scale/2;placement.imageBounds.y=placement.y-placement.imageBounds.height/2;}
       image.setPosition(placement.x,placement.y).setScale(placement.scale).setName('hero/portrait')
         .setData('heroId',this.characterId).setData('assetId',this.characterId+(l.pc?'.pc':'.portrait')).setData('bounds',placement.imageBounds);
       holder.add(image);this.heroPortrait=image;
@@ -834,8 +832,23 @@ export class GameScene extends Phaser.Scene {
 
     l.slots.forEach((b,i)=>{
       if(i>=r2JokerCapacity(this.run))return;
-      const j=jokers[i];if(!j)return;
+      const j=jokers[i];if(!j){
+        if(l.pc){v.add(this.add.graphics().lineStyle(1,T.divider,.55).strokeRoundedRect(b.x,b.y,b.width,b.height,6));v.text(b.x+b.width/2,b.y+b.height/2,'空槽 '+(i+1),14,C.mutedInk).setOrigin(.5);}
+        return;
+      }
       const d=this.jokerDefinition(j.definitionId),rarityStyle=JOKER_RARITY[d.rarity];
+      if(l.pc){
+        const textX=b.x+b.width+10,textWidth=l.pc.main.width/5-b.width-28;
+        const heading=v.text(textX,b.y+12,d.name,l.pc.compact?16:20,C.ink,textWidth).setFontStyle('bold').setName('pc/joker-name');
+        const summary=v.text(textX,heading.y+heading.height+10,d.description,l.pc.compact?14:16,C.mutedInk,textWidth).setName('pc/joker-rule');
+        if(summary.height>b.height-heading.height-38){
+          let end=d.description.length;
+          while(summary.height>b.height-heading.height-38&&end>0)summary.setText(d.description.slice(0,--end)+'…');
+        }
+        const detail=v.rect({x:textX,y:b.y,width:textWidth,height:b.height}).setFillStyle(0,0).setStrokeStyle();
+        v.target(detail,'pc/joker-details/'+j.instanceId,{tap:()=>this.inspectJoker(j.instanceId),detail:()=>this.inspectJoker(j.instanceId)});
+      }
+
       const marker=v.add(this.add.container(b.x+b.width/2,b.y+b.height/2)).setData('baseX',b.x+b.width/2).setData('baseY',b.y+b.height/2);
       const r=this.add.rectangle(0,0,b.width,b.height,T.paperLight,0).setStrokeStyle();marker.add(r);
       const resolution=Math.max(1,1/this.scale.zoom),labelX=-b.width/2+3;
@@ -1887,6 +1900,15 @@ export class GameScene extends Phaser.Scene {
     const challenge=opponentChallenge(this.run,preview?.type);
     this.resultText.setVisible(true).setText(preview?(challenge?.selection??selectionCopy(preview).title):challenge?'回音墙 · 目标 '+heatText(challenge.target):this.stage.name).setData('opponentSelection',challenge);
     fitScoreLine(this.resultText,{x:score.x+10,y:score.y+(score.height<90?4:7),width:score.width-20-(this.bossSuitRescueButton?154:this.selectionQuickInScore(score)?104:0),height:score.height<90?18:30},score.height<90?18:24);
+    // PC keeps the scoring lanes legible before a hand is committed. Dashes
+    // are deliberate: no guessed score is presented as a saved result.
+    if(this.view.layout.pc&&!this.bossSuitRescueButton){
+      this.scoreLabels.forEach((label,i)=>label.setText(['热度','倍率','本手得分'][i]).setVisible(true));
+      [this.scoreHeat,this.scoreMult,this.scoreTotal].forEach(text=>text.setText('—').setData('fullText','—').setVisible(true));
+      this.view.root.list.filter(o=>o.name.startsWith('score/formula-')).forEach(o=>(o as Phaser.GameObjects.Text).setVisible(true));
+      if(!preview)this.resultText.setText('选择手牌 · 出牌后计分');
+      this.fitScoreReadouts();
+    }
     if(this.bossSuitRescuePreview){
       let text='选牌后查看本手预计得分';
       if(preview){try{const p=previewR2Hand(aiHandScoreInput(this.aiInput(),[...this.selectedIds]));text=(bossSuitRescueActive(this.run.stage)?'解封本手':'本手')+'预计 '+(p.scoreRange.minimum===p.scoreRange.maximum?p.scoreRange.minimum:p.scoreRange.minimum+'–'+p.scoreRange.maximum)+'分 · 目标不变';}catch{text='所选能力暂不可用 · 调整后查看预计得分';}}
@@ -2628,9 +2650,10 @@ export class GameScene extends Phaser.Scene {
     this.stage={...this.stage,targetHeat:this.run.stage!.targetHeat};
     (this.view.root.getByName('hud/target') as Phaser.GameObjects.Text|undefined)?.setText('目标 '+heatText(this.stage.targetHeat));
     const l=this.view.layout,displayHeat=this.presentation?.displayHeat??this.heat,remaining=(BigInt(this.stage.targetHeat)>BigInt(displayHeat)?BigInt(this.stage.targetHeat)-BigInt(displayHeat):0n).toString();
-    this.heatText.setText(l.mode==='portrait'?heatText(displayHeat)+' / '+heatText(this.stage.targetHeat):heatText(displayHeat));
+    this.heatText.setText(l.mode==='portrait'?heatText(displayHeat)+' / '+heatText(this.stage.targetHeat):(l.pc?'累计 ':'')+heatText(displayHeat));
     const discardCost=r2DiscardCost(this.run),discards=this.run.stage!.discardsLeft,plays=this.presentation?.resourcePlayLeft??this.handsLeft;
     this.resourceCounts.play.setText(plays+' 次');this.resourceCounts.discard.setText(discards+' 次');
+    if(l.pc){(this.view.root.getByName('hud/play-left') as Phaser.GameObjects.Text)?.setText('出牌 '+plays);(this.view.root.getByName('hud/discard-left') as Phaser.GameObjects.Text)?.setText('弃牌 '+discards);}
     if(this.menuActions)this.menuActions.viewLastHand=!this.presentation&&this.run.lastTrace?()=>this.inspectLastTrace():undefined;
     const playColor=handActionCountColor('play',!!this.playButton.input?.enabled),discardColor=handActionCountColor('discard',!!this.discardButton.input?.enabled,discards<2*discardCost);
     if(this.resourceCounts.play.style.color!==playColor)this.resourceCounts.play.setColor(playColor);
@@ -2639,7 +2662,8 @@ export class GameScene extends Phaser.Scene {
     this.goldText.setText(l.shortLandscape?gold+' 金':'金币 '+gold+(l.mode==='desktop'?'\n还需 '+heatText(remaining)+' 热度':''));
     if(l.mode==='desktop'&&this.progressBar?.active){
       // Keep the two actual text rows within the HUD's dedicated gold region.
-      const sidebar=l.pc?.heroRows??heroSidebarRows(l.hud);fitScoreLine(this.goldText,sidebar.gold,14);
+      const sidebar=l.pc?.heroRows??heroSidebarRows(l.hud);fitScoreLine(this.goldText,sidebar.gold,l.pc?20:14);
+      if(l.pc)this.goldText.setOrigin(0,0).setPosition(sidebar.gold.x,sidebar.gold.y);
       const progressY=Math.max(sidebar.progress.y,this.goldText.getBounds().bottom+4);
       this.progressBar.setY(progressY+2.5);
     }
