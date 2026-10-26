@@ -19,7 +19,7 @@ export function pcResultViewport(width:number,height:number){
 /** Existing saved facts only. No commands, thresholds, reward issuance or timers. */
 export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2RunState,cleared:boolean,skipped:boolean,facts:ReturnType<typeof settlementFacts>,formulaOverride?:string,rewardLabel?:string){
  const l=resultLayout(view.layout.width,view.layout.height,0,b.height,true),lost=!cleared&&!skipped;
- const compact=view.layout.height<850,gap=compact?24:32,heroWidth=b.width*.58,heroHeight=b.height-64;
+ const compact=view.layout.height<850,gap=compact?24:32,heroWidth=b.width*.58,heroHeight=b.height-24;
  const heroBox={x:b.x-16,y:b.y+4,width:heroWidth+8,height:heroHeight};
  const x=b.x+heroWidth+gap,width=b.width-heroWidth-gap;
  const text=(x:number,y:number,copy:string,size:number,width:number,color=C.ink,name='')=>{
@@ -29,12 +29,19 @@ export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2R
   return item;
  };
  const paper=view.add(scene.add.graphics().setName('result-art/stage').setData('bounds',b));
- // Open editorial spread: one quiet vertical seam, no outer panel or card frame.
- paper.fillStyle(lost?T.jadeSoft:T.paperLight,.65).fillCircle(heroBox.x+heroBox.width*.52,b.y+heroHeight*.38,Math.min(heroWidth*.42,heroHeight*.38))
-  .lineStyle(3,lost?T.jade:T.red,.6).lineBetween(x,b.y-12,x+48,b.y-12)
-  .lineStyle(1,lost?T.jade:T.red,.32).lineBetween(heroBox.x+heroBox.width*.74,b.y+18,heroBox.x+heroBox.width*.74,b.y+heroHeight-6)
+ // The desktop spread uses a broad paper wash behind the full cutout. Its
+ // torn left edge carries the crop without boxing the hero into a badge.
+ const washLeft=heroBox.x+heroBox.width*.12,washRight=heroBox.x+heroBox.width-8,washTop=b.y+8,washBottom=b.y+heroHeight-10;
+ const wash=[
+  {x:washLeft+20,y:washTop},{x:washRight-12,y:washTop+4},{x:washRight+2,y:washTop+24},
+  {x:washRight-3,y:washBottom-20},{x:washRight-18,y:washBottom},{x:washLeft+28,y:washBottom-6},
+  {x:washLeft+6,y:washBottom-22},{x:washLeft+18,y:washTop+heroHeight*.48},{x:washLeft+4,y:washTop+40},
+ ];
+ const accent=lost?T.jade:facts.tier>=2?T.red:T.jade;
+ paper.fillStyle(lost?T.jadeSoft:T.paperLight,.72).fillPoints(wash,true)
+  .lineStyle(3,accent,.34).lineBetween(washRight-54,washTop+7,washRight-18,washTop+10)
   .lineStyle(1,T.divider,.8).beginPath().moveTo(l.next.x-gap/2,b.y).lineTo(l.next.x-gap/2,b.y+b.height).strokePath();
- const tag=text(x,b.y+8,skipped?'本场跳过':lost?'本局结果':'本场总热度',16,width,C.jade,'result/hand');
+ const tag=text(x,b.y+8,skipped?'本场跳过':'本场总热度',16,width,C.jade,'result/hand');
  const exactScore=facts.stageTotal,copy=(exactScore.length>15&&/[1-9]/.test(exactScore.slice(3))?'≈':'')+heatText(exactScore);
  const size=compact?(facts.tier>=2?76:68):(facts.tier>=2?104:88);
  const score=view.text(x,tag.y+tag.height+16,copy,size,lost?C.ink:facts.tier>=2?C.red:C.ink).setFontFamily(SCORE_FONT).setFontStyle('bold').setName('result/score').setData('exactScore',exactScore).setData('pcPoster',true);
@@ -71,13 +78,11 @@ export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2R
  const hero=paint();
  const reward={x:l.next.x,y:b.y+40,width:l.next.width,height:68};
  text(reward.x,b.y+8,lost?'本局留档':skipped?'换场记录':'本场所得',16,reward.width,C.jade,'result/reward-heading');
- view.add(scene.add.graphics().lineStyle(1,lost?T.jade:T.red,.65).lineBetween(reward.x,reward.y-8,reward.x+Math.min(reward.width,56),reward.y-8).setName('result/reward-rule'));
  let rewardText:Phaser.GameObjects.Text|undefined;
  if(cleared&&!skipped&&rewardLabel){
   rewardText=text(reward.x+reward.width/2,reward.y+8,rewardLabel,22,reward.width-48,C.ink,'result/reward').setOrigin(.5,0).setFontStyle('bold');
   reward.height=Math.max(reward.height,rewardText.height+16);
  }else text(reward.x,reward.y+8,lost?'成绩已记录，下一局重新启程。':'跳场所得见下方记录。',16,reward.width,C.ink,'result/receipt-state');
- paper.fillStyle(lost?T.jadeSoft:T.paperLight,.82).fillRoundedRect(reward.x,reward.y-2,reward.width,reward.height+8,4);
  let reviewBookBand:Box|undefined;
  if(facts.reviewBook){
   reviewBookBand={x:reward.x,y:reward.y+reward.height+8,width:reward.width,height:52};
