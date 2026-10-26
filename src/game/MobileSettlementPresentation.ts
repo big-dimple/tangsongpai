@@ -41,7 +41,7 @@ export function drawMobileSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run
   const explanation=fit(b.x,combo.y+combo.height+3,'得分解释 · '+facts.scoreExplanation,13,textWidth,C.jade,'result/score-explanation');
   infoBottom=explanation.y+explanation.height;
  }
- if(!compact&&facts.tier>=2&&!lost&&!skipped)fit(b.x,target.y+target.height+8,facts.tag,18,textWidth,C.red,'result/tier');
+ if(!compact&&facts.tier>=2&&!lost&&!skipped)fit(b.x,infoBottom+8,facts.tag,18,textWidth,C.red,'result/tier');
  fit(b.x,b.y+artHeight-25,getCharacter(run.characterId).name,compact?20:24,textWidth,C.ink,'result/hero-name').setFontStyle('bold');
  const artLayer=view.add(scene.add.container(0,0).setName('result-art/source-layer'));
  const paint=()=>{
