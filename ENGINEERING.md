@@ -111,12 +111,12 @@ tools/          离线素材工具
 - 跳过、快进、静音、减少动态、后台切换和 resize 不改变规则结果，也不重复奖励。
 - 群英卷轴仅在每次页面加载后的首页播放一次：保留浅色纸卷，六人完整亮相后额外停留 1 秒，总长 2.6 秒，展开、落印与淡出保持原节奏；可直接操作离开首页，减少动态时跳过。选角页不重播群英卷轴，仅重置本局单人登场演出的播放额度。
 - 桌面横屏与手机竖屏共用 CSS 坐标和明确命中区域；触控、键盘与标准手柄均为正式输入路径。
-- PC 牌桌新版由 SceneView 的 game 场景显式启用，几何函数 PcTableLayout 只消费尺寸/安全区/手牌数据，默认不开启；实际入口排除 primary coarse pointer，要求至少 1180×640 可用横向空间。手机对局牌桌、触控平板与小窗口保留原牌桌布局。
+- PC 牌桌新版由 SceneView 的 game 场景显式启用，几何函数 PcTableLayout 只消费尺寸/安全区/手牌数据，默认不开启；实际入口排除 primary coarse pointer，要求至少 1180×640 可用横向空间。移动牌桌保留正式触控几何，同时由 StageTableArt 绘制当前英雄的透明纸面层。
 - PC 的 hud 覆盖完整侧栏，heroRows、heroPortrait、inventoryEntry/helpEntry 与最终 scoreBoard/playedArea 一起从布局输出；渲染、命中、手柄焦点与计分来源避让共用这些几何，不能只移动可见图片。
 - PC 结算由 IntermissionLayout、PcSettlementPresentation 和 IntermissionScroll 配合实现上锚画幅海报，不对整块内容二次垂直居中。长去向文字可进入现有只读详情弹窗，真实分数/收益仍来自原 settlementFacts。
 - beginPcSettlementCut 是 PC-only 非阻塞暖纸 DOM 衔接，不是旧牌桌截图，不修改 PaperFlow 或奇遇切场。它不等待动画再执行导航，减少动态时不播放，拥有明确清理上限；结算入场同样不决定规则或奖励。
 - PC 牌桌与 PC/手机竖屏结算使用独立 `pc` purpose（沿用技术键，不替换既有 portrait/selection）：`public/assets/tangsong-pc-heroes/manifest.json` 注册六张 896×1120 带 alpha WebP（合计 1,794,950 字节）。`PcHeroArt` 按各自衣袖、双锤和剑的轮廓定义比例与水平落点，完整保留源画幅；结算人物向左越出文字版心，成绩与收益/按钮分列，上锚而非整组居中。
-- 透明图只在实际 PC 牌桌或 PC/手机竖屏结算请求当前英雄；复用原有受控图片队列与结果取消生命周期，不加入首页六人预加载。`portrait`、`selection` 与手机对局资源/演出保持原路径。角色详情仍使用原 portrait。
+- 透明图只在实际 PC 牌桌、商店英雄席、移动牌桌或 PC/手机竖屏结算请求当前英雄；复用原有受控图片队列与结果取消生命周期，不加入首页六人预加载。`portrait`、`selection` 与角色详情仍使用原路径，存档身份和玩法规则不变。
 - 手机竖屏结算由 `MobileSettlementPresentation` 独立绘制：人物/成绩主区、全宽奖励、去向和稳定按钮，紧凑屏压缩人物区而非把 PC 三栏缩小。长去向可点标题展开全文；失败、跳场、通关仍走真实既有操作。
 - 通用图片加载器只对注册的 `pc` purpose 使用 400,000 字节、896×1120 像素限额，并继续校验键/URL/真实尺寸；其他图片保留原 128 KiB / 600,000 像素限额。
 - PC 牌桌与商店道具箱共用 `pcToolInventoryContent` 的 22px 图标轨道与独立文字区，12px 间隔、绝对定位，保留原按钮功能和手机样式。
@@ -128,6 +128,8 @@ tools/          离线素材工具
 - 资源使用注册表与 `BASE_URL`；源素材、运行时变体和预览文件分开，首屏只加载必要资源。
 - 当前素材清单为 `docs/assets/inventory.json`，素材检查工具位于 `tools/blender/`。
 - 英雄文案数据为 `src/content/hero-text-spec.json`；清理文档不改其内容，也不将文案技能说明当成所有旧存档共用的规则。
+
+本轮三条视觉重做线的实现入口已经合并：`PcTableLayout`/`StageTableArt` 负责牌桌，`ShopLayout`/`ShopScene`/`ShopArt`/`ShopMobileOffers` 负责商店，`IntermissionLayout`/`PcSettlementPresentation`/`MobileSettlementPresentation` 负责结算。后续只处理用户试玩后可复现的工程问题，不把检查数量写成审美结论。
 
 ## 8. 测试、CI 与发布
 
