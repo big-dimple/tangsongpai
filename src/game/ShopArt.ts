@@ -26,14 +26,15 @@ export function shopSheet(scene:Phaser.Scene,view:SceneView,name:string,b:Box,co
 export function drawShopArt(scene:Phaser.Scene,view:SceneView,p:ReturnType<typeof shopLayout>):void {
   const pc=p.pc;
   if(pc){
-    // PC uses a workbench composition: the hero rail is a dark ink mat and
-    // the stock is a separate paper shelf. This keeps the resource/decision
-    // columns legible at a glance instead of rendering every region as the
-    // same floating form.
+    // PC uses a workbench composition: the hero remains an independent
+    // transparent cutout on a quiet paper rail. A faint jade wash anchors the
+    // lower figure without turning the whole rail into a green rectangle.
     view.add(scene.add.rectangle(0,0,view.layout.width,view.layout.height,0xe7ded0).setOrigin(0).setName('shop-art/pc-ground'));
     const wash=scene.add.graphics().setName('shop-art/pc-wash');
-    wash.fillStyle(0x203f3b,.96).fillRoundedRect(pc.left.x,pc.left.y,pc.left.width,pc.left.height,12);
-    wash.fillStyle(0x9c3b30,.7).fillRect(pc.left.x,pc.left.y+6,4,Math.min(116,pc.left.height-12));
+    wash.fillStyle(T.paperLight,.98).fillRoundedRect(pc.left.x,pc.left.y,pc.left.width,pc.left.height,12);
+    wash.fillStyle(T.jade,.10).fillRoundedRect(pc.left.x+8,pc.left.y+184,pc.left.width-16,Math.max(80,pc.left.height-198),10);
+    wash.fillStyle(T.red,.82).fillRect(pc.left.x+6,pc.left.y+6,4,Math.min(116,pc.left.height-12));
+    wash.lineStyle(1,T.jade,.62).strokeRoundedRect(pc.left.x+.5,pc.left.y+.5,pc.left.width-1,pc.left.height-1,12);
     view.add(wash);
     shopSheet(scene,view,'owned',{...pc.ownedRail,height:pc.ownedRail.height+16},T.jadeSoft,true,true);
     shopSheet(scene,view,'stock',pc.shopPanel,T.paperLight,true,true);
@@ -43,9 +44,7 @@ export function drawShopArt(scene:Phaser.Scene,view:SceneView,p:ReturnType<typeo
       shelf.lineBetween(offer.x+6,offer.y+offer.height-7,offer.x+offer.width-6,offer.y+offer.height-7);
     }
     view.add(shelf);
-    // SceneView intentionally normalizes pale ink colors for paper surfaces;
-    // this label sits on the dark rail, so keep its light color explicit.
-    view.add(scene.add.text(pc.left.x+18,pc.left.y+132,'随身席位',{fontFamily:'"Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif',fontSize:'12px',color:'#d7e4dc',wordWrap:{width:pc.left.width-36,useAdvancedWrap:true}}).setName('shop/hero-rail-label'));
+    view.add(scene.add.text(pc.left.x+18,pc.left.y+132,'随身席位',{fontFamily:'"Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif',fontSize:'12px',color:'#3F606B',wordWrap:{width:pc.left.width-36,useAdvancedWrap:true}}).setName('shop/hero-rail-label'));
     view.text(pc.shopPanel.x+16,pc.shopPanel.y+14,'今日货架',12,'#80633d',pc.shopPanel.width-32).setName('shop/shelf-label');
   }else if(p.short){
     shopSheet(scene,view,'stock',{x:p.tabs.x-4,y:p.tabs.y-4,width:p.tabs.width+8,height:Math.max(...p.shelf.map(b=>b.y+b.height))+6-p.tabs.y},T.paperLight);

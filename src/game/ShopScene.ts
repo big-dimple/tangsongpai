@@ -388,7 +388,7 @@ export class ShopScene extends Phaser.Scene {
     if(guide)this.view.add(this.add.graphics().fillStyle(PAPER_THEME.paperLight,.96).fillRoundedRect(guide.box.x-4,guide.box.y-4,guide.box.width+8,guide.box.height+8,6));
     const hit=this.view.add(this.add.rectangle(b.x+b.width/2,b.y+b.height/2,b.width,b.height,0,0));
     this.view.target(hit,'shop/hero-preparation',{tap:()=>showHeroExplanation(this.dialog,character.id,{run:this.run,closeLabel:'返回商店'}),detail:()=>showHeroExplanation(this.dialog,character.id,{run:this.run,closeLabel:'返回商店'})});
-    this.view.add(this.add.text(b.x+b.width/2,b.y+b.height-31,character.name+' · 原画与技能 ↗',{fontFamily:UI_FONT,fontSize:'14px',color:'#f2db9f'}).setOrigin(.5,0).setName('shop/hero-caption'));
+    this.view.add(this.add.text(b.x+b.width/2,b.y+b.height-31,character.name+' · 原画与技能 ↗',{fontFamily:UI_FONT,fontSize:'14px',color:'#26313A'}).setOrigin(.5,0).setName('shop/hero-caption'));
   }
   /** Phone keeps the hero as a translucent ink subject behind the shelf. */
   private drawMobileHeroArt(p:ReturnType<typeof shopLayout>):void {
@@ -483,13 +483,13 @@ export class ShopScene extends Phaser.Scene {
     v.text(pc.left.x+16,pc.left.y+6,'经营台',13,'#596B69',pc.left.width-32).setName('shop/workbench-label');
     v.text(pc.shopPanel.x+64,pc.shopPanel.y-19,'本店货架 · 先看效果，再决定',13,'#596B69',pc.shopPanel.width-76).setName('shop/market-label');
     const header=p.desktopHeader!,character=getCharacter(this.run.characterId);
-    const title=this.add.text(header.hero.x,header.hero.y+22,character.name+(this.run.tourMode==='endless'?' · 无尽筹备':' · 筹备'),{fontFamily:UI_FONT,fontSize:`${this.run.tourMode==='endless'?20:24}px`,color:'#f2db9f',fontStyle:'bold'}).setOrigin(0,.5).setName('shop/title');v.add(title);this.ellipsis(title,header.hero.width);
-    v.add(this.add.text(p.x+16,p.top+58,stage.name,{fontFamily:UI_FONT,fontSize:'16px',color:'#f2db9f',wordWrap:{width:pc.left.width-32,useAdvancedWrap:true}}));
+    const title=this.add.text(header.hero.x,header.hero.y+22,character.name+(this.run.tourMode==='endless'?' · 无尽筹备':' · 筹备'),{fontFamily:UI_FONT,fontSize:`${this.run.tourMode==='endless'?20:24}px`,color:'#26313A',fontStyle:'bold'}).setOrigin(0,.5).setName('shop/title');v.add(title);this.ellipsis(title,header.hero.width);
+    v.add(this.add.text(p.x+16,p.top+58,stage.name,{fontFamily:UI_FONT,fontSize:'16px',color:'#3F606B',wordWrap:{width:pc.left.width-32,useAdvancedWrap:true}}));
     const target=v.text(header.target.x,header.target.y+22,'目标 '+heatText(stage.targetHeat),20,'#A33E2E').setOrigin(0,.5).setFontStyle('bold').setName('shop/target');
     for(let size=20;target.width>header.target.width&&size>14;)target.setFontSize(--size);
     this.drawBalance(header.purse,false,20,true);
     v.button({...p.chapter,x:p.chapter.x+12,width:p.chapter.width-24},programEntryLabel(this.run),'action/chapter',()=>this.inspectChapter());
-    v.add(this.add.text(p.x+16,p.top+96,`已持唐宋牌 ${this.run.jokers.length}/${r2JokerCapacity(this.run)} · 从左向右结算`,{fontFamily:UI_FONT,fontSize:'14px',color:'#f7f1df',wordWrap:{width:pc.left.width-32,useAdvancedWrap:true}}).setName('shop/owned-heading'));
+    v.add(this.add.text(p.x+16,p.top+96,`已持唐宋牌 ${this.run.jokers.length}/${r2JokerCapacity(this.run)} · 从左向右结算`,{fontFamily:UI_FONT,fontSize:'14px',color:'#26313A',wordWrap:{width:pc.left.width-32,useAdvancedWrap:true}}).setName('shop/owned-heading'));
     this.drawBuildEntry(p);this.drawOwned(p);
     this.drawInventoryBag(pc.inventoryEntry);this.drawRefresh(p.reroll);
     this.shopButton(p.play,'进入牌桌  →','action/start-stage',()=>void this.send({type:'LeaveShop'}),this.ready,true);
