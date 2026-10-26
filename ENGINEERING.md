@@ -104,7 +104,7 @@ tools/          离线素材工具
 - 内容版本、规则身份、模式和内容哈希共同隔离存档；旧数据不静默迁移或清空，应保留导出路径。
 - 多标签页使用写者租约或版本比较，避免两个页面互相覆盖。
 - 首屏恢复读取有 2.5 秒上限；用户在恢复尚未完成或读取失败时明确开始新局，可立即进入页面内存存储，不等待旧局读取；仍须取得写者租约，保护其他正在游戏的页面。过期恢复的读取、失败和收尾不得覆盖新局、释放新操作的忙碌锁或改写存储状态。
-- 内存新局持续提示刷新会丢失、旧档仍保留，并提示可导出本局；刷新恢复原 IndexedDB 存档，不自动迁移或把内存局宣称为已持久化。存储恢复后重新加载并开始的新局仍按正常租约、revision 校验和检查点备份写入，再次刷新恢复新局。内存控制器在同页继续或接管时仍绑定原内存存储，不能混入磁盘 revision。`player-entry-storage.test.ts` 覆盖无存档、未结束旧局、挂起、迟到成功/失败/租约、保存失败重试及新局刷新。 `node tests/player-entry-recovery.browser.mjs` 用 Chromium 的真实 IndexedDB、Web Locks 与页面刷新验证五条主路径；可用 `SMOKE_CHROMIUM_EXECUTABLE_PATH` 指定已有浏览器。
+- 内存新局通过菜单外的轻量常驻状态条提示“本局暂未保存，刷新会丢失”，菜单标记待处理提示；旧档仍保留。刷新恢复原 IndexedDB 存档，不自动迁移或把内存局宣称为已持久化。存储恢复后重新加载并开始的新局仍按正常租约、revision 校验和检查点备份写入，再次刷新恢复新局。内存控制器在同页继续或接管时仍绑定原内存存储，不能混入磁盘 revision。`player-entry-storage.test.ts` 覆盖无存档、未结束旧局、挂起、迟到成功/失败/租约、保存失败重试及新局刷新。 `node tests/player-entry-recovery.browser.mjs` 用 Chromium 的真实 IndexedDB、Web Locks 与页面刷新验证五条主路径；可用 `SMOKE_CHROMIUM_EXECUTABLE_PATH` 指定已有浏览器。`node tests/player-entry-recovery-ui.browser.mjs` 通过真实触控验证首页→选角→路线→商店→牌桌，断言关闭菜单时风险提示可见且不覆盖按钮、迟到恢复不跳回旧局，按 HEAD 保存报告和截图。这两个脚本需显式执行，不属于默认 CI browser scope。
 
 ## 7. 表现、输入与资源
 

@@ -28,6 +28,8 @@ export function routeSavedRun(game:Phaser.Game):void {
 export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|undefined=()=>game.registry.get('runMenuActions') as RunMenuActions|undefined):void {
   const session=gameSession(),audio=AudioEngine.shared,fullscreen=installFullscreen(),haptics=Haptics.shared;
   const host=document.createElement('div'),toggle=document.createElement('button'),fullButton=document.createElement('button'),modal=document.createElement('dialog'),panel=document.createElement('section'),status=document.createElement('p');
+  const memoryNotice=document.createElement('p');
+  memoryNotice.className='run-memory-notice';memoryNotice.textContent='本局暂未保存，刷新会丢失';memoryNotice.hidden=true;memoryNotice.setAttribute('role','status');memoryNotice.setAttribute('aria-live','polite');
   const fullscreenInfo=document.createElement('p');
   let previousFocus:HTMLElement|undefined,closing=false,needsAttention=false,keyboardInput=false,pointerHeld=false,actionDepth=0,returningFromDialog=false;
   const primaryHover=globalThis.matchMedia?.('(hover: hover) and (pointer: fine)'),anyHover=globalThis.matchMedia?.('(any-hover: hover) and (any-pointer: fine)'),coarsePointer=globalThis.matchMedia?.('(any-pointer: coarse)');
@@ -171,7 +173,8 @@ export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|un
     start.className='run-menu-new dialog-primary';
     recovery.hidden=[retry,reload,cancelCandidate,takeover].every(b=>b.hidden);
     refreshActions();
-    const critical=!!pending||!!session.storageUnavailable||run?.status==='paused'||elsewhere;
+    memoryNotice.hidden=!session.temporaryRun;
+    const critical=!!session.temporaryRun||!!pending||!!session.storageUnavailable||run?.status==='paused'||elsewhere;
     needsAttention=critical;toggle.classList.toggle('needs-attention',critical);updateToggle(interaction.state());status.dataset.tone=critical?'warning':run?.status==='saving'?'pending':'normal';
   }
   fullButton.onclick=()=>{actionDepth++;interaction.refresh();void fullscreen.toggle().then(()=>{if(!fullscreen.getState().message)close();}).finally(()=>{actionDepth--;interaction.refresh();});};
@@ -180,7 +183,7 @@ export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|un
     fullButton.title=state.active?'退出浏览器全屏':'全屏游玩，减少浏览器工具栏占用';
     fullscreenInfo.textContent=state.message;fullscreenInfo.hidden=!state.message;
   });
-  modal.append(panel);host.append(toggle,modal);document.body.append(host);
+  modal.append(panel);host.append(toggle,memoryNotice,modal);document.body.append(host);
   const unsubscribe=session.subscribe(refreshState);refreshState();
   const sceneKey=()=>game.scene.getScenes?.(true).map(scene=>scene.sys.settings.key).sort().join('|');let lastScene=sceneKey();
   const refreshLiveActions=()=>{const scene=sceneKey();if(scene!==lastScene){lastScene=scene;close(interaction.state().open);}if(modal.open){refreshActions();interaction.refresh();}};game.events.on('poststep',refreshLiveActions);

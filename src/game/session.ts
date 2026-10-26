@@ -43,10 +43,11 @@ export class GameSession {
     try {const s=JSON.parse(localStorage.getItem('tangsongpai-presentation-v1')??'null');if(s&&[1,2,4].includes(s.speed))this.speed=s.speed;if(typeof s?.reducedMotion==='boolean')this.reducedMotion=s.reducedMotion;}catch{/* Optional preferences cannot block a run. */}
     document.addEventListener('visibilitychange',()=>{if(document.hidden){void this.run?.flush();void this.replacement?.flush();}});
   }
+  get temporaryRun():boolean {return this.saveStore!==this.storage&&!!this.run;}
   get pendingRun():SavedRun|undefined {return this.replacement;}
   subscribe(listener:()=>void):()=>void {this.listeners.add(listener);return ()=>this.listeners.delete(listener);}
   private changed():void {
-    if(this.saveStore!==this.storage&&!this.notice.includes('暂存于内存'))this.notice+=' 本页新局暂存于内存，刷新会丢失；旧存档保留。可导出本局；刷新后重试读取原存档。';
+    if(this.saveStore!==this.storage&&!this.notice.includes('暂存于内存'))this.notice+=' 本页新局暂存于内存，本局暂未保存，刷新会丢失；旧存档保留。';
     this.listeners.forEach(listener=>listener());
   }
   private pendingNotice():string {
