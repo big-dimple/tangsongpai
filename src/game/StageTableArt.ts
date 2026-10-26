@@ -3,6 +3,7 @@ import type Phaser from 'phaser';
 import {playedFootprint,intersects,type Box,type TableLayout} from './layout';
 import {toolInventoryPlayedArea} from './ToolInventoryEntry';
 import {selectionPortraitKey} from './portraits';
+import {pcHeroKey,PC_HERO_COMPOSITION} from './PcHeroArt';
 import type {CharacterId} from './characters';
 import type {SceneView} from './SceneView';
 import {PAPER_THEME as T} from './theme';
@@ -28,48 +29,38 @@ export function stageTableArtPlan(l:TableLayout):StageTableArtPlan {
 export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:CharacterId,inspectHero?:()=>void,legacyPortrait=true):void {
  const plan=stageTableArtPlan(view.layout);
  if(view.layout.pc){
-  const l=view.layout,{frame,main,focusSpine,focusGap}=l.pc!,g=scene.add.graphics().setName('table-art/pc-paper').setData('bounds',frame);
-  // One open sheet, with a darker identity edge and two live lanes. The
-  // score spine and landing lane carry different weights so the current hand
-  // remains the foreground instead of becoming another equal card panel.
-  const bottom=frame.y+frame.height,right=main.x+main.width;
-  const rackBottom=l.jokers.y+l.jokers.height+8,handTop=l.hand.y-8;
-  const score=l.scoreBoard,played=l.playedArea;
+  const l=view.layout,{frame,main,stage,build}=l.pc!,g=scene.add.graphics().setName('table-art/pc-paper').setData('bounds',frame);
+  const bottom=frame.y+frame.height,right=main.x+main.width,handTop=l.hand.y-8;
   g.fillStyle(T.paper,.98).fillRect(frame.x,frame.y,frame.width,frame.height);
-  g.fillStyle(T.paperEdge,.36).beginPath().moveTo(frame.x,frame.y)
-    .lineTo(main.x-22,frame.y).lineTo(main.x-8,bottom).lineTo(frame.x,bottom).closePath().fillPath();
-  g.fillStyle(T.paperLight,.56).fillRect(main.x,main.y,main.width,main.height);
-  // The cool, quiet centre makes the warm card faces read as the active layer.
-  const focusTop=Math.min(handTop,rackBottom+12);
-  g.fillStyle(T.jadeSoft,.42).beginPath().moveTo(main.x,focusTop)
-    .lineTo(right,focusTop).lineTo(right,handTop).lineTo(main.x+18,handTop).closePath().fillPath();
-  // Score and played cards share one working plane, but the score lane is
-  // quieter and narrower than the broad landing lane.
-  g.fillStyle(T.redSoft,.26).fillRoundedRect(score.x,score.y,score.width,score.height,10);
-  g.fillStyle(T.paperLight,.72).fillRoundedRect(played.x,played.y,played.width,played.height,10);
-  g.lineStyle(1,T.red,.28).strokeRoundedRect(score.x+.5,score.y+.5,Math.max(0,score.width-1),Math.max(0,score.height-1),10);
-  g.lineStyle(1,T.jade,.26).strokeRoundedRect(played.x+.5,played.y+.5,Math.max(0,played.width-1),Math.max(0,played.height-1),10);
-  // The hand rises out of a white paper lip. All geometry still comes from layout.
-  g.fillStyle(T.ink,.045).fillRect(main.x,handTop,main.width,5);
-  g.fillStyle(T.paperLight,.94).beginPath().moveTo(main.x+18,handTop+5)
-    .lineTo(right,handTop+5).lineTo(right,bottom).lineTo(main.x,bottom)
-    .lineTo(main.x,handTop+23).closePath().fillPath();
-  g.lineStyle(1,T.jade,.24).lineBetween(main.x-16,frame.y+8,main.x-16,bottom-8);
-  g.lineStyle(3,T.red,.65).lineBetween(frame.x+12,frame.y,frame.x+54,frame.y);
-  g.lineStyle(1,T.ink,.16).lineBetween(main.x,rackBottom,right,rackBottom);
-  // Short repeated marks belong to the five real build slots, not extra seats.
-  for(const slot of l.slots){
-    const cx=slot.x+slot.width/2;
-    g.lineStyle(2,T.jade,.32).lineBetween(cx-12,rackBottom,cx+12,rackBottom);
-    g.lineStyle(1,T.jade,.16).lineBetween(cx,rackBottom,cx,rackBottom+4);
-  }
-  const spine=focusSpine??{x:score.x+score.width+focusGap/2,y:score.y,width:2,height:score.height};
-  g.lineStyle(2,T.red,.52).lineBetween(spine.x,spine.y+10,spine.x,spine.y+spine.height-10);
-  g.fillStyle(T.red,.75).fillCircle(spine.x+1,score.y+10,3);
-  g.fillStyle(T.jade,.55).fillCircle(spine.x+1,played.y+played.height-10,3);
-  g.lineStyle(1,T.ink,.17).lineBetween(main.x+24,handTop+5,right,handTop+5);
-  // One measured accent at the action edge echoes the red result seal.
-  g.lineStyle(2,T.red,.45).lineBetween(right-44,bottom,right,bottom);
+  // Hero wing: a paper field and ink wash make the transparent character feel
+  // supported by the table instead of floating beside it.
+  g.fillStyle(T.paperEdge,.9).fillRect(frame.x,frame.y,main.x-frame.x-14,frame.height);
+  // An ink wash follows the lower silhouette instead of boxing the hero in a
+  // rectangular panel; the transparent art supplies the actual contour.
+  g.fillStyle(T.ink,.16).beginPath().moveTo(frame.x,frame.y+frame.height*.68)
+    .lineTo(main.x-14,frame.y+frame.height*.52).lineTo(main.x-14,bottom)
+    .lineTo(frame.x,bottom).closePath().fillPath();
+  g.fillStyle(T.jade,.5).fillRect(main.x-14,frame.y,14,frame.height);
+  g.fillStyle(T.paperLight,.94).fillRoundedRect(main.x,main.y,main.width,main.height,10);
+  // Build row and target plate are deliberately separate cards of the paper.
+  g.fillStyle(T.jadeSoft,.52).fillRoundedRect(build.x,build.y,build.width,build.height,10);
+  g.lineStyle(1,T.jade,.4).strokeRoundedRect(build.x+.5,build.y+.5,build.width-1,build.height-1,10);
+  g.fillStyle(T.redSoft,.48).fillRoundedRect(l.scoreBoard.x,l.scoreBoard.y,l.scoreBoard.width,l.scoreBoard.height,10);
+  g.lineStyle(2,T.red,.5).strokeRoundedRect(l.scoreBoard.x+1,l.scoreBoard.y+1,l.scoreBoard.width-2,l.scoreBoard.height-2,10);
+  // The centre stage is the largest uninterrupted surface. Its corner marks
+  // and red seal give a clear landing point for the played hand.
+  g.fillStyle(T.paper,.88).fillRoundedRect(stage.x,stage.y,stage.width,stage.height,12);
+  g.lineStyle(1,T.jade,.46).strokeRoundedRect(stage.x+.5,stage.y+.5,stage.width-1,stage.height-1,12);
+  g.lineStyle(1,T.jade,.2).lineBetween(stage.x+18,stage.y+28,stage.x+stage.width-18,stage.y+28);
+  g.lineStyle(1,T.jade,.18).lineBetween(stage.x+18,stage.y+stage.height-24,stage.x+stage.width-18,stage.y+stage.height-24);
+  const sealX=stage.x+stage.width-30,sealY=stage.y+30;
+  g.lineStyle(2,T.red,.66).strokeCircle(sealX,sealY,12);g.lineStyle(1,T.red,.45).lineBetween(sealX-7,sealY,sealX+7,sealY);
+  // Hand and action band sit on a bright foreground lip, keeping the next
+  // interaction visually distinct from the stage without changing hit areas.
+  g.fillStyle(T.paperLight,.98).fillRect(main.x,handTop,main.width,bottom-handTop);
+  g.lineStyle(2,T.ink,.2).lineBetween(main.x,handTop,right,handTop);
+  g.lineStyle(2,T.red,.52).lineBetween(right-64,bottom,right,bottom);
+  g.lineStyle(1,T.jade,.25).lineBetween(main.x+20,handTop+7,right-20,handTop+7);
   view.add(g);
   return;
  }
@@ -83,7 +74,30 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
   view.add(g);
   if(scene.textures.exists('p00-paper'))view.add(scene.add.tileSprite(b.x+4,b.y+4,b.width-8,b.height-8,'p00-paper').setOrigin(0).setAlpha(color===T.jadeSoft ? .08 : .18).setName('table-art/'+name+'-paper'));
  }
- sheet('surface',plan.surface,T.jadeSoft,T.jade,true);
+ if(view.layout.mode==='portrait'){
+  const l=view.layout,accent=scene.add.graphics().setName('table-art/mobile-arena').setData('bounds',plan.surface);
+  accent.fillStyle(T.paper,.96).fillRoundedRect(plan.surface.x,plan.surface.y,plan.surface.width,plan.surface.height,12);
+  accent.fillStyle(T.ink,.9).fillRect(plan.program.x,plan.program.y,plan.program.width,plan.program.height);
+  accent.fillStyle(T.jadeSoft,.5).fillRoundedRect(l.scoreBoard.x,l.scoreBoard.y,l.scoreBoard.width,l.scoreBoard.height,10);
+  accent.lineStyle(1,T.jade,.42).strokeRoundedRect(l.scoreBoard.x+.5,l.scoreBoard.y+.5,l.scoreBoard.width-1,l.scoreBoard.height-1,10);
+  accent.fillStyle(T.paperLight,.98).fillRoundedRect(l.playedArea.x,l.playedArea.y,l.playedArea.width,l.playedArea.height,12);
+  accent.lineStyle(1,T.red,.42).strokeRoundedRect(l.playedArea.x+.5,l.playedArea.y+.5,l.playedArea.width-1,l.playedArea.height-1,12);
+  accent.fillStyle(T.paperLight,.99).fillRect(l.hand.x-4,l.hand.y-8,l.hand.width+8,l.actions.y-l.hand.y+8);
+  accent.lineStyle(2,T.ink,.16).lineBetween(l.hand.x,l.hand.y-8,l.hand.x+l.hand.width,l.hand.y-8);
+  accent.lineStyle(2,T.red,.48).lineBetween(l.actions.x,l.actions.y+l.actions.height,l.actions.x+l.actions.width,l.actions.y+l.actions.height);
+  view.add(accent);
+  // The supplied full-frame hero art is part of the table's atmosphere on
+  // phones too. It sits behind the landing lane with a soft alpha so sleeves,
+  // hair and weapons dissolve into the paper while the live cards stay crisp.
+  const holder=view.add(scene.add.container(0,0).setName('table-art/mobile-hero-layer'));
+  whenTextureReady(scene,holder,pcHeroKey(characterId),()=>{
+   const key=pcHeroKey(characterId),source=scene.textures.get(key).getSourceImage() as HTMLImageElement;
+   const area=l.playedArea,composition=PC_HERO_COMPOSITION[characterId],width=area.width*.56,height=area.height*.96;
+   const scale=Math.min(width/source.width,height/source.height)*composition.scale;
+   const image=scene.add.image(area.x+area.width*.78,area.y+area.height*.56,key).setScale(scale).setAlpha(.3).setName('table-art/mobile-hero');
+   image.setData('assetId',characterId+'.pc').setData('bounds',{x:image.x-image.displayWidth/2,y:image.y-image.displayHeight/2,width:image.displayWidth,height:image.displayHeight});holder.add(image);
+  });
+ } else sheet('surface',plan.surface,T.jadeSoft,T.jade,true);
  sheet('program',plan.program,T.paper,T.brass);
  const key=selectionPortraitKey(characterId),box=plan.portrait;
  if(box&&legacyPortrait){
