@@ -1,6 +1,6 @@
 import {stopFirstChapterGuide} from './FirstChapterGuide';
 import {launchIdentity,type RunLaunchIntent} from './RunLaunch';
-import {SavedRun} from '../application/SavedRun';
+import {SavedRun,type SaveSlots,type SaveStore} from '../application/SavedRun';
 import {MAX_IMPORT_BYTES,readCheckpoint,restoreSlots} from '../application/checkpoint';
 import {createRun,type R2RunState} from '../domain/run';
 import type {CharacterId} from '../domain/characters';
@@ -8,6 +8,17 @@ import {IndexedDbSave} from '../platform/IndexedDbSave';
 import {WriteLease} from '../platform/WriteLease';
 import {r2RunModeConfig,r2ModeStorageKey,type R2ModeSelection} from '../content/r2Modes';
 import {recordSavedRunProgress} from '../platform/RunProgress';
+
+class VolatileSaveStore implements SaveStore {
+  private slots:SaveSlots={revision:0,current:null,previous:null};
+  async read():Promise<SaveSlots>{return structuredClone(this.slots);}
+  async readPartition():Promise<SaveSlots>{return this.read();}
+  async commit(expectedRevision:number,current:Parameters<SaveStore['commit']>[1],previous:Parameters<SaveStore['commit']>[2]):Promise<number>{
+    if(expectedRevision!==this.slots.revision)throw Error('write-conflict');
+    this.slots={revision:expectedRevision+1,current:structuredClone(current),previous:previous?structuredClone(previous):null};
+    return this.slots.revision;
+  }
+}
 
 export class GameSession {
   readonly storage=new IndexedDbSave();
@@ -21,6 +32,10 @@ export class GameSession {
   speed:1|2|4=1;
   reducedMotion=false;
   private listeners=new Set<()=>void>();
+  /** A suspended IndexedDB open must never own the first-run route forever. */
+  private saveStore:SaveStore=this.storage;
+  private restoreGeneration=0;
+  private readonly restoreTimeoutMs=2500;
   constructor(){
     this.storage.canWrite=()=>this.lease.writable;
     this.lease.onChange=()=>{if(!this.lease.writable){this.run?.setReadOnly();this.replacement?.setReadOnly();}this.changed();};
@@ -33,23 +48,47 @@ export class GameSession {
   private pendingNotice():string {
     return this.replacement?.status==='readonly'?'这次操作还没保存，请先取消，再在这里继续。原进度保留。':'新局或导入候选尚未保存，请重试保存、导出候选或取消。原进度保留。';
   }
+  private readPartition(selection:R2ModeSelection&{contentVersion?:unknown;contentHash?:unknown}):Promise<SaveSlots>{
+    const store=this.saveStore as SaveStore&{readPartition?:(selection:R2ModeSelection&{contentVersion?:unknown;contentHash?:unknown})=>Promise<SaveSlots>};
+    return store.readPartition?store.readPartition(selection):store.read();
+  }
   private blockPending():boolean {
     if(!this.replacement)return false;this.notice=this.pendingNotice();this.changed();return true;
   }
   async initialize():Promise<void> {
     if(this.working||this.blockPending())return;
-    this.working=true;this.changed();
-    try {await this.loadSavedRun();}
-    finally {this.working=false;this.changed();}
-  }
-  private async loadSavedRun():Promise<boolean> {
+    this.working=true;this.changed();const generation=++this.restoreGeneration;
+    let timeout:ReturnType<typeof setTimeout>|undefined;
     try {
-      let slots=await this.storage.read(),restored=restoreSlots(slots);
+      const completed=await Promise.race([
+        this.loadSavedRun(generation).then(()=>true),
+        new Promise<false>(resolve=>{timeout=setTimeout(()=>resolve(false),this.restoreTimeoutMs);}),
+      ]);
+      if(!completed&&generation===this.restoreGeneration)this.enableVolatileStartup();
+    }
+    finally {if(timeout!==undefined)clearTimeout(timeout);this.working=false;this.changed();}
+  }
+  private enableVolatileStartup():void {
+    // In-memory saves keep the run playable while a wedged old IndexedDB
+    // request is left to settle in the background. The old checkpoint is not
+    // replaced or discarded; a later reload can still retry normal restore.
+    this.restoreGeneration++;
+    this.saveStore=new VolatileSaveStore();
+    this.run=undefined;this.loaded=true;this.storageUnavailable=false;
+    this.notice='旧存档读取超时，已先进入新局；本页进度暂存于内存。稍后可刷新重试读取。';
+    this.lease.drop();this.changed();
+  }
+  private async loadSavedRun(generation=this.restoreGeneration):Promise<boolean> {
+    try {
+      let slots=await this.saveStore.read(),restored=restoreSlots(slots);
+      if(generation!==this.restoreGeneration)return false;
       // An empty home has no progress to protect and must not reserve the only writer.
-      if(restored.checkpoint&&await this.lease.claim()){slots=await this.storage.read();restored=restoreSlots(slots);}
+      if(restored.checkpoint&&await this.lease.claim()){slots=await this.saveStore.read();restored=restoreSlots(slots);}
+      if(generation!==this.restoreGeneration){if(this.lease.writable)this.lease.drop();return false;}
+      this.saveStore=this.storage;
       this.storageUnavailable=false;
       this.notice=restored.status==='backup'?'当前存档损坏，已读取上次有效备份；原数据仍保留，可导出。':restored.status==='invalid'?'存档损坏或版本不兼容，原数据已保留。可导出保留数据，或确认后开始新局。':'';
-      if(restored.checkpoint)this.attach(SavedRun.restore(this.storage,slots));else this.run=undefined;
+      if(restored.checkpoint)this.attach(SavedRun.restore(this.saveStore,slots));else this.run=undefined;
       this.loaded=true;
       return true;
     }catch{this.storageUnavailable=true;this.notice='浏览器暂时无法读取进度，请重试。';return false;}
@@ -76,9 +115,9 @@ export class GameSession {
     try {
       if(!this.lease.writable){
         if(!await this.lease.claim()){await this.loadSavedRun();this.notice='游戏已在另一页打开。可在这里继续。';return;}
-        const latest=await this.storage.read().catch(error=>{this.storageUnavailable=true;throw error;}),restored=restoreSlots(latest);
+        const latest=await this.saveStore.read().catch(error=>{this.storageUnavailable=true;throw error;}),restored=restoreSlots(latest);
         // A different page may have started a run after this empty home was opened.
-        if(restored.checkpoint&&!this.run){this.attach(SavedRun.restore(this.storage,latest));this.notice='已找到保存的进度。可以继续本局，或重新选择新局。';return;}
+        if(restored.checkpoint&&!this.run){this.attach(SavedRun.restore(this.saveStore,latest));this.notice='已找到保存的进度。可以继续本局，或重新选择新局。';return;}
         if(this.run?.status==='readonly')await this.loadSavedRun();
       }
       if(this.run&&!(await this.run.flush())){this.notice='本局尚未保存，请先重试或导出；未替换已有进度。';return;}
@@ -86,8 +125,8 @@ export class GameSession {
       const r2Identity=launchIdentity(characterId,intent);
       const openingRoute=intent.kind==='new'?(intent.openingRoute??'group'):intent.run.openingRoute;
       const state=createRun({r2Identity,...(openingRoute===undefined?{}:{openingRoute}),seed,characterId,runId:`run/${seed}/${characterId}`,rulesVersion:'r2',...(modeConfig===undefined?{}:{modeConfig})});
-      const slots=await this.storage.readPartition(state).catch(error=>{this.storageUnavailable=true;throw error;});
-      const run=await SavedRun.start(this.storage,state,slots);
+      const slots=await this.readPartition(state).catch((error:unknown)=>{this.storageUnavailable=true;throw error;});
+      const run=await SavedRun.start(this.saveStore,state,slots);
       if(!await this.publishReplacement(run))return;
       return run;
     }catch{this.notice='暂时无法开始新局，请重试。';}
@@ -108,7 +147,7 @@ export class GameSession {
       if(new TextEncoder().encode(text).length>MAX_IMPORT_BYTES)throw Error('导入文件过大');
       const checked=readCheckpoint(JSON.parse(text));if(!checked.ok)throw Error(checked.code);
       if(this.run&&!await this.run.flush())throw Error('本局尚未保存，请先重试或导出');
-      const run=await SavedRun.import(this.storage,checked.checkpoint,await this.storage.readPartition(checked.checkpoint.state));
+      const run=await SavedRun.import(this.saveStore,checked.checkpoint,await this.readPartition(checked.checkpoint.state));
       this.notice='导入成功，已保存完整进度。';
       if(!await this.publishReplacement(run))return false;
       this.changed();return true;
@@ -142,12 +181,12 @@ export class GameSession {
     try {
       const selected=r2RunModeConfig(modeConfig);
       if(this.run&&!await this.run.flush())throw Error('本局尚未保存，请先重试或导出');
-      const slots=await this.storage.readPartition(selected),restored=restoreSlots(slots);
+      const slots=await this.readPartition(selected),restored=restoreSlots(slots);
       if(!restored.checkpoint)throw Error(restored.status==='empty'?'所选模式尚无已保存进度':restored.code??'所选模式存档无效');
       const state=restored.checkpoint.state;
       if(r2ModeStorageKey(state,state.contentHash)!==r2ModeStorageKey(selected,state.contentHash))throw Error('所选模式与保存分区不一致');
       // Import only persists the existing checkpoint and meta pointer; it never applies StartRun or re-locks a chapter.
-      const run=await SavedRun.import(this.storage,restored.checkpoint,slots);
+      const run=await SavedRun.import(this.saveStore,restored.checkpoint,slots);
       this.notice=restored.status==='backup'?'所选模式已从有效备份恢复；原数据仍保留，可导出。':'已恢复所选模式的完整进度。';
       if(!await this.publishReplacement(run))return false;
       return true;
