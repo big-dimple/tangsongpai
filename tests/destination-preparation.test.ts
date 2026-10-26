@@ -1,6 +1,6 @@
 import {afterEach,beforeEach,expect,it,vi} from 'vitest';
 import type Phaser from 'phaser';
-import {cancelDestinationPreparation,prepareDestination,type LoadingScreen} from '../src/game/LoadingScreen';
+import {cancelDestinationPreparation,prepareDestination,prepareDestinationBackground,type LoadingScreen} from '../src/game/LoadingScreen';
 import {paperSceneStart} from '../src/game/PaperFlow';
 import {prepareSceneResources,type PreparationProgress} from '../src/game/SceneResources';
 const fixtures=vi.hoisted(()=>({assets:[{key:'opening-face',url:'/face.webp',pixels:1}]}));
@@ -25,6 +25,13 @@ it('cold later destinations resolve immediately without optional-image recovery 
  for(const key of ['title','character-select','shop','game','intermission','shop','game'])expect(await prepareDestination(game,key)).toBe(true);
  expect(await prepareDestination(game,'title',true)).toBe(true);
  expect(prepareSceneResources).not.toHaveBeenCalled();expect(game.registry.set).not.toHaveBeenCalled();expect(document.createElement).not.toHaveBeenCalled();
+});
+it('background opening recovery never owns the title navigation gate',async()=>{
+ const {game}=setup();let decoded!:(p:PreparationProgress)=>void;
+ vi.mocked(prepareSceneResources).mockImplementation(()=>new Promise(resolve=>decoded=resolve));
+ const done=prepareDestinationBackground(game,'title'),settled=vi.fn();void done.then(settled);await tick();
+ expect(settled).not.toHaveBeenCalled();expect(game.registry.set).toHaveBeenCalledWith('resourcePreparation',expect.objectContaining({key:'title',status:'loading'}));
+ decoded(progress(1));expect(await done).toBe(true);expect(settled).toHaveBeenCalledOnce();
 });
 it('rapid normal navigation enters only the latest destination while optional resources remain unavailable',async()=>{
  const {game}=setup(),start=vi.fn(),scene={game,scene:{isActive:()=>true,start}} as unknown as Phaser.Scene;
