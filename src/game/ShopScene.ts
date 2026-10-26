@@ -224,8 +224,12 @@ export class ShopScene extends Phaser.Scene {
     this.events.once('shutdown',()=>{this.lifecycle++;this.clearSynergyHighlights();this.hideHoverPicture();this.dialog.close();for(const [key,listener] of this.artRefreshListeners)this.textures.off('addtexture-'+key,listener);this.artRefreshListeners.clear();this.artTargets.clear();this.jokerArtTargets.clear();});
     this.events.once('shutdown',()=>{if(this.registry.get('runMenuActions')===this.menuActions)this.registry.remove('runMenuActions');this.menuActions=undefined;});
     const owner=runController(this),run=owner?.state;if(!owner||!run||run.phase!=='shop'){this.scene.start('character-select');return;}this.run=run;
+    // Portrait shops open with the bottom owned-card rail folded. The entry
+    // button carries its reversible affordance so the primary action remains
+    // available without spending a separate row on an arrow control.
     this.menuActions={viewDeck:()=>this.inspectDeck()};this.registry.set('runMenuActions',this.menuActions);
     this.cameras.main.setBackgroundColor('#F3EADB');this.view=new SceneView(this,()=>this.render());
+    this.ownedCollapsed=this.view.layout.width<700&&this.view.layout.height>this.view.layout.width;
     this.view.controllerAction=(action,targetId)=>{
       if(action!=='previous'&&action!=='next')return false;
       if(!this.ready)return true;
@@ -360,8 +364,8 @@ export class ShopScene extends Phaser.Scene {
     if(!offers.length&&!this.workshopSelected&&!p.portrait)v.text(p.shelf[0].x,p.shelf[0].y,this.shelfKind==='items'?'本店暂无可购道具；换牌会保留此货架。':'本货架暂无商品，可换一批或进入牌桌。',14,'#3F606B',p.w);
     const allowed=r2RunModeConfig(this.run).reroll.allowed,cost=this.run.shop?.freeRerolls?0:r2PaidRerollPrice(this.run);
     this.drawRefresh(portraitHeader?.reroll??p.reroll);
-    this.shopButton(p.play,'进入牌桌','action/start-stage',()=>void this.send({type:'LeaveShop'}),this.ready,true);
-    this.drawOwnedToggle(p);
+    const entry=this.shopButton(p.play,'进入牌桌','action/start-stage',()=>void this.send({type:'LeaveShop'}),this.ready,true);
+    this.drawOwnedToggle(p,entry);
     if(p.portrait)this.drawBuildEntry(p);
     else this.shopButton(p.build,this.lastPurchaseReceipt?'购物结果':p.portrait&&p.copyBeside?'培养':p.inventoryCollapsed?`培养 ${this.run.jokers.length}/${r2JokerCapacity(this.run)}`:this.buildLabel(),'action/build',()=>this.lastPurchaseReceipt?this.openPurchaseReceipt():this.inspectJourney());
     const reason=!this.ready?'当前进度未保存或只读，请查看菜单。':allowed&&this.run.gold<cost?`换牌还差 ${cost-this.run.gold} 金。可直接入场。`:this.shelfKind==='jokers'&&this.run.jokers.length===r2JokerCapacity(this.run)?`${r2JokerCapacity(this.run)}槽已满，点随身牌出售后再买。`:this.shelfKind==='tools'?'购买后收入库存；查看详情，再确认使用。':this.shelfKind==='items'?'道具本局生效；换牌不重抽道具货架。':p.portrait?'点商品直接看详情；确认后才扣款。':'点卡牌不会扣钱；点随身牌可出售或左移、右移。';
@@ -461,13 +465,30 @@ export class ShopScene extends Phaser.Scene {
     }
   }
   /** A fixed, small control keeps the folded rail reversible without stealing the entry action. */
-  private drawOwnedToggle(p:ReturnType<typeof shopLayout>):void {
-    if(p.pc||!p.ownedToggle||!this.run.jokers.length)return;
-    const button=this.shopButton(p.ownedToggle,this.ownedCollapsed?'展开已购牌':'收起已购牌','action/toggle-owned',()=>{
+  private drawOwnedToggle(p:ReturnType<typeof shopLayout>,entry?:Phaser.GameObjects.Rectangle):void {
+    if(p.pc)return;
+    const toggle=()=>{
       if(this.busy)return;
       this.ownedCollapsed=!this.ownedCollapsed;
       this.render();
-    },!this.busy);
+    };
+    if(p.portrait&&entry){
+      const b=p.play,art=entry.getData('buttonArt') as Phaser.GameObjects.Container,label=entry.getData('label') as Phaser.GameObjects.Text;
+      // Keep the arrow in a dark, high-contrast end-cap. Its 56px segment
+      // exceeds the touch target minimum while the rest of the button still
+      // submits LeaveShop.
+      const cap=this.add.graphics().fillStyle(0x203f3b,1).fillRoundedRect(b.width-56,0,56,b.height,6)
+        .lineStyle(1,0xf2db9f,.9).lineBetween(b.width-56,7,b.width-56,b.height-7);
+      art.add(cap);
+      label.setX(b.x+(b.width-56)/2).setData('restY',b.y+b.height/2-1);
+      const arrow=this.view.text(b.x+b.width-28,b.y+b.height/2,this.run.jokers.length?(this.ownedCollapsed?'⌄':'⌃'):'·',24,'#F7F1DF').setOrigin(.5).setFontStyle('bold').setName('shop/owned-toggle-arrow');
+      const hit=this.view.rect({x:b.x+b.width-56,y:b.y,width:56,height:b.height},0).setFillStyle(0,0).setStrokeStyle();
+      hit.setData('label',arrow).setData('ownedCollapsed',this.ownedCollapsed);
+      this.view.target(hit,'action/toggle-owned',{tap:toggle});
+      return;
+    }
+    if(!p.ownedToggle||!this.run.jokers.length)return;
+    const button=this.shopButton(p.ownedToggle,this.ownedCollapsed?'展开已购牌':'收起已购牌','action/toggle-owned',toggle,!this.busy);
     const label=button.getData('label') as Phaser.GameObjects.Text|undefined;
     label?.setText(this.ownedCollapsed?'⌃':'⌄').setFontSize(18).setFontStyle('bold').setColor('#203f3b');
     button.setData('ownedCollapsed',this.ownedCollapsed);

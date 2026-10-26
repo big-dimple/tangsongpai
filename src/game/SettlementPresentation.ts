@@ -15,7 +15,7 @@ import {stageOutcome} from './stageOutcome';
 import {getCharacter} from './characters';
 import {selectionPortraitKey,avatarKey} from './portraits';
 import {jokerArtKey} from './jokerArt';
-import {heatText,readableFractionText} from './scoreText';
+import {heatText,readableFractionText,readableScoreFormula} from './scoreText';
 import {failureSummary} from './FailureSummary';
 import {PAPER_THEME as T,PAPER_CSS as C,SCORE_FONT} from './theme';
 import type {SceneView} from './SceneView';
@@ -55,7 +55,10 @@ export function settlementFacts(run:R2RunState,cleared:boolean,skipped=false){
  // Keep the complete ordered trace in the existing inspection. This line is a subset, never a claimed total.
  const jokerFactorSourceCount=new Set(factors.filter(e=>e.sourceType==='joker').map(e=>e.sourceInstanceId)).size;
  const chain=factors.filter(e=>e.sourceType==='joker').slice(0,3).map(e=>cardDefinitionName(r2JokerDefinitionFor(run,e.sourceDefinitionId))+' ×'+readableFractionText(e.value));
- return {...saved,reviewBook:reviewBookReceipt(run,cleared,skipped),stageTotal:run.stage?.heat??'0',tier,tag,hero,heroSkill,heroCopy,card,cardCopy,operation,routeCopy,routeSummary,chain,jokerFactorSourceCount,factorCount:factors.length};
+ const handLabel=trace?HAND_LABELS[trace.handType]:undefined;
+ const handCards=trace?trace.sets.playedIds.map(id=>trace.cards.find(card=>card.id===id)).filter((card):card is NonNullable<typeof card>=>!!card).map(card=>rankLabel(card.rank)+SUIT_SYMBOL[card.suit]).join('  '):undefined;
+ const scoreExplanation=trace?readableScoreFormula(trace.accumulator.H,trace.accumulator.M,trace.finalScore):undefined;
+ return {...saved,reviewBook:reviewBookReceipt(run,cleared,skipped),stageTotal:run.stage?.heat??'0',tier,tag,hero,heroSkill,heroCopy,card,cardCopy,operation,routeCopy,routeSummary,chain,jokerFactorSourceCount,factorCount:factors.length,handLabel,handCards,scoreExplanation};
 }
 
 /** Initial viewport budget. The rendered paper is then shortened to its actual content. */
