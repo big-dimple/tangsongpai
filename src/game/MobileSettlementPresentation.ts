@@ -27,15 +27,20 @@ export function drawMobileSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run
   {x:washRight-5,y:washBottom-16},{x:washRight-19,y:washBottom},{x:washLeft+22,y:washBottom-4},
   {x:washLeft+7,y:washBottom-18},{x:washLeft+17,y:washTop+artHeight*.48},{x:washLeft+5,y:washTop+34},
  ];
- paper.fillStyle(lost?T.jadeSoft:T.paperLight,.78).fillPoints(wash,true);
- // Keep the paper edge unruled so no straight portrait boundary appears.
- // The ink accents sit inside the wash and read as stage atmosphere.
- paper.lineStyle(2,lost?T.jade:T.red,.34).lineBetween(washRight-40,washTop+7,washRight-12,washTop+9);
+ // The cutout remains transparent and independent; keep the information
+ // column readable without a portrait color block.
  const tag=fit(b.x,b.y+16,skipped?'本场跳过':'本场总热度',14,textWidth,C.jade,'result/hand');
  const score=fit(b.x,tag.y+tag.height+8,heatText(facts.stageTotal),compact?38:48,textWidth,lost?C.ink:facts.tier>=2?C.red:C.ink,'result/score').setFontFamily(SCORE_FONT).setFontStyle('bold').setData('exactScore',facts.stageTotal).setData('pcPoster',true);
  if(score.width>textWidth)score.setScale(textWidth/score.width);
  const formula=formulaOverride?.split(' · ')[0]??(skipped?'没有本场计分':lost?'目标 '+heatText(run.stage!.targetHeat):'目标 '+heatText(run.stage!.targetHeat)+'\n已过关');
  const target=fit(b.x,score.y+score.displayHeight+10,formula,14,textWidth,C.jade,'result/formula');
+ let infoBottom=target.y+target.height;
+ if(facts.handLabel){
+  const hand=fit(b.x,infoBottom+8,'本手牌型 · '+facts.handLabel,15,textWidth,C.ink,'result/hand-type').setFontStyle('bold');
+  const combo=fit(b.x,hand.y+hand.height+3,'使用组合 · '+(facts.handCards??'已保存'),13,textWidth,C.jade,'result/hand-combo');
+  const explanation=fit(b.x,combo.y+combo.height+3,'得分解释 · '+facts.scoreExplanation,13,textWidth,C.jade,'result/score-explanation');
+  infoBottom=explanation.y+explanation.height;
+ }
  if(!compact&&facts.tier>=2&&!lost&&!skipped)fit(b.x,target.y+target.height+8,facts.tag,18,textWidth,C.red,'result/tier');
  fit(b.x,b.y+artHeight-25,getCharacter(run.characterId).name,compact?20:24,textWidth,C.ink,'result/hero-name').setFontStyle('bold');
  const artLayer=view.add(scene.add.container(0,0).setName('result-art/source-layer'));

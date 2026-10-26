@@ -38,9 +38,9 @@ export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2R
   {x:washLeft+6,y:washBottom-22},{x:washLeft+18,y:washTop+heroHeight*.48},{x:washLeft+4,y:washTop+40},
  ];
  const accent=lost?T.jade:facts.tier>=2?T.red:T.jade;
- paper.fillStyle(lost?T.jadeSoft:T.paperLight,.72).fillPoints(wash,true)
-  .lineStyle(3,accent,.34).lineBetween(washRight-54,washTop+7,washRight-18,washTop+10)
-  .lineStyle(1,T.divider,.8).beginPath().moveTo(l.next.x-gap/2,b.y).lineTo(l.next.x-gap/2,b.y+b.height).strokePath();
+ // The hero is a transparent independent layer; structure belongs to the
+ // information column instead of a colored portrait block.
+ paper.lineStyle(1,T.divider,.8).beginPath().moveTo(l.next.x-gap/2,b.y).lineTo(l.next.x-gap/2,b.y+b.height).strokePath();
  const tag=text(x,b.y+8,skipped?'本场跳过':'本场总热度',16,width,C.jade,'result/hand');
  const exactScore=facts.stageTotal,copy=(exactScore.length>15&&/[1-9]/.test(exactScore.slice(3))?'≈':'')+heatText(exactScore);
  const size=compact?(facts.tier>=2?76:68):(facts.tier>=2?104:88);
@@ -49,7 +49,14 @@ export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2R
  if(score.width>width)score.setScale(width/score.width);
  const formula=formulaOverride??(lost?'目标 '+heatText(run.stage!.targetHeat)+' · 差 '+heatText((BigInt(run.stage!.targetHeat)-BigInt(facts.stageTotal)).toString()):skipped?'没有本场计分':'目标 '+heatText(run.stage!.targetHeat)+' · 已过关');
  const target=text(x,score.y+score.displayHeight+16,formula,16,width,C.jade,'result/formula');
- const ruleY=target.y+target.height+24;
+ let infoBottom=target.y+target.height;
+ if(facts.handLabel){
+  const hand=text(x,infoBottom+12,'本手牌型 · '+facts.handLabel,17,width,C.ink,'result/hand-type').setFontStyle('bold');
+  const combo=text(x,hand.y+hand.height+4,'使用组合 · '+(facts.handCards??'已保存'),14,width,C.jade,'result/hand-combo');
+  const explanation=text(x,combo.y+combo.height+4,'得分解释 · '+facts.scoreExplanation,14,width,C.jade,'result/score-explanation');
+  infoBottom=explanation.y+explanation.height;
+ }
+ const ruleY=infoBottom+20;
  paper.lineStyle(lost?1:3,lost?T.jade:T.red,lost?.45:.8).beginPath().moveTo(x,ruleY).lineTo(x+Math.min(64,width*.3),ruleY).strokePath();
  if(!lost&&facts.tier>=2)text(x,ruleY+16,facts.tag,24,width,C.red,'result/tier').setFontFamily('Georgia, "Noto Serif SC", SimSun, serif').setFontStyle('bold');
  const receipt=skipped?'没有本场计分':lost?failureSummary(run).lastHand:facts.trace?'末手 '+HAND_LABELS[facts.trace.handType]+' · '+heatText(facts.trace.finalScore):'末手记录不可用';
