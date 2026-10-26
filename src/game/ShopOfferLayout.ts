@@ -62,3 +62,15 @@ export function shopOfferGeometry(tile:Box,kind:keyof typeof SHOP_CATEGORIES,has
   const priceY=tile.y+tile.height-padding-reasonHeight-priceHeight;
   return {art:{x:tile.x+padding,y:tile.y+padding,width,height:width/aspect},title:{x,y:tile.y+padding,width:copyWidth,height:titleHeight},summary:{x,y:tile.y+padding+titleHeight+6,width:copyWidth,height:priceY-tile.y-padding-titleHeight-10},price:{x,y:priceY,width:copyWidth,height:priceHeight},reason:{x,y:priceY+priceHeight,width:copyWidth,height:reasonHeight}};
 }
+
+/** PC offers bind the illustration, real rule and purchase entry into one bounded object. */
+export function pcShopOfferGeometry(tile:Box,hasExtra=false,extraRows=1,usedSummaryHeight?:number):ShopOfferGeometry {
+ const pad=16,gap=16,header=64,wide=tile.width>=400;
+ const artWidth=Math.min(wide?208:136,tile.width*.44,(tile.height-header-16)*.8);
+ const art={x:tile.x+pad,y:tile.y+header,width:artWidth,height:artWidth*1.25};
+ const x=art.x+art.width+gap,copyWidth=tile.x+tile.width-pad-x;
+ const priceHeight=48,reasonHeight=24,maxPriceY=Math.min(tile.y+tile.height-pad-reasonHeight-priceHeight,art.y+art.height-priceHeight);
+ const extraHeight=hasExtra?28*extraRows:0;
+ const priceY=usedSummaryHeight===undefined?maxPriceY:Math.min(maxPriceY,art.y+Math.max(76,usedSummaryHeight+16)+extraHeight);
+ return {art,title:{x:tile.x+pad,y:tile.y+12,width:tile.width-pad*2,height:28},identity:{x:tile.x+pad,y:tile.y+42,width:tile.width-pad*2,height:18},summary:{x,y:art.y,width:copyWidth,height:Math.max(42,priceY-art.y-12-extraHeight)},...(hasExtra?{extra:{x,y:priceY-extraHeight-4,width:copyWidth,height:extraHeight}}:{}),price:{x,y:priceY,width:copyWidth,height:priceHeight},reason:{x,y:priceY+priceHeight+4,width:copyWidth,height:reasonHeight}};
+}

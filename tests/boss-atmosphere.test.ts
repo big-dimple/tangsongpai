@@ -64,10 +64,10 @@ it('late optional art cannot install a texture or revive a retired shop owner',a
  const f=fixture();f.sync();clearBossAtmosphere(f.scene);ready('blob:late');for(let i=0;i<8;i++)await Promise.resolve();expect(f.textures.cache.has('boss/general-95008f17')).toBe(false);expect(f.nodes.every(n=>!n.active)).toBe(true);expect(f.events.listenerCount('update')).toBe(0);
 });
 
-it.each([1,5])('PC Boss art can use spare upper rail space without moving any shop region (%s held)',owned=>{
- const p=shopLayout(1180,757,8,0,3,false,false,0,0,owned,{x:1104,y:12,width:64,height:44}),pc=p.pc!;
+it.each([[1180,1,168],[1180,5,80],[1920,5,168]])('PC Boss art uses only the spare upper rail (%s wide, %s held)',(width,owned,minimum)=>{
+ const p=shopLayout(width,757,8,0,3,false,false,0,0,owned,{x:width-76,y:12,width:64,height:44}),pc=p.pc!;
  const heading={x:pc.ownedRail.x,y:p.top+12,width:Math.max(160,p.build.x-pc.ownedRail.x-8),height:40};
  const protectedBoxes=[pc.left,heading,...p.slots.slice(0,owned),p.build,pc.inventoryEntry,p.reroll,p.tabs,pc.shared,p.play,p.menu!].map(b=>({x:b.x-4,y:b.y-4,width:b.width+8,height:b.height+8}));
- const area=bossGhostArea(1180,757,protectedBoxes)!;expect(area).toBeDefined();expect(area.width).toBeGreaterThanOrEqual(168);expect(area.height).toBeGreaterThanOrEqual(84);
+ const area=bossGhostArea(width,757,protectedBoxes)!;expect(area).toBeDefined();expect(area.width).toBeGreaterThanOrEqual(minimum);expect(area.height).toBeGreaterThanOrEqual(minimum/2);
  for(const b of protectedBoxes)expect(intersects(area,b)).toBe(false);
 });

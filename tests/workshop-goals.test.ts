@@ -25,7 +25,7 @@ it('retains actual duplicate-offer price and unavailable shared quota from the d
  expect(workshopChoices(run).filter(r=>!r.duplicate).every(r=>!!r.reason)).toBe(true);
 });
 it('uses one selected-category region and keeps the unique large entry separate at empty and full ownership',()=>{
- for(const [w,h] of [[1000,768],[1366,900],[1912,954]])for(const n of [0,5]){const p=shopLayout(w,h,8,0,3,false,false,0,0,n),pc=p.pc!;expect(pc).toBeTruthy();for(const b of [pc.toolOffers,pc.workshop,pc.itemOffers])expect(b).toEqual(pc.shared);for(const b of pc.jokerOffers){expect(intersects(b,p.play)).toBe(false);expect(b.y).toBe(pc.shared.y);}expect(shopSharedContent(p,n)).toEqual(pc.shared);expect(p.play.width).toBeGreaterThanOrEqual(220);if(!n)expect(pc.ownedRail.height).toBeLessThanOrEqual(56);}
+ for(const [w,h] of [[1000,768],[1366,900],[1912,954]])for(const n of [0,5]){const p=shopLayout(w,h,8,0,3,false,false,0,0,n),pc=p.pc!;expect(pc).toBeTruthy();for(const b of [pc.toolOffers,pc.workshop,pc.itemOffers])expect(b).toEqual(pc.shared);for(const b of pc.jokerOffers){expect(intersects(b,p.play)).toBe(false);expect(b.y).toBe(pc.shared.y);}expect(shopSharedContent(p,n)).toEqual(pc.shared);expect(p.play.width).toBeGreaterThanOrEqual(220);expect(pc.ownedRail).toEqual(shopLayout(w,h,8,0,3,false,false,0,0,n?0:5).pc!.ownedRail);expect(pc.ownedRail.height).toBeGreaterThan(p.slots[0].height);}
 });
 it('reserves four mobile categories with independent compact inventory and refresh, and a single shared workspace instead of empty decoration',()=>{
  for(const [w,h] of [[320,568],[360,640],[390,740],[430,932]]){

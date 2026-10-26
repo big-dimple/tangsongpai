@@ -1,5 +1,6 @@
 import type {Box} from './layout';
-import {shopOfferGeometry} from './ShopOfferLayout';
+import {shopOfferGeometry,pcShopOfferGeometry} from './ShopOfferLayout';
+import {pcLandscapeFrame} from './PcLandscapeFrame';
 /** The old copy allowance is not a licence to place invisible targets over shop actions. */
 export function shopOwnedHitBox(card:Box,actionTop:number,expanded:boolean):Box {
   return {...card,height:Math.min(card.height+(expanded?22:0),Math.max(card.height,actionTop-card.y-4))};
@@ -36,30 +37,28 @@ function shortShopLayout(width:number,height:number,top:number,bottom:number,col
 }
 
 /** Left state, upper owned resources, lower sale panel. Short PC reuses the short branch. */
-function desktopShopLayout(width:number,height:number,top:number,bottom:number,_cols:number,ownedCount:number){
-  const w=Math.min(1540,width-48),x=(width-w)/2,leftWidth=width>=1600?264:236,gap=width>=1600?40:28,rightX=x+leftWidth+gap,rightWidth=w-leftWidth-gap;
-  const usableHeight=height-top-bottom;
-  const compactRail=usableHeight<800,railGap=compactRail?24:40;
-  const ownedWidth=compactRail?64:width>=1600&&usableHeight>=800?104:86,ownedHeight=ownedWidth*1.4,slotY=top+60;
-  const slots:Box[]=Array.from({length:5},(_,i)=>({x:rightX+i*(ownedWidth+12),y:slotY,width:ownedWidth,height:ownedHeight}));
-  const empty=ownedCount===0;
-  const ownedRail={x:rightX,y:top,width:rightWidth,height:empty?56:60+ownedHeight+railGap-16};
-  const inventoryEntry={x:rightX+rightWidth-168,y:top+(empty?4:64),width:168,height:44};
-  const panelY=empty?top+72:slotY+ownedHeight+railGap;
-  const shopPanel={x:rightX,y:panelY,width:rightWidth,height:height-bottom-8-panelY};
-  const goodsX=shopPanel.x+12,goodsWidth=shopPanel.width-24;
-  const play={x:shopPanel.x+shopPanel.width-252,y:shopPanel.y+shopPanel.height-68,width:240,height:56};
-  const shared={x:goodsX,y:shopPanel.y+72,width:goodsWidth,height:play.y-20-shopPanel.y-72};
-  const seat=(goodsWidth-24)/3,jokerOffers:Box[]=Array.from({length:3},(_,i)=>({x:goodsX+i*(seat+12),y:shared.y,width:seat,height:shared.height}));
-  const shelf=jokerOffers.map(b=>shopOfferGeometry(b,'jokers')!.art);
+function desktopShopLayout(width:number,height:number,top:number,bottom:number,_cols:number,_ownedCount:number){
+  const {frame,sidebar,main,compact}=pcLandscapeFrame(width,height,top,bottom);
+  const x=frame.x,w=frame.width,leftWidth=sidebar.width,rightX=main.x,rightWidth=main.width;
+  const ownedWidth=compact?88:120,ownedHeight=ownedWidth*1.4,slotY=main.y+42,slotGap=compact?18:28;
+  const slots:Box[]=Array.from({length:5},(_,i)=>({x:rightX+12+i*(ownedWidth+slotGap),y:slotY,width:ownedWidth,height:ownedHeight}));
+  const ownedRail={x:rightX,y:main.y,width:rightWidth,height:ownedHeight+74};
+  const inventoryEntry={x:rightX+rightWidth-160,y:top,width:160,height:44};
+  const panelY=ownedRail.y+ownedRail.height+20;
+  const shopPanel={x:rightX,y:panelY,width:rightWidth,height:frame.y+frame.height-panelY};
+  const play={x:main.x+main.width-240,y:frame.y+frame.height-72,width:240,height:56};
+  const goodsX=main.x,goodsWidth=main.width,shared={x:goodsX,y:panelY+60,width:goodsWidth,height:play.y-panelY-88};
+  const seat=(goodsWidth-32)/3,offerHeight=Math.min(compact?320:376,shared.height);
+  const jokerOffers:Box[]=Array.from({length:3},(_,i)=>({x:goodsX+i*(seat+16),y:shared.y,width:seat,height:offerHeight}));
+  const shelf=jokerOffers.map(b=>pcShopOfferGeometry(b).art);
   const groupY=shared.y,toolOffers=shared,workshop=shared,itemOffers=shared;
-  const feedback={x:goodsX,y:play.y+12,width:Math.max(160,play.x-goodsX-16),height:40};
-  const reroll={x:empty?inventoryEntry.x-116:inventoryEntry.x,y:empty?top+4:top+116,width:104,height:44};
-  const build={x:empty?reroll.x-144:Math.min(rightX+5*(ownedWidth+12)+12,inventoryEntry.x-144),y:top+6,width:132,height:44};
-  const chapter={x,y:top+176,width:leftWidth,height:44};
-  const pc={left:{x,y:top,width:leftWidth,height:shopPanel.y+shopPanel.height-top},ownedRail,inventoryEntry,shopPanel,actionRail:play,shared,jokerOffers,toolOffers,itemOffers,workshop,feedback,groupY,guidanceHeight:0};
-  return {x,w,top,pc,desktop:true,short:false,copyBeside:false,inventoryCollapsed:false,compact:false,wideHeader:false,portrait:false,slots,shelf,
-    tabs:{x:goodsX,y:shopPanel.y+8,width:goodsWidth,height:44},chapter,items:inventoryEntry,build,reroll,play,noticeY:feedback.y};
+  const feedback={x:goodsX,y:play.y+8,width:Math.max(80,play.x-goodsX-164),height:44};
+  const reroll={x:inventoryEntry.x-120,y:top,width:104,height:44};
+  const build={x:play.x-144,y:play.y+6,width:132,height:44};
+  const chapter={x,y:sidebar.y+204,width:leftWidth,height:44};
+  const pc={left:sidebar,ownedRail,inventoryEntry,shopPanel,actionRail:play,shared,jokerOffers,toolOffers,itemOffers,workshop,feedback,groupY,guidanceHeight:0};
+  return {x,w,top,pc,desktop:true,short:false,copyBeside:false,inventoryCollapsed:false,compact,wideHeader:false,portrait:false,slots,shelf,
+    tabs:{x:goodsX,y:panelY,width:goodsWidth,height:44},chapter,items:inventoryEntry,build,reroll,play,noticeY:feedback.y};
 }
 
 export function shopLayout(width:number,height:number,top:number,bottom:number,cols:number,ownedCopy=false,guideActions=false,left=0,right=0,ownedCount=5,menu?:Box,ownedCollapsed=false){
@@ -103,7 +102,7 @@ function shiftLayout<T>(value:T,left:number):T {
   return value;
 }
 function shopContentLayout(width:number,height:number,top:number,bottom:number,cols:number,ownedCopy=false,guideActions=false,ownedCount=5,ownedCollapsed=false){
-  if(width>=1000){if(height-top-bottom<712)return shortShopLayout(width,height,top,bottom,cols,ownedCollapsed);return desktopShopLayout(width,height,top,bottom,cols,ownedCount);}
+  if(width>=1000){if(height-top-bottom<680)return shortShopLayout(width,height,top,bottom,cols,ownedCollapsed);return desktopShopLayout(width,height,top,bottom,cols,ownedCount);}
   if(height<=width&&height-top-bottom<500)return shortShopLayout(width,height,top,bottom,cols);
   const portrait=width<700&&height>width,x=12,w=width-24,seat=(Math.min(w,420)-8*(cols-1))/cols;
   // Browser toolbar height changes keep the same three-card gallery.
@@ -131,7 +130,7 @@ function shopContentLayout(width:number,height:number,top:number,bottom:number,c
 export function shopFirstGuideLayout(p:ReturnType<typeof shopLayout>,height:number,emptyOwned:boolean){
  if(p.portrait)return;
  let x=p.x,width=p.w,y:number,limit:number,replacesEmptySlots=false;
- if(p.pc){x=p.x+12;width=p.pc.left.width-24;y=p.chapter.y+p.chapter.height+12;limit=p.pc.left.y+p.pc.left.height-8;}
+ if(p.pc){x=p.x+12;width=p.pc.left.width-24;y=p.chapter.y+p.chapter.height+12;limit=p.pc.left.y+420;}
  else if(p.short){
   if(!p.inventoryCollapsed&&emptyOwned){width=p.chapter.width;y=p.slots[0].y;limit=p.chapter.y-6;replacesEmptySlots=true;}
   else{x=p.tabs.x;width=p.tabs.width;y=Math.max(...p.shelf.map(b=>b.y+b.height))+4;limit=p.play.y-4;}

@@ -4,18 +4,18 @@ import {newRunIdentity} from '../src/game/RunLaunch';
 import {r2ToolPrice} from '../src/domain/r2Shop';
 import {intersects,type Box} from '../src/game/layout';
 import {shopAnchoredTip} from '../src/game/ShopAnchoredTip';
-import {shopOfferGeometry,shopHeldGeometry,shopIdentityText,shopOfferSynopsis,SHOP_CATEGORIES} from '../src/game/ShopOfferLayout';
+import {shopOfferGeometry,pcShopOfferGeometry,shopHeldGeometry,shopIdentityText,shopOfferSynopsis,SHOP_CATEGORIES} from '../src/game/ShopOfferLayout';
 import {shopLayout,shopSharedContent,shopSummaryWrap,shopOfferSummary} from '../src/game/ShopLayout';
 import {shopPurchaseContinuation,shopToolContinuation,shopToolPurchaseContinuation} from '../src/game/ShopPurchaseFlow';
 
 const inside=(a:Box,b:Box)=>a.x>=b.x&&a.y>=b.y&&a.x+a.width<=b.x+b.width&&a.y+a.height<=b.y+b.height;
 
-it('medium desktop spends space on full merchandise while keeping two-line information and aligned prices',()=>{
+it('medium desktop binds complete merchandise to its rules and aligned purchase entry',()=>{
  const p=shopLayout(1180,757,8,0,3,true),pc=p.pc!;
- expect(pc.ownedRail.height+16).toBeLessThan(757*.25);
- const rows=pc.jokerOffers.map(tile=>shopOfferGeometry(tile,'jokers')!);
+ expect(pc.ownedRail.height).toBeLessThan(757*.3);
+ const rows=pc.jokerOffers.map(tile=>pcShopOfferGeometry(tile));
  for(const [i,g] of rows.entries()){
-  expect(g.art.width).toBeGreaterThanOrEqual(112);expect(g.summary.height).toBeGreaterThanOrEqual(34);
+  expect(g.art.width).toBeGreaterThanOrEqual(100);expect(g.summary.height).toBeGreaterThanOrEqual(34);
   expect(g.price.y).toBe(rows[0].price.y);for(const copy of [g.title,g.identity!,g.summary,g.price])expect(intersects(g.art,copy)).toBe(false);
  }
 });
@@ -117,4 +117,41 @@ describe('saved tool purchases continue without choosing or consuming for the pl
     const snapshot=structuredClone(run),flow=shopToolContinuation(run,'held')!;
     expect(flow.next).toBe('later');expect(flow.primaryLabel).toBeUndefined();expect(flow.status).toContain('留到可用阶段');expect(flow).not.toHaveProperty('carryIntent');expect(run).toEqual(snapshot);
   });
+});
+
+it('PC purchase keeps the owned rail, gallery and footer fixed across empty, bought and full inventory',()=>{
+ for(const [width,height] of [[1920,1080],[1920,924],[1366,768]]){
+  const initial=shopLayout(width,height,12,0,3,true,false,0,0,0);
+  for(const owned of [1,5]){
+   const current=shopLayout(width,height,12,0,3,true,false,0,0,owned);
+   expect(current.slots).toEqual(initial.slots);
+   expect(current.pc!.jokerOffers).toEqual(initial.pc!.jokerOffers);
+   expect(current.play).toEqual(initial.play);
+  }
+  for(const tile of initial.pc!.jokerOffers)for(const extraRows of [1,2]){
+   const g=pcShopOfferGeometry(tile,true,extraRows);
+   for(const part of [g.art,g.title,g.identity!,g.summary,g.extra!,g.price,g.reason])expect(inside(part,tile)).toBe(true);
+   const parts=[g.art,g.title,g.identity!,g.summary,g.extra!,g.price,g.reason];
+   for(const [i,a] of parts.entries())for(const b of parts.slice(i+1))expect(intersects(a,b)).toBe(false);
+   expect(g.price.height).toBeGreaterThanOrEqual(44);
+   expect(g.summary.width).toBeGreaterThanOrEqual(130);
+   expect(g.summary.height).toBeGreaterThanOrEqual(42);
+   expect(tile.y+tile.height-(g.reason.y+g.reason.height)).toBeLessThanOrEqual(64);
+  }
+ }
+});
+
+
+it('PC purchase follows measured short rules without changing the artwork or outer card',()=>{
+ for(const [width,height] of [[1920,1080],[1920,924],[1366,768]]){
+  const tile=shopLayout(width,height,12,0,3).pc!.jokerOffers[0],baseline=pcShopOfferGeometry(tile);
+  for(const textHeight of [24,48,72])for(const extraRows of [0,1,2]){
+   const flow=pcShopOfferGeometry(tile,extraRows>0,Math.max(1,extraRows),textHeight);
+   expect(flow.art).toEqual(baseline.art);
+   expect(inside(flow.price,tile)).toBe(true);
+   expect(flow.price.y).toBeLessThanOrEqual(baseline.price.y);
+   if(extraRows===0)expect(flow.price.y-flow.summary.y-textHeight).toBeLessThanOrEqual(52);
+   if(flow.extra){expect(flow.extra.y+flow.extra.height).toBeLessThan(flow.price.y);expect(intersects(flow.extra,flow.price)).toBe(false);}
+  }
+ }
 });

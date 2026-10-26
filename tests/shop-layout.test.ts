@@ -137,8 +137,8 @@ it('PC regions preserve left state, upper horizontal owned rail and lower simult
  }
 });
 
-it('short PC uses the existing broad short layout, while mobile keeps its exact layout',()=>{
- for(const [width,height,top,bottom] of [[1280,640,8,0],[1280,720,24,34],[1024,500,24,34],[1912,710,8,0]]){const l=shopLayout(width,height,top,bottom,3,true);expect(l.pc).toBeNull();expect(l.short).toBe(true);expect(l.tabs.width).toBeGreaterThan(420);}
+it('very short PC retains the fallback while mobile keeps its exact layout',()=>{
+ for(const [width,height,top,bottom] of [[1280,640,8,0],[1280,720,24,34],[1024,500,24,34]]){const l=shopLayout(width,height,top,bottom,3,true);expect(l.pc).toBeNull();expect(l.short).toBe(true);expect(l.tabs.width).toBeGreaterThan(420);}
  for(const [width,height] of [[320,568],[360,640],[390,740],[430,932],[844,300]])expect(shopLayout(width,height,8,0,3,true).pc).toBeNull();
 });
 
