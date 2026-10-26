@@ -4,8 +4,11 @@ import type {SceneView} from './SceneView';
 import type {Box} from './layout';
 import type {settlementFacts} from './SettlementPresentation';
 import {getCharacter} from './characters';
-import {pcHeroKey,PC_HERO_COMPOSITION} from './PcHeroArt';
-import {heatText} from './scoreText';
+import {pcHeroKey} from './PcHeroArt';
+import {heatText,readableFractionText} from './scoreText';
+import {rankLabel,SUIT_SYMBOL} from '../cards/types';
+import {enhancementText} from './CardSpecialLabels';
+import {pcLandscapeFrame} from './PcLandscapeFrame';
 import {HAND_LABELS} from '../content/handLabels';
 import {failureSummary} from './FailureSummary';
 import {PAPER_THEME as T,PAPER_CSS as C,SCORE_FONT} from './theme';
@@ -19,77 +22,87 @@ export function pcResultViewport(width:number,height:number){
 /** Existing saved facts only. No commands, thresholds, reward issuance or timers. */
 export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2RunState,cleared:boolean,skipped:boolean,facts:ReturnType<typeof settlementFacts>,formulaOverride?:string,rewardLabel?:string){
  const l=resultLayout(view.layout.width,view.layout.height,0,b.height,true),lost=!cleared&&!skipped;
- const compact=view.layout.height<850,gap=compact?24:32,heroWidth=b.width*.58,heroHeight=b.height-24;
- const heroBox={x:b.x-16,y:b.y+4,width:heroWidth+8,height:heroHeight};
- const x=b.x+heroWidth+gap,width=b.width-heroWidth-gap;
+ const grid=pcLandscapeFrame(view.layout.width,view.layout.height),compact=grid.compact;
  const text=(x:number,y:number,copy:string,size:number,width:number,color=C.ink,name='')=>{
   const item=view.text(x,y,copy,size,color).setName(name);
-  for(let font=size;item.width>width&&font>14;)item.setFontSize(--font);
+  for(let font=size;item.width>width&&font>16;)item.setFontSize(--font);
   if(item.width>width)item.setWordWrapWidth(width,true);
   return item;
  };
  const paper=view.add(scene.add.graphics().setName('result-art/stage').setData('bounds',b));
- // The desktop spread uses a broad paper wash behind the full cutout. Its
- // torn left edge carries the crop without boxing the hero into a badge.
- const washLeft=heroBox.x+heroBox.width*.12,washRight=heroBox.x+heroBox.width-8,washTop=b.y+8,washBottom=b.y+heroHeight-10;
- const wash=[
-  {x:washLeft+20,y:washTop},{x:washRight-12,y:washTop+4},{x:washRight+2,y:washTop+24},
-  {x:washRight-3,y:washBottom-20},{x:washRight-18,y:washBottom},{x:washLeft+28,y:washBottom-6},
-  {x:washLeft+6,y:washBottom-22},{x:washLeft+18,y:washTop+heroHeight*.48},{x:washLeft+4,y:washTop+40},
- ];
- const accent=lost?T.jade:facts.tier>=2?T.red:T.jade;
- // The hero is a transparent independent layer; structure belongs to the
- // information column instead of a colored portrait block.
- paper.lineStyle(1,T.divider,.8).beginPath().moveTo(l.next.x-gap/2,b.y).lineTo(l.next.x-gap/2,b.y+b.height).strokePath();
- const tag=text(x,b.y+8,skipped?'本场跳过':'本场总热度',16,width,C.jade,'result/hand');
+ const side={x:grid.sidebar.x,y:b.y,width:grid.sidebar.width,height:b.height};
+ const baseline=l.primary.y+l.primary.height;
+ paper.lineStyle(1,T.divider,.8).lineBetween(b.x-grid.gap/2,0,b.x-grid.gap/2,baseline);
+ paper.lineStyle(1,T.divider,.8).lineBetween(l.next.x-grid.gap/2,b.y,l.next.x-grid.gap/2,baseline);
+ const tag=text(side.x,side.y,skipped?'本场跳过':'本场总热度',18,side.width,C.jade,'result/hand');
  const exactScore=facts.stageTotal,copy=(exactScore.length>15&&/[1-9]/.test(exactScore.slice(3))?'≈':'')+heatText(exactScore);
- const size=compact?(facts.tier>=2?76:68):(facts.tier>=2?104:88);
- const score=view.text(x,tag.y+tag.height+16,copy,size,lost?C.ink:facts.tier>=2?C.red:C.ink).setFontFamily(SCORE_FONT).setFontStyle('bold').setName('result/score').setData('exactScore',exactScore).setData('pcPoster',true);
- for(let font=size;score.width>width&&font>28;)score.setFontSize(--font);
- if(score.width>width)score.setScale(width/score.width);
+ const score=text(side.x,tag.y+32,copy,compact?52:64,side.width,lost?C.ink:C.red,'result/score').setFontFamily(SCORE_FONT).setFontStyle('bold').setData('exactScore',exactScore).setData('pcPoster',true);
  const formula=formulaOverride??(lost?'目标 '+heatText(run.stage!.targetHeat)+' · 差 '+heatText((BigInt(run.stage!.targetHeat)-BigInt(facts.stageTotal)).toString()):skipped?'没有本场计分':'目标 '+heatText(run.stage!.targetHeat)+' · 已过关');
- const target=text(x,score.y+score.displayHeight+16,formula,16,width,C.jade,'result/formula');
- let infoBottom=target.y+target.height;
- if(facts.handLabel){
-  const hand=text(x,infoBottom+12,'本手牌型 · '+facts.handLabel,17,width,C.ink,'result/hand-type').setFontStyle('bold');
-  const combo=text(x,hand.y+hand.height+4,'使用组合 · '+(facts.handCards??'已保存'),14,width,C.jade,'result/hand-combo');
-  const explanation=text(x,combo.y+combo.height+4,'得分解释 · '+facts.scoreExplanation,14,width,C.jade,'result/score-explanation');
-  infoBottom=explanation.y+explanation.height;
- }
- const ruleY=infoBottom+20;
- paper.lineStyle(lost?1:3,lost?T.jade:T.red,lost?.45:.8).beginPath().moveTo(x,ruleY).lineTo(x+Math.min(64,width*.3),ruleY).strokePath();
- if(!lost&&facts.tier>=2)text(x,ruleY+16,facts.tag,24,width,C.red,'result/tier').setFontFamily('Georgia, "Noto Serif SC", SimSun, serif').setFontStyle('bold');
- const receipt=skipped?'没有本场计分':lost?failureSummary(run).lastHand:facts.trace?'末手 '+HAND_LABELS[facts.trace.handType]+' · '+heatText(facts.trace.finalScore):'末手记录不可用';
- // Last-hand attribution remains subordinate. Full contributions stay in the existing detail action.
- const receiptY=Math.max(ruleY+(facts.tier>=2&&!lost?62:24),b.y+b.height-104);
- const receiptText=text(x,receiptY,receipt,14,width,C.jade,'result/gap');
- const sourceY=receiptText.y+receiptText.height+10;
- if(facts.card)text(x,sourceY,'末手来源 · '+facts.card.name,14,width,C.jade,'result/source-continuity');
- else if(lost)text(x,sourceY,failureSummary(run).reason,14,width,C.jade,'result/failure-reason');
+ const target=text(side.x,score.y+score.height+16,formula,18,side.width,C.jade,'result/formula');
+ const purse=text(side.x,target.y+target.height+20,'金币 '+run.gold+'　·　出牌余量 '+run.stage!.handsLeft,18,side.width,C.ink,'result/resources');
+ const heroHeight=Math.min(compact?210:370,Math.max(80,baseline-purse.y-purse.height-94));
+ // Keep the complete source frame inside the sidebar, with the lower
+ // silhouette resting on an explicit information baseline.
+ const heroBox={x:side.x,y:baseline-54-heroHeight,width:side.width,height:heroHeight};
  const artLayer=view.add(scene.add.container(0,0).setName('result-art/source-layer'));
  const paint=()=>{
-  artLayer.removeAll(true);const start=view.root.length;
-  const key=pcHeroKey(run.characterId),composition=PC_HERO_COMPOSITION[run.characterId];
-  let hero:Phaser.GameObjects.Image|undefined;
-  if(scene.textures.exists(key)){
-   hero=view.add(scene.add.image(0,0,key).setName('result-art/hero').setData('assetId',run.characterId+'.pc'));
-   // Full source frame: no clipping of hands, hair, sleeves or weapons.
-   hero.setScale(Math.min(1,heroBox.width/hero.width,heroBox.height/hero.height)*composition.scale);
-   hero.setPosition(heroBox.x+hero.displayWidth/2+(heroBox.width-hero.displayWidth)*composition.align,heroBox.y+heroBox.height-hero.displayHeight/2);
-   hero.setData('bounds',{x:hero.x-hero.displayWidth/2,y:hero.y-hero.displayHeight/2,width:hero.displayWidth,height:hero.displayHeight});
-  }
-  text(heroBox.x,heroBox.y+heroBox.height+12,getCharacter(run.characterId).name,compact?24:30,heroBox.width,C.ink,'result/hero-name').setFontFamily('Georgia, "Noto Serif SC", SimSun, serif').setFontStyle('bold');
-  if(facts.hero)text(heroBox.x,heroBox.y+heroBox.height+44,'末手 · '+(facts.heroSkill??'')+' '+facts.heroCopy.replace('本手兑现 · ',''),14,heroBox.width,C.jade,'result/hero-effect');
-  artLayer.add(view.root.list.slice(start));return hero;
+  artLayer.removeAll(true);const key=pcHeroKey(run.characterId);
+  if(!scene.textures.exists(key))return;
+  const hero=scene.add.image(0,0,key).setName('result-art/hero').setData('assetId',run.characterId+'.pc');
+  hero.setScale(Math.min(1,heroBox.width/hero.width,heroBox.height/hero.height));
+  hero.setPosition(heroBox.x+hero.displayWidth/2,heroBox.y+heroBox.height-hero.displayHeight/2);
+  hero.setData('bounds',{x:hero.x-hero.displayWidth/2,y:hero.y-hero.displayHeight/2,width:hero.displayWidth,height:hero.displayHeight});
+  artLayer.add(hero);return hero;
  };
  const hero=paint();
- const reward={x:l.next.x,y:b.y+40,width:l.next.width,height:68};
- text(reward.x,b.y+8,lost?'本局留档':skipped?'换场记录':'本场所得',16,reward.width,C.jade,'result/reward-heading');
+ paper.lineStyle(1,T.divider,.8).lineBetween(side.x,baseline-54,side.x+side.width,baseline-54);
+ text(side.x,baseline-42,getCharacter(run.characterId).name,compact?22:26,side.width,C.ink,'result/hero-name').setFontStyle('bold');
+ if(facts.hero)text(side.x,baseline-10,(facts.heroSkill??'角色能力')+' · '+facts.heroCopy.replace('本手兑现 · ',''),16,side.width,C.jade,'result/hero-effect');
+
+ const trace=facts.trace,heading=trace?(lost?'末手牌型 · ':'致胜牌型 · ')+HAND_LABELS[trace.handType]:skipped?'本场跳过':lost?'本场回顾':'本场计分记录';
+ text(b.x,b.y,heading,compact?28:36,b.width,C.ink,'result/hand-type').setFontStyle('bold');
+ if(trace){
+  const cards=trace.sets.playedIds.map(id=>trace.cards.find(card=>card.id===id)).filter((card):card is NonNullable<typeof card>=>!!card);
+  const cardWidth=Math.min(compact?94:132,(b.width-24*Math.max(0,cards.length-1))/Math.max(1,cards.length)),cardHeight=cardWidth*1.4;
+  const cardsY=b.y+(compact?50:66),cardsX=b.x+(b.width-(cardWidth*cards.length+24*Math.max(0,cards.length-1)))/2;
+  text(b.x, cardsY+cardHeight+12,'实际打出 '+cards.length+' 张 · '+trace.sets.activeScoringIds.length+' 张有效计分',16,b.width,C.jade,'result/hand-combo').setData('fullText',facts.handCards);
+  cards.forEach((card,i)=>{
+   const x=cardsX+i*(cardWidth+24),y=cardsY,active=trace.sets.activeScoringIds.includes(card.id),red=card.suit==='hearts'||card.suit==='diamonds',ink=red?C.red:C.ink;
+   const face=view.add(scene.add.graphics().setName('result/card-face').setData('cardId',card.id).setData('scoring',active).setData('bounds',{x,y,width:cardWidth,height:cardHeight}));
+   face.fillStyle(T.ink,.08).fillRoundedRect(x,y+5,cardWidth,cardHeight,7).fillStyle(T.paperLight).fillRoundedRect(x,y,cardWidth,cardHeight,7).lineStyle(active?2:1,active?T.jade:T.divider,1).strokeRoundedRect(x,y,cardWidth,cardHeight,7);
+   text(x+10,y+9,rankLabel(card.rank)+'\n'+SUIT_SYMBOL[card.suit],compact?21:28,cardWidth-20,ink,'result/card-index').setData('cardId',card.id);
+   text(x+cardWidth/2,y+cardHeight*.5,SUIT_SYMBOL[card.suit],compact?40:62,cardWidth,ink,'result/card-suit').setOrigin(.5);
+   const corner=text(x+cardWidth-8,y+cardHeight-8,rankLabel(card.rank),compact?19:24,cardWidth-16,ink,'result/card-corner').setOrigin(0,0).setAngle(180);corner.setData('cardId',card.id);
+   if(card.enhancement||card.edition&&card.edition!=='none'){
+    const editions={none:'',foil:'闪箔',holographic:'全息',polychrome:'多彩'};
+    text(x,y+cardHeight-25,[card.enhancement?enhancementText(card).split(' · ')[0]:'',editions[card.edition??'none']].filter(Boolean).join('·'),14,cardWidth,C.jade,'result/card-modifiers').setOrigin(0,0);
+   }
+  });
+  const calcY=cardsY+cardHeight+(compact?52:66),gap=16,cellWidth=(b.width-gap*2)/3,calcHeight=compact?102:128;
+  const columns=[{label:'热度累计',value:readableFractionText(trace.accumulator.H),color:C.jade},{label:'倍率累计',value:readableFractionText(trace.accumulator.M),color:C.red},{label:'本手入账',value:heatText(trace.finalScore),color:C.ink}];
+  columns.forEach((column,i)=>{const x=b.x+i*(cellWidth+gap);paper.fillStyle(T.paperLight,.9).fillRoundedRect(x,calcY,cellWidth,calcHeight,8).lineStyle(1,T.divider,.8).strokeRoundedRect(x,calcY,cellWidth,calcHeight,8);text(x+14,calcY+12,column.label,16,cellWidth-28,C.jade);text(x+14,calcY+40,column.value,compact?32:44,cellWidth-28,column.color,'result/calculation-'+i).setFontFamily(SCORE_FONT).setFontStyle('bold');});
+  const explanation=text(b.x,calcY+calcHeight+14,facts.scoreExplanation!,compact?18:22,b.width,C.ink,'result/score-explanation');
+  // Stage heat is the saved sum of credited hands; show its relation to this
+  // trace without rerunning scoring rules or treating a source bonus as a total.
+  const previous=(BigInt(facts.stageTotal)-BigInt(trace.finalScore)).toString();
+  const credit=text(b.x,explanation.y+explanation.height+10,'此前累计 '+heatText(previous)+' + 本手 '+heatText(trace.finalScore)+' = 本场 '+heatText(facts.stageTotal),compact?18:22,b.width,C.ink,'result/stage-credit');
+  const attribution=[facts.card?facts.card.name+' · '+facts.cardCopy?.replaceAll('\n','；'):undefined,facts.hero?(facts.heroSkill??getCharacter(run.characterId).name)+' · '+facts.heroCopy:undefined,facts.routeCopy].filter(Boolean).join('　／　');
+  if(attribution){const source=text(b.x,credit.y+credit.height+10,'关键来源 · '+attribution,16,b.width,C.jade,'result/source-continuity').setData('fullText',attribution);if(source.height>48)source.setText('关键来源 · '+(facts.card?.name??facts.heroSkill??'本局资历')+' · 完整顺序见本场详情');}
+ }else{
+  text(b.x,b.y+64,skipped?'没有出牌，不产生本场计分。':lost?failureSummary(run).lastHand:'本场末手记录不可用。',24,b.width,C.jade,'result/hand-combo');
+  if(lost)text(b.x,b.y+120,failureSummary(run).reason,20,b.width,C.ink,'result/failure-reason');
+ }
+
+ const reward={x:l.next.x,y:b.y+38,width:l.next.width,height:126};
+ text(reward.x,b.y,lost?'本局留档':skipped?'换场记录':'本场奖励',22,reward.width,C.ink,'result/reward-heading').setFontStyle('bold');
  let rewardText:Phaser.GameObjects.Text|undefined;
  if(cleared&&!skipped&&rewardLabel){
-  rewardText=text(reward.x+reward.width/2,reward.y+8,rewardLabel,22,reward.width-48,C.ink,'result/reward').setOrigin(.5,0).setFontStyle('bold');
-  reward.height=Math.max(reward.height,rewardText.height+16);
- }else text(reward.x,reward.y+8,lost?'成绩已记录，下一局重新启程。':'跳场所得见下方记录。',16,reward.width,C.ink,'result/receipt-state');
+  const [headline,...details]=rewardLabel.split(' · ');
+  rewardText=text(reward.x+reward.width/2,reward.y+10,headline.replace(/^奖励\s+/,''),compact?30:38,reward.width-48,C.red,'result/reward').setOrigin(.5,0).setFontStyle('bold');
+  const detail=text(reward.x,reward.y+rewardText.height+24,details.length?details.join(' · '):'已计入金币余额',16,reward.width,C.jade,'result/reward-details').setData('fullText',details.join(' · '));
+  if(detail.height>48)detail.setText('含特殊收益 · 完整记录见本场详情');
+  reward.height=Math.max(reward.height,detail.y+detail.height-reward.y+12);
+ }else text(reward.x,reward.y+10,lost?'成绩已记录，下一局重新启程。':'跳场所得见下方记录。',18,reward.width,C.jade,'result/receipt-state');
  let reviewBookBand:Box|undefined;
  if(facts.reviewBook){
   reviewBookBand={x:reward.x,y:reward.y+reward.height+8,width:reward.width,height:52};

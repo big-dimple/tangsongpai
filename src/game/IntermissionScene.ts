@@ -167,9 +167,9 @@ export class IntermissionScene extends Phaser.Scene {
       this.auxiliary({...n,height:52},'再战建议 ›\n'+prompt,'action/failure-guidance',()=>this.inspectFailure(),!this.busy);nextBottom=n.y+52;
     }else {
       v.add(this.add.graphics().lineStyle(1,T.divider,.75).beginPath().moveTo(p.next.x,n.y-2).lineTo(p.next.x+p.next.width,n.y-2).strokePath());
-      const nextHeading=v.text(n.x,n.y+2,heading,p.portrait&&p.tight?16:18,PAPER_CSS.ink,n.width).setFontStyle('bold').setName('result/next-heading');
+      const nextHeading=v.text(n.x,n.y+2,heading,p.pc?22:p.portrait&&p.tight?16:18,PAPER_CSS.ink,n.width).setFontStyle('bold').setName('result/next-heading');
       const bodyY=nextHeading.y+nextHeading.height+3;
-      const nextBody=v.text(n.x,bodyY,body,14,PAPER_CSS.jade,n.width).setLineSpacing(1).setName('result/next-body');nextBottom=nextBody.y+nextBody.height;
+      const nextBody=v.text(n.x,bodyY,body,p.pc?18:14,PAPER_CSS.jade,n.width).setLineSpacing(1).setName('result/next-body');nextBottom=nextBody.y+nextBody.height;
       if(mobile&&nextBottom>n.y+n.height){
         nextBody.setText(nextStage?`${nextStage.name} · 目标 ${heatText(nextStage.targetHeat)}`:body.split('\n')[0]);nextBottom=nextBody.y+nextBody.height;
         nextHeading.setText(heading+' ›');const hit=v.rect({...n,height:Math.max(44,nextBottom-n.y)}).setFillStyle(0,0).setStrokeStyle();v.target(hit,'action/result-next-details',{tap:()=>this.dialog.open(heading,body,[],{closeLabel:'返回结算'})});
@@ -209,7 +209,7 @@ export class IntermissionScene extends Phaser.Scene {
     this.firstRender=false;if(pc||mobile)this.requestSourceArt();
   }
   private auxiliary(b:Box,label:string,name:string,action:()=>void,enabled=true):void {
-    const v=this.view,text=v.text(b.x+b.width/2,b.y+b.height/2,label,14,PAPER_CSS.jade,b.width-4).setOrigin(.5).setAlpha(enabled?1:.55);
+    const v=this.view,text=v.text(b.x+b.width/2,b.y+b.height/2,label,pcResultViewport(v.layout.width,v.layout.height)?18:14,PAPER_CSS.jade,b.width-4).setOrigin(.5).setAlpha(enabled?1:.55);
     const hit=v.rect(b).setFillStyle(0,0).setStrokeStyle().setData('label',text);
     v.target(hit,name,{tap:()=>{if(enabled){this.audio.select();action();}}});
     if(!enabled)hit.disableInteractive();
