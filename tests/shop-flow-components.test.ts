@@ -13,7 +13,7 @@ const inside=(a:Box,b:Box)=>a.x>=b.x&&a.y>=b.y&&a.x+a.width<=b.x+b.width&&a.y+a.
 it('medium desktop binds complete merchandise to its rules and aligned purchase entry',()=>{
  const p=shopLayout(1180,757,8,0,3,true),pc=p.pc!;
  expect(pc.ownedRail.height).toBeLessThan(757*.3);
- const rows=pc.jokerOffers.map(tile=>pcShopOfferGeometry(tile));
+ const rows=pc.jokerOffers.map(tile=>pcShopOfferGeometry(tile)!);
  for(const [i,g] of rows.entries()){
   expect(g.art.width).toBeGreaterThanOrEqual(100);expect(g.summary.height).toBeGreaterThanOrEqual(34);
   expect(g.price.y).toBe(rows[0].price.y);for(const copy of [g.title,g.identity!,g.summary,g.price])expect(intersects(g.art,copy)).toBe(false);
@@ -129,7 +129,7 @@ it('PC purchase keeps the owned rail, gallery and footer fixed across empty, bou
    expect(current.play).toEqual(initial.play);
   }
   for(const tile of initial.pc!.jokerOffers)for(const extraRows of [1,2]){
-   const g=pcShopOfferGeometry(tile,true,extraRows);
+   const g=pcShopOfferGeometry(tile,true,extraRows)!;
    for(const part of [g.art,g.title,g.identity!,g.summary,g.extra!,g.price,g.reason])expect(inside(part,tile)).toBe(true);
    const parts=[g.art,g.title,g.identity!,g.summary,g.extra!,g.price,g.reason];
    for(const [i,a] of parts.entries())for(const b of parts.slice(i+1))expect(intersects(a,b)).toBe(false);
@@ -144,14 +144,24 @@ it('PC purchase keeps the owned rail, gallery and footer fixed across empty, bou
 
 it('PC purchase follows measured short rules without changing the artwork or outer card',()=>{
  for(const [width,height] of [[1920,1080],[1920,924],[1366,768]]){
-  const tile=shopLayout(width,height,12,0,3).pc!.jokerOffers[0],baseline=pcShopOfferGeometry(tile);
+  const tile=shopLayout(width,height,12,0,3).pc!.jokerOffers[0],baseline=pcShopOfferGeometry(tile)!;
   for(const textHeight of [24,48,72])for(const extraRows of [0,1,2]){
-   const flow=pcShopOfferGeometry(tile,extraRows>0,Math.max(1,extraRows),textHeight);
+   const flow=pcShopOfferGeometry(tile,extraRows>0,Math.max(1,extraRows),textHeight)!;
    expect(flow.art).toEqual(baseline.art);
    expect(inside(flow.price,tile)).toBe(true);
-   expect(flow.price.y).toBeLessThanOrEqual(baseline.price.y);
+   expect(flow.price.y).toBeLessThanOrEqual(pcShopOfferGeometry(tile,extraRows>0,Math.max(1,extraRows))!.price.y);
    if(extraRows===0)expect(flow.price.y-flow.summary.y-textHeight).toBeLessThanOrEqual(52);
    if(flow.extra){expect(flow.extra.y+flow.extra.height).toBeLessThan(flow.price.y);expect(intersects(flow.extra,flow.price)).toBe(false);}
   }
+ }
+});
+
+
+it('PC worst-case disabled edition requires276px instead of clamping overlapping summary rows',()=>{
+ for(const height of [180,236.8,246.8,266.8,275.99])expect(pcShopOfferGeometry({x:40,y:100,width:495,height},true,2)).toBeUndefined();
+ for(const width of [270,337,495])for(const height of [276,280,320,376]){
+  const g=pcShopOfferGeometry({x:40,y:100,width,height},true,2)!;expect(g).toBeDefined();expect(g.summary.height).toBeGreaterThanOrEqual(56);
+  const parts=Object.values(g);for(const part of parts)expect(inside(part,{x:40,y:100,width,height})).toBe(true);
+  for(const [i,a] of parts.entries())for(const b of parts.slice(i+1))expect(intersects(a,b)).toBe(false);
  }
 });

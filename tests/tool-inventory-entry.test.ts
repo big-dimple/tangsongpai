@@ -44,5 +44,13 @@ describe('desktop height boundary respects the usable safe viewport',()=>{
 });
 
 it('PC has one explicit inventory entry clear of the horizontal rack and sale panel',()=>{
- for(const [width,height] of [[1000,768],[1280,720],[1912,954]]){const p=shopLayout(width,height,8,0,3),entry=shopInventoryEntry(p.tabs,p.pc!.inventoryEntry);expect(entry).toEqual(p.pc!.inventoryEntry);expect(entry.height).toBe(44);for(const b of [...p.slots,p.build,p.pc!.shopPanel])expect(intersects(entry,b)).toBe(false);}
+ for(const [width,height] of [[1000,768],[1366,768],[1912,954]]){const p=shopLayout(width,height,8,0,3),entry=shopInventoryEntry(p.tabs,p.pc!.inventoryEntry);expect(entry).toEqual(p.pc!.inventoryEntry);expect(entry.height).toBe(44);for(const b of [...p.slots,p.build,p.pc!.shopPanel])expect(intersects(entry,b)).toBe(false);}
+});
+
+it('short PC content fallback keeps the inventory entry clear of the compact shelf and actions',()=>{
+ for(const [width,height] of [[1280,720],[1920,700],[1920,710]]){
+  const p=shopLayout(width,height,8,0,3);expect(p.short).toBe(true);expect(p.pc).toBeNull();
+  const entry=p.items;expect(entry.height).toBeGreaterThanOrEqual(44);
+  for(const b of [...p.slots,...p.shelf,p.build,p.play,p.tabs])expect(intersects(entry,b)).toBe(false);
+ }
 });

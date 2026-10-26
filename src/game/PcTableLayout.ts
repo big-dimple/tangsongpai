@@ -12,6 +12,7 @@ export interface PcTableOptions {pc?:boolean}
  */
 export function pcTableAreas(viewport:{width:number;height:number},safe:Insets,handWindow:HandWindow,enabled=false){
  const width=viewport.width-safe.left-safe.right,height=viewport.height-safe.top-safe.bottom;
+ const short=height<740;
  if(!enabled||width<1180||height<640||width<=height)return;
  const {frame,sidebar:hud,main,compact}=pcLandscapeFrame(viewport.width,viewport.height,safe.top,safe.bottom,safe.left,safe.right);
  const rail=box(viewport.width-safe.right-76,safe.top+8,64,44);
@@ -28,13 +29,18 @@ export function pcTableAreas(viewport:{width:number;height:number},safe:Insets,h
  const heroAction=box(main.x+2*(actionWidth+16),actionY+10,Math.min(224,tools.x-main.x-2*(actionWidth+16)-16),44);
  const handLabel=box(main.x,hand.y-28,160,22);
  const piles=box(main.x+170,hand.y-28,main.width-170,22);
- const rackCardWidth=Math.min(138,Math.max(80,(height-350)/4.2));
- const headerHeight=rackCardWidth*1.4+32;
+ const rackCardWidth=short?64:Math.min(138,Math.max(80,(height-350)/4.2));
+ const rackLabelHeight=short?28:32,headerHeight=rackCardWidth*1.4+rackLabelHeight;
  const jokers=box(main.x,main.y,main.width,headerHeight);
- const slots=Array.from({length:5},(_,i)=>box(main.x+16+i*main.width/5,jokers.y+32,rackCardWidth,rackCardWidth*1.4));
- const scoreBoard=box(main.x,main.y+headerHeight+16,main.width,compact?92:112);
- const stageY=scoreBoard.y+scoreBoard.height+12;
- const playedArea=box(main.x,stageY,main.width,Math.max(24,hand.y-40-stageY));
+ const slots=Array.from({length:5},(_,i)=>box(main.x+16+i*main.width/5,jokers.y+rackLabelHeight,rackCardWidth,rackCardWidth*1.4));
+ // Below 740 usable pixels the score and played cards share a horizontal
+ // band. Stacking both forced a 24px landing strip into the hand hit area.
+ // Keep the hand/action sizes; spend less height on the build and use width.
+ const middleY=main.y+headerHeight+(short?12:16),middleHeight=hand.y-40-middleY;
+ const scoreWidth=short?Math.min(360,main.width*.4):main.width;
+ const scoreBoard=box(main.x,middleY,scoreWidth,short?middleHeight:compact?92:112);
+ const stageY=short?middleY:scoreBoard.y+scoreBoard.height+12;
+ const playedArea=short?box(main.x+scoreWidth+24,middleY,main.width-scoreWidth-24,middleHeight):box(main.x,stageY,main.width,hand.y-40-stageY);
  const preview=box(main.x,scoreBoard.y,main.width,playedArea.y+playedArea.height-scoreBoard.y);
  const handOverflow=count>Math.floor((hand.width-cardWidth)/36)+1;
  const cardArea=handOverflow?box(hand.x+48,hand.y,hand.width-96,hand.height):hand;
@@ -55,5 +61,5 @@ export function pcTableAreas(viewport:{width:number;height:number},safe:Insets,h
  const scoreFire=box(scoreBoard.x+8,scoreBoard.y+scoreBoard.height-24,scoreBoard.width-16,20);
  return {hud,jokers,slots,jokerLabels:slots,preview,scoreBoard,playedArea,scoreEyes,scoreFire,hand,handLabel,piles,status,heroAction,cards,handRows:1,handOverflow,visibleCardCount,handStart,labelHeight:18,inventoryEntry:utilities.inventory,helpEntry:utilities.help,...footer,
   handNavigation:{previous:box(hand.x,hand.y+(hand.height-44)/2,44,44),next:box(hand.x+hand.width-44,hand.y+(hand.height-44)/2,44,44)},
-  pc:{frame,main,rail,heroPortrait,heroRows,utilities,compact,stage:playedArea,build:jokers,entry:box(main.x,main.y,main.width,34)}};
+  pc:{frame,main,rail,heroPortrait,heroRows,utilities,compact,short,stage:playedArea,build:jokers,entry:box(main.x,main.y,main.width,34)}};
 }

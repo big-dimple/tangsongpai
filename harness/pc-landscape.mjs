@@ -21,7 +21,13 @@ try{for(const viewport of sizes){
    const s=await state();const cards=s.handOrder.map(id=>s.deckInstances.find(c=>c.id===id));let picked;
    for(const c of cards){const pair=cards.filter(x=>x.rank===c.rank);if(pair.length>=2){picked=pair.slice(0,2).map(x=>x.id);break;}}
    picked??=cards.sort((a,b)=>b.rank-a.rank).slice(0,5).map(c=>c.id);
-   for(const id of picked)await tapUI(p,'game','card/'+id,touch);if(!turn)await shot('table-selected');
+   for(const id of picked)await tapUI(p,'game','card/'+id,touch);if(!turn){
+    row.tableGeometry=await p.evaluate(()=>{const s=window.__harness.game.scene.getScene('game'),l=s.view.layout;return {pc:!!l.pc,short:!!l.pc?.short,score:l.scoreBoard,played:l.playedArea,handHits:s.cardViews.map(c=>c.hit.getBounds()),landings:s.landingBoxes(s.selectedIds.size)};});
+    const overlap=(a,b)=>a.x<b.x+b.width&&b.x<a.x+a.width&&a.y<b.y+b.height&&b.y<a.y+a.height;
+    for(const card of row.tableGeometry.landings)for(const hit of row.tableGeometry.handHits)assert.ok(!overlap(card,hit),'rendered landing cannot cover any hand input');
+    if(row.tableGeometry.short)for(const card of row.tableGeometry.landings){assert.ok(card.width>=64,'short PC landing card stays readable');assert.ok(card.height>=89,'short PC landing retains its card ratio');}
+    await shot('table-selected');
+   }
    await tapUI(p,'game','action/play',touch);const confirm=p.getByRole('button',{name:'继续出牌',exact:true});if(await confirm.count())await confirm.click();
    if(!turn){
     await p.waitForFunction(()=>{const s=window.__harness.game.scene.getScene('game');return s.presentation&&s.scoreTotal.visible&&/\d/.test(s.scoreTotal.text);});

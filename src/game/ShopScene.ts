@@ -555,6 +555,7 @@ export class ShopScene extends Phaser.Scene {
   private drawPCOffer(o:R2Offer,kind:ShelfKind,tile:Box):void {
     const v=this.view,first=v.root.length,d=kind==='jokers'?this.jokerDefinition(o.definitionId):undefined,info=kind==='tools'?toolInfo(o.definitionId,this.run):kind==='items'?itemInfo(o.definitionId):undefined;
     const g=pcShopOfferGeometry(tile,kind==='jokers'&&(o.edition??'none')!=='none',this.run.chapterDisabledJokerId===o.definitionId?2:1);
+    if(!g){this.shopButton(tile,'查看 '+(d?.name??info!.name),'offer/'+o.offerId,()=>this.inspectOffer(o.offerId));return;}
     shopSheet(this,v,'offer',tile,PAPER_THEME.paperLight);
     v.add(this.add.graphics().lineStyle(1,PAPER_THEME.divider,.9).strokeRoundedRect(tile.x,tile.y,tile.width,tile.height,8).setName('shop/offer-edge'));
     if(this.selectedOfferId===o.offerId)v.add(this.add.graphics().lineStyle(1.5,0x42665d,1).strokeRoundedRect(tile.x+.75,tile.y+.75,tile.width-1.5,tile.height-1.5,6).setName('shop/offer-selected').setData('offerId',o.offerId));
@@ -568,7 +569,7 @@ export class ShopScene extends Phaser.Scene {
     const lineHeight=tile.width>=400?28:24,maxLines=Math.max(2,Math.floor(g.summary.height/lineHeight));
     const wrapped=shopSummaryWrap(summary,g.summary.width,copy=>{purpose.setText(copy);return purpose.width;},maxLines);
     purpose.setText(wrapped).setLineSpacing(tile.width>=400?3:2).setData('fullText',summary);
-    const flow=pcShopOfferGeometry(tile,!!g.extra,this.run.chapterDisabledJokerId===o.definitionId?2:1,purpose.height);
+    const flow=pcShopOfferGeometry(tile,!!g.extra,this.run.chapterDisabledJokerId===o.definitionId?2:1,purpose.height)??g;
     if(flow.extra)this.drawOfferExtra(o,flow.extra);
     const reason=o.consumed?'':this.purchaseReason(o,true);
     if(reason){const note=v.text(flow.reason.x,flow.reason.y,reason,14,PAPER_CSS.red).setName('shop/offer-reason').setData('offerId',o.offerId);this.ellipsis(note,flow.reason.width);}

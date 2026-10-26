@@ -1,7 +1,7 @@
 import {expect,it} from 'vitest';
 import {layout,intersects,type Box} from '../src/game/layout';
 const safe={top:0,right:0,bottom:0,left:0};
-it.each([[1920,1080],[1920,924],[1366,768],[1280,720]])('PC %sx%s keeps the build, score, played hand, hand and actions in a single reading column',(width,height)=>{
+it.each([[1920,1080],[1920,924],[1366,768]])('PC %sx%s keeps the build, score, played hand, hand and actions in a single reading column',(width,height)=>{
  const l=layout({width,height},safe,undefined,{count:8},{pc:true});expect(l.pc).toBeDefined();
  const lanes=[l.jokers,l.scoreBoard,l.playedArea,l.hand,l.actions];
  for(const lane of lanes){expect(lane.x).toBe(l.pc!.main.x);expect(lane.width).toBe(l.pc!.main.width);expect(lane.height).toBeGreaterThan(20);}
@@ -19,4 +19,24 @@ it('1920 main composition spends the width on cards and keeps the hero subordina
 });
 it('does not enable PC composition for phones or primary coarse pointer callers',()=>{
  for(const [width,height] of [[390,844],[844,390],[1920,1080]])expect(layout({width,height},safe,undefined,{count:8},{pc:false}).pc).toBeUndefined();
+});
+
+it.each([[1180,640],[1280,640],[1280,720],[1920,700],[1920,710]])('short PC %sx%s gives real played cards room above every hand hit',(width,height)=>{
+ const l=layout({width,height},safe,undefined,{count:8},{pc:true});
+ expect(l.pc?.short).toBe(true);
+ expect(l.scoreBoard.y).toBe(l.playedArea.y);
+ expect(l.playedArea.x).toBeGreaterThanOrEqual(l.scoreBoard.x+l.scoreBoard.width+24);
+ expect(l.playedArea.height).toBeGreaterThanOrEqual(100);
+ expect(l.playedArea.width).toBeGreaterThanOrEqual(480);
+ expect(l.playedArea.y+l.playedArea.height).toBeLessThanOrEqual(l.handLabel.y-8);
+ for(const card of l.cards)expect(intersects(l.playedArea,card.hit)).toBe(false);
+ for(const a of [l.scoreBoard,l.playedArea])for(const b of [l.jokers,l.hand,l.actions])expect(intersects(a,b)).toBe(false);
+ // The actual landing allocator leaves 14px padding and uses a 5:7 card.
+ expect((l.playedArea.height-14)/1.4).toBeGreaterThanOrEqual(64);
+ for(const button of [...Object.values(l.tableActions),...Object.values(l.buttons)])expect(button.height).toBeGreaterThanOrEqual(44);
+});
+it('short-PC breakpoint uses height remaining after browser safe insets',()=>{
+ const l=layout({width:1280,height:740},{...safe,top:50,bottom:50},undefined,{count:8},{pc:true});
+ expect(l.pc?.short).toBe(true);expect(l.playedArea.height).toBeGreaterThanOrEqual(100);
+ for(const card of l.cards)expect(intersects(l.playedArea,card.hit)).toBe(false);
 });
