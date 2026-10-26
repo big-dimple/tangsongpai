@@ -89,6 +89,10 @@ export function shopLayout(width:number,height:number,top:number,bottom:number,c
   const result={...p,menu,headerRows,desktopHeader};
   if(p.portrait){
     const header=shopPortraitHeader(result);result.reroll=header.reroll;
+    const shift=height-bottom-56-p.play.y;
+    result.play={...p.play,y:p.play.y+shift};
+    result.slots=p.slots.map(b=>({...b,y:b.y+shift}));
+    if('ownedToggle' in result&&result.ownedToggle)result.ownedToggle={x:result.play.x+result.play.width-56,y:result.play.y,width:56,height:56};
     // One existing footer strip holds the actual notice and secondary advice.
     result.noticeY=height-bottom-44;
     result.build={x:p.x+p.w-104,y:result.noticeY,width:104,height:44};
@@ -233,6 +237,6 @@ export function shopSharedContent(p:ReturnType<typeof shopLayout>,ownedCount:num
  if(p.pc)return p.pc.shared;
  if(p.desktopHeader){const y=p.shelf[0].y;return {x:p.tabs.x,y,width:p.tabs.width,height:Math.max(44,p.play.y-8-y)};}
  if(!p.portrait)return;
- const y=p.tabs.y+p.tabs.height+8,bottom=ownedCount&&!p.inventoryCollapsed?p.slots[0].y-28:p.inventoryCollapsed&&p.ownedToggle?p.ownedToggle.y-8:p.play.y-8;
+ const y=p.tabs.y+p.tabs.height+8,bottom=ownedCount&&!p.inventoryCollapsed?p.slots[0].y-28:p.play.y-8;
  return {x:p.x,y,width:p.w,height:Math.max(44,bottom-y)};
 }

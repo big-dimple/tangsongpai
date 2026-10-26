@@ -189,6 +189,9 @@ export function mountReviewBookMotion(scene:Phaser.Scene,root:Phaser.GameObjects
 
 /** One real second, independent of Phaser's acceleration. No input or command callback. */
 export function mountSettlementMotion(scene:Phaser.Scene,root:Phaser.GameObjects.Container,stage:Box,score:Phaser.GameObjects.Text,hero:Phaser.GameObjects.Image|undefined,tier:number,lost:boolean){
+ // Mobile cutouts touch the screen edge: animate only the score, never slide
+ // the full source frame outside the viewport. Desktop keeps its own entrance.
+ if(score.getData('mobilePoster'))return mountPcSettlementMotion(scene,score,undefined,lost);
  if(score.getData('pcPoster'))return mountPcSettlementMotion(scene,score,hero,lost);
  const group=scene.add.container(0,0).setName(lost?'result/failure-motion':'result/victory-motion').setData('startedAt',performance.now());
  // Insert behind every fact; geometry stays strictly inside the result paper.
