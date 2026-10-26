@@ -18,7 +18,7 @@ export function drawMobileSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run
  const paper=view.add(scene.add.graphics().setName('result-art/stage').setData('bounds',b));
  // Full source frame aligned to the left screen edge and receipt baseline.
  const tag=fit(textX,b.y+16,skipped?'本场跳过':'本场总热度',14,textWidth,C.jade,'result/hand');
- const score=fit(textX,tag.y+tag.height+8,heatText(facts.stageTotal),compact?38:48,textWidth,lost?C.ink:facts.tier>=2?C.red:C.ink,'result/score').setFontFamily(SCORE_FONT).setFontStyle('bold').setData('exactScore',facts.stageTotal).setData('pcPoster',true);
+ const score=fit(textX,tag.y+tag.height+8,heatText(facts.stageTotal),compact?38:48,textWidth,lost?C.ink:facts.tier>=2?C.red:C.ink,'result/score').setFontFamily(SCORE_FONT).setFontStyle('bold').setData('exactScore',facts.stageTotal).setData('mobilePoster',true);
  if(score.width>textWidth)score.setScale(textWidth/score.width);
  const formula=formulaOverride?.split(' · ')[0]??(skipped?'没有本场计分':lost?'目标 '+heatText(run.stage!.targetHeat):'目标 '+heatText(run.stage!.targetHeat)+'\n已过关');
  const target=fit(textX,score.y+score.displayHeight+10,formula,14,textWidth,C.jade,'result/formula');
@@ -45,7 +45,11 @@ export function drawMobileSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run
  const rewardText=fit(reward.x+reward.width/2,reward.y+4,cleared&&!skipped?rewardLabel??'本场奖励已保存':skipped?'换场所得见下方记录':'成绩已记录',16,reward.width-44,C.ink,'result/reward').setOrigin(.5,0).setFontStyle('bold');
  reward.height=Math.max(36,rewardText.height+8);
  let reviewBookBand:Box|undefined;
- if(facts.reviewBook){reviewBookBand={x:b.x,y:reward.y+reward.height+6,width:b.width,height:24};fit(textX,reviewBookBand.y,facts.reviewBook.label,14,b.width,C.jade,'result/review-book').setData('sourceEventId',facts.reviewBook.eventId).setData('clearId',facts.reviewBook.clearId);}
+ if(facts.reviewBook){
+  reviewBookBand={x:b.x,y:reward.y+reward.height+6,width:b.width,height:24};
+  const receipt=fit(reviewBookBand.x,reviewBookBand.y,facts.reviewBook.label,14,reviewBookBand.width,C.jade,'result/review-book').setData('sourceEventId',facts.reviewBook.eventId).setData('clearId',facts.reviewBook.clearId);
+  reviewBookBand.height=Math.max(24,receipt.height);
+ }
  const height=(reviewBookBand?reviewBookBand.y+reviewBookBand.height:reward.y+reward.height)-b.y;
  return {facts,score,reward,rewardText,paint,hero,stage:{...b,height},reviewBookBand};
 }
