@@ -366,13 +366,12 @@ export class ShopScene extends Phaser.Scene {
     this.drawRefresh(portraitHeader?.reroll??p.reroll);
     const entry=this.shopButton(p.play,'进入牌桌','action/start-stage',()=>void this.send({type:'LeaveShop'}),this.ready,true);
     this.drawOwnedToggle(p,entry);
-    if(p.portrait)this.drawBuildEntry(p);
-    else this.shopButton(p.build,this.lastPurchaseReceipt?'购物结果':p.portrait&&p.copyBeside?'培养':p.inventoryCollapsed?`培养 ${this.run.jokers.length}/${r2JokerCapacity(this.run)}`:this.buildLabel(),'action/build',()=>this.lastPurchaseReceipt?this.openPurchaseReceipt():this.inspectJourney());
+    if(!p.portrait) this.shopButton(p.build,this.lastPurchaseReceipt?'购物结果':p.portrait&&p.copyBeside?'培养':p.inventoryCollapsed?`培养 ${this.run.jokers.length}/${r2JokerCapacity(this.run)}`:this.buildLabel(),'action/build',()=>this.lastPurchaseReceipt?this.openPurchaseReceipt():this.inspectJourney());
     const reason=!this.ready?'当前进度未保存或只读，请查看菜单。':allowed&&this.run.gold<cost?`换牌还差 ${cost-this.run.gold} 金。可直接入场。`:this.shelfKind==='jokers'&&this.run.jokers.length===r2JokerCapacity(this.run)?`${r2JokerCapacity(this.run)}槽已满，点随身牌出售后再买。`:this.shelfKind==='tools'?'购买后收入库存；查看详情，再确认使用。':this.shelfKind==='items'?'道具本局生效；换牌不重抽道具货架。':p.portrait?'点商品直接看详情；确认后才扣款。':'点卡牌不会扣钱；点随身牌可出售或左移、右移。';
     const discovery=this.ready&&!this.notice?savedGrowthDiscovery(this.run,'shop'):undefined;
     const noticeArea=shopNoticeArea(p);
-    this.noticeLabel=v.text(noticeArea.x,noticeArea.y,this.busy?'正在保存…':this.shopNotice||(this.workshopSelected?'':(this.shelfKind==='tools'?r2BasicToolShelfStatus(this.run):undefined)||discovery?.full||(!p.portrait?(starterShopCue(this.run)||firstChapterGuide(this.run)?.cue):undefined)||reason),14,this.shopNotice?'#B8473A':'#3F606B',noticeArea.width).setStyle({maxLines:p.short?1:2}).setName(discovery?'growth/discovery':'');
-    if(p.portrait)this.noticeLabel.setY(p.noticeY+Math.max(0,(44-this.noticeLabel.height)/2));
+    if(!p.portrait)this.noticeLabel=v.text(noticeArea.x,noticeArea.y,this.busy?'正在保存…':this.shopNotice||(this.workshopSelected?'':(this.shelfKind==='tools'?r2BasicToolShelfStatus(this.run):undefined)||discovery?.full||(!p.portrait?(starterShopCue(this.run)||firstChapterGuide(this.run)?.cue):undefined)||reason),14,this.shopNotice?'#B8473A':'#3F606B',noticeArea.width).setStyle({maxLines:p.short?1:2}).setName(discovery?'growth/discovery':'');
+
     this.drawDecisionIdle(p);this.drawFirstGuide(p);
     this.drawResultCue();this.syncBossPreparation();
   }
@@ -481,7 +480,9 @@ export class ShopScene extends Phaser.Scene {
         .lineStyle(1,0xf2db9f,.9).lineBetween(b.width-56,7,b.width-56,b.height-7);
       art.add(cap);
       label.setX(b.x+(b.width-56)/2).setData('restY',b.y+b.height/2-1);
-      const arrow=this.view.text(b.x+b.width-28,b.y+b.height/2,this.run.jokers.length?(this.ownedCollapsed?'⌄':'⌃'):'·',24,'#F7F1DF').setOrigin(.5).setFontStyle('bold').setName('shop/owned-toggle-arrow');
+      const arrow=this.view.text(b.x+b.width-28,b.y+b.height/2,this.ownedCollapsed?'⌃':'⌄',24,'#F7F1DF').setOrigin(.5).setFontStyle('bold').setName('shop/owned-toggle-arrow').setColor('#fff9ee');
+      entry.setSize(b.width-56,b.height).setPosition(b.x+(b.width-56)/2,b.y+b.height/2);
+      entry.input!.hitArea.setTo(0,0,b.width-56,b.height);
       const hit=this.view.rect({x:b.x+b.width-56,y:b.y,width:56,height:b.height},0).setFillStyle(0,0).setStrokeStyle();
       hit.setData('label',arrow).setData('ownedCollapsed',this.ownedCollapsed);
       this.view.target(hit,'action/toggle-owned',{tap:toggle});
@@ -602,7 +603,7 @@ export class ShopScene extends Phaser.Scene {
     const result=this.resultFeedback.snapshot(performance.now(),this.resultReduced);this.resultKey=result?.key;
     this.resultLayer?.destroy(true);this.resultLayer=undefined;this.resultNote=undefined;this.resultPlate=undefined;
     this.noticeLabel?.setVisible(!result);if(!result)return;
-    const p=this.geometry(),bottom=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-bottom'))||0,b=shopResultBox(p,this.view.layout.height,bottom);
+    const p=this.geometry();if(p.portrait)return;const bottom=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-bottom'))||0,b=shopResultBox(p,this.view.layout.height,bottom);
     const layer=this.add.container(0,0).setName('shop/result-layer');this.resultLayer=layer;
     // Keep the feedback slot quiet, but let the transaction state read at a glance
     // even when reduced motion is enabled or the player never opens the receipt.

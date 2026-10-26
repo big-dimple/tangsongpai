@@ -56,6 +56,6 @@ export function drawShopArt(scene:Phaser.Scene,view:SceneView,p:ReturnType<typeo
     // remains visible while the user scrolls the shelf.
     const bottom=Math.min(view.layout.height,p.play.y-8);
     shopSheet(scene,view,'mobile-shelf',{x:p.x-4,y:p.tabs.y-4,width:p.w+8,height:Math.max(44,bottom-p.tabs.y+8)},T.paperLight,true,true);
-    shopSheet(scene,view,'mobile-actions',{x:p.x-4,y:p.reroll.y-4,width:p.w+8,height:view.layout.height-p.reroll.y+4},T.jadeSoft,true,false);
+    shopSheet(scene,view,'mobile-actions',{x:p.x-4,y:p.play.y-4,width:p.w+8,height:view.layout.height-p.play.y+4},T.paperLight,false,false);
   }
 }

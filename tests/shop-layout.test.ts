@@ -61,8 +61,8 @@ it('portrait stock geometry and the compact owned rail stay clear of primary act
   const l=shopLayout(width,height,8,bottom,3);expect(l.shelf).toHaveLength(3);
   for(const b of l.shelf){expect(b.width).toBeGreaterThanOrEqual(l.copyBeside?60:88);expect(b.width).toBeLessThanOrEqual(108);expect(b.height/b.width).toBeCloseTo(1.25);const tile=shopOfferCopy(l,b,true).tile;expect(intersects(shopSharedContent(l,5)!,l.slots[0])).toBe(false);expect(intersects(tile,l.reroll)).toBe(false);}
   expect(l.slots.every(b=>b.height>=44)).toBe(true);
-  expect(l.play.y).toBeGreaterThan(l.reroll.y+l.reroll.height);expect(l.play.y+l.play.height).toBeLessThan(height-bottom);expect(l.play.height).toBeGreaterThanOrEqual(48);
-  if(!l.inventoryCollapsed)expect(l.slots[0].y+l.slots[0].height).toBeLessThan(l.build.y);
+  expect(l.play.y).toBeGreaterThan(l.reroll.y+l.reroll.height);expect(l.play.y+l.play.height).toBe(height-bottom);expect(l.play.height).toBeGreaterThanOrEqual(48);
+  if(!l.inventoryCollapsed)expect(l.slots[0].y+l.slots[0].height).toBeLessThan(l.play.y);
  }
 });
 
@@ -73,8 +73,8 @@ it('a purchased mobile rail folds into extra shelf space while the fixed arrow a
  expect(folded.inventoryCollapsed).toBe(true);
  const toggle='ownedToggle' in folded?folded.ownedToggle:undefined;
  expect(toggle).toBeDefined();
- expect(toggle!.y+toggle!.height).toBeLessThanOrEqual(folded.play.y);
- expect(intersects(toggle!,folded.play)).toBe(false);
+ expect(toggle!.y).toBe(folded.play.y);
+ expect(toggle!.x+toggle!.width).toBe(folded.play.x+folded.play.width);
  expect(intersects(toggle!,shopSharedContent(folded,5)!)).toBe(false);
  expect(folded.play).toEqual(expanded.play);
  expect(shopSharedContent(folded,5)!.height).toBeGreaterThan(shopSharedContent(expanded,5)!.height);
@@ -112,7 +112,7 @@ it('compact inventory names retain measured four-character14px room without cove
 it('toolbar stays fixed while advice shares the notice strip below the primary action',()=>{
  for(const [width,height,top,bottom] of [[320,568,12,0],[390,740,12,0],[844,300,12,34]]){
   const l=shopLayout(width,height,top,bottom,3,true);
-  if(width===320){expect(l.headerRows).toBe(2);expect(l.tabs).toEqual({x:12,y:108,width:296,height:44});expect(l.reroll).toEqual({x:90,y:56,width:72,height:44});expect(l.play).toEqual({x:12,y:460,width:296,height:56});expect(l.build).toEqual({x:204,y:524,width:104,height:44});expect(l.shelf[0]).toMatchObject({y:160,width:88,height:88*1.25});expect(l.build.width).toBe(104);expect(l.inventoryCollapsed).toBe(false);}
+  if(width===320){expect(l.headerRows).toBe(2);expect(l.tabs).toEqual({x:12,y:108,width:296,height:44});expect(l.reroll).toEqual({x:90,y:56,width:72,height:44});expect(l.play).toEqual({x:12,y:512,width:296,height:56});expect(l.build).toEqual({x:204,y:524,width:104,height:44});expect(l.shelf[0]).toMatchObject({y:160,width:88,height:88*1.25});expect(l.build.width).toBe(104);expect(l.inventoryCollapsed).toBe(false);}
   for(const b of l.shelf)expect(b.x).toBeGreaterThanOrEqual(0);
   for(const b of l.slots){const hit=shopOwnedHitBox(b,l.reroll.y,true);for(const a of [l.reroll,l.build,l.play])expect(intersects(hit,a)).toBe(false);}
  }
@@ -195,13 +195,12 @@ it('PC goods expand by final width and height, with bounded narrow pagination',(
  for(const [width,height,count] of [[500,272,4],[436,160,2],[256,112,2]]){const group={x:12,y:10,width,height},g=shopGoodsGrid(group,count);if(width>=436)expect(g.capacity).toBeGreaterThanOrEqual(count);else expect(g.capacity).toBe(1);for(const [i,b] of g.boxes.entries()){expect(b.x+b.width).toBeLessThanOrEqual(group.x+width);expect(b.y+b.height).toBeLessThanOrEqual(group.y+height);for(const other of g.boxes.slice(i+1))expect(intersects(b,other)).toBe(false);}}
 });
 
-it('phone advice shares the existing notice strip, preserves44px hits and gives stock the old separate advice space',()=>{
- for(const [width,height,bottom]of [[320,568,0],[390,740,0],[390,844,34],[699,900,34]])for(const owned of [0,5]){
-  const menu={x:width-56,y:12,width:44,height:44},p=shopLayout(width,height,12,bottom,3,true,false,0,0,owned,menu),shared=shopSharedContent(p,owned)!;
-  expect(p.build.x+p.build.width).toBe(p.x+p.w);expect(p.build.y).toBe(p.noticeY);expect(p.build.height).toBe(44);expect(p.build.y+p.build.height).toBeLessThanOrEqual(height-bottom);expect(p.play.height).toBeGreaterThanOrEqual(48);expect(p.play.y+p.play.height+8).toBeLessThanOrEqual(p.build.y);
-  expect(intersects(p.build,p.play)).toBe(false);expect(intersects(shared,p.build)).toBe(false);expect(intersects(shared,p.play)).toBe(false);
-  if(!owned||p.inventoryCollapsed)expect(shared.y+shared.height).toBe(p.play.y-8);
-  else for(const slot of p.slots){expect(intersects(slot,p.play)).toBe(false);expect(intersects(slot,p.build)).toBe(false);}
+it('phone footer gives all space above the single safe-area action row to stock or explicitly opened cards',()=>{
+ for(const height of [568,640,740,844])for(const bottom of [0,34]){
+ const folded=shopLayout(390,height,12,bottom,3,true,false,0,0,5,undefined,true),expanded=shopLayout(390,height,12,bottom,3,true,false,0,0,5,undefined,false);
+ expect(folded.play.y+folded.play.height).toBe(height-bottom);
+ expect(shopSharedContent(folded,5)!.y+shopSharedContent(folded,5)!.height).toBe(folded.play.y-8);
+ expect(shopSharedContent(folded,5)!.height-shopSharedContent(expanded,5)!.height).toBe(106);
  }
 });
 
