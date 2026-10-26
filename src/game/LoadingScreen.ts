@@ -84,13 +84,31 @@ export class LoadingScreen {
 }
 type Preparation={key:string;cancel:()=>void;promise:Promise<boolean>};
 const pending=new WeakMap<Phaser.Game,Preparation>();
+type PreparationView=Pick<LoadingScreen,'controls'|'recovery'|'finish'|'close'>;
 /** Only Boot owns a blocking preparation. Later scenes paint their fallbacks and share background warmup. */
 export function prepareDestination(game:Phaser.Game,key:string,_startup=false,existing?:LoadingScreen):Promise<boolean>{
  const old=pending.get(game);
  if(!existing){old?.cancel();return Promise.resolve(true);}
  if(old?.key===key)return old.promise;old?.cancel();
- const assets=openingResources(),view=existing;
- const owner=new AbortController(),cancel=()=>{if(pending.get(game)?.cancel===cancel)pending.delete(game);owner.abort();view.close();};
+ return startPreparation(game,key,existing);
+}
+
+/**
+ * Starts the same opening-image recovery owner without making navigation wait
+ * for it. Boot uses this after painting the title so a missing/slow optional
+ * image can be retried in the background while the real fallback UI remains
+ * usable.
+ */
+export function prepareDestinationBackground(game:Phaser.Game,key='title'):Promise<boolean>{
+ const old=pending.get(game);
+ if(old?.key===key)return old.promise;
+ old?.cancel();
+ return startPreparation(game,key);
+}
+
+function startPreparation(game:Phaser.Game,key:string,view?:PreparationView):Promise<boolean>{
+ const assets=openingResources();
+ const owner=new AbortController(),cancel=()=>{if(pending.get(game)?.cancel===cancel)pending.delete(game);owner.abort();view?.close();};
  const record={key,total:assets.length,loaded:0,failed:0,pending:assets.length,keys:assets.map(a=>a.key),status:'loading',round:0,retryInMs:0};
  game.registry.set('resourcePreparation',record);game.events.once('destroy',cancel);
  const entry:Preparation={key,cancel,promise:Promise.resolve(false)};
@@ -101,9 +119,9 @@ export function prepareDestination(game:Phaser.Game,key:string,_startup=false,ex
   const ranks=new Map(last.states.map(s=>[s.key,s.status==='queued'?0:s.status==='loading'?1:s.status==='failed'?2:3]));
   const ordered=[...assets].sort((a,b)=>(ranks.get(a.key)??0)-(ranks.get(b.key)??0));
   return prepareSceneResources(game,ordered,p=>{last=p;changed(p);},signal).then(p=>{last=p;return p;});
- },last,p=>{Object.assign(record,{loaded:p.loaded,failed:p.failed,pending:p.pending,status:p.status,round:p.round,retryInMs:p.retryInMs});view.recovery(p);},owner.signal);
- view.controls(()=>recovery.pause(),()=>recovery.resume());
- entry.promise=(async()=>{try{const ready=await recovery.run();if(!ready||owner.signal.aborted)return false;await view.finish(owner.signal);return !owner.signal.aborted;}finally{view.close();game.events.off('destroy',cancel);if(pending.get(game)===entry)pending.delete(game);}})();
+ },last,p=>{Object.assign(record,{loaded:p.loaded,failed:p.failed,pending:p.pending,status:p.status,round:p.round,retryInMs:p.retryInMs});view?.recovery(p);},owner.signal);
+ view?.controls(()=>recovery.pause(),()=>recovery.resume());
+ entry.promise=(async()=>{try{const ready=await recovery.run();if(!ready||owner.signal.aborted)return false;if(view)await view.finish(owner.signal);return !owner.signal.aborted;}finally{view?.close();game.events.off('destroy',cancel);if(pending.get(game)===entry)pending.delete(game);}})();
  pending.set(game,entry);return entry.promise;
 }
 export function cancelDestinationPreparation(game:Phaser.Game,key?:string):void {const current=pending.get(game);if(current&&(!key||current.key===key))current.cancel();}

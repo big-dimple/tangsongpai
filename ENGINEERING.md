@@ -126,7 +126,7 @@ tools/          离线素材工具
 - `GamepadInput` 只让方向导航连发，确认、出牌、弃牌、调序等按键每次按下仅执行一次；首次连接、断线重连和后台恢复须回到中立位置。未知映射不猜测键位。`GamepadNavigation` 只调用 `SceneView` 注册的有效操作及顶层原生弹窗控件，不模拟键盘、不绕过现有命令校验。关闭、切场景和换回鼠标／键盘会清理焦点表现；手柄提示显示时为牌桌保留独立底栏。
 - 有独立操作按钮的选择卡片通过 `WholeActionSurface` 将标题、说明与留白接入同一按钮；嵌套控件、禁用按钮及文本选择保持各自行为。点击选择卡片仍由原有确认流程决定是否提交。
 - 音频统一走应用级总线，处理解锁、后台 suspend、音量偏好和实例清理。
-- 资源使用注册表与 `BASE_URL`；源素材、运行时变体和预览文件分开，首屏只加载必要资源。
+- 资源使用注册表与 `BASE_URL`；源素材、运行时变体和预览文件分开，首屏只加载必要资源。`BootScene` 先关闭静态首屏并进入标题，旧局 IndexedDB 恢复与 opening 图片恢复由 `prepareDestinationBackground` 后台运行；缺图保留 `ResourceRecovery` 重试，不得阻塞新局入口。
 - 当前素材清单为 `docs/assets/inventory.json`，素材检查工具位于 `tools/blender/`。
 - 英雄文案数据为 `src/content/hero-text-spec.json`；清理文档不改其内容，也不将文案技能说明当成所有旧存档共用的规则。
 
