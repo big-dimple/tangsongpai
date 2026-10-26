@@ -19,7 +19,12 @@ const profiles={desktop:{width:1280,height:720},wide:{width:1920,height:1080},mo
 assert.ok(selectedProfiles.length&&new Set(selectedProfiles).size===selectedProfiles.length&&selectedProfiles.every(p=>profiles[p]),'known distinct viewport profiles');
 const expectedAmoIdentity=await currentNewRunIdentity('amo','group');
 const report={testedCommit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),dirty:execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim(),checks:[],physicalDevice:'NOT_RUN',humanAcceptance:'NOT_RUN'};
-const state=page=>page.evaluate(()=>window.__harness.game.registry.get('runController').state);
+// Boot deliberately enters the title while IndexedDB recovery continues in the
+// background.  After a reload the title scene can therefore be active for a
+// few frames before RunMenu's session subscription republishes the controller.
+// Wait for that eventual startup contract instead of turning the title back
+// into a blocking navigation gate.
+const state=async page=>{await page.waitForFunction(()=>!!window.__harness?.game.registry.get('runController'));return page.evaluate(()=>window.__harness.game.registry.get('runController').state);};
 const next=(page,seq)=>page.waitForFunction(seq=>window.__harness.game.registry.get('runController').state.commandSeq>seq&&window.__harness.game.registry.get('runController').status==='idle',seq);
 const ready=page=>page.waitForFunction(()=>{const s=window.__harness.game.scene.getScene('game');return s.scene.isActive()&&!s.playing&&s.cardViews.length>0;});
 const revealCard=async(page,id)=>{
