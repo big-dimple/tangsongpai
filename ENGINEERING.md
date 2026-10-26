@@ -121,6 +121,7 @@ tools/          离线素材工具
 - PC 牌桌与 PC/手机竖屏结算使用独立 `pc` purpose（沿用技术键，不替换既有 portrait/selection）：`public/assets/tangsong-pc-heroes/manifest.json` 注册六张 896×1120 带 alpha WebP（合计 1,794,950 字节）。`PcHeroArt` 按各自衣袖、双锤和剑的轮廓定义比例与水平落点，完整保留源画幅；PC 人物完整源画幅落在窄侧栏内并贴底，无人物背景色块；成绩与收益/按钮分列。
 - 透明图只在实际 PC 牌桌、商店英雄席、移动牌桌或 PC/手机竖屏结算请求当前英雄；复用原有受控图片队列与结果取消生命周期，不加入首页六人预加载。`portrait`、`selection` 与角色详情仍使用原路径，存档身份和玩法规则不变。
 - 手机竖屏结算由 `MobileSettlementPresentation` 独立绘制：人物/成绩主区、全宽奖励、去向和稳定按钮，紧凑屏压缩人物区而非把 PC 三栏缩小。长去向可点标题展开全文；失败、跳场、通关仍走真实既有操作。
+- 平板和短横屏的通用 `drawSettlement` 同样读取 `settlementFacts` 的末手牌型、实际打出的组合和计算解释；关键牌来源不得替代组合，`playedIds` 不等于 `activeScoringIds`。短屏通过既有结算滚动访问后续操作。`node harness/fallback-settlement.mjs` 验证 1024×768、740×390 的来源/多手累计/失败/跳过及 PC、手机竖屏回归，截图和报告写入忽略的 `shots/fallback-settlement`。
 - 通用图片加载器只对注册的 `pc` purpose 使用 400,000 字节、896×1120 像素限额，并继续校验键/URL/真实尺寸；其他图片保留原 128 KiB / 600,000 像素限额。
 - PC 牌桌与商店道具箱共用 `pcToolInventoryContent` 的 22px 图标轨道与独立文字区，12px 间隔、绝对定位，保留原按钮功能和手机样式。
 - `node tools/build-pc-hero-art.mjs <原图目录>` 可重建运行图及 SHA/alpha/来源映射。源图为用户 Desktop/lihui/table 六张 1122×1402 PNG，原文件保留在外部；不向 public 复制原图，不生成新人物，不裁头手或武器。WebP quality 84、alphaQuality 100、无放大。
