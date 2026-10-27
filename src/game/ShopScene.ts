@@ -201,7 +201,7 @@ export class ShopScene extends Phaser.Scene {
     const menu=document.querySelector('.run-menu-dock,.run-menu-toggle')?.getBoundingClientRect(),app=document.getElementById('app')!.getBoundingClientRect();
     const menuBox=menu&&menu.width&&menu.height?{x:(menu.x-app.x)*l.width/app.width,y:(menu.y-app.y)*l.height/app.height,width:menu.width*l.width/app.width,height:menu.height*l.height/app.height}:undefined;
     // Decoration never changes the functional shop bounds.
-    return shopLayout(l.width,l.height,l.hud.y,inset('bottom'),cols,this.run.jokers.some(j=>!!this.jokerCopy(j.definitionId)),!!firstChapterShopPrompt(this.run)&&this.ready,inset('left'),inset('right'),this.run.jokers.length,menuBox,this.ownedCollapsed,!window.matchMedia('(pointer: coarse)').matches);
+    return shopLayout(l.width,l.height,l.hud.y,inset('bottom'),cols,this.run.jokers.some(j=>!!this.jokerCopy(j.definitionId)),!!firstChapterShopPrompt(this.run)&&this.ready,inset('left'),inset('right'),this.run.jokers.length,menuBox,this.ownedCollapsed,typeof window!=='undefined'&&!window.matchMedia('(pointer: coarse)').matches);
   }
   create():void {
     this.hapticLife?.abort();this.hapticLife=new AbortController();
