@@ -113,6 +113,8 @@ import {JOKER_RARITY,createJokerRarityBadge} from './JokerRarity';
 import {mountF09Art} from './F09Art';
 import Phaser from 'phaser';
 import {handActionContent,handActionCountColor,pcHandActionContent} from './HandActionArt';
+import {mountPcActionArt,refreshPcActionArt} from './PcActionArt';
+import {wrapPcJokerSummary} from './PcJokerSummary';
 import {mountPcActionKeyboard} from './PcActionKeyboard';
 import {renderHandSortGroup,handAiButtonLabel} from './HandActionControls';
 import {r2JokerCapacity} from '../domain/r2Resources';
@@ -465,7 +467,7 @@ export class GameScene extends Phaser.Scene {
     });
     this.ownedInput=new OwnedJokerInput(this,{
       ready:()=>this.ownedReady,inspectable:()=>!this.playing&&!this.presentation&&this.run.phase==='await-input',
-      cards:()=>this.run.jokers.map((j,i)=>({...this.view.layout.slots[i],id:j.instanceId})),
+      cards:()=>{const l=this.view.layout;return this.run.jokers.map((j,i)=>{const slot=l.slots[i];return {...slot,width:l.pc?Math.min(l.jokers.width/5,l.jokers.x+l.jokers.width-slot.x):slot.width,id:j.instanceId};});},
       cancelCanvas:()=>{this.view.cancelInteraction();this.handInput?.cancel();},tap:id=>this.inspectJoker(id),
       lift:(id,x,y)=>this.liftOwned(id,x,y),move:(x,y)=>this.ownedDrag?.preview(x,y),
       drop:(id,x,y)=>this.dropOwned(id,x,y),cancel:()=>this.cancelOwned(),
@@ -726,6 +728,7 @@ export class GameScene extends Phaser.Scene {
     }
     this.discardButton=v.button(discardBox,'弃牌','action/discard',()=>void this.discardSelected(),this.ready&&this.selectedIds.size>0&&this.run.stage!.discardsLeft>=r2DiscardCost(this.run),false,'discard');
     this.playButton=v.button(l.tableActions.play,'出牌','action/play',()=>void this.playSelected(),this.ready&&this.selectedIds.size>0&&this.handsLeft>0,true,'play');
+    if(l.pc)for(const button of [this.discardButton,this.playButton,this.heroActionButton])if(button)mountPcActionArt(this,button);
     this.resourceCounts={} as Record<'play'|'discard',Phaser.GameObjects.Text>;
     for(const kind of ['play','discard'] as const){
       const b=kind==='discard'?discardBox:l.tableActions[kind],button=kind==='play'?this.playButton:this.discardButton;
@@ -846,18 +849,20 @@ export class GameScene extends Phaser.Scene {
     l.slots.forEach((b,i)=>{
       if(i>=r2JokerCapacity(this.run))return;
       const j=jokers[i];if(!j){
-        if(l.pc){v.add(this.add.graphics().lineStyle(1,T.divider,.55).strokeRoundedRect(b.x,b.y,b.width,b.height,6));v.text(b.x+b.width/2,b.y+b.height/2,'空槽 '+(i+1),14,C.mutedInk).setOrigin(.5);}
+        if(l.pc){v.add(this.add.graphics().lineStyle(1,T.divider,.55).strokeRoundedRect(b.x,b.y,b.width,b.height,6));v.text(b.x+b.width/2,b.y+b.height/2,'空槽 '+(i+1),14,'#46565c').setOrigin(.5);}
         return;
       }
       const d=this.jokerDefinition(j.definitionId),rarityStyle=JOKER_RARITY[d.rarity];
       if(l.pc){
-        const textX=b.x+b.width+10,textWidth=l.pc.main.width/5-b.width-28;
+        const textX=b.x+b.width+10,textWidth=l.jokers.width/5-b.width-28;
         const heading=v.text(textX,b.y+12,d.name,l.pc.compact?16:20,C.ink,textWidth).setFontStyle('bold').setName('pc/joker-name');
-        const summary=v.text(textX,heading.y+heading.height+10,d.description,l.pc.compact?14:16,C.mutedInk,textWidth).setName('pc/joker-rule');
-        if(summary.height>b.height-heading.height-38){
-          let end=d.description.length;
-          while(summary.height>b.height-heading.height-38&&end>0)summary.setText(d.description.slice(0,--end)+'…');
-        }
+        heading.setWordWrapWidth(0);for(let size=l.pc.compact?16:20;heading.width>textWidth&&size>14;)heading.setFontSize(--size);
+        if(heading.width>textWidth){let name=d.name;while(heading.width>textWidth&&name.length)heading.setText((name=name.slice(0,-1))+'…');}
+        const summarySize=l.pc.short&&l.height<700?12:l.pc.compact?14:16;
+        const summary=v.text(textX,heading.y+heading.height+8,d.description,summarySize,'#46565c',textWidth).setName('pc/joker-rule');
+        summary.setWordWrapWidth(0).setText('字');
+        const maxLines=Math.max(1,Math.floor((b.y+b.height-summary.y-4)/summary.height));
+        summary.setText(wrapPcJokerSummary(d.description,textWidth,maxLines,value=>{summary.setText(value);return summary.width;})).setData('fullText',d.description);
         const detail=v.rect({x:textX,y:b.y,width:textWidth,height:b.height}).setFillStyle(0,0).setStrokeStyle();
         v.target(detail,'pc/joker-details/'+j.instanceId,{tap:()=>this.inspectJoker(j.instanceId),detail:()=>this.inspectJoker(j.instanceId)});
       }
@@ -888,7 +893,8 @@ export class GameScene extends Phaser.Scene {
       v.target(hit,'joker/'+j.instanceId,{tap:()=>this.inspectJoker(j.instanceId),detail:()=>this.inspectJoker(j.instanceId),enter:()=>this.hoverJoker(j.instanceId,true),leave:()=>this.hoverJoker(j.instanceId,false)});
     });
     const first=l.slots[0],last=l.slots[jokers.length-1];
-    this.ownedInput?.setBounds(!this.presentation&&this.run.phase==='await-input'&&last?{x:first.x,y:first.y,width:last.x+last.width-first.x,height:first.height}:undefined);
+    const lastRight=last?(l.pc?Math.min(last.x+l.jokers.width/5,l.jokers.x+l.jokers.width):last.x+last.width):0;
+    this.ownedInput?.setBounds(!this.presentation&&this.run.phase==='await-input'&&last?{x:first.x,y:first.y,width:lastRight-first.x,height:first.height}:undefined);
     this.ownedInput?.surface.setAttribute('aria-label','持有唐宋牌：'+jokers.map(j=>this.jokerDefinition(j.definitionId).name).join('、')+'；左右键切换，Enter查看与调序');
   }
   private jokerMechanism(marker:Phaser.GameObjects.Container,x:number,y:number,size:number,joker:R2JokerInstance):void {
@@ -1387,6 +1393,7 @@ export class GameScene extends Phaser.Scene {
     this.resourceCounts.play.setVisible(!this.pendingRefill);this.resourceCounts.discard.setVisible(!this.pendingRefill);
     if(this.pendingRefill){this.view.setEnabled(this.aiButton,false);this.view.setEnabled(this.playButton,this.ready&&!this.refillHidden&&this.selectedIds.size===this.pendingRefill.required);(this.playButton.getData('label') as Phaser.GameObjects.Text).setText('确认留'+this.pendingRefill.required);this.view.setEnabled(this.discardButton,this.ready);(this.discardButton.getData('label') as Phaser.GameObjects.Text).setText(this.refillHidden?'继续选牌':'收起候选');}
     if(dragHint)this.statusText.setText(dragHint);
+    if(this.view.layout.pc)for(const button of [this.discardButton,this.playButton,this.heroActionButton])refreshPcActionArt(button);
     this.pcKeyboardActions?.update();
     // Balatro-style call-to-action: the playable state breathes a warm aura.
     const auraOn=!!this.playButton.input?.enabled&&this.selectedIds.size>0&&!this.presentation&&!this.playing;

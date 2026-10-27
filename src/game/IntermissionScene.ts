@@ -48,6 +48,7 @@ import {SKIP_ITEM_LABELS} from './ConsumableDialog';
 import type {Box} from './layout';
 import {PAPER_CSS,PAPER_THEME as T} from './theme';
 import {resultLayout} from './IntermissionLayout';
+import {drawPcSettlementArt} from './PcSettlementArt';
 import {mountResultViewport} from './IntermissionScroll';
 
 export interface IntermissionResult {cleared:boolean;stageIndex:number;stageHeat:string;handsLeft:number;goldEarned:number;failureCue?:FailureCue;rewardClearId?:string}
@@ -128,7 +129,7 @@ export class IntermissionScene extends Phaser.Scene {
     let p=resultLayout(l.width,l.height,0,preferred,pc);
     const nextStage=this.result.cleared&&run.phase==='stage-cleared'?getR2Stage(run.stageIndex,run.tourMode,run.difficulty,run):undefined,skipped=run.phase==='run-lost'?null:run.stage?.skipResult,won=run.phase==='run-won',capped=this.result.cleared&&run.phase==='stage-cleared'&&!nextStage,lost=!this.result.cleared&&!skipped&&!won;
     const animateIn=this.firstRender&&!gameSession().reducedMotion&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    this.releaseViewport?.();this.releaseViewport=undefined;this.stopCelebration();v.clear();this.paintSourceArt=undefined;this.sourceArtLayer=undefined;v.paperBackground();const backgroundCount=v.root.length;
+    this.releaseViewport?.();this.releaseViewport=undefined;this.stopCelebration();v.clear();this.paintSourceArt=undefined;this.sourceArtLayer=undefined;v.paperBackground();if(pc)drawPcSettlementArt(this,v);const backgroundCount=v.root.length;
     const content=this.resultContent=this.add.container(0,0).setName('result/content');
     const identity=stageIdentity(stage.index,run.stage!.boss,run.tourMode,run.difficulty,run)!;
     const stageLabel=v.text(p.x,p.top,(run.tourMode==='endless'?'无尽 · ':'')+stage.name+' · '+character.name,14,identity.isBoss?PAPER_CSS.red:PAPER_CSS.jade,p.w-116).setName('stage-identity/result');
@@ -139,9 +140,9 @@ export class IntermissionScene extends Phaser.Scene {
     const titleText=v.text(p.x,p.top+(p.short?22:28),title,p.pc?(l.width<1500?40:48):p.short||p.portrait&&identity.isBoss?22:p.portrait?26:34,identity.isBoss&&this.result.cleared?PAPER_CSS.red:PAPER_CSS.ink,p.w).setName('result/title').setFontFamily('Georgia, "Noto Serif SC", SimSun, serif').setFontStyle('bold');
     if(p.pc||mobile){titleText.setWordWrapWidth(0);for(let size=mobile?26:l.width<1500?40:48;titleText.width>(p.pc?p.w-36:p.w)&&size>(mobile?18:24);)titleText.setFontSize(--size);}
     if(p.pc){
-      titleText.setOrigin(.5,0).setX(p.x+p.w/2).setAlign('center').setColor(PAPER_CSS.paperLight);
-      const box=titleText.getBounds(),x=box.x-18,y=box.y-3,width=box.width+36,height=box.height+6,tone=lost||skipped||capped?0x3f606b:0x8d302a;
-      titlePlate!.fillStyle(T.ink,.15).fillRoundedRect(x,y+3,width,height,4).fillStyle(tone).fillRoundedRect(x,y,width,height,4).lineStyle(1,T.paperLight,.55).strokeRoundedRect(x+3,y+3,width-6,height-6,3);
+      titleText.setOrigin(.5,0).setX(p.x+p.w/2).setAlign('center').setColor(lost||skipped||capped?PAPER_CSS.jade:PAPER_CSS.red);
+      const box=titleText.getBounds(),center=box.x+box.width/2,y=box.y+box.height+2,tone=lost||skipped||capped?T.jade:T.red;
+      titlePlate!.lineStyle(2,tone,.55).lineBetween(center-42,y,center+42,y);
     }
     const paperHeight=this.drawResultHero(p.score,!!skipped,lost,animateIn);
     p=resultLayout(l.width,l.height,0,paperHeight,pc);
