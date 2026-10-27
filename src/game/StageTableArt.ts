@@ -30,13 +30,26 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
  const plan=stageTableArtPlan(view.layout);
  if(view.layout.pc){
   const l=view.layout,{frame,main,build}=l.pc!,g=scene.add.graphics().setName('table-art/pc-paper').setData('bounds',frame);
-  const right=main.x+main.width;
-  g.lineStyle(1,T.divider,.8).lineBetween(main.x-16,frame.y,main.x-16,frame.y+frame.height);
-  g.lineStyle(1,T.divider,.8).lineBetween(main.x,build.y+build.height+8,right,build.y+build.height+8);
-  g.fillStyle(T.paperLight,.8).fillRoundedRect(l.scoreBoard.x,l.scoreBoard.y,l.scoreBoard.width,l.scoreBoard.height,8);
-  g.lineStyle(1,T.divider,.75).strokeRoundedRect(l.scoreBoard.x,l.scoreBoard.y,l.scoreBoard.width,l.scoreBoard.height,8);
-  g.lineStyle(1,T.divider,.8).lineBetween(main.x,l.actions.y-10,right,l.actions.y-10);
-  g.lineStyle(2,T.red,.65).lineBetween(main.x,frame.y-14,main.x+48,frame.y-14);
+  // Layered lacquer surround, warm card trays and a quiet jade playing field.
+  // Every painted surface follows existing hit geometry and has no input.
+  g.fillStyle(0x253e40).fillRect(0,0,l.width,l.height);
+  g.fillStyle(0x172d30,.65).fillRoundedRect(frame.x-12,frame.y-12,frame.width+24,frame.height+24,18);
+  g.fillStyle(0xe9ddc7).fillRoundedRect(frame.x-8,frame.y-16,frame.width+16,frame.height+24,14);
+  g.lineStyle(2,0x9a8261,.8).strokeRoundedRect(frame.x-7,frame.y-15,frame.width+14,frame.height+22,13);
+  g.fillStyle(0xf7f0e4).fillRoundedRect(l.hud.x,l.hud.y,l.hud.width,frame.height,9);
+  g.lineStyle(1,0xc4b397).strokeRoundedRect(l.hud.x+.5,l.hud.y+.5,l.hud.width-1,frame.height-1,9);
+  g.fillStyle(0xe1d3bc).fillRoundedRect(build.x,build.y-4,build.width,build.height+8,9);
+  g.lineStyle(1,0xb4a083,.8).strokeRoundedRect(build.x+.5,build.y-3.5,build.width-1,build.height+7,9);
+  const stage=l.playedArea;
+  g.fillStyle(0xc6d7cf).fillRoundedRect(stage.x,stage.y,stage.width,stage.height,10);
+  g.lineStyle(2,0x718f88,.7).strokeRoundedRect(stage.x+1,stage.y+1,stage.width-2,stage.height-2,9);
+  g.lineStyle(1,0xf6f1e5,.6).strokeRoundedRect(stage.x+5,stage.y+5,stage.width-10,stage.height-10,6);
+  g.fillStyle(0x26313a,.12).fillRoundedRect(l.scoreBoard.x,l.scoreBoard.y+3,l.scoreBoard.width,l.scoreBoard.height,9);
+  g.fillStyle(0xfff9ee).fillRoundedRect(l.scoreBoard.x,l.scoreBoard.y,l.scoreBoard.width,l.scoreBoard.height,9);
+  g.lineStyle(1,0xb4a083).strokeRoundedRect(l.scoreBoard.x+.5,l.scoreBoard.y+.5,l.scoreBoard.width-1,l.scoreBoard.height-1,9);
+  g.fillStyle(0xf6eee0).fillRoundedRect(main.x,l.hand.y-8,main.width,l.actions.y+l.actions.height-l.hand.y+16,9);
+  g.lineStyle(1,0xc4b397,.8).strokeRoundedRect(main.x+.5,l.hand.y-7.5,main.width-1,l.actions.y+l.actions.height-l.hand.y+15,9);
+  g.lineStyle(3,T.red,.8).lineBetween(main.x+12,frame.y-9,main.x+64,frame.y-9);
   view.add(g);
   return;
  }

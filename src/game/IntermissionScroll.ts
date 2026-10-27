@@ -7,11 +7,11 @@ import {resultPlacement} from './IntermissionLayout';
 import {PAPER_CSS,PAPER_THEME} from './theme';
 import type {Box} from './layout';
 
-function measuredContent(content:Phaser.GameObjects.Container):Box {
+function measuredContent(content:Phaser.GameObjects.Container,pc:boolean):Box {
   const boxes:Box[]=[];
   const walk=(list:Phaser.GameObjects.GameObject[])=>{for(const object of list){
     const item=object as Phaser.GameObjects.Image&{list?:Phaser.GameObjects.GameObject[]};
-    if(!item.visible)continue;
+    if(!item.visible||pc&&item.name==='result-art/stage')continue;
     if(item.list){walk(item.list);continue;}
     // Graphics without an explicit paper box report the origin, not their drawn bounds.
     const box=item.getData('bounds')??(item.type==='Graphics'?undefined:item.getBounds());
@@ -23,9 +23,9 @@ function measuredContent(content:Phaser.GameObjects.Container):Box {
 
 /** Local result scrolling; no saved state, camera movement or shared scene input changes. */
 export function mountResultViewport(scene:Phaser.Scene,view:SceneView,content:Phaser.GameObjects.Container,top:number,bottom:number,offset:number,remember:(offset:number)=>void){
-  const pc=pcResultViewport(view.layout.width,view.layout.height)||mobileResultViewport(view.layout.width,view.layout.height);
-  const bounds=measuredContent(content),initial=resultPlacement(top,bottom,bounds,offset,pc);
-  const readingBottom=bottom-(initial.overflow>0?22:0),placement=resultPlacement(top,readingBottom,bounds,offset,pc);
+  const anchorTop=mobileResultViewport(view.layout.width,view.layout.height);
+  const bounds=measuredContent(content,pcResultViewport(view.layout.width,view.layout.height)),initial=resultPlacement(top,bottom,bounds,offset,anchorTop);
+  const readingBottom=bottom-(initial.overflow>0?22:0),placement=resultPlacement(top,readingBottom,bounds,offset,anchorTop);
   const canvas=scene.game.canvas,mask=view.add(scene.add.graphics().setVisible(false));
   mask.fillStyle(0xffffff).fillRect(0,top,view.layout.width,readingBottom-top);
   content.setMask(mask.createGeometryMask());
@@ -33,7 +33,7 @@ export function mountResultViewport(scene:Phaser.Scene,view:SceneView,content:Ph
   const rail=placement.overflow>0?view.add(scene.add.graphics()).setName('result-scroll/rail'):undefined;
   let scroll=placement.scroll,drag:{id:number;y:number;offset:number;moving:boolean}|undefined;
   const update=(next:number)=>{
-    const p=resultPlacement(top,readingBottom,bounds,next,pc);scroll=p.scroll;content.y=p.y;remember(scroll);
+    const p=resultPlacement(top,readingBottom,bounds,next,anchorTop);scroll=p.scroll;content.y=p.y;remember(scroll);
     content.setData('viewport',{top,bottom:readingBottom,contentTop:bounds.y,contentHeight:bounds.height,overflow:p.overflow,scroll});
     if(hint)hint.setText(scroll>=p.overflow-1?'已到末尾 · 可继续':'上下滑动查看结算');
     if(rail){const h=readingBottom-top,thumb=Math.max(32,h*h/bounds.height);rail.clear().fillStyle(PAPER_THEME.jade,.35).fillRoundedRect(Math.min(view.layout.width-5,bounds.x+bounds.width+5),top+(h-thumb)*scroll/p.overflow,3,thumb,1.5);}

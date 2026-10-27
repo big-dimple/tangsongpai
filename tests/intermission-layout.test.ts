@@ -1,5 +1,6 @@
 import {expect,it} from 'vitest';
 import {resultLayout,resultPlacement} from '../src/game/IntermissionLayout';
+import {pcLandscapeFrame} from '../src/game/PcLandscapeFrame';
 
 it.each([[1366,768],[1440,900],[1920,1080]])('centers the actual complete result inside the usable %sx%s viewport',(width,height)=>{
  const p=resultLayout(width,height,0,301),content={y:0,height:381},placed=resultPlacement(60,height-16,content);
@@ -26,9 +27,11 @@ it.each([[1920,1080],[1920,924],[1366,768],[1180,640]])('PC result centers the h
  expect(p.pc).toBe(true);
  expect(p.score.width).toBeGreaterThanOrEqual(580);
  expect(p.score.width).toBeLessThanOrEqual(920);
- expect(p.score.x+p.score.width/2).toBe(width/2);
- expect(p.next.x+p.next.width/2).toBe(width/2);
- expect(p.primary.x+p.primary.width/2).toBe(width/2);
+ const grid=pcLandscapeFrame(width,height),sideX=p.score.x-grid.gap-grid.sidebar.width;
+ expect(sideX).toBeGreaterThanOrEqual(grid.frame.x);
+ expect((sideX+p.score.x+p.score.width)/2).toBe(width/2);
+ expect(p.next.x+p.next.width/2).toBe(p.score.x+p.score.width/2);
+ expect(p.primary.x+p.primary.width/2).toBe(p.score.x+p.score.width/2);
  expect(p.score.y).toBeGreaterThanOrEqual(92);
  for(const b of [p.primary,p.left,p.right]){
   expect(b.y+safeTop).toBeGreaterThan(0);

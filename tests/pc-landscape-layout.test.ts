@@ -17,21 +17,27 @@ it.each([[1920,1080],[1920,924],[1366,768],[1280,640],[1180,640]])('PC %sx%s foo
   for(const b of controls.slice(i+1))expect(intersects(a,b)).toBe(false);
  }
 });
-it.each([[1920,1080],[1920,924]])('PC %sx%s keeps the build, score, played hand, hand and actions in a single reading column',(width,height)=>{
+it.each([[1920,1080],[1920,924]])('PC %sx%s keeps a compact rack and a shared score/played band above the hand',(width,height)=>{
  const l=layout({width,height},safe,undefined,{count:8},{pc:true});expect(l.pc).toBeDefined();
  expect(l.pc!.short).toBe(false);
  const lanes=[l.jokers,l.scoreBoard,l.playedArea,l.hand,l.actions];
- for(const lane of lanes){expect(lane.x).toBe(l.pc!.main.x);expect(lane.width).toBe(l.pc!.main.width);expect(lane.height).toBeGreaterThan(20);}
+ expect(l.jokers.width).toBe(1100);expect(l.jokers.x+l.jokers.width/2).toBe(l.pc!.main.x+l.pc!.main.width/2);
+ expect(l.scoreBoard.x+l.scoreBoard.width+24).toBe(l.playedArea.x);
+ expect(l.scoreBoard.y).toBeGreaterThanOrEqual(l.playedArea.y);
+ expect(l.scoreBoard.y+l.scoreBoard.height).toBeLessThanOrEqual(l.playedArea.y+l.playedArea.height);
+ for(const lane of lanes)expect(lane.height).toBeGreaterThan(20);
  for(const [i,lane] of lanes.entries())for(const other of lanes.slice(i+1))expect(intersects(lane,other)).toBe(false);
  expect(l.playedArea.y+l.playedArea.height).toBeLessThanOrEqual(l.handLabel.y-8);
  const controls=[...Object.values(l.tableActions),...Object.values(l.buttons),l.heroAction!];
  for(const [i,b]of controls.entries()){expect(b.width).toBeGreaterThanOrEqual(44);expect(b.height).toBeGreaterThanOrEqual(44);for(const other of controls.slice(i+1))expect(intersects(b,other)).toBe(false);}
  for(const b of [...lanes,l.pc!.heroPortrait,...controls,...l.slots] as Box[]){expect(b.x).toBeGreaterThanOrEqual(0);expect(b.x+b.width).toBeLessThanOrEqual(width);expect(b.y+b.height).toBeLessThanOrEqual(height);}
- expect(l.hud.width).toBeLessThan(width*.21);expect(l.pc!.main.width).toBeGreaterThan(width*.73);
+ expect(l.hud.width).toBeLessThan(width*.21);expect(l.pc!.frame.width).toBe(1600);
+ expect(l.pc!.frame.x+l.pc!.frame.width/2).toBe(width/2);
+ expect(l.pc!.main.width).toBeGreaterThanOrEqual(1200);
 });
 it('1920 main composition spends the width on cards and keeps the hero subordinate',()=>{
  const l=layout({width:1920,height:1080},safe,undefined,{count:8},{pc:true});
- expect(l.cards[0].visual.width).toBeGreaterThanOrEqual(140);expect(l.slots[0].width).toBeGreaterThanOrEqual(130);
+ expect(l.cards[0].visual.width).toBeGreaterThanOrEqual(140);expect(l.slots[0].width).toBe(100);
  expect(l.pc!.heroPortrait.width).toBeLessThan(320);expect(l.playedArea.height).toBeGreaterThan(130);
 });
 it('does not enable PC composition for phones or primary coarse pointer callers',()=>{
@@ -41,7 +47,7 @@ it('does not enable PC composition for phones or primary coarse pointer callers'
 it.each([[1180,640],[1280,640],[1280,720],[1920,700],[1920,710],[1366,768]])('short PC %sx%s gives real played cards room above every hand hit',(width,height)=>{
  const l=layout({width,height},safe,undefined,{count:8},{pc:true});
  expect(l.pc?.short).toBe(true);
- expect(l.scoreBoard.y).toBe(l.playedArea.y);
+ expect(l.scoreBoard.y).toBeGreaterThanOrEqual(l.playedArea.y);
  expect(l.playedArea.x).toBeGreaterThanOrEqual(l.scoreBoard.x+l.scoreBoard.width+24);
  expect(l.playedArea.height).toBeGreaterThanOrEqual(100);
  expect(l.playedArea.width).toBeGreaterThanOrEqual(480);
