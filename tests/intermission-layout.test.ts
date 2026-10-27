@@ -1,5 +1,5 @@
 import {expect,it} from 'vitest';
-import {resultLayout,resultPlacement} from '../src/game/IntermissionLayout';
+import {pcResultSidebar,resultLayout,resultPlacement} from '../src/game/IntermissionLayout';
 import {pcLandscapeFrame} from '../src/game/PcLandscapeFrame';
 
 it.each([[1366,768],[1440,900],[1920,1080]])('centers the actual complete result inside the usable %sx%s viewport',(width,height)=>{
@@ -27,7 +27,7 @@ it.each([[1920,1080],[1920,924],[1366,768],[1180,640]])('PC result centers the h
  expect(p.pc).toBe(true);
  expect(p.score.width).toBeGreaterThanOrEqual(580);
  expect(p.score.width).toBeLessThanOrEqual(920);
- const grid=pcLandscapeFrame(width,height),sideX=p.score.x-grid.gap-grid.sidebar.width;
+ const grid=pcLandscapeFrame(width,height),sidebar=pcResultSidebar(width,height),sideX=p.score.x-grid.gap-sidebar.width;
  expect(sideX).toBeGreaterThanOrEqual(grid.frame.x);
  expect((sideX+p.score.x+p.score.width)/2).toBe(width/2);
  expect(p.next.x+p.next.width/2).toBe(p.score.x+p.score.width/2);
@@ -39,4 +39,11 @@ it.each([[1920,1080],[1920,924],[1366,768],[1180,640]])('PC result centers the h
   expect(b.x+b.width).toBeLessThanOrEqual(width-28);
  }
  expect(resultPlacement(safeTop,height-16,{y:0,height:p.noticeY+24},0,true).overflow).toBe(0);
+});
+
+it.each([[1180,640],[1366,768],[1920,1080]])('PC result reserves a wide full-body hero stage without shrinking the receipt at %sx%s',(width,height)=>{
+ const sidebar=pcResultSidebar(width,height),p=resultLayout(width,height,0,301,true);
+ expect(sidebar.width).toBeGreaterThanOrEqual(288);
+ expect(p.score.width).toBeGreaterThanOrEqual(580);
+ expect(sidebar.width+p.score.width).toBeLessThanOrEqual(width-56);
 });

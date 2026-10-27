@@ -1,6 +1,12 @@
 import type {Box} from './layout';
 import {pcLandscapeFrame} from './PcLandscapeFrame';
 
+/** Result-only hero stage: wider than the table rail, without moving other PC scenes. */
+export function pcResultSidebar(width:number,height:number){
+ const grid=pcLandscapeFrame(width,height),sidebarWidth=Math.min(width<1500?288:width<1800?352:400,grid.frame.width*.26);
+ return {...grid.sidebar,width:sidebarWidth};
+}
+
 /** Measure the complete result, then place it inside the safe reading viewport. */
 export function resultPlacement(top:number,bottom:number,content:Pick<Box,'y'|'height'>,offset=0,anchorTop=false){
   const available=Math.max(1,bottom-top),overflow=Math.max(0,content.height-available);
@@ -10,10 +16,10 @@ export function resultPlacement(top:number,bottom:number,content:Pick<Box,'y'|'h
 
 export function resultLayout(width:number,height:number,top:number,contentHeight:number,pc=false){
   if(pc){
-    const grid=pcLandscapeFrame(width,height),w=Math.min(920,grid.frame.width-grid.sidebar.width-grid.gap);
+    const grid=pcLandscapeFrame(width,height),sidebar=pcResultSidebar(width,height),w=Math.min(920,grid.frame.width-sidebar.width-grid.gap);
     // Balance the portrait and reading column together, not each against the viewport.
-    const groupWidth=grid.sidebar.width+grid.gap+w;
-    const x=grid.frame.x+(grid.frame.width-groupWidth)/2+grid.sidebar.width+grid.gap,bodyY=top+92;
+    const groupWidth=sidebar.width+grid.gap+w;
+    const x=grid.frame.x+(grid.frame.width-groupWidth)/2+sidebar.width+grid.gap,bodyY=top+92;
     // Result content is later translated below the browser/menu safe row.
     const actionWidth=Math.min(420,w),actionX=x+(w-actionWidth)/2;
     const primary:Box={x:actionX,y:height-224,width:actionWidth,height:56};
@@ -47,4 +53,3 @@ export function resultLayout(width:number,height:number,top:number,contentHeight
     left:{x:actionX,y:auxY,width:auxWidth,height:44},right:{x:actionX+auxWidth+8,y:auxY,width:auxWidth,height:44},
     noticeY:Math.max(next.y+next.height,auxY+44)+4};
 }
-
