@@ -16,6 +16,14 @@ it('a real multi-hand clear keeps the stage headline separate from the last-hand
  expect(BigInt(facts.stageTotal)).toBe(BigInt(f.state.stage!.heat)+BigInt(facts.trace!.finalScore));
  expect(BigInt(facts.stageTotal)).toBeGreaterThan(BigInt(facts.trace!.finalScore));expect(JSON.stringify(run)).toBe(before);
 });
+it('a key source never narrows the saved combination to effective scoring cards',()=>{
+ const f=supportSettlementReady(),run=energySend(f.state,{...f.action,selectedIds:f.action.selectedIds.slice(0,4)}),before=JSON.stringify(run);
+ const facts=settlementFacts(run,true);
+ expect(readCheckpoint(makeCheckpoint(run,[])).ok).toBe(true);expect(facts.card).toBeDefined();
+ expect(run.lastTrace!.sets.playedIds).toHaveLength(4);expect(run.lastTrace!.sets.activeScoringIds).toHaveLength(3);
+ expect(facts.handLabel).toBe('三条');expect(facts.handCards).toBe('K♠  K♥  K♣  9♠');
+ expect(facts.scoreExplanation).toContain(run.lastTrace!.finalScore);expect(JSON.stringify(run)).toBe(before);
+});
 it('same-source heat additions stay additions, including the already saved growth at cap',()=>{
  const run=settle('ordinary'),before=JSON.stringify(run),f=settlementFacts(run,true);
  expect(f.card?.id).toBe('c04');expect(f.cardCopy).toBe('热度 +50\n读取 +100 热度');
