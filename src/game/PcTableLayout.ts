@@ -18,10 +18,13 @@ export function pcTableAreas(viewport:{width:number;height:number},safe:Insets,h
  const count=Number.isSafeInteger(handWindow.count)&&handWindow.count>=0?handWindow.count:8;
  const status=box(main.x,frame.y+frame.height-20,main.width,20);
  const actionHeight=64,actionY=status.y-actionHeight-12;
- const actions=box(main.x,actionY,main.width,actionHeight),tools=box(main.x+(main.width-198)/2,actionY,198,64);
+ // Keep the three main actions together beneath the centred hand, regardless
+ // of the width of the surrounding table. The skill has its own adjacent hit.
+ const actions=box(main.x,actionY,main.width,actionHeight),gap=10,actionWidth=164,sortWidth=198;
+ const groupWidth=actionWidth*2+sortWidth+gap*2,groupX=main.x+(main.width-groupWidth)/2;
+ const tools=box(groupX+actionWidth+gap,actionY,sortWidth,64);
  const buttons={rank:box(tools.x,tools.y+14,66,50),suit:box(tools.x+66,tools.y+14,66,50),ai:box(tools.x+132,tools.y+14,66,50)};
- const actionWidth=compact?164:208;
- const tableActions={discard:box(main.x,actionY,actionWidth,64),play:box(main.x+main.width-actionWidth,actionY,actionWidth,64)};
+ const tableActions={discard:box(groupX,actionY,actionWidth,64),play:box(tools.x+tools.width+gap,actionY,actionWidth,64)};
  const footer={actions,tools,buttons,tableActions};
  const cardWidth=Math.min(142,Math.max(96,(height-420)/4)),handHeight=cardWidth*1.4+28;
  const hand=box(main.x,actionY-20-handHeight,main.width,handHeight);
@@ -31,8 +34,8 @@ export function pcTableAreas(viewport:{width:number;height:number},safe:Insets,h
  const fullRackWidth=Math.min(138,Math.max(80,(height-350)/4.2));
  const stackedLandingHeight=hand.y-40-(main.y+fullRackWidth*1.4+32+16+(compact?92:112)+12);
  const short=stackedLandingHeight<64*1.4+14;
- const heroRight=tableActions.play.x-16,heroWidth=Math.min(224,heroRight-(tools.x+tools.width+16));
- const heroAction=box(heroRight-heroWidth,actionY+10,heroWidth,44);
+ const heroX=tableActions.play.x+tableActions.play.width+12;
+ const heroAction=box(heroX,actionY+10,Math.min(160,main.x+main.width-heroX),44);
  const handLabel=box(main.x,hand.y-28,160,22);
  const piles=box(main.x+170,hand.y-28,main.width-170,22);
  // In the side-by-side layout, give the build the remaining height after a

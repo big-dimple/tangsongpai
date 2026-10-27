@@ -1,13 +1,15 @@
 import {expect,it} from 'vitest';
 import {layout,intersects,type Box} from '../src/game/layout';
 const safe={top:0,right:0,bottom:0,left:0};
-it.each([[1920,1080],[1920,924],[1366,768],[1280,640],[1180,640]])('PC %sx%s footer follows discard, sorting, skill, play without overlapping targets',(width,height)=>{
+it.each([[1920,1080],[1920,924],[1366,768],[1280,640],[1180,640]])('PC %sx%s footer keeps discard, sorting and play compact beneath the hand, with a separate skill',(width,height)=>{
  const l=layout({width,height},safe,undefined,{count:8},{pc:true}),{discard,play}=l.tableActions;
- expect(l.pc).toBeDefined();expect(discard.x).toBe(l.actions.x);expect(play.x+play.width).toBe(l.actions.x+l.actions.width);
+ expect(l.pc).toBeDefined();expect((discard.x+play.x+play.width)/2).toBe(l.hand.x+l.hand.width/2);
+ expect(play.x+play.width-discard.x).toBe(546);
  expect(l.tools.x+l.tools.width/2).toBe(l.actions.x+l.actions.width/2);
- expect(discard.x+discard.width+16).toBeLessThanOrEqual(l.tools.x);
- expect(l.tools.x+l.tools.width+16).toBeLessThanOrEqual(l.heroAction!.x);
- expect(l.heroAction!.x+l.heroAction!.width+16).toBeLessThanOrEqual(play.x);
+ expect(l.tools.x-(discard.x+discard.width)).toBe(10);
+ expect(play.x-(l.tools.x+l.tools.width)).toBe(10);
+ expect(l.heroAction!.x-(play.x+play.width)).toBe(12);
+ expect(l.heroAction!.x+l.heroAction!.width).toBeLessThanOrEqual(l.pc!.main.x+l.pc!.main.width);
  const controls=[discard,...Object.values(l.buttons),l.heroAction!,play];
  for(const [i,a] of controls.entries()){
   expect(a.width).toBeGreaterThanOrEqual(44);expect(a.height).toBeGreaterThanOrEqual(44);
@@ -69,4 +71,16 @@ it('short-PC breakpoint uses height remaining after browser safe insets',()=>{
  const l=layout({width:1280,height:740},{...safe,top:50,bottom:50},undefined,{count:8},{pc:true});
  expect(l.pc?.short).toBe(true);expect(l.playedArea.height).toBeGreaterThanOrEqual(100);
  for(const card of l.cards)expect(intersects(l.playedArea,card.hit)).toBe(false);
+});
+
+it('keeps the complete compact actions and skill within the main column at minimum usable size with safe insets',()=>{
+ const inset={top:24,bottom:34,left:12,right:12};
+ const l=layout({width:1204,height:698},inset,undefined,{count:8},{pc:true});
+ expect(l.pc).toBeDefined();
+ const {discard,play}=l.tableActions;
+ expect(play.x+play.width-discard.x).toBe(546);
+ expect(l.heroAction.x-(play.x+play.width)).toBe(12);
+ expect(l.heroAction.width).toBeGreaterThanOrEqual(140);
+ expect(l.heroAction.x+l.heroAction.width).toBeLessThanOrEqual(l.pc!.main.x+l.pc!.main.width);
+ for(const a of [discard,play,...Object.values(l.buttons),l.heroAction])for(const card of l.cards)expect(intersects(a,card.hit)).toBe(false);
 });

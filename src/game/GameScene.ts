@@ -709,7 +709,7 @@ export class GameScene extends Phaser.Scene {
     this.previousHandText=v.text(portrait?p.x+10:h.x+12,portrait?p.y+p.height-20:h.y+(short?301:510),'',14,portrait?'#eddfbf':C.brass,portrait?p.width-20:h.width-24).setVisible(false);
     this.handCountText=v.text(l.handLabel.x,l.handLabel.y,'',14,'#f0e6cb').setVisible(!portrait&&l.labelHeight>0);
     this.pileText=v.text(l.piles.x+l.piles.width,l.piles.y,'',14,'#c8d4c7').setOrigin(1,0).setVisible(!portrait&&l.labelHeight>0);
-    renderHandSortGroup(this,v,l.tools);
+    renderHandSortGroup(this,v,l.tools,!!l.pc);
     this.rankButton=v.button(l.buttons.rank,'点数','action/sort-rank',()=>void this.sortHand('rank'),this.ready,false,'sort');
     this.suitButton=v.button(l.buttons.suit,'花色','action/sort-suit',()=>void this.sortHand('suit'),this.ready,false,'sort');
     this.aiButton=v.button(l.buttons.ai,handAiButtonLabel('ready'),'selection/switch-type',()=>this.switchHandType(),false,false,'sort');
@@ -744,7 +744,7 @@ export class GameScene extends Phaser.Scene {
     inventoryFeedback(this,this.inventoryButton,this.run,this.ready,this.reducedMotion,!!l.pc);
     this.controlsLive=true;
     this.updateHud();this.renderHand();this.ownedDrag?.rebind();this.mountSceneHeroPortrait();this.mountStageGiftDelivery();
-    if(l.pc){const entries=[{id:'discard',target:this.discardButton},{id:'rank',target:this.rankButton},{id:'suit',target:this.suitButton},{id:'ai',target:this.aiButton},...(this.heroActionButton?[{id:'skill',target:this.heroActionButton}]:[]),{id:'play',target:this.playButton}].map(entry=>({...entry,activate:()=>v.activateTarget(entry.target)}));this.pcKeyboardActions=mountPcActionKeyboard(this,l,entries,keyboardFocus);}
+    if(l.pc){const entries=[{id:'discard',target:this.discardButton},{id:'rank',target:this.rankButton},{id:'suit',target:this.suitButton},{id:'ai',target:this.aiButton},{id:'play',target:this.playButton},...(this.heroActionButton?[{id:'skill',target:this.heroActionButton}]:[])].map(entry=>({...entry,activate:()=>v.activateTarget(entry.target)}));this.pcKeyboardActions=mountPcActionKeyboard(this,l,entries,keyboardFocus);}
   }
   private mountSceneHeroPortrait():void {
     const l=this.view.layout,area=l.pc?.heroPortrait??heroPortraitArea(l),holder=this.view.add(this.add.container(0,0).setName('hero/portrait-holder'));
