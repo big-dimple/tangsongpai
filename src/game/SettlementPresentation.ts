@@ -23,6 +23,7 @@ import type {Box} from './layout';
 import {savedSkillName,strongestJokerFactor,settlementBeat} from './SettlementHighlights';
 import {reviewBookReceipt} from './ReviewBookReceipt';
 import {goodsArtKey} from './GoodsArtLoading';
+import {drawSettlementHand} from './SettlementHand';
 
 const scoring=(e:ScoreEvent)=>!['base','finalScore','afterHand','onStageClear','beforeFailure'].includes(e.phase);
 const increased=(e:ScoreEvent,metric:'H'|'M')=>Rational.fromJSON(e.after[metric]).compare(Rational.fromJSON(e.before[metric]))>0;
@@ -112,8 +113,8 @@ export function drawSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2Run
  // when a joker owns the separate contribution panel below.
  let receiptBottom=receiptText.y+receiptText.height;
  if(facts.handLabel){
-  const combination=fit(view,main.x,receiptBottom+3,'使用组合 · '+facts.handCards,14,main.width,C.ink,'result/hand-combo');
-  const calculation=fit(view,main.x,combination.y+combination.height+3,'末手计算 · '+facts.scoreExplanation,14,main.width,C.jade,'result/score-explanation');
+  const combination=drawSettlementHand(view,facts.trace!,main.x,receiptBottom+3,main.width,14);
+  const calculation=fit(view,main.x,combination.bottom+3,'末手计算 · '+facts.scoreExplanation,14,main.width,C.jade,'result/score-explanation');
   receiptBottom=calculation.y+calculation.height;
  }
  if(p.desktop&&facts.tier>=2)fit(view,main.x+main.width,main.y,facts.tag,14,main.width*.45,C.red,'result/tier').setOrigin(1,0);

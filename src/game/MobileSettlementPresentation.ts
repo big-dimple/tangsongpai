@@ -6,6 +6,7 @@ import type {settlementFacts} from './SettlementPresentation';
 import {pcHeroKey} from './PcHeroArt';
 import {heatText} from './scoreText';
 import {PAPER_CSS as C,SCORE_FONT} from './theme';
+import {drawSettlementHand} from './SettlementHand';
 
 export const mobileResultViewport=(width:number,height:number)=>width<700&&height>width;
 /** A vertical result: hero/score masthead, full-width receipt, then destination and actions. */
@@ -25,8 +26,8 @@ export function drawMobileSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run
  let infoBottom=target.y+target.height;
  if(facts.handLabel){
   const hand=fit(textX,infoBottom+8,'本手牌型 · '+facts.handLabel,15,textWidth,C.ink,'result/hand-type').setFontStyle('bold');
-  const combo=fit(textX,hand.y+hand.height+3,'使用组合 · '+(facts.handCards??'已保存'),13,textWidth,C.jade,'result/hand-combo');
-  const explanation=fit(textX,combo.y+combo.height+3,'得分解释 · '+facts.scoreExplanation,13,textWidth,C.jade,'result/score-explanation');
+  const combo=drawSettlementHand(view,facts.trace!,textX,hand.y+hand.height+3,textWidth,13);
+  const explanation=fit(textX,combo.bottom+3,'得分解释 · '+facts.scoreExplanation,13,textWidth,C.jade,'result/score-explanation');
   infoBottom=explanation.y+explanation.height;
  }
 
