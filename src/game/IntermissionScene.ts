@@ -184,7 +184,7 @@ export class IntermissionScene extends Phaser.Scene {
       }
     }
     // The PC actions follow the measured destination copy, including long or wrapped states.
-    if(p.pc){p.primary.y=nextBottom+8;p.left.y=p.primary.y+p.primary.height+(l.height<700?4:8);p.right.y=p.left.y;p.noticeY=p.left.y+48;}
+    if(p.pc){const gap=l.height<700?4:8;p.primary.y=nextBottom+gap;p.left.y=p.primary.y+p.primary.height+gap;p.right.y=p.left.y;p.noticeY=p.left.y+(l.height<700?44:48);}
     if(!p.pc&&(p.portrait||p.wide||p.short)){const shift=nextBottom+(p.wide?20:8)-p.primary.y;p.primary.y+=shift;p.left.y+=shift;p.right.y+=shift;p.noticeY+=shift;}
     if(nextStage){
       this.auxiliary(p.left,'本场详情','action/result-details',()=>this.inspectResult());
