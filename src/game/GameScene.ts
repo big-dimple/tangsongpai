@@ -664,7 +664,7 @@ export class GameScene extends Phaser.Scene {
     if(!portrait&&!l.shortLandscape)v.text(h.x+12,l.mode==='desktop'?sidebar.stage.y:h.y+96,identity.isBoss?identity.title:identity.stageName,14,C.paper,h.width-24).setName('stage-identity/current');
     this.heatText=v.text(h.x+12,portrait?h.y+27:l.shortLandscape?h.y+94:short?h.y+108:sidebar.heat.y,'',portrait?20:short?28:l.pc?36:24,C.paper,h.width-24).setFontStyle('bold');
     const goldY=portrait?h.y+31:l.shortLandscape?h.y+11:l.mode==='desktop'?sidebar.gold.y:h.y+180;
-    this.goldText=l.shortLandscape?v.text(h.x+h.width-12,goldY,'',14,C.brass).setOrigin(1,0):v.text(h.x+12,goldY,'',14,C.brass,h.width-24);
+    this.goldText=l.shortLandscape?v.text(h.x+h.width-12,goldY,'',14,C.brass).setOrigin(1,0):v.text(h.x+12,goldY,'',14,l.pc?C.mutedInk:C.brass,h.width-24);
     if(!portrait){
 
       v.text(h.x+12,l.mode==='desktop'?sidebar.target.y:h.y+(l.shortLandscape?130:146),'目标 '+heatText(this.stage.targetHeat),l.pc?24:14,C.jade,h.width-24).setName('hud/target');

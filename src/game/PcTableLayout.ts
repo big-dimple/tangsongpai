@@ -12,7 +12,6 @@ export interface PcTableOptions {pc?:boolean}
  */
 export function pcTableAreas(viewport:{width:number;height:number},safe:Insets,handWindow:HandWindow,enabled=false){
  const width=viewport.width-safe.left-safe.right,height=viewport.height-safe.top-safe.bottom;
- const short=height<740;
  if(!enabled||width<1180||height<640||width<=height)return;
  const {frame,sidebar:hud,main,compact}=pcLandscapeFrame(viewport.width,viewport.height,safe.top,safe.bottom,safe.left,safe.right);
  const rail=box(viewport.width-safe.right-76,safe.top+8,64,44);
@@ -26,15 +25,24 @@ export function pcTableAreas(viewport:{width:number;height:number},safe:Insets,h
  const footer={actions,tools,buttons,tableActions};
  const cardWidth=Math.min(142,Math.max(96,(height-420)/4)),handHeight=cardWidth*1.4+28;
  const hand=box(main.x,actionY-20-handHeight,main.width,handHeight);
+ // The landing allocator needs 14px padding around a 64×89.6 card.
+ // Decide from the actual space left by the stacked layout, including safe
+ // insets and the compact score board, rather than a viewport breakpoint.
+ const fullRackWidth=Math.min(138,Math.max(80,(height-350)/4.2));
+ const stackedLandingHeight=hand.y-40-(main.y+fullRackWidth*1.4+32+16+(compact?92:112)+12);
+ const short=stackedLandingHeight<64*1.4+14;
  const heroAction=box(main.x+2*(actionWidth+16),actionY+10,Math.min(224,tools.x-main.x-2*(actionWidth+16)-16),44);
  const handLabel=box(main.x,hand.y-28,160,22);
  const piles=box(main.x+170,hand.y-28,main.width-170,22);
- const rackCardWidth=short?64:Math.min(138,Math.max(80,(height-350)/4.2));
+ // In the side-by-side layout, give the build the remaining height after a
+ // readable landing card, its padding, the hand gap and rack labels.
+ const shortRackBudget=(hand.y-40-main.y-28-12-104)/1.4;
+ const rackCardWidth=short?Math.min(fullRackWidth,Math.max(64,shortRackBudget)):fullRackWidth;
  const rackLabelHeight=short?28:32,headerHeight=rackCardWidth*1.4+rackLabelHeight;
  const jokers=box(main.x,main.y,main.width,headerHeight);
  const slots=Array.from({length:5},(_,i)=>box(main.x+16+i*main.width/5,jokers.y+rackLabelHeight,rackCardWidth,rackCardWidth*1.4));
- // Below 740 usable pixels the score and played cards share a horizontal
- // band. Stacking both forced a 24px landing strip into the hand hit area.
+ // When stacked content leaves too little landing space, the score and played
+ // cards share a horizontal band.
  // Keep the hand/action sizes; spend less height on the build and use width.
  const middleY=main.y+headerHeight+(short?12:16),middleHeight=hand.y-40-middleY;
  const scoreWidth=short?Math.min(360,main.width*.4):main.width;
