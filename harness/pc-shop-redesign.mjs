@@ -10,7 +10,7 @@ const server=await createServer({mode:'e2e',server:{host:'127.0.0.1',port:5595,s
 const {createRun,applyCommand,assertRunInvariants}=await server.ssrLoadModule('/src/domain/run.ts'),{newRunIdentity}=await server.ssrLoadModule('/src/game/RunLaunch.ts'),{r2CreateJoker}=await server.ssrLoadModule('/src/domain/r2Run.ts'),{makeCheckpoint,readCheckpoint}=await server.ssrLoadModule('/src/application/checkpoint.ts');
 const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']}),rows=[];
 try{
- for(const spec of [{width:1366,height:768,touch:false},{width:1920,height:1080,touch:false},{width:1366,height:768,touch:true}]){
+ for(const spec of [{width:1280,height:720,touch:false},{width:1366,height:768,touch:false},{width:1920,height:1080,touch:false},{width:1366,height:768,touch:true}]){
   const page=await browser.newPage({viewport:{width:spec.width,height:spec.height},hasTouch:spec.touch,reducedMotion:'no-preference'}),errors=[];
   page.on('pageerror',e=>errors.push(String(e)));page.on('dialog',d=>d.accept());
   const state=()=>page.evaluate(()=>structuredClone(window.__harness.game.registry.get('runController').state));
@@ -31,9 +31,12 @@ try{
   await page.evaluate(()=>{const s=window.__harness.game.scene.getScene('shop');s.busy=false;s.render();});
   const offer=before.shop.offers.find(o=>o.definitionId==='mantangcai');assert.ok(offer);await buyOffer(page,offer.offerId,spec.touch);await page.waitForFunction(()=>window.__harness.game.registry.get('runController').state.jokers.length===1);for(let n=0;n<3&&await page.locator('dialog[open] .dialog-close').count();n++)await page.locator('dialog[open] .dialog-close').last().click();const bought=await state();assert.equal(bought.gold,before.gold-4);await shot('purchased');
   for(const name of ['shop/hero-preparation','action/tool-inventory']){await tapUI(page,'shop',name,spec.touch);await page.locator('dialog[open]').last().waitFor();await page.locator('dialog[open] .dialog-close').last().click();assert.deepEqual(await state(),bought);}
-  await tapUI(page,'shop','action/start-stage',spec.touch);await waitScene(page,'game');await page.getByRole('button',{name:'进入暖场 ›',exact:true}).waitFor();assert.equal((await state()).phase,'stage-ready');assert.deepEqual(errors,[]);
-  rows.push({...spec,purchase:true,hero:true,inventory:true,entry:true});await page.close();console.log('PASS',spec);
+  await tapUI(page,'shop','action/start-stage',spec.touch);await waitScene(page,'game');const warm=page.getByRole('button',{name:'进入暖场 ›',exact:true});await warm.waitFor();assert.equal((await state()).phase,'stage-ready');await warm.click();await page.waitForFunction(()=>{const c=window.__harness.game.registry.get('runController');return c?.state.phase==='await-input'&&c.status==='idle';});const entered=await state();
+  await page.reload();await waitScene(page,'title');await page.waitForFunction(async()=>{const {gameSession}=await import('/src/game/session.ts');return gameSession().loaded&&gameSession().run?.state.phase==='await-input';});assert.deepEqual(await page.evaluate(async()=>{const {gameSession}=await import('/src/game/session.ts');return gameSession().run.state;}),entered);assert.deepEqual(errors,[]);
+  rows.push({...spec,purchase:true,hero:true,inventory:true,entry:true,reload:true});await page.close();console.log('PASS',spec);
  }
+ const tablet=await browser.newPage({viewport:{width:1280,height:720},hasTouch:true,reducedMotion:'reduce'});await tablet.goto('http://127.0.0.1:5595/?harness=1&seed=r03-651');await chooseCharacter(tablet,'erxiang',true);
+ const tabletLayout=await tablet.evaluate(()=>{const p=window.__harness.game.scene.getScene('shop').geometry();return{pc:!!p.pc,short:p.short,play:p.play};});assert.equal(tabletLayout.pc,false);assert.equal(tabletLayout.short,true);assert.equal(tabletLayout.play.x,1124);await tablet.screenshot({path:out+'/1280-touch-tablet-unchanged.png'});rows.push({width:1280,height:720,touch:true,tabletFallbackUnchanged:true});await tablet.close();
  let run=createRun({seed:'owned-drag-fixed',runId:'owned-drag-fixed',characterId:'erxiang',rulesVersion:'r2',r2Identity:newRunIdentity('erxiang','group'),openingRoute:'group'});
  for(const action of [{type:'LeaveShop'},{type:'SkipStage'},{type:'OpenShop'}]){const r=applyCommand(run,{runId:run.runId,commandId:run.runId+'/command/'+(run.commandSeq+1),expectedSeq:run.commandSeq,action});assert.ok(r.ok);run=r.state;}
  run.jokers=['b03','b10','e01','e04','f12'].map((id,i)=>r2CreateJoker(id,'owned-drag/'+i,4));assertRunInvariants(run);const cp=makeCheckpoint(run,[]);assert.ok(readCheckpoint(cp).ok);
