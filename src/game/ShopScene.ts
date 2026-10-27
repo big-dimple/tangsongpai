@@ -6,8 +6,7 @@ import {canCarryTool,type ToolCarryIntent} from './ToolCarryIntent';
 import {heroText} from './HeroIdentity';
 import {showShopComparison,type ShopComparisonView} from './ShopComparisonDialog';
 import {createShopOfferValue,createShopIdentityTags,styleShopMobileOfferInk} from './ShopJokerPresentation';
-import {warmTableImages,warmPcHeroImage} from './StageImageWarmup';
-import {pcHeroKey,PC_HERO_COMPOSITION} from './PcHeroArt';
+import {warmTableImages} from './StageImageWarmup';
 import {warmShopToolImages,warmShopToolPanel} from './ShopToolImageWarmup';
 import {showHeroExplanation} from './HeroExplanation';
 import {bossRulesSeen,presentBossPreparation} from './BossPreparationPresentation';
@@ -80,7 +79,7 @@ import {heatText,fractionText} from './scoreText';
 import {toolInfo,itemInfo,goodsArtPortrait,jokerExtraBonusCopy,toolFamilyLabel} from './r2ToolInfo';
 import {SceneView} from './SceneView';
 import {getCharacter} from './characters';
-import {selectionPortraitKey,avatarKey} from './portraits';
+import {avatarKey} from './portraits';
 import {DetailDialog} from './DetailDialog';
 import {showDeckInspection} from './DeckInspector';
 import type {RunMenuActions} from './RunMenu';
@@ -249,9 +248,7 @@ export class ShopScene extends Phaser.Scene {
     const canvasLabel=this.game.canvas.getAttribute('aria-label');this.events.once('shutdown',()=>{if(canvasLabel===null)this.game.canvas.removeAttribute('aria-label');else this.game.canvas.setAttribute('aria-label',canvasLabel);});
     this.ownedInput=new OwnedJokerInput(this,{ready:()=>this.ready,inspectable:()=>!this.busy&&this.run?.phase==='shop',cards:()=>{const p=this.geometry();return p.inventoryCollapsed?[]:this.run.jokers.map((j,i)=>({...p.slots[i],id:j.instanceId}));},cancelCanvas:()=>this.view.cancelInteraction(),tap:id=>this.inspectJoker(id),lift:(id,x,y)=>this.liftOwned(id,x,y),move:(x,y)=>this.previewOwned(x,y),drop:(id,x,y)=>this.moveJoker(id,x,y),cancel:()=>this.cancelOwned()});
     this.events.once('shutdown',()=>{this.ownedInput?.destroy();this.ownedInput=undefined;if(this.ownedDrag?.saving)this.input.enabled=true;this.ownedDrag?.destroy();this.ownedDrag=undefined;});
-    const pcHeroTexture=pcHeroKey(this.run.characterId),refreshPcHero=()=>{if(this.scene.isActive()&&this.lifecycle>0)this.render();};
-    if(!this.textures.exists(pcHeroTexture)){this.textures.once('addtexture-'+pcHeroTexture,refreshPcHero);this.events.once('shutdown',()=>this.textures.off('addtexture-'+pcHeroTexture,refreshPcHero));}
-    warmTableImages(this,this.run.characterId);warmPcHeroImage(this,this.run.characterId);this.render();this.prepareBossEntrance(owner,run,this.lifecycle);
+    warmTableImages(this,this.run.characterId);this.render();this.prepareBossEntrance(owner,run,this.lifecycle);
     if(!gameSession().reducedMotion&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
       this.view.root.setAlpha(.35);this.tweens.add({targets:this.view.root,alpha:1,duration:220,ease:'Cubic.easeOut'});
       if(!this.dialog.current){
@@ -315,7 +312,6 @@ export class ShopScene extends Phaser.Scene {
       const inline=p.portrait&&!p.copyBeside&&p.slots[0].y-p.shelf[0].y-p.shelf[0].height<122;
       v.text(inline?p.x:p.slots[0].x,inline?p.top+27:p.slots[0].y-20,ownedLabel,14,'#26313A',p.slots[4].x+p.slots[4].width-p.slots[0].x).setName('shop/owned-heading');
     }
-    if(p.portrait)this.drawMobileHeroArt(p);
     this.drawOwned(p);
     if(!p.portrait&&!p.short)v.button(p.chapter,p.portrait?(this.run.program&&!this.run.program.choiceMade?'接节目单':'本章'):'本章节目','action/chapter',()=>this.inspectChapter());
     if(!p.portrait&&!p.short)v.button(p.items,`道具箱 ${this.run.consumables.length}/${r2ConsumableCapacity(this.run)}`,'action/items',()=>showConsumables(this.dialog,this.run,this.ready,(a,seq)=>this.send(a,seq)));
@@ -377,54 +373,6 @@ export class ShopScene extends Phaser.Scene {
   }
   private syncBossPreparation():void {
     syncBossAtmosphere(this,this.view.root,()=>this.run,'preparation',{reduced:()=>this.resultReduced});
-  }
-  private drawShopPortrait(p:ReturnType<typeof shopLayout>):void {
-    const pc=p.pc;if(!pc)return;const character=getCharacter(this.run.characterId),key=selectionPortraitKey(character.id);
-    const cutoutKey=pcHeroKey(character.id),artKey=this.textures.exists(cutoutKey)?cutoutKey:key;
-    if(!this.textures.exists(artKey))return;
-    const b=pc.left,guide=firstChapterShopPrompt(this.run)&&this.ready?shopFirstGuideLayout(p,this.view.layout.height,this.run.jokers.length===0):undefined;
-    const artTop=Math.max(b.y+270,guide?guide.box.y+guide.box.height+20:0),baseline=b.y+b.height-40;
-    const image=this.add.image(0,0,artKey),artHeight=Math.max(64,baseline-artTop);
-    image.setScale(Math.min(b.width/image.width,artHeight/image.height)).setName('shop/hero-portrait').setData('assetId',character.id+'.pc');
-    // Full alpha source; its lower edge meets the sidebar baseline, never an inset mat.
-    image.setPosition(b.x+image.displayWidth/2,baseline-image.displayHeight/2);
-    this.view.add(image);
-    const bounds={x:b.x,y:baseline-image.displayHeight,width:image.displayWidth,height:image.displayHeight};
-    image.setData('bounds',bounds);
-    const hit=this.view.rect(bounds).setFillStyle(0,0).setStrokeStyle();
-    this.view.target(hit,'shop/hero-preparation',{tap:()=>showHeroExplanation(this.dialog,character.id,{run:this.run,closeLabel:'返回商店'}),detail:()=>showHeroExplanation(this.dialog,character.id,{run:this.run,closeLabel:'返回商店'})});
-    this.view.add(this.add.graphics().lineStyle(1,PAPER_THEME.divider,.8).lineBetween(b.x,baseline,b.x+b.width,baseline));
-    this.view.text(b.x,baseline+10,character.name+' · 原画与技能 ↗',16,PAPER_CSS.jade,b.width).setName('shop/hero-caption');
-  }
-
-  /** Phone keeps the hero as a translucent ink subject behind the shelf. */
-  private drawMobileHeroArt(p:ReturnType<typeof shopLayout>):void {
-    if(!p.portrait)return;
-    const character=getCharacter(this.run.characterId),key=pcHeroKey(character.id);
-    if(!this.textures.exists(key))return;
-    // Keep the cutout below the complete header and category row. Its paper
-    // wash may sit behind the gallery, but never behind balance/target/tabs.
-    const stageTop=p.tabs.y+p.tabs.height+8,stage={x:p.x+p.w*.42,y:stageTop,width:p.w*.62,height:Math.min(220,p.play.y-stageTop-8)},composition=PC_HERO_COMPOSITION[character.id];
-    if(stage.height<=24)return;
-    // The cutout is carried by an asymmetrical ink sweep rather than a
-    // circular avatar plate. Its open side leaves the shelf copy readable.
-    const wash=this.add.graphics().fillStyle(0x203f3b,.12).beginPath()
-      .moveTo(stage.x+stage.width*.1,stage.y+stage.height*.72)
-      .lineTo(stage.x+stage.width*.35,stage.y+stage.height*.12)
-      .lineTo(stage.x+stage.width*.92,stage.y+stage.height*.02)
-      .lineTo(stage.x+stage.width*.74,stage.y+stage.height*.52)
-      .lineTo(stage.x+stage.width*.98,stage.y+stage.height*.96)
-      .lineTo(stage.x+stage.width*.22,stage.y+stage.height*.9)
-      .closePath().fillPath().lineStyle(2,0xb8473a,.35).beginPath()
-      .moveTo(stage.x+stage.width*.05,stage.y+stage.height*.82)
-      .lineTo(stage.x+stage.width*.3,stage.y+stage.height*.66)
-      .lineTo(stage.x+stage.width*.93,stage.y+stage.height*.72)
-      .strokePath().setName('shop/mobile-hero-ink');
-    this.view.add(wash);
-    const image=this.add.image(stage.x+stage.width/2,stage.y+stage.height/2,key).setName('shop/mobile-hero').setData('assetId',character.id+'.pc');
-    const scale=Math.min(stage.width/image.width,stage.height/image.height)*composition.scale;
-    image.setScale(scale).setAlpha(.88);image.x=stage.x+stage.width/2+(stage.width-image.displayWidth)*(composition.align-.5);image.y=stage.y+stage.height-image.displayHeight/2;
-    this.view.add(image);
   }
   private drawOwned(p:ReturnType<typeof shopLayout>):void {
     const v=this.view;
@@ -500,7 +448,11 @@ export class ShopScene extends Phaser.Scene {
   }
   private renderPC(p:ReturnType<typeof shopLayout>):void {
     const pc=p.pc!;const v=this.view,stage=getR2Stage(this.run.stageIndex,this.run.tourMode,this.run.difficulty,this.run)!;
-    drawShopArt(this,v,p);this.drawShopPortrait(p);
+    drawShopArt(this,v,p);
+    const heroEntry={x:pc.left.x,y:pc.left.y+pc.left.height-44,width:pc.left.width,height:44};
+    v.text(heroEntry.x,heroEntry.y+12,'查看人物技能',16,PAPER_CSS.jade,heroEntry.width).setName('shop/hero-caption');
+    const heroHit=v.rect(heroEntry).setFillStyle(0,0).setStrokeStyle();
+    v.target(heroHit,'shop/hero-preparation',{tap:()=>showHeroExplanation(this.dialog,this.run.characterId,{run:this.run,closeLabel:'返回商店'}),detail:()=>showHeroExplanation(this.dialog,this.run.characterId,{run:this.run,closeLabel:'返回商店'})});
     v.text(p.x,p.top+4,'唐宋牌 · 商店',26,PAPER_CSS.ink).setFontStyle('bold').setName('shop/title');
     v.text(pc.left.x+12,pc.left.y+8,stage.name,22,PAPER_CSS.ink,pc.left.width-24).setName('shop/stage');
     v.text(pc.left.x+12,pc.left.y+56,'下一场目标',16,PAPER_CSS.mutedInk,pc.left.width-24);
