@@ -24,7 +24,9 @@ export function pcResultViewport(width:number,height:number){
 export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2RunState,cleared:boolean,skipped:boolean,facts:ReturnType<typeof settlementFacts>,formulaOverride?:string,rewardLabel?:string){
  const l=resultLayout(view.layout.width,view.layout.height,0,b.height,true),lost=!cleared&&!skipped;
  const grid=pcLandscapeFrame(view.layout.width,view.layout.height),compact=grid.compact,cx=b.x+b.width/2;
- const ceremony=view.layout.width>=1500&&view.layout.height>=850,columnWidth=ceremony?b.width*.47:b.width;
+ // Even the minimum PC width has room for two readable receipt columns;
+ // keeping them parallel leaves the next action visible on short screens.
+ const ceremony=b.width>=600,columnWidth=ceremony?b.width*.47:b.width;
  let columnX=ceremony?b.x+b.width*.25:cx;
  const text=(x:number,y:number,copy:string,size:number,width:number,color=C.ink,name='')=>{
   const item=view.text(x,y,copy,size,color).setColor(color).setName(name);
