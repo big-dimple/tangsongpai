@@ -56,7 +56,7 @@ export function installGamepadNavigation(game:Phaser.Game):()=>void {
     if(ring.parentElement!==parent)parent.append(ring);if(hint.parentElement!==parent)parent.append(hint);
     const root=modal??document.body;
     const controls=[...root.querySelectorAll<HTMLElement>(selector)].filter(element=>visibleControllerControl(element)&&
-      (modal||!element.closest('dialog,.run-menu,.hand-input-surface,.shop-owned-input'))&&element!==game.canvas);
+      (modal||!element.closest('dialog,.run-menu,.hand-input-surface,.shop-owned-input'))&&!element.hasAttribute('data-pc-keyboard-action')&&element!==game.canvas);
     const native=controls.map((element):Target=>{
       let identity=nativeIdentities.get(element);if(!identity){identity=`dom/${++nativeOrdinal}/${element.getAttribute('aria-label')??element.textContent?.trim().slice(0,80)??element.tagName}`;nativeIdentities.set(element,identity);}
       const r=element.getBoundingClientRect(),id=element.dataset.ui??identity;

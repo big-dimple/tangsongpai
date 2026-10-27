@@ -3,7 +3,7 @@ import approvedLayout from '../docs/production/evidence/shop-closeout-repair-202
 import type Phaser from 'phaser';
 import {describe,expect,it} from 'vitest';
 import {layout,intersects} from '../src/game/layout';
-import {HAND_ACTION_LINES,drawHandActionGlyph,handActionContent,handActionCountColor} from '../src/game/HandActionArt';
+import {HAND_ACTION_LINES,drawHandActionGlyph,handActionContent,handActionCountColor,pcHandActionContent} from '../src/game/HandActionArt';
 import {PAPER_THEME,PAPER_CSS} from '../src/game/theme';
 import {handSortTitleBox,handAiButtonLabel} from '../src/game/HandActionControls';
 const profiles=[[390,740,0,0],[320,568,0,0],[844,300,12,12],[844,300,12,34]];
@@ -38,6 +38,13 @@ describe('sorting caption above three controls beside equal primary actions',()=
  });
 });
 describe('card actions remain readable as different ink shapes',()=>{
+ it.each([164,208])('centres the PC glyph and 96px copy block together in a %ipx button',width=>{
+  const b={x:100,y:20,width,height:64},c=pcHandActionContent(b);
+  expect(c.glyph.x+c.glyph.width+10).toBe(c.text.x);
+  expect((c.glyph.x+c.text.x+c.text.width)/2).toBe(b.x+b.width/2);
+  expect(c.centerX).toBe(c.text.x+c.text.width/2);
+  expect(c.glyph.x).toBeGreaterThan(b.x);expect(c.text.x+c.text.width).toBeLessThan(b.x+b.width);
+ });
  it('draws discard down into a flat card pile and play forward, independent of color',()=>{
   const down=HAND_ACTION_LINES.discard[2],forward=HAND_ACTION_LINES.play[3];expect(down[1][0]).toBe(down[0][0]);expect(down[1][1]).toBeGreaterThan(down[0][1]);expect(forward[1][0]).toBeGreaterThan(forward[0][0]);expect(forward[1][1]).toBe(forward[0][1]);expect(HAND_ACTION_LINES.discard[3].slice(0,-1)).toHaveLength(4);expect(HAND_ACTION_LINES.play.filter(line=>line[0][0]===line.at(-1)![0]&&line[0][1]===line.at(-1)![1])).toHaveLength(3);
  });

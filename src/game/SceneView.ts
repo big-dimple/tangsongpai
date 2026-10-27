@@ -150,6 +150,11 @@ export class SceneView {
     }
     object.once('destroy',()=>{this.gestures.delete(object);if(this.pressed?.object===object)this.cancel();});
   }
+  /** Reuse the same guarded action and feedback for its native keyboard target. */
+  activateTarget(target:Phaser.GameObjects.Rectangle):void {
+    const actions=this.gestures.get(target);if(!actions||!target.active||!target.visible||!target.input?.enabled)return;
+    this.cancelInteraction();actions.tap();
+  }
   button(b:Box,label:string,name:string,action:()=>void,enabled=true,primary=false,skin?:HandButtonSkin):Phaser.GameObjects.Rectangle {
     const art=this.add(this.scene.add.container(b.x,b.y)),g=this.scene.add.graphics(),radius=6;
     g.fillStyle(PAPER_THEME.ink,.08).fillRoundedRect(0,2,b.width,b.height,radius);
@@ -161,18 +166,21 @@ export class SceneView {
     if(glyph)art.add(glyph);
     const t=this.text(b.x+b.width/2,b.y+b.height/2-1,label,primary?22:15).setOrigin(.5).setFontStyle('bold').setColor(primary?PAPER_CSS.paperLight:PAPER_CSS.jade);
     const r=this.rect(b).setFillStyle(0,0).setStrokeStyle();
-    r.setData('label',t).setData('buttonArt',art).setData('buttonFace',g).setData('buttonBounds',b).setData('buttonPrimary',primary).setData('buttonSkin',skin).setData('buttonGlyph',glyph);
+    r.setData('label',t).setData('buttonArt',art).setData('buttonFace',g).setData('buttonEdge',edge).setData('buttonBounds',b).setData('buttonPrimary',primary).setData('buttonSkin',skin).setData('buttonGlyph',glyph);
     if(skin==='sort'&&isHandSortControl(name)){
       const visual=attachHandSortVisual(this.scene,r,{art,face:g,edge,glow,label:t,bounds:b},()=>gameSession().reducedMotion);
       this.target(r,name,{tap:()=>{AudioEngine.shared.select();action();},...visual});this.setEnabled(r,enabled);return r;
     }
-    const stop=()=>this.scene.tweens.killTweensOf([art,t]);
+    const count=()=>r.getData('pcHandAction')?r.getData('buttonCount') as Phaser.GameObjects.Text|undefined:undefined;
+    let countPress:Phaser.Tweens.Tween|undefined;
+    const stop=()=>{this.scene.tweens.killTweensOf([art,t]);if(countPress){countPress.remove();countPress=undefined;const n=count();if(n){n.setScale(1);n.y=Number(n.getData('restY'));crispText(n);}}};
     const rest=()=>{stop();art.setScale(1).setPosition(b.x,b.y);t.setScale(1);t.y=Number(t.getData('restY')??b.y+b.height/2-1);crispText(t);glow.setAlpha(0);};
     const press=()=>{
       stop();glow.setAlpha(.6);
       if(gameSession().reducedMotion||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
       this.scene.tweens.add({targets:art,scaleX:.955,scaleY:.955,x:b.x+b.width*.045/2,y:b.y+b.height*.045/2,duration:80,ease:'Quad.Out'});
       this.scene.tweens.add({targets:t,scaleX:.955,scaleY:.955,y:Number(t.getData('restY')??b.y+b.height/2-1)+1,duration:80,ease:'Quad.Out'});
+      const n=count();if(n)countPress=this.scene.tweens.add({targets:n,scaleX:.955,scaleY:.955,y:Number(n.getData('restY'))+1,duration:80,ease:'Quad.Out'});
     };
     r.once('destroy',stop);
     this.target(r,name,{tap:()=>{AudioEngine.shared.select();action();},press,release:rest,cancel:rest});
@@ -187,6 +195,8 @@ export class SceneView {
     const art=object.getData('buttonArt') as Phaser.GameObjects.Container|undefined;art?.setAlpha(1);
     const face=object.getData('buttonFace') as Phaser.GameObjects.Graphics|undefined,b=object.getData('buttonBounds') as Box|undefined;
     const skin=object.getData('buttonSkin') as HandButtonSkin|undefined,glyph=object.getData('buttonGlyph') as Phaser.GameObjects.Graphics|undefined;
+    const edge=object.getData('buttonEdge') as Phaser.GameObjects.Graphics|undefined;
+    if(object.getData('pcHandAction')&&edge&&b){edge.clear().lineStyle(1.5,enabled?(primary?PAPER_THEME.red:PAPER_THEME.jade):0x858b89,1).strokeRoundedRect(.75,.75,b.width-1.5,b.height-1.5,6);}
     const sortRefresh=object.getData('sortVisualRefresh') as (()=>void)|undefined;
     if(face&&b&&!sortRefresh){face.clear();if(skin!=='sort'){face.fillStyle(PAPER_THEME.ink,.08).fillRoundedRect(0,2,b.width,b.height,6);face.fillStyle(enabled?(primary?PAPER_THEME.red:PAPER_THEME.paperLight):PAPER_THEME.disabled).fillRoundedRect(0,0,b.width,b.height,6);}}
     if(glyph&&skin&&skin!=='sort')drawHandActionGlyph(glyph,skin,enabled?(primary?PAPER_THEME.paperLight:PAPER_THEME.jade):PAPER_THEME.disabledInk);
