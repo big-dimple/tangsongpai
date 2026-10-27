@@ -209,7 +209,7 @@ export class IntermissionScene extends Phaser.Scene {
     this.firstRender=false;if(pc||mobile)this.requestSourceArt();
   }
   private auxiliary(b:Box,label:string,name:string,action:()=>void,enabled=true):void {
-    const v=this.view,text=v.text(b.x+b.width/2,b.y+b.height/2,label,pcResultViewport(v.layout.width,v.layout.height)?18:14,PAPER_CSS.jade,b.width-4).setOrigin(.5).setAlpha(enabled?1:.55);
+    const v=this.view,text=v.text(b.x+b.width/2,b.y+b.height/2,label,pcResultViewport(v.layout.width,v.layout.height)?18:14,enabled?PAPER_CSS.jade:PAPER_CSS.disabledInk,b.width-4).setOrigin(.5);
     const hit=v.rect(b).setFillStyle(0,0).setStrokeStyle().setData('label',text);
     v.target(hit,name,{tap:()=>{if(enabled){this.audio.select();action();}}});
     if(!enabled)hit.disableInteractive();
