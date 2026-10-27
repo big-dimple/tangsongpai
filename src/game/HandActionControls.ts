@@ -19,9 +19,10 @@ export function handActionControls(actions:Box,mode:LayoutMode,bottomLimit?:numb
  return {actions:footer,tools,buttons,tableActions};
 }
 
-export function renderHandSortGroup(scene:Phaser.Scene,view:SceneView,tools:Box):void {
+export function renderHandSortGroup(scene:Phaser.Scene,view:SceneView,tools:Box,pc=false):void {
  const title=handSortTitleBox(tools),g=scene.add.graphics();
  g.fillStyle(PAPER_THEME.jadeSoft).fillRoundedRect(tools.x,tools.y,tools.width,tools.height,6).lineStyle(1,PAPER_THEME.jade,.9).strokeRoundedRect(tools.x+.5,tools.y+.5,tools.width-1,tools.height-1,6);
+ if(pc){g.lineStyle(1,PAPER_THEME.paperLight,.9).beginPath().moveTo(tools.x+6,tools.y+2).lineTo(tools.x+tools.width-6,tools.y+2).strokePath();g.lineStyle(2,PAPER_THEME.jade,.25).beginPath().moveTo(tools.x+6,tools.y+tools.height-3).lineTo(tools.x+tools.width-6,tools.y+tools.height-3).strokePath();}
  g.lineStyle(1,PAPER_THEME.jade,.2);
  for(const index of [1,2]){const x=Math.round(tools.x+tools.width*index/3)+.5;g.beginPath().moveTo(x,tools.y+SORT_TITLE_HEIGHT+13).lineTo(x,tools.y+tools.height-13).strokePath();}
  view.add(g.setName('action/sort-group').setData('bounds',tools));

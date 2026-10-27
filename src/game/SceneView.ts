@@ -198,7 +198,9 @@ export class SceneView {
     const edge=object.getData('buttonEdge') as Phaser.GameObjects.Graphics|undefined;
     if(object.getData('pcHandAction')&&edge&&b){edge.clear().lineStyle(1.5,enabled?(primary?PAPER_THEME.red:PAPER_THEME.jade):0x858b89,1).strokeRoundedRect(.75,.75,b.width-1.5,b.height-1.5,6);}
     const sortRefresh=object.getData('sortVisualRefresh') as (()=>void)|undefined;
-    if(face&&b&&!sortRefresh){face.clear();if(skin!=='sort'){face.fillStyle(PAPER_THEME.ink,.08).fillRoundedRect(0,2,b.width,b.height,6);face.fillStyle(enabled?(primary?PAPER_THEME.red:PAPER_THEME.paperLight):PAPER_THEME.disabled).fillRoundedRect(0,0,b.width,b.height,6);}}
+    if(face&&b&&!sortRefresh){face.clear();if(skin!=='sort'){face.fillStyle(PAPER_THEME.ink,.08).fillRoundedRect(0,2,b.width,b.height,6);face.fillStyle(enabled?(primary?PAPER_THEME.red:PAPER_THEME.paperLight):PAPER_THEME.disabled).fillRoundedRect(0,0,b.width,b.height,6);
+      if(object.getData('pcHandAction')){face.lineStyle(1,PAPER_THEME.paperLight,enabled?.7:.45).beginPath().moveTo(7,3).lineTo(b.width-7,3).strokePath();face.lineStyle(2,primary&&enabled?0x792e27:PAPER_THEME.jade,enabled?.35:.2).beginPath().moveTo(7,b.height-3).lineTo(b.width-7,b.height-3).strokePath();}
+    }}
     if(glyph&&skin&&skin!=='sort')drawHandActionGlyph(glyph,skin,enabled?(primary?PAPER_THEME.paperLight:PAPER_THEME.jade):PAPER_THEME.disabledInk);
     sortRefresh?.();
   }
