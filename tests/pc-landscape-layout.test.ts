@@ -1,6 +1,20 @@
 import {expect,it} from 'vitest';
 import {layout,intersects,type Box} from '../src/game/layout';
 const safe={top:0,right:0,bottom:0,left:0};
+it.each([[1920,1080],[1920,924],[1366,768],[1280,640],[1180,640]])('PC %sx%s footer follows discard, sorting, skill, play without overlapping targets',(width,height)=>{
+ const l=layout({width,height},safe,undefined,{count:8},{pc:true}),{discard,play}=l.tableActions;
+ expect(l.pc).toBeDefined();expect(discard.x).toBe(l.actions.x);expect(play.x+play.width).toBe(l.actions.x+l.actions.width);
+ expect(l.tools.x+l.tools.width/2).toBe(l.actions.x+l.actions.width/2);
+ expect(discard.x+discard.width+16).toBeLessThanOrEqual(l.tools.x);
+ expect(l.tools.x+l.tools.width+16).toBeLessThanOrEqual(l.heroAction!.x);
+ expect(l.heroAction!.x+l.heroAction!.width+16).toBeLessThanOrEqual(play.x);
+ const controls=[discard,...Object.values(l.buttons),l.heroAction!,play];
+ for(const [i,a] of controls.entries()){
+  expect(a.width).toBeGreaterThanOrEqual(44);expect(a.height).toBeGreaterThanOrEqual(44);
+  expect(intersects(a,l.hand)).toBe(false);
+  for(const b of controls.slice(i+1))expect(intersects(a,b)).toBe(false);
+ }
+});
 it.each([[1920,1080],[1920,924]])('PC %sx%s keeps the build, score, played hand, hand and actions in a single reading column',(width,height)=>{
  const l=layout({width,height},safe,undefined,{count:8},{pc:true});expect(l.pc).toBeDefined();
  expect(l.pc!.short).toBe(false);

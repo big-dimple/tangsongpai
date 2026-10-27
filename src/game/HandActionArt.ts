@@ -20,3 +20,9 @@ export function drawHandActionGlyph(g:Phaser.GameObjects.Graphics,kind:HandActio
 export function handActionContent(b:Box){
   const symbol=b.width>=96;return {glyph:{x:b.x+6,y:b.y+(b.height-36)/2,width:symbol?28:0,height:36},text:{x:b.x+(symbol?36:6),y:b.y+4,width:b.width-(symbol?42:12),height:b.height-8},centerX:b.x+(b.width+(symbol?30:0))/2,labelY:b.y+15,countY:b.y+37};
 }
+/** Centre the complete icon and copy as one group in the wider PC controls. */
+export function pcHandActionContent(b:Box){
+  const copyWidth=96,gap=10,glyphWidth=28,groupWidth=glyphWidth+gap+copyWidth;
+  const x=b.x+(b.width-groupWidth)/2;
+  return {glyph:{x,y:b.y+(b.height-36)/2,width:glyphWidth,height:36},text:{x:x+glyphWidth+gap,y:b.y+4,width:copyWidth,height:b.height-8},centerX:x+glyphWidth+gap+copyWidth/2,labelY:b.y+15,countY:b.y+37};
+}

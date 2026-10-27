@@ -9,6 +9,11 @@ body[data-controller-connected] .detail-dialog[open]{max-height:calc(100dvh - va
 body[data-controller-connected] .run-menu-panel{max-height:calc(100dvh - var(--safe-top) - var(--safe-bottom) - var(--controller-bar-height) - 82px);}
 body[data-controller-active] canvas{outline:0;}
 @media(max-width:900px){body[data-controller-connected]{--controller-bar-height:54px;}.controller-hints{white-space:normal;font-size:11px;}}
+/* At the minimum-height PC table, keep its 640px canvas and use the empty top rail. */
+@media (min-width:1180px) and (min-height:640px) and (max-height:850px){
+ body[data-controller-connected][data-pc-table-active] #app{height:100dvh;}
+ body[data-controller-connected][data-pc-table-active] > .controller-hints{inset:var(--safe-top) calc(96px + var(--safe-right)) auto var(--safe-left);z-index:40;height:34px;padding:6px 10px;}
+}
 .whole-action-surface:has(button:not(:disabled)){cursor:pointer;}
 .whole-action-surface:has(button:not(:disabled)):hover{border-color:#3f606b;background-color:#e2e8e5;}
 .whole-action-surface:focus-within{outline:2px solid #3f606b;outline-offset:2px;}

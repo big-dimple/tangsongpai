@@ -112,7 +112,8 @@ import {jokerArtLoadState,requestJokerArt,retryJokerArt} from './JokerArtLoading
 import {JOKER_RARITY,createJokerRarityBadge} from './JokerRarity';
 import {mountF09Art} from './F09Art';
 import Phaser from 'phaser';
-import {handActionContent,handActionCountColor} from './HandActionArt';
+import {handActionContent,handActionCountColor,pcHandActionContent} from './HandActionArt';
+import {mountPcActionKeyboard} from './PcActionKeyboard';
 import {renderHandSortGroup,handAiButtonLabel} from './HandActionControls';
 import {r2JokerCapacity} from '../domain/r2Resources';
 import {r2RunModeConfig,R2_MODE_CATALOG} from '../content/r2Modes';
@@ -296,6 +297,7 @@ export class GameScene extends Phaser.Scene {
   private mobileHeroName?:Phaser.GameObjects.Text;
   private playButton!: Phaser.GameObjects.Rectangle;
   private discardButton!: Phaser.GameObjects.Rectangle;
+  private pcKeyboardActions?:ReturnType<typeof mountPcActionKeyboard>;
   private bossSuitRescuePreview?:Phaser.GameObjects.Text;
   private bossSuitRescueButton?:Phaser.GameObjects.Rectangle;
   private rankButton!: Phaser.GameObjects.Rectangle;
@@ -368,6 +370,13 @@ export class GameScene extends Phaser.Scene {
 
   private carriedTool?:ToolCarryIntent;
   async create(data?:{carriedTool?:ToolCarryIntent;preparedBossOwner?:object}): Promise<void> {
+    // The controller hint can occupy the top rail only while this PC table is active.
+    // Read the outer viewport so connecting a controller cannot itself push the
+    // canvas below the PC threshold before this class is established.
+    const syncPcTable=()=>{const style=getComputedStyle(document.documentElement),n=(key:string)=>parseFloat(style.getPropertyValue(key))||0,width=window.innerWidth-n('--safe-left')-n('--safe-right'),height=window.innerHeight-n('--safe-top')-n('--safe-bottom');document.body.toggleAttribute('data-pc-table-active',width>=1180&&height>=640&&width>height&&!window.matchMedia('(pointer: coarse)').matches);};
+    syncPcTable();window.addEventListener('resize',syncPcTable);
+    const retirePcTable=()=>{this.events.off('shutdown',retirePcTable);this.events.off('destroy',retirePcTable);window.removeEventListener('resize',syncPcTable);document.body.removeAttribute('data-pc-table-active');this.pcKeyboardActions?.destroy();this.pcKeyboardActions=undefined;};
+    this.events.once('shutdown',retirePcTable);this.events.once('destroy',retirePcTable);
     this.targetAttachment?.destroy();this.targetAttachment=undefined;
     this.heroPortraitMotion?.destroy();this.heroPortraitMotion=undefined;this.heroPortrait=undefined;this.giftDelivery?.destroy();this.giftDelivery=undefined;this.giftEvent=undefined;
     this.touyeSkillPhase=undefined;
@@ -639,6 +648,7 @@ export class GameScene extends Phaser.Scene {
     this.stage={...this.stage,targetHeat:this.run.stage!.targetHeat};
     this.controlsLive=false;this.stopScoreFire();
     this.heroPortraitMotion?.destroy();this.heroPortraitMotion=undefined;this.heroPortrait=undefined;this.giftDelivery?.destroy();this.giftDelivery=undefined;
+    const keyboardFocus=this.pcKeyboardActions?.focusedId();this.pcKeyboardActions?.destroy();this.pcKeyboardActions=undefined;
     const v=this.view,l=v.layout;this.hoveredCardId=undefined;this.hoveredJokerId=undefined;this.jokerHoverPreview=undefined;v.clear();this.settlementChrome.clear();this.handNavigationButtons=[];v.paperBackground();if(l.mode==='portrait')warmPcHeroImage(this,this.characterId);drawStageTableArt(this,v,this.characterId,undefined,false);
     if(l.pc){
       v.text(l.pc.build.x+16,l.pc.build.y,'唐宋牌 · '+this.run.jokers.length+'/'+r2JokerCapacity(this.run),18,C.jade).setName('pc/section-build');
@@ -711,7 +721,7 @@ export class GameScene extends Phaser.Scene {
       const b=heroActions.shortcut,art=this.heroActionButton.getData('buttonArt') as Phaser.GameObjects.Container;
       const centerX=(b.width+(portrait?42:18))/2;this.heroActionButton.setData('skillEdge',art.list[1]).setData('portraitSkill',portrait);
       (this.heroActionButton.getData('label') as Phaser.GameObjects.Text).setFontSize(14).setPosition(b.x+centerX,b.y+13).setData('restY',b.y+13);
-      if(!portrait)art.add(this.add.graphics().fillStyle(T.jade,.8).fillPoints([{x:13,y:13},{x:18,y:22},{x:13,y:31},{x:8,y:22}],true).setName('hero/skill-mark'));
+      if(!portrait){const mark=this.add.graphics().fillStyle(T.jade,l.pc?1:.8).fillPoints([{x:13,y:13},{x:18,y:22},{x:13,y:31},{x:8,y:22}],true).setName('hero/skill-mark');art.add(mark);this.heroActionButton.setData('skillMark',mark);}
       const status=this.add.text(centerX,32,'',{fontFamily:UI_FONT,fontSize:'11px',color:C.mutedInk}).setOrigin(.5).setName('hero/skill-status');art.add(status);this.heroActionButton.setData('skillStatus',status);
     }
     this.discardButton=v.button(discardBox,'弃牌','action/discard',()=>void this.discardSelected(),this.ready&&this.selectedIds.size>0&&this.run.stage!.discardsLeft>=r2DiscardCost(this.run),false,'discard');
@@ -719,10 +729,12 @@ export class GameScene extends Phaser.Scene {
     this.resourceCounts={} as Record<'play'|'discard',Phaser.GameObjects.Text>;
     for(const kind of ['play','discard'] as const){
       const b=kind==='discard'?discardBox:l.tableActions[kind],button=kind==='play'?this.playButton:this.discardButton;
-      const content=handActionContent(b);(button.getData('buttonGlyph') as Phaser.GameObjects.Graphics|undefined)?.setVisible(content.glyph.width>0);
+      const content=l.pc?pcHandActionContent(b):handActionContent(b),glyph=button.getData('buttonGlyph') as Phaser.GameObjects.Graphics|undefined;
+      glyph?.setVisible(content.glyph.width>0);if(l.pc)glyph?.setPosition(content.glyph.x-b.x,content.glyph.y-b.y);
       const label=button.getData('label') as Phaser.GameObjects.Text;
       label.setFontSize(kind==='play'?16:14).setPosition(content.centerX,content.labelY).setData('restY',content.labelY);
       this.resourceCounts[kind]=v.text(content.centerX,content.countY,'',14,kind==='play'?C.paperLight:C.jade).setOrigin(.5).setName('button/'+kind+'-left');
+      if(l.pc){button.setData('pcHandAction',true).setData('buttonCount',this.resourceCounts[kind]);this.resourceCounts[kind].setData('restY',content.countY);this.view.setEnabled(button,!!button.input?.enabled);}
       if(l.pc)v.text(l.hud.x+12+(kind==='discard'?l.hud.width/2:0),l.pc.heroRows.stage.y+30,'',18,C.ink).setName('hud/'+kind+'-left');
     }
     const play=l.tableActions.play;
@@ -732,6 +744,7 @@ export class GameScene extends Phaser.Scene {
     inventoryFeedback(this,this.inventoryButton,this.run,this.ready,this.reducedMotion,!!l.pc);
     this.controlsLive=true;
     this.updateHud();this.renderHand();this.ownedDrag?.rebind();this.mountSceneHeroPortrait();this.mountStageGiftDelivery();
+    if(l.pc){const entries=[{id:'discard',target:this.discardButton},{id:'rank',target:this.rankButton},{id:'suit',target:this.suitButton},{id:'ai',target:this.aiButton},...(this.heroActionButton?[{id:'skill',target:this.heroActionButton}]:[]),{id:'play',target:this.playButton}].map(entry=>({...entry,activate:()=>v.activateTarget(entry.target)}));this.pcKeyboardActions=mountPcActionKeyboard(this,l,entries,keyboardFocus);}
   }
   private mountSceneHeroPortrait():void {
     const l=this.view.layout,area=l.pc?.heroPortrait??heroPortraitArea(l),holder=this.view.add(this.add.container(0,0).setName('hero/portrait-holder'));
@@ -1374,6 +1387,7 @@ export class GameScene extends Phaser.Scene {
     this.resourceCounts.play.setVisible(!this.pendingRefill);this.resourceCounts.discard.setVisible(!this.pendingRefill);
     if(this.pendingRefill){this.view.setEnabled(this.aiButton,false);this.view.setEnabled(this.playButton,this.ready&&!this.refillHidden&&this.selectedIds.size===this.pendingRefill.required);(this.playButton.getData('label') as Phaser.GameObjects.Text).setText('确认留'+this.pendingRefill.required);this.view.setEnabled(this.discardButton,this.ready);(this.discardButton.getData('label') as Phaser.GameObjects.Text).setText(this.refillHidden?'继续选牌':'收起候选');}
     if(dragHint)this.statusText.setText(dragHint);
+    this.pcKeyboardActions?.update();
     // Balatro-style call-to-action: the playable state breathes a warm aura.
     const auraOn=!!this.playButton.input?.enabled&&this.selectedIds.size>0&&!this.presentation&&!this.playing;
     if(this.playAura){
@@ -1397,12 +1411,15 @@ export class GameScene extends Phaser.Scene {
     if(this.passiveHeroSkill&&heroCue){this.passiveHeroSkill.description.setText(heroCue.detail);this.passiveHeroSkill.anchor.setData('ariaLabel',heroCue.ariaLabel);}
     if(this.heroActionButton){
       this.heroActionButton.setData('abilityAvailable',heroAvailable).setData('abilityChosen',heroChosen&&this.ready).setData('abilityState',heroCue?.state??'unavailable').setData('ariaLabel',heroCue?.ariaLabel??'');
-      this.view.setEnabled(this.heroActionButton,this.ready&&heroCue?.actionable!==false&&(heroOpportunity||!!this.pendingRefill||heroChosen));
+      const skillEnabled=this.ready&&heroCue?.actionable!==false&&(heroOpportunity||!!this.pendingRefill||heroChosen);
+      this.view.setEnabled(this.heroActionButton,skillEnabled);
       (this.heroActionButton.getData('label') as Phaser.GameObjects.Text).setText(heroCue?.label??this.heroActionLabel());
-      updateHeroSkillStatusText(this.heroActionButton.getData('skillStatus') as Phaser.GameObjects.Text|undefined,heroCue?.status??'',heroCue?.state==='available'||heroCue?.state==='selected'?C.jade:heroCue?.state==='pending'?C.red:C.mutedInk);
+      if(this.view.layout.pc){const mark=this.heroActionButton.getData('skillMark') as Phaser.GameObjects.Graphics|undefined;mark?.clear().fillStyle(skillEnabled?T.jade:T.disabledInk,1).fillPoints([{x:13,y:13},{x:18,y:22},{x:13,y:31},{x:8,y:22}],true);}
+      updateHeroSkillStatusText(this.heroActionButton.getData('skillStatus') as Phaser.GameObjects.Text|undefined,heroCue?.status??'',this.view.layout.pc&&!skillEnabled?C.disabledInk:heroCue?.state==='available'||heroCue?.state==='selected'?C.jade:heroCue?.state==='pending'?C.red:C.mutedInk);
       this.sushiSkillPayoff?.refresh();
       this.liueSkillPayoff?.refresh();
     }
+    this.pcKeyboardActions?.update();
     this.game?.canvas?.setAttribute('aria-label',GAME_NAME+' · '+getCharacter(this.characterId).name+'牌桌；方向键聚焦手牌，空格选牌，Enter查看详情。'+(heroCue?' '+heroCue.ariaLabel:''));
     this.roleText.setColor(heroCue?.state==='passive'?C.ink:heroAvailable?C.jade:C.mutedInk).setData('abilityAvailable',heroAvailable);
     this.roleFrame.setStrokeStyle(heroOpportunity||heroChosen?2:1,heroAvailable||heroChosen?T.jade:T.brass,heroOpportunity||heroChosen?1:.6);
@@ -2680,6 +2697,7 @@ export class GameScene extends Phaser.Scene {
     }
     this.fitHudReadouts();
     if(!this.presentation)this.refreshJokerLabels(this.selectionPreview());
+    this.pcKeyboardActions?.update();
   }
 }
 
