@@ -129,6 +129,10 @@ it('PC regions preserve left state, upper horizontal owned rail and lower simult
   const menu={x:width-148,y:8,width:148,height:44},l=shopLayout(width,height,8,0,3,true,false,0,0,5,menu),p=l.pc!;expect(p).toBeTruthy();expect(l.slots.every(b=>b.y===l.slots[0].y)).toBe(true);
   expect(p.left.x+p.left.width).toBeLessThan(p.ownedRail.x);expect(l.slots[0].y+l.slots[0].height).toBeLessThan(p.shopPanel.y);
   const actions=[l.chapter,l.build,l.play,l.reroll,p.inventoryEntry];
+  expect(l.play.x+l.play.width/2).toBeCloseTo(p.shared.x+p.shared.width/2);
+  expect(l.play.y-(p.jokerOffers[0].y+p.jokerOffers[0].height)).toBeCloseTo(28);
+  expect(p.feedback.x).toBeGreaterThanOrEqual(l.play.x+l.play.width);
+  expect(p.feedback.width).toBeGreaterThanOrEqual(160);
   for(const [i,b] of actions.entries()){expect(intersects(b,{x:width-148,y:8,width:148,height:44})).toBe(false);expect(b.height).toBeGreaterThanOrEqual(44);for(const other of actions.slice(i+1))expect(intersects(b,other)).toBe(false);}
   for(const b of [...l.slots,...actions,...p.jokerOffers,p.toolOffers,p.itemOffers,p.feedback]){expect(b.x).toBeGreaterThanOrEqual(0);expect(b.y).toBeGreaterThanOrEqual(8);expect(b.x+b.width).toBeLessThanOrEqual(width);expect(b.y+b.height).toBeLessThanOrEqual(height);}
   for(const b of [...p.jokerOffers,p.toolOffers,p.itemOffers])for(const a of [...actions,p.feedback])expect(intersects(b,a)).toBe(false);

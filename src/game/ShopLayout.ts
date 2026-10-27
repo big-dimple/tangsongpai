@@ -45,9 +45,10 @@ function desktopShopLayout(width:number,height:number,top:number,bottom:number,_
   const ownedRail={x:rightX,y:main.y,width:rightWidth,height:ownedHeight+74};
   const inventoryEntry={x:rightX+rightWidth-160,y:top,width:160,height:44};
   const panelY=ownedRail.y+ownedRail.height+20;
-  const shopPanel={x:rightX,y:panelY,width:rightWidth,height:frame.y+frame.height-panelY};
-  const play={x:main.x+main.width-240,y:frame.y+frame.height-72,width:240,height:56};
-  const goodsX=main.x,goodsWidth=main.width,shared={x:goodsX,y:panelY+60,width:goodsWidth,height:play.y-panelY-88};
+  const bottomPlayY=frame.y+frame.height-72,sharedHeight=Math.min(compact?320:376,bottomPlayY-panelY-88);
+  const play={x:main.x+(main.width-240)/2,y:panelY+88+sharedHeight,width:240,height:56};
+  const shopPanel={x:rightX,y:panelY,width:rightWidth,height:play.y+play.height+16-panelY};
+  const goodsX=main.x,goodsWidth=main.width,shared={x:goodsX,y:panelY+60,width:goodsWidth,height:sharedHeight};
   // Eligibility follows the real remaining merchandise region, including safe insets.
   if(shared.height<PC_SHOP_MIN_OFFER_HEIGHT)return shortShopLayout(width,height,top,bottom,_cols,ownedCollapsed);
   const seat=(goodsWidth-32)/3,offerHeight=Math.min(compact?320:376,shared.height);
@@ -56,7 +57,7 @@ function desktopShopLayout(width:number,height:number,top:number,bottom:number,_
   if(offers.some(g=>!g))return shortShopLayout(width,height,top,bottom,_cols,ownedCollapsed);
   const shelf=offers.map(g=>g!.art);
   const groupY=shared.y,toolOffers=shared,workshop=shared,itemOffers=shared;
-  const feedback={x:goodsX,y:play.y+8,width:Math.max(80,play.x-goodsX-164),height:44};
+  const feedback={x:play.x+play.width+16,y:play.y+8,width:Math.max(0,goodsX+goodsWidth-play.x-play.width-16),height:44};
   const reroll={x:inventoryEntry.x-120,y:top,width:104,height:44};
   const build={x:play.x-144,y:play.y+6,width:132,height:44};
   const chapter={x,y:sidebar.y+204,width:leftWidth,height:44};
@@ -87,7 +88,7 @@ export function shopLayout(width:number,height:number,top:number,bottom:number,c
   if(desktopHeader){
     p.items=desktopHeader.inventory;p.reroll=desktopHeader.reroll;
     p.build={x:p.pc||p.play.x>p.x+p.w/2?p.play.x-144:p.x+p.w-132,y:p.play.y+6,width:132,height:44};
-    if(p.pc){p.pc.inventoryEntry=desktopHeader.inventory;p.pc.feedback={...p.pc.feedback,width:Math.max(0,p.build.x-p.pc.feedback.x-16)};}
+    if(p.pc)p.pc.inventoryEntry=desktopHeader.inventory;
   }
   const result={...p,menu,headerRows,desktopHeader};
   if(p.portrait){
