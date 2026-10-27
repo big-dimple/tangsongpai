@@ -745,11 +745,12 @@ export class ShopScene extends Phaser.Scene {
     (art.list[0] as Phaser.GameObjects.Graphics).clear();(art.list[1] as Phaser.GameObjects.Graphics).clear();(button.getData('label') as Phaser.GameObjects.Text).setFontSize(14).setFontStyle('normal').setAlign('center').setColor('#3F606B');
   }
   private drawInventoryBag(b:Box):void {
-    const compact=b.width<100,onInk=!!this.geometry().desktopHeader&&this.geometry().short,count=this.run.consumables.length+'/'+r2ConsumableCapacity(this.run),button=this.shopButton(b,compact?'道具箱\n'+count:'道具箱 '+count,'action/tool-inventory',()=>showConsumables(this.dialog,this.run,this.ready,(a,seq)=>this.send(a,seq)),!this.busy);
+    const portrait=this.geometry().portrait,compact=b.width<100,onInk=portrait||!!this.geometry().desktopHeader&&this.geometry().short,count=this.run.consumables.length+'/'+r2ConsumableCapacity(this.run),button=this.shopButton(b,compact?'道具箱\n'+count:'道具箱 '+count,'action/tool-inventory',()=>showConsumables(this.dialog,this.run,this.ready,(a,seq)=>this.send(a,seq)),!this.busy);
     if(pcResultViewport(this.view.layout.width,this.view.layout.height)){inventoryFeedback(this,button,this.run,this.ready,this.resultReduced,true);return;}
     button.setData('chest',true);inventoryFeedback(this,button,this.run,this.ready,this.resultReduced);
     const art=button.getData('buttonArt') as Phaser.GameObjects.Container;(art.list[0] as Phaser.GameObjects.Graphics).clear();(art.list[1] as Phaser.GameObjects.Graphics).clear();shopToolbarGlyph(this,art,'bag',compact?2:14,14,onInk?0xe7cc8c:0x42665d,compact?18:24);
-    (button.getData('label') as Phaser.GameObjects.Text).setText(compact?'道具箱\n'+count:'道具箱 '+count).setFontSize(compact?12:14).setFontStyle(this.run.consumables.length?'bold':'normal').setAlign('center').setX(b.x+(compact?46:b.width/2+8)).setColor(onInk?this.run.consumables.length?'#f2db9f':'#f7f1df':'#3F606B');
+    const state=portrait&&this.busy?'处理中':count;
+    (button.getData('label') as Phaser.GameObjects.Text).setText(compact?'道具箱\n'+state:'道具箱 '+state).setFontSize(compact?12:14).setFontStyle(this.run.consumables.length?'bold':'normal').setAlign('center').setX(b.x+(compact?46:b.width/2+8)).setColor(onInk?this.run.consumables.length?'#f2db9f':'#f7f1df':'#3F606B');
   }
   private confirmRefresh():void {
     if(!this.ready||this.refreshDialog&&this.dialog.active(this.refreshDialog))return;
@@ -757,9 +758,10 @@ export class ShopScene extends Phaser.Scene {
   }
   private drawRefresh(b:Box):void {
     const allowed=r2RunModeConfig(this.run).reroll.allowed,cost=this.run.shop?.freeRerolls?0:r2PaidRerollPrice(this.run),enabled=this.ready&&allowed&&this.run.gold>=cost&&r2Pool(this.run.jokers.map(j=>j.definitionId),this.run.safetyNetUsed?['f07']:[]).length>0;
-    const compact=b.width<100,onInk=!!this.geometry().desktopHeader&&this.geometry().short,price=allowed?(cost?cost+'金币':'免费'):'禁用',button=this.shopButton(b,compact?'花钱换货\n'+price:'花钱换货 '+price,'action/reroll',()=>this.confirmRefresh(),enabled),art=button.getData('buttonArt') as Phaser.GameObjects.Container;
+    const portrait=this.geometry().portrait,compact=b.width<100,onInk=portrait||!!this.geometry().desktopHeader&&this.geometry().short,price=allowed?(cost?cost+'金币':'免费'):'禁用',button=this.shopButton(b,compact?'花钱换货\n'+price:'花钱换货 '+price,'action/reroll',()=>this.confirmRefresh(),enabled),art=button.getData('buttonArt') as Phaser.GameObjects.Container;
     (art.list[0] as Phaser.GameObjects.Graphics).clear();(art.list[1] as Phaser.GameObjects.Graphics).clear();shopToolbarGlyph(this,art,'refresh',compact?2:8,14,onInk?0xe7cc8c:0x42665d,compact?18:20);
-    const label=button.getData('label') as Phaser.GameObjects.Text;label.setText((cost?'花钱换货':'免费换货')+'\n'+price).setFontSize(compact?12:14).setFontStyle('normal').setAlign('center').setX(b.x+(compact?46:b.width/2+12)).setColor(onInk?'#f7f1df':'#36594f');
+    const unavailable=portrait&&!enabled?(!this.ready?'未就绪':!allowed?'已禁用':this.run.gold<cost?'金币不足':'无可换') : price;
+    const label=button.getData('label') as Phaser.GameObjects.Text;label.setText((cost?'花钱换货':'免费换货')+'\n'+unavailable).setFontSize(compact?12:14).setFontStyle('normal').setAlign('center').setX(b.x+(compact?46:b.width/2+12)).setColor(onInk?'#f7f1df':'#36594f');
   }
   private inspectMakeCards():void {
     if(this.busy||this.run.phase!=='shop')return;
