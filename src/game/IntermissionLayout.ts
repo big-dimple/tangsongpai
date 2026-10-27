@@ -10,15 +10,15 @@ export function resultPlacement(top:number,bottom:number,content:Pick<Box,'y'|'h
 
 export function resultLayout(width:number,height:number,top:number,contentHeight:number,pc=false){
   if(pc){
-    const grid=pcLandscapeFrame(width,height),gap=grid.gap,x=grid.main.x,w=grid.main.width;
-    const sideWidth=width<1500?292:368,rightX=x+w-sideWidth,bodyY=top+102;
+    const grid=pcLandscapeFrame(width,height),edge=grid.main.x,w=Math.min(920,width-edge*2),x=(width-w)/2,bodyY=top+92;
     // Result content is later translated below the browser/menu safe row.
-    const primary:Box={x:rightX,y:height-224,width:sideWidth,height:56};
-    const score:Box={x,y:bodyY,width:w-sideWidth-gap,height:primary.y-bodyY+56};
-    const next:Box={x:rightX,y:bodyY+208,width:sideWidth,height:132};
-    const auxY=primary.y+primary.height+8,auxWidth=(sideWidth-12)/2;
+    const actionWidth=Math.min(420,w),actionX=x+(w-actionWidth)/2;
+    const primary:Box={x:actionX,y:height-224,width:actionWidth,height:56};
+    const score:Box={x,y:bodyY,width:w,height:primary.y-bodyY+56};
+    const nextWidth=Math.min(620,w),next:Box={x:x+(w-nextWidth)/2,y:bodyY,width:nextWidth,height:0};
+    const auxY=primary.y+primary.height+8,auxWidth=(actionWidth-12)/2;
     return {x,w,top,short:false,portrait:false,tight:false,wide:true,pc:true,score,next,nextText:next,primary,
-      left:{x:rightX,y:auxY,width:auxWidth,height:44},right:{x:rightX+auxWidth+12,y:auxY,width:auxWidth,height:44},noticeY:auxY+48};
+      left:{x:actionX,y:auxY,width:auxWidth,height:44},right:{x:actionX+auxWidth+12,y:auxY,width:auxWidth,height:44},noticeY:auxY+48};
   }
   if(width<700&&height>width){
     const x=12,w=width-24,bodyY=top+64,tight=height<700;

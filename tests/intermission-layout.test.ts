@@ -21,13 +21,15 @@ it.each([[320,568],[390,844],[740,320],[1024,768]])('keeps readable touch contro
  expect(p.primary.height).toBeGreaterThanOrEqual(48);expect(p.left.height).toBeGreaterThanOrEqual(44);
 });
 
-it.each([[1920,1080],[1920,924],[1366,768]])('PC result reserves a real hand column and first-screen continuation at %sx%s',(width,height)=>{
+it.each([[1920,1080],[1920,924],[1366,768],[1180,640]])('PC result centers the hand and continuation within the reading column at %sx%s',(width,height)=>{
  const p=resultLayout(width,height,0,301,true),safeTop=60;
  expect(p.pc).toBe(true);
- expect(p.score.width).toBeGreaterThanOrEqual(700);
- expect(p.next.x).toBeGreaterThanOrEqual(p.score.x+p.score.width+24);
- expect(p.score.y).toBeGreaterThanOrEqual(96);
- expect(p.next.y+p.next.height+24).toBeLessThanOrEqual(p.primary.y);
+ expect(p.score.width).toBeGreaterThanOrEqual(580);
+ expect(p.score.width).toBeLessThanOrEqual(920);
+ expect(p.score.x+p.score.width/2).toBe(width/2);
+ expect(p.next.x+p.next.width/2).toBe(width/2);
+ expect(p.primary.x+p.primary.width/2).toBe(width/2);
+ expect(p.score.y).toBeGreaterThanOrEqual(92);
  for(const b of [p.primary,p.left,p.right]){
   expect(b.y+safeTop).toBeGreaterThan(0);
   expect(b.y+b.height+safeTop).toBeLessThanOrEqual(height-16);
