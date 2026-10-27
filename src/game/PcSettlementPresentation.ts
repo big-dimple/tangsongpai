@@ -10,6 +10,7 @@ import {rankLabel,SUIT_SYMBOL} from '../cards/types';
 import {enhancementText} from './CardSpecialLabels';
 import {pcLandscapeFrame} from './PcLandscapeFrame';
 import {HAND_LABELS} from '../content/handLabels';
+import {settlementHandCards,settlementSuitInk} from './SettlementHand';
 import {failureSummary} from './FailureSummary';
 import {PAPER_THEME as T,PAPER_CSS as C,SCORE_FONT} from './theme';
 import {resultLayout} from './IntermissionLayout';
@@ -62,17 +63,17 @@ export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2R
  const trace=facts.trace,heading=trace?(lost?'末手牌型 · ':'致胜牌型 · ')+HAND_LABELS[trace.handType]:skipped?'本场跳过':lost?'本场回顾':'本场计分记录';
  text(b.x,b.y,heading,compact?28:36,b.width,C.ink,'result/hand-type').setFontStyle('bold');
  if(trace){
-  const cards=trace.sets.playedIds.map(id=>trace.cards.find(card=>card.id===id)).filter((card):card is NonNullable<typeof card>=>!!card);
+  const cards=trace.sets.playedIds.map(id=>trace.cards.find(card=>card.id===id)).filter((card):card is NonNullable<typeof card>=>!!card),handCards=settlementHandCards(trace);
   const cardWidth=Math.min(compact?94:132,(b.width-24*Math.max(0,cards.length-1))/Math.max(1,cards.length)),cardHeight=cardWidth*1.4;
   const cardsY=b.y+(compact?50:66),cardsX=b.x+(b.width-(cardWidth*cards.length+24*Math.max(0,cards.length-1)))/2;
   text(b.x, cardsY+cardHeight+12,'实际打出 '+cards.length+' 张 · '+trace.sets.activeScoringIds.length+' 张有效计分',16,b.width,C.jade,'result/hand-combo').setData('fullText',facts.handCards);
   cards.forEach((card,i)=>{
-   const x=cardsX+i*(cardWidth+24),y=cardsY,active=trace.sets.activeScoringIds.includes(card.id),red=card.suit==='hearts'||card.suit==='diamonds',ink=red?C.red:C.ink;
+   const x=cardsX+i*(cardWidth+24),y=cardsY,active=handCards[i].active,ink=settlementSuitInk(card.suit);
    const face=view.add(scene.add.graphics().setName('result/card-face').setData('cardId',card.id).setData('scoring',active).setData('bounds',{x,y,width:cardWidth,height:cardHeight}));
    face.fillStyle(T.ink,.08).fillRoundedRect(x,y+5,cardWidth,cardHeight,7).fillStyle(T.paperLight).fillRoundedRect(x,y,cardWidth,cardHeight,7).lineStyle(active?2:1,active?T.jade:T.divider,1).strokeRoundedRect(x,y,cardWidth,cardHeight,7);
-   text(x+10,y+9,rankLabel(card.rank)+'\n'+SUIT_SYMBOL[card.suit],compact?21:28,cardWidth-20,ink,'result/card-index').setData('cardId',card.id);
-   text(x+cardWidth/2,y+cardHeight*.5,SUIT_SYMBOL[card.suit],compact?40:62,cardWidth,ink,'result/card-suit').setOrigin(.5);
-   const corner=text(x+cardWidth-8,y+cardHeight-8,rankLabel(card.rank),compact?19:24,cardWidth-16,ink,'result/card-corner').setOrigin(0,0).setAngle(180);corner.setData('cardId',card.id);
+   text(x+10,y+9,rankLabel(card.rank)+'\n'+SUIT_SYMBOL[card.suit],compact?21:28,cardWidth-20,ink,'result/card-index').setColor(ink).setData('cardId',card.id).setData('suit',card.suit);
+   text(x+cardWidth/2,y+cardHeight*.5,SUIT_SYMBOL[card.suit],compact?40:62,cardWidth,ink,'result/card-suit').setColor(ink).setOrigin(.5).setData('cardId',card.id).setData('suit',card.suit);
+   const corner=text(x+cardWidth-8,y+cardHeight-8,rankLabel(card.rank),compact?19:24,cardWidth-16,ink,'result/card-corner').setColor(ink).setOrigin(0,0).setAngle(180);corner.setData('cardId',card.id);
    if(card.enhancement||card.edition&&card.edition!=='none'){
     const editions={none:'',foil:'闪箔',holographic:'全息',polychrome:'多彩'};
     text(x,y+cardHeight-25,[card.enhancement?enhancementText(card).split(' · ')[0]:'',editions[card.edition??'none']].filter(Boolean).join('·'),14,cardWidth,C.jade,'result/card-modifiers').setOrigin(0,0);
