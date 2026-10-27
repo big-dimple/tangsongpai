@@ -36,7 +36,7 @@
 /* Shop actions share one quiet secondary treatment and one explicit confirm. */
 .detail-dialog:is(.shop-tool-purchase,.tool-detail,.shop-workshop,.shop-service-confirmation) .dialog-actions button { border:0;border-radius:8px;background:#e2e8e5;color:#203f3b;box-shadow:none;min-height:48px; }
 .detail-dialog:is(.shop-tool-purchase,.tool-detail,.shop-workshop,.shop-service-confirmation) .dialog-actions .dialog-primary { background:#203f3b;color:#fff9ee; }
-.detail-dialog:is(.shop-tool-purchase,.tool-detail,.shop-workshop,.shop-service-confirmation) .dialog-actions button:disabled { background:#e7e5de;color:#73776f; }
+.detail-dialog:is(.shop-tool-purchase,.tool-detail,.shop-workshop,.shop-service-confirmation) .dialog-actions button:disabled { background:#e7e5de;color:#595b59; }
 .detail-dialog.shop-tool-purchase[open] { width:min(640px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px)); }
 .detail-dialog.shop-tool-purchase .dialog-card-art { flex-basis:128px;width:128px;padding:0;border:0;box-shadow:none;background:transparent; }
 .shop-tool-later { margin-top:12px;padding:0 12px;background:#edf1e9;border-radius:8px; }
