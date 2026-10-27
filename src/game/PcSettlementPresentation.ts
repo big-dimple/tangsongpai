@@ -13,7 +13,7 @@ import {HAND_LABELS} from '../content/handLabels';
 import {settlementHandCards,settlementSuitInk} from './SettlementHand';
 import {failureSummary} from './FailureSummary';
 import {PAPER_THEME as T,PAPER_CSS as C,SCORE_FONT} from './theme';
-import {resultLayout} from './IntermissionLayout';
+import {pcResultSidebar,resultLayout} from './IntermissionLayout';
 
 /** A geometry gate plus the primary pointer: touch tablets retain their existing view. */
 export function pcResultViewport(width:number,height:number){
@@ -36,24 +36,26 @@ export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2R
  };
  const centered=(y:number,copy:string,size:number,width:number,color=C.ink,name='')=>text(columnX,y,copy,size,Math.min(width,columnWidth),color,name).setOrigin(.5,0).setAlign('center');
  const paper=view.add(scene.add.graphics().setName('result-art/stage').setData('bounds',b));
- const side={...grid.sidebar,x:b.x-grid.gap-grid.sidebar.width},heroBox={x:side.x,y:b.y+12,width:side.width,height:Math.min(compact?250:370,Math.max(80,l.primary.y-b.y-54))};
+ const side={...pcResultSidebar(view.layout.width,view.layout.height),x:b.x-grid.gap-pcResultSidebar(view.layout.width,view.layout.height).width};
+ const heroHeight=Math.min(compact?390:520,Math.max(240,view.layout.height-b.y-176));
+ const heroBox={x:side.x,y:b.y+4,width:side.width,height:heroHeight};
  const halo=view.add(scene.add.graphics().setName('result-art/hero-halo'));
  const haloRadius=Math.min(side.width*.43,heroBox.height*.36),haloX=side.x+side.width/2,haloY=heroBox.y+heroBox.height*.4;
- halo.fillStyle(0xc7d8cf,.8).fillCircle(haloX,haloY,haloRadius).lineStyle(1,0x829d91,.65).strokeCircle(haloX,haloY,haloRadius+5);
+ halo.fillStyle(0xc7d8cf,.18).fillCircle(haloX,haloY,haloRadius).lineStyle(1,0xc7b89d,.42).strokeCircle(haloX,haloY,haloRadius+5);
  const artLayer=view.add(scene.add.container(0,0).setName('result-art/source-layer'));
  const paint=()=>{
   artLayer.removeAll(true);const key=pcHeroKey(run.characterId);
   if(!scene.textures.exists(key))return;
   const hero=scene.add.image(0,0,key).setName('result-art/hero').setData('assetId',run.characterId+'.pc');
   hero.setScale(Math.min(1,heroBox.width/hero.width,heroBox.height/hero.height));
-  hero.setPosition(heroBox.x+hero.displayWidth/2,heroBox.y+heroBox.height-hero.displayHeight/2);
+  hero.setPosition(heroBox.x+heroBox.width/2,heroBox.y+heroBox.height-hero.displayHeight/2);
   hero.setData('bounds',{x:hero.x-hero.displayWidth/2,y:hero.y-hero.displayHeight/2,width:hero.displayWidth,height:hero.displayHeight});
   artLayer.add(hero);return hero;
  };
  const hero=paint();
- const heroName=text(side.x,heroBox.y+heroBox.height+8,getCharacter(run.characterId).name,18,side.width,C.ink,'result/hero-name').setFontStyle('bold');
- const resources=text(side.x,heroName.y+heroName.height+4,'金币 '+run.gold+'　·　出牌余量 '+run.stage!.handsLeft,16,side.width,C.ink,'result/resources');
- if(facts.hero)text(side.x,resources.y+resources.height+4,(facts.heroSkill??'角色能力')+' · '+facts.heroCopy.replace('本手兑现 · ',''),16,side.width,C.jade,'result/hero-effect');
+ const heroName=text(side.x+side.width/2,heroBox.y+heroBox.height+8,getCharacter(run.characterId).name,22,side.width,C.paperLight,'result/hero-name').setOrigin(.5,0).setFontStyle('bold');
+ const resources=text(side.x+side.width/2,heroName.y+heroName.height+4,'金币 '+run.gold+'　·　出牌余量 '+run.stage!.handsLeft,15,side.width,'#d8cdb8','result/resources').setOrigin(.5,0);
+ if(facts.hero)text(side.x+side.width/2,resources.y+resources.height+4,(facts.heroSkill??'角色能力')+' · '+facts.heroCopy.replace('本手兑现 · ',''),14,side.width-16,C.redSoft,'result/hero-effect').setOrigin(.5,0).setAlign('center');
 
  const tag=centered(b.y,skipped?'本场跳过':'本场总热度',16,b.width,C.jade,'result/hand');
  const exactScore=facts.stageTotal,copy=(exactScore.length>15&&/[1-9]/.test(exactScore.slice(3))?'≈':'')+heatText(exactScore);
@@ -102,7 +104,7 @@ export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2R
    const corner=text(x+cardWidth-4,y+cardHeight-4,rankLabel(card.rank),16,cardWidth-8,ink,'result/card-corner').setOrigin(0,0).setAngle(180);corner.setData('cardId',card.id);
    if(card.enhancement||card.edition&&card.edition!=='none'){
     const editions={none:'',foil:'闪箔',holographic:'全息',polychrome:'多彩'};
-    text(x,y+cardHeight-19,[card.enhancement?enhancementText(card).split(' · ')[0]:'',editions[card.edition??'none']].filter(Boolean).join('·'),12,cardWidth,C.jade,'result/card-modifiers');
+    text(x+cardWidth/2,y+cardHeight-30,[card.enhancement?enhancementText(card).split(' · ')[0]:'',editions[card.edition??'none']].filter(Boolean).join('·'),11,cardWidth-8,C.jade,'result/card-modifiers').setOrigin(.5,0).setAlign('center');
    }
   });
   const combo=centered(cardsY+cardHeight+4,'实际打出 '+cards.length+' 张 · '+trace.sets.activeScoringIds.length+' 张有效计分',14,b.width,C.jade,'result/hand-combo').setData('fullText',facts.handCards);
@@ -118,6 +120,13 @@ export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2R
   if(lost){const reason=centered(bottom+4,failureSummary(run).reason,16,b.width,C.ink,'result/failure-reason');bottom=reason.y+reason.height;}
  }
  bottom=Math.max(scoreBottom,bottom);
+ if(ceremony){
+  const y=b.y-12,leftHeight=scoreBottom-y+12,rightHeight=bottom-y+12;
+  paper.fillStyle(T.ink,.05).fillRoundedRect(b.x,y+3,b.width*.49,leftHeight,10).fillRoundedRect(b.x+b.width*.51,y+3,b.width*.49,rightHeight,10);
+  paper.fillStyle(T.paperLight,.78).fillRoundedRect(b.x,y,b.width*.49,leftHeight,10).fillRoundedRect(b.x+b.width*.51,y,b.width*.49,rightHeight,10);
+  paper.lineStyle(1,T.divider,.68).strokeRoundedRect(b.x+.5,y+.5,b.width*.49-1,leftHeight-1,10).strokeRoundedRect(b.x+b.width*.51+.5,y+.5,b.width*.49-1,rightHeight-1,10);
+  paper.fillStyle(lost||skipped?T.jade:T.red,.86).fillRect(b.x+18,y,52,3).fillRect(b.x+b.width*.51+18,y,52,3);
+ }
  return {facts,score,reward,rewardText,paint,hero,stage:b,reviewBookBand,receiptBottom:bottom};
 }
 
