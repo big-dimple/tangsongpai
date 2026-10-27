@@ -131,15 +131,22 @@ export class IntermissionScene extends Phaser.Scene {
     this.releaseViewport?.();this.releaseViewport=undefined;this.stopCelebration();v.clear();this.paintSourceArt=undefined;this.sourceArtLayer=undefined;v.paperBackground();const backgroundCount=v.root.length;
     const content=this.resultContent=this.add.container(0,0).setName('result/content');
     const identity=stageIdentity(stage.index,run.stage!.boss,run.tourMode,run.difficulty,run)!;
-    v.text(p.x,p.top,(run.tourMode==='endless'?'无尽 · ':'')+stage.name+' · '+character.name,14,identity.isBoss?PAPER_CSS.red:PAPER_CSS.jade,p.w-116).setName('stage-identity/result');
+    const stageLabel=v.text(p.x,p.top,(run.tourMode==='endless'?'无尽 · ':'')+stage.name+' · '+character.name,14,identity.isBoss?PAPER_CSS.red:PAPER_CSS.jade,p.w-116).setName('stage-identity/result');
+    if(p.pc)stageLabel.setOrigin(.5,0).setX(p.x+p.w/2);
     const guidance=lost?failureGuidance(run):undefined;
     const title=capped?'本局暂止于此':skipped?'换一场，再对局':won?(run.mode==='tutorial'?'教学对局完成！':run.mode==='challenge'?'挑战完成！':'八章通关'):this.result.cleared?(identity.isBoss?'压轴过关 · '+identity.title:'本场获胜'):guidance?.title??'此局结束，再来一局';
+    const titlePlate=p.pc?v.add(this.add.graphics().setName('result/title-plate')):undefined;
     const titleText=v.text(p.x,p.top+(p.short?22:28),title,p.pc?(l.width<1500?40:48):p.short||p.portrait&&identity.isBoss?22:p.portrait?26:34,identity.isBoss&&this.result.cleared?PAPER_CSS.red:PAPER_CSS.ink,p.w).setName('result/title').setFontFamily('Georgia, "Noto Serif SC", SimSun, serif').setFontStyle('bold');
-    if(p.pc||mobile){titleText.setWordWrapWidth(0);for(let size=mobile?26:l.width<1500?40:48;titleText.width>p.w&&size>(mobile?18:24);)titleText.setFontSize(--size);}
+    if(p.pc||mobile){titleText.setWordWrapWidth(0);for(let size=mobile?26:l.width<1500?40:48;titleText.width>(p.pc?p.w-36:p.w)&&size>(mobile?18:24);)titleText.setFontSize(--size);}
+    if(p.pc){
+      titleText.setOrigin(.5,0).setX(p.x+p.w/2).setAlign('center').setColor(PAPER_CSS.paperLight);
+      const box=titleText.getBounds(),x=box.x-18,y=box.y-3,width=box.width+36,height=box.height+6,tone=lost||skipped||capped?0x3f606b:0x8d302a;
+      titlePlate!.fillStyle(T.ink,.15).fillRoundedRect(x,y+3,width,height,4).fillStyle(tone).fillRoundedRect(x,y,width,height,4).lineStyle(1,T.paperLight,.55).strokeRoundedRect(x+3,y+3,width-6,height-6,3);
+    }
     const paperHeight=this.drawResultHero(p.score,!!skipped,lost,animateIn);
     p=resultLayout(l.width,l.height,0,paperHeight,pc);
     const trace=run.lastTrace;
-    const n=p.pc?{...p.nextText,y:Math.max(p.nextText.y,this.resultReceiptBottom+24)}:p.nextText;
+    const n=p.pc?{...p.nextText,y:Math.max(p.nextText.y,this.resultReceiptBottom+4)}:p.nextText;
     let heading='下一步',body='';
     if(skipped){
       const reward=skipped.kind==='coupon'?'下次买牌减2金券':skipped.kind==='gold'?'库存已满，+1金币':SKIP_ITEM_LABELS[skipped.definitionId];
@@ -174,17 +181,9 @@ export class IntermissionScene extends Phaser.Scene {
         nextBody.setText(nextStage?`${nextStage.name} · 目标 ${heatText(nextStage.targetHeat)}`:body.split('\n')[0]);nextBottom=nextBody.y+nextBody.height;
         nextHeading.setText(heading+' ›');const hit=v.rect({...n,height:Math.max(44,nextBottom-n.y)}).setFillStyle(0,0).setStrokeStyle();v.target(hit,'action/result-next-details',{tap:()=>this.dialog.open(heading,body,[],{closeLabel:'返回结算'})});
       }
-      if(p.pc&&nextBottom>p.primary.y-24){
-        // Keep the real destination/target visible and the complete copy in the existing modal.
-        const summary=nextStage?`${nextStage.name} · 目标 ${heatText(nextStage.targetHeat)}`:won?'本模式结果已保存。':capped?'已达数值上限，进度已保存。':body.split('\n')[0];
-        nextBody.setText(summary);nextBottom=nextBody.y+nextBody.height;
-        const detail={x:n.x,y:nextBottom+4,width:n.width,height:44};
-        this.auxiliary(detail,'查看完整去向与记录 ›','action/result-next-details',()=>this.dialog.open(heading,body,[],{closeLabel:'返回结算'}),!this.busy);
-        nextBottom=detail.y+detail.height;
-      }
     }
-    // Keep desktop actions on their baseline; only genuinely overflowing copy may expand it.
-    if(p.pc){const shift=Math.max(0,nextBottom+24-p.primary.y);p.primary.y+=shift;p.left.y+=shift;p.right.y+=shift;p.noticeY+=shift;}
+    // The PC actions follow the measured destination copy, including long or wrapped states.
+    if(p.pc){p.primary.y=nextBottom+8;p.left.y=p.primary.y+p.primary.height+8;p.right.y=p.left.y;p.noticeY=p.left.y+48;}
     if(!p.pc&&(p.portrait||p.wide||p.short)){const shift=nextBottom+(p.wide?20:8)-p.primary.y;p.primary.y+=shift;p.left.y+=shift;p.right.y+=shift;p.noticeY+=shift;}
     if(nextStage){
       this.auxiliary(p.left,'本场详情','action/result-details',()=>this.inspectResult());
@@ -233,7 +232,7 @@ export class IntermissionScene extends Phaser.Scene {
     const interest=!lost&&!skipped?run.lastTrace?.events.find(e=>e.sourceType==='character'&&e.sourceDefinitionId==='xiemu'&&e.phase==='onStageClear'):undefined;
     const rewardCopy=[giftCopy,interest?'含关末息'+interest.value.n+'金':undefined].filter(Boolean).join(' · ');
     const presentation=drawSettlement(this,v,b,run,this.result.cleared,skipped,formula,'奖励  +'+this.result.goldEarned+' 金'+(rewardCopy?' · '+rewardCopy:''));
-    this.resultReceiptBottom=presentation.reviewBookBand?presentation.reviewBookBand.y+presentation.reviewBookBand.height:presentation.reward.y+presentation.reward.height;
+    this.resultReceiptBottom='receiptBottom' in presentation?presentation.receiptBottom:presentation.reviewBookBand?presentation.reviewBookBand.y+presentation.reviewBookBand.height:presentation.reward.y+presentation.reward.height;
     const explainHero=(image:Phaser.GameObjects.Image|undefined)=>{
       if(!image)return;
       const hit=v.rect(image.getData('bounds')).setFillStyle(0,0).setStrokeStyle();image.parentContainer.add(hit);
