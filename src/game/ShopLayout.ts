@@ -37,17 +37,18 @@ function shortShopLayout(width:number,height:number,top:number,bottom:number,col
 }
 
 /** Left state, upper owned resources, lower sale panel. Short PC reuses the short branch. */
-function desktopShopLayout(width:number,height:number,top:number,bottom:number,_cols:number,_ownedCount:number,ownedCollapsed=false){
+function desktopShopLayout(width:number,height:number,top:number,bottom:number,_cols:number,_ownedCount:number,ownedCollapsed=false,tightOwned=false){
   const {frame,sidebar,main,compact}=pcLandscapeFrame(width,height,top,bottom);
   const x=frame.x,w=frame.width,leftWidth=sidebar.width,rightX=main.x,rightWidth=main.width;
-  const ownedWidth=compact?88:120,ownedHeight=ownedWidth*1.4,slotY=main.y+42,slotGap=compact?18:28;
+  const ownedWidth=compact?(tightOwned?66:88):120,ownedHeight=ownedWidth*1.4,slotY=main.y+42,slotGap=compact?18:28;
   const slots:Box[]=Array.from({length:5},(_,i)=>({x:rightX+12+i*(ownedWidth+slotGap),y:slotY,width:ownedWidth,height:ownedHeight}));
   const ownedRail={x:rightX,y:main.y,width:rightWidth,height:ownedHeight+74};
   const inventoryEntry={x:rightX+rightWidth-160,y:top,width:160,height:44};
   const panelY=ownedRail.y+ownedRail.height+20;
-  const shopPanel={x:rightX,y:panelY,width:rightWidth,height:frame.y+frame.height-panelY};
-  const play={x:main.x+main.width-240,y:frame.y+frame.height-72,width:240,height:56};
-  const goodsX=main.x,goodsWidth=main.width,shared={x:goodsX,y:panelY+60,width:goodsWidth,height:play.y-panelY-88};
+  const bottomPlayY=frame.y+frame.height-72,sharedHeight=Math.min(compact?320:376,bottomPlayY-panelY-88);
+  const play={x:main.x+(main.width-240)/2,y:panelY+88+sharedHeight,width:240,height:56};
+  const shopPanel={x:rightX,y:panelY,width:rightWidth,height:play.y+play.height+16-panelY};
+  const goodsX=main.x,goodsWidth=main.width,shared={x:goodsX,y:panelY+60,width:goodsWidth,height:sharedHeight};
   // Eligibility follows the real remaining merchandise region, including safe insets.
   if(shared.height<PC_SHOP_MIN_OFFER_HEIGHT)return shortShopLayout(width,height,top,bottom,_cols,ownedCollapsed);
   const seat=(goodsWidth-32)/3,offerHeight=Math.min(compact?320:376,shared.height);
@@ -56,7 +57,7 @@ function desktopShopLayout(width:number,height:number,top:number,bottom:number,_
   if(offers.some(g=>!g))return shortShopLayout(width,height,top,bottom,_cols,ownedCollapsed);
   const shelf=offers.map(g=>g!.art);
   const groupY=shared.y,toolOffers=shared,workshop=shared,itemOffers=shared;
-  const feedback={x:goodsX,y:play.y+8,width:Math.max(80,play.x-goodsX-164),height:44};
+  const feedback={x:play.x+play.width+16,y:play.y+8,width:Math.max(0,goodsX+goodsWidth-play.x-play.width-16),height:44};
   const reroll={x:inventoryEntry.x-120,y:top,width:104,height:44};
   const build={x:play.x-144,y:play.y+6,width:132,height:44};
   const chapter={x,y:sidebar.y+204,width:leftWidth,height:44};
@@ -65,13 +66,13 @@ function desktopShopLayout(width:number,height:number,top:number,bottom:number,_
     tabs:{x:goodsX,y:panelY,width:goodsWidth,height:44},chapter,items:inventoryEntry,build,reroll,play,noticeY:feedback.y};
 }
 
-export function shopLayout(width:number,height:number,top:number,bottom:number,cols:number,ownedCopy=false,guideActions=false,left=0,right=0,ownedCount=5,menu?:Box,ownedCollapsed=false){
+export function shopLayout(width:number,height:number,top:number,bottom:number,cols:number,ownedCopy=false,guideActions=false,left=0,right=0,ownedCount=5,menu?:Box,ownedCollapsed=false,desktopPointer=false){
   const availableWidth=width-left-right,portrait=availableWidth<700&&height>availableWidth;
   // A fixed compact menu belongs to the existing header. Reclaim a whole reserved
   // row above it; the portrait canvas header starts 4px before the DOM anchor.
   const contentTop=menu&&availableWidth<1000&&top>=menu.y+menu.height?Math.max(0,menu.y-(portrait?4:0)):top;
   // Native portrait categories share one region; legacy canvas stock columns cannot move its bounds.
-  const p=shiftLayout(shopContentLayout(availableWidth,height,contentTop,bottom,portrait?3:cols,ownedCopy,guideActions,ownedCount,ownedCollapsed),left);
+  const p=shiftLayout(shopContentLayout(availableWidth,height,contentTop,bottom,portrait?3:cols,ownedCopy,guideActions,ownedCount,ownedCollapsed,desktopPointer),left);
   const headerRows=p.portrait&&width-left-right<600?2:1;
   if(headerRows===2){p.tabs={...p.tabs,y:p.tabs.y+44};p.shelf=p.shelf.map(b=>({...b,y:b.y+44}));}
   if(p.portrait){p.play={...p.play,y:p.play.y-16};if('ownedToggle' in p&&p.ownedToggle)p.ownedToggle={...p.ownedToggle,y:p.ownedToggle.y-16};}
@@ -87,7 +88,7 @@ export function shopLayout(width:number,height:number,top:number,bottom:number,c
   if(desktopHeader){
     p.items=desktopHeader.inventory;p.reroll=desktopHeader.reroll;
     p.build={x:p.pc||p.play.x>p.x+p.w/2?p.play.x-144:p.x+p.w-132,y:p.play.y+6,width:132,height:44};
-    if(p.pc){p.pc.inventoryEntry=desktopHeader.inventory;p.pc.feedback={...p.pc.feedback,width:Math.max(0,p.build.x-p.pc.feedback.x-16)};}
+    if(p.pc)p.pc.inventoryEntry=desktopHeader.inventory;
   }
   const result={...p,menu,headerRows,desktopHeader};
   if(p.portrait){
@@ -109,8 +110,14 @@ function shiftLayout<T>(value:T,left:number):T {
   if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value).map(([k,v])=>[k,k==='x'&&typeof v==='number'?v+left:shiftLayout(v,left)])) as T;
   return value;
 }
-function shopContentLayout(width:number,height:number,top:number,bottom:number,cols:number,ownedCopy=false,guideActions=false,ownedCount=5,ownedCollapsed=false){
-  if(width>=1000){if(height-top-bottom<680)return shortShopLayout(width,height,top,bottom,cols,ownedCollapsed);return desktopShopLayout(width,height,top,bottom,cols,ownedCount,ownedCollapsed);}
+function shopContentLayout(width:number,height:number,top:number,bottom:number,cols:number,ownedCopy=false,guideActions=false,ownedCount=5,ownedCollapsed=false,desktopPointer=false){
+  if(width>=1000){
+    if(height-top-bottom<680)return shortShopLayout(width,height,top,bottom,cols,ownedCollapsed);
+    const normal=desktopShopLayout(width,height,top,bottom,cols,ownedCount,ownedCollapsed);
+    // A non-coarse-pointer desktop can reclaim vertical room from its owned rail;
+    // coarse-pointer tablets retain their existing compact layout.
+    return !normal.pc&&desktopPointer?desktopShopLayout(width,height,top,bottom,cols,ownedCount,ownedCollapsed,true):normal;
+  }
   if(height<=width&&height-top-bottom<500)return shortShopLayout(width,height,top,bottom,cols);
   const portrait=width<700&&height>width,x=12,w=width-24,seat=(Math.min(w,420)-8*(cols-1))/cols;
   // Browser toolbar height changes keep the same three-card gallery.

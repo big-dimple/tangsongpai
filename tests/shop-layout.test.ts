@@ -129,6 +129,10 @@ it('PC regions preserve left state, upper horizontal owned rail and lower simult
   const menu={x:width-148,y:8,width:148,height:44},l=shopLayout(width,height,8,0,3,true,false,0,0,5,menu),p=l.pc!;expect(p).toBeTruthy();expect(l.slots.every(b=>b.y===l.slots[0].y)).toBe(true);
   expect(p.left.x+p.left.width).toBeLessThan(p.ownedRail.x);expect(l.slots[0].y+l.slots[0].height).toBeLessThan(p.shopPanel.y);
   const actions=[l.chapter,l.build,l.play,l.reroll,p.inventoryEntry];
+  expect(l.play.x+l.play.width/2).toBeCloseTo(p.shared.x+p.shared.width/2);
+  expect(l.play.y-(p.jokerOffers[0].y+p.jokerOffers[0].height)).toBeCloseTo(28);
+  expect(p.feedback.x).toBeGreaterThanOrEqual(l.play.x+l.play.width);
+  expect(p.feedback.width).toBeGreaterThanOrEqual(160);
   for(const [i,b] of actions.entries()){expect(intersects(b,{x:width-148,y:8,width:148,height:44})).toBe(false);expect(b.height).toBeGreaterThanOrEqual(44);for(const other of actions.slice(i+1))expect(intersects(b,other)).toBe(false);}
   for(const b of [...l.slots,...actions,...p.jokerOffers,p.toolOffers,p.itemOffers,p.feedback]){expect(b.x).toBeGreaterThanOrEqual(0);expect(b.y).toBeGreaterThanOrEqual(8);expect(b.x+b.width).toBeLessThanOrEqual(width);expect(b.y+b.height).toBeLessThanOrEqual(height);}
   for(const b of [...p.jokerOffers,p.toolOffers,p.itemOffers])for(const a of [...actions,p.feedback])expect(intersects(b,a)).toBe(false);
@@ -140,6 +144,16 @@ it('PC regions preserve left state, upper horizontal owned rail and lower simult
 it('very short PC retains the fallback while mobile keeps its exact layout',()=>{
  for(const [width,height,top,bottom] of [[1280,640,8,0],[1280,720,24,34],[1024,500,24,34]]){const l=shopLayout(width,height,top,bottom,3,true);expect(l.pc).toBeNull();expect(l.short).toBe(true);expect(l.tabs.width).toBeGreaterThan(420);}
  for(const [width,height] of [[320,568],[360,640],[390,740],[430,932],[844,300]])expect(shopLayout(width,height,8,0,3,true).pc).toBeNull();
+});
+
+it('reclaims a smaller owned rail for 1280×720 fine-pointer desktop while coarse-pointer layout stays unchanged',()=>{
+ const coarse=shopLayout(1280,720,8,0,3,true,false,0,0,5,undefined,false,false);
+ const desktop=shopLayout(1280,720,8,0,3,true,false,0,0,5,undefined,false,true);
+ expect(coarse.pc).toBeNull();expect(coarse.short).toBe(true);
+ expect(desktop.pc).not.toBeNull();expect(desktop.slots[0].width).toBe(66);
+ expect(desktop.play.x+desktop.play.width/2).toBeCloseTo(desktop.pc!.shared.x+desktop.pc!.shared.width/2);
+ expect(desktop.play.y-(desktop.pc!.jokerOffers[0].y+desktop.pc!.jokerOffers[0].height)).toBeCloseTo(28);
+ for(const slot of desktop.slots)expect(intersects(slot,desktop.pc!.shared)).toBe(false);
 });
 
 it('physical500 with safe insets uses short shop and keeps full inventory targets inside usable height',()=>{
