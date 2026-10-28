@@ -15,6 +15,7 @@ export function heroPayoffs(state:R2RunState,trace:ScoreTrace,replay=false):Joke
    !!trace.amoExile?.use&&e.reasonKey==='amo.exile'||
    !!trace.assist&&e.reasonKey==='amo.assist.'+trace.assist.kind||
    !!trace.erxiangHandoff&&e.reasonKey==='erxiang.handoff'||
+   !!trace.laohuanFind?.multiplier&&e.reasonKey==='laohuan.find'||
    !!trace.azaoCharge?.release&&e.sourceDefinitionId==='azao'&&e.phase==='characterScore'||
    !!trace.xiemuBurn?.cost&&e.sourceDefinitionId==='xiemu'&&e.phase==='characterScore'||
    trace.touyeWager?.outcome==='won'&&!!trace.touyeWager.commit&&!!e.reasonKey?.startsWith('touye.won.'));

@@ -1,3 +1,4 @@
+import {usesLaohuanFind} from '../domain/r2LaohuanFind';
 import {erxiangHandoffLimit} from '../domain/r2ErxiangHandoff';
 import {laohuanRefillRepeats} from '../domain/r2LaohuanRefill';
 import {characterForNewRun,characterForRun} from './CharacterRunCopy';
@@ -21,6 +22,7 @@ export function selectionPresentation(id:CharacterId,run?:Pick<R2RunState,'chara
  const identity=run??{characterId:id,...newRunIdentity(id)},hero=run?characterForRun(run):characterForNewRun(id),copy={...operations[id],tag:hero.passiveName,hook:hero.quickEffect};
  if(id==='erxiang')copy.cost='这张普通点数不加热度；每场'+erxiangHandoffLimit(identity)+'次。';
  if(id==='laohuan'&&laohuanRefillRepeats(identity)){copy.entry='正常弃牌 → 自动多看 → 自己留牌';copy.when='被动：正常弃牌后自动生效。';copy.cost='每次正常弃牌多看最多2张；照付弃牌成本。';}
+ if(usesLaohuanFind(identity)){copy.entry='正常弃牌 → 留候选 → 下一手选择寻得';copy.when='本批至少2张同点参与有效计分。';copy.cost='寻得每场一次；下一手出牌或再次弃牌后旧批失效。';}
  if(id==='amo'){const exile=amoExileCopy(identity);copy.when='选好1–5张出牌，'+(exile.requiresKing?'余牌须含K；主手里的K不算。':'至少还剩1张可弃。');}
  if(id==='xiemu'){const tiers=xiemuTiersFor(identity);copy.when='两对及以上，至少留有'+tiers[0].cost+'金。';copy.cost='出牌扣'+tiers.map(t=>t.cost).join('／')+'金，倍率×'+tiers.map(t=>t.multiplier).join('／')+'；每场一次。';}
  return copy;

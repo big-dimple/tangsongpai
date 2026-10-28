@@ -1,3 +1,4 @@
+import {laohuanFindToken} from './r2LaohuanFind';
 import {usesTouyeNewCore} from './r2TouyeWager';
 import type {TouyeBet} from './r2TouyeWager';
 import {isR2BoundedClear,isR2RouteStarter,R2_ROUTE_STARTERS,type R2OpeningRoute} from './r2GroupUpgrade';
@@ -62,6 +63,7 @@ export interface Receipt {
   commandId: string;
   fingerprint: string;
   seq: number;
+  laohuanFindSnapshot?:string;
 }
 
 export interface RunState {
@@ -105,7 +107,7 @@ export type Action =
   | {type:'BuyBossSuitRescue';entryToken?:string;purchasePlayIndex?:number}
   | {type:'BuyPokerPolychrome';opportunityId:string;shopSeq:number;targetId:string}
   | {type:'SkipPokerEncounter';opportunityId:string;shopSeq:number}
-  | { type: 'PlayHand'; selectedIds: readonly string[]; erxiangTargetId?:string; azaoRelease?:boolean; xiemuBurn?:3|5|6|10|20|30; amoExile?:boolean }
+  | { type: 'PlayHand'; selectedIds: readonly string[]; laohuanFindRank?:number; erxiangTargetId?:string; azaoRelease?:boolean; xiemuBurn?:3|5|6|10|20|30; amoExile?:boolean }
   | { type: 'PlayAssistedHand'; selectedIds: readonly string[]; assistIds:readonly string[] }
   | { type: 'DiscardHand'; selectedIds: readonly string[]; laohuanTrick?:boolean; touyeBet?:TouyeBet }
   | {type:'ChooseRefill';selectedIds:readonly string[]}
@@ -207,7 +209,7 @@ export function applyCommand(input: AnyRunState | null, command: Command): Comma
   if (input?.rulesVersion === 'r2' || (!input && command.action.type === 'StartRun' && command.action.rulesVersion === 'r2')) {
     const result = transactR2(input as R2RunState|null, command);
     if (!result.ok) return {...fail(result.code), ...(result.diagnostic ? {diagnostic:result.diagnostic} : {})};
-    const receipt = {commandId:command.commandId,fingerprint,seq:result.state.commandSeq+1};
+    const receipt:Receipt = {commandId:command.commandId,fingerprint,seq:result.state.commandSeq+1,...(input?.rulesVersion==='r2'&&command.action.type==='DiscardHand'&&result.state.stage?.laohuanFindProof?.source.commandId===command.commandId?{laohuanFindSnapshot:laohuanFindToken(input)}:{})};
     result.state.commandSeq++; result.state.receipts.push(receipt);
     assertR2Invariants(result.state);
     return {...result,receipt,duplicate:false};

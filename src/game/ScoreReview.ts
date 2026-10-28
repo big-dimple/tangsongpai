@@ -52,6 +52,7 @@ function sourceName(run:R2RunState,trace:ScoreTrace,event:ScoreEvent):string {
     const hero=heroSkillTitleForRun(run);
     if(event.reasonKey.startsWith('touye.won.')||event.reasonKey.startsWith('touye.lost.'))return hero+' · '+(trace.touyeWager?.commit?'押'+HAND_LABELS[trace.touyeWager.commit.target]:'')+(event.reasonKey.startsWith('touye.won.')?' · 达成':' · 输约');
     if(usesTouyeWager(run)&&event.sourceDefinitionId==='touye'&&event.operation==='multiply-multiplier')return hero+' · 常规倍率';
+    if(event.reasonKey==='laohuan.find')return '辛弃疾 · 寻得 · '+rankLabel(trace.cards.find(c=>c.id===trace.laohuanFind!.activeIds[0])!.rank)+' '+trace.laohuanFind!.activeIds.length+'张';
     if(event.sourceDefinitionId==='xiemu'&&event.operation==='multiply-multiplier'&&trace.xiemuBurn?.cost)return hero+' · 支付'+trace.xiemuBurn.cost+'金';
     if(event.sourceDefinitionId==='azao'&&event.operation==='multiply-multiplier'&&trace.azaoCharge?.release)return hero+' · 消耗'+trace.azaoCharge.before.charge+'层释放';
     return hero;

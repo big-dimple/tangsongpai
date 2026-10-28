@@ -90,11 +90,16 @@ const ORIGINAL_HOUSE_PROFILES=Object.freeze([
 ].map(([version,hash,timing])=>Object.freeze({contentVersion:version+'-a11-house-v1',contentHash:stableHash({inherits:hash,jokers:R2_HOUSE_JOKERS,a11PriceDelta:1}),amoScoreTiming:timing as 'assist-v1'|'exile-v1',base:Object.freeze({contentVersion:version,contentHash:hash})})));
 // Additive identities retain each published character/content base; original profiles stay exact.
 const RESCUE_HOUSE_PROFILES=ORIGINAL_HOUSE_PROFILES.map(p=>Object.freeze({...p,...withBossSuitRescueIdentity(p),rescueBase:Object.freeze({contentVersion:p.contentVersion,contentHash:p.contentHash})}));
+const POKER_HOUSE_PROFILES=RESCUE_HOUSE_PROFILES.map(p=>Object.freeze({...p,...withPokerEncounterIdentity(p),pokerBase:Object.freeze({contentVersion:p.contentVersion,contentHash:p.contentHash})}));
+export function withLaohuanFindIdentity(base:{contentVersion:string;contentHash:string}) {return {contentVersion:base.contentVersion+'-laohuan-find-v1',contentHash:stableHash({inherits:base.contentHash,laohuanFind:'retained-batch-next-play-maximum-rank-2-3-4-late-v1'})};}
+const LAOHUAN_FIND_PROFILE=POKER_HOUSE_PROFILES.filter(p=>p.base.contentVersion===R2_HERO_FREQUENCY_VERSION).map(p=>Object.freeze({...p,...withLaohuanFindIdentity(p)}));
 export const R2_HOUSE_PROFILES:readonly (typeof ORIGINAL_HOUSE_PROFILES[number]&{rescueBase?:Readonly<{contentVersion:string;contentHash:string}>;pokerBase?:Readonly<{contentVersion:string;contentHash:string}>})[]=Object.freeze([
   ...ORIGINAL_HOUSE_PROFILES,
   ...RESCUE_HOUSE_PROFILES,
-  ...RESCUE_HOUSE_PROFILES.map(p=>Object.freeze({...p,...withPokerEncounterIdentity(p),pokerBase:Object.freeze({contentVersion:p.contentVersion,contentHash:p.contentHash})})),
+  ...POKER_HOUSE_PROFILES,
+  ...LAOHUAN_FIND_PROFILE,
 ]);
+export const isR2LaohuanFind=(s:{contentVersion?:unknown;contentHash?:unknown})=>LAOHUAN_FIND_PROFILE.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
 export const r2HouseProfile=(s:{contentVersion?:unknown;contentHash?:unknown})=>R2_HOUSE_PROFILES.find(p=>s.contentVersion===p.contentVersion&&s.contentHash===p.contentHash);
 export const r2HouseBase=(s:{contentVersion?:unknown;contentHash?:unknown})=>r2HouseProfile(s)?.base??s;
 export function r2WithHouseJoker(s:{contentVersion:string;contentHash:string}){const p=R2_HOUSE_PROFILES.find(p=>p.base.contentVersion===s.contentVersion&&p.base.contentHash===s.contentHash);if(!p)throw Error('unsupported-house-base');return {contentVersion:p.contentVersion,contentHash:p.contentHash};}

@@ -1,3 +1,4 @@
+import {usesLaohuanFind,laohuanFindGroups} from '../domain/r2LaohuanFind';
 import {laohuanRefillUsed,laohuanRefillRepeats} from '../domain/r2LaohuanRefill';
 import {amoExileMultiplier} from '../domain/r2AmoExile';
 import {usesAmoExile,amoExileChoice} from '../domain/r2AmoExile';
@@ -31,6 +32,12 @@ export function heroAbilityCue(run:R2RunState,facts?:R2SelectionFacts,ids:readon
   const detail=draft.touyePhase==='drawing'?(target?'已押'+target+'，换牌完成后出牌':'正在确认换牌，请稍候'):draft.touyePhase==='settling'?(target?'已押'+target+'，正在出牌结算':c.settled||'正在出牌结算'):c.pending?'出牌后结算':!c.enabled?'本场角色能力停用':c.used?c.settled||'本场次数已用':available?'弃牌前押牌型并换牌':ids.length?'当前不能押目标':'先选1–5张弃牌';
   return cue(detail,available,!draft.touyePhase&&c.enabled&&!c.used&&!c.pending&&!!run.stage?.handsLeft&&run.drawPile.length>0&&run.stage!.discardsLeft>=r2DiscardCost(run)&&run.gold>=(run.stage?.boss?.definitionId==='B07'?1:0)&&c.choices.some(x=>x.available||x.reason==='先选1–5张实际弃牌'),{used:c.used,disabled:!c.enabled,lockedTarget:target,activity:draft.touyePhase});
  }
+ if(usesLaohuanFind(run)){
+  const enabled=r2RunModeConfig(run).characterAbilityEnabled&&run.stage?.boss?.definitionId!=='B08',used=!!run.stage?.laohuanFindUsed;
+  const groups=facts?laohuanFindGroups(run.deckInstances,facts.activeScoringIds,run.stage?.laohuanFindBatch??[]):[],selected=groups.find(g=>g.rank===draft.laohuanFindRank);
+  const detail=run.pendingRefill?'请选择保留的牌':!enabled?'本场寻得停用':used?'本场寻得已用':selected?'已选'+selected.ids.length+'张同点 · ×'+Math.min(4,selected.ids.length):groups.length?'本手可选同点组发动寻得':'换牌后选择至少两张本批同点计分牌';
+  return {...cue(detail,enabled&&!used&&groups.length>0,enabled&&!used&&groups.length>0,{used,disabled:!enabled,selected:!!selected,pending:!!run.pendingRefill}),label:'寻得'};
+ }
  if(laohuanRefillRepeats(run))return cue(r2RunModeConfig(run).characterAbilityEnabled?(run.pendingRefill?'请选择保留的牌':'弃牌后多看两张'):'本模式已停用',false,false,{passive:true});
  if(usesLaohuanRefill(run)){
   const enabled=r2RunModeConfig(run).characterAbilityEnabled,used=laohuanRefillUsed(run),pending=!!run.pendingRefill;
@@ -41,6 +48,7 @@ export function heroAbilityCue(run:R2RunState,facts?:R2SelectionFacts,ids:readon
 }
 /** Called after a successful saved hand, including fast-forward; no forecast or reward callback. */
 export function savedHeroResult(run:R2RunState):string {
+ if(usesLaohuanFind(run)&&run.lastTrace?.laohuanFind?.multiplier)return '辛弃疾 · 寻得 · '+run.lastTrace.laohuanFind.activeIds.length+'张同点 · ×'+run.lastTrace.laohuanFind.multiplier;
  if(usesLaohuanRefill(run)&&run.stage?.laohuanTrickUsed&&!run.pendingRefill)return heroSkillTitle('laohuan')+(laohuanRefillRepeats(run)?' · 已留下所选牌':' · 本场已用 · 已留下所选牌');
  const t=run.lastTrace;if(!t)return '';
  if(usesAmoExile(run)&&t.amoExile?.use)return '苏轼 · 贬谪 · 已弃'+t.amoExile.discardedIds.length+'张 · 本次得分×'+amoExileMultiplier(run);

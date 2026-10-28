@@ -7,9 +7,9 @@ import {r2SelectionFacts} from '../src/domain/r2SelectionFacts';
 import {r2JokerDefinitionsFor} from '../src/domain/r2ContentProfiles';
 const start=(id:CharacterId)=>{let s=createRun({seed:'hero-guide',runId:'hero-guide/'+id,rulesVersion:'r2',characterId:id,openingRoute:'group',r2Identity:newRunIdentity(id,'group'),modeConfig:{mode:'standard',difficulty:0,challengeId:null,programsEnabled:false}});const r=applyCommand(s,{runId:s.runId,commandId:'enter',expectedSeq:s.commandSeq,action:{type:'LeaveShop'}});if(!r.ok)throw Error(r.code);const entered=applyCommand(r.state,{runId:s.runId,commandId:'enter-stage',expectedSeq:r.state.commandSeq,action:{type:'EnterStage'}});if(!entered.ok)throw Error(entered.code);return entered.state;};
 it('six current skills give their actual steps and risks without mutating the run',()=>{
- for(const id of CHARACTER_IDS){const s=start(id),before=structuredClone(s),c=heroSkillGuide(s);expect(c.active).toBe(id!=='laohuan');expect(c.step).toBeTruthy();expect(c.effect).toBeTruthy();expect(c.risk).toBeTruthy();expect(s).toEqual(before);}
+ for(const id of CHARACTER_IDS){const s=start(id),before=structuredClone(s),c=heroSkillGuide(s);expect(c.active).toBe(true);expect(c.step).toBeTruthy();expect(c.effect).toBeTruthy();expect(c.risk).toBeTruthy();expect(s).toEqual(before);}
  expect(heroSkillGuide(start('touye')).step).toContain('选1–5张弃牌');expect(heroSkillGuide(start('touye')).effect).toContain('×0.85');
- expect(heroSkillGuide(start('laohuan'))).toMatchObject({active:false,step:'被动 · 正常弃牌后自动生效',effect:'弃牌后多看两张'});expect(heroOperationSteps(start('laohuan'),heroSkillGuide(start('laohuan'))).labels).toEqual(['正常弃牌','自动多看两张','选择应留牌']);expect(heroSkillGuide(start('erxiang')).effect).toContain('改加倍率');
+ expect(heroSkillGuide(start('laohuan'))).toMatchObject({active:true,step:'本批至少两张同点牌有效计分时可发动',effect:'本批2／3／4张同点有效计分分别×2／×3／×4'});expect(heroOperationSteps(start('laohuan'),heroSkillGuide(start('laohuan'))).labels).toEqual(['正常弃牌并留候选','选本批同点计分牌','选择寻得并出牌']);expect(heroSkillGuide(start('erxiang')).effect).toContain('改加倍率');
  expect(heroSkillGuide(start('xiemu')).effect).toContain('付3金 ×1.5');expect(heroSkillGuide(start('azao')).effect).toContain('×1.5／2.5／4');expect(heroSkillGuide(start('amo')).risk).toContain('正常补牌');
 });
 it('Touye unavailable, selected and pending steps come from existing real choices',()=>{

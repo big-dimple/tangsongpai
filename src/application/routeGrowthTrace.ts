@@ -20,7 +20,7 @@ export function assertRouteGrowthTrace(t:ScoreTrace,history:R2RouteHistory,stage
   for(const [i,e] of reads.entries()){
     const family=families[i],index=t.events.indexOf(e);
     if(e.routeFamily!==family||e.phase!=='routeGrowth'||index<=lastJoker||index>=final||i>0&&index!==t.events.indexOf(reads[i-1])+1||e.reasonKey!==`route-growth.${family}.factor`||stableHash(e.value)!==stableHash(t.routeGrowth!.factors[family])||e.resourceBefore!==expected[family]||e.resourceAfter!==expected[family]||stableHash(e.visibleCondition)!==stableHash({kind:'hand-type-in',values:R2_ROUTE_HAND_TYPES[family]}))fail();
-    if(t.events.slice(index+1,final).some(next=>next.phase!=='routeGrowth'&&!(next.sourceType==='character'&&(next.sourceDefinitionId==='amo'||activeMultTiming&&(['xiemu','azao'].includes(next.sourceDefinitionId)||next.sourceDefinitionId==='touye'&&!!t.touyeWager?.commit)))))fail();
+    if(t.events.slice(index+1,final).some(next=>next.phase!=='routeGrowth'&&!(next.sourceType==='character'&&(next.sourceDefinitionId==='amo'||activeMultTiming&&((['xiemu','azao'].includes(next.sourceDefinitionId)||next.sourceDefinitionId==='laohuan'&&!!t.laohuanFind?.multiplier)||next.sourceDefinitionId==='touye'&&!!t.touyeWager?.commit)))))fail();
   }
   for(const e of [...clears,...awards]){
     const family=e.routeFamily;

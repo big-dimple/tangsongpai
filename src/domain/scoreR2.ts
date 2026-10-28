@@ -1,3 +1,4 @@
+import {laohuanFindStep,type LaohuanFindIntent,type LaohuanFindTrace} from './r2LaohuanFind';
 import {amoExileFacts,type AmoExileIntent,type AmoExileTrace} from './r2AmoExile';
 import {stableHash} from './hash';
 import {erxiangHandoffStep,type ErxiangHandoffIntent,type ErxiangHandoffTrace} from './r2ErxiangHandoff';
@@ -51,6 +52,7 @@ export interface ScoreInput {
   azaoCharge?:AzaoChargeIntent;
   xiemuBurn?:XiemuBurnIntent;
   laohuanTrick?:true;
+  laohuanFind?:LaohuanFindIntent;
   rulesVersion: 'r2'; runId: string; rootId: string; characterId: CharacterId | 'neutral';
   bossSuitRescue?:string;
   hand: readonly PlayingCard[]; selectedIds: readonly string[]; disabledIds: readonly string[];
@@ -81,6 +83,7 @@ export interface ScoreEvent {
 }
 interface ScoreTraceBase {
   bossSuitRescue?:string;
+  laohuanFind?:LaohuanFindTrace;
   amoExile?:AmoExileTrace;
   routeGrowth?:R2RouteGrowthTrace;
   rulesVersion: 'r2'; rootId: string; handType: R2HandType; level: number;
@@ -153,7 +156,7 @@ function resolveScore(input: PublicScoreInput, policy: ResolvePolicy): ScoreTrac
   if(challengeDisabledJokerId!==null&&(typeof challengeDisabledJokerId!=='string'||!input.definitions.some(definition=>definition.id===challengeDisabledJokerId)))throw new Error('invalid-score-challenge-ban');
   for (const [type, level] of Object.entries(input.handLevels)) if (!R2_HAND_TYPES.includes(type as R2HandType) || !Number.isInteger(level) || level! < 1 || level! > SCORE_LIMITS.handLevel) throw new Error('invalid-hand-level');
   const routeProfile=hasR2RouteGrowthDefinitions(input.definitions);
-  if(input.activeMultTiming!==undefined&&(input.activeMultTiming!=='after-route-growth'||!routeProfile||!['touye','xiemu','azao','neutral'].includes(input.characterId)))throw Error('invalid-active-mult-timing');
+  if(input.activeMultTiming!==undefined&&(input.activeMultTiming!=='after-route-growth'||!routeProfile||!['touye','xiemu','azao','laohuan','neutral'].includes(input.characterId)))throw Error('invalid-active-mult-timing');
   if(routeProfile?!validR2RouteProgress(input.routeGrowth):input.routeGrowth!==undefined)throw Error('invalid-route-growth-snapshot');
   if(input.boundedClear!==undefined&&(input.boundedClear!==true||!routeProfile))throw Error('invalid-bounded-clear-profile');
   const errors = validateR2Content(input.definitions,routeProfile?'route-growth-v1':'published');
@@ -205,6 +208,8 @@ function resolveScore(input: PublicScoreInput, policy: ResolvePolicy): ScoreTrac
   if(input.touyeWager?.newCore&&input.touyeWager.commit&&stableHash([...cards.map(c=>c.id)].sort())!==stableHash([...input.touyeWager.commit.refill!.handAfter].sort()))throw Error('invalid-touye-refill-hand');
   if(touyeWager?.commit&&touyeWager.commit.duePlayIndex!==input.playIndex)throw Error('invalid-touye-due-play');
   if(input.laohuanTrick!==undefined&&(input.laohuanTrick!==true||!['laohuan','neutral'].includes(input.characterId)))throw Error('invalid-laohuan-character');
+  if(input.laohuanFind&&!input.laohuanTrick)throw Error('invalid-laohuan-find');
+  const laohuanFind=input.laohuanFind?laohuanFindStep(cards,facts.activeScoringIds,input.laohuanFind,input.characterId==='laohuan'&&input.boss?.definitionId!=='B08'):undefined;
   if(input.amoExileKing!==undefined&&(input.amoExileKing!==true||input.amoScoreTiming!=='exile-v1'||!['amo','neutral'].includes(input.characterId)))throw Error('invalid-amo-king-context');
   if(input.xiemuFrequent!==undefined&&(input.xiemuFrequent!==true||!['xiemu','neutral'].includes(input.characterId)))throw Error('invalid-xiemu-frequent');
   if(input.heroBalance!==undefined&&(input.heroBalance!==true||!['amo','xiemu','neutral'].includes(input.characterId)))throw Error('invalid-hero-balance');
@@ -407,7 +412,7 @@ function resolveScore(input: PublicScoreInput, policy: ResolvePolicy): ScoreTrac
     else if (kind === 'add-multiplier') M = M.add(value);
     else M = M.multiply(value);
   }, condition,undefined,0,undefined,reasonKey?{reasonKey}:{});
-  const lateActive=input.activeMultTiming==='after-route-growth'&&!!(xiemuBurn?.cost||azaoCharge?.release||touyeWager?.commit);
+  const lateActive=input.activeMultTiming==='after-route-growth'&&!!(xiemuBurn?.cost||azaoCharge?.release||touyeWager?.commit||laohuanFind?.multiplier);
   let deferredCharacter:(()=>void)|undefined;
   const activeChar=(value:Rational,reasonKey?:string)=>{
     const apply=()=>char('multiply-multiplier',value,{kind:'always'},reasonKey);
@@ -416,7 +421,7 @@ function resolveScore(input: PublicScoreInput, policy: ResolvePolicy): ScoreTrac
   if(boss?.definitionId!=='B08')switch (input.characterId) {
     case 'amo': if ((input.amoScoreTiming??'before-joker') === 'before-joker' && played.length === 1) char('multiply-multiplier', new Rational(3n), {kind:'played-count',equals:1}); break;
     case 'erxiang': if (!erxiangHandoff&&['pair','two-pair','three-kind'].includes(evaluated.type)) char('add-multiplier', new Rational(3n,2n), {kind:'hand-type-in',values:['pair','two-pair','three-kind']}); break;
-    case 'laohuan': if (!input.laohuanTrick&&(['straight','flush','straight-flush'].includes(evaluated.type))) char('add-heat', new Rational(120n), {kind:'hand-type-in',values:['straight','flush','straight-flush']}); break;
+    case 'laohuan': if(laohuanFind?.multiplier)activeChar(new Rational(BigInt(laohuanFind.multiplier)),'laohuan.find'); else if (!input.laohuanTrick&&(['straight','flush','straight-flush'].includes(evaluated.type))) char('add-heat', new Rational(120n), {kind:'hand-type-in',values:['straight','flush','straight-flush']}); break;
     case 'azao': if(azaoCharge){if(azaoCharge.multiplier)activeChar(azaoCharge.multiplier==='1.5'?new Rational(3n,2n):azaoCharge.multiplier==='2.5'?new Rational(5n,2n):new Rational(4n));}else if (input.previousHandType !== null && input.previousHandType !== evaluated.type) char('add-multiplier', new Rational(1n)); break;
     case 'touye': if(touyeWager){if(touyeWager.multiplier)activeChar(touyeWager.multiplier==='2'?new Rational(2n):touyeWager.multiplier==='0.85'?new Rational(17n,20n):new Rational(23n,20n),'touye.'+touyeWager.outcome+(touyeWager.commit?'.'+touyeWager.commit.target:''));}else char('multiply-multiplier', input.wager ? (chance({n:1,d:2}) ? new Rational(2n) : new Rational(3n,4n)) : new Rational(23n,20n)); break;
     case 'xiemu': if(xiemuBurn){if(xiemuBurn.multiplier)activeChar(xiemuBurn.multiplier===1.5?new Rational(3n,2n):new Rational(BigInt(xiemuBurn.multiplier)));}else if (input.handsBeforePlay === 1) char('multiply-multiplier', new Rational(2n)); break;
@@ -450,7 +455,7 @@ function resolveScore(input: PublicScoreInput, policy: ResolvePolicy): ScoreTrac
       {reasonKey:`enhancement.${card.enhancement}.destroy-card`});
   }
   hook('afterHand');
-  return immutable({ ...(exile?{amoExile:exile}:{}),...(routeGrowth?{routeGrowth}:{}),...(erxiangHandoff?{erxiangHandoff}:{}),...(touyeWager?{touyeWager}:{}),...(input.laohuanTrick?{laohuanTrick:true as const}:{}),...(xiemuBurn?{xiemuBurn}:{}),...(azaoCharge?{azaoCharge}:{}),rulesVersion:'r2', rootId:input.rootId, handType:evaluated.type, level,
+  return immutable({ ...(laohuanFind?{laohuanFind}:{}),...(exile?{amoExile:exile}:{}),...(routeGrowth?{routeGrowth}:{}),...(erxiangHandoff?{erxiangHandoff}:{}),...(touyeWager?{touyeWager}:{}),...(input.laohuanTrick?{laohuanTrick:true as const}:{}),...(xiemuBurn?{xiemuBurn}:{}),...(azaoCharge?{azaoCharge}:{}),rulesVersion:'r2', rootId:input.rootId, handType:evaluated.type, level,
     sets:{playedIds:played.map(c=>c.id),scoringIds:evaluated.scoringIds,activeScoringIds:active.map(c=>c.id),heldIds:held.map(c=>c.id),...(exile?{discardedIds:exile.discardedIds}:{})},
     ...(input.amoScoreTiming==='assist-v1'?{sets:{playedIds:played.map(c=>c.id),scoringIds:evaluated.scoringIds,activeScoringIds:active.map(c=>c.id),heldIds:held.map(c=>c.id),assistConsumedIds:assist?.assistIds??[]},assist:assist?{ids:assist.assistIds,kind:assist.assistKind,multiplier:assist.assistMultiplier}:null}:{}),finalScore:final.toString(),accumulator:snapshot(),events,jokers:jokers.filter(j=>!destroyedJokerIds.includes(j.instanceId)),
     ...(rng ? {rng:rng.snapshot()} : {}),goldDelta,destroyedCardIds,destroyedJokerIds,cards,sourceJokers,bossContext,...(input.bossSuitRescue?{bossSuitRescue:input.bossSuitRescue}:{}) });
