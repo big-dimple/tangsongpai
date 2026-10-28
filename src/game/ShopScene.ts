@@ -1,4 +1,5 @@
 import {pcResultViewport} from './PcSettlementPresentation';
+import {mountDynamicTargetReveal} from './DynamicTargetReveal';
 import {type WorkshopIntent,type WorkshopTab} from './WorkshopModel';
 import {shopBossPreparation,currentShopNotice} from './ShopBossPreparation';
 import {syncBossAtmosphere} from './BossAtmosphere';
@@ -157,6 +158,8 @@ export class ShopScene extends Phaser.Scene {
   private starterMarkers:Phaser.GameObjects.Graphics[]=[];
   private resultKey?:string;
   private readonly dialog=new DetailDialog();
+  private pendingDynamicTarget?:string;
+  private deferredDynamicTarget?:{target:Phaser.GameObjects.Text;box:Box};
   private menuActions?:RunMenuActions;
   private readonly audio=AudioEngine.shared;
   private hapticLife?:AbortController;
@@ -203,7 +206,7 @@ export class ShopScene extends Phaser.Scene {
     // Decoration never changes the functional shop bounds.
     return shopLayout(l.width,l.height,l.hud.y,inset('bottom'),cols,this.run.jokers.some(j=>!!this.jokerCopy(j.definitionId)),!!firstChapterShopPrompt(this.run)&&this.ready,inset('left'),inset('right'),this.run.jokers.length,menuBox,this.ownedCollapsed,typeof window!=='undefined'&&!window.matchMedia('(pointer: coarse)').matches);
   }
-  create():void {
+  create(data:{targetLockCommandId?:string}={}):void {
     this.hapticLife?.abort();this.hapticLife=new AbortController();
     const stopHaptics=()=>{this.hapticLife?.abort();this.transactionHaptic?.cancel();};
     const cancelHaptics=()=>this.transactionHaptic?.cancel(),cancelHapticKey=(event:KeyboardEvent)=>{if(event.key==='Escape')cancelHaptics();};
@@ -213,7 +216,7 @@ export class ShopScene extends Phaser.Scene {
     this.makeCardsView={pane:'purchase',positions:{owned:0,purchase:0}};
     this.comparisonView={scrollTop:0};
     this.savedPractice=undefined;this.practiceOrigin=undefined;
-    this.busy=false;this.selectedOfferId=undefined;this.shelfKind='jokers';this.shelfPage=0;this.pcPages={jokers:0,tools:0,items:0};this.notice='';this.ownedCollapsed=false;this.lifecycle++;
+    this.busy=false;this.selectedOfferId=undefined;this.shelfKind='jokers';this.shelfPage=0;this.pcPages={jokers:0,tools:0,items:0};this.notice='';this.ownedCollapsed=false;this.deferredDynamicTarget=undefined;this.lifecycle++;
     this.workshopSelected=false;this.refreshDialog=undefined;
     this.mobileOffersKind=undefined;this.mobileOffersScrollTop={jokers:0,tools:0,items:0};
     this.events.once('shutdown',()=>{this.clearInlineWorkshop();this.clearMobileOffers();});
@@ -223,6 +226,8 @@ export class ShopScene extends Phaser.Scene {
     this.events.once('shutdown',()=>{this.lifecycle++;this.clearSynergyHighlights();this.hideHoverPicture();this.dialog.close();for(const [key,listener] of this.artRefreshListeners)this.textures.off('addtexture-'+key,listener);this.artRefreshListeners.clear();this.artTargets.clear();this.jokerArtTargets.clear();});
     this.events.once('shutdown',()=>{if(this.registry.get('runMenuActions')===this.menuActions)this.registry.remove('runMenuActions');this.menuActions=undefined;});
     const owner=runController(this),run=owner?.state;if(!owner||!run||run.phase!=='shop'){this.scene.start('character-select');return;}this.run=run;
+    const lock=run.dynamicEndless?.records.at(-1),freshTarget=!!data.targetLockCommandId&&lock?.lock.commandId===data.targetLockCommandId&&lock.index===run.stageIndex;
+    this.pendingDynamicTarget=freshTarget?data.targetLockCommandId:undefined;
     // Portrait shops open with the bottom owned-card rail folded. The entry
     // button carries its reversible affordance so the primary action remains
     // available without spending a separate row on an arrow control.
@@ -248,8 +253,8 @@ export class ShopScene extends Phaser.Scene {
     const canvasLabel=this.game.canvas.getAttribute('aria-label');this.events.once('shutdown',()=>{if(canvasLabel===null)this.game.canvas.removeAttribute('aria-label');else this.game.canvas.setAttribute('aria-label',canvasLabel);});
     this.ownedInput=new OwnedJokerInput(this,{ready:()=>this.ready,inspectable:()=>!this.busy&&this.run?.phase==='shop',cards:()=>{const p=this.geometry();return p.inventoryCollapsed?[]:this.run.jokers.map((j,i)=>({...p.slots[i],id:j.instanceId}));},cancelCanvas:()=>this.view.cancelInteraction(),tap:id=>this.inspectJoker(id),lift:(id,x,y)=>this.liftOwned(id,x,y),move:(x,y)=>this.previewOwned(x,y),drop:(id,x,y)=>this.moveJoker(id,x,y),cancel:()=>this.cancelOwned()});
     this.events.once('shutdown',()=>{this.ownedInput?.destroy();this.ownedInput=undefined;if(this.ownedDrag?.saving)this.input.enabled=true;this.ownedDrag?.destroy();this.ownedDrag=undefined;});
-    warmTableImages(this,this.run.characterId);this.render();this.prepareBossEntrance(owner,run,this.lifecycle);
-    if(!gameSession().reducedMotion&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    warmTableImages(this,this.run.characterId);this.render();this.pendingDynamicTarget=undefined;this.prepareBossEntrance(owner,run,this.lifecycle);
+    if(!freshTarget&&!gameSession().reducedMotion&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
       this.view.root.setAlpha(.35);this.tweens.add({targets:this.view.root,alpha:1,duration:220,ease:'Cubic.easeOut'});
       if(!this.dialog.current){
         const stopBurst=mountHeroEntranceBurst(document.body,this.run.characterId,{context:'shop',stageIndex:this.run.stageIndex,reducedMotion:false});
@@ -262,7 +267,7 @@ export class ShopScene extends Phaser.Scene {
     let stopped=false,observer:MutationObserver|undefined;
     const stop=():void=>{stopped=true;observer?.disconnect();observer=undefined;this.events.off('create',attempt);};
     const valid=()=>!stopped&&this.scene.isActive()&&this.lifecycle===lifecycle&&runController(this)===owner&&owner.state===run&&this.run===run&&run.phase==='shop';
-    const resume=()=>{if(valid()){this.resumeMakeCards();const v=pokerEncounterView(this.run);if(!this.dialog.current&&v){this.inspectPokerEncounter(this.pokerEntryId!==v.id);this.pokerEntryId=undefined;}}};
+    const resume=()=>{if(valid()){this.resumeMakeCards();const v=pokerEncounterView(this.run);if(!this.dialog.current&&v){this.inspectPokerEncounter(this.pokerEntryId!==v.id);this.pokerEntryId=undefined;}const pending=this.deferredDynamicTarget;this.deferredDynamicTarget=undefined;if(pending?.target.active&&!this.dialog.current)mountDynamicTargetReveal(this,this.view,pending.target,pending.box,()=>this.resultReduced,this.view.layout.mode==='portrait');}};
     const attempt=()=>{
       if(!valid()){stop();return;}
       if(!shopBossPreparation(run)){this.audio.setScene('shop');resume();return;}
@@ -303,7 +308,7 @@ export class ShopScene extends Phaser.Scene {
     if(portraitHeader||desktopHeader)title.setY(purse.y+(44-title.height)/2);
     if(headerTabs)title.setVisible(false);
     this.drawBalance(purse,p.portrait||p.short);
-    const headerTarget=portraitHeader?.target??desktopHeader?.target;if(headerTarget){const b=headerTarget,target=v.text(b.x+b.width,b.y+b.height/2,'目标 '+heatText(stage.targetHeat),14).setColor('#f2db9f').setOrigin(1,.5).setName('shop/target');for(let size=14;target.width>b.width&&size>12;)target.setFontSize(--size);}
+    const headerTarget=portraitHeader?.target??desktopHeader?.target;if(headerTarget){const b=headerTarget,target=v.text(b.x+b.width,b.y+b.height/2,'目标 '+heatText(stage.targetHeat),14).setColor('#f2db9f').setOrigin(1,.5).setName('shop/target');for(let size=14;target.width>b.width&&size>12;)target.setFontSize(--size);this.revealDynamicTarget(target,b);}
     drawShopArt(this,v,p);
     if(!p.portrait&&!p.short)v.text(p.x,p.top+37,`${stage.name} · 目标 ${heatText(stage.targetHeat)}`,14,'#3F606B',p.short?p.slots[4].x+p.slots[4].width-p.x:p.w-24);
     if(!p.short&&!p.inventoryCollapsed&&this.run.jokers.length>0){
@@ -446,6 +451,16 @@ export class ShopScene extends Phaser.Scene {
     label?.setText(this.ownedCollapsed?'⌃':'⌄').setFontSize(18).setFontStyle('bold').setColor('#203f3b');
     button.setData('ownedCollapsed',this.ownedCollapsed);
   }
+  private revealDynamicTarget(target:Phaser.GameObjects.Text,box:Box):void {
+    if(!this.pendingDynamicTarget)return;
+    this.pendingDynamicTarget=undefined;
+    if(this.view.layout.mode==='portrait'){
+      const original=target.style.fontSize;target.setFontSize(16);
+      if(target.width>box.width){target.setFontSize(original);return;}
+    }
+    if(this.run.stageIndex%3===2){this.deferredDynamicTarget={target,box};return;}
+    mountDynamicTargetReveal(this,this.view,target,box,()=>this.resultReduced,this.view.layout.mode==='portrait');
+  }
   private renderPC(p:ReturnType<typeof shopLayout>):void {
     const pc=p.pc!;const v=this.view,stage=getR2Stage(this.run.stageIndex,this.run.tourMode,this.run.difficulty,this.run)!;
     drawShopArt(this,v,p);
@@ -456,7 +471,8 @@ export class ShopScene extends Phaser.Scene {
     v.text(p.x,p.top+4,'唐宋牌 · 商店',26,PAPER_CSS.ink).setColor('#fff7e4').setFontStyle('bold').setName('shop/title');
     v.text(pc.left.x+12,pc.left.y+8,stage.name,22,PAPER_CSS.ink,pc.left.width-24).setName('shop/stage');
     v.text(pc.left.x+12,pc.left.y+56,'下一场目标',16,PAPER_CSS.mutedInk,pc.left.width-24);
-    v.text(pc.left.x+12,pc.left.y+86,heatText(stage.targetHeat)+' 热度',30,PAPER_CSS.red,pc.left.width-24).setFontStyle('bold').setName('shop/target');
+    const target=v.text(pc.left.x+12,pc.left.y+86,heatText(stage.targetHeat)+' 热度',30,PAPER_CSS.red,pc.left.width-24).setFontStyle('bold').setName('shop/target');
+    this.revealDynamicTarget(target,{x:pc.left.x+12,y:pc.left.y+86,width:pc.left.width-24,height:46});
     this.drawBalance({x:pc.left.x+12,y:pc.left.y+138,width:pc.left.width-24,height:44},false,24);
     v.button({...p.chapter,x:p.chapter.x+12,width:p.chapter.width-24},programEntryLabel(this.run),'action/chapter',()=>this.inspectChapter());
     v.text(pc.ownedRail.x+12,pc.ownedRail.y+2,`唐宋牌 ${this.run.jokers.length}/${r2JokerCapacity(this.run)} · 从左向右结算`,18,PAPER_CSS.jade,pc.ownedRail.width-24).setName('shop/owned-heading');

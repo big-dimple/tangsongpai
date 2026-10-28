@@ -42,7 +42,7 @@ import {inventoryFeedback} from './InventoryFeedback';
 import {showSavedToolResult} from './SavedToolResult';
 import {ENHANCEMENT_BRIEF} from './CardSpecialLabels';
 import {fitStatusSummary} from './StatusSummary';
-import {lastPlayWarning,reducedPlayEntry,LastPlayWarningTracker,lastPlayCuePlacement} from './LastPlayWarning';
+import {lastPlayWarning,reducedPlayEntry,LastPlayWarningTracker,lastPlayCuePlacement,bossRuleCuePlacement} from './LastPlayWarning';
 import {transactionGrowthChange,handGrowthChanges} from './SavedGrowthChange';
 import {heroActionShortcut,heroShortcutReminder} from './HeroActionShortcut';
 import {AssistRecommendationCache} from './AssistRecommendation';
@@ -136,7 +136,7 @@ import {heatText,fractionText,readableFractionText,readableScoreFormula,accumula
 import {scoreCelebration} from './scoreCelebration';
 import {scoreBeat,scoreFireLevel,fourCardFormation,type ScoreBeat} from './scorePresentation';
 import {stageNotice,discardReferenceCopy} from './stageNotice';
-import {stageIdentity} from './StageIdentity';
+import {stageIdentity,stageSuitLabel} from './StageIdentity';
 import type {R2RunState as RunState,DomainEvent} from '../domain/run';
 import {r2UsesAssist,R2_LIMITS,getR2Stage as getStage,r2ScoreContext,r2DiscardCost} from '../domain/r2Run';
 import {r2ScoringDisabledJokerIds,type Accumulator,type ScoreTrace,type ScoreEvent} from '../domain/scoreR2';
@@ -296,6 +296,7 @@ export class GameScene extends Phaser.Scene {
   private statusMessage='';
   private readonly lastPlayWarningTracker=new LastPlayWarningTracker();
   private lastPlayCue?:Phaser.GameObjects.Container;
+  private bossRuleCue?:Phaser.GameObjects.Container;
   private heatText!: Phaser.GameObjects.Text;
   private resourceCounts!:Record<'play'|'discard',Phaser.GameObjects.Text>;
   private goldText!:Phaser.GameObjects.Text;
@@ -407,6 +408,7 @@ export class GameScene extends Phaser.Scene {
       this.tweens.timeScale=gameSession().speed;this.time.timeScale=gameSession().speed;
       if(this.reducedMotion){
         if(this.lastPlayCue?.active){this.lastPlayCue.destroy();this.lastPlayCue=undefined;}
+        if(this.bossRuleCue?.active){this.bossRuleCue.destroy();this.bossRuleCue=undefined;}
         if(this.toolHand){this.effects.clear();this.toolHand=undefined;this.render();}
         this.heroClimax?.reduce();this.playAuraPulse?.remove();this.playAuraPulse=undefined;this.cameras.main.resetFX();
         this.cardViews.forEach(view=>{view.sheenTween?.remove();view.sheen?.setAlpha(0);this.revealCard(view);});
@@ -558,6 +560,10 @@ export class GameScene extends Phaser.Scene {
       dialog.dataset.stageKind=identity.isBoss?'boss':'normal';
     }
     if(introduceBoss&&this.dialog.current){const modal=this.dialog.current,stop=trackBossRulesVisible(this.run,modal,()=>this.lifecycle===lifecycle&&this.scene.isActive()&&controller.state===this.run&&this.dialog.active(modal));this.events.once('shutdown',stop);}
+    if(enteredStage&&this.run.stage.boss){
+      const stageIndex=this.run.stage.index,announce=()=>{if(this.lifecycle===lifecycle&&this.scene.isActive()&&this.run.stage?.index===stageIndex&&this.run.phase==='await-input'&&!this.playing&&!this.presentation&&!document.querySelector('dialog[open]'))this.presentBossRuleCue();};
+      const modal=this.dialog.current;if(modal)modal.addEventListener('close',()=>queueMicrotask(announce),{once:true});else announce();
+    }
     if(enteredStage){const stopBurst=mountHeroEntranceBurst(this.dialog.current??document.body,this.run.characterId,{context:this.run.stage.boss?'boss':'stage',stageIndex:this.run.stage.index,reducedMotion:this.reducedMotion});this.events.once('shutdown',stopBurst);}
   }
 
@@ -1387,13 +1393,16 @@ export class GameScene extends Phaser.Scene {
     const guideCue=this.ready&&!this.presentation&&!this.selectedIds.size&&this.handsLeft>1?firstChapterGuide(this.run)?.cue:undefined;
     const {warning,highlight}=this.lastPlayWarningTracker.observe(this.run,this.playing||!!this.presentation);
     if(!warning&&this.lastPlayCue?.active){this.lastPlayCue.destroy();this.lastPlayCue=undefined;}
-    const criticalStatus=warning?(warning.message+(this.statusMessage?' · '+this.statusMessage:'')):this.statusMessage||(this.pendingRefill?this.refillHidden?'候选已保存 · 点英雄继续':`留 ${this.pendingRefill.required} 张 · 已选 ${this.selectedIds.size}/${this.pendingRefill.required} · 确认后补入`:'')||(!this.playing&&!this.presentation?reducedPlayEntry(this.run)??'':'');
+    if(this.bossRuleCue?.active&&(this.playing||!!this.presentation||this.run.phase!=='await-input')){this.bossRuleCue.destroy();this.bossRuleCue=undefined;}
+    const detail=this.statusMessage||(this.pendingRefill?this.refillHidden?'候选已保存 · 点英雄继续':`留 ${this.pendingRefill.required} 张 · 已选 ${this.selectedIds.size}/${this.pendingRefill.required} · 确认后补入`:'');
+    const restriction=this.run.stage?.boss&&!this.playing&&!this.presentation&&this.run.phase==='await-input'?'本局限制：'+(reducedPlayEntry(this.run)??notice?.title??'压轴规则'):'';
+    const criticalStatus=warning?(warning.message+(detail?' · '+detail:'')):restriction?restriction+(detail?' · '+detail:''):detail;
     this.statusText.setName(discovery&&!criticalStatus?'growth/discovery':'').setText(criticalStatus||discovery?.full||sweepReminder||selectedReminder||guideCue||reminders||entryReminder||benefitReminder||memoryReminder||reason);
-    this.statusText.setColor(warning?'#9b3027':'#f3d5ab').setFontStyle(warning?'bold':'normal').setFontSize(warning?16:14);
+    this.statusText.setColor(warning?'#9b3027':restriction?'#30251f':'#f3d5ab').setFontStyle(warning?'bold':'normal').setFontSize(warning?16:14);
     if(warning){
       this.statusText.setName('warning/last-play');this.resourceCounts.play.setColor('#9b3027').setFontStyle('bold');
       if(highlight&&!this.reducedMotion)this.presentLastPlayCue();
-    }else this.resourceCounts.play.setFontStyle('normal');
+    }else {this.resourceCounts.play.setFontStyle('normal');if(restriction)this.statusText.setName('boss/restriction');}
     if(!criticalStatus){
     if(!discovery&&benefitReminder&&!sweepReminder&&!this.statusMessage&&!selectedReminder&&!reminders&&!entryReminder&&this.statusText.width>handWindow.status.width)this.statusText.setText('已保存结果 · 菜单查看上手');
     if(selectedReminder&&this.statusText.width>handWindow.status.width)this.statusText.setText('点所选条件 · 查看来源');
@@ -1407,7 +1416,7 @@ export class GameScene extends Phaser.Scene {
     if(portrait){this.statusText.setVisible(!!criticalStatus);if(criticalStatus)this.resultText.setVisible(false);}
     fitStatusSummary(this.statusText,{...handWindow.status,height:Math.max(0,Math.min(Math.max(warning?20:0,handWindow.status.height+(handWindow.mode==='landscape'?12:0)),handWindow.height-safeBottom-handWindow.status.y))},!criticalStatus&&selectedReminder?'点所选条件':undefined);
     if(usesLaohuanRefill(this.run))this.roleText.setText(this.roleCaption());
-    if(this.bossSuitRescueButton&&portrait&&criticalStatus&&!this.playing&&!this.presentation){const board=this.view.layout.scoreBoard;this.resultText.setVisible(false);fitScoreLine(this.statusText,{x:board.x+10,y:board.y+7,width:board.width-174,height:30},14);}
+    if(this.bossSuitRescueButton&&portrait&&criticalStatus&&!this.playing&&!this.presentation){const board=this.view.layout.scoreBoard;this.resultText.setVisible(false);if(warning)this.bossSuitRescuePreview?.setVisible(false);fitScoreLine(this.statusText,warning?{x:board.x+10,y:board.y+54,width:board.width-20,height:24}:{x:board.x+10,y:board.y+7,width:board.width-174,height:30},warning?16:14);}
     this.updateHeroControl();this.fitHudReadouts();
     this.resourceCounts.play.setVisible(!this.pendingRefill);this.resourceCounts.discard.setVisible(!this.pendingRefill);
     if(this.pendingRefill){this.view.setEnabled(this.aiButton,false);this.view.setEnabled(this.playButton,this.ready&&!this.refillHidden&&this.selectedIds.size===this.pendingRefill.required);(this.playButton.getData('label') as Phaser.GameObjects.Text).setText('确认留'+this.pendingRefill.required);this.view.setEnabled(this.discardButton,this.ready);(this.discardButton.getData('label') as Phaser.GameObjects.Text).setText(this.refillHidden?'继续选牌':'收起候选');}
@@ -2475,6 +2484,33 @@ export class GameScene extends Phaser.Scene {
     const l=this.view.layout;
     this.cardViews.forEach((view,i)=>{if(this.settledCards.has(view.card.id))return;const area=l.cards[i];view.container.setVisible(area.visible).setPosition(area.visual.x+area.visual.width/2,area.visual.y+area.visual.height/2).setAngle(0);view.hit?.setVisible(false);});
     this.updateHandCount();
+  }
+  /** The stage's public rule is displayed without creating an input surface. */
+  private presentBossRuleCue():void {
+    const stage=this.run.stage,boss=stage?.boss;if(!stage||!boss||this.reducedMotion||document.hidden)return;
+    const definition=R2_BOSSES.find(row=>row.id===boss.definitionId);if(!definition)return;
+    const l=this.view.layout,mobile=l.mode==='portrait',width=Math.min(mobile?l.width*.85:360,mobile?l.width*.85:l.playedArea.width);
+    const suit=boss.disabledSuit?' · '+stageSuitLabel(boss.disabledSuit):'';
+    const budget=boss.definitionId==='B09'?' 本场初始'+stage.initialHands+'次出牌。':'';
+    const copy='本局限制：'+definition.name+suit+'\n'+definition.rule+budget;
+    const label=this.add.text(0,0,copy,{fontFamily:UI_FONT,fontSize:mobile?'16px':'18px',color:'#F5E8CC',wordWrap:{width:Math.max(1,width-52),useAdvancedWrap:true},lineSpacing:2});
+    const h=Math.max(72,label.height+24),box=bossRuleCuePlacement(l.width,l.height,l.scoreBoard,l.playedArea,[l.hud,l.jokers,l.scoreBoard,l.hand,l.handLabel,l.piles,l.tools,l.actions,...l.slots],mobile,h);
+    if(!box){label.destroy();return;}
+    this.bossRuleCue?.destroy();
+    const group=this.view.add(this.add.container(box.x,box.y)).setName('boss/restriction-cue').setData('cueBounds',box);
+    const sheet=this.add.graphics().fillStyle(0x160f0c,.24).fillRoundedRect(2,3,box.width-2,box.height-3,6)
+      .fillStyle(0x30251f,.99).fillRoundedRect(0,0,box.width,box.height-3,6)
+      .fillStyle(0x76583c,.14).fillRoundedRect(3,3,box.width-6,17,3)
+      .lineStyle(1,0xc9a65f,.95).strokeRoundedRect(.5,.5,box.width-1,box.height-4,6)
+      .lineStyle(1,0xf5e8cc,.18).strokeRoundedRect(4,4,box.width-8,box.height-11,3);
+    const lines=this.add.graphics().lineStyle(1,0xc9a65f,.8).lineBetween(12,6,box.width-12,6).lineBetween(12,box.height-9,box.width-12,box.height-9).setAlpha(0).setScale(.96,1);
+    const seal=this.add.container(box.width-24,21).setAlpha(0),stamp=this.add.graphics().fillStyle(0xa13e31,1).fillRoundedRect(-9,-9,18,18,2).lineStyle(1,0xf5e8cc,.85).strokeRoundedRect(-7,-7,14,14,1),mark=this.add.text(0,0,'限',{fontFamily:UI_FONT,fontSize:'12px',fontStyle:'bold',color:'#F5E8CC'}).setOrigin(.5);
+    seal.add([stamp,mark]);label.setPosition(16,11);group.add([sheet,lines,label,seal]);this.bossRuleCue=group;
+    const runId=this.run.runId,stageIndex=stage.index,valid=()=>group.active&&this.bossRuleCue===group&&!document.hidden&&!this.reducedMotion&&!document.querySelector('dialog[open]')&&!this.playing&&!this.presentation&&this.run.runId===runId&&this.run.stage?.index===stageIndex&&this.run.phase==='await-input';
+    const live=()=>{if(valid())return true;if(group.active)group.destroy();if(this.bossRuleCue===group)this.bossRuleCue=undefined;return false;};
+    if(live())this.tweens.add({targets:lines,alpha:1,scaleX:1,duration:450,ease:'Sine.easeOut'});
+    this.time.delayedCall(150,()=>{if(!live())return;seal.setAlpha(1).setScale(1.16);this.tweens.add({targets:seal,scaleX:1,scaleY:1,duration:180,ease:'Cubic.easeOut'});});
+    this.time.delayedCall(1850,()=>{if(!live())return;this.tweens.add({targets:group,alpha:0,duration:300,ease:'Sine.easeIn',onComplete:()=>{if(group.active)group.destroy();if(this.bossRuleCue===group)this.bossRuleCue=undefined;}});});
   }
   /** Decorative only: the persistent status and every input remain in place. */
   private presentLastPlayCue():void {
