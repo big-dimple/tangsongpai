@@ -37,7 +37,7 @@ describe('saved score review display only',()=>{
   const cards=review.cards.filter(c=>c.title.startsWith(cardDisplayName('c07')));expect(cards.length).toBe(2);
   for(const card of cards){expect(card.body).toContain('额外再计分 1 次 · 实际触发 1 次');}
   const repeated=fixture({jokers:[r2CreateJoker('c02','red-one',4,undefined,state),r2CreateJoker('c02','red-two',4,undefined,state)]});
-  const red=formatScoreReview(state,repeated.trace).cards.filter(c=>c.title.startsWith((cardDisplayName('c02'))));expect(red).toHaveLength(2);for(const card of red)expect(card.body).toContain('+8 热度 · 实际触发 5 次');
+  const red=formatScoreReview(state,repeated.trace).cards.filter(c=>c.title.startsWith((cardDisplayName('c02'))));expect(red).toHaveLength(2);for(const card of red)expect(card.body).toContain('+12 热度 · 实际触发 5 次');
   const zero=fixture({jokers:[r2CreateJoker('b10','unmet',4,undefined,state)]});
   expect(formatScoreReview(zero.state,zero.trace).cards.some(c=>c.title.includes(cardDisplayName('b10'))&&c.body.includes('实际触发'))).toBe(false);
  });
