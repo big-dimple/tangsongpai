@@ -32,7 +32,7 @@ it('six public legal inputs only advertise the current valid operation, without 
  }
 });
 it('money, qualification, no discard budget, used handoff and old identities never get a ready accent',()=>{
- const x=entered('xiemu');x.gold=2;expect(heroAbilityCue(x,facts(x),main)).toMatchObject({available:false,label:'赏赐',status:'条件未满足',detail:'不足3金'});
+ const x=entered('xiemu');x.gold=1;expect(heroAbilityCue(x,facts(x),main)).toMatchObject({available:false,label:'赏赐',status:'条件未满足',detail:'不足2金'});
  const e=entered('erxiang');expect(heroAbilityCue(e,facts(e,[cards[0]]),[cards[0]])?.available).toBe(false);
  const a=send(e,{type:'PlayHand',selectedIds:cards.slice(0,2),erxiangTargetId:cards[0]});expect(heroAbilityCue(a)?.available).toBe(false);
  const l=entered('laohuan');l.stage!.discardsLeft=0;expect(heroAbilityCue(l,facts(l),[cards[0]])?.available).toBe(false);

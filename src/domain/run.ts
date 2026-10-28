@@ -107,7 +107,7 @@ export type Action =
   | {type:'BuyBossSuitRescue';entryToken?:string;purchasePlayIndex?:number}
   | {type:'BuyPokerPolychrome';opportunityId:string;shopSeq:number;targetId:string}
   | {type:'SkipPokerEncounter';opportunityId:string;shopSeq:number}
-  | { type: 'PlayHand'; selectedIds: readonly string[]; laohuanFindRank?:number; erxiangTargetId?:string; azaoRelease?:boolean; xiemuBurn?:3|5|6|10|20|30; amoExile?:boolean }
+  | { type: 'PlayHand'; selectedIds: readonly string[]; laohuanFindRank?:number; erxiangTargetId?:string; azaoRelease?:boolean; xiemuBurn?:2|3|4|5|6|8|10|20|30; amoExile?:boolean }
   | { type: 'PlayAssistedHand'; selectedIds: readonly string[]; assistIds:readonly string[] }
   | { type: 'DiscardHand'; selectedIds: readonly string[]; laohuanTrick?:boolean; touyeBet?:TouyeBet }
   | {type:'ChooseRefill';selectedIds:readonly string[]}

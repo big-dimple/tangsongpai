@@ -42,6 +42,7 @@ export interface ScoreInput {
   heroBalance?:true;
   amoExileKing?:true;
   xiemuFrequent?:true;
+  xiemuRevised?:true;
   /** Required for the exact C2 content profile; never inferred from Joker ownership. */
   routeGrowth?:R2RouteProgress;
   boundedClear?:true;
@@ -211,10 +212,11 @@ function resolveScore(input: PublicScoreInput, policy: ResolvePolicy): ScoreTrac
   if(input.laohuanFind&&!input.laohuanTrick)throw Error('invalid-laohuan-find');
   const laohuanFind=input.laohuanFind?laohuanFindStep(cards,facts.activeScoringIds,input.laohuanFind,input.characterId==='laohuan'&&input.boss?.definitionId!=='B08'):undefined;
   if(input.amoExileKing!==undefined&&(input.amoExileKing!==true||input.amoScoreTiming!=='exile-v1'||!['amo','neutral'].includes(input.characterId)))throw Error('invalid-amo-king-context');
+  if(input.xiemuRevised!==undefined&&(input.xiemuRevised!==true||!input.xiemuFrequent||!['xiemu','neutral'].includes(input.characterId)))throw Error('invalid-xiemu-revised');
   if(input.xiemuFrequent!==undefined&&(input.xiemuFrequent!==true||!['xiemu','neutral'].includes(input.characterId)))throw Error('invalid-xiemu-frequent');
   if(input.heroBalance!==undefined&&(input.heroBalance!==true||!['amo','xiemu','neutral'].includes(input.characterId)))throw Error('invalid-hero-balance');
   if(input.xiemuBurn&&input.characterId!=='xiemu'&&input.characterId!=='neutral')throw Error('invalid-xiemu-character');
-  const xiemuBurn=input.xiemuBurn?xiemuBurnStep(evaluated.type,input.xiemuBurn,input.characterId==='xiemu'&&input.boss?.definitionId!=='B08',input.heroBalance,input.xiemuFrequent):undefined;
+  const xiemuBurn=input.xiemuBurn?xiemuBurnStep(evaluated.type,input.xiemuBurn,input.characterId==='xiemu'&&input.boss?.definitionId!=='B08',input.heroBalance,input.xiemuFrequent,input.xiemuRevised):undefined;
   if(xiemuBurn&&xiemuBurn.goldAfter!==input.gold)throw Error('invalid-xiemu-payment');
   if(input.azaoCharge&&input.characterId!=='azao'&&input.characterId!=='neutral')throw Error('invalid-azao-character');
   const azaoCharge=input.azaoCharge?azaoChargeStep(evaluated.type,input.azaoCharge,input.characterId==='azao'&&input.boss?.definitionId!=='B08'):undefined;

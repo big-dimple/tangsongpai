@@ -32,7 +32,7 @@ function characterDetailsForRun(run:Pick<R2RunState,'characterId'|'contentVersio
  if(usesLaohuanFind(run))return {...character,openingPlay:'弃牌多看两张；下一手本批两张同点有效计分时可发动寻得。',buildTip:'每次正常弃牌多看最多两张；本批同点牌在下一手有效计分可选择寻得。',passiveDescription:'每次正常弃牌多看最多2张，亲自留下应补张数。下一手本批实际留牌有至少2张同点有效计分时，可选择最大同点组发动寻得：2／3／4张及以上分别×2／×3／×4，每场一次。最大组并列时自行选择，不能叠加。再次弃牌或下一手成功出牌后旧批资格失效。静场只能换牌；关闭角色能力的挑战两者停用。'};
  if(laohuanRefillRepeats(run))return {...character,openingPlay:'被动：每次正常弃牌后多看最多2张，自己留下应补张数。',buildTip:'照付正常弃牌成本，每次都多看最多2张；未留候选本场不再抽，没有额外技能次数限制。',passiveDescription:'每次正常弃牌都多看最多2张，亲自留下应补张数；正常弃牌额度与附加费用照付，未留候选本场不再抽。牌堆不足时少看或全部留下。固定候选选完前不能继续操作；静场可用，无能力挑战停用。'};
  if(usesLaohuanRefill(run))return {...character,openingPlay:'弃牌前点击技能按钮确认换牌，多看最多两张并自己留牌，本场一次。',buildTip:'每场一次额外择牌：真实弃牌后多看最多2张，自己留应补数；没留的本场不再抽。三条路线都可用。',passiveDescription:'每场一次，照付实际弃牌成本，确认换牌后多看最多2张，手选应补数；未留候选进已用区、不算再次弃牌。候选不足全留，收起或恢复仍是同批；完成前不能出/弃/用工具。静场可用，无能力挑战停用；'};
- if(isR2XiemuBalance(run)){const costs=xiemuTiersFor(run).map(t=>t.cost).join('／');return {...character,openingPlay:'两对及以上，出牌前可付'+costs+'金换倍率，也可留钱收息。',buildTip:'每场一次，两对及以上付'+costs+'金，本手倍率×1.5／2／3；持币收益与关末息读余钱。',passiveDescription:'每场一次主动付'+costs+'金，本手倍率×1.5／2／3，仅两对及以上主手。不足不降档。过关时奖励前金币每5金额外给1，最多2金；静场不付但保留关末息，无能力挑战全停。'};}
+ if(isR2XiemuBalance(run)){const tiers=xiemuTiersFor(run),costs=tiers.map(t=>t.cost).join('／'),multipliers=tiers.map(t=>t.multiplier).join('／');return {...character,openingPlay:'两对及以上，出牌前可付'+costs+'金换倍率，也可留钱收息。',buildTip:'每场一次，两对及以上付'+costs+'金，本手倍率×'+multipliers+'；持币收益与关末息读余钱。',passiveDescription:'每场一次主动付'+costs+'金，本手倍率×'+multipliers+'，仅两对及以上主手。不足不降档。过关时奖励前金币每5金额外给1，最多2金；静场不付但保留关末息，无能力挑战全停。'};}
  if(usesXiemuBurn(run))return {...character,openingPlay:'两对及以上，出牌前可付10／20／30金换倍率，也可留钱收息。',buildTip:'每场一次，两对及以上可付10／20／30金，本手倍率×2／3／4；先扣真金，持币收益和关末息读余钱。留钱还有有限关末息。',passiveDescription:'每场一次主动付10／20／30金，本手倍率×2／3／4，仅两对及以上主手。不足不降档。成功额外关末息：奖励前金币每5金给1，最多2金；不算本次奖励再生息。静场不付、关末息保留；无能力挑战全停。'};
  if(run.characterId==='azao'&&isR2AzaoCharge(run))return {...character,openingPlay:'两对及以上先蓄势；有层时出牌前点英雄释放，换型可继续蓄。',buildTip:'两对及以上先蓄1层，下一手可主动释放。换牌型可继续蓄；重复牌型不释放会清空。弃牌保留，场间清空。',passiveDescription:'两对及以上：首手蓄1层，连续换牌型最多3层。主动释放当前1／2／3层，倍率×1.5／2.5／4；重复合格牌也可释放。释放手不再蓄。重复牌型不释放、对子或高牌出牌清空；弃牌保留，进场／结束清空。'};
  if(run.characterId!=='amo')return character;
@@ -53,7 +53,7 @@ export function characterForRun(run:Pick<R2RunState,'characterId'|'contentVersio
  const c=characterDetailsForRun(run),current=usesCurrentHeroText(run),quick=HERO_QUICK_COPY[run.characterId];
  return {...c,openingPlay:'openingPlay' in c?c.openingPlay:c.buildTip,
   passiveName:heroSkillName(run.characterId),
-  quickEffect:laohuanRefillRepeats(run)?'弃牌后多看两张，自行留下应补张数。':isR2XiemuBalance(run)?'付'+xiemuTiersFor(run).map(t=>t.cost).join('／')+'金换×1.5／2／3，也可留钱收息。':current?quick.effect:('openingPlay' in c?c.openingPlay:c.buildTip),
+  quickEffect:laohuanRefillRepeats(run)?'弃牌后多看两张，自行留下应补张数。':isR2XiemuBalance(run)?'付'+xiemuTiersFor(run).map(t=>t.cost).join('／')+'金换×'+xiemuTiersFor(run).map(t=>t.multiplier).join('／')+'，也可留钱收息。':current?quick.effect:('openingPlay' in c?c.openingPlay:c.buildTip),
   skillTags:isR2HeroFrequency(run)?run.characterId==='erxiang'?['对子及以上','每场2次']:['被动','每次正常弃牌','照付弃牌成本']:current?quick.tags:[] as readonly string[],
   detailRules:isR2HeroFrequency(run)||isR2XiemuBalance(run)?c.passiveDescription:current?heroDetailRules(run.characterId):c.passiveDescription};
 }

@@ -10,7 +10,7 @@ it('six current skills give their actual steps and risks without mutating the ru
  for(const id of CHARACTER_IDS){const s=start(id),before=structuredClone(s),c=heroSkillGuide(s);expect(c.active).toBe(true);expect(c.step).toBeTruthy();expect(c.effect).toBeTruthy();expect(c.risk).toBeTruthy();expect(s).toEqual(before);}
  expect(heroSkillGuide(start('touye')).step).toContain('选1–5张弃牌');expect(heroSkillGuide(start('touye')).effect).toContain('×0.85');
  expect(heroSkillGuide(start('laohuan'))).toMatchObject({active:true,step:'本批至少两张同点牌有效计分时可发动',effect:'本批2／3／4张同点有效计分分别×2／×3／×4'});expect(heroOperationSteps(start('laohuan'),heroSkillGuide(start('laohuan'))).labels).toEqual(['正常弃牌并留候选','选本批同点计分牌','选择寻得并出牌']);expect(heroSkillGuide(start('erxiang')).effect).toContain('改加倍率');
- expect(heroSkillGuide(start('xiemu')).effect).toContain('付3金 ×1.5');expect(heroSkillGuide(start('azao')).effect).toContain('×1.5／2.5／4');expect(heroSkillGuide(start('amo')).risk).toContain('正常补牌');
+ expect(heroSkillGuide(start('xiemu')).effect).toContain('付2金 ×1.5');expect(heroSkillGuide(start('azao')).effect).toContain('×1.5／2.5／4');expect(heroSkillGuide(start('amo')).risk).toContain('正常补牌');
 });
 it('Touye unavailable, selected and pending steps come from existing real choices',()=>{
  const s=start('touye'),ids=[s.handOrder[0]],facts=r2SelectionFacts({hand:s.handOrder.map(id=>s.deckInstances.find(c=>c.id===id)!),selectedIds:ids,jokers:s.jokers,definitions:r2JokerDefinitionsFor(s),disabledIds:[]});expect(heroSkillGuide(s,facts,ids).step).toContain('选下一手目标');
@@ -25,7 +25,7 @@ it('chosen drafts report the actual third step and zero charge has its real rele
  for(const name of ['erxiang','xiemu','azao','amo'] as const){const s=start(name);s.handOrder=ids;s.gold=15;
  const facts=r2SelectionFacts({hand:ids.map(id=>s.deckInstances.find(c=>c.id===id)!),selectedIds:ids.slice(0,4),jokers:s.jokers,definitions:r2JokerDefinitionsFor(s),disabledIds:[]});
  if(name==='azao')s.stage!.azaoCharge={charge:1,previousQualifiedType:'two-pair'};
- const draft=name==='erxiang'?{erxiangTargetId:ids[0]}:name==='xiemu'?{xiemuBurn:10}:name==='azao'?{azaoRelease:true}:{amoExile:true};
+ const draft=name==='erxiang'?{erxiangTargetId:ids[0]}:name==='xiemu'?{xiemuBurn:8}:name==='azao'?{azaoRelease:true}:{amoExile:true};
  const before=structuredClone(s),guide=heroSkillGuide(s,facts,ids.slice(0,4),true,draft);
  expect(guide.step).toMatch(/第3步.*已选.*确认出牌/);expect(heroOperationSteps(s,guide,true).current).toBe(2);expect(s).toEqual(before);
  }
