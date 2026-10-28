@@ -39,7 +39,7 @@ export const CHARACTERS: CharacterDefinition[] = [
     buildTip: '准备两种能得分的牌型轮换，先比较总分；不要为了 +1 倍率，硬打更弱的牌。',
     accent: 0x95ff8c, portrait: (characterArt('azao','portrait')?.url??''), portraitFocusX: 0.61, portraitFocusY: 0.25 },
   { id: 'xiemu', name: HERO_CAST.xiemu.name, intro: HERO_CAST.xiemu.intro, title: HERO_CAST.xiemu.title, quote: HERO_CAST.xiemu.quote, passiveName: heroSkillName('xiemu'), passiveDescription: '最后可用出牌 ×2；该手过关额外 +2 金。',
-    buildTip: ("强牌留给最后可用出牌，配「"+cardDisplayName('f02')+"」；「回马枪」每第 3 手翻倍，先核对它是否与最后一手重合，再权衡提前过关的余次金币。"),
+    buildTip: ("强牌留给最后可用出牌，配「"+cardDisplayName('f02')+"」；「回马枪」第 3 至 5 手连翻，先核对它是否覆盖最后一手，再权衡提前过关的余次金币。"),
     accent: 0xff5b5b, portrait: (characterArt('xiemu','portrait')?.url??''), portraitFocusX: 0.5, portraitFocusY: 0.22 },
 ];
 

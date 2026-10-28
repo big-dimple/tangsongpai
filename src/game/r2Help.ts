@@ -11,7 +11,7 @@ import {getR2Tool} from '../content/r2Tools';
 
 /** Short entry hints; values and full conditions still come from the content definition. */
 export const R2_OFFER_USE:Record<string,string>={
-  pengci:'高牌加倍率',mantangcai:'对子等加热',tiesuanpan:'JQKA加热',huimaqiang:'每3手翻倍',jiedongfeng:'顺/同花增倍',
+  pengci:'高牌加倍率',mantangcai:'对子等加热',tiesuanpan:'JQKA加热',huimaqiang:'3至5手翻倍',jiedongfeng:'顺/同花增倍',
   a03:'单张加热',a04:'小牌组扩手',a05:'单张成长',a06:'高牌乘倍',a07:'单弃加金',a08:'小点数加热',
   b02:'重复增倍',b03:'对子型成长',b04:'两组增倍',b05:'三张同点加热',b06:'对子重触发',b07:'全计分加热',b08:'对子致胜加金',
   c02:'红牌加热',c03:'黑牌加热',c04:'顺子加热',c05:'同花弃牌蓄热',c06:'同花成长',c07:'末张重触发',c08:'四张普通顺子',

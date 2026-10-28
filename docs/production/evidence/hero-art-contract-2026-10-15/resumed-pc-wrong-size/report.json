@@ -4378,7 +4378,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-core-build-v1",
-          "contentHash": "json-fnv-v1:6dfe1a721e4949e6",
+          "contentHash": "json-fnv-v1:7d9aa2c7de88757b",
           "runId": "run/1792048549660/amo",
           "seed": "1792048549660",
           "commandSeq": 3,
@@ -4839,7 +4839,7 @@
           "receipts": [
             {
               "commandId": "run/1792048549660/amo/start",
-              "fingerprint": "json-fnv-v1:9863dbbe71ecbbea",
+              "fingerprint": "json-fnv-v1:ea980bb727482043",
               "seq": 1
             },
             {
@@ -4904,7 +4904,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-core-build-v1",
-              "contentHash": "json-fnv-v1:6dfe1a721e4949e6",
+              "contentHash": "json-fnv-v1:7d9aa2c7de88757b",
               "runId": "run/1792048549660/amo",
               "seed": "1792048549660",
               "commandSeq": 3,
@@ -5365,7 +5365,7 @@
               "receipts": [
                 {
                   "commandId": "run/1792048549660/amo/start",
-                  "fingerprint": "json-fnv-v1:9863dbbe71ecbbea",
+                  "fingerprint": "json-fnv-v1:ea980bb727482043",
                   "seq": 1
                 },
                 {
@@ -5415,7 +5415,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:c1f8f4d796d8c70b"
+            "checksum": "json-fnv-v1:bb44d4e254e7593e"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -5431,7 +5431,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-core-build-v1",
-              "contentHash": "json-fnv-v1:6dfe1a721e4949e6",
+              "contentHash": "json-fnv-v1:7d9aa2c7de88757b",
               "runId": "run/1792048549660/amo",
               "seed": "1792048549660",
               "commandSeq": 2,
@@ -5894,7 +5894,7 @@
               "receipts": [
                 {
                   "commandId": "run/1792048549660/amo/start",
-                  "fingerprint": "json-fnv-v1:9863dbbe71ecbbea",
+                  "fingerprint": "json-fnv-v1:ea980bb727482043",
                   "seq": 1
                 },
                 {
@@ -5931,7 +5931,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:afa4935d6d8768d9"
+            "checksum": "json-fnv-v1:9797d54ef28a6b6a"
           }
         }
       },

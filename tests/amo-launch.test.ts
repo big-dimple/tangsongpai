@@ -22,7 +22,7 @@ describe('normal new-game policy and exact retry creation',()=>{
    expect(r2HouseBase(run).contentVersion).toBe(characterId==='amo'?R2_AMO_KING_VERSION:characterId==='xiemu'?R2_XIEMU_FREQUENT_VERSION:characterId==='erxiang'||characterId==='laohuan'?R2_HERO_FREQUENCY_VERSION:R2_S04_FINISH_VERSION);
    expect(run.handLevels).toEqual({});expect(readCheckpoint(makeCheckpoint(run,[])).ok).toBe(true);
   }
-  expect(createRun(base).contentHash).toBe('json-fnv-v1:117fb6675e31ce73');
+  expect(createRun(base).contentHash).toBe('json-fnv-v1:27de51ef19451243');
   expect(createRun(base).handLevels).toEqual({'high-card':3});
  });
  it.each(R2_RULESETS.filter(p=>!isR2RouteStarter(p)))('retry creates $contentVersion directly with fresh counters and exact identity',profile=>{
@@ -38,7 +38,7 @@ describe('normal new-game policy and exact retry creation',()=>{
   expect(entered.handLevels).toEqual(profile.amoScoreTiming==='assist-v1'?{}:{'high-card':3});
  });
  it('rejects mixed, unknown, extra, conflicting and wrong-character identity inputs',()=>{
-  const identities=[{contentVersion:R2_ASSIST_VERSION,contentHash:'json-fnv-v1:117fb6675e31ce73'},{contentVersion:'unknown',contentHash:R2_ASSIST_HASH},{...newRunIdentity('amo'),extra:1},Object.assign([] ,newRunIdentity('amo')),null];
+  const identities=[{contentVersion:R2_ASSIST_VERSION,contentHash:'json-fnv-v1:27de51ef19451243'},{contentVersion:'unknown',contentHash:R2_ASSIST_HASH},{...newRunIdentity('amo'),extra:1},Object.assign([] ,newRunIdentity('amo')),null];
   for(const r2Identity of identities)expect(()=>createRun({...base,r2Identity} as any)).toThrow('invalid-r2-identity');
   expect(()=>createRun({...base,r2Profile:'amo-assist-v1',r2Identity:newRunIdentity('amo')})).toThrow('invalid-r2-identity');
   expect(()=>createRun({...base,characterId:'erxiang',r2Identity:{contentVersion:R2_ASSIST_VERSION,contentHash:R2_ASSIST_HASH}})).toThrow('invalid-r2-profile');

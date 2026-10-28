@@ -21,7 +21,7 @@ function actual(id:string,j=r2CreateJoker(id,id,0),extra:Partial<ScoreInput>={},
 it('complete conditional compact phrases survive fitting, or expose a conditions entry',()=>{
  expect(JOKER_COMPACT.c07).toEqual(['同花/同花顺末牌再计','条件 ›']);
  expect(JOKER_COMPACT.d07).toEqual(['全计分+0.5','条件 ›']);
- expect(JOKER_COMPACT.huimaqiang).toEqual(['每3次×2','每3次×2']);
+ expect(JOKER_COMPACT.huimaqiang).toEqual(['3–5手×2','3–5手×2']);
  for(const id of ['c07','d07'])expect(fitJokerLabel(JOKER_COMPACT[id],s=>s.length<=5)).toBe('条件 ›');
  expect(jokerMemoryAbility(def('c07'),undefined,ctx).condition).toContain('同花、同花顺');
  expect(jokerMemoryAbility(def('c07'),undefined,ctx).value).toContain('同花葫芦、同花五条不算');
@@ -68,7 +68,7 @@ it('real clear transactions distinguish coefficient growth for next play from cu
 });
 it('all72 render for all three exact profiles, with adapted thresholds only in 843f',()=>{
  const prototype=createRun({runId:'assist-copy',seed:'assist-copy',characterId:'amo',rulesVersion:'r2',r2Profile:'amo-assist-v1'});
- expect(prototype.contentHash).toBe('json-fnv-v1:b0dbe7b458ba9338');
+ expect(prototype.contentHash).toBe('json-fnv-v1:86d6f3ce5f30985a');
  for(const identity of [{contentVersion:R2_PUBLISHED_CONTENT.v10.version,contentHash:R2_PUBLISHED_CONTENT.v10.hash},{contentVersion:R2_PUBLISHED_CONTENT.v11.version,contentHash:R2_PUBLISHED_CONTENT.v11.hash},prototype]){
   for(const d of R2_JOKERS){const copy=jokerAbilityCopyForRun(identity,d.id,r2CreateJoker(d.id,d.id,0),ctx);expect(JSON.stringify(copy)).not.toMatch(/\{\w+\}|见完整规则/);expect(copy.condition).not.toContain('整手倍率');}
   for(const id of ['a03','a05','a06']){const copy=jokerAbilityCopyForRun(identity,id,undefined,ctx);if(identity===prototype){expect(copy.condition).toContain('两对及以上牌型');expect(copy.rules).toContain('两对、三条、顺子、同花、葫芦、四条、同花顺、五条、同花葫芦、同花五条');const d=R2_ASSIST_JOKERS.find(d=>d.id===id)!;expect(fitJokerLabel(jokerMemory(d,r2CreateJoker(id,id,0),ctx).labelCandidates,s=>s.length<=5)).toBe('条件 ›');}else{expect(copy.condition).toContain(id==='a06'?'打出高牌':id==='a03'?'只打出 1 张':'只出 1 张');expect(copy.condition).not.toContain('两对及以上');}}

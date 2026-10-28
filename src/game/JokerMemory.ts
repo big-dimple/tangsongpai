@@ -40,6 +40,7 @@ export function r2ConditionDescription(c:Condition):string {
   case'played-count-maximum':return'合法选择1–'+c.maximum+'张';
   case'held-count':return'打出前保留至少'+c.minimum+'张，包括停用牌；过关时按上手实际记录';
   case'play-modulo':return modulo(c.divisor,c.remainder)+'；弃牌不推进，返次不回退';
+  case'play-window':return'本场第'+c.minimum+'至'+c.maximum+'次成功出牌；弃牌不推进，返次不回退，超过第'+c.maximum+'次不再触发';
   case'suit-in':return'对象花色为'+c.values.map(s=>SUIT_SYMBOL[s]).join('／');
   case'largest-scoring-rank-group':return'对子、两对、三条、葫芦等同点数组合：按主手原始计分牌选最多同点组，平手取左边先出现组；失效参与选组，仅有效牌再计';
   case'paired-rank':return'同打的同点数牌至少'+c.minimum+'张，附带和停用也参与计数';

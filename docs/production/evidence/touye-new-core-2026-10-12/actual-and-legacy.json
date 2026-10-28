@@ -3,11 +3,11 @@
   "hashes": {
     "baseRoute": {
       "contentVersion": "quality-r2-route-growth-v1",
-      "contentHash": "json-fnv-v1:7414228d95059959"
+      "contentHash": "json-fnv-v1:a47db56489d9c970"
     },
     "newCore": {
       "contentVersion": "quality-r2-touye-new-core-v1",
-      "contentHash": "json-fnv-v1:413ecc65d3b9a2a1"
+      "contentHash": "json-fnv-v1:87c19b9c45c076b0"
     }
   },
   "rows": [
@@ -27,7 +27,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-win",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -482,7 +482,7 @@
           "receipts": [
             {
               "commandId": "core/mature-win/start",
-              "fingerprint": "json-fnv-v1:0c84bc3c4684e730",
+              "fingerprint": "json-fnv-v1:4d0e19f43943b980",
               "seq": 1
             },
             {
@@ -502,7 +502,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:5aa0fa187318a3dc"
+        "checksum": "json-fnv-v1:4fc71e097ffcaaed"
       },
       "bet": {
         "runId": "core/mature-win",
@@ -533,7 +533,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-win",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -1155,7 +1155,7 @@
           "receipts": [
             {
               "commandId": "core/mature-win/start",
-              "fingerprint": "json-fnv-v1:0c84bc3c4684e730",
+              "fingerprint": "json-fnv-v1:4d0e19f43943b980",
               "seq": 1
             },
             {
@@ -1196,7 +1196,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:30d53b262829ceb2"
+        "checksum": "json-fnv-v1:b35af00bf5c78567"
       },
       "publicScoreContext": {
         "routeGrowth": {
@@ -1333,7 +1333,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-win",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -2063,7 +2063,7 @@
           "receipts": [
             {
               "commandId": "core/mature-win/start",
-              "fingerprint": "json-fnv-v1:0c84bc3c4684e730",
+              "fingerprint": "json-fnv-v1:4d0e19f43943b980",
               "seq": 1
             },
             {
@@ -2739,7 +2739,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:9978a6c6c5d455da"
+        "checksum": "json-fnv-v1:bb105dd1bffd052d"
       },
       "result": {
         "commit": {
@@ -2843,7 +2843,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/unformed-win",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -3298,7 +3298,7 @@
           "receipts": [
             {
               "commandId": "core/unformed-win/start",
-              "fingerprint": "json-fnv-v1:b269affc36cd3820",
+              "fingerprint": "json-fnv-v1:92eeec946be8efb0",
               "seq": 1
             },
             {
@@ -3318,7 +3318,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:1dcf4bf5d6bfcbf1"
+        "checksum": "json-fnv-v1:f0831f0c675b4c38"
       },
       "bet": {
         "runId": "core/unformed-win",
@@ -3349,7 +3349,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/unformed-win",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -3971,7 +3971,7 @@
           "receipts": [
             {
               "commandId": "core/unformed-win/start",
-              "fingerprint": "json-fnv-v1:b269affc36cd3820",
+              "fingerprint": "json-fnv-v1:92eeec946be8efb0",
               "seq": 1
             },
             {
@@ -4012,7 +4012,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:7e209da2b24e01c6"
+        "checksum": "json-fnv-v1:dc9417d33b456c07"
       },
       "publicScoreContext": {
         "routeGrowth": {
@@ -4149,7 +4149,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/unformed-win",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -4879,7 +4879,7 @@
           "receipts": [
             {
               "commandId": "core/unformed-win/start",
-              "fingerprint": "json-fnv-v1:b269affc36cd3820",
+              "fingerprint": "json-fnv-v1:92eeec946be8efb0",
               "seq": 1
             },
             {
@@ -5555,7 +5555,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:ead201c1d4905755"
+        "checksum": "json-fnv-v1:5a744b1826204bfc"
       },
       "result": {
         "commit": {
@@ -5659,7 +5659,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-old-core",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -6114,7 +6114,7 @@
           "receipts": [
             {
               "commandId": "core/mature-old-core/start",
-              "fingerprint": "json-fnv-v1:76a01d244d030168",
+              "fingerprint": "json-fnv-v1:46b98adced324b38",
               "seq": 1
             },
             {
@@ -6134,7 +6134,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:495d311fb512fe03"
+        "checksum": "json-fnv-v1:c37f213513c50ec9"
       },
       "bet": {
         "runId": "core/mature-old-core",
@@ -6165,7 +6165,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-old-core",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -6787,7 +6787,7 @@
           "receipts": [
             {
               "commandId": "core/mature-old-core/start",
-              "fingerprint": "json-fnv-v1:76a01d244d030168",
+              "fingerprint": "json-fnv-v1:46b98adced324b38",
               "seq": 1
             },
             {
@@ -6828,7 +6828,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:b39d6f88350e082c"
+        "checksum": "json-fnv-v1:4b890cfc2a496228"
       },
       "publicScoreContext": {
         "routeGrowth": {
@@ -6958,7 +6958,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-old-core",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -7688,7 +7688,7 @@
           "receipts": [
             {
               "commandId": "core/mature-old-core/start",
-              "fingerprint": "json-fnv-v1:76a01d244d030168",
+              "fingerprint": "json-fnv-v1:46b98adced324b38",
               "seq": 1
             },
             {
@@ -8279,7 +8279,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:0ed07e195988357d"
+        "checksum": "json-fnv-v1:1dcf54b32ac49a07"
       },
       "result": {
         "commit": {
@@ -8381,7 +8381,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-accompanying",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -8836,7 +8836,7 @@
           "receipts": [
             {
               "commandId": "core/mature-accompanying/start",
-              "fingerprint": "json-fnv-v1:0efb83f4a0b111b8",
+              "fingerprint": "json-fnv-v1:0bb66b6cefd4a188",
               "seq": 1
             },
             {
@@ -8856,7 +8856,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:02549d055ecc2db9"
+        "checksum": "json-fnv-v1:248067b8537710b4"
       },
       "bet": {
         "runId": "core/mature-accompanying",
@@ -8887,7 +8887,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-accompanying",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -9509,7 +9509,7 @@
           "receipts": [
             {
               "commandId": "core/mature-accompanying/start",
-              "fingerprint": "json-fnv-v1:0efb83f4a0b111b8",
+              "fingerprint": "json-fnv-v1:0bb66b6cefd4a188",
               "seq": 1
             },
             {
@@ -9550,7 +9550,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:bee537b2ba3a53b6"
+        "checksum": "json-fnv-v1:7b4f704d83f0ca91"
       },
       "publicScoreContext": {
         "routeGrowth": {
@@ -9681,7 +9681,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-accompanying",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -10418,7 +10418,7 @@
           "receipts": [
             {
               "commandId": "core/mature-accompanying/start",
-              "fingerprint": "json-fnv-v1:0efb83f4a0b111b8",
+              "fingerprint": "json-fnv-v1:0bb66b6cefd4a188",
               "seq": 1
             },
             {
@@ -11010,7 +11010,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:1c3ea3fc390a3b30"
+        "checksum": "json-fnv-v1:36ad5f7d95800d79"
       },
       "result": {
         "commit": {
@@ -11112,7 +11112,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/target-miss",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -11567,7 +11567,7 @@
           "receipts": [
             {
               "commandId": "core/target-miss/start",
-              "fingerprint": "json-fnv-v1:ba30f1981428253c",
+              "fingerprint": "json-fnv-v1:87b3c750020b918c",
               "seq": 1
             },
             {
@@ -11587,7 +11587,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:717f55d3e942acd7"
+        "checksum": "json-fnv-v1:d6572382c6d25e8e"
       },
       "bet": {
         "runId": "core/target-miss",
@@ -11618,7 +11618,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/target-miss",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -12240,7 +12240,7 @@
           "receipts": [
             {
               "commandId": "core/target-miss/start",
-              "fingerprint": "json-fnv-v1:ba30f1981428253c",
+              "fingerprint": "json-fnv-v1:87b3c750020b918c",
               "seq": 1
             },
             {
@@ -12281,7 +12281,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:246dd8004096ca44"
+        "checksum": "json-fnv-v1:5918d74349b65267"
       },
       "publicScoreContext": {
         "routeGrowth": {
@@ -12408,7 +12408,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/target-miss",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -13115,7 +13115,7 @@
           "receipts": [
             {
               "commandId": "core/target-miss/start",
-              "fingerprint": "json-fnv-v1:ba30f1981428253c",
+              "fingerprint": "json-fnv-v1:87b3c750020b918c",
               "seq": 1
             },
             {
@@ -13522,7 +13522,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:29da7607feb29453"
+        "checksum": "json-fnv-v1:77a22e0c61df9508"
       },
       "result": {
         "commit": {
@@ -13626,7 +13626,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/disabled-core",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -14086,7 +14086,7 @@
           "receipts": [
             {
               "commandId": "core/disabled-core/start",
-              "fingerprint": "json-fnv-v1:50411ed4a45f7228",
+              "fingerprint": "json-fnv-v1:e7151d2cae9139f8",
               "seq": 1
             },
             {
@@ -14106,7 +14106,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:8eeaa4c4b2b4d9d8"
+        "checksum": "json-fnv-v1:59ea9dee8b0a0a3a"
       },
       "bet": {
         "runId": "core/disabled-core",
@@ -14137,7 +14137,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/disabled-core",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -14765,7 +14765,7 @@
           "receipts": [
             {
               "commandId": "core/disabled-core/start",
-              "fingerprint": "json-fnv-v1:50411ed4a45f7228",
+              "fingerprint": "json-fnv-v1:e7151d2cae9139f8",
               "seq": 1
             },
             {
@@ -14806,7 +14806,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:0d6d83446eec8260"
+        "checksum": "json-fnv-v1:6a88b0d68d0b534a"
       },
       "publicScoreContext": {
         "routeGrowth": {
@@ -14939,7 +14939,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/disabled-core",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -15677,7 +15677,7 @@
           "receipts": [
             {
               "commandId": "core/disabled-core/start",
-              "fingerprint": "json-fnv-v1:50411ed4a45f7228",
+              "fingerprint": "json-fnv-v1:e7151d2cae9139f8",
               "seq": 1
             },
             {
@@ -16230,7 +16230,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:fe1c1ed50c27a429"
+        "checksum": "json-fnv-v1:69fdb20924ae86fd"
       },
       "result": {
         "commit": {
@@ -16332,7 +16332,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/B02-zero",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -16790,7 +16790,7 @@
           "receipts": [
             {
               "commandId": "core/B02-zero/start",
-              "fingerprint": "json-fnv-v1:ad1a9890e05a3ba4",
+              "fingerprint": "json-fnv-v1:731ab2285415e1b4",
               "seq": 1
             },
             {
@@ -16810,7 +16810,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:e0430a0caebacca8"
+        "checksum": "json-fnv-v1:ac2986364397e50a"
       },
       "bet": {
         "runId": "core/B02-zero",
@@ -16841,7 +16841,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/B02-zero",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -17466,7 +17466,7 @@
           "receipts": [
             {
               "commandId": "core/B02-zero/start",
-              "fingerprint": "json-fnv-v1:ad1a9890e05a3ba4",
+              "fingerprint": "json-fnv-v1:731ab2285415e1b4",
               "seq": 1
             },
             {
@@ -17507,7 +17507,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:fbb97284caee9458"
+        "checksum": "json-fnv-v1:ddbd4ee0096fe694"
       },
       "publicScoreContext": {
         "routeGrowth": {
@@ -17642,7 +17642,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/B02-zero",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -18375,7 +18375,7 @@
           "receipts": [
             {
               "commandId": "core/B02-zero/start",
-              "fingerprint": "json-fnv-v1:ad1a9890e05a3ba4",
+              "fingerprint": "json-fnv-v1:731ab2285415e1b4",
               "seq": 1
             },
             {
@@ -19011,7 +19011,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:e05b2e270d2058b3"
+        "checksum": "json-fnv-v1:ce95caa79a87eb63"
       },
       "result": {
         "commit": {
@@ -19115,7 +19115,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/short",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -19312,7 +19312,7 @@
           "receipts": [
             {
               "commandId": "core/short/start",
-              "fingerprint": "json-fnv-v1:16491314a9677918",
+              "fingerprint": "json-fnv-v1:1f082e4cff48f1e8",
               "seq": 1
             },
             {
@@ -19332,7 +19332,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:b0276301b93711e5"
+        "checksum": "json-fnv-v1:b34950cecd35caa2"
       },
       "bet": {
         "runId": "core/short",
@@ -19365,7 +19365,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/short",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -19641,7 +19641,7 @@
           "receipts": [
             {
               "commandId": "core/short/start",
-              "fingerprint": "json-fnv-v1:16491314a9677918",
+              "fingerprint": "json-fnv-v1:1f082e4cff48f1e8",
               "seq": 1
             },
             {
@@ -19684,7 +19684,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:8a9da4e997bc553d"
+        "checksum": "json-fnv-v1:6a5078c850ef5144"
       },
       "publicScoreContext": {
         "routeGrowth": {
@@ -19820,7 +19820,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/short",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -20187,7 +20187,7 @@
           "receipts": [
             {
               "commandId": "core/short/start",
-              "fingerprint": "json-fnv-v1:16491314a9677918",
+              "fingerprint": "json-fnv-v1:1f082e4cff48f1e8",
               "seq": 1
             },
             {
@@ -20810,7 +20810,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:a043b908d42dd34c"
+        "checksum": "json-fnv-v1:1e2a63014ac6182d"
       },
       "result": {
         "commit": {
@@ -20914,7 +20914,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/empty",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -21104,7 +21104,7 @@
           "receipts": [
             {
               "commandId": "core/empty/start",
-              "fingerprint": "json-fnv-v1:075a5f9e4356ef3a",
+              "fingerprint": "json-fnv-v1:a15fd35624ccdd8a",
               "seq": 1
             },
             {
@@ -21124,7 +21124,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:d0648fa4c3c2ddd8"
+        "checksum": "json-fnv-v1:953d319e4ebd790a"
       },
       "bet": {
         "runId": "core/empty",
@@ -21159,7 +21159,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/duplicate-face",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -21620,7 +21620,7 @@
           "receipts": [
             {
               "commandId": "core/duplicate-face/start",
-              "fingerprint": "json-fnv-v1:df74d02898549c6c",
+              "fingerprint": "json-fnv-v1:806a09e0148d663c",
               "seq": 1
             },
             {
@@ -21640,7 +21640,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:4df7b18c80923d50"
+        "checksum": "json-fnv-v1:a6e8d383aaea3717"
       },
       "bet": {
         "runId": "core/duplicate-face",
@@ -21671,7 +21671,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/duplicate-face",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -22301,7 +22301,7 @@
           "receipts": [
             {
               "commandId": "core/duplicate-face/start",
-              "fingerprint": "json-fnv-v1:df74d02898549c6c",
+              "fingerprint": "json-fnv-v1:806a09e0148d663c",
               "seq": 1
             },
             {
@@ -22342,7 +22342,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:5a36c2a2e4e53516"
+        "checksum": "json-fnv-v1:0df521792edea57d"
       },
       "publicScoreContext": {
         "routeGrowth": {
@@ -22479,7 +22479,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/duplicate-face",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -23217,7 +23217,7 @@
           "receipts": [
             {
               "commandId": "core/duplicate-face/start",
-              "fingerprint": "json-fnv-v1:df74d02898549c6c",
+              "fingerprint": "json-fnv-v1:806a09e0148d663c",
               "seq": 1
             },
             {
@@ -23893,7 +23893,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:7b4d617009050c34"
+        "checksum": "json-fnv-v1:a2d5ccff7d4b8ae3"
       },
       "result": {
         "commit": {
@@ -23997,7 +23997,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/four-straight",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -24461,7 +24461,7 @@
           "receipts": [
             {
               "commandId": "core/four-straight/start",
-              "fingerprint": "json-fnv-v1:893a2e7686a59c52",
+              "fingerprint": "json-fnv-v1:e07d508e236c34a2",
               "seq": 1
             },
             {
@@ -24481,7 +24481,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:45b52461d8e31755"
+        "checksum": "json-fnv-v1:08774458b8f407f4"
       },
       "bet": {
         "runId": "core/four-straight",
@@ -24512,7 +24512,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/four-straight",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -25143,7 +25143,7 @@
           "receipts": [
             {
               "commandId": "core/four-straight/start",
-              "fingerprint": "json-fnv-v1:893a2e7686a59c52",
+              "fingerprint": "json-fnv-v1:e07d508e236c34a2",
               "seq": 1
             },
             {
@@ -25184,7 +25184,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:453224cb79e5c4e7"
+        "checksum": "json-fnv-v1:ada618ae384aee22"
       },
       "publicScoreContext": {
         "routeGrowth": {
@@ -25321,7 +25321,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/four-straight",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -26060,7 +26060,7 @@
           "receipts": [
             {
               "commandId": "core/four-straight/start",
-              "fingerprint": "json-fnv-v1:893a2e7686a59c52",
+              "fingerprint": "json-fnv-v1:e07d508e236c34a2",
               "seq": 1
             },
             {
@@ -26744,7 +26744,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:699649d06b6ee944"
+        "checksum": "json-fnv-v1:b2c5715701714f9b"
       },
       "result": {
         "commit": {
@@ -26848,7 +26848,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/four-flush",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -27312,7 +27312,7 @@
           "receipts": [
             {
               "commandId": "core/four-flush/start",
-              "fingerprint": "json-fnv-v1:ae8ac5809bf0f5d4",
+              "fingerprint": "json-fnv-v1:46ceee587c6d42a4",
               "seq": 1
             },
             {
@@ -27332,7 +27332,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:0783a8ba27003c96"
+        "checksum": "json-fnv-v1:2d28d65c42dad7a0"
       },
       "bet": {
         "runId": "core/four-flush",
@@ -27363,7 +27363,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/four-flush",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -27994,7 +27994,7 @@
           "receipts": [
             {
               "commandId": "core/four-flush/start",
-              "fingerprint": "json-fnv-v1:ae8ac5809bf0f5d4",
+              "fingerprint": "json-fnv-v1:46ceee587c6d42a4",
               "seq": 1
             },
             {
@@ -28035,7 +28035,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:bf8f385a464e77de"
+        "checksum": "json-fnv-v1:0f2dcca82a4477e4"
       },
       "publicScoreContext": {
         "routeGrowth": {
@@ -28172,7 +28172,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/four-flush",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -28911,7 +28911,7 @@
           "receipts": [
             {
               "commandId": "core/four-flush/start",
-              "fingerprint": "json-fnv-v1:ae8ac5809bf0f5d4",
+              "fingerprint": "json-fnv-v1:46ceee587c6d42a4",
               "seq": 1
             },
             {
@@ -29597,7 +29597,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:73dd0b0945ee848d"
+        "checksum": "json-fnv-v1:1da64877a222eed3"
       },
       "result": {
         "commit": {
@@ -29701,7 +29701,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/four-kind-flush",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -30156,7 +30156,7 @@
           "receipts": [
             {
               "commandId": "core/four-kind-flush/start",
-              "fingerprint": "json-fnv-v1:0c6bb034aedf9818",
+              "fingerprint": "json-fnv-v1:28b168ac48132528",
               "seq": 1
             },
             {
@@ -30176,7 +30176,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:41a44bc0416a7854"
+        "checksum": "json-fnv-v1:9f59dc25ca4f36f1"
       },
       "bet": {
         "runId": "core/four-kind-flush",
@@ -30207,7 +30207,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/four-kind-flush",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -30829,7 +30829,7 @@
           "receipts": [
             {
               "commandId": "core/four-kind-flush/start",
-              "fingerprint": "json-fnv-v1:0c6bb034aedf9818",
+              "fingerprint": "json-fnv-v1:28b168ac48132528",
               "seq": 1
             },
             {
@@ -30870,7 +30870,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:4082120736ed3793"
+        "checksum": "json-fnv-v1:12afad560ac574ba"
       },
       "publicScoreContext": {
         "routeGrowth": {
@@ -31008,7 +31008,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/four-kind-flush",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -31745,7 +31745,7 @@
           "receipts": [
             {
               "commandId": "core/four-kind-flush/start",
-              "fingerprint": "json-fnv-v1:0c6bb034aedf9818",
+              "fingerprint": "json-fnv-v1:28b168ac48132528",
               "seq": 1
             },
             {
@@ -32420,7 +32420,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:29d9dd74e8b6c568"
+        "checksum": "json-fnv-v1:7045f47d57fb9659"
       },
       "result": {
         "commit": {
@@ -32522,7 +32522,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/unformed-disabled",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -32982,7 +32982,7 @@
           "receipts": [
             {
               "commandId": "core/unformed-disabled/start",
-              "fingerprint": "json-fnv-v1:f9a5408e9952904a",
+              "fingerprint": "json-fnv-v1:30d6f46627ff8b1a",
               "seq": 1
             },
             {
@@ -33002,7 +33002,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:5d739a7b11fe81c7"
+        "checksum": "json-fnv-v1:bd6209a9fde6b655"
       },
       "bet": {
         "runId": "core/unformed-disabled",
@@ -33033,7 +33033,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/unformed-disabled",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -33661,7 +33661,7 @@
           "receipts": [
             {
               "commandId": "core/unformed-disabled/start",
-              "fingerprint": "json-fnv-v1:f9a5408e9952904a",
+              "fingerprint": "json-fnv-v1:30d6f46627ff8b1a",
               "seq": 1
             },
             {
@@ -33702,7 +33702,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:64f9a5ca1c186366"
+        "checksum": "json-fnv-v1:d75cece88173df54"
       },
       "publicScoreContext": {
         "routeGrowth": {
@@ -33835,7 +33835,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/unformed-disabled",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -34573,7 +34573,7 @@
           "receipts": [
             {
               "commandId": "core/unformed-disabled/start",
-              "fingerprint": "json-fnv-v1:f9a5408e9952904a",
+              "fingerprint": "json-fnv-v1:30d6f46627ff8b1a",
               "seq": 1
             },
             {
@@ -35126,7 +35126,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:4f1ff45ff026b56b"
+        "checksum": "json-fnv-v1:fd1ab4872573af4b"
       },
       "result": {
         "commit": {
@@ -35228,7 +35228,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/full-house-core",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -35683,7 +35683,7 @@
           "receipts": [
             {
               "commandId": "core/full-house-core/start",
-              "fingerprint": "json-fnv-v1:3c3f97f086c13f44",
+              "fingerprint": "json-fnv-v1:f29b216869bd58d4",
               "seq": 1
             },
             {
@@ -35703,7 +35703,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:91d6a9188343ec5c"
+        "checksum": "json-fnv-v1:d3f9d725ce887511"
       },
       "bet": {
         "runId": "core/full-house-core",
@@ -35734,7 +35734,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/full-house-core",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -36356,7 +36356,7 @@
           "receipts": [
             {
               "commandId": "core/full-house-core/start",
-              "fingerprint": "json-fnv-v1:3c3f97f086c13f44",
+              "fingerprint": "json-fnv-v1:f29b216869bd58d4",
               "seq": 1
             },
             {
@@ -36397,7 +36397,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:d62b0ffe8e9e6f12"
+        "checksum": "json-fnv-v1:0827736bc8d653a7"
       },
       "publicScoreContext": {
         "routeGrowth": {
@@ -36535,7 +36535,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/full-house-core",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -37272,7 +37272,7 @@
           "receipts": [
             {
               "commandId": "core/full-house-core/start",
-              "fingerprint": "json-fnv-v1:3c3f97f086c13f44",
+              "fingerprint": "json-fnv-v1:f29b216869bd58d4",
               "seq": 1
             },
             {
@@ -37991,7 +37991,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:7d6c4b8601681b3a"
+        "checksum": "json-fnv-v1:283fd031c47a8ba5"
       },
       "result": {
         "commit": {
@@ -38095,7 +38095,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/four-kind-core",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -38550,7 +38550,7 @@
           "receipts": [
             {
               "commandId": "core/four-kind-core/start",
-              "fingerprint": "json-fnv-v1:94ebb190982b6b94",
+              "fingerprint": "json-fnv-v1:6a5dbb6803211624",
               "seq": 1
             },
             {
@@ -38570,7 +38570,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:f27646847f1cc2a8"
+        "checksum": "json-fnv-v1:68740eb2b6bb037e"
       },
       "bet": {
         "runId": "core/four-kind-core",
@@ -38601,7 +38601,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/four-kind-core",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -39223,7 +39223,7 @@
           "receipts": [
             {
               "commandId": "core/four-kind-core/start",
-              "fingerprint": "json-fnv-v1:94ebb190982b6b94",
+              "fingerprint": "json-fnv-v1:6a5dbb6803211624",
               "seq": 1
             },
             {
@@ -39264,7 +39264,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:671d8fac45f46148"
+        "checksum": "json-fnv-v1:dee14d001899294c"
       },
       "publicScoreContext": {
         "routeGrowth": {
@@ -39401,7 +39401,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/four-kind-core",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -40131,7 +40131,7 @@
           "receipts": [
             {
               "commandId": "core/four-kind-core/start",
-              "fingerprint": "json-fnv-v1:94ebb190982b6b94",
+              "fingerprint": "json-fnv-v1:6a5dbb6803211624",
               "seq": 1
             },
             {
@@ -40807,7 +40807,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:78f19fe549f97e41"
+        "checksum": "json-fnv-v1:bfb01d8bb65de0ef"
       },
       "result": {
         "commit": {
@@ -40911,7 +40911,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/all-disabled-flush",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -41375,7 +41375,7 @@
           "receipts": [
             {
               "commandId": "core/all-disabled-flush/start",
-              "fingerprint": "json-fnv-v1:7c32482c81bc9af0",
+              "fingerprint": "json-fnv-v1:1848bd64481690c0",
               "seq": 1
             },
             {
@@ -41395,7 +41395,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:361166792062e355"
+        "checksum": "json-fnv-v1:3c7c94987c618924"
       },
       "bet": {
         "runId": "core/all-disabled-flush",
@@ -41426,7 +41426,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/all-disabled-flush",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -42057,7 +42057,7 @@
           "receipts": [
             {
               "commandId": "core/all-disabled-flush/start",
-              "fingerprint": "json-fnv-v1:7c32482c81bc9af0",
+              "fingerprint": "json-fnv-v1:1848bd64481690c0",
               "seq": 1
             },
             {
@@ -42098,7 +42098,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:5e82ffb62c543ee2"
+        "checksum": "json-fnv-v1:f2e08c79813a084d"
       },
       "publicScoreContext": {
         "routeGrowth": {
@@ -42232,7 +42232,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/all-disabled-flush",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -42978,7 +42978,7 @@
           "receipts": [
             {
               "commandId": "core/all-disabled-flush/start",
-              "fingerprint": "json-fnv-v1:7c32482c81bc9af0",
+              "fingerprint": "json-fnv-v1:1848bd64481690c0",
               "seq": 1
             },
             {
@@ -43405,7 +43405,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:3179a4f4f2c0a350"
+        "checksum": "json-fnv-v1:b49347fb5e16c3ff"
       },
       "result": {
         "commit": {
@@ -43496,7 +43496,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-route-growth-v1",
-        "contentHash": "json-fnv-v1:7414228d95059959"
+        "contentHash": "json-fnv-v1:a47db56489d9c970"
       },
       "kind": "ordinary",
       "checkpointSha256": "c2fb0861c45d450dad2062baf19688228e8f806412373edcab76bcc8274fc6fc",
@@ -43521,7 +43521,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-route-growth-v1",
-        "contentHash": "json-fnv-v1:7414228d95059959"
+        "contentHash": "json-fnv-v1:a47db56489d9c970"
       },
       "kind": "won",
       "checkpointSha256": "9f3b63ab128f0d9da02618b9eef7928f251261a507989d6a56306f9854105ab6",
@@ -43563,7 +43563,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-route-growth-v1",
-        "contentHash": "json-fnv-v1:7414228d95059959"
+        "contentHash": "json-fnv-v1:a47db56489d9c970"
       },
       "kind": "lost",
       "checkpointSha256": "a5559262c98da4e0cdcab686d6b0e2d9e95b744e5eb10de3160e6c8fa6f33576",
@@ -43602,7 +43602,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-suit-choice-v1",
-        "contentHash": "json-fnv-v1:1b7a0ea858306134"
+        "contentHash": "json-fnv-v1:530475b8dfbff144"
       },
       "kind": "ordinary",
       "checkpointSha256": "68aed70169ebf884ae131eff1f2d1b2434e9c2dfeb9359e63eec8200f85264a7",
@@ -43627,7 +43627,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-suit-choice-v1",
-        "contentHash": "json-fnv-v1:1b7a0ea858306134"
+        "contentHash": "json-fnv-v1:530475b8dfbff144"
       },
       "kind": "won",
       "checkpointSha256": "af1ef55087bf272e7a0a376f2f6980fb0596c581a658f60df0b1ab327b61f608",
@@ -43669,7 +43669,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-suit-choice-v1",
-        "contentHash": "json-fnv-v1:1b7a0ea858306134"
+        "contentHash": "json-fnv-v1:530475b8dfbff144"
       },
       "kind": "lost",
       "checkpointSha256": "8cade9f22e623bbc3d300b0d9a900fc6ef02dc930305badbd6095be794c16a8b",
@@ -43708,7 +43708,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-choice-v1",
-        "contentHash": "json-fnv-v1:39a8d0fb6bc97307"
+        "contentHash": "json-fnv-v1:58d84b58aee674b4"
       },
       "kind": "ordinary",
       "checkpointSha256": "1a5b11385330828c93f184d0eb00f87b3e16e241c3020e4194775642d35cff20",
@@ -43733,7 +43733,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-choice-v1",
-        "contentHash": "json-fnv-v1:39a8d0fb6bc97307"
+        "contentHash": "json-fnv-v1:58d84b58aee674b4"
       },
       "kind": "won",
       "checkpointSha256": "a17c20052a9a8f158e4486797b5f8f563d0372af417cff46d5e71836355fcb96",
@@ -43775,7 +43775,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-choice-v1",
-        "contentHash": "json-fnv-v1:39a8d0fb6bc97307"
+        "contentHash": "json-fnv-v1:58d84b58aee674b4"
       },
       "kind": "lost",
       "checkpointSha256": "c9cc97159b1787977ded4a3e6803797d1d40259605f4b7b072e5923dcf4a2723",
@@ -43814,7 +43814,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-erxiang-handoff-v1",
-        "contentHash": "json-fnv-v1:1f5fd46c0f17da58"
+        "contentHash": "json-fnv-v1:9bd9839fe805ae8b"
       },
       "kind": "ordinary",
       "checkpointSha256": "75811b1e4881233cab93b43dd7ce0f171f7edffbb2f458df37a7820eada43ac2",
@@ -43839,7 +43839,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-erxiang-handoff-v1",
-        "contentHash": "json-fnv-v1:1f5fd46c0f17da58"
+        "contentHash": "json-fnv-v1:9bd9839fe805ae8b"
       },
       "kind": "won",
       "checkpointSha256": "ccd6b7806312490ed48f37597bd182a4a02507bde36e15431eedbf94e5beeeae",
@@ -43881,7 +43881,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-erxiang-handoff-v1",
-        "contentHash": "json-fnv-v1:1f5fd46c0f17da58"
+        "contentHash": "json-fnv-v1:9bd9839fe805ae8b"
       },
       "kind": "lost",
       "checkpointSha256": "5f6d7725ce363e6989425d1b121eaba67e92055b8493ae5cadae8516d4f508ae",
@@ -43920,7 +43920,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-supply-v1",
-        "contentHash": "json-fnv-v1:9945e0ce56ff7cb2"
+        "contentHash": "json-fnv-v1:d3c295b2e0f1e306"
       },
       "kind": "ordinary",
       "checkpointSha256": "697808d79e377675283a472d4ff2a290206fdae0cfffeeff6cc1172cde55be27",
@@ -43945,7 +43945,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-supply-v1",
-        "contentHash": "json-fnv-v1:9945e0ce56ff7cb2"
+        "contentHash": "json-fnv-v1:d3c295b2e0f1e306"
       },
       "kind": "won",
       "checkpointSha256": "b4cb4cab2a4b56b03ddffb540b424e23a98ada7b966f2e0f961fec5062f63a16",
@@ -43987,7 +43987,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-supply-v1",
-        "contentHash": "json-fnv-v1:9945e0ce56ff7cb2"
+        "contentHash": "json-fnv-v1:d3c295b2e0f1e306"
       },
       "kind": "lost",
       "checkpointSha256": "45f0ac625574aa3bc440846a86c41f43465f03f3972bd8c19360c04088a394e7",
@@ -44026,7 +44026,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-touye-wager-v1",
-        "contentHash": "json-fnv-v1:a2186375d3bfcec1"
+        "contentHash": "json-fnv-v1:6174a0a8f6708d14"
       },
       "kind": "ordinary",
       "checkpointSha256": "f9207dc90e2fda85751a5277ad6762cc9ba842fb8f3619d9173a1e5dcbb9580e",
@@ -44051,7 +44051,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-touye-wager-v1",
-        "contentHash": "json-fnv-v1:a2186375d3bfcec1"
+        "contentHash": "json-fnv-v1:6174a0a8f6708d14"
       },
       "kind": "won",
       "checkpointSha256": "5ada581a3ff84d877569f02966785cd540995a1baad35f5bfc071464fc55bbdf",
@@ -44093,7 +44093,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-touye-wager-v1",
-        "contentHash": "json-fnv-v1:a2186375d3bfcec1"
+        "contentHash": "json-fnv-v1:6174a0a8f6708d14"
       },
       "kind": "lost",
       "checkpointSha256": "5eeb193d5ca48b5b939d46b5c7e0f5899f6c4c6292036ff59325e8310b66ee70",
@@ -44132,7 +44132,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-laohuan-refill-v1",
-        "contentHash": "json-fnv-v1:3683dcc2deeee53e"
+        "contentHash": "json-fnv-v1:e0401c19334be15d"
       },
       "kind": "ordinary",
       "checkpointSha256": "d2a67c87eaf17b7383a1584d1a8b65856a1f3c241ff6f4266e9219ead8c99646",
@@ -44157,7 +44157,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-laohuan-refill-v1",
-        "contentHash": "json-fnv-v1:3683dcc2deeee53e"
+        "contentHash": "json-fnv-v1:e0401c19334be15d"
       },
       "kind": "random-wager",
       "checkpointSha256": "fef6fa4383109a09b71c49cf03c37b76fe1771de894d0e03ffcd4e563f1a5071",
@@ -44191,7 +44191,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-xiemu-burn-v1",
-        "contentHash": "json-fnv-v1:525608410742e09d"
+        "contentHash": "json-fnv-v1:9b4f9594a2f0f2f8"
       },
       "kind": "ordinary",
       "checkpointSha256": "3b1a0c89e10366719b7f6900c34d865fd5c9deeedb8a93d2f7b1614f6f0d36ca",
@@ -44216,7 +44216,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-xiemu-burn-v1",
-        "contentHash": "json-fnv-v1:525608410742e09d"
+        "contentHash": "json-fnv-v1:9b4f9594a2f0f2f8"
       },
       "kind": "random-wager",
       "checkpointSha256": "53bdbc9689ce5e6d7747f120591e9e1792b2570969aecbc7a07205155e555423",
@@ -44250,7 +44250,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-azao-charge-v1",
-        "contentHash": "json-fnv-v1:1e5d534e40cc0f2a"
+        "contentHash": "json-fnv-v1:a5523a00eb18c8ac"
       },
       "kind": "ordinary",
       "checkpointSha256": "1b37f59f9141a569e0bfc637c117a1d455a183eca661f617edb2914ce292800e",
@@ -44275,7 +44275,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-azao-charge-v1",
-        "contentHash": "json-fnv-v1:1e5d534e40cc0f2a"
+        "contentHash": "json-fnv-v1:a5523a00eb18c8ac"
       },
       "kind": "random-wager",
       "checkpointSha256": "f9840bb939e946a83bbf1740b5b5f0b19de49ceadd321505437a23ee5f1f6396",
@@ -44309,7 +44309,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-route-starter-v1",
-        "contentHash": "json-fnv-v1:61f2c0d68afcf672"
+        "contentHash": "json-fnv-v1:aeca01ee061eb1fa"
       },
       "kind": "ordinary",
       "checkpointSha256": "cbf6abee4ef6eec6ce8acf59a21f432766a59096183f6f3c254e9791ec64e4cf",
@@ -44334,7 +44334,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-route-starter-v1",
-        "contentHash": "json-fnv-v1:61f2c0d68afcf672"
+        "contentHash": "json-fnv-v1:aeca01ee061eb1fa"
       },
       "kind": "random-wager",
       "checkpointSha256": "b43870fc47424c58734897963369bdadd6ffc3fcf969329d58f86c7518aa8fd7",
@@ -44368,7 +44368,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-group-upgrade-prototype-v1",
-        "contentHash": "json-fnv-v1:df2816bdf026bad9"
+        "contentHash": "json-fnv-v1:2189bb4930383b65"
       },
       "kind": "ordinary",
       "checkpointSha256": "8d65871f7b5cfb55137726d5f09c3df5e789301ee3f702c31086b585a4cbe843",
@@ -44393,7 +44393,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-group-upgrade-prototype-v1",
-        "contentHash": "json-fnv-v1:df2816bdf026bad9"
+        "contentHash": "json-fnv-v1:2189bb4930383b65"
       },
       "kind": "random-wager",
       "checkpointSha256": "e77fc77e06e3177be019bc4405b280472ecd842987bd12a6e7ba7a840d20f459",
@@ -44427,7 +44427,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-combo-growth-prototype-v1",
-        "contentHash": "json-fnv-v1:3141dde0f87b3ab4"
+        "contentHash": "json-fnv-v1:beb1f5a383222cff"
       },
       "kind": "ordinary",
       "checkpointSha256": "257ec0b3582d2097915c199fcd62b916dba7a6d3d9c19a26eefc81c80a29edad",
@@ -44452,7 +44452,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-combo-growth-prototype-v1",
-        "contentHash": "json-fnv-v1:3141dde0f87b3ab4"
+        "contentHash": "json-fnv-v1:beb1f5a383222cff"
       },
       "kind": "random-wager",
       "checkpointSha256": "7cb2a6316ad2882d01066f9bc60d881ad10084d3663ab86bd4a5cd8d0b907e84",
@@ -44486,14 +44486,14 @@
     {
       "identity": {
         "contentVersion": "quality-r2-amo-assist-prototype-v1",
-        "contentHash": "json-fnv-v1:b0dbe7b458ba9338"
+        "contentHash": "json-fnv-v1:86d6f3ce5f30985a"
       },
       "unsupportedTouye": "Error: invalid-r2-profile"
     },
     {
       "identity": {
         "contentVersion": "quality-r2-content-v11",
-        "contentHash": "json-fnv-v1:117fb6675e31ce73"
+        "contentHash": "json-fnv-v1:27de51ef19451243"
       },
       "kind": "ordinary",
       "checkpointSha256": "e8d85c3a18d80aacc3c99a0ed5cd24ad89eedc4c0cf7962b41ab93d626280892",
@@ -44518,7 +44518,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-content-v11",
-        "contentHash": "json-fnv-v1:117fb6675e31ce73"
+        "contentHash": "json-fnv-v1:27de51ef19451243"
       },
       "kind": "random-wager",
       "checkpointSha256": "588a556b31aeb3d6c313e5fb3c7bdb613efa81a727288df0d15adac03d60f3e4",
@@ -44552,7 +44552,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-content-v10",
-        "contentHash": "json-fnv-v1:00ba5b399c980695"
+        "contentHash": "json-fnv-v1:1d9e0cc5be9691f9"
       },
       "kind": "ordinary",
       "checkpointSha256": "8d4dbfec65863adf805391fb5968a1e7b965cdccf257832ec5a6ab871a0db0e4",
@@ -44577,7 +44577,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-content-v10",
-        "contentHash": "json-fnv-v1:00ba5b399c980695"
+        "contentHash": "json-fnv-v1:1d9e0cc5be9691f9"
       },
       "kind": "random-wager",
       "checkpointSha256": "a69fb639168ce3795a835d1203b713b8e6243b84570d36a6a804d2bc13538b20",

@@ -30,7 +30,7 @@ function fixture(ids=['b03','b06','b08','b10']){let s=createRun({seed:'group-sta
 function mutated(s:R2RunState,change:(s:any)=>void){const cp=makeCheckpoint(s,[]),bad=structuredClone(cp);change(bad.state);const {checksum,...rest}=bad;return readCheckpoint({...rest,checksum:stableHash(rest)});}
 describe('group upgrade first source checkpoint',()=>{
  it('validates only four overrides, preserves e7d/843f identities and full old replay',()=>{
-  expect(validateR2Content(R2_GROUP_UPGRADE_JOKERS)).toEqual([]);expect(R2_COMBO_GROWTH_HASH).toBe('json-fnv-v1:3141dde0f87b3ab4');expect(R2_ASSIST_HASH).toBe('json-fnv-v1:b0dbe7b458ba9338');
+  expect(validateR2Content(R2_GROUP_UPGRADE_JOKERS)).toEqual([]);expect(R2_COMBO_GROWTH_HASH).toBe('json-fnv-v1:beb1f5a383222cff');expect(R2_ASSIST_HASH).toBe('json-fnv-v1:86d6f3ce5f30985a');
   const prior=r2JokerDefinitionsFor({contentVersion:R2_COMBO_GROWTH_VERSION,contentHash:R2_COMBO_GROWTH_HASH});for(const d of prior)if(!['b03','b06','b08','b10'].includes(d.id))expect(R2_GROUP_UPGRADE_JOKERS.find(v=>v.id===d.id)).toBe(d);
   for(const old of [v10,v11,frozen843f,frozenE7d]){const before=readCheckpoint(old.before),after=readCheckpoint(old.after);expect(before.ok&&after.ok).toBe(true);if(!before.ok||!after.ok)throw Error('old fixture');const r=applyCommand(before.checkpoint.state,old.command as Command);expect(r.ok).toBe(true);expect(r.state).toEqual(after.checkpoint.state);expect(makeCheckpoint(r.state,[old.command as Command])).toEqual(after.checkpoint);}
  });

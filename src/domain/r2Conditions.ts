@@ -22,6 +22,7 @@ switch (c.kind) {
       case 'played-count-maximum': return ctx.played.length <= c.maximum;
       case 'held-count': return ctx.held.length >= c.minimum;
       case 'play-modulo': return ctx.playIndex % c.divisor === c.remainder;
+  case 'play-window': return ctx.playIndex>=c.minimum&&ctx.playIndex<=c.maximum;
       case 'suit-in': return !!card&&c.values.includes(card.suit);
       case 'paired-rank': return !!card&&ctx.played.filter(p=>p.rank===card.rank).length>=c.minimum;
       case 'rank-groups': return [...new Set(ctx.played.map(p=>p.rank))].filter(rank=>ctx.played.filter(p=>p.rank===rank).length>=c.groupSize).length>=c.minimum;

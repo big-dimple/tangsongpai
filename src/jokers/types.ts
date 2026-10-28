@@ -7,7 +7,8 @@ export type JokerCondition =
   | { kind: 'always' }
   | { kind: 'hand-type-in'; values: HandType[] }
   | { kind: 'face-card-at-least'; value: number }
-  | { kind: 'play-number-divisible-by'; value: number };
+  | { kind: 'play-number-divisible-by'; value: number }
+  | { kind: 'play-number-in-range'; minimum: number; maximum: number };
 
 export type JokerEffect =
   | { kind: 'heat-add'; value: number }

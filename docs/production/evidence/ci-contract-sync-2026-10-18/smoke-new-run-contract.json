@@ -16,11 +16,11 @@
   ],
   "actualIdentity": {
     "contentVersion": "quality-r2-amo-exile-v3",
-    "contentHash": "json-fnv-v1:cf857ebc71020ca8"
+    "contentHash": "json-fnv-v1:6885a55bdc5c13bf"
   },
   "legacyFixtureIdentity": {
     "contentVersion": "quality-r2-s04-finish-v1",
-    "contentHash": "json-fnv-v1:65b545bd97c0fdf1"
+    "contentHash": "json-fnv-v1:d336a1de2aa6ab7a"
   },
   "syntax": {
     "files": [

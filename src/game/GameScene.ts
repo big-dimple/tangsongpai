@@ -1719,7 +1719,7 @@ export class GameScene extends Phaser.Scene {
       this.run=result.state;this.refreshToolInventory();this.statusMessage='';
       if(pendingDrag){reorderSaved=true;if(!result.duplicate)reorderReceipt=result.receipt.commandId;this.statusMessage='顺序已保存';this.audio.select();}
       if(action.type==='ReorderHand'){if(focusedId)this.focusIndex=Math.max(0,this.run.handOrder.indexOf(focusedId));this.showFocusedCard();this.renderHand();}
-      else if(action.type==='ReorderJokers'&&!pendingDrag||action.type==='DestroyConsumable')this.render();
+      else if(action.type==='ReorderJokers'&&!pendingDrag||action.type==='DestroyConsumable'||action.type==='DestroyLongTermItem')this.render();
       if(used){
         this.toolHand=beforeHand;
         const info=toolInfo(used.definitionId);this.audio.toolUse(info.family);this.effects.clear();

@@ -33,9 +33,9 @@
     "id": "huimaqiang",
     "name": "回马枪",
     "rarity": "rare",
-    "description": "每第 3 次出牌，最终倍率 ×2。",
+    "description": "第 3、4、5 次出牌，最终倍率 ×2。",
     "triggerText": "回马一枪！最终倍率 ×2",
-    "condition": { "kind": "play-number-divisible-by", "value": 3 },
+    "condition": { "kind": "play-number-in-range", "minimum": 3, "maximum": 5 },
     "effects": [{ "kind": "final-multiplier", "value": 2 }]
   },
   {

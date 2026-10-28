@@ -2,7 +2,7 @@
   "scope": "bounded planted legal states, actual UI actions and full state/journal/IndexedDB; no natural game/seed search or full18",
   "identity": {
     "contentVersion": "quality-r2-touye-new-core-v1",
-    "contentHash": "json-fnv-v1:99a801dbe96d9d47"
+    "contentHash": "json-fnv-v1:87c19b9c45c076b0"
   },
   "rows": [
     {
@@ -32,7 +32,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-win",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -492,7 +492,7 @@
           "receipts": [
             {
               "commandId": "core/mature-win/start",
-              "fingerprint": "json-fnv-v1:0c84bc3c4684e730",
+              "fingerprint": "json-fnv-v1:4d0e19f43943b980",
               "seq": 1
             },
             {
@@ -536,7 +536,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-win",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -996,7 +996,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-win/start",
-                  "fingerprint": "json-fnv-v1:5d954663c212345f",
+                  "fingerprint": "json-fnv-v1:4d0e19f43943b980",
                   "seq": 1
                 },
                 {
@@ -1016,7 +1016,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:cad23554852b1f90"
+            "checksum": "json-fnv-v1:fda3510c010eb288"
           },
           "previous": null
         }
@@ -1056,7 +1056,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-win",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -1683,7 +1683,7 @@
           "receipts": [
             {
               "commandId": "core/mature-win/start",
-              "fingerprint": "json-fnv-v1:0c84bc3c4684e730",
+              "fingerprint": "json-fnv-v1:4d0e19f43943b980",
               "seq": 1
             },
             {
@@ -1748,7 +1748,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-win",
               "seed": "touye-core-bounded",
               "commandSeq": 4,
@@ -2375,7 +2375,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-win/start",
-                  "fingerprint": "json-fnv-v1:5d954663c212345f",
+                  "fingerprint": "json-fnv-v1:4d0e19f43943b980",
                   "seq": 1
                 },
                 {
@@ -2416,7 +2416,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:7fdc93e87f87b2ac"
+            "checksum": "json-fnv-v1:f3339a6e7c0d84da"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -2441,7 +2441,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-win",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -2901,7 +2901,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-win/start",
-                  "fingerprint": "json-fnv-v1:5d954663c212345f",
+                  "fingerprint": "json-fnv-v1:4d0e19f43943b980",
                   "seq": 1
                 },
                 {
@@ -2921,7 +2921,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:cad23554852b1f90"
+            "checksum": "json-fnv-v1:fda3510c010eb288"
           }
         }
       },
@@ -3036,7 +3036,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-win",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -3771,7 +3771,7 @@
           "receipts": [
             {
               "commandId": "core/mature-win/start",
-              "fingerprint": "json-fnv-v1:0c84bc3c4684e730",
+              "fingerprint": "json-fnv-v1:4d0e19f43943b980",
               "seq": 1
             },
             {
@@ -4391,7 +4391,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-win",
               "seed": "touye-core-bounded",
               "commandSeq": 5,
@@ -5126,7 +5126,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-win/start",
-                  "fingerprint": "json-fnv-v1:5d954663c212345f",
+                  "fingerprint": "json-fnv-v1:4d0e19f43943b980",
                   "seq": 1
                 },
                 {
@@ -5722,7 +5722,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:52badd4f0506d5fb"
+            "checksum": "json-fnv-v1:b076c4fbb6b47457"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -5747,7 +5747,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-win",
               "seed": "touye-core-bounded",
               "commandSeq": 4,
@@ -6374,7 +6374,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-win/start",
-                  "fingerprint": "json-fnv-v1:5d954663c212345f",
+                  "fingerprint": "json-fnv-v1:4d0e19f43943b980",
                   "seq": 1
                 },
                 {
@@ -6415,7 +6415,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:7fdc93e87f87b2ac"
+            "checksum": "json-fnv-v1:f3339a6e7c0d84da"
           }
         }
       },
@@ -6542,7 +6542,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-old-core",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -7002,7 +7002,7 @@
           "receipts": [
             {
               "commandId": "core/mature-old-core/start",
-              "fingerprint": "json-fnv-v1:76a01d244d030168",
+              "fingerprint": "json-fnv-v1:46b98adced324b38",
               "seq": 1
             },
             {
@@ -7046,7 +7046,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-old-core",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -7506,7 +7506,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-old-core/start",
-                  "fingerprint": "json-fnv-v1:9c1de0237d6cb83f",
+                  "fingerprint": "json-fnv-v1:46b98adced324b38",
                   "seq": 1
                 },
                 {
@@ -7526,7 +7526,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:83898eefa39f9e7b"
+            "checksum": "json-fnv-v1:036fa27c74114db8"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -7551,7 +7551,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-win",
               "seed": "touye-core-bounded",
               "commandSeq": 5,
@@ -8286,7 +8286,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-win/start",
-                  "fingerprint": "json-fnv-v1:5d954663c212345f",
+                  "fingerprint": "json-fnv-v1:4d0e19f43943b980",
                   "seq": 1
                 },
                 {
@@ -8882,7 +8882,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:52badd4f0506d5fb"
+            "checksum": "json-fnv-v1:b076c4fbb6b47457"
           }
         }
       },
@@ -8919,7 +8919,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-old-core",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -9546,7 +9546,7 @@
           "receipts": [
             {
               "commandId": "core/mature-old-core/start",
-              "fingerprint": "json-fnv-v1:76a01d244d030168",
+              "fingerprint": "json-fnv-v1:46b98adced324b38",
               "seq": 1
             },
             {
@@ -9611,7 +9611,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-old-core",
               "seed": "touye-core-bounded",
               "commandSeq": 4,
@@ -10238,7 +10238,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-old-core/start",
-                  "fingerprint": "json-fnv-v1:9c1de0237d6cb83f",
+                  "fingerprint": "json-fnv-v1:46b98adced324b38",
                   "seq": 1
                 },
                 {
@@ -10279,7 +10279,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:7a7eeb8cfc4a1de8"
+            "checksum": "json-fnv-v1:3058d97953f7d90d"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -10304,7 +10304,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-old-core",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -10764,7 +10764,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-old-core/start",
-                  "fingerprint": "json-fnv-v1:9c1de0237d6cb83f",
+                  "fingerprint": "json-fnv-v1:46b98adced324b38",
                   "seq": 1
                 },
                 {
@@ -10784,7 +10784,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:83898eefa39f9e7b"
+            "checksum": "json-fnv-v1:036fa27c74114db8"
           }
         }
       },
@@ -10897,7 +10897,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-old-core",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -11632,7 +11632,7 @@
           "receipts": [
             {
               "commandId": "core/mature-old-core/start",
-              "fingerprint": "json-fnv-v1:76a01d244d030168",
+              "fingerprint": "json-fnv-v1:46b98adced324b38",
               "seq": 1
             },
             {
@@ -12250,7 +12250,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-old-core",
               "seed": "touye-core-bounded",
               "commandSeq": 5,
@@ -12985,7 +12985,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-old-core/start",
-                  "fingerprint": "json-fnv-v1:9c1de0237d6cb83f",
+                  "fingerprint": "json-fnv-v1:46b98adced324b38",
                   "seq": 1
                 },
                 {
@@ -13579,7 +13579,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:b2f92511cdfe5ed5"
+            "checksum": "json-fnv-v1:64f4ac324ccf7596"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -13604,7 +13604,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-old-core",
               "seed": "touye-core-bounded",
               "commandSeq": 4,
@@ -14231,7 +14231,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-old-core/start",
-                  "fingerprint": "json-fnv-v1:9c1de0237d6cb83f",
+                  "fingerprint": "json-fnv-v1:46b98adced324b38",
                   "seq": 1
                 },
                 {
@@ -14272,7 +14272,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:7a7eeb8cfc4a1de8"
+            "checksum": "json-fnv-v1:3058d97953f7d90d"
           }
         }
       },
@@ -14396,7 +14396,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-accompanying",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -14856,7 +14856,7 @@
           "receipts": [
             {
               "commandId": "core/mature-accompanying/start",
-              "fingerprint": "json-fnv-v1:0efb83f4a0b111b8",
+              "fingerprint": "json-fnv-v1:0bb66b6cefd4a188",
               "seq": 1
             },
             {
@@ -14900,7 +14900,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-accompanying",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -15360,7 +15360,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-accompanying/start",
-                  "fingerprint": "json-fnv-v1:729862038ea4ba6f",
+                  "fingerprint": "json-fnv-v1:0bb66b6cefd4a188",
                   "seq": 1
                 },
                 {
@@ -15380,7 +15380,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:dc874aea5d0a5e06"
+            "checksum": "json-fnv-v1:1da5d1b3fa51f07f"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -15405,7 +15405,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-old-core",
               "seed": "touye-core-bounded",
               "commandSeq": 5,
@@ -16140,7 +16140,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-old-core/start",
-                  "fingerprint": "json-fnv-v1:9c1de0237d6cb83f",
+                  "fingerprint": "json-fnv-v1:46b98adced324b38",
                   "seq": 1
                 },
                 {
@@ -16734,7 +16734,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:b2f92511cdfe5ed5"
+            "checksum": "json-fnv-v1:64f4ac324ccf7596"
           }
         }
       },
@@ -16771,7 +16771,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-accompanying",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -17398,7 +17398,7 @@
           "receipts": [
             {
               "commandId": "core/mature-accompanying/start",
-              "fingerprint": "json-fnv-v1:0efb83f4a0b111b8",
+              "fingerprint": "json-fnv-v1:0bb66b6cefd4a188",
               "seq": 1
             },
             {
@@ -17463,7 +17463,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-accompanying",
               "seed": "touye-core-bounded",
               "commandSeq": 4,
@@ -18090,7 +18090,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-accompanying/start",
-                  "fingerprint": "json-fnv-v1:729862038ea4ba6f",
+                  "fingerprint": "json-fnv-v1:0bb66b6cefd4a188",
                   "seq": 1
                 },
                 {
@@ -18131,7 +18131,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:746c01ac0c1786c0"
+            "checksum": "json-fnv-v1:78e5e08f046eb77b"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -18156,7 +18156,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-accompanying",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -18616,7 +18616,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-accompanying/start",
-                  "fingerprint": "json-fnv-v1:729862038ea4ba6f",
+                  "fingerprint": "json-fnv-v1:0bb66b6cefd4a188",
                   "seq": 1
                 },
                 {
@@ -18636,7 +18636,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:dc874aea5d0a5e06"
+            "checksum": "json-fnv-v1:1da5d1b3fa51f07f"
           }
         }
       },
@@ -18749,7 +18749,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-accompanying",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -19491,7 +19491,7 @@
           "receipts": [
             {
               "commandId": "core/mature-accompanying/start",
-              "fingerprint": "json-fnv-v1:0efb83f4a0b111b8",
+              "fingerprint": "json-fnv-v1:0bb66b6cefd4a188",
               "seq": 1
             },
             {
@@ -20110,7 +20110,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-accompanying",
               "seed": "touye-core-bounded",
               "commandSeq": 5,
@@ -20852,7 +20852,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-accompanying/start",
-                  "fingerprint": "json-fnv-v1:729862038ea4ba6f",
+                  "fingerprint": "json-fnv-v1:0bb66b6cefd4a188",
                   "seq": 1
                 },
                 {
@@ -21447,7 +21447,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:445f59ca5d8e0a46"
+            "checksum": "json-fnv-v1:16c3d875765187f9"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -21472,7 +21472,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-accompanying",
               "seed": "touye-core-bounded",
               "commandSeq": 4,
@@ -22099,7 +22099,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-accompanying/start",
-                  "fingerprint": "json-fnv-v1:729862038ea4ba6f",
+                  "fingerprint": "json-fnv-v1:0bb66b6cefd4a188",
                   "seq": 1
                 },
                 {
@@ -22140,7 +22140,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:746c01ac0c1786c0"
+            "checksum": "json-fnv-v1:78e5e08f046eb77b"
           }
         }
       },
@@ -22264,7 +22264,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/short",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -22466,7 +22466,7 @@
           "receipts": [
             {
               "commandId": "core/short/start",
-              "fingerprint": "json-fnv-v1:16491314a9677918",
+              "fingerprint": "json-fnv-v1:1f082e4cff48f1e8",
               "seq": 1
             },
             {
@@ -22510,7 +22510,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/short",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -22712,7 +22712,7 @@
               "receipts": [
                 {
                   "commandId": "core/short/start",
-                  "fingerprint": "json-fnv-v1:f2faaafb22e76017",
+                  "fingerprint": "json-fnv-v1:1f082e4cff48f1e8",
                   "seq": 1
                 },
                 {
@@ -22732,7 +22732,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:b432044ced09e560"
+            "checksum": "json-fnv-v1:6799d11108ad1a15"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -22757,7 +22757,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-accompanying",
               "seed": "touye-core-bounded",
               "commandSeq": 5,
@@ -23499,7 +23499,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-accompanying/start",
-                  "fingerprint": "json-fnv-v1:729862038ea4ba6f",
+                  "fingerprint": "json-fnv-v1:0bb66b6cefd4a188",
                   "seq": 1
                 },
                 {
@@ -24094,7 +24094,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:445f59ca5d8e0a46"
+            "checksum": "json-fnv-v1:16c3d875765187f9"
           }
         }
       },
@@ -24131,7 +24131,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/short",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -24412,7 +24412,7 @@
           "receipts": [
             {
               "commandId": "core/short/start",
-              "fingerprint": "json-fnv-v1:16491314a9677918",
+              "fingerprint": "json-fnv-v1:1f082e4cff48f1e8",
               "seq": 1
             },
             {
@@ -24479,7 +24479,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/short",
               "seed": "touye-core-bounded",
               "commandSeq": 4,
@@ -24760,7 +24760,7 @@
               "receipts": [
                 {
                   "commandId": "core/short/start",
-                  "fingerprint": "json-fnv-v1:f2faaafb22e76017",
+                  "fingerprint": "json-fnv-v1:1f082e4cff48f1e8",
                   "seq": 1
                 },
                 {
@@ -24803,7 +24803,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:7806914b01057927"
+            "checksum": "json-fnv-v1:64f2993ac2e9a686"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -24828,7 +24828,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/short",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -25030,7 +25030,7 @@
               "receipts": [
                 {
                   "commandId": "core/short/start",
-                  "fingerprint": "json-fnv-v1:f2faaafb22e76017",
+                  "fingerprint": "json-fnv-v1:1f082e4cff48f1e8",
                   "seq": 1
                 },
                 {
@@ -25050,7 +25050,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:b432044ced09e560"
+            "checksum": "json-fnv-v1:6799d11108ad1a15"
           }
         }
       },
@@ -25163,7 +25163,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/short",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -25535,7 +25535,7 @@
           "receipts": [
             {
               "commandId": "core/short/start",
-              "fingerprint": "json-fnv-v1:16491314a9677918",
+              "fingerprint": "json-fnv-v1:1f082e4cff48f1e8",
               "seq": 1
             },
             {
@@ -26102,7 +26102,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/short",
               "seed": "touye-core-bounded",
               "commandSeq": 5,
@@ -26474,7 +26474,7 @@
               "receipts": [
                 {
                   "commandId": "core/short/start",
-                  "fingerprint": "json-fnv-v1:f2faaafb22e76017",
+                  "fingerprint": "json-fnv-v1:1f082e4cff48f1e8",
                   "seq": 1
                 },
                 {
@@ -27017,7 +27017,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:0e238a48c252eb3c"
+            "checksum": "json-fnv-v1:782d52a9fe22a03d"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -27042,7 +27042,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/short",
               "seed": "touye-core-bounded",
               "commandSeq": 4,
@@ -27323,7 +27323,7 @@
               "receipts": [
                 {
                   "commandId": "core/short/start",
-                  "fingerprint": "json-fnv-v1:f2faaafb22e76017",
+                  "fingerprint": "json-fnv-v1:1f082e4cff48f1e8",
                   "seq": 1
                 },
                 {
@@ -27366,7 +27366,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:7806914b01057927"
+            "checksum": "json-fnv-v1:64f2993ac2e9a686"
           }
         }
       },
@@ -27483,7 +27483,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/disabled-core",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -27943,7 +27943,7 @@
           "receipts": [
             {
               "commandId": "core/disabled-core/start",
-              "fingerprint": "json-fnv-v1:50411ed4a45f7228",
+              "fingerprint": "json-fnv-v1:e7151d2cae9139f8",
               "seq": 1
             },
             {
@@ -27978,7 +27978,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/disabled-core",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -28438,7 +28438,7 @@
               "receipts": [
                 {
                   "commandId": "core/disabled-core/start",
-                  "fingerprint": "json-fnv-v1:1a20c183769ebe9f",
+                  "fingerprint": "json-fnv-v1:e7151d2cae9139f8",
                   "seq": 1
                 },
                 {
@@ -28458,7 +28458,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:620e70b11175a7c5"
+            "checksum": "json-fnv-v1:59ea9dee8b0a0a3a"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -28483,7 +28483,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/short",
               "seed": "touye-core-bounded",
               "commandSeq": 5,
@@ -28855,7 +28855,7 @@
               "receipts": [
                 {
                   "commandId": "core/short/start",
-                  "fingerprint": "json-fnv-v1:f2faaafb22e76017",
+                  "fingerprint": "json-fnv-v1:1f082e4cff48f1e8",
                   "seq": 1
                 },
                 {
@@ -29398,7 +29398,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:0e238a48c252eb3c"
+            "checksum": "json-fnv-v1:782d52a9fe22a03d"
           }
         }
       },
@@ -29426,7 +29426,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/disabled-core",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -30054,7 +30054,7 @@
           "receipts": [
             {
               "commandId": "core/disabled-core/start",
-              "fingerprint": "json-fnv-v1:50411ed4a45f7228",
+              "fingerprint": "json-fnv-v1:e7151d2cae9139f8",
               "seq": 1
             },
             {
@@ -30110,7 +30110,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/disabled-core",
               "seed": "touye-core-bounded",
               "commandSeq": 4,
@@ -30738,7 +30738,7 @@
               "receipts": [
                 {
                   "commandId": "core/disabled-core/start",
-                  "fingerprint": "json-fnv-v1:1a20c183769ebe9f",
+                  "fingerprint": "json-fnv-v1:e7151d2cae9139f8",
                   "seq": 1
                 },
                 {
@@ -30779,7 +30779,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:e152981bcbfd33df"
+            "checksum": "json-fnv-v1:6a88b0d68d0b534a"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -30795,7 +30795,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/disabled-core",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -31255,7 +31255,7 @@
               "receipts": [
                 {
                   "commandId": "core/disabled-core/start",
-                  "fingerprint": "json-fnv-v1:1a20c183769ebe9f",
+                  "fingerprint": "json-fnv-v1:e7151d2cae9139f8",
                   "seq": 1
                 },
                 {
@@ -31275,7 +31275,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:620e70b11175a7c5"
+            "checksum": "json-fnv-v1:59ea9dee8b0a0a3a"
           }
         }
       },
@@ -31379,7 +31379,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/disabled-core",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -32117,7 +32117,7 @@
           "receipts": [
             {
               "commandId": "core/disabled-core/start",
-              "fingerprint": "json-fnv-v1:50411ed4a45f7228",
+              "fingerprint": "json-fnv-v1:e7151d2cae9139f8",
               "seq": 1
             },
             {
@@ -32685,7 +32685,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/disabled-core",
               "seed": "touye-core-bounded",
               "commandSeq": 5,
@@ -33423,7 +33423,7 @@
               "receipts": [
                 {
                   "commandId": "core/disabled-core/start",
-                  "fingerprint": "json-fnv-v1:1a20c183769ebe9f",
+                  "fingerprint": "json-fnv-v1:e7151d2cae9139f8",
                   "seq": 1
                 },
                 {
@@ -33976,7 +33976,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:76ad96a4db8f6a00"
+            "checksum": "json-fnv-v1:89a5d64f055046a3"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -33992,7 +33992,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/disabled-core",
               "seed": "touye-core-bounded",
               "commandSeq": 4,
@@ -34620,7 +34620,7 @@
               "receipts": [
                 {
                   "commandId": "core/disabled-core/start",
-                  "fingerprint": "json-fnv-v1:1a20c183769ebe9f",
+                  "fingerprint": "json-fnv-v1:e7151d2cae9139f8",
                   "seq": 1
                 },
                 {
@@ -34661,7 +34661,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:e152981bcbfd33df"
+            "checksum": "json-fnv-v1:6a88b0d68d0b534a"
           }
         }
       },
@@ -34785,7 +34785,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-route-growth-v1",
-          "contentHash": "json-fnv-v1:a7750670d410edec",
+          "contentHash": "json-fnv-v1:a47db56489d9c970",
           "runId": "core/mature-win",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -35243,7 +35243,7 @@
           "receipts": [
             {
               "commandId": "core/mature-win/start",
-              "fingerprint": "json-fnv-v1:e4f43cf23619930e",
+              "fingerprint": "json-fnv-v1:0006d62f25c610a3",
               "seq": 1
             },
             {
@@ -35287,7 +35287,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-route-growth-v1",
-              "contentHash": "json-fnv-v1:a7750670d410edec",
+              "contentHash": "json-fnv-v1:a47db56489d9c970",
               "runId": "core/mature-win",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -35745,7 +35745,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-win/start",
-                  "fingerprint": "json-fnv-v1:d8d6dbdc6aed5638",
+                  "fingerprint": "json-fnv-v1:0006d62f25c610a3",
                   "seq": 1
                 },
                 {
@@ -35765,7 +35765,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:f33fb1553d4f24d1"
+            "checksum": "json-fnv-v1:15c310826d3576a6"
           },
           "previous": null
         }
@@ -35808,7 +35808,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-win",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -36268,7 +36268,7 @@
           "receipts": [
             {
               "commandId": "core/mature-win/start",
-              "fingerprint": "json-fnv-v1:0c84bc3c4684e730",
+              "fingerprint": "json-fnv-v1:4d0e19f43943b980",
               "seq": 1
             },
             {
@@ -36312,7 +36312,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-win",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -36772,7 +36772,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-win/start",
-                  "fingerprint": "json-fnv-v1:5d954663c212345f",
+                  "fingerprint": "json-fnv-v1:4d0e19f43943b980",
                   "seq": 1
                 },
                 {
@@ -36792,7 +36792,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:cad23554852b1f90"
+            "checksum": "json-fnv-v1:fda3510c010eb288"
           },
           "previous": null
         }
@@ -36830,7 +36830,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-win",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -37457,7 +37457,7 @@
           "receipts": [
             {
               "commandId": "core/mature-win/start",
-              "fingerprint": "json-fnv-v1:0c84bc3c4684e730",
+              "fingerprint": "json-fnv-v1:4d0e19f43943b980",
               "seq": 1
             },
             {
@@ -37522,7 +37522,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-win",
               "seed": "touye-core-bounded",
               "commandSeq": 4,
@@ -38149,7 +38149,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-win/start",
-                  "fingerprint": "json-fnv-v1:5d954663c212345f",
+                  "fingerprint": "json-fnv-v1:4d0e19f43943b980",
                   "seq": 1
                 },
                 {
@@ -38190,7 +38190,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:7fdc93e87f87b2ac"
+            "checksum": "json-fnv-v1:f3339a6e7c0d84da"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -38215,7 +38215,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-win",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -38675,7 +38675,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-win/start",
-                  "fingerprint": "json-fnv-v1:5d954663c212345f",
+                  "fingerprint": "json-fnv-v1:4d0e19f43943b980",
                   "seq": 1
                 },
                 {
@@ -38695,7 +38695,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:cad23554852b1f90"
+            "checksum": "json-fnv-v1:fda3510c010eb288"
           }
         }
       },
@@ -38808,7 +38808,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-win",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -39543,7 +39543,7 @@
           "receipts": [
             {
               "commandId": "core/mature-win/start",
-              "fingerprint": "json-fnv-v1:0c84bc3c4684e730",
+              "fingerprint": "json-fnv-v1:4d0e19f43943b980",
               "seq": 1
             },
             {
@@ -40163,7 +40163,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-win",
               "seed": "touye-core-bounded",
               "commandSeq": 5,
@@ -40898,7 +40898,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-win/start",
-                  "fingerprint": "json-fnv-v1:5d954663c212345f",
+                  "fingerprint": "json-fnv-v1:4d0e19f43943b980",
                   "seq": 1
                 },
                 {
@@ -41494,7 +41494,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:52badd4f0506d5fb"
+            "checksum": "json-fnv-v1:b076c4fbb6b47457"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -41519,7 +41519,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-win",
               "seed": "touye-core-bounded",
               "commandSeq": 4,
@@ -42146,7 +42146,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-win/start",
-                  "fingerprint": "json-fnv-v1:5d954663c212345f",
+                  "fingerprint": "json-fnv-v1:4d0e19f43943b980",
                   "seq": 1
                 },
                 {
@@ -42187,7 +42187,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:7fdc93e87f87b2ac"
+            "checksum": "json-fnv-v1:f3339a6e7c0d84da"
           }
         }
       },
@@ -42313,7 +42313,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-old-core",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -42773,7 +42773,7 @@
           "receipts": [
             {
               "commandId": "core/mature-old-core/start",
-              "fingerprint": "json-fnv-v1:76a01d244d030168",
+              "fingerprint": "json-fnv-v1:46b98adced324b38",
               "seq": 1
             },
             {
@@ -42817,7 +42817,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-old-core",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -43277,7 +43277,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-old-core/start",
-                  "fingerprint": "json-fnv-v1:9c1de0237d6cb83f",
+                  "fingerprint": "json-fnv-v1:46b98adced324b38",
                   "seq": 1
                 },
                 {
@@ -43297,7 +43297,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:83898eefa39f9e7b"
+            "checksum": "json-fnv-v1:036fa27c74114db8"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -43322,7 +43322,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-win",
               "seed": "touye-core-bounded",
               "commandSeq": 5,
@@ -44057,7 +44057,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-win/start",
-                  "fingerprint": "json-fnv-v1:5d954663c212345f",
+                  "fingerprint": "json-fnv-v1:4d0e19f43943b980",
                   "seq": 1
                 },
                 {
@@ -44653,7 +44653,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:52badd4f0506d5fb"
+            "checksum": "json-fnv-v1:b076c4fbb6b47457"
           }
         }
       },
@@ -44690,7 +44690,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-old-core",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -45317,7 +45317,7 @@
           "receipts": [
             {
               "commandId": "core/mature-old-core/start",
-              "fingerprint": "json-fnv-v1:76a01d244d030168",
+              "fingerprint": "json-fnv-v1:46b98adced324b38",
               "seq": 1
             },
             {
@@ -45382,7 +45382,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-old-core",
               "seed": "touye-core-bounded",
               "commandSeq": 4,
@@ -46009,7 +46009,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-old-core/start",
-                  "fingerprint": "json-fnv-v1:9c1de0237d6cb83f",
+                  "fingerprint": "json-fnv-v1:46b98adced324b38",
                   "seq": 1
                 },
                 {
@@ -46050,7 +46050,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:7a7eeb8cfc4a1de8"
+            "checksum": "json-fnv-v1:3058d97953f7d90d"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -46075,7 +46075,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-old-core",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -46535,7 +46535,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-old-core/start",
-                  "fingerprint": "json-fnv-v1:9c1de0237d6cb83f",
+                  "fingerprint": "json-fnv-v1:46b98adced324b38",
                   "seq": 1
                 },
                 {
@@ -46555,7 +46555,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:83898eefa39f9e7b"
+            "checksum": "json-fnv-v1:036fa27c74114db8"
           }
         }
       },
@@ -46668,7 +46668,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-old-core",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -47403,7 +47403,7 @@
           "receipts": [
             {
               "commandId": "core/mature-old-core/start",
-              "fingerprint": "json-fnv-v1:76a01d244d030168",
+              "fingerprint": "json-fnv-v1:46b98adced324b38",
               "seq": 1
             },
             {
@@ -48021,7 +48021,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-old-core",
               "seed": "touye-core-bounded",
               "commandSeq": 5,
@@ -48756,7 +48756,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-old-core/start",
-                  "fingerprint": "json-fnv-v1:9c1de0237d6cb83f",
+                  "fingerprint": "json-fnv-v1:46b98adced324b38",
                   "seq": 1
                 },
                 {
@@ -49350,7 +49350,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:b2f92511cdfe5ed5"
+            "checksum": "json-fnv-v1:64f4ac324ccf7596"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -49375,7 +49375,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-old-core",
               "seed": "touye-core-bounded",
               "commandSeq": 4,
@@ -50002,7 +50002,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-old-core/start",
-                  "fingerprint": "json-fnv-v1:9c1de0237d6cb83f",
+                  "fingerprint": "json-fnv-v1:46b98adced324b38",
                   "seq": 1
                 },
                 {
@@ -50043,7 +50043,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:7a7eeb8cfc4a1de8"
+            "checksum": "json-fnv-v1:3058d97953f7d90d"
           }
         }
       },
@@ -50167,7 +50167,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-accompanying",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -50627,7 +50627,7 @@
           "receipts": [
             {
               "commandId": "core/mature-accompanying/start",
-              "fingerprint": "json-fnv-v1:0efb83f4a0b111b8",
+              "fingerprint": "json-fnv-v1:0bb66b6cefd4a188",
               "seq": 1
             },
             {
@@ -50671,7 +50671,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-accompanying",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -51131,7 +51131,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-accompanying/start",
-                  "fingerprint": "json-fnv-v1:729862038ea4ba6f",
+                  "fingerprint": "json-fnv-v1:0bb66b6cefd4a188",
                   "seq": 1
                 },
                 {
@@ -51151,7 +51151,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:dc874aea5d0a5e06"
+            "checksum": "json-fnv-v1:1da5d1b3fa51f07f"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -51176,7 +51176,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-old-core",
               "seed": "touye-core-bounded",
               "commandSeq": 5,
@@ -51911,7 +51911,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-old-core/start",
-                  "fingerprint": "json-fnv-v1:9c1de0237d6cb83f",
+                  "fingerprint": "json-fnv-v1:46b98adced324b38",
                   "seq": 1
                 },
                 {
@@ -52505,7 +52505,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:b2f92511cdfe5ed5"
+            "checksum": "json-fnv-v1:64f4ac324ccf7596"
           }
         }
       },
@@ -52542,7 +52542,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-accompanying",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -53169,7 +53169,7 @@
           "receipts": [
             {
               "commandId": "core/mature-accompanying/start",
-              "fingerprint": "json-fnv-v1:0efb83f4a0b111b8",
+              "fingerprint": "json-fnv-v1:0bb66b6cefd4a188",
               "seq": 1
             },
             {
@@ -53234,7 +53234,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-accompanying",
               "seed": "touye-core-bounded",
               "commandSeq": 4,
@@ -53861,7 +53861,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-accompanying/start",
-                  "fingerprint": "json-fnv-v1:729862038ea4ba6f",
+                  "fingerprint": "json-fnv-v1:0bb66b6cefd4a188",
                   "seq": 1
                 },
                 {
@@ -53902,7 +53902,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:746c01ac0c1786c0"
+            "checksum": "json-fnv-v1:78e5e08f046eb77b"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -53927,7 +53927,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-accompanying",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -54387,7 +54387,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-accompanying/start",
-                  "fingerprint": "json-fnv-v1:729862038ea4ba6f",
+                  "fingerprint": "json-fnv-v1:0bb66b6cefd4a188",
                   "seq": 1
                 },
                 {
@@ -54407,7 +54407,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:dc874aea5d0a5e06"
+            "checksum": "json-fnv-v1:1da5d1b3fa51f07f"
           }
         }
       },
@@ -54520,7 +54520,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-accompanying",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -55262,7 +55262,7 @@
           "receipts": [
             {
               "commandId": "core/mature-accompanying/start",
-              "fingerprint": "json-fnv-v1:0efb83f4a0b111b8",
+              "fingerprint": "json-fnv-v1:0bb66b6cefd4a188",
               "seq": 1
             },
             {
@@ -55881,7 +55881,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-accompanying",
               "seed": "touye-core-bounded",
               "commandSeq": 5,
@@ -56623,7 +56623,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-accompanying/start",
-                  "fingerprint": "json-fnv-v1:729862038ea4ba6f",
+                  "fingerprint": "json-fnv-v1:0bb66b6cefd4a188",
                   "seq": 1
                 },
                 {
@@ -57218,7 +57218,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:445f59ca5d8e0a46"
+            "checksum": "json-fnv-v1:16c3d875765187f9"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -57243,7 +57243,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-accompanying",
               "seed": "touye-core-bounded",
               "commandSeq": 4,
@@ -57870,7 +57870,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-accompanying/start",
-                  "fingerprint": "json-fnv-v1:729862038ea4ba6f",
+                  "fingerprint": "json-fnv-v1:0bb66b6cefd4a188",
                   "seq": 1
                 },
                 {
@@ -57911,7 +57911,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:746c01ac0c1786c0"
+            "checksum": "json-fnv-v1:78e5e08f046eb77b"
           }
         }
       },
@@ -58035,7 +58035,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/short",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -58237,7 +58237,7 @@
           "receipts": [
             {
               "commandId": "core/short/start",
-              "fingerprint": "json-fnv-v1:16491314a9677918",
+              "fingerprint": "json-fnv-v1:1f082e4cff48f1e8",
               "seq": 1
             },
             {
@@ -58281,7 +58281,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/short",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -58483,7 +58483,7 @@
               "receipts": [
                 {
                   "commandId": "core/short/start",
-                  "fingerprint": "json-fnv-v1:f2faaafb22e76017",
+                  "fingerprint": "json-fnv-v1:1f082e4cff48f1e8",
                   "seq": 1
                 },
                 {
@@ -58503,7 +58503,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:b432044ced09e560"
+            "checksum": "json-fnv-v1:6799d11108ad1a15"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -58528,7 +58528,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-accompanying",
               "seed": "touye-core-bounded",
               "commandSeq": 5,
@@ -59270,7 +59270,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-accompanying/start",
-                  "fingerprint": "json-fnv-v1:729862038ea4ba6f",
+                  "fingerprint": "json-fnv-v1:0bb66b6cefd4a188",
                   "seq": 1
                 },
                 {
@@ -59865,7 +59865,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:445f59ca5d8e0a46"
+            "checksum": "json-fnv-v1:16c3d875765187f9"
           }
         }
       },
@@ -59902,7 +59902,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/short",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -60183,7 +60183,7 @@
           "receipts": [
             {
               "commandId": "core/short/start",
-              "fingerprint": "json-fnv-v1:16491314a9677918",
+              "fingerprint": "json-fnv-v1:1f082e4cff48f1e8",
               "seq": 1
             },
             {
@@ -60250,7 +60250,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/short",
               "seed": "touye-core-bounded",
               "commandSeq": 4,
@@ -60531,7 +60531,7 @@
               "receipts": [
                 {
                   "commandId": "core/short/start",
-                  "fingerprint": "json-fnv-v1:f2faaafb22e76017",
+                  "fingerprint": "json-fnv-v1:1f082e4cff48f1e8",
                   "seq": 1
                 },
                 {
@@ -60574,7 +60574,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:7806914b01057927"
+            "checksum": "json-fnv-v1:64f2993ac2e9a686"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -60599,7 +60599,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/short",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -60801,7 +60801,7 @@
               "receipts": [
                 {
                   "commandId": "core/short/start",
-                  "fingerprint": "json-fnv-v1:f2faaafb22e76017",
+                  "fingerprint": "json-fnv-v1:1f082e4cff48f1e8",
                   "seq": 1
                 },
                 {
@@ -60821,7 +60821,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:b432044ced09e560"
+            "checksum": "json-fnv-v1:6799d11108ad1a15"
           }
         }
       },
@@ -60934,7 +60934,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/short",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -61306,7 +61306,7 @@
           "receipts": [
             {
               "commandId": "core/short/start",
-              "fingerprint": "json-fnv-v1:16491314a9677918",
+              "fingerprint": "json-fnv-v1:1f082e4cff48f1e8",
               "seq": 1
             },
             {
@@ -61873,7 +61873,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/short",
               "seed": "touye-core-bounded",
               "commandSeq": 5,
@@ -62245,7 +62245,7 @@
               "receipts": [
                 {
                   "commandId": "core/short/start",
-                  "fingerprint": "json-fnv-v1:f2faaafb22e76017",
+                  "fingerprint": "json-fnv-v1:1f082e4cff48f1e8",
                   "seq": 1
                 },
                 {
@@ -62788,7 +62788,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:0e238a48c252eb3c"
+            "checksum": "json-fnv-v1:782d52a9fe22a03d"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -62813,7 +62813,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/short",
               "seed": "touye-core-bounded",
               "commandSeq": 4,
@@ -63094,7 +63094,7 @@
               "receipts": [
                 {
                   "commandId": "core/short/start",
-                  "fingerprint": "json-fnv-v1:f2faaafb22e76017",
+                  "fingerprint": "json-fnv-v1:1f082e4cff48f1e8",
                   "seq": 1
                 },
                 {
@@ -63137,7 +63137,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:7806914b01057927"
+            "checksum": "json-fnv-v1:64f2993ac2e9a686"
           }
         }
       },
@@ -63254,7 +63254,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/disabled-core",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -63714,7 +63714,7 @@
           "receipts": [
             {
               "commandId": "core/disabled-core/start",
-              "fingerprint": "json-fnv-v1:50411ed4a45f7228",
+              "fingerprint": "json-fnv-v1:e7151d2cae9139f8",
               "seq": 1
             },
             {
@@ -63749,7 +63749,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/disabled-core",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -64209,7 +64209,7 @@
               "receipts": [
                 {
                   "commandId": "core/disabled-core/start",
-                  "fingerprint": "json-fnv-v1:1a20c183769ebe9f",
+                  "fingerprint": "json-fnv-v1:e7151d2cae9139f8",
                   "seq": 1
                 },
                 {
@@ -64229,7 +64229,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:620e70b11175a7c5"
+            "checksum": "json-fnv-v1:59ea9dee8b0a0a3a"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -64254,7 +64254,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/short",
               "seed": "touye-core-bounded",
               "commandSeq": 5,
@@ -64626,7 +64626,7 @@
               "receipts": [
                 {
                   "commandId": "core/short/start",
-                  "fingerprint": "json-fnv-v1:f2faaafb22e76017",
+                  "fingerprint": "json-fnv-v1:1f082e4cff48f1e8",
                   "seq": 1
                 },
                 {
@@ -65169,7 +65169,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:0e238a48c252eb3c"
+            "checksum": "json-fnv-v1:782d52a9fe22a03d"
           }
         }
       },
@@ -65197,7 +65197,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/disabled-core",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -65825,7 +65825,7 @@
           "receipts": [
             {
               "commandId": "core/disabled-core/start",
-              "fingerprint": "json-fnv-v1:50411ed4a45f7228",
+              "fingerprint": "json-fnv-v1:e7151d2cae9139f8",
               "seq": 1
             },
             {
@@ -65881,7 +65881,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/disabled-core",
               "seed": "touye-core-bounded",
               "commandSeq": 4,
@@ -66509,7 +66509,7 @@
               "receipts": [
                 {
                   "commandId": "core/disabled-core/start",
-                  "fingerprint": "json-fnv-v1:1a20c183769ebe9f",
+                  "fingerprint": "json-fnv-v1:e7151d2cae9139f8",
                   "seq": 1
                 },
                 {
@@ -66550,7 +66550,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:e152981bcbfd33df"
+            "checksum": "json-fnv-v1:6a88b0d68d0b534a"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -66566,7 +66566,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/disabled-core",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -67026,7 +67026,7 @@
               "receipts": [
                 {
                   "commandId": "core/disabled-core/start",
-                  "fingerprint": "json-fnv-v1:1a20c183769ebe9f",
+                  "fingerprint": "json-fnv-v1:e7151d2cae9139f8",
                   "seq": 1
                 },
                 {
@@ -67046,7 +67046,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:620e70b11175a7c5"
+            "checksum": "json-fnv-v1:59ea9dee8b0a0a3a"
           }
         }
       },
@@ -67150,7 +67150,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/disabled-core",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -67888,7 +67888,7 @@
           "receipts": [
             {
               "commandId": "core/disabled-core/start",
-              "fingerprint": "json-fnv-v1:50411ed4a45f7228",
+              "fingerprint": "json-fnv-v1:e7151d2cae9139f8",
               "seq": 1
             },
             {
@@ -68456,7 +68456,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/disabled-core",
               "seed": "touye-core-bounded",
               "commandSeq": 5,
@@ -69194,7 +69194,7 @@
               "receipts": [
                 {
                   "commandId": "core/disabled-core/start",
-                  "fingerprint": "json-fnv-v1:1a20c183769ebe9f",
+                  "fingerprint": "json-fnv-v1:e7151d2cae9139f8",
                   "seq": 1
                 },
                 {
@@ -69747,7 +69747,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:76ad96a4db8f6a00"
+            "checksum": "json-fnv-v1:89a5d64f055046a3"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -69763,7 +69763,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:99a801dbe96d9d47",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/disabled-core",
               "seed": "touye-core-bounded",
               "commandSeq": 4,
@@ -70391,7 +70391,7 @@
               "receipts": [
                 {
                   "commandId": "core/disabled-core/start",
-                  "fingerprint": "json-fnv-v1:1a20c183769ebe9f",
+                  "fingerprint": "json-fnv-v1:e7151d2cae9139f8",
                   "seq": 1
                 },
                 {
@@ -70432,7 +70432,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:e152981bcbfd33df"
+            "checksum": "json-fnv-v1:6a88b0d68d0b534a"
           }
         }
       },
@@ -70556,7 +70556,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-route-growth-v1",
-          "contentHash": "json-fnv-v1:a7750670d410edec",
+          "contentHash": "json-fnv-v1:a47db56489d9c970",
           "runId": "core/mature-win",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -71014,7 +71014,7 @@
           "receipts": [
             {
               "commandId": "core/mature-win/start",
-              "fingerprint": "json-fnv-v1:e4f43cf23619930e",
+              "fingerprint": "json-fnv-v1:0006d62f25c610a3",
               "seq": 1
             },
             {
@@ -71058,7 +71058,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-route-growth-v1",
-              "contentHash": "json-fnv-v1:a7750670d410edec",
+              "contentHash": "json-fnv-v1:a47db56489d9c970",
               "runId": "core/mature-win",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -71516,7 +71516,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-win/start",
-                  "fingerprint": "json-fnv-v1:d8d6dbdc6aed5638",
+                  "fingerprint": "json-fnv-v1:0006d62f25c610a3",
                   "seq": 1
                 },
                 {
@@ -71536,7 +71536,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:f33fb1553d4f24d1"
+            "checksum": "json-fnv-v1:15c310826d3576a6"
           },
           "previous": null
         }

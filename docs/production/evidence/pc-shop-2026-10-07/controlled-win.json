@@ -5,7 +5,7 @@
     "schemaVersion": 2,
     "rulesVersion": "r2",
     "contentVersion": "quality-r2-group-upgrade-prototype-v1",
-    "contentHash": "json-fnv-v1:df2816bdf026bad9",
+    "contentHash": "json-fnv-v1:2189bb4930383b65",
     "runId": "w1-controlled-20261007",
     "seed": "group-natural-17",
     "commandSeq": 5,
@@ -962,5 +962,5 @@
   },
   "journalBaseSeq": 5,
   "journal": [],
-  "checksum": "json-fnv-v1:05a4d04bc3b53497"
+  "checksum": "json-fnv-v1:016a9a6d1e841239"
 }

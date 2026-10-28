@@ -8,7 +8,7 @@
       "schemaVersion": 2,
       "rulesVersion": "r2",
       "contentVersion": "quality-r2-amo-assist-prototype-v1",
-      "contentHash": "json-fnv-v1:b0dbe7b458ba9338",
+      "contentHash": "json-fnv-v1:86d6f3ce5f30985a",
       "runId": "frozen-843f-controlled",
       "seed": "frozen-843f-controlled",
       "commandSeq": 3,
@@ -482,7 +482,7 @@
     },
     "journalBaseSeq": 3,
     "journal": [],
-    "checksum": "json-fnv-v1:1e9c94844f776fd8"
+    "checksum": "json-fnv-v1:11beab8ffb63e053"
   },
   "command": {
     "runId": "frozen-843f-controlled",
@@ -509,7 +509,7 @@
       "schemaVersion": 2,
       "rulesVersion": "r2",
       "contentVersion": "quality-r2-amo-assist-prototype-v1",
-      "contentHash": "json-fnv-v1:b0dbe7b458ba9338",
+      "contentHash": "json-fnv-v1:86d6f3ce5f30985a",
       "runId": "frozen-843f-controlled",
       "seed": "frozen-843f-controlled",
       "commandSeq": 4,
@@ -1530,6 +1530,6 @@
         }
       }
     ],
-    "checksum": "json-fnv-v1:42e1a5cc27db5430"
+    "checksum": "json-fnv-v1:983cfaef859a7123"
   }
 }

@@ -2,11 +2,11 @@
   "baseMain": "4976f30a4bb8c65dedbf46af16499dd8da5a541b",
   "newIdentity": {
     "contentVersion": "quality-r2-touye-new-core-v1",
-    "contentHash": "json-fnv-v1:413ecc65d3b9a2a1"
+    "contentHash": "json-fnv-v1:87c19b9c45c076b0"
   },
   "oldC2Identity": {
     "contentVersion": "quality-r2-route-growth-v1",
-    "contentHash": "json-fnv-v1:7414228d95059959"
+    "contentHash": "json-fnv-v1:a47db56489d9c970"
   },
   "legacyConstantsByteExact": true,
   "productFiles": [

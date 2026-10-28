@@ -22,8 +22,8 @@ import {shopDeferredGrowthCashRisk} from './ShopReplacementCashRisk';
 import {shopPurchaseValue} from './ShopPurchaseValue';
 
 /** Audited against the renamed Tang-Song 72 definitions. Changed/older semantics require review. */
-export const SHOP_RECOMMENDATION_SEMANTICS='json-fnv-v1:c6f2e6e74166f523';
-export const SHOP_C2_RECOMMENDATION_SEMANTICS='json-fnv-v1:315fbd82cda9c5be';
+export const SHOP_RECOMMENDATION_SEMANTICS='json-fnv-v1:f8364d4b8abe5def';
+export const SHOP_C2_RECOMMENDATION_SEMANTICS='json-fnv-v1:83bf3a2ebe2d8c62';
 export const SHOP_RECOMMENDATION_AUDIT={
  pengci:'triple',mantangcai:'group-heat',tiesuanpan:'face-score',huimaqiang:'third-play',jiedongfeng:'straight-flush-add',
  a03:'first-score',a05:'repeat-growth',b02:'pair-score',b03:'group-growth',b04:'two-groups',
@@ -46,7 +46,7 @@ export const SHOP_C2_RECOMMENDATION_AUDIT={...SHOP_RECOMMENDATION_AUDIT,
 } as const;
 export type RecommendationStars=0|1|2|3|4|5;
 export interface ShopRecommendation {stars:RecommendationStars;reason:string;condition:string;detail:string;stage:'early'|'mid'|'late';combination:string;combinationHint:string;facts:Readonly<Record<string,number|boolean|string>>}
-export const SHOP_HOUSE_RECOMMENDATION_SEMANTICS='json-fnv-v1:397c92b5fe0ec469';
+export const SHOP_HOUSE_RECOMMENDATION_SEMANTICS='json-fnv-v1:bf164b81a7433aed';
 const hashes=new WeakMap<object,string>();
 /** No affordability rating, RNG, future piles or stored recommendation. Cash gates use purchase cash. */
 export function shopRecommendation(state:R2RunState,offer:R2Offer,focus?:BuildFocus,sold?:R2JokerInstance):ShopRecommendation {
@@ -196,7 +196,7 @@ export function shopRecommendation(state:R2RunState,offer:R2Offer,focus?:BuildFo
   case 'quad-multiply':return result(largest<4?1:groupConcentrated&&additiveSource?4:2,'四条以上相乘','需四条或更高同点组');
   case 'route-transition':return result(straightConcentrated&&flushConcentrated&&ordinaryStraightPossible&&ordinaryFlushPossible?4:2,'普通顺花交替相乘','首手与同花顺不触发');
   case 'no-discard':return result(additiveSource&&(groupReady||flushReady||straightReady)?4:3,'未弃牌相乘','本场成功弃牌即停用');
-  case 'third-play':return result(3,'第三手相乘','本场每第3次出牌');
+  case 'third-play':return result(3,'第3至5手相乘','本场第3、4、5次出牌');
   case 'temporary-multiply':return result(2,'限4次','第4次出牌后销毁');
   case 'chance-heat':return result(2,'随机补热度','每手1/3 · 未中为0');
   case 'held-face':case 'held-multiply':{const n=count(c=>c.rank>=11&&c.rank<=13);return result(n===0?1:n>=Math.ceil(cards.length*.4)?4:2,'人头持牌收益','需把JQK留下');}

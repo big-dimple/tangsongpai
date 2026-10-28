@@ -842,6 +842,11 @@ export function transactR2(input:R2RunState|null,command:Command):Transaction {
         const index=state.consumables.findIndex(c=>c.instanceId===action.instanceId);if(index<0)return fail('unknown-consumable');
         state.consumables.splice(index,1);break;
       }
+      case 'DestroyLongTermItem': {
+        if(!['shop','await-input'].includes(state.phase))return fail('wrong-phase');
+        const index=state.longTermItems.indexOf(action.definitionId);if(index<0)return fail('unknown-item');
+        state.longTermItems.splice(index,1);break;
+      }
       case 'PlayAssistedHand':
       case 'PlayHand': {
         if(state.phase!=='await-input'||!state.stage)return fail('wrong-phase');

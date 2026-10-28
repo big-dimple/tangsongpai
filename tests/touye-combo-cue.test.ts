@@ -8,8 +8,8 @@ const start=()=>createRun({rulesVersion:'r2',characterId:'touye',runId:'combo-gu
 it('owned actual modulo source provides next successful-play timing without promising a win',()=>{
  let s=start();expect(touyeComboCue(s)).toBeUndefined();s.jokers=[r2CreateJoker('huimaqiang','combo',4,'none',s)];
  for(const type of ['LeaveShop','EnterStage'] as const){const r=applyCommand(s,{runId:s.runId,commandId:type,expectedSeq:s.commandSeq,action:{type}});if(!r.ok)throw Error(r.code);s=r.state;}
- const before=structuredClone(s);expect(touyeComboCue(s)).toContain('第3手，还隔2手');expect(touyeComboCue(s)).toContain('两项实际生效');expect(touyeComboCue(s)).not.toContain('稳赢');expect(s).toEqual(before);
- s.stage!.playIndex=2;expect(touyeComboCue(s)).toContain('第3手，就是下一手');s.stage!.playIndex=3;expect(touyeComboCue(s)).toContain('第6手，还隔2手');
+ const before=structuredClone(s);expect(touyeComboCue(s)).toContain('第3手起倍率×2，还隔2手');expect(touyeComboCue(s)).toContain('两项实际生效');expect(touyeComboCue(s)).not.toContain('稳赢');expect(s).toEqual(before);
+ s.stage!.playIndex=2;expect(touyeComboCue(s)).toContain('第3手，就是下一手');s.stage!.playIndex=3;expect(touyeComboCue(s)).toContain('第4手，就是下一手');s.stage!.playIndex=5;expect(touyeComboCue(s)).toContain('已谢幕');expect(touyeComboCue(s)).toContain('不再触发');
 });
 it('a real third-hand flush settles separate Touye and Huimaqiang multipliers',()=>{
  let s=start();const send=(action:Parameters<typeof applyCommand>[1]['action'])=>{const r=applyCommand(s,{runId:s.runId,commandId:'actual/'+s.commandSeq,expectedSeq:s.commandSeq,action});if(!r.ok)throw Error(r.code);s=r.state;};

@@ -8289,7 +8289,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-core-build-v1",
-          "contentHash": "json-fnv-v1:6dfe1a721e4949e6",
+          "contentHash": "json-fnv-v1:7d9aa2c7de88757b",
           "runId": "controlled/score-energy/multiply",
           "seed": "score-energy-controlled",
           "commandSeq": 4,
@@ -8822,7 +8822,7 @@
           "receipts": [
             {
               "commandId": "controlled/score-energy/multiply/start",
-              "fingerprint": "json-fnv-v1:c9bb63c86422094c",
+              "fingerprint": "json-fnv-v1:7872bc1d7cb92a51",
               "seq": 1
             },
             {
@@ -9662,7 +9662,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-core-build-v1",
-              "contentHash": "json-fnv-v1:6dfe1a721e4949e6",
+              "contentHash": "json-fnv-v1:7d9aa2c7de88757b",
               "runId": "controlled/score-energy/multiply",
               "seed": "score-energy-controlled",
               "commandSeq": 4,
@@ -10195,7 +10195,7 @@
               "receipts": [
                 {
                   "commandId": "controlled/score-energy/multiply/start",
-                  "fingerprint": "json-fnv-v1:c9bb63c86422094c",
+                  "fingerprint": "json-fnv-v1:7872bc1d7cb92a51",
                   "seq": 1
                 },
                 {
@@ -11013,7 +11013,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:86eeedd9de89c09d"
+            "checksum": "json-fnv-v1:ef3267bff624bcb3"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -11029,7 +11029,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-core-build-v1",
-              "contentHash": "json-fnv-v1:6dfe1a721e4949e6",
+              "contentHash": "json-fnv-v1:7d9aa2c7de88757b",
               "runId": "controlled/score-energy/multiply",
               "seed": "score-energy-controlled",
               "commandSeq": 3,
@@ -11505,7 +11505,7 @@
               "receipts": [
                 {
                   "commandId": "controlled/score-energy/multiply/start",
-                  "fingerprint": "json-fnv-v1:c9bb63c86422094c",
+                  "fingerprint": "json-fnv-v1:7872bc1d7cb92a51",
                   "seq": 1
                 },
                 {
@@ -11538,7 +11538,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:6ba65e64361a1ce8"
+            "checksum": "json-fnv-v1:8a957312eea2b666"
           }
         }
       },

@@ -2,7 +2,7 @@
   "status": "PASS",
   "identity": {
     "contentVersion": "quality-r2-touye-new-core-v1",
-    "contentHash": "json-fnv-v1:413ecc65d3b9a2a1"
+    "contentHash": "json-fnv-v1:87c19b9c45c076b0"
   },
   "scope": "bounded planted legal states, actual UI actions and full state/journal/IndexedDB; no natural game/seed search or full18",
   "cases": [

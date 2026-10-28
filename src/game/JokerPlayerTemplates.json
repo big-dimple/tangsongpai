@@ -56,17 +56,21 @@
     }
   },
   "huimaqiang": {
-    "main": "本场每第 {h0c_divisor} 手，整手倍率 ×{h0o0_value}。",
+    "main": "本场第 {h0c_minimum} 至 {h0c_maximum} 手，整手倍率 ×{h0o0_value}。",
     "limits": [
       "弃牌不算一手；返还出牌机会不会倒退出牌序号。"
     ],
     "rules": [
-      "下次出牌序号为本场已成功出牌次数加一；进入新场重新计数。"
+      "第 {h0c_maximum} 手之后不再触发；进入新场重新计数。"
     ],
     "state": [],
     "bindings": {
-      "h0c_divisor": {
-        "source": "definition.hooks[0].condition.divisor",
+      "h0c_minimum": {
+        "source": "definition.hooks[0].condition.minimum",
+        "format": "plain"
+      },
+      "h0c_maximum": {
+        "source": "definition.hooks[0].condition.maximum",
         "format": "plain"
       },
       "h0o0_value": {

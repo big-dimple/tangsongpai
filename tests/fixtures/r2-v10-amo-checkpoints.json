@@ -8,7 +8,7 @@
       "schemaVersion": 2,
       "rulesVersion": "r2",
       "contentVersion": "quality-r2-content-v10",
-      "contentHash": "json-fnv-v1:00ba5b399c980695",
+      "contentHash": "json-fnv-v1:1d9e0cc5be9691f9",
       "runId": "legacy-v10-amo",
       "seed": "amo-version-contract",
       "commandSeq": 3,
@@ -477,7 +477,7 @@
     },
     "journalBaseSeq": 3,
     "journal": [],
-    "checksum": "json-fnv-v1:d384c8303a9c154c"
+    "checksum": "json-fnv-v1:b0cb1ef45f51dad8"
   },
   "command": {
     "runId": "legacy-v10-amo",
@@ -497,7 +497,7 @@
       "schemaVersion": 2,
       "rulesVersion": "r2",
       "contentVersion": "quality-r2-content-v10",
-      "contentHash": "json-fnv-v1:00ba5b399c980695",
+      "contentHash": "json-fnv-v1:1d9e0cc5be9691f9",
       "runId": "legacy-v10-amo",
       "seed": "amo-version-contract",
       "commandSeq": 4,
@@ -1297,6 +1297,6 @@
         }
       }
     ],
-    "checksum": "json-fnv-v1:6811258f94fbde13"
+    "checksum": "json-fnv-v1:6bd5db4fc3f54b1b"
   }
 }

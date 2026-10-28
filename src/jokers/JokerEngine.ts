@@ -24,6 +24,11 @@ function matches(condition: JokerCondition, context: JokerContext): boolean {
       return countFaceCards(context) >= condition.value;
     case 'play-number-divisible-by':
       return context.playIndex > 0 && context.playIndex % condition.value === 0;
+    case 'play-number-in-range':
+      return (
+        context.playIndex >= condition.minimum &&
+        context.playIndex <= condition.maximum
+      );
   }
 }
 

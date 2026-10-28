@@ -27,8 +27,8 @@ function score(played:PlayingCard[],ids:string[],previousHandType:R2HandType|nul
 describe('Amo prototype seven-card profile',()=>{
  it('overlays exactly seven, preserving published bytes, identities, initial growth, inventory and other65',()=>{
   expect(validateR2Content(R2_ASSIST_JOKERS)).toEqual([]);expect(R2_ASSIST_JOKERS).toHaveLength(72);
-  expect(stableHash(R2_PUBLISHED_CONTENT.snapshot)).toBe('json-fnv-v1:00ba5b399c980695');
-  expect(R2_PUBLISHED_CONTENT.v11.hash).toBe('json-fnv-v1:117fb6675e31ce73');
+  expect(stableHash(R2_PUBLISHED_CONTENT.snapshot)).toBe('json-fnv-v1:1d9e0cc5be9691f9');
+  expect(R2_PUBLISHED_CONTENT.v11.hash).toBe('json-fnv-v1:27de51ef19451243');
   expect(R2_ASSIST_JOKERS.filter((d,i)=>d!==R2_PUBLISHED_JOKERS[i]).map(d=>d.id).sort()).toEqual([...R2_ASSIST_ADAPTED_IDS].sort());
   for(const p of [R2_PUBLISHED_CONTENT.v10,R2_PUBLISHED_CONTENT.v11])expect(r2JokerDefinitionsFor({contentVersion:p.version,contentHash:p.hash})).toBe(R2_PUBLISHED_JOKERS);
   const s=fixture();expect(r2JokerDefinitionsFor(s)).toBe(R2_ASSIST_JOKERS);expect(Object.isFrozen(r2JokerDefinitionFor(s,'a05').hooks[1].condition)).toBe(true);

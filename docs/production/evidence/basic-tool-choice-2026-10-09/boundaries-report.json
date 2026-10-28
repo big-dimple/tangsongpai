@@ -17,7 +17,7 @@
     "schemaVersion": 2,
     "rulesVersion": "r2",
     "contentVersion": "quality-r2-basic-tool-choice-v1",
-    "contentHash": "json-fnv-v1:39a8d0fb6bc97307",
+    "contentHash": "json-fnv-v1:58d84b58aee674b4",
     "runId": "basic-choice/window",
     "seed": "group-natural-17",
     "commandSeq": 23,

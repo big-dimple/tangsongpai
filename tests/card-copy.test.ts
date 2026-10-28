@@ -45,11 +45,11 @@ describe('five Joker shared condition and benefit copy',()=>{
     }
   });
 
-  it.each([0,1,2,3,4,5])('uses completed count %i to label the next play and matches the official third-play boundary',completed=>{
+  it.each([0,1,2,3,4,5,6,7])('uses completed count %i to label the next play and matches the official 3-to-5 play window',completed=>{
     const next=completed+1,input={...base,playIndex:next},known=cardAbilityCopy('huimaqiang',{gold:3,inStage:true,playIndex:completed})!;
     expect(known.state).toContain(`下一手是本场第 ${next} 次`);expect(known.bodyActive).toBeUndefined();
-    expect(cardAbilityCopy('huimaqiang',context(input,'huimaqiang'))?.bodyActive).toBe(next%3===0);
-    expect(known.compact).toContain(next%3===0?'×2':`待第${Math.ceil(next/3)*3}手`);
+    expect(cardAbilityCopy('huimaqiang',context(input,'huimaqiang'))?.bodyActive).toBe(next>=3&&next<=5);
+    expect(known.compact).toContain(next>=3&&next<=5?'×2':next<3?'待第3手':'不再触发');
   });
 
   it.each([

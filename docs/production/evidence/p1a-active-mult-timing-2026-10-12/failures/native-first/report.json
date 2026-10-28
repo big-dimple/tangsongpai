@@ -2,7 +2,7 @@
   "scope": "PC1366/390 controlled legal imports, native choice/cancel/bet/play/cold restore/failed save retry, real source trace captions; no natural runs, physical device or audio claim",
   "identity": {
     "contentVersion": "quality-r2-active-mult-timing-v1",
-    "contentHash": "json-fnv-v1:27ec36731d26ee5f"
+    "contentHash": "json-fnv-v1:a81df32340b9c507"
   },
   "rows": [
     {
@@ -23,7 +23,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:27ec36731d26ee5f",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 3,
@@ -503,7 +503,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:61fb412c16326730",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -538,7 +538,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-active-mult-timing-v1",
-              "contentHash": "json-fnv-v1:27ec36731d26ee5f",
+              "contentHash": "json-fnv-v1:a81df32340b9c507",
               "runId": "p1a/xiemu",
               "seed": "p1a-bounded",
               "commandSeq": 3,
@@ -1018,7 +1018,7 @@
               "receipts": [
                 {
                   "commandId": "p1a/xiemu/start",
-                  "fingerprint": "json-fnv-v1:61fb412c16326730",
+                  "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
                   "seq": 1
                 },
                 {
@@ -1038,7 +1038,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:9c8e48d48cabf7d0"
+            "checksum": "json-fnv-v1:b4d384996a3bc5fd"
           },
           "previous": null
         }
@@ -1057,7 +1057,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:27ec36731d26ee5f",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 3,
@@ -1537,7 +1537,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:61fb412c16326730",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -1572,7 +1572,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-active-mult-timing-v1",
-              "contentHash": "json-fnv-v1:27ec36731d26ee5f",
+              "contentHash": "json-fnv-v1:a81df32340b9c507",
               "runId": "p1a/xiemu",
               "seed": "p1a-bounded",
               "commandSeq": 3,
@@ -2052,7 +2052,7 @@
               "receipts": [
                 {
                   "commandId": "p1a/xiemu/start",
-                  "fingerprint": "json-fnv-v1:61fb412c16326730",
+                  "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
                   "seq": 1
                 },
                 {
@@ -2072,7 +2072,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:9c8e48d48cabf7d0"
+            "checksum": "json-fnv-v1:b4d384996a3bc5fd"
           },
           "previous": null
         }
@@ -2183,7 +2183,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:27ec36731d26ee5f",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 4,
@@ -2719,7 +2719,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:61fb412c16326730",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -3678,7 +3678,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-active-mult-timing-v1",
-              "contentHash": "json-fnv-v1:27ec36731d26ee5f",
+              "contentHash": "json-fnv-v1:a81df32340b9c507",
               "runId": "p1a/xiemu",
               "seed": "p1a-bounded",
               "commandSeq": 4,
@@ -4214,7 +4214,7 @@
               "receipts": [
                 {
                   "commandId": "p1a/xiemu/start",
-                  "fingerprint": "json-fnv-v1:61fb412c16326730",
+                  "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
                   "seq": 1
                 },
                 {
@@ -5151,7 +5151,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:04c75d17e67696cb"
+            "checksum": "json-fnv-v1:9dfd85c8f5ab5f4c"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -5167,7 +5167,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-active-mult-timing-v1",
-              "contentHash": "json-fnv-v1:27ec36731d26ee5f",
+              "contentHash": "json-fnv-v1:a81df32340b9c507",
               "runId": "p1a/xiemu",
               "seed": "p1a-bounded",
               "commandSeq": 3,
@@ -5647,7 +5647,7 @@
               "receipts": [
                 {
                   "commandId": "p1a/xiemu/start",
-                  "fingerprint": "json-fnv-v1:61fb412c16326730",
+                  "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
                   "seq": 1
                 },
                 {
@@ -5667,7 +5667,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:9c8e48d48cabf7d0"
+            "checksum": "json-fnv-v1:b4d384996a3bc5fd"
           }
         }
       },

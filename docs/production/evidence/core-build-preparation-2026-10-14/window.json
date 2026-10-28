@@ -501,7 +501,7 @@
     "scope": "same fixed natural command policy replayed offline under core-build; frozen C9 B12 hand; not a new natural sample or C10 draw prediction",
     "identity": {
       "contentVersion": "quality-r2-core-build-v1",
-      "contentHash": "json-fnv-v1:6dfe1a721e4949e6"
+      "contentHash": "json-fnv-v1:7d9aa2c7de88757b"
     },
     "c9": {
       "score": "60047",

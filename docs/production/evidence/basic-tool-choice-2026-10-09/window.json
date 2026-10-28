@@ -5,7 +5,7 @@
     "schemaVersion": 2,
     "rulesVersion": "r2",
     "contentVersion": "quality-r2-basic-tool-choice-v1",
-    "contentHash": "json-fnv-v1:39a8d0fb6bc97307",
+    "contentHash": "json-fnv-v1:58d84b58aee674b4",
     "runId": "basic-choice/window",
     "seed": "group-natural-17",
     "commandSeq": 17,
@@ -514,7 +514,7 @@
     "receipts": [
       {
         "commandId": "basic-choice/window/start",
-        "fingerprint": "json-fnv-v1:0acc4f4bfd9fd807",
+        "fingerprint": "json-fnv-v1:22879c5b42421397",
         "seq": 1
       },
       {
@@ -1104,5 +1104,5 @@
   },
   "journalBaseSeq": 17,
   "journal": [],
-  "checksum": "json-fnv-v1:186019924bb1f966"
+  "checksum": "json-fnv-v1:bb63434b7a33c827"
 }

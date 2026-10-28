@@ -113,6 +113,7 @@ export type Action =
   | { type: 'UseConsumable'; instanceId:string; targetIds:readonly string[]; handType?:import('./evaluateR2').R2HandType; secondaryHandType?:import('./evaluateR2').R2HandType; suit?:import('../cards/types').Suit; sacrificeId?:string; targetKind?:'card'|'joker' }
   | { type:'PracticeHand';handType:import('./evaluateR2').R2HandType;expectedLevel:number;shopSeq:number }
   | { type: 'DestroyConsumable'; instanceId:string }
+  | { type: 'DestroyLongTermItem'; definitionId:string }
   | { type: 'SetWager'; enabled: boolean }
   | { type: 'BuyOffer'; offerId: string }
   | { type:'BuyBasicTool';definitionId:string;shopSeq:number }

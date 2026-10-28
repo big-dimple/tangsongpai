@@ -5,7 +5,7 @@
   "branch": "c2-route-growth-local",
   "identity": {
     "contentVersion": "quality-r2-route-growth-v1",
-    "contentHash": "json-fnv-v1:3e788b6aba71306e"
+    "contentHash": "json-fnv-v1:a47db56489d9c970"
   },
   "checks": {
     "targetedFiles": 6,

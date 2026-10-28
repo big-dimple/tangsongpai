@@ -34,6 +34,7 @@ const when=(c:Condition,phase:HookPhase):string|undefined=>{
   case'resource-maximum':return '出牌前≤'+c.maximum+'金';
   case'resource':return c.resource==='gold'?'出牌前'+c.equals+'金':c.resource==='discards-used'?c.equals===0?'本场未弃过牌':c.equals===1&&phase==='onDiscard'?'本场首次成功弃牌':'本场已弃'+c.equals+'次':c.resource==='hands-after'?phase==='onStageClear'?'剩'+c.equals+'次出牌过关':'出牌后剩'+c.equals+'次':'本场第'+c.equals+'次出牌';
   case'play-modulo':return c.remainder===0?'本场第'+c.divisor+'/'+c.divisor*2+'/'+c.divisor*3+'…次出牌':undefined;
+  case'play-window':return '本场第'+c.minimum+'–'+c.maximum+'次出牌';
   case'scoring-position':return (c.handTypes?(allBeyondPair(c.handTypes)?'除高牌/对子外':names(c.handTypes))+'的':'')+(c.position==='third-original'?'原计分第3张':c.position==='first'?'首张有效计分牌':'末张有效计分牌')+(c.playModulo?'，本场每第'+c.playModulo.divisor+'次出牌':'');
   case'discard-count':return '成功弃'+c.equals+'张';
   case'hand-type-unfinished':return names(c.values)+'结算后未过关';

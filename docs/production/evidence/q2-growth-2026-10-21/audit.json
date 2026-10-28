@@ -73,7 +73,7 @@
         "seq": 7,
         "identity": {
           "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-          "contentHash": "json-fnv-v1:9db871b8548be81c"
+          "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
         },
         "phase": "stage-cleared",
         "gold": 7,
@@ -679,7 +679,7 @@
               "seq": 8,
               "identity": {
                 "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-                "contentHash": "json-fnv-v1:9db871b8548be81c"
+                "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
               },
               "phase": "shop",
               "gold": 7,
@@ -1042,7 +1042,7 @@
               "seq": 9,
               "identity": {
                 "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-                "contentHash": "json-fnv-v1:9db871b8548be81c"
+                "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
               },
               "phase": "shop",
               "gold": 9,
@@ -1463,7 +1463,7 @@
         "seq": 9,
         "identity": {
           "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-          "contentHash": "json-fnv-v1:9db871b8548be81c"
+          "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
         },
         "phase": "shop",
         "gold": 3,
@@ -1838,7 +1838,7 @@
             "seq": 1,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "shop",
             "gold": 6,
@@ -1860,7 +1860,7 @@
             "seq": 2,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "shop",
             "gold": 2,
@@ -1901,7 +1901,7 @@
             "seq": 2,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "shop",
             "gold": 2,
@@ -1931,7 +1931,7 @@
             "seq": 3,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "stage-ready",
             "gold": 2,
@@ -1972,7 +1972,7 @@
             "seq": 3,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "stage-ready",
             "gold": 2,
@@ -2002,7 +2002,7 @@
             "seq": 4,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 2,
@@ -2054,7 +2054,7 @@
             "seq": 4,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 2,
@@ -2089,7 +2089,7 @@
             "seq": 5,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 2,
@@ -2373,7 +2373,7 @@
             "seq": 5,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 2,
@@ -2640,7 +2640,7 @@
             "seq": 6,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 2,
@@ -2930,7 +2930,7 @@
             "seq": 6,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 2,
@@ -3202,7 +3202,7 @@
             "seq": 7,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "stage-cleared",
             "gold": 7,
@@ -3576,7 +3576,7 @@
             "seq": 7,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "stage-cleared",
             "gold": 7,
@@ -3939,7 +3939,7 @@
             "seq": 8,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "shop",
             "gold": 7,
@@ -4326,7 +4326,7 @@
             "seq": 8,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "shop",
             "gold": 7,
@@ -4689,7 +4689,7 @@
             "seq": 9,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "shop",
             "gold": 3,
@@ -5085,7 +5085,7 @@
         "seq": 8,
         "identity": {
           "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-          "contentHash": "json-fnv-v1:9db871b8548be81c"
+          "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
         },
         "phase": "stage-cleared",
         "gold": 9,
@@ -5585,7 +5585,7 @@
               "seq": 9,
               "identity": {
                 "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-                "contentHash": "json-fnv-v1:9db871b8548be81c"
+                "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
               },
               "phase": "shop",
               "gold": 9,
@@ -5930,7 +5930,7 @@
               "seq": 10,
               "identity": {
                 "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-                "contentHash": "json-fnv-v1:9db871b8548be81c"
+                "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
               },
               "phase": "shop",
               "gold": 11,
@@ -6330,7 +6330,7 @@
         "seq": 16,
         "identity": {
           "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-          "contentHash": "json-fnv-v1:9db871b8548be81c"
+          "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
         },
         "phase": "stage-cleared",
         "gold": 14,
@@ -6698,7 +6698,7 @@
             "seq": 1,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "shop",
             "gold": 6,
@@ -6720,7 +6720,7 @@
             "seq": 2,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "shop",
             "gold": 2,
@@ -6761,7 +6761,7 @@
             "seq": 2,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "shop",
             "gold": 2,
@@ -6791,7 +6791,7 @@
             "seq": 3,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "stage-ready",
             "gold": 2,
@@ -6832,7 +6832,7 @@
             "seq": 3,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "stage-ready",
             "gold": 2,
@@ -6862,7 +6862,7 @@
             "seq": 4,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 2,
@@ -6925,7 +6925,7 @@
             "seq": 4,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 2,
@@ -6960,7 +6960,7 @@
             "seq": 5,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 2,
@@ -7023,7 +7023,7 @@
             "seq": 5,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 2,
@@ -7058,7 +7058,7 @@
             "seq": 6,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 2,
@@ -7121,7 +7121,7 @@
             "seq": 6,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 2,
@@ -7156,7 +7156,7 @@
             "seq": 7,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 2,
@@ -7209,7 +7209,7 @@
             "seq": 7,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 2,
@@ -7244,7 +7244,7 @@
             "seq": 8,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "stage-cleared",
             "gold": 9,
@@ -7600,7 +7600,7 @@
             "seq": 8,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "stage-cleared",
             "gold": 9,
@@ -7945,7 +7945,7 @@
             "seq": 9,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "shop",
             "gold": 9,
@@ -8314,7 +8314,7 @@
             "seq": 9,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "shop",
             "gold": 9,
@@ -8659,7 +8659,7 @@
             "seq": 10,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "shop",
             "gold": 5,
@@ -9015,7 +9015,7 @@
             "seq": 10,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "shop",
             "gold": 5,
@@ -9360,7 +9360,7 @@
             "seq": 11,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "stage-ready",
             "gold": 5,
@@ -9716,7 +9716,7 @@
             "seq": 11,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "stage-ready",
             "gold": 5,
@@ -10061,7 +10061,7 @@
             "seq": 12,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 5,
@@ -10138,7 +10138,7 @@
             "seq": 12,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 5,
@@ -10187,7 +10187,7 @@
             "seq": 13,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 5,
@@ -10264,7 +10264,7 @@
             "seq": 13,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 5,
@@ -10313,7 +10313,7 @@
             "seq": 14,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 5,
@@ -10390,7 +10390,7 @@
             "seq": 14,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 5,
@@ -10439,7 +10439,7 @@
             "seq": 15,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 5,
@@ -10506,7 +10506,7 @@
             "seq": 15,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 5,
@@ -10555,7 +10555,7 @@
             "seq": 16,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "stage-cleared",
             "gold": 14,
@@ -10944,7 +10944,7 @@
         "seq": 6,
         "identity": {
           "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-          "contentHash": "json-fnv-v1:9db871b8548be81c"
+          "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
         },
         "phase": "stage-cleared",
         "gold": 7,
@@ -11450,7 +11450,7 @@
               "seq": 7,
               "identity": {
                 "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-                "contentHash": "json-fnv-v1:9db871b8548be81c"
+                "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
               },
               "phase": "shop",
               "gold": 7,
@@ -11799,7 +11799,7 @@
               "seq": 8,
               "identity": {
                 "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-                "contentHash": "json-fnv-v1:9db871b8548be81c"
+                "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
               },
               "phase": "shop",
               "gold": 10,
@@ -12201,7 +12201,7 @@
         "seq": 11,
         "identity": {
           "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-          "contentHash": "json-fnv-v1:9db871b8548be81c"
+          "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
         },
         "phase": "await-input",
         "gold": 3,
@@ -12385,7 +12385,7 @@
             "seq": 1,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "shop",
             "gold": 6,
@@ -12407,7 +12407,7 @@
             "seq": 2,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "shop",
             "gold": 0,
@@ -12448,7 +12448,7 @@
             "seq": 2,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "shop",
             "gold": 0,
@@ -12478,7 +12478,7 @@
             "seq": 3,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "stage-ready",
             "gold": 0,
@@ -12519,7 +12519,7 @@
             "seq": 3,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "stage-ready",
             "gold": 0,
@@ -12549,7 +12549,7 @@
             "seq": 4,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 0,
@@ -12612,7 +12612,7 @@
             "seq": 4,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 0,
@@ -12647,7 +12647,7 @@
             "seq": 5,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 0,
@@ -12700,7 +12700,7 @@
             "seq": 5,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 0,
@@ -12735,7 +12735,7 @@
             "seq": 6,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "stage-cleared",
             "gold": 7,
@@ -13095,7 +13095,7 @@
             "seq": 6,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "stage-cleared",
             "gold": 7,
@@ -13444,7 +13444,7 @@
             "seq": 7,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "shop",
             "gold": 7,
@@ -13817,7 +13817,7 @@
             "seq": 7,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "shop",
             "gold": 7,
@@ -14166,7 +14166,7 @@
             "seq": 8,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "shop",
             "gold": 3,
@@ -14526,7 +14526,7 @@
             "seq": 8,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "shop",
             "gold": 3,
@@ -14875,7 +14875,7 @@
             "seq": 9,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "stage-ready",
             "gold": 3,
@@ -15235,7 +15235,7 @@
             "seq": 9,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "stage-ready",
             "gold": 3,
@@ -15584,7 +15584,7 @@
             "seq": 10,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 3,
@@ -15647,7 +15647,7 @@
             "seq": 10,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 3,
@@ -15696,7 +15696,7 @@
             "seq": 11,
             "identity": {
               "contentVersion": "quality-r2-refill-handoff-frequency-v2-a11-house-v1",
-              "contentHash": "json-fnv-v1:9db871b8548be81c"
+              "contentHash": "json-fnv-v1:a9053a1d241cd8a1"
             },
             "phase": "await-input",
             "gold": 3,
@@ -15879,7 +15879,7 @@
       "seq": 197,
       "identity": {
         "contentVersion": "quality-r2-bounded-clear-v1",
-        "contentHash": "json-fnv-v1:7f60ad479f68b033"
+        "contentHash": "json-fnv-v1:745d8bdcd35a5840"
       },
       "phase": "shop",
       "gold": 264,
@@ -16498,7 +16498,7 @@
             "seq": 197,
             "identity": {
               "contentVersion": "quality-r2-bounded-clear-v1",
-              "contentHash": "json-fnv-v1:7f60ad479f68b033"
+              "contentHash": "json-fnv-v1:745d8bdcd35a5840"
             },
             "phase": "shop",
             "gold": 264,
@@ -17091,7 +17091,7 @@
             "seq": 198,
             "identity": {
               "contentVersion": "quality-r2-bounded-clear-v1",
-              "contentHash": "json-fnv-v1:7f60ad479f68b033"
+              "contentHash": "json-fnv-v1:745d8bdcd35a5840"
             },
             "phase": "shop",
             "gold": 266,
@@ -17684,7 +17684,7 @@
             "seq": 198,
             "identity": {
               "contentVersion": "quality-r2-bounded-clear-v1",
-              "contentHash": "json-fnv-v1:7f60ad479f68b033"
+              "contentHash": "json-fnv-v1:745d8bdcd35a5840"
             },
             "phase": "shop",
             "gold": 266,
@@ -18265,7 +18265,7 @@
             "seq": 199,
             "identity": {
               "contentVersion": "quality-r2-bounded-clear-v1",
-              "contentHash": "json-fnv-v1:7f60ad479f68b033"
+              "contentHash": "json-fnv-v1:745d8bdcd35a5840"
             },
             "phase": "shop",
             "gold": 261,
@@ -18877,7 +18877,7 @@
             "seq": 199,
             "identity": {
               "contentVersion": "quality-r2-bounded-clear-v1",
-              "contentHash": "json-fnv-v1:7f60ad479f68b033"
+              "contentHash": "json-fnv-v1:745d8bdcd35a5840"
             },
             "phase": "shop",
             "gold": 261,
@@ -19465,7 +19465,7 @@
             "seq": 200,
             "identity": {
               "contentVersion": "quality-r2-bounded-clear-v1",
-              "contentHash": "json-fnv-v1:7f60ad479f68b033"
+              "contentHash": "json-fnv-v1:745d8bdcd35a5840"
             },
             "phase": "shop",
             "gold": 264,
@@ -20053,7 +20053,7 @@
         "seq": 200,
         "identity": {
           "contentVersion": "quality-r2-bounded-clear-v1",
-          "contentHash": "json-fnv-v1:7f60ad479f68b033"
+          "contentHash": "json-fnv-v1:745d8bdcd35a5840"
         },
         "phase": "shop",
         "gold": 264,

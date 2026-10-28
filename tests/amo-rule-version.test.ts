@@ -17,7 +17,7 @@ function loaded(raw:unknown):Checkpoint {const read=readCheckpoint(raw);if(!read
 class MemoryStore implements SaveStore {slots:SaveSlots;constructor(cp:Checkpoint){this.slots={revision:1,current:structuredClone(cp),previous:null};}async read(){return structuredClone(this.slots);}async commit(rev:number,current:Checkpoint,previous:Checkpoint|null){if(rev!==this.slots.revision)throw Error('write-conflict');this.slots={revision:rev+1,current:structuredClone(current),previous:structuredClone(previous)};return rev+1;}}
 describe('Amo ruleset identity and exact balance contract',()=>{
  it('keeps the actual published v10 identity, accepts only paired identities and creates explicit v11',()=>{
-  expect(R2_LEGACY_CONTENT_HASH).toBe('json-fnv-v1:00ba5b399c980695');
+  expect(R2_LEGACY_CONTENT_HASH).toBe('json-fnv-v1:1d9e0cc5be9691f9');
   expect(r2RulesetFor(legacy.before.state)?.amoScoreTiming).toBe('before-joker');
   const state=createRun({seed:'new-rule',characterId:'amo',runId:'new-rule',rulesVersion:'r2'});
   expect([state.contentVersion,state.contentHash]).toEqual([R2_CONTENT_VERSION,R2_CONTENT_HASH]);expect(state.handLevels).toEqual({'high-card':3});

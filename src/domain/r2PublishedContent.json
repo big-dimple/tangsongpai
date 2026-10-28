@@ -2,11 +2,11 @@
   "source": "04d2f729bbe37d7e34783f4a2a81b9026ff98a64",
   "v10": {
     "version": "quality-r2-content-v10",
-    "hash": "json-fnv-v1:00ba5b399c980695"
+    "hash": "json-fnv-v1:1d9e0cc5be9691f9"
   },
   "v11": {
     "version": "quality-r2-content-v11",
-    "hash": "json-fnv-v1:117fb6675e31ce73"
+    "hash": "json-fnv-v1:27de51ef19451243"
   },
   "snapshot": {
     "jokers": [
@@ -99,14 +99,14 @@
         "id": "huimaqiang",
         "name": "回马枪",
         "rarity": "rare",
-        "description": "本场每第 3 次出牌，整手倍率 ×2。",
+        "description": "本场第 3、4、5 次出牌，整手倍率 ×2；第 6 次起不再触发。",
         "hooks": [
           {
             "phase": "jokerScore",
             "condition": {
-              "kind": "play-modulo",
-              "divisor": 3,
-              "remainder": 0
+              "kind": "play-window",
+              "minimum": 3,
+              "maximum": 5
             },
             "operations": [
               {

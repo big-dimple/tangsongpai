@@ -63,6 +63,17 @@ export function showPokerEncounter(dialog:DetailDialog,h:Hooks,options:{committe
   const c2=enhanceQiyuCardGrid(d,v.targets,reduced);
   stageCleanup=()=>{c2();c1();};
  }catch{/* Static selection remains visible. */}
- d.querySelector<HTMLButtonElement>('.dialog-close')!.addEventListener('click',()=>emit('Exited'));
+ // 底部返回按钮误触会白白失去本次奇遇：先弹确认，明确告知后果，并引导下滑查看选牌。
+ const close=d.querySelector<HTMLButtonElement>('.dialog-close')!;
+ close.onclick=()=>{
+  const stay=()=>showPokerEncounter(dialog,h,{returning:true});
+  const c=open('返回商店 · 将失去本次奇遇','返回商店后本次奇遇机会立即失效，之后按真实通关重新推进，不会补发。\n下滑可查看全部可选扑克与规则说明，选好再离开也不迟。',[
+   {label:'留在奇遇 · 继续查看',primary:true,run:stay},
+   {label:'失去机会 · 返回商店',run:()=>{emit('Exited');dialog.close();}},
+  ],{closeLabel:'返回奇遇选牌',summaryBody:'仅在确认后才会离开；误触不会直接退出奇遇。'});
+  c.classList.add('poker-encounter-exit-confirm');
+  c.querySelector<HTMLButtonElement>('.dialog-close')!.onclick=stay;
+  c.addEventListener('cancel',e=>{e.preventDefault();stay();},{capture:true});
+ };
  d.addEventListener('cancel',()=>emit('Exited'));
 }

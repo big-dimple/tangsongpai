@@ -2,7 +2,7 @@
   "scope": "bounded planted legal states, actual UI actions and full state/journal/IndexedDB; no natural game/seed search or full18",
   "identity": {
     "contentVersion": "quality-r2-touye-new-core-v1",
-    "contentHash": "json-fnv-v1:413ecc65d3b9a2a1"
+    "contentHash": "json-fnv-v1:87c19b9c45c076b0"
   },
   "rows": [
     {
@@ -23,7 +23,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-win",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -478,7 +478,7 @@
           "receipts": [
             {
               "commandId": "core/mature-win/start",
-              "fingerprint": "json-fnv-v1:0c84bc3c4684e730",
+              "fingerprint": "json-fnv-v1:4d0e19f43943b980",
               "seq": 1
             },
             {
@@ -513,7 +513,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-win",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -968,7 +968,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-win/start",
-                  "fingerprint": "json-fnv-v1:0c84bc3c4684e730",
+                  "fingerprint": "json-fnv-v1:4d0e19f43943b980",
                   "seq": 1
                 },
                 {
@@ -988,7 +988,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:5aa0fa187318a3dc"
+            "checksum": "json-fnv-v1:4fc71e097ffcaaed"
           },
           "previous": null
         }
@@ -1019,7 +1019,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-touye-new-core-v1",
-          "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+          "contentHash": "json-fnv-v1:87c19b9c45c076b0",
           "runId": "core/mature-win",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -1641,7 +1641,7 @@
           "receipts": [
             {
               "commandId": "core/mature-win/start",
-              "fingerprint": "json-fnv-v1:0c84bc3c4684e730",
+              "fingerprint": "json-fnv-v1:4d0e19f43943b980",
               "seq": 1
             },
             {
@@ -1697,7 +1697,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-win",
               "seed": "touye-core-bounded",
               "commandSeq": 4,
@@ -2319,7 +2319,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-win/start",
-                  "fingerprint": "json-fnv-v1:0c84bc3c4684e730",
+                  "fingerprint": "json-fnv-v1:4d0e19f43943b980",
                   "seq": 1
                 },
                 {
@@ -2360,7 +2360,7 @@
                 }
               }
             ],
-            "checksum": "json-fnv-v1:30d53b262829ceb2"
+            "checksum": "json-fnv-v1:b35af00bf5c78567"
           },
           "previous": {
             "format": "tangsongpai-checkpoint",
@@ -2376,7 +2376,7 @@
               "schemaVersion": 2,
               "rulesVersion": "r2",
               "contentVersion": "quality-r2-touye-new-core-v1",
-              "contentHash": "json-fnv-v1:413ecc65d3b9a2a1",
+              "contentHash": "json-fnv-v1:87c19b9c45c076b0",
               "runId": "core/mature-win",
               "seed": "touye-core-bounded",
               "commandSeq": 3,
@@ -2831,7 +2831,7 @@
               "receipts": [
                 {
                   "commandId": "core/mature-win/start",
-                  "fingerprint": "json-fnv-v1:0c84bc3c4684e730",
+                  "fingerprint": "json-fnv-v1:4d0e19f43943b980",
                   "seq": 1
                 },
                 {
@@ -2851,7 +2851,7 @@
             },
             "journalBaseSeq": 3,
             "journal": [],
-            "checksum": "json-fnv-v1:5aa0fa187318a3dc"
+            "checksum": "json-fnv-v1:4fc71e097ffcaaed"
           }
         }
       },

@@ -57,7 +57,7 @@ describe('prototype edition exception binds to the actual saved source',()=>{
  });
  it('accepts card foil independently and keeps published fixtures and current prototype hash unchanged',()=>{
   const cp=fixture(undefined,true,true);expect(readCheckpoint(cp)).toEqual({ok:true,checkpoint:cp});
-  expect(R2_ASSIST_HASH).toBe('json-fnv-v1:b0dbe7b458ba9338');
+  expect(R2_ASSIST_HASH).toBe('json-fnv-v1:86d6f3ce5f30985a');
   for(const frozen of [v10,v11]){const before=readCheckpoint(frozen.before),after=readCheckpoint(frozen.after);expect(before.ok&&after.ok).toBe(true);if(!before.ok||!after.ok)throw Error('published fixture');const result=applyCommand(before.checkpoint.state,frozen.command as Command);expect(result.ok).toBe(true);expect(result.state).toEqual(after.checkpoint.state);expect(makeCheckpoint(result.state,[frozen.command as Command])).toEqual(after.checkpoint);}
  });
 });

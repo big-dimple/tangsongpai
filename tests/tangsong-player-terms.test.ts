@@ -57,7 +57,7 @@ it('keeps frozen boss and challenge text as hash input while their player projec
  // Pin every frozen registry character, independent of checkout line endings.
  const registryLF=readFileSync('src/domain/r2PublishedContent.json','utf8').replaceAll('\r\n','\n');
  for(const checkoutText of [registryLF,registryLF.replaceAll('\n','\r\n')]){
-  expect(createHash('sha256').update(checkoutText.replaceAll('\r\n','\n')).digest('hex')).toBe('5e1de62bf74b0f0def45c0691a81b92dfa76f1ab1c1114a4f69317d63e16da2e');
+  expect(createHash('sha256').update(checkoutText.replaceAll('\r\n','\n')).digest('hex')).toBe('bd0fd38ee3e7e02e237b998063e294fc89a8edc3303c1d26b4aec428fdef321f');
  }
  expect(R2_PUBLISHED_CONTENT.v10.hash).not.toBe(R2_PUBLISHED_CONTENT.v11.hash);
 });

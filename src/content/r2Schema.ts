@@ -17,6 +17,7 @@ export type Condition =
   | { kind: 'played-count-maximum'; maximum: number }
   | { kind: 'held-count'; minimum: number }
   | { kind: 'play-modulo'; divisor: number; remainder: number }
+  | { kind: 'play-window'; minimum: number; maximum: number }
   | { kind: 'suit-in'; values: readonly Suit[] }
   | { kind: 'paired-rank'; minimum: number }
   | { kind: 'rank-groups'; minimum: number; groupSize: number }
@@ -216,6 +217,7 @@ export function validR2Condition(c:unknown,phase?:HookPhase,profile:'published'|
     case 'played-count-maximum':valid=at('jokerScore')&&exact(c,['kind','maximum'])&&integer(c.maximum,1,5);break;
     case 'held-count':valid=exact(c,['kind','minimum'])&&integer(c.minimum,0,14);break;
     case 'play-modulo':valid=exact(c,['kind','divisor','remainder'])&&integer(c.divisor,1,100)&&integer(c.remainder,0,(c.divisor as number)-1);break;
+    case 'play-window':valid=exact(c,['kind','minimum','maximum'])&&integer(c.minimum,1,100)&&integer(c.maximum,1,100)&&(c.maximum as number)>=(c.minimum as number);break;
     case 'suit-in':valid=at('onCardScore')&&exact(c,['kind','values'])&&Array.isArray(c.values)&&c.values.length>0&&c.values.length<=SUITS.length&&c.values.every(v=>SUITS.includes(v));break;
     case 'paired-rank':valid=at('onCardScore')&&exact(c,['kind','minimum'])&&integer(c.minimum,2,5);break;
     case 'rank-groups':valid=at('jokerScore')&&exact(c,['kind','minimum','groupSize'])&&integer(c.minimum,1,2)&&integer(c.groupSize,2,5);break;

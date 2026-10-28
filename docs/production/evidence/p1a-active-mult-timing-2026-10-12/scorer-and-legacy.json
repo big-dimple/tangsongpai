@@ -26040,7 +26040,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "core/unformed-win",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -26516,7 +26516,7 @@
           "receipts": [
             {
               "commandId": "core/unformed-win/start",
-              "fingerprint": "json-fnv-v1:b43b6c9f691ad85b",
+              "fingerprint": "json-fnv-v1:7e27fca8d679eeac",
               "seq": 1
             },
             {
@@ -26536,7 +26536,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:ce00b12cecf8ac80"
+        "checksum": "json-fnv-v1:a4d16d7639090552"
       },
       "pending": {
         "format": "tangsongpai-checkpoint",
@@ -26552,7 +26552,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "core/unformed-win",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -27195,7 +27195,7 @@
           "receipts": [
             {
               "commandId": "core/unformed-win/start",
-              "fingerprint": "json-fnv-v1:b43b6c9f691ad85b",
+              "fingerprint": "json-fnv-v1:7e27fca8d679eeac",
               "seq": 1
             },
             {
@@ -27236,7 +27236,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:caa073e145e421b5"
+        "checksum": "json-fnv-v1:e09aad81045293c5"
       },
       "unusedReal": {
         "format": "tangsongpai-checkpoint",
@@ -27259,7 +27259,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "core/unformed-win",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -27786,7 +27786,7 @@
           "receipts": [
             {
               "commandId": "core/unformed-win/start",
-              "fingerprint": "json-fnv-v1:b43b6c9f691ad85b",
+              "fingerprint": "json-fnv-v1:7e27fca8d679eeac",
               "seq": 1
             },
             {
@@ -28459,7 +28459,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:809070f6dd1b149a"
+        "checksum": "json-fnv-v1:c0367f8057e3b52c"
       },
       "input": {
         "rulesVersion": "r2",
@@ -33913,7 +33913,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "core/unformed-disabled",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -34394,7 +34394,7 @@
           "receipts": [
             {
               "commandId": "core/unformed-disabled/start",
-              "fingerprint": "json-fnv-v1:9bce2ba18f0e35b5",
+              "fingerprint": "json-fnv-v1:0c58a36a4baba7e6",
               "seq": 1
             },
             {
@@ -34414,7 +34414,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:badc306f313addc3"
+        "checksum": "json-fnv-v1:658bf151e29aeadd"
       },
       "pending": {
         "format": "tangsongpai-checkpoint",
@@ -34430,7 +34430,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "core/unformed-disabled",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -35079,7 +35079,7 @@
           "receipts": [
             {
               "commandId": "core/unformed-disabled/start",
-              "fingerprint": "json-fnv-v1:9bce2ba18f0e35b5",
+              "fingerprint": "json-fnv-v1:0c58a36a4baba7e6",
               "seq": 1
             },
             {
@@ -35120,7 +35120,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:30b830206c15765c"
+        "checksum": "json-fnv-v1:98deae800ddfbc2c"
       },
       "unusedReal": {
         "format": "tangsongpai-checkpoint",
@@ -35136,7 +35136,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "core/unformed-disabled",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -35668,7 +35668,7 @@
           "receipts": [
             {
               "commandId": "core/unformed-disabled/start",
-              "fingerprint": "json-fnv-v1:9bce2ba18f0e35b5",
+              "fingerprint": "json-fnv-v1:0c58a36a4baba7e6",
               "seq": 1
             },
             {
@@ -36220,7 +36220,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:98a07db3d727a69f"
+        "checksum": "json-fnv-v1:1a94cabbc153c757"
       },
       "input": {
         "rulesVersion": "r2",
@@ -41486,7 +41486,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "core/unformed-win",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -41962,7 +41962,7 @@
           "receipts": [
             {
               "commandId": "core/unformed-win/start",
-              "fingerprint": "json-fnv-v1:b43b6c9f691ad85b",
+              "fingerprint": "json-fnv-v1:7e27fca8d679eeac",
               "seq": 1
             },
             {
@@ -41982,7 +41982,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:ce00b12cecf8ac80"
+        "checksum": "json-fnv-v1:a4d16d7639090552"
       },
       "pending": {
         "format": "tangsongpai-checkpoint",
@@ -41998,7 +41998,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "core/unformed-win",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -42641,7 +42641,7 @@
           "receipts": [
             {
               "commandId": "core/unformed-win/start",
-              "fingerprint": "json-fnv-v1:b43b6c9f691ad85b",
+              "fingerprint": "json-fnv-v1:7e27fca8d679eeac",
               "seq": 1
             },
             {
@@ -42682,7 +42682,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:caa073e145e421b5"
+        "checksum": "json-fnv-v1:e09aad81045293c5"
       },
       "unusedReal": {
         "format": "tangsongpai-checkpoint",
@@ -42698,7 +42698,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "core/unformed-win",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -43205,7 +43205,7 @@
           "receipts": [
             {
               "commandId": "core/unformed-win/start",
-              "fingerprint": "json-fnv-v1:b43b6c9f691ad85b",
+              "fingerprint": "json-fnv-v1:7e27fca8d679eeac",
               "seq": 1
             },
             {
@@ -43609,7 +43609,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:d5d3bb46e4bf5aca"
+        "checksum": "json-fnv-v1:746175fc96d13268"
       },
       "input": {
         "rulesVersion": "r2",
@@ -48143,7 +48143,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 3,
@@ -48623,7 +48623,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -48643,7 +48643,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:609699494e204545"
+        "checksum": "json-fnv-v1:d675be5bf0d3caff"
       },
       "action": {
         "type": "PlayHand",
@@ -48677,7 +48677,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 4,
@@ -49213,7 +49213,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -50109,7 +50109,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:56d507ba328f4f6e"
+        "checksum": "json-fnv-v1:8ee8b5668585834a"
       },
       "unused": {
         "format": "tangsongpai-checkpoint",
@@ -50132,7 +50132,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 4,
@@ -50667,7 +50667,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -51564,7 +51564,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:3ede702a9987310e"
+        "checksum": "json-fnv-v1:b6c72ff49c1b4e70"
       }
     },
     {
@@ -51583,7 +51583,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 3,
@@ -52063,7 +52063,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -52083,7 +52083,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:57dc2a5d7bc20d39"
+        "checksum": "json-fnv-v1:2a8a99e7df0af0bb"
       },
       "action": {
         "type": "PlayHand",
@@ -52117,7 +52117,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 4,
@@ -52653,7 +52653,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -53549,7 +53549,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:aaa20d1216c96466"
+        "checksum": "json-fnv-v1:9520efaa810b2b9e"
       },
       "unused": {
         "format": "tangsongpai-checkpoint",
@@ -53572,7 +53572,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 4,
@@ -54107,7 +54107,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -55004,7 +55004,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:7a1200c1b49d2025"
+        "checksum": "json-fnv-v1:83df2083bee9e48f"
       }
     },
     {
@@ -55023,7 +55023,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 3,
@@ -55503,7 +55503,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -55523,7 +55523,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:b51165fa4e1a076e"
+        "checksum": "json-fnv-v1:ec30a0dc2bd14138"
       },
       "action": {
         "type": "PlayHand",
@@ -55557,7 +55557,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 4,
@@ -56093,7 +56093,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -56989,7 +56989,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:f8ae233f582fa4f3"
+        "checksum": "json-fnv-v1:6b4602231b953917"
       },
       "unused": {
         "format": "tangsongpai-checkpoint",
@@ -57012,7 +57012,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 4,
@@ -57547,7 +57547,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -58444,7 +58444,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:b2adb495d179dd79"
+        "checksum": "json-fnv-v1:223c8e0f410adcfb"
       }
     },
     {
@@ -58463,7 +58463,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 3,
@@ -58943,7 +58943,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -58963,7 +58963,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:367491388e03a594"
+        "checksum": "json-fnv-v1:c0e89b1297a28406"
       },
       "action": {
         "type": "PlayHand",
@@ -58997,7 +58997,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 4,
@@ -59533,7 +59533,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -60470,7 +60470,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:533b0419255661bd"
+        "checksum": "json-fnv-v1:40341211630100b5"
       },
       "unused": {
         "format": "tangsongpai-checkpoint",
@@ -60493,7 +60493,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 4,
@@ -61028,7 +61028,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -61925,7 +61925,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:86d17a327d1938d6"
+        "checksum": "json-fnv-v1:2a6e12dc2d961078"
       }
     },
     {
@@ -61944,7 +61944,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 3,
@@ -62424,7 +62424,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -62444,7 +62444,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:1db2302beac21e1f"
+        "checksum": "json-fnv-v1:1fd0165d3e4ae959"
       },
       "action": {
         "type": "PlayHand",
@@ -62478,7 +62478,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 4,
@@ -63014,7 +63014,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -63951,7 +63951,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:5cb82805ae457961"
+        "checksum": "json-fnv-v1:a32a10690c6e7315"
       },
       "unused": {
         "format": "tangsongpai-checkpoint",
@@ -63974,7 +63974,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 4,
@@ -64509,7 +64509,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -65406,7 +65406,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:fd22bf5c05a2bd60"
+        "checksum": "json-fnv-v1:b184d706eb48a3b2"
       }
     },
     {
@@ -65425,7 +65425,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 3,
@@ -65905,7 +65905,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -65925,7 +65925,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:7cc308bf5f9deabb"
+        "checksum": "json-fnv-v1:b4d384996a3bc5fd"
       },
       "action": {
         "type": "PlayHand",
@@ -65959,7 +65959,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 4,
@@ -66495,7 +66495,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -67432,7 +67432,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:a11ba3703dcb82d4"
+        "checksum": "json-fnv-v1:9dfd85c8f5ab5f4c"
       },
       "unused": {
         "format": "tangsongpai-checkpoint",
@@ -67455,7 +67455,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 4,
@@ -67990,7 +67990,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -68887,7 +68887,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:638552dfd1ead3d3"
+        "checksum": "json-fnv-v1:3238cf518db96a7d"
       }
     }
   ],
@@ -68926,7 +68926,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 3,
@@ -69410,7 +69410,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -69430,7 +69430,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:ad02f6ddee8feab1"
+        "checksum": "json-fnv-v1:a2bceb4fd56b4b1b"
       },
       "used": {
         "format": "tangsongpai-checkpoint",
@@ -69469,7 +69469,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 4,
@@ -70009,7 +70009,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -70946,7 +70946,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:5d09fa4c92d6ed78"
+        "checksum": "json-fnv-v1:c616f49c3afde7c8"
       },
       "unused": {
         "format": "tangsongpai-checkpoint",
@@ -70979,7 +70979,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 4,
@@ -71519,7 +71519,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -72291,7 +72291,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:662b673e9c304aa2"
+        "checksum": "json-fnv-v1:63b9ab4c7d31a278"
       }
     },
     {
@@ -72316,7 +72316,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/azao",
           "seed": "p1a-bounded",
           "commandSeq": 4,
@@ -72835,7 +72835,7 @@
           "receipts": [
             {
               "commandId": "p1a/azao/start",
-              "fingerprint": "json-fnv-v1:6fa51f982c8648b4",
+              "fingerprint": "json-fnv-v1:7fe52a9dc02c0a19",
               "seq": 1
             },
             {
@@ -73361,7 +73361,7 @@
         },
         "journalBaseSeq": 4,
         "journal": [],
-        "checksum": "json-fnv-v1:92e95e86d52c8bda"
+        "checksum": "json-fnv-v1:3ece640b67c1e3cf"
       },
       "used": {
         "format": "tangsongpai-checkpoint",
@@ -73389,7 +73389,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/azao",
           "seed": "p1a-bounded",
           "commandSeq": 5,
@@ -73959,7 +73959,7 @@
           "receipts": [
             {
               "commandId": "p1a/azao/start",
-              "fingerprint": "json-fnv-v1:6fa51f982c8648b4",
+              "fingerprint": "json-fnv-v1:7fe52a9dc02c0a19",
               "seq": 1
             },
             {
@@ -74761,7 +74761,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:f5fe1ddc25aae048"
+        "checksum": "json-fnv-v1:1f2a4bfb0ad5331f"
       },
       "unused": {
         "format": "tangsongpai-checkpoint",
@@ -74782,7 +74782,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/azao",
           "seed": "p1a-bounded",
           "commandSeq": 5,
@@ -75352,7 +75352,7 @@
           "receipts": [
             {
               "commandId": "p1a/azao/start",
-              "fingerprint": "json-fnv-v1:6fa51f982c8648b4",
+              "fingerprint": "json-fnv-v1:7fe52a9dc02c0a19",
               "seq": 1
             },
             {
@@ -75989,7 +75989,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:ba28de5d66de2da1"
+        "checksum": "json-fnv-v1:57eca5bca7224180"
       }
     },
     {
@@ -76009,7 +76009,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "core/mature-win",
           "seed": "touye-core-bounded",
           "commandSeq": 3,
@@ -76464,7 +76464,7 @@
           "receipts": [
             {
               "commandId": "core/mature-win/start",
-              "fingerprint": "json-fnv-v1:ab6996ff86e61c4b",
+              "fingerprint": "json-fnv-v1:f0470f98bc0146ac",
               "seq": 1
             },
             {
@@ -76484,7 +76484,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:f3f0f06035b7417c"
+        "checksum": "json-fnv-v1:07f9c7ec4c1a1710"
       },
       "pending": {
         "format": "tangsongpai-checkpoint",
@@ -76500,7 +76500,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "core/mature-win",
           "seed": "touye-core-bounded",
           "commandSeq": 4,
@@ -77122,7 +77122,7 @@
           "receipts": [
             {
               "commandId": "core/mature-win/start",
-              "fingerprint": "json-fnv-v1:ab6996ff86e61c4b",
+              "fingerprint": "json-fnv-v1:f0470f98bc0146ac",
               "seq": 1
             },
             {
@@ -77147,7 +77147,7 @@
         },
         "journalBaseSeq": 4,
         "journal": [],
-        "checksum": "json-fnv-v1:aa3aaf37b30583cb"
+        "checksum": "json-fnv-v1:a3d5eda327b95e3f"
       },
       "used": {
         "format": "tangsongpai-checkpoint",
@@ -77170,7 +77170,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "core/mature-win",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -77900,7 +77900,7 @@
           "receipts": [
             {
               "commandId": "core/mature-win/start",
-              "fingerprint": "json-fnv-v1:ab6996ff86e61c4b",
+              "fingerprint": "json-fnv-v1:f0470f98bc0146ac",
               "seq": 1
             },
             {
@@ -78546,7 +78546,7 @@
         },
         "journalBaseSeq": 5,
         "journal": [],
-        "checksum": "json-fnv-v1:f372487321a7371f"
+        "checksum": "json-fnv-v1:7847852f14fa3153"
       },
       "unused": {
         "format": "tangsongpai-checkpoint",
@@ -78562,7 +78562,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "core/mature-win",
           "seed": "touye-core-bounded",
           "commandSeq": 5,
@@ -79068,7 +79068,7 @@
           "receipts": [
             {
               "commandId": "core/mature-win/start",
-              "fingerprint": "json-fnv-v1:ab6996ff86e61c4b",
+              "fingerprint": "json-fnv-v1:f0470f98bc0146ac",
               "seq": 1
             },
             {
@@ -79557,7 +79557,7 @@
         },
         "journalBaseSeq": 5,
         "journal": [],
-        "checksum": "json-fnv-v1:5a56608f9d85e093"
+        "checksum": "json-fnv-v1:be27b2f35657bf6f"
       }
     }
   ],
@@ -79580,7 +79580,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/price/d11",
           "seed": "p1a-price-branch",
           "commandSeq": 2,
@@ -80039,7 +80039,7 @@
           "receipts": [
             {
               "commandId": "p1a/price/d11/start",
-              "fingerprint": "json-fnv-v1:e6983b89f9d7d25d",
+              "fingerprint": "json-fnv-v1:655539ca2a6bb586",
               "seq": 1
             },
             {
@@ -80054,7 +80054,7 @@
         },
         "journalBaseSeq": 2,
         "journal": [],
-        "checksum": "json-fnv-v1:eac3bae2c29cbd06"
+        "checksum": "json-fnv-v1:fee1aca0b7ab8d5c"
       },
       "sold": {
         "format": "tangsongpai-checkpoint",
@@ -80070,7 +80070,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/price/d11",
           "seed": "p1a-price-branch",
           "commandSeq": 3,
@@ -80522,7 +80522,7 @@
           "receipts": [
             {
               "commandId": "p1a/price/d11/start",
-              "fingerprint": "json-fnv-v1:e6983b89f9d7d25d",
+              "fingerprint": "json-fnv-v1:655539ca2a6bb586",
               "seq": 1
             },
             {
@@ -80552,7 +80552,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:96fd4196c4e23582"
+        "checksum": "json-fnv-v1:0a1d7a60bf089014"
       },
       "bought": {
         "format": "tangsongpai-checkpoint",
@@ -80568,7 +80568,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/price/d11",
           "seed": "p1a-price-branch",
           "commandSeq": 4,
@@ -81028,7 +81028,7 @@
           "receipts": [
             {
               "commandId": "p1a/price/d11/start",
-              "fingerprint": "json-fnv-v1:e6983b89f9d7d25d",
+              "fingerprint": "json-fnv-v1:655539ca2a6bb586",
               "seq": 1
             },
             {
@@ -81072,7 +81072,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:1d90e226aae0c1ea"
+        "checksum": "json-fnv-v1:7e3cc080c6a14a9c"
       },
       "inputBefore": {
         "rulesVersion": "r2",
@@ -87516,7 +87516,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/price/e10",
           "seed": "p1a-price-branch",
           "commandSeq": 2,
@@ -87978,7 +87978,7 @@
           "receipts": [
             {
               "commandId": "p1a/price/e10/start",
-              "fingerprint": "json-fnv-v1:7037a4b9a6edd55d",
+              "fingerprint": "json-fnv-v1:063d579a77d4d6a6",
               "seq": 1
             },
             {
@@ -87993,7 +87993,7 @@
         },
         "journalBaseSeq": 2,
         "journal": [],
-        "checksum": "json-fnv-v1:bbac4f83aa7245cf"
+        "checksum": "json-fnv-v1:d53329fc8953ce10"
       },
       "sold": {
         "format": "tangsongpai-checkpoint",
@@ -88009,7 +88009,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/price/e10",
           "seed": "p1a-price-branch",
           "commandSeq": 3,
@@ -88461,7 +88461,7 @@
           "receipts": [
             {
               "commandId": "p1a/price/e10/start",
-              "fingerprint": "json-fnv-v1:7037a4b9a6edd55d",
+              "fingerprint": "json-fnv-v1:063d579a77d4d6a6",
               "seq": 1
             },
             {
@@ -88491,7 +88491,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:198a52a832a2466c"
+        "checksum": "json-fnv-v1:b6bb7aabb7ebc2d7"
       },
       "bought": {
         "format": "tangsongpai-checkpoint",
@@ -88507,7 +88507,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/price/e10",
           "seed": "p1a-price-branch",
           "commandSeq": 4,
@@ -88967,7 +88967,7 @@
           "receipts": [
             {
               "commandId": "p1a/price/e10/start",
-              "fingerprint": "json-fnv-v1:7037a4b9a6edd55d",
+              "fingerprint": "json-fnv-v1:063d579a77d4d6a6",
               "seq": 1
             },
             {
@@ -89011,7 +89011,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:eff26dbaa89ac7ce"
+        "checksum": "json-fnv-v1:a1b7ae0d4c04ba79"
       },
       "inputBefore": {
         "rulesVersion": "r2",
@@ -97415,7 +97415,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-route-growth-v1",
-        "contentHash": "json-fnv-v1:7414228d95059959"
+        "contentHash": "json-fnv-v1:a47db56489d9c970"
       },
       "before": {
         "format": "tangsongpai-checkpoint",
@@ -97448,7 +97448,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-route-growth-v1",
-          "contentHash": "json-fnv-v1:7414228d95059959",
+          "contentHash": "json-fnv-v1:a47db56489d9c970",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 3,
@@ -97923,7 +97923,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:b602ca5227e43b5e",
+              "fingerprint": "json-fnv-v1:ac75256575d83311",
               "seq": 1
             },
             {
@@ -97943,7 +97943,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:302af290a2e10054"
+        "checksum": "json-fnv-v1:f683ce86282f784a"
       },
       "after": {
         "format": "tangsongpai-checkpoint",
@@ -97976,7 +97976,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-route-growth-v1",
-          "contentHash": "json-fnv-v1:7414228d95059959",
+          "contentHash": "json-fnv-v1:a47db56489d9c970",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 4,
@@ -98502,7 +98502,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:b602ca5227e43b5e",
+              "fingerprint": "json-fnv-v1:ac75256575d83311",
               "seq": 1
             },
             {
@@ -99094,7 +99094,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:9b97448dec83e7e1"
+        "checksum": "json-fnv-v1:5d96df7d12d18049"
       },
       "refund": [
         {
@@ -99146,7 +99146,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-active-mult-timing-v1",
-        "contentHash": "json-fnv-v1:ca1e8f77913649d3"
+        "contentHash": "json-fnv-v1:a81df32340b9c507"
       },
       "before": {
         "format": "tangsongpai-checkpoint",
@@ -99179,7 +99179,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 3,
@@ -99654,7 +99654,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -99674,7 +99674,7 @@
         },
         "journalBaseSeq": 3,
         "journal": [],
-        "checksum": "json-fnv-v1:dca5f75617c0dce2"
+        "checksum": "json-fnv-v1:ba2f39f4b2d72328"
       },
       "after": {
         "format": "tangsongpai-checkpoint",
@@ -99713,7 +99713,7 @@
           "schemaVersion": 2,
           "rulesVersion": "r2",
           "contentVersion": "quality-r2-active-mult-timing-v1",
-          "contentHash": "json-fnv-v1:ca1e8f77913649d3",
+          "contentHash": "json-fnv-v1:a81df32340b9c507",
           "runId": "p1a/xiemu",
           "seed": "p1a-bounded",
           "commandSeq": 4,
@@ -100238,7 +100238,7 @@
           "receipts": [
             {
               "commandId": "p1a/xiemu/start",
-              "fingerprint": "json-fnv-v1:5219f23d29506e71",
+              "fingerprint": "json-fnv-v1:d777552c8e8d9d50",
               "seq": 1
             },
             {
@@ -100869,7 +100869,7 @@
             }
           }
         ],
-        "checksum": "json-fnv-v1:207a43abae82c59f"
+        "checksum": "json-fnv-v1:580e06c390af8117"
       },
       "refund": []
     }
@@ -100878,7 +100878,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-touye-new-core-v1",
-        "contentHash": "json-fnv-v1:413ecc65d3b9a2a1"
+        "contentHash": "json-fnv-v1:87c19b9c45c076b0"
       },
       "hero": "touye",
       "commands": [
@@ -100928,7 +100928,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-touye-new-core-v1",
-        "contentHash": "json-fnv-v1:413ecc65d3b9a2a1"
+        "contentHash": "json-fnv-v1:87c19b9c45c076b0"
       },
       "hero": "touye",
       "scenario": "unformed-win",
@@ -100972,7 +100972,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-touye-new-core-v1",
-        "contentHash": "json-fnv-v1:413ecc65d3b9a2a1"
+        "contentHash": "json-fnv-v1:87c19b9c45c076b0"
       },
       "hero": "touye",
       "scenario": "target-miss",
@@ -101013,7 +101013,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-route-growth-v1",
-        "contentHash": "json-fnv-v1:7414228d95059959"
+        "contentHash": "json-fnv-v1:a47db56489d9c970"
       },
       "hero": "amo",
       "commands": [
@@ -101063,7 +101063,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-route-growth-v1",
-        "contentHash": "json-fnv-v1:7414228d95059959"
+        "contentHash": "json-fnv-v1:a47db56489d9c970"
       },
       "hero": "touye",
       "commands": [
@@ -101113,7 +101113,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-route-growth-v1",
-        "contentHash": "json-fnv-v1:7414228d95059959"
+        "contentHash": "json-fnv-v1:a47db56489d9c970"
       },
       "hero": "xiemu",
       "commands": [
@@ -101164,7 +101164,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-route-growth-v1",
-        "contentHash": "json-fnv-v1:7414228d95059959"
+        "contentHash": "json-fnv-v1:a47db56489d9c970"
       },
       "hero": "azao",
       "commands": [
@@ -101214,7 +101214,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-route-growth-v1",
-        "contentHash": "json-fnv-v1:7414228d95059959"
+        "contentHash": "json-fnv-v1:a47db56489d9c970"
       },
       "hero": "erxiang",
       "commands": [
@@ -101264,7 +101264,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-route-growth-v1",
-        "contentHash": "json-fnv-v1:7414228d95059959"
+        "contentHash": "json-fnv-v1:a47db56489d9c970"
       },
       "hero": "laohuan",
       "commands": [
@@ -101314,7 +101314,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-route-growth-v1",
-        "contentHash": "json-fnv-v1:7414228d95059959"
+        "contentHash": "json-fnv-v1:a47db56489d9c970"
       },
       "hero": "touye",
       "scenario": "unformed-win",
@@ -101358,7 +101358,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-route-growth-v1",
-        "contentHash": "json-fnv-v1:7414228d95059959"
+        "contentHash": "json-fnv-v1:a47db56489d9c970"
       },
       "hero": "touye",
       "scenario": "target-miss",
@@ -101399,7 +101399,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-suit-choice-v1",
-        "contentHash": "json-fnv-v1:1b7a0ea858306134"
+        "contentHash": "json-fnv-v1:530475b8dfbff144"
       },
       "hero": "amo",
       "commands": [
@@ -101449,7 +101449,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-suit-choice-v1",
-        "contentHash": "json-fnv-v1:1b7a0ea858306134"
+        "contentHash": "json-fnv-v1:530475b8dfbff144"
       },
       "hero": "touye",
       "commands": [
@@ -101499,7 +101499,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-suit-choice-v1",
-        "contentHash": "json-fnv-v1:1b7a0ea858306134"
+        "contentHash": "json-fnv-v1:530475b8dfbff144"
       },
       "hero": "xiemu",
       "commands": [
@@ -101550,7 +101550,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-suit-choice-v1",
-        "contentHash": "json-fnv-v1:1b7a0ea858306134"
+        "contentHash": "json-fnv-v1:530475b8dfbff144"
       },
       "hero": "azao",
       "commands": [
@@ -101600,7 +101600,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-suit-choice-v1",
-        "contentHash": "json-fnv-v1:1b7a0ea858306134"
+        "contentHash": "json-fnv-v1:530475b8dfbff144"
       },
       "hero": "erxiang",
       "commands": [
@@ -101650,7 +101650,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-suit-choice-v1",
-        "contentHash": "json-fnv-v1:1b7a0ea858306134"
+        "contentHash": "json-fnv-v1:530475b8dfbff144"
       },
       "hero": "laohuan",
       "commands": [
@@ -101700,7 +101700,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-suit-choice-v1",
-        "contentHash": "json-fnv-v1:1b7a0ea858306134"
+        "contentHash": "json-fnv-v1:530475b8dfbff144"
       },
       "hero": "touye",
       "scenario": "unformed-win",
@@ -101744,7 +101744,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-suit-choice-v1",
-        "contentHash": "json-fnv-v1:1b7a0ea858306134"
+        "contentHash": "json-fnv-v1:530475b8dfbff144"
       },
       "hero": "touye",
       "scenario": "target-miss",
@@ -101785,7 +101785,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-choice-v1",
-        "contentHash": "json-fnv-v1:39a8d0fb6bc97307"
+        "contentHash": "json-fnv-v1:58d84b58aee674b4"
       },
       "hero": "amo",
       "commands": [
@@ -101835,7 +101835,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-choice-v1",
-        "contentHash": "json-fnv-v1:39a8d0fb6bc97307"
+        "contentHash": "json-fnv-v1:58d84b58aee674b4"
       },
       "hero": "touye",
       "commands": [
@@ -101885,7 +101885,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-choice-v1",
-        "contentHash": "json-fnv-v1:39a8d0fb6bc97307"
+        "contentHash": "json-fnv-v1:58d84b58aee674b4"
       },
       "hero": "xiemu",
       "commands": [
@@ -101936,7 +101936,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-choice-v1",
-        "contentHash": "json-fnv-v1:39a8d0fb6bc97307"
+        "contentHash": "json-fnv-v1:58d84b58aee674b4"
       },
       "hero": "azao",
       "commands": [
@@ -101986,7 +101986,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-choice-v1",
-        "contentHash": "json-fnv-v1:39a8d0fb6bc97307"
+        "contentHash": "json-fnv-v1:58d84b58aee674b4"
       },
       "hero": "erxiang",
       "commands": [
@@ -102036,7 +102036,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-choice-v1",
-        "contentHash": "json-fnv-v1:39a8d0fb6bc97307"
+        "contentHash": "json-fnv-v1:58d84b58aee674b4"
       },
       "hero": "laohuan",
       "commands": [
@@ -102086,7 +102086,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-choice-v1",
-        "contentHash": "json-fnv-v1:39a8d0fb6bc97307"
+        "contentHash": "json-fnv-v1:58d84b58aee674b4"
       },
       "hero": "touye",
       "scenario": "unformed-win",
@@ -102130,7 +102130,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-choice-v1",
-        "contentHash": "json-fnv-v1:39a8d0fb6bc97307"
+        "contentHash": "json-fnv-v1:58d84b58aee674b4"
       },
       "hero": "touye",
       "scenario": "target-miss",
@@ -102171,7 +102171,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-erxiang-handoff-v1",
-        "contentHash": "json-fnv-v1:1f5fd46c0f17da58"
+        "contentHash": "json-fnv-v1:9bd9839fe805ae8b"
       },
       "hero": "amo",
       "commands": [
@@ -102221,7 +102221,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-erxiang-handoff-v1",
-        "contentHash": "json-fnv-v1:1f5fd46c0f17da58"
+        "contentHash": "json-fnv-v1:9bd9839fe805ae8b"
       },
       "hero": "touye",
       "commands": [
@@ -102271,7 +102271,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-erxiang-handoff-v1",
-        "contentHash": "json-fnv-v1:1f5fd46c0f17da58"
+        "contentHash": "json-fnv-v1:9bd9839fe805ae8b"
       },
       "hero": "xiemu",
       "commands": [
@@ -102322,7 +102322,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-erxiang-handoff-v1",
-        "contentHash": "json-fnv-v1:1f5fd46c0f17da58"
+        "contentHash": "json-fnv-v1:9bd9839fe805ae8b"
       },
       "hero": "azao",
       "commands": [
@@ -102372,7 +102372,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-erxiang-handoff-v1",
-        "contentHash": "json-fnv-v1:1f5fd46c0f17da58"
+        "contentHash": "json-fnv-v1:9bd9839fe805ae8b"
       },
       "hero": "erxiang",
       "commands": [
@@ -102422,7 +102422,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-erxiang-handoff-v1",
-        "contentHash": "json-fnv-v1:1f5fd46c0f17da58"
+        "contentHash": "json-fnv-v1:9bd9839fe805ae8b"
       },
       "hero": "laohuan",
       "commands": [
@@ -102472,7 +102472,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-erxiang-handoff-v1",
-        "contentHash": "json-fnv-v1:1f5fd46c0f17da58"
+        "contentHash": "json-fnv-v1:9bd9839fe805ae8b"
       },
       "hero": "touye",
       "scenario": "unformed-win",
@@ -102516,7 +102516,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-erxiang-handoff-v1",
-        "contentHash": "json-fnv-v1:1f5fd46c0f17da58"
+        "contentHash": "json-fnv-v1:9bd9839fe805ae8b"
       },
       "hero": "touye",
       "scenario": "target-miss",
@@ -102557,7 +102557,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-supply-v1",
-        "contentHash": "json-fnv-v1:9945e0ce56ff7cb2"
+        "contentHash": "json-fnv-v1:d3c295b2e0f1e306"
       },
       "hero": "amo",
       "commands": [
@@ -102607,7 +102607,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-supply-v1",
-        "contentHash": "json-fnv-v1:9945e0ce56ff7cb2"
+        "contentHash": "json-fnv-v1:d3c295b2e0f1e306"
       },
       "hero": "touye",
       "commands": [
@@ -102657,7 +102657,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-supply-v1",
-        "contentHash": "json-fnv-v1:9945e0ce56ff7cb2"
+        "contentHash": "json-fnv-v1:d3c295b2e0f1e306"
       },
       "hero": "xiemu",
       "commands": [
@@ -102708,7 +102708,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-supply-v1",
-        "contentHash": "json-fnv-v1:9945e0ce56ff7cb2"
+        "contentHash": "json-fnv-v1:d3c295b2e0f1e306"
       },
       "hero": "azao",
       "commands": [
@@ -102758,7 +102758,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-supply-v1",
-        "contentHash": "json-fnv-v1:9945e0ce56ff7cb2"
+        "contentHash": "json-fnv-v1:d3c295b2e0f1e306"
       },
       "hero": "erxiang",
       "commands": [
@@ -102808,7 +102808,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-supply-v1",
-        "contentHash": "json-fnv-v1:9945e0ce56ff7cb2"
+        "contentHash": "json-fnv-v1:d3c295b2e0f1e306"
       },
       "hero": "laohuan",
       "commands": [
@@ -102858,7 +102858,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-supply-v1",
-        "contentHash": "json-fnv-v1:9945e0ce56ff7cb2"
+        "contentHash": "json-fnv-v1:d3c295b2e0f1e306"
       },
       "hero": "touye",
       "scenario": "unformed-win",
@@ -102902,7 +102902,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-basic-tool-supply-v1",
-        "contentHash": "json-fnv-v1:9945e0ce56ff7cb2"
+        "contentHash": "json-fnv-v1:d3c295b2e0f1e306"
       },
       "hero": "touye",
       "scenario": "target-miss",
@@ -102943,7 +102943,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-touye-wager-v1",
-        "contentHash": "json-fnv-v1:a2186375d3bfcec1"
+        "contentHash": "json-fnv-v1:6174a0a8f6708d14"
       },
       "hero": "amo",
       "commands": [
@@ -102993,7 +102993,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-touye-wager-v1",
-        "contentHash": "json-fnv-v1:a2186375d3bfcec1"
+        "contentHash": "json-fnv-v1:6174a0a8f6708d14"
       },
       "hero": "touye",
       "commands": [
@@ -103043,7 +103043,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-touye-wager-v1",
-        "contentHash": "json-fnv-v1:a2186375d3bfcec1"
+        "contentHash": "json-fnv-v1:6174a0a8f6708d14"
       },
       "hero": "xiemu",
       "commands": [
@@ -103094,7 +103094,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-touye-wager-v1",
-        "contentHash": "json-fnv-v1:a2186375d3bfcec1"
+        "contentHash": "json-fnv-v1:6174a0a8f6708d14"
       },
       "hero": "azao",
       "commands": [
@@ -103144,7 +103144,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-touye-wager-v1",
-        "contentHash": "json-fnv-v1:a2186375d3bfcec1"
+        "contentHash": "json-fnv-v1:6174a0a8f6708d14"
       },
       "hero": "erxiang",
       "commands": [
@@ -103194,7 +103194,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-touye-wager-v1",
-        "contentHash": "json-fnv-v1:a2186375d3bfcec1"
+        "contentHash": "json-fnv-v1:6174a0a8f6708d14"
       },
       "hero": "laohuan",
       "commands": [
@@ -103244,7 +103244,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-touye-wager-v1",
-        "contentHash": "json-fnv-v1:a2186375d3bfcec1"
+        "contentHash": "json-fnv-v1:6174a0a8f6708d14"
       },
       "hero": "touye",
       "scenario": "unformed-win",
@@ -103288,7 +103288,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-touye-wager-v1",
-        "contentHash": "json-fnv-v1:a2186375d3bfcec1"
+        "contentHash": "json-fnv-v1:6174a0a8f6708d14"
       },
       "hero": "touye",
       "scenario": "target-miss",
@@ -103329,7 +103329,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-laohuan-refill-v1",
-        "contentHash": "json-fnv-v1:3683dcc2deeee53e"
+        "contentHash": "json-fnv-v1:e0401c19334be15d"
       },
       "hero": "amo",
       "commands": [
@@ -103379,7 +103379,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-laohuan-refill-v1",
-        "contentHash": "json-fnv-v1:3683dcc2deeee53e"
+        "contentHash": "json-fnv-v1:e0401c19334be15d"
       },
       "hero": "touye",
       "commands": [
@@ -103429,7 +103429,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-laohuan-refill-v1",
-        "contentHash": "json-fnv-v1:3683dcc2deeee53e"
+        "contentHash": "json-fnv-v1:e0401c19334be15d"
       },
       "hero": "xiemu",
       "commands": [
@@ -103480,7 +103480,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-laohuan-refill-v1",
-        "contentHash": "json-fnv-v1:3683dcc2deeee53e"
+        "contentHash": "json-fnv-v1:e0401c19334be15d"
       },
       "hero": "azao",
       "commands": [
@@ -103530,7 +103530,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-laohuan-refill-v1",
-        "contentHash": "json-fnv-v1:3683dcc2deeee53e"
+        "contentHash": "json-fnv-v1:e0401c19334be15d"
       },
       "hero": "erxiang",
       "commands": [
@@ -103580,7 +103580,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-laohuan-refill-v1",
-        "contentHash": "json-fnv-v1:3683dcc2deeee53e"
+        "contentHash": "json-fnv-v1:e0401c19334be15d"
       },
       "hero": "laohuan",
       "commands": [
@@ -103630,7 +103630,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-xiemu-burn-v1",
-        "contentHash": "json-fnv-v1:525608410742e09d"
+        "contentHash": "json-fnv-v1:9b4f9594a2f0f2f8"
       },
       "hero": "amo",
       "commands": [
@@ -103680,7 +103680,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-xiemu-burn-v1",
-        "contentHash": "json-fnv-v1:525608410742e09d"
+        "contentHash": "json-fnv-v1:9b4f9594a2f0f2f8"
       },
       "hero": "touye",
       "commands": [
@@ -103730,7 +103730,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-xiemu-burn-v1",
-        "contentHash": "json-fnv-v1:525608410742e09d"
+        "contentHash": "json-fnv-v1:9b4f9594a2f0f2f8"
       },
       "hero": "xiemu",
       "commands": [
@@ -103781,7 +103781,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-xiemu-burn-v1",
-        "contentHash": "json-fnv-v1:525608410742e09d"
+        "contentHash": "json-fnv-v1:9b4f9594a2f0f2f8"
       },
       "hero": "azao",
       "commands": [
@@ -103831,7 +103831,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-xiemu-burn-v1",
-        "contentHash": "json-fnv-v1:525608410742e09d"
+        "contentHash": "json-fnv-v1:9b4f9594a2f0f2f8"
       },
       "hero": "erxiang",
       "commands": [
@@ -103881,7 +103881,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-xiemu-burn-v1",
-        "contentHash": "json-fnv-v1:525608410742e09d"
+        "contentHash": "json-fnv-v1:9b4f9594a2f0f2f8"
       },
       "hero": "laohuan",
       "commands": [
@@ -103931,7 +103931,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-azao-charge-v1",
-        "contentHash": "json-fnv-v1:1e5d534e40cc0f2a"
+        "contentHash": "json-fnv-v1:a5523a00eb18c8ac"
       },
       "hero": "amo",
       "commands": [
@@ -103981,7 +103981,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-azao-charge-v1",
-        "contentHash": "json-fnv-v1:1e5d534e40cc0f2a"
+        "contentHash": "json-fnv-v1:a5523a00eb18c8ac"
       },
       "hero": "touye",
       "commands": [
@@ -104031,7 +104031,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-azao-charge-v1",
-        "contentHash": "json-fnv-v1:1e5d534e40cc0f2a"
+        "contentHash": "json-fnv-v1:a5523a00eb18c8ac"
       },
       "hero": "xiemu",
       "commands": [
@@ -104081,7 +104081,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-azao-charge-v1",
-        "contentHash": "json-fnv-v1:1e5d534e40cc0f2a"
+        "contentHash": "json-fnv-v1:a5523a00eb18c8ac"
       },
       "hero": "azao",
       "commands": [
@@ -104131,7 +104131,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-azao-charge-v1",
-        "contentHash": "json-fnv-v1:1e5d534e40cc0f2a"
+        "contentHash": "json-fnv-v1:a5523a00eb18c8ac"
       },
       "hero": "erxiang",
       "commands": [
@@ -104181,7 +104181,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-azao-charge-v1",
-        "contentHash": "json-fnv-v1:1e5d534e40cc0f2a"
+        "contentHash": "json-fnv-v1:a5523a00eb18c8ac"
       },
       "hero": "laohuan",
       "commands": [
@@ -104231,7 +104231,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-route-starter-v1",
-        "contentHash": "json-fnv-v1:61f2c0d68afcf672"
+        "contentHash": "json-fnv-v1:aeca01ee061eb1fa"
       },
       "hero": "amo",
       "commands": [
@@ -104281,7 +104281,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-route-starter-v1",
-        "contentHash": "json-fnv-v1:61f2c0d68afcf672"
+        "contentHash": "json-fnv-v1:aeca01ee061eb1fa"
       },
       "hero": "touye",
       "commands": [
@@ -104331,7 +104331,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-route-starter-v1",
-        "contentHash": "json-fnv-v1:61f2c0d68afcf672"
+        "contentHash": "json-fnv-v1:aeca01ee061eb1fa"
       },
       "hero": "xiemu",
       "commands": [
@@ -104381,7 +104381,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-route-starter-v1",
-        "contentHash": "json-fnv-v1:61f2c0d68afcf672"
+        "contentHash": "json-fnv-v1:aeca01ee061eb1fa"
       },
       "hero": "azao",
       "commands": [
@@ -104431,7 +104431,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-route-starter-v1",
-        "contentHash": "json-fnv-v1:61f2c0d68afcf672"
+        "contentHash": "json-fnv-v1:aeca01ee061eb1fa"
       },
       "hero": "erxiang",
       "commands": [
@@ -104481,7 +104481,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-route-starter-v1",
-        "contentHash": "json-fnv-v1:61f2c0d68afcf672"
+        "contentHash": "json-fnv-v1:aeca01ee061eb1fa"
       },
       "hero": "laohuan",
       "commands": [
@@ -104531,7 +104531,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-group-upgrade-prototype-v1",
-        "contentHash": "json-fnv-v1:df2816bdf026bad9"
+        "contentHash": "json-fnv-v1:2189bb4930383b65"
       },
       "hero": "amo",
       "commands": [
@@ -104581,7 +104581,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-group-upgrade-prototype-v1",
-        "contentHash": "json-fnv-v1:df2816bdf026bad9"
+        "contentHash": "json-fnv-v1:2189bb4930383b65"
       },
       "hero": "touye",
       "commands": [
@@ -104631,7 +104631,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-group-upgrade-prototype-v1",
-        "contentHash": "json-fnv-v1:df2816bdf026bad9"
+        "contentHash": "json-fnv-v1:2189bb4930383b65"
       },
       "hero": "xiemu",
       "commands": [
@@ -104681,7 +104681,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-group-upgrade-prototype-v1",
-        "contentHash": "json-fnv-v1:df2816bdf026bad9"
+        "contentHash": "json-fnv-v1:2189bb4930383b65"
       },
       "hero": "azao",
       "commands": [
@@ -104731,7 +104731,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-group-upgrade-prototype-v1",
-        "contentHash": "json-fnv-v1:df2816bdf026bad9"
+        "contentHash": "json-fnv-v1:2189bb4930383b65"
       },
       "hero": "erxiang",
       "commands": [
@@ -104781,7 +104781,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-group-upgrade-prototype-v1",
-        "contentHash": "json-fnv-v1:df2816bdf026bad9"
+        "contentHash": "json-fnv-v1:2189bb4930383b65"
       },
       "hero": "laohuan",
       "commands": [
@@ -104831,7 +104831,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-combo-growth-prototype-v1",
-        "contentHash": "json-fnv-v1:3141dde0f87b3ab4"
+        "contentHash": "json-fnv-v1:beb1f5a383222cff"
       },
       "hero": "amo",
       "commands": [
@@ -104881,7 +104881,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-combo-growth-prototype-v1",
-        "contentHash": "json-fnv-v1:3141dde0f87b3ab4"
+        "contentHash": "json-fnv-v1:beb1f5a383222cff"
       },
       "hero": "touye",
       "commands": [
@@ -104931,7 +104931,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-combo-growth-prototype-v1",
-        "contentHash": "json-fnv-v1:3141dde0f87b3ab4"
+        "contentHash": "json-fnv-v1:beb1f5a383222cff"
       },
       "hero": "xiemu",
       "commands": [
@@ -104981,7 +104981,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-combo-growth-prototype-v1",
-        "contentHash": "json-fnv-v1:3141dde0f87b3ab4"
+        "contentHash": "json-fnv-v1:beb1f5a383222cff"
       },
       "hero": "azao",
       "commands": [
@@ -105031,7 +105031,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-combo-growth-prototype-v1",
-        "contentHash": "json-fnv-v1:3141dde0f87b3ab4"
+        "contentHash": "json-fnv-v1:beb1f5a383222cff"
       },
       "hero": "erxiang",
       "commands": [
@@ -105081,7 +105081,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-combo-growth-prototype-v1",
-        "contentHash": "json-fnv-v1:3141dde0f87b3ab4"
+        "contentHash": "json-fnv-v1:beb1f5a383222cff"
       },
       "hero": "laohuan",
       "commands": [
@@ -105131,7 +105131,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-amo-assist-prototype-v1",
-        "contentHash": "json-fnv-v1:b0dbe7b458ba9338"
+        "contentHash": "json-fnv-v1:86d6f3ce5f30985a"
       },
       "hero": "amo",
       "commands": [
@@ -105181,7 +105181,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-content-v11",
-        "contentHash": "json-fnv-v1:117fb6675e31ce73"
+        "contentHash": "json-fnv-v1:27de51ef19451243"
       },
       "hero": "amo",
       "commands": [
@@ -105231,7 +105231,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-content-v11",
-        "contentHash": "json-fnv-v1:117fb6675e31ce73"
+        "contentHash": "json-fnv-v1:27de51ef19451243"
       },
       "hero": "touye",
       "commands": [
@@ -105281,7 +105281,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-content-v11",
-        "contentHash": "json-fnv-v1:117fb6675e31ce73"
+        "contentHash": "json-fnv-v1:27de51ef19451243"
       },
       "hero": "xiemu",
       "commands": [
@@ -105331,7 +105331,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-content-v11",
-        "contentHash": "json-fnv-v1:117fb6675e31ce73"
+        "contentHash": "json-fnv-v1:27de51ef19451243"
       },
       "hero": "azao",
       "commands": [
@@ -105381,7 +105381,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-content-v11",
-        "contentHash": "json-fnv-v1:117fb6675e31ce73"
+        "contentHash": "json-fnv-v1:27de51ef19451243"
       },
       "hero": "erxiang",
       "commands": [
@@ -105431,7 +105431,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-content-v11",
-        "contentHash": "json-fnv-v1:117fb6675e31ce73"
+        "contentHash": "json-fnv-v1:27de51ef19451243"
       },
       "hero": "laohuan",
       "commands": [
@@ -105481,7 +105481,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-content-v10",
-        "contentHash": "json-fnv-v1:00ba5b399c980695"
+        "contentHash": "json-fnv-v1:1d9e0cc5be9691f9"
       },
       "hero": "amo",
       "commands": [
@@ -105531,7 +105531,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-content-v10",
-        "contentHash": "json-fnv-v1:00ba5b399c980695"
+        "contentHash": "json-fnv-v1:1d9e0cc5be9691f9"
       },
       "hero": "touye",
       "commands": [
@@ -105581,7 +105581,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-content-v10",
-        "contentHash": "json-fnv-v1:00ba5b399c980695"
+        "contentHash": "json-fnv-v1:1d9e0cc5be9691f9"
       },
       "hero": "xiemu",
       "commands": [
@@ -105631,7 +105631,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-content-v10",
-        "contentHash": "json-fnv-v1:00ba5b399c980695"
+        "contentHash": "json-fnv-v1:1d9e0cc5be9691f9"
       },
       "hero": "azao",
       "commands": [
@@ -105681,7 +105681,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-content-v10",
-        "contentHash": "json-fnv-v1:00ba5b399c980695"
+        "contentHash": "json-fnv-v1:1d9e0cc5be9691f9"
       },
       "hero": "erxiang",
       "commands": [
@@ -105731,7 +105731,7 @@
     {
       "identity": {
         "contentVersion": "quality-r2-content-v10",
-        "contentHash": "json-fnv-v1:00ba5b399c980695"
+        "contentHash": "json-fnv-v1:1d9e0cc5be9691f9"
       },
       "hero": "laohuan",
       "commands": [
@@ -105789,6 +105789,6 @@
   },
   "identity": {
     "contentVersion": "quality-r2-active-mult-timing-v1",
-    "contentHash": "json-fnv-v1:ca1e8f77913649d3"
+    "contentHash": "json-fnv-v1:a81df32340b9c507"
   }
 }

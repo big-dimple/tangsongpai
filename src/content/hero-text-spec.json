@@ -337,7 +337,7 @@
       "mottoAttribution": "苏轼《前赤壁赋》摘句（简体）。",
       "identityScope": {
         "contentVersion": "quality-r2-amo-exile-v3",
-        "contentHash": "json-fnv-v1:5277be04256d1158",
+        "contentHash": "json-fnv-v1:6885a55bdc5c13bf",
         "role": "current-normal-new-run"
       }
     },
@@ -391,7 +391,7 @@
       "mottoAttribution": "借传世《花蕊夫人宫词》赏赐意象作游戏演绎，并非历史原话；宫词作者归属有争议。",
       "identityScope": {
         "contentVersion": "quality-r2-xiemu-burn-v3",
-        "contentHash": "json-fnv-v1:85b16fbea725efa2",
+        "contentHash": "json-fnv-v1:d17ef815020a27c1",
         "role": "current-normal-new-run"
       }
     }
@@ -453,7 +453,7 @@
       "mottoAttribution": "苏轼《前赤壁赋》摘句（简体）。",
       "identityScope": {
         "contentVersion": "quality-r2-amo-exile-v1",
-        "contentHash": "json-fnv-v1:0dd93914fd628f68",
+        "contentHash": "json-fnv-v1:a83a35bfe27ac59b",
         "role": "legacy-saved-run"
       }
     },
@@ -505,7 +505,7 @@
       "mottoAttribution": "苏轼《前赤壁赋》摘句（简体）。",
       "identityScope": {
         "contentVersion": "quality-r2-amo-exile-v2",
-        "contentHash": "json-fnv-v1:db11f4b55b8dabb9",
+        "contentHash": "json-fnv-v1:51c1b9aece2d5c22",
         "role": "legacy-saved-run"
       }
     },
@@ -559,7 +559,7 @@
       "mottoAttribution": "借传世《花蕊夫人宫词》赏赐意象作游戏演绎，并非历史原话；宫词作者归属有争议。",
       "identityScope": {
         "contentVersion": "quality-r2-xiemu-burn-v2",
-        "contentHash": "json-fnv-v1:6b70f550e44bf564",
+        "contentHash": "json-fnv-v1:a8d9536b8fbe0487",
         "role": "legacy-saved-run"
       }
     }
