@@ -97,6 +97,8 @@ export function withXiemuRevisionIdentity(base:{contentVersion:string;contentHas
 const XIEMU_REVISION_PROFILE=POKER_HOUSE_PROFILES.filter(p=>p.base.contentVersion===R2_XIEMU_FREQUENT_VERSION).map(p=>Object.freeze({...p,...withXiemuRevisionIdentity(p)}));
 export function withTouyeScalingIdentity(base:{contentVersion:string;contentHash:string}) {return {contentVersion:base.contentVersion+'-touye-scaling-v1',contentHash:stableHash({inherits:base.contentHash,success:'1-new-2-2-new-3-3plus-new-4',failure:'0.85',ordinary:'1.15',proof:'existing-new-core'})};}
 const TOUYE_SCALING_PROFILE=POKER_HOUSE_PROFILES.filter(p=>p.base.contentVersion===R2_S04_FINISH_VERSION).map(p=>Object.freeze({...p,...withTouyeScalingIdentity(p)}));
+export function withErxiangGroupIdentity(base:{contentVersion:string;contentHash:string}) {return {contentVersion:base.contentVersion+'-erxiang-group-v1',contentHash:stableHash({inherits:base.contentHash,transfer:'same-rank-active-every-card-execution-before-enhancement',uses:2,retrigger:'no-additional-or-recursive'})};}
+const ERXIANG_GROUP_PROFILE=POKER_HOUSE_PROFILES.filter(p=>p.base.contentVersion===R2_HERO_FREQUENCY_VERSION).map(p=>Object.freeze({...p,...withErxiangGroupIdentity(p)}));
 const LAOHUAN_FIND_PROFILE=POKER_HOUSE_PROFILES.filter(p=>p.base.contentVersion===R2_HERO_FREQUENCY_VERSION).map(p=>Object.freeze({...p,...withLaohuanFindIdentity(p)}));
 export const R2_HOUSE_PROFILES:readonly (typeof ORIGINAL_HOUSE_PROFILES[number]&{rescueBase?:Readonly<{contentVersion:string;contentHash:string}>;pokerBase?:Readonly<{contentVersion:string;contentHash:string}>})[]=Object.freeze([
   ...ORIGINAL_HOUSE_PROFILES,
@@ -105,7 +107,9 @@ export const R2_HOUSE_PROFILES:readonly (typeof ORIGINAL_HOUSE_PROFILES[number]&
   ...LAOHUAN_FIND_PROFILE,
   ...XIEMU_REVISION_PROFILE,
   ...TOUYE_SCALING_PROFILE,
+  ...ERXIANG_GROUP_PROFILE,
 ]);
+export const isR2ErxiangGroup=(s:{contentVersion?:unknown;contentHash?:unknown})=>ERXIANG_GROUP_PROFILE.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
 export const isR2TouyeScaling=(s:{contentVersion?:unknown;contentHash?:unknown})=>TOUYE_SCALING_PROFILE.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
 export const isR2XiemuRevision=(s:{contentVersion?:unknown;contentHash?:unknown})=>XIEMU_REVISION_PROFILE.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
 export const isR2LaohuanFind=(s:{contentVersion?:unknown;contentHash?:unknown})=>LAOHUAN_FIND_PROFILE.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);

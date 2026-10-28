@@ -1,3 +1,4 @@
+import {usesErxiangGroup} from '../domain/r2ErxiangHandoff';
 import {usesTouyeScaling} from '../domain/r2TouyeWager';
 import {savedAmoExileMultiplier} from './AmoExileCopy';
 import {heroSkillTitleForRun} from './CharacterRunCopy';
@@ -75,7 +76,7 @@ export function reviewOperationText(run:R2RunState,event:ScoreEvent):string {
   if(event.operation==='route-clear')return '已过关 '+event.resourceBefore+' → '+event.resourceAfter+' 次';
   if(event.operation==='route-clear-family')return '本场用过'+(event.routeFamily?familyHands[event.routeFamily]:'这类牌型')+'，过关记录 '+event.resourceBefore+' → '+event.resourceAfter+' 次';
   if(event.reasonKey==='amo.exile')return '本次得分 ×'+value;
-  if(event.reasonKey==='erxiang.handoff')return value+'点普通热度改加倍率（首次计分）';
+  if(event.reasonKey==='erxiang.handoff')return value+'点普通热度改加倍率（'+(usesErxiangGroup(run)?'本次计分':'首次计分')+'）';
   if(event.operation==='retrigger-card')return '额外再计分 '+value+' 次';
   if(event.operation==='read-growth')return '读取已攒'+(event.before.H.n!==event.after.H.n||event.before.H.d!==event.after.H.d?'热度':'倍率')+' +'+value;
   if(event.operation==='add-heat-per-gold')return '按当时金币加入热度 +'+value;

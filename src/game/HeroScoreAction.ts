@@ -32,6 +32,7 @@ export function heroScoreAction(trace:ScoreTrace,event:ScoreEvent,retainedIds:re
  if(retained&&positive)return {hero:'laohuan',eventId:event.eventId,sourceInstanceId:event.sourceInstanceId,kind:'retained-card',targetIds:[retained],costIds:[],positive,contributions};
  if(event.sourceType!=='character')return;
  const hero=event.sourceDefinitionId as CharacterId,saved=savedHeroAttachment(trace,hero);
+ if(hero==='erxiang'&&trace.erxiangGroup&&event.reasonKey==='erxiang.handoff'&&event.targetCardId&&positive)return {hero,eventId:event.eventId,sourceInstanceId:event.sourceInstanceId,kind:'handoff',targetIds:[event.targetCardId],costIds:[],positive,contributions};
  if(saved?.event.eventId!==event.eventId)return;
  const main=trace.sets.activeScoringIds.length?trace.sets.activeScoringIds:trace.sets.playedIds;
  const common={hero,eventId:event.eventId,sourceInstanceId:event.sourceInstanceId,positive,contributions,costIds:[] as string[]};

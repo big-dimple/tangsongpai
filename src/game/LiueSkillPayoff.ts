@@ -12,11 +12,10 @@ interface Options {
  context:EffectContext;beat:ScoreBeat;reduced:boolean;root:Phaser.GameObjects.Container;
  cards:readonly {id:string;container:Phaser.GameObjects.Container}[];onDispose?:()=>void;
 }
-/** One saved first-ordinary-points conversion. The card remains intact; neither
- * previews, card enhancements/editions nor later retriggers are receipts. */
+/** Animate an actual saved conversion event; the card remains intact. */
 export function mountLiueSkillPayoff(scene:Phaser.Scene,button:Phaser.GameObjects.Rectangle|undefined,trace:ScoreTrace,eventId:string,options:Options){
- const saved=savedHeroAttachment(trace,'erxiang'),event=saved?.event,label=button?.getData('label') as Phaser.GameObjects.Text|undefined,status=button?.getData('skillStatus') as Phaser.GameObjects.Text|undefined;
- if(!event||event.eventId!==eventId||event.phase!=='onCardScore'||event.operation!=='add-multiplier'||event.retriggerDepth!==0||event.value.d!=='1'||BigInt(event.value.n)<=0n||trace.erxiangHandoff?.points!==Number(event.value.n)||options.context.signal.aborted||!options.root.active||!button?.active||!label?.active||button.getData('liueSkillPayoff'))return;
+ const saved=savedHeroAttachment(trace,'erxiang'),event=trace.erxiangGroup?trace.events.find(e=>e.eventId===eventId&&e.sourceType==='character'&&e.sourceDefinitionId==='erxiang'&&e.reasonKey==='erxiang.handoff'):saved?.event,label=button?.getData('label') as Phaser.GameObjects.Text|undefined,status=button?.getData('skillStatus') as Phaser.GameObjects.Text|undefined;
+ if(!event||event.eventId!==eventId||event.phase!=='onCardScore'||event.operation!=='add-multiplier'||(!trace.erxiangGroup&&event.retriggerDepth!==0)||event.value.d!=='1'||BigInt(event.value.n)<=0n||trace.erxiangHandoff?.points!==Number(event.value.n)||options.context.signal.aborted||!options.root.active||!button?.active||!label?.active||button.getData('liueSkillPayoff'))return;
  const source=options.cards.find(c=>c.id===event.targetCardId&&c.container.active&&c.container.visible);if(!source)return;
  const amount=event.value.n,token={eventId,targetId:source.id,amount,arrived:false},rest={text:label.text,color:label.style.color,sx:label.scaleX,sy:label.scaleY,y:label.y,status:status?.text,statusColor:status?.style.color};
  let disposed=false,buttonClosing=false,elapsed=0,origin:{x:number;y:number}|undefined,group:Phaser.GameObjects.Container|undefined,packet:Phaser.GameObjects.Text|undefined,ink:Phaser.GameObjects.Graphics|undefined;

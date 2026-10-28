@@ -132,7 +132,7 @@ function legalEventEnvelope(definitions,catalog,limits,scoreLimits,chapter) {
           const rest=residual.map(row=>({definitionId:row.id,events:sourceCost(row,played,held,cleared)}))
             .sort((a,b)=>b.events-a.events).slice(0,slots);
           const suppression=Math.min(2,active,Math.max(0,played-3)),boss=suppression>=maximum(Object.values(bossTraceBudgets))?'B02':'B12';
-          const breakdown={baseCharacterFinal:3,cardEvents,ordinarySuppression:boss==='B02'?suppression:0,bossTrace:bossTraceBudgets[boss],
+          const breakdown={baseCharacterFinal:2+Math.max(1,2*active+extra),cardEvents,ordinarySuppression:boss==='B02'?suppression:0,bossTrace:bossTraceBudgets[boss],
             heldEnhancementOrGold:held,jokerEdition:limits.jokerSlots,residualSources:sum(rest.map(row=>row.events)),clearRules:cleared?clearRules:0};
           const bound=sum(Object.values(breakdown));statesChecked++;
           if(bound>maximumEvents){maximumEvents=bound;abstractWitness={boss,played,active,normalCardGroups:normal,
@@ -145,7 +145,8 @@ function legalEventEnvelope(definitions,catalog,limits,scoreLimits,chapter) {
     maximumEntryHand:withoutJokerHandModifiers+sum(handModifiers.flatMap(row=>row.modifiers.map(modifier=>modifier.amount))),
     retriggerCapNoticesReachable:false,abstractWitness,
     scope:'Current72 command-reachable configurations, v10 mode resources, B01–B16 and at most one selected program payout; upper event envelope, not attained maximum score or natural acquisition probability.',bossTraceBudgets,
-    proof:['Each equipped source spends one of the same five slots across all phases; A04/D06 spend slots to increase held count.',
+    proof:['The Liu E group contract adds at most one character event per actual ordinary card execution; one intrinsic encore per active card plus Joker repeats is an upper bound.',
+      'Each equipped source spends one of the same five slots across all phases; A04/D06 spend slots to increase held count.',
       'The six normal card definitions provide at most four simultaneous groups; overlapping groups are overcounted with fewer slots.',
       'A11 requires played1; B06 requires pair and cannot coexist effectively with C07/D11. Other positions contribute at most three repeats.',
       'Encore adds at most one intrinsic repeat: at most four extras, so no legal retrigger-cap rejection event is omitted.',
@@ -225,7 +226,7 @@ try {
       +held*cost.held+cost.jokerScore+cost.afterHand+cost.stageClear+cost.interest+editionEvents}))
       .sort((a,b)=>b.weighted-a.weighted).slice(0,SCORE_LIMITS.jokerCount);
     const components={
-      baseCharacterFinal:3, // One base, at most one character effect, one final score.
+      baseCharacterFinal:2+Math.max(1,played*passes), // Liu E may transfer on every active scoring pass; other heroes emit at most one character effect.
       bossTrace:maximum(Object.values(bossTraceBudgets)), // One half-base or post-hand seal; discard transactions stay outside the score trace.
       cardPoints:played*passes,
       scoringEnhancement:played*passes*scoringEnhancement,

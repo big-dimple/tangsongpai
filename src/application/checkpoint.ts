@@ -1,3 +1,4 @@
+import {usesErxiangGroup} from '../domain/r2ErxiangHandoff';
 import {usesTouyeScaling} from '../domain/r2TouyeWager';
 import {isR2XiemuRevision} from '../domain/r2GroupUpgrade';
 import {usesLaohuanFind,laohuanFindStep,validLaohuanFindProof,findProofRetained,type LaohuanFindTrace,type LaohuanFindProof} from '../domain/r2LaohuanFind';
@@ -10,7 +11,7 @@ import {isR2CoreBuild} from '../domain/r2GroupUpgrade';
 import {r2PracticeBasePrice} from '../domain/r2Practice';
 import {isR2BoundedClear,isR2RouteGrowth,isR2ActiveMultTiming} from '../domain/r2GroupUpgrade';
 import {validR2RouteHistory,type R2RouteHistory} from '../domain/r2RouteGrowth';
-import {usesErxiangHandoff,erxiangHandoffLimit,erxiangHandoffStep,type ErxiangHandoffTrace} from '../domain/r2ErxiangHandoff';
+import {usesErxiangHandoff,erxiangHandoffLimit,erxiangHandoffStep,ordinaryCardPoints,type ErxiangHandoffTrace} from '../domain/r2ErxiangHandoff';
 import {isR2ToolSupply} from '../domain/r2GroupUpgrade';
 import {usesTouyeWager,usesTouyeNewCore,validTouyeCommit,touyeWagerStep,TOUYE_TARGETS,type TouyeCommit,type TouyeWagerTrace} from '../domain/r2TouyeWager';
 import {usesLaohuanRefill,laohuanRefillRepeats} from '../domain/r2LaohuanRefill';
@@ -151,13 +152,14 @@ function touyeCommit(value:unknown,enhancements:boolean,newCore=false):void {
  if(newCore){const p=record(c.refill,['handLimit','handAfter','refilledIds']);integer(p.handLimit,1,14);uniqueIds(p.handAfter,14);uniqueIds(p.refilledIds,14);}
  const rules=record(c.rules,['fourStraight','fourFlush']);bool(rules.fourStraight);bool(rules.fourFlush);if(!validTouyeCommit(c as unknown as TouyeCommit,newCore))fail('invalid-save-touye-commit');
 }
-function trace(value:unknown,context:{bossSuitRescue:boolean;erxiangTwo:boolean;amoExileKing:boolean;xiemuFrequent:boolean;xiemuRevised:boolean;heroBalance:boolean;boundedClear:boolean;activeMultTiming:boolean;erxiang:boolean;touye:boolean;newTouye:boolean;touyeScaling:boolean;laohuan:boolean;laohuanFind:boolean;xiemu:boolean;azao:boolean;phase:R2RunState['phase'];routeGrowth?:R2RouteHistory;group:boolean;combo:boolean;definitions:ReturnType<typeof r2JokerDefinitionsFor>;runId:string;characterId:string;amoScoreTiming:'before-joker'|'after-joker'|'assist-v1'|'exile-v1';discoveredHands:readonly string[];levels:R2RunState['handLevels'];stage:R2RunState['stage'];stageIndex:number;config:R2ModeConfig;program:R2ProgramState|null;usage:R2RunState['chapterHandUsage'];liveJokerIds?:readonly string[];liveJokers?:readonly R2JokerInstance[];settledGold?:number}):void {
+function trace(value:unknown,context:{bossSuitRescue:boolean;erxiangTwo:boolean;erxiangGroup:boolean;amoExileKing:boolean;xiemuFrequent:boolean;xiemuRevised:boolean;heroBalance:boolean;boundedClear:boolean;activeMultTiming:boolean;erxiang:boolean;touye:boolean;newTouye:boolean;touyeScaling:boolean;laohuan:boolean;laohuanFind:boolean;xiemu:boolean;azao:boolean;phase:R2RunState['phase'];routeGrowth?:R2RouteHistory;group:boolean;combo:boolean;definitions:ReturnType<typeof r2JokerDefinitionsFor>;runId:string;characterId:string;amoScoreTiming:'before-joker'|'after-joker'|'assist-v1'|'exile-v1';discoveredHands:readonly string[];levels:R2RunState['handLevels'];stage:R2RunState['stage'];stageIndex:number;config:R2ModeConfig;program:R2ProgramState|null;usage:R2RunState['chapterHandUsage'];liveJokerIds?:readonly string[];liveJokers?:readonly R2JokerInstance[];settledGold?:number}):void {
   if(value===null)return;
   const R2_JOKERS=context.definitions,combo=context.combo,group=context.group,routeProfile=context.routeGrowth!==undefined;
   const stage=context.stage;if(!stage)return fail('invalid-save-trace-stage');
   const successfulStage=stage.skipResult===null&&stage.clearId!==null&&stage.index+1===context.stageIndex&&BigInt(stage.heat)>=BigInt(stage.targetHeat);
   const prototype=context.amoScoreTiming==='assist-v1',exileProfile=context.amoScoreTiming==='exile-v1';
-  const t=record(value,[...(exileProfile?['amoExile']:[]),...(routeProfile?['routeGrowth']:[]),...(context.erxiang?['erxiangHandoff']:[]),...(context.touye?['touyeWager']:[]),...(context.laohuan?['laohuanTrick']:[]),...(context.laohuanFind?['laohuanFind']:[]),...(context.xiemu?['xiemuBurn']:[]),...(context.azao?['azaoCharge']:[]),...(combo?['combo']:[]),...(prototype?['assist']:[]),'rulesVersion','rootId','handType','level','sets','finalScore','accumulator','events','jokers','rng','destroyedJokerIds','goldDelta','destroyedCardIds','cards','sourceJokers','bossContext'],context.bossSuitRescue?['bossSuitRescue']:[]);
+  const t=record(value,[...(exileProfile?['amoExile']:[]),...(routeProfile?['routeGrowth']:[]),...(context.erxiang?['erxiangHandoff']:[]),...(context.erxiangGroup?['erxiangGroup']:[]),...(context.touye?['touyeWager']:[]),...(context.laohuan?['laohuanTrick']:[]),...(context.laohuanFind?['laohuanFind']:[]),...(context.xiemu?['xiemuBurn']:[]),...(context.azao?['azaoCharge']:[]),...(combo?['combo']:[]),...(prototype?['assist']:[]),'rulesVersion','rootId','handType','level','sets','finalScore','accumulator','events','jokers','rng','destroyedJokerIds','goldDelta','destroyedCardIds','cards','sourceJokers','bossContext'],context.bossSuitRescue?['bossSuitRescue']:[]);
+  if(context.erxiangGroup&&t.erxiangGroup!==true)fail('invalid-save-erxiang-group');
   if(context.laohuan&&(t.laohuanTrick!==true||!context.laohuanFind&&(t.events as ScoreEvent[]).some(e=>e.sourceType==='character')))fail('invalid-save-laohuan-score');
   let clearCapital:number|null=null;
   if(combo){const clock=record(t.combo,['goldBeforeRewards']);if(clock.goldBeforeRewards!==null)integer(clock.goldBeforeRewards);clearCapital=clock.goldBeforeRewards as number|null;if(successfulStage!==(clearCapital!==null))fail('invalid-save-combo-clear-clock');}
@@ -607,11 +609,22 @@ function trace(value:unknown,context:{bossSuitRescue:boolean;erxiangTwo:boolean;
     const enabled=context.config.characterAbilityEnabled&&boss?.definitionId!=='B08';
     const expected=erxiangHandoffStep(t.handType as R2HandType,t.cards as PlayingCard[],active,boss?r2OrdinarySuppression(boss,stage.index,t.cards as PlayingCard[],played):[],{targetId:saved.targetId,beforeUsed:saved.beforeUsed},enabled);
     if(stableHash(expected)!==stableHash(saved)||(context.erxiangTwo?(stage.erxiangHandoffUses!<(saved.targetId===null?0:1)||saved.beforeUsed!==((stage.erxiangHandoffUses!-(saved.targetId===null?0:1))>=2)||stage.erxiangHandoffUsed!==(stage.erxiangHandoffUses===2)):stage.erxiangHandoffUsed!==saved.afterUsed)||stage.playIndex===1&&saved.beforeUsed||!enabled&&saved.beforeUsed)fail('invalid-save-erxiang-transition');
+    const roles=(events as ScoreEvent[]).filter(e=>e.sourceType==='character');
+    if(context.erxiangGroup){
+      const target=saved.targetId?cardSources.get(saved.targetId):undefined,suppressed=boss?r2OrdinarySuppression(boss,stage.index,t.cards as PlayingCard[],played):[];
+      const ranks=(events as ScoreEvent[]).filter(e=>e.phase==='onCardScore'&&e.sourceType==='card'&&e.sourceDefinitionId.startsWith('rank-')&&!!e.targetCardId&&target&&cardSources.get(e.targetCardId)?.rank===target.rank&&!suppressed.includes(e.targetCardId));
+      if(roles.length!==ranks.length)fail('invalid-save-erxiang-events');
+      for(const [i,previous] of ranks.entries()){
+        const e=roles[i],card=cardSources.get(previous.targetCardId!)!,value=new Rational(BigInt(ordinaryCardPoints(card))),index=(events as ScoreEvent[]).indexOf(e);
+        if(index<1||(events as ScoreEvent[])[index-1]!==previous||e.phase!=='onCardScore'||e.operation!=='add-multiplier'||e.reasonKey!=='erxiang.handoff'||e.targetCardId!==card.id||e.retriggerDepth!==previous.retriggerDepth||e.rootEventId!==previous.rootEventId||stableHash(e.visibleCondition)!==stableHash({kind:'always'})||Rational.fromJSON(e.value).compare(value)||Rational.fromJSON(e.before.H).compare(Rational.fromJSON(e.after.H))||Rational.fromJSON(e.before.M).add(value).compare(Rational.fromJSON(e.after.M))||previous.operation!=='add-heat'||previous.value.n!=='0'||stableHash(previous.before)!==stableHash(previous.after)||stableHash(previous.after)!==stableHash(e.before))fail('invalid-save-erxiang-group-event');
+      }
+    }else{
     const roles=(events as ScoreEvent[]).filter(e=>e.sourceType==='character');if(roles.length!==(saved.targetId===null?0:1))fail('invalid-save-erxiang-events');
     if(saved.targetId!==null){
       const e=roles[0],index=(events as ScoreEvent[]).indexOf(e),previous=(events as ScoreEvent[])[index-1],card=cardSources.get(saved.targetId)!;
       const value=new Rational(BigInt(saved.points));
       if(e.phase!=='onCardScore'||e.operation!=='add-multiplier'||e.reasonKey!=='erxiang.handoff'||e.targetCardId!==saved.targetId||e.retriggerDepth!==0||e.rootEventId!==e.eventId||stableHash(e.visibleCondition)!==stableHash({kind:'always'})||Rational.fromJSON(e.value).compare(value)||Rational.fromJSON(e.before.H).compare(Rational.fromJSON(e.after.H))||Rational.fromJSON(e.before.M).add(value).compare(Rational.fromJSON(e.after.M))||!previous||previous.sourceType!=='card'||previous.sourceDefinitionId!==`rank-${card.rank}`||previous.targetCardId!==saved.targetId||previous.retriggerDepth!==0||previous.operation!=='add-heat'||previous.value.n!=='0'||stableHash(previous.before)!==stableHash(previous.after)||stableHash(previous.after)!==stableHash(e.before))fail('invalid-save-erxiang-event');
+    }
     }
   }
   if(context.xiemu){
@@ -927,7 +940,7 @@ function validateState(value:unknown):asserts value is R2RunState {
     }
   }
   const stage=s.stage as R2RunState['stage'],sameStage=stage?.index===s.stageIndex&&['await-input','pending-refill','run-lost'].includes(s.phase as string);
-  trace(s.lastTrace,{bossSuitRescue:usesBossSuitRescue(s),erxiangTwo:erxiangHandoffLimit(s)===2,amoExileKing:isR2AmoKing(s),xiemuFrequent:isR2XiemuFrequent(s),xiemuRevised:isR2XiemuRevision(s)&&s.characterId==='xiemu',heroBalance:isR2HeroBalance(s),boundedClear:isR2BoundedClear(s),activeMultTiming:isR2ActiveMultTiming(s),routeGrowth:isR2RouteGrowth(s)?s.routeGrowth as R2RouteHistory:undefined,erxiang:usesErxiangHandoff(s),touye:usesTouyeWager(s),newTouye:usesTouyeNewCore(s),touyeScaling:usesTouyeScaling(s),laohuan:usesLaohuanRefill(s),laohuanFind:usesLaohuanFind(s),xiemu:usesXiemuBurn(s),azao:usesAzaoCharge(s),phase:s.phase as R2RunState['phase'],group:hasR2GroupUpgradeContract(s),combo,definitions:r2JokerDefinitionsFor(s),runId:s.runId as string,characterId:s.characterId as string,amoScoreTiming:r2ScoreTimingFor(s),discoveredHands:Object.keys(levels),levels:levels as R2RunState['handLevels'],stage,stageIndex:s.stageIndex as number,
+  trace(s.lastTrace,{bossSuitRescue:usesBossSuitRescue(s),erxiangTwo:erxiangHandoffLimit(s)===2,erxiangGroup:usesErxiangGroup(s),amoExileKing:isR2AmoKing(s),xiemuFrequent:isR2XiemuFrequent(s),xiemuRevised:isR2XiemuRevision(s)&&s.characterId==='xiemu',heroBalance:isR2HeroBalance(s),boundedClear:isR2BoundedClear(s),activeMultTiming:isR2ActiveMultTiming(s),routeGrowth:isR2RouteGrowth(s)?s.routeGrowth as R2RouteHistory:undefined,erxiang:usesErxiangHandoff(s),touye:usesTouyeWager(s),newTouye:usesTouyeNewCore(s),touyeScaling:usesTouyeScaling(s),laohuan:usesLaohuanRefill(s),laohuanFind:usesLaohuanFind(s),xiemu:usesXiemuBurn(s),azao:usesAzaoCharge(s),phase:s.phase as R2RunState['phase'],group:hasR2GroupUpgradeContract(s),combo,definitions:r2JokerDefinitionsFor(s),runId:s.runId as string,characterId:s.characterId as string,amoScoreTiming:r2ScoreTimingFor(s),discoveredHands:Object.keys(levels),levels:levels as R2RunState['handLevels'],stage,stageIndex:s.stageIndex as number,
     config,program:s.program as R2ProgramState|null,usage:usage as R2RunState['chapterHandUsage'],
     liveJokerIds:sameStage?(s.jokers as R2JokerInstance[]).map(joker=>joker.instanceId):undefined,liveJokers:combo||sameStage?s.jokers as R2JokerInstance[]:undefined,settledGold:['stage-cleared','run-won'].includes(s.phase as string)?s.gold as number:undefined});
   const program=s.program as R2ProgramState|null;

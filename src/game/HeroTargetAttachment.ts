@@ -110,7 +110,7 @@ export class HeroTargetAttachment {
    const body=cardVisualRoot(card),m=body.getWorldTransformMatrix(),sx=Math.max(.1,Math.hypot(m.a,m.b)),sy=Math.max(.1,Math.hypot(m.c,m.d));
    const ear=mark.ear?.active?mark.ear:(mark.ear=this.scene.add.graphics().setName('hero/handoff-ear').setData('targetId',id));if(ear.parentContainer!==body)body.add(ear);
    const box={x:patch.x+Math.max(0,patch.width-14/sx),y:patch.y,width:Math.min(patch.width,14/sx),height:Math.min(patch.height,18/sy)};
-   ear.setVisible(drawHandoffEar(ear,box,undefined,{x:sx,y:sy},this.options.motion()==='full'?this.state.value?.clock??0:0)).setAlpha(alpha);
+   ear.setVisible(drawHandoffEar(ear,box,this.state.value?.kind==='group'&&this.state.value.releaseReason==='erxiang.handoff'?'听政目标：同点有效牌每次普通点数改加倍率':undefined,{x:sx,y:sy},this.options.motion()==='full'?this.state.value?.clock??0:0)).setAlpha(alpha);
   }
  }
  private layout(root:Phaser.GameObjects.Container,targets:ReadonlySet<Phaser.GameObjects.Container>,ignoreHandoff=false){

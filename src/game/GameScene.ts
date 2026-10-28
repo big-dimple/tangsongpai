@@ -1,3 +1,4 @@
+import {usesErxiangGroup} from '../domain/r2ErxiangHandoff';
 import {usesLaohuanFind,laohuanFindGroups} from '../domain/r2LaohuanFind';
 import {pcHeroKey,PC_HERO_COMPOSITION} from './PcHeroArt';
 import {beginPcSettlementCut} from './PcSettlementPresentation';
@@ -1218,8 +1219,8 @@ export class GameScene extends Phaser.Scene {
       const chosen=xiemuChoice(this.run,preview?.type,this.xiemuBurn).choices.some(c=>c.cost===this.xiemuBurn&&c.available);
       this.previewHeroTargets(chosen&&main.length?{key:key(main)+'/'+this.xiemuBurn,targetId:main[0],targetIds:main,kind:'group',label:'待付'+this.xiemuBurn,resolvedLabel:'已付'+this.xiemuBurn,releaseReason:'xiemu.multiply-multiplier'}:undefined);return;
     }
-    const target=usesErxiangHandoff(this.run)?erxiangChoice(this.run,this.selectionPreview(),this.erxiangTargetId).selected?.card.id:undefined;
-    this.previewHeroTargets(target?{key:JSON.stringify([this.run.runId,this.run.stage?.index,[...this.selectedIds].sort()]),targetId:target}:undefined);
+    const handoff=usesErxiangHandoff(this.run)?erxiangChoice(this.run,this.selectionPreview(),this.erxiangTargetId).selected:undefined,target=handoff?.card.id;
+    this.previewHeroTargets(target?{key:JSON.stringify([this.run.runId,this.run.stage?.index,[...this.selectedIds].sort(),target]),targetId:target,...(usesErxiangGroup(this.run)?{targetIds:handoff!.groupIds,kind:'group' as const,label:'同点待转',resolvedLabel:'已转',releaseReason:'erxiang.handoff'}:{})}:undefined);
   }
   private refreshSelection(animateId?:string):void {
     if(!this.presentation&&!this.playing&&this.run.phase==='await-input'){this.validateAssistSelection();Object.assign(this,retainChosenHeroDraft(this.run,this.selectionPreview(),this.chosenHeroDraft()));this.ensureCandidates();}
@@ -1949,6 +1950,12 @@ export class GameScene extends Phaser.Scene {
       if(!preview)this.resultText.setText('选择手牌 · 出牌后计分');
       this.fitScoreReadouts();
     }
+    if(preview&&usesErxiangGroup(this.run)&&this.erxiangTargetId&&!this.playing&&!this.presentation){
+      try{const input=this.aiInput(),ids=[...this.selectedIds],chosen=previewR2Hand(aiHandScoreInput(input,ids)),plain=previewR2Hand(aiHandScoreInput({...input,score:aiScoreContext(input.score,{erxiangTargetId:null})},ids));
+        const range=(p:typeof chosen)=>p.scoreRange.minimum===p.scoreRange.maximum?p.scoreRange.minimum:p.scoreRange.minimum+'–'+p.scoreRange.maximum;
+        this.resultText.setText('预计转后 '+range(chosen)+' · 不转 '+range(plain));fitScoreLine(this.resultText,{x:score.x+10,y:score.y+(score.height<90?4:7),width:score.width-20-(this.bossSuitRescueButton?154:this.selectionQuickInScore(score)?104:0),height:score.height<90?18:30},score.height<90?18:24);
+      }catch{this.resultText.setText('当前选择不能预览，请调整选牌');}
+    }
     if(this.bossSuitRescuePreview){
       let text='选牌后查看本手预计得分';
       if(preview){try{const p=previewR2Hand(aiHandScoreInput(this.aiInput(),[...this.selectedIds]));text=(bossSuitRescueActive(this.run.stage)?'解封本手':'本手')+'预计 '+(p.scoreRange.minimum===p.scoreRange.maximum?p.scoreRange.minimum:p.scoreRange.minimum+'–'+p.scoreRange.maximum)+'分 · 目标不变';}catch{text='所选能力暂不可用 · 调整后查看预计得分';}}
@@ -2053,7 +2060,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private operationText(event:ScoreEvent):string {
-    if(event.reasonKey==='erxiang.handoff')return fractionText(event.value)+'点热度 → 倍率（首次普通计分）';
+    if(event.reasonKey==='erxiang.handoff')return fractionText(event.value)+'点热度 → 倍率（'+(usesErxiangGroup(this.run)?'本次普通计分':'首次普通计分')+'）';
     if(event.reasonKey==='amo.exile')return '贬谪：本手得分×'+fractionText(event.value);
     return r2ScoreOperationText(event,event.sourceType==='joker'?this.jokerDefinition(event.sourceDefinitionId):undefined);
   }

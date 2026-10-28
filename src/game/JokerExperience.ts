@@ -49,6 +49,7 @@ export function savedBenefit(state:R2RunState,trace:ScoreTrace,e:ScoreEvent):Sav
   if(trace.amoExile?.use&&e.reasonKey==='amo.exile')return fact('苏轼 · 贬谪 · 已使用','弃掉'+trace.amoExile.discardedIds.length+'张；本次得分 '+trace.amoExile.beforeScore+' → '+trace.amoExile.afterScore+'（×'+savedAmoExileMultiplier(trace)+'）','出牌时弃掉其余手牌，每场一次','之后正常补牌；本场贬谪已用');
   if(trace.laohuanFind?.multiplier&&e.reasonKey==='laohuan.find')return fact('辛弃疾 · 寻得',trace.laohuanFind.activeIds.length+'张同点有效计分 · ×'+trace.laohuanFind.multiplier,'本次换牌实际留下的同点组','本场寻得已用；下一场重置');
   const handoff=trace.erxiangHandoff;
+  if(trace.erxiangGroup&&handoff?.targetId&&e.reasonKey==='erxiang.handoff'&&e.targetCardId)return fact(skill(),e.value.n+'点热度改加倍率（本次计分）','所选核心同点的有效计分牌','同点牌与重触各自转移，不保证增加得分');
   if(handoff?.targetId&&e.reasonKey==='erxiang.handoff'&&e.targetCardId===handoff.targetId)return fact(skill(),handoff.points+'点热度改加倍率（首次普通计分）','所选计分牌，本场一次','本场已用；增强、版次、后续重触保持');
   const wager=trace.touyeWager;
   if(wager?.commit&&e.reasonKey.startsWith('touye.'+(wager.outcome==='won'?'won.':'lost.')))return fact(skill('已结算'),'押'+HAND_LABELS[wager.commit.target]+' · 实际'+HAND_LABELS[trace.handType]+' · '+(wager.outcome==='won'?'达成×'+wager.multiplier+(usesTouyeScaling(state)&&wager.core?' · 新牌有效'+wager.core.activeNewIds.length+'张':''):wager.core?.lossReason==='new-core'?'新摸牌没参与成型×0.85':(usesTouyeScaling(state)?'新牌有效'+(wager.core?.activeNewIds.length??0)+'张 · ':'')+'未成×0.85'),'之前的押注在这一手结算',wager.core?'本场已用；输约不是收益':'本场已用；未成不是收益');
