@@ -325,7 +325,7 @@ export class IntermissionScene extends Phaser.Scene {
           const result=await dispatchRun(this,{type:'ContinueEndless'},seq);
           if(lifecycle!==this.lifecycle||!this.scene.isActive())return;
           if(result.ok&&result.state.phase==='shop'&&result.state.tourMode==='endless'){
-            const row=result.state.dynamicEndless?.records.at(-1);this.exitResult('shop',row?.lock.commandId===result.receipt.commandId?{targetLockCommandId:result.receipt.commandId}:undefined);return;
+            const row=result.state.dynamicEndless?.records.at(-1);this.exitResult('shop',row&&row.lock.commandId===result.receipt.commandId?{targetLockCommandId:result.receipt.commandId}:undefined);return;
           }
           this.notice=!result.ok&&result.code==='stale-sequence'?'胜利进度已变化，请重新确认继续。':!result.ok&&result.code==='save-failed'?'接续未保存，胜利进度仍保留；请在菜单重试保存。':'接续未完成，胜利进度仍保留；请查看菜单后重试。';
           this.dialog.close(dialog);this.audio.invalid();
@@ -348,7 +348,7 @@ export class IntermissionScene extends Phaser.Scene {
     try {
       if(this.result.cleared&&run.phase==='stage-cleared'&&nextStagePreview(run)){
         const result=await dispatchRun(this,{type:'OpenShop'},run.commandSeq);if(lifecycle!==this.lifecycle||!this.scene.isActive())return;
-        if(result.ok){const o=result.state.pokerEncounter?.opportunities.at(-1),row=result.state.dynamicEndless?.records.at(-1);this.exitResult('shop',{...(o?.status==='offered'?{pokerEncounterEntryId:o.id}:{}),...(row?.lock.commandId===result.receipt.commandId?{targetLockCommandId:result.receipt.commandId}:{})});return;}
+        if(result.ok){const o=result.state.pokerEncounter?.opportunities.at(-1),row=result.state.dynamicEndless?.records.at(-1),data={...(o?.status==='offered'?{pokerEncounterEntryId:o.id}:{}),...(row&&row.lock.commandId===result.receipt.commandId?{targetLockCommandId:result.receipt.commandId}:{})};this.exitResult('shop',Object.keys(data).length?data:undefined);return;}
         this.notice='商店尚未保存，请在菜单重试保存。';this.audio.invalid();
       }else {this.exitResult('character-select',{freshSeed:true});return;}
     }finally {if(lifecycle===this.lifecycle&&this.scene.isActive()){this.busy=false;this.render();}}
