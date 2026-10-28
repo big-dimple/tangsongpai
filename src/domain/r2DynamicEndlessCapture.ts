@@ -12,7 +12,7 @@ export function captureDynamicScore(before:R2RunState,after:R2RunState,command:C
  const trace=scored[0].score;
  if(trace.rootId!==after.lastTrace?.rootId||trace.finalScore!==after.lastTrace.finalScore)throw Error('invalid-dynamic-score-trace');
  const hand=makeDynamicHandEvidence(stage.index,old.heat,stage.heat,trace,command);
- const ended=events.filter(e=>e.type==='stage-ended'&&e.cleared);
+ const ended=events.filter((e):e is Extract<DomainEvent,{type:'stage-ended'}>=>e.type==='stage-ended'&&e.cleared);
  if(ended.length>1||!!stage.clearId!==!!ended.length||ended.length&&stableHash(ended[0].stage)!==stableHash(stage))throw Error('invalid-dynamic-clear-transaction');
  const clear=ended.length?makeDynamicClearEvidence(stage,trace,command):null;
  return {hand,clear,receipt:{...receipt,endlessHandHash:dynamicHandHash(hand),...(clear?{endlessClearHash:dynamicClearHash(clear)}:{})}};
