@@ -1,6 +1,8 @@
 import {expect,it} from 'vitest';
 import {R2_HAND_TYPES} from '../src/domain/evaluateR2';
-import {R2_BASE_SCORES} from '../src/domain/scoreR2';
+import {R2_BASE_SCORES,SCORE_LIMITS} from '../src/domain/scoreR2';
+import {R2_GROUP_HAND_TYPES} from '../src/domain/r2GroupHands';
+import {R2_EDITIONS} from '../src/content/r2Tools';
 import {HAND_LABELS} from '../src/content/handLabels';
 import {handRuleReference} from '../src/game/HandRuleReference';
 import {nextCandidate} from '../src/game/SelectionCopy';
@@ -20,6 +22,13 @@ it('references all12 real bases and partial saved levels without discovery/save 
 it('four rules explain ordinary exceptions, clone types and evaluator precedence',()=>{
  const copy=handRuleReference({},{fourStraight:true,fourFlush:true});expect(copy).toContain('4张普通顺子；同花顺仍5张');expect(copy).toContain('4张普通同花；同花顺仍5张');expect(copy).toContain('4张同花连续判普通同花，不是同花顺');expect(copy).toContain('不能跨越QKA2');expect(copy).toContain('复制得到的不同牌');
  expect(copy).toContain('判型优先顺序（先符合者）：同花五条 → 同花葫芦 → 五条 → 同花顺 → 四条 → 葫芦 → 同花 → 顺子');
+});
+it('explains group membership, polychrome timing and the real retrigger boundary',()=>{
+ const copy=handRuleReference({}),group=copy.split('成组包括')[1].split('。')[0];
+ for(const type of R2_GROUP_HAND_TYPES)expect(group).toContain(HAND_LABELS[type]);
+ expect(R2_EDITIONS.find(e=>e.id==='polychrome')!.effect?.value).toEqual({n:'3',d:'2'});
+ expect(copy).toContain('多彩扑克在该牌增强后使当前倍率×1.5');expect(copy).toContain('多彩唐宋牌在本槽整手计分后');
+ expect(copy).toContain('每张牌每手最多额外重触发 '+SCORE_LIMITS.extraRetriggers+' 次');expect(copy).toContain('不重算整手或整手角色能力');
 });
 const hand:PlayingCard[]=[{id:'a',rank:5,suit:'hearts'},{id:'b',rank:8,suit:'clubs'},{id:'c',rank:6,suit:'clubs'},{id:'d',rank:5,suit:'clubs'},{id:'e',rank:4,suit:'clubs'},{id:'f',rank:3,suit:'clubs'},{id:'g',rank:9,suit:'diamonds'},{id:'h',rank:5,suit:'diamonds'}];
 const input:R2CandidateInput={hand,definitions:R2_JOKERS,jokers:[],disabledIds:[],boss:null,stageIndex:0,sealedJokerIds:[],challengeDisabledJokerId:null,resources:{gold:0,handsLeft:4,playIndex:0,discardsUsed:0,stageHeat:'0',target:'400'},contentVersion:'fixture'};
