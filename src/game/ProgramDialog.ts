@@ -16,7 +16,10 @@ export function programStatus(state:R2RunState):string {
   return name+' · 压轴过关兑现';
 }
 export function programEntryLabel(state:R2RunState):string {
-  const p=state.program;return !p?'节目单 · 关闭':!p.choiceMade?'节目单 · 待选':p.abandoned?'节目单 · 已放弃':p.claimed?'节目单 · 已兑现':p.selectedId?'节目单 · 已接':'节目单 · 本章不接';
+  const p=state.program,label=!p?'节目单 · 关闭':!p.choiceMade?'节目单 · 待选':p.abandoned?'节目单 · 已放弃':p.claimed?'节目单 · 已兑现':p.selectedId?'节目单 · 已接':'节目单 · 本章不接';
+  if(state.tourMode==='endless'&&state.phase==='shop'&&!state.dynamicEndless)return label+' · 动态挑战可选';
+  if(state.dynamicEndless?.status==='pending')return label+' · 动态挑战第'+(state.dynamicEndless.fromStage/3+1)+'章生效';
+  return label;
 }
 export function programPreparationFacts(state:R2RunState):string {
   const challenge=R2_MODE_CATALOG.challenges.find(row=>row.id===state.challengeId);
@@ -31,9 +34,9 @@ function programDescription(id:string):string {
     default:throw Error('unknown-program');
   }
 }
-export function showPrograms(dialog:DetailDialog,state:R2RunState,ready:boolean,send:(action:Action,seq:number)=>Promise<boolean>,options:{directory?:()=>void;valid?:()=>boolean}={}):void {
+export function showPrograms(dialog:DetailDialog,state:R2RunState,ready:boolean,send:(action:Action,seq:number)=>Promise<boolean>,options:{directory?:()=>void;activateDynamic?:()=>void;valid?:()=>boolean}={}):void {
   const program=state.program,seq=state.commandSeq;
-  const extra=options.directory?[{label:'本章对手与规则',run:options.directory}]:[],facts=programPreparationFacts(state),valid=()=>options.valid?.()??true;
+  const extra=[...(options.directory?[{label:'本章对手与规则',run:options.directory}]:[]),...(options.activateDynamic?[{label:'启用动态挑战',disabled:!ready,run:options.activateDynamic}]:[])],facts=programPreparationFacts(state),valid=()=>options.valid?.()??true;
   if(!program){dialog.open('本章节目单','本局已关闭节目单，普通奖励照常。'+(facts?'\n\n'+facts:''),extra);return;}
   const usage=Object.entries(state.chapterHandUsage).filter(([,count])=>count!>0)
     .map(([type,count])=>HAND_LABELS[type as keyof typeof HAND_LABELS]+' '+count+'次').join(' · ')||'还未出牌';

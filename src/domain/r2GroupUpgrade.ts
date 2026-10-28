@@ -111,14 +111,25 @@ const LEGACY_HOUSE_PROFILES=Object.freeze([
 ]);
 const VALUE_BASE_PROFILES=[...POKER_HOUSE_PROFILES.filter(p=>p.base.contentVersion===R2_AMO_KING_VERSION||p.base.contentVersion===R2_S04_FINISH_VERSION),...LAOHUAN_FIND_PROFILE,...XIEMU_REVISION_PROFILE,...TOUYE_SCALING_PROFILE,...ERXIANG_GROUP_PROFILE];
 const VALUE_HOUSE_PROFILES=VALUE_BASE_PROFILES.map(p=>Object.freeze({...p,contentVersion:p.contentVersion+'-joker-value-v1',contentHash:stableHash({inherits:p.contentHash,jokers:R2_VALUE_JOKERS}),valueBase:Object.freeze({contentVersion:p.contentVersion,contentHash:p.contentHash})}));
+/** A separate identity reserves the new endless contract; old starts keep their original receipt. */
+const DYNAMIC_ENDLESS_CONTRACT=Object.freeze({version:'dynamic-endless-v1',scope:'endless-only',sample:'actual-non-boss-stage-total',confirmation:'two-successes',anchor:'max-baseline-ceil-105pct-min-two-times-ceil-35pct-confirmed-35pct',boss:'public-tiers-b03-all-live-disabled-35pct-with-static-floor',rounding:'integer-ceil',locking:'one-stage-before-entry'});
+const DYNAMIC_HOUSE_PROFILES=VALUE_HOUSE_PROFILES.map(p=>Object.freeze({...p,contentVersion:p.contentVersion+'-dynamic-endless-v1',contentHash:stableHash({inherits:p.contentHash,policy:DYNAMIC_ENDLESS_CONTRACT}),dynamicBase:Object.freeze({contentVersion:p.contentVersion,contentHash:p.contentHash})}));
+const ALL_VALUE_HOUSE_PROFILES=Object.freeze([...VALUE_HOUSE_PROFILES,...DYNAMIC_HOUSE_PROFILES]);
+export function withDynamicEndlessIdentity(base:{contentVersion:string;contentHash:string}) {
+ const profile=DYNAMIC_HOUSE_PROFILES.find(p=>p.dynamicBase.contentVersion===base.contentVersion&&p.dynamicBase.contentHash===base.contentHash);
+ if(!profile)throw Error('unsupported-dynamic-endless-base');
+ return {contentVersion:profile.contentVersion,contentHash:profile.contentHash};
+}
+export const isR2DynamicEndless=(s:{contentVersion?:unknown;contentHash?:unknown})=>DYNAMIC_HOUSE_PROFILES.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
+export const r2DynamicEndlessBase=(s:{contentVersion?:unknown;contentHash?:unknown})=>DYNAMIC_HOUSE_PROFILES.find(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash)?.dynamicBase??s;
 export function withJokerValueIdentity(base:{contentVersion:string;contentHash:string}) {
  const profile=VALUE_HOUSE_PROFILES.find(p=>p.valueBase.contentVersion===base.contentVersion&&p.valueBase.contentHash===base.contentHash);
  if(!profile)throw Error('unsupported-joker-value-base');
  return {contentVersion:profile.contentVersion,contentHash:profile.contentHash};
 }
-export const R2_HOUSE_PROFILES:readonly (typeof ORIGINAL_HOUSE_PROFILES[number]&{rescueBase?:Readonly<{contentVersion:string;contentHash:string}>;pokerBase?:Readonly<{contentVersion:string;contentHash:string}>})[]=Object.freeze([...LEGACY_HOUSE_PROFILES,...VALUE_HOUSE_PROFILES]);
-export const r2JokerValueBase=(s:{contentVersion?:unknown;contentHash?:unknown})=>VALUE_HOUSE_PROFILES.find(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash)?.valueBase??s;
-export const isR2JokerValue=(s:{contentVersion?:unknown;contentHash?:unknown})=>VALUE_HOUSE_PROFILES.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
+export const R2_HOUSE_PROFILES:readonly (typeof ORIGINAL_HOUSE_PROFILES[number]&{rescueBase?:Readonly<{contentVersion:string;contentHash:string}>;pokerBase?:Readonly<{contentVersion:string;contentHash:string}>})[]=Object.freeze([...LEGACY_HOUSE_PROFILES,...ALL_VALUE_HOUSE_PROFILES]);
+export const r2JokerValueBase=(s:{contentVersion?:unknown;contentHash?:unknown})=>ALL_VALUE_HOUSE_PROFILES.find(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash)?.valueBase??s;
+export const isR2JokerValue=(s:{contentVersion?:unknown;contentHash?:unknown})=>ALL_VALUE_HOUSE_PROFILES.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
 export const isR2ErxiangGroup=(s:{contentVersion?:unknown;contentHash?:unknown})=>{s=r2JokerValueBase(s);return ERXIANG_GROUP_PROFILE.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);};
 export const isR2TouyeScaling=(s:{contentVersion?:unknown;contentHash?:unknown})=>{s=r2JokerValueBase(s);return TOUYE_SCALING_PROFILE.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);};
 export const isR2XiemuRevision=(s:{contentVersion?:unknown;contentHash?:unknown})=>{s=r2JokerValueBase(s);return XIEMU_REVISION_PROFILE.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);};

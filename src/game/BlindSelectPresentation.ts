@@ -29,7 +29,7 @@ export function presentStageSelection(dialog: DetailDialog, run: R2RunState, sce
   const stage0 = getR2Stage(start, run.tourMode, run.difficulty, run);
   const stage1 = getR2Stage(start + 1, run.tourMode, run.difficulty, run);
   const stage2 = getR2Stage(start + 2, run.tourMode, run.difficulty, run);
-  if (!stage0 || !stage1 || !stage2) return Promise.resolve(true);
+  if (![stage0,stage1,stage2][run.stageIndex%3]) return Promise.resolve(true);
 
   const currentInChapter = run.stageIndex % 3;
   const isBoss = currentInChapter === 2;
@@ -158,13 +158,15 @@ export function presentStageSelection(dialog: DetailDialog, run: R2RunState, sce
       const info = element('div', 'blind-stage-info');
       const target = element('p', 'blind-target');
       target.append(element('span', 'blind-target-label', bossStage ? '决战目标' : '目标热度'),
-        element('strong', 'blind-target-value', heatText(stage.targetHeat)));
+        element('strong', 'blind-target-value', stage?heatText(stage.targetHeat):'待定'));
       info.append(target);
       if (bossStage) {
         const rule = element('section', 'blind-boss-declaration');
         rule.setAttribute('aria-label', `${bossDef.name}的本场规则`);
         rule.append(element('p', 'blind-boss-rule', bossDef.rule + disabledSuitText),
           element('p', 'blind-boss-response', '应对 · ' + bossDef.response));
+        const lock=run.dynamicEndless?.records.find(row=>row.index===start+index);
+        if(lock?.boss.definitionId==='B03'&&lock.deck.live>0&&lock.deck.live===lock.deck.disabled)rule.append(element('p','blind-boss-response','目标已考虑锁定时全部有效牌属于受限花色；筹备后目标不变。'));
         info.append(rule);
       }
       info.append(element('p', 'blind-clear-reward', '过关 · 结算奖金 + 利息'));

@@ -392,8 +392,8 @@
       ],
       "mottoAttribution": "借传世《花蕊夫人宫词》赏赐意象作游戏演绎，并非历史原话；宫词作者归属有争议。",
       "identityScope": {
-        "contentVersion": "quality-r2-xiemu-burn-v3-a11-house-v1-b03-rescue-v1-poker-encounter-v1-xiemu-revision-v1-joker-value-v1",
-        "contentHash": "json-fnv-v1:d2f67cf0ef7fd634",
+        "contentVersion": "quality-r2-xiemu-burn-v3-a11-house-v1-b03-rescue-v1-poker-encounter-v1-xiemu-revision-v1-joker-value-v1-dynamic-endless-v1",
+        "contentHash": "json-fnv-v1:88daad41007e2ce5",
         "role": "current-normal-new-run"
       }
     }

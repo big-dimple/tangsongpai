@@ -1,7 +1,7 @@
 import type {Command,DomainEvent,Receipt} from './run';
 import type {R2RunState} from './r2Run';
 import {stableHash} from './hash';
-import {dynamicClearHash,dynamicHandHash,makeDynamicClearEvidence,makeDynamicHandEvidence,type DynamicClearEvidence,type DynamicHandEvidence,type DynamicEvidenceReceipt} from './r2DynamicEndlessEvidence';
+import {dynamicClearHash,dynamicHandHash,dynamicReceiptOutcome,makeDynamicClearEvidence,makeDynamicHandEvidence,type DynamicClearEvidence,type DynamicHandEvidence,type DynamicEvidenceReceipt} from './r2DynamicEndlessEvidence';
 
 /** Capture only facts emitted by the same successful command transaction.
  * The caller must persist the returned record and stamped receipt atomically. */
@@ -15,5 +15,5 @@ export function captureDynamicScore(before:R2RunState,after:R2RunState,command:C
  const ended=events.filter((e):e is Extract<DomainEvent,{type:'stage-ended'}>=>e.type==='stage-ended'&&e.cleared);
  if(ended.length>1||!!stage.clearId!==!!ended.length||ended.length&&stableHash(ended[0].stage)!==stableHash(stage))throw Error('invalid-dynamic-clear-transaction');
  const clear=ended.length?makeDynamicClearEvidence(stage,trace,command):null;
- return {hand,clear,receipt:{...receipt,endlessHandHash:dynamicHandHash(hand),...(clear?{endlessClearHash:dynamicClearHash(clear)}:{})}};
+ return {hand,clear,receipt:{...receipt,endlessOutcome:dynamicReceiptOutcome(dynamicHandHash(hand),clear?dynamicClearHash(clear):'')}};
 }

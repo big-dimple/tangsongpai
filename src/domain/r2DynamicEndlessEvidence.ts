@@ -10,7 +10,12 @@ export interface DynamicClearEvidence {
  stageIndex:number;clearId:string;score:string;target:string;finalHandScore:string;rootId:string;command:Command;
 }
 export interface DynamicHandEvidence {stageIndex:number;before:string;after:string;score:string;rootId:string;command:Command}
-export type DynamicEvidenceReceipt=Receipt&{endlessClearHash?:string;endlessHandHash?:string};
+/** Three bounded stamps share one receipt field; empty positions denote absent outcomes. */
+export type DynamicEvidenceReceipt=Receipt&{endlessOutcome?:string};
+export const dynamicReceiptOutcome=(hand='',clear='',policy='',lock='')=>[hand,clear,policy,lock].join('|');
+export function dynamicReceiptParts(receipt:DynamicEvidenceReceipt|undefined):[string,string,string,string] {
+ const parts=receipt?.endlessOutcome?.split('|');return parts?.length===4?parts as [string,string,string,string]:['','','',''];
+}
 const validScore=(s:unknown):s is string=>typeof s==='string'&&s.length<=MAX_INTEGER_DIGITS&&/^(0|[1-9]\d*)$/.test(s);
 const outcome=(e:DynamicClearEvidence)=>({stageIndex:e.stageIndex,clearId:e.clearId,score:e.score,target:e.target,finalHandScore:e.finalHandScore,rootId:e.rootId});
 export const dynamicClearHash=(e:DynamicClearEvidence)=>stableHash(outcome(e));
@@ -25,7 +30,7 @@ export function dynamicHandEvidenceShape(e:DynamicHandEvidence,runId:string):boo
  return !!e&&Number.isSafeInteger(e.stageIndex)&&e.stageIndex>=0&&validScore(e.before)&&validScore(e.after)&&validScore(e.score)&&BigInt(e.before)+BigInt(e.score)===BigInt(e.after)&&!!e.command&&e.command.runId===runId&&typeof e.command.commandId==='string'&&!!e.command.commandId&&Number.isSafeInteger(e.command.expectedSeq)&&e.command.expectedSeq>=0&&['PlayHand','PlayAssistedHand'].includes(e.command.action?.type)&&e.rootId===`${runId}/hand/${e.command.commandId}`;
 }
 export function verifyDynamicHandEvidence(e:DynamicHandEvidence,receipt:DynamicEvidenceReceipt|undefined,runId:string):boolean {
- return dynamicHandEvidenceShape(e,runId)&&!!receipt&&receipt.commandId===e.command.commandId&&receipt.seq===e.command.expectedSeq+1&&receipt.fingerprint===stableHash(e.command)&&receipt.endlessHandHash===dynamicHandHash(e);
+ return dynamicHandEvidenceShape(e,runId)&&!!receipt&&receipt.commandId===e.command.commandId&&receipt.seq===e.command.expectedSeq+1&&receipt.fingerprint===stableHash(e.command)&&dynamicReceiptParts(receipt)[0]===dynamicHandHash(e);
 }
 /** Does not reconstruct earlier hands; the caller captures the actual committed stage, never a claimed score. */
 export function makeDynamicClearEvidence(stage:Pick<R2StageState,'index'|'clearId'|'heat'|'targetHeat'|'skipResult'>,trace:Pick<ScoreTrace,'rootId'|'finalScore'>,command:Command):DynamicClearEvidence {
@@ -38,7 +43,7 @@ export function dynamicClearEvidenceShape(e:DynamicClearEvidence,runId:string):b
 }
 /** Existing command receipts alone cannot establish score; require the clear outcome stamp. */
 export function verifyDynamicClearEvidence(e:DynamicClearEvidence,receipt:DynamicEvidenceReceipt|undefined,runId:string):boolean {
- return dynamicClearEvidenceShape(e,runId)&&!!receipt&&receipt.commandId===e.command.commandId&&receipt.seq===e.command.expectedSeq+1&&receipt.fingerprint===stableHash(e.command)&&receipt.endlessClearHash===dynamicClearHash(e);
+ return dynamicClearEvidenceShape(e,runId)&&!!receipt&&receipt.commandId===e.command.commandId&&receipt.seq===e.command.expectedSeq+1&&receipt.fingerprint===stableHash(e.command)&&dynamicReceiptParts(receipt)[1]===dynamicClearHash(e);
 }
 /** Replay-free consistency of a complete bounded stage, tied to committed outcome receipts. */
 export function verifyDynamicClearChain(clear:DynamicClearEvidence,hands:readonly DynamicHandEvidence[],receipts:readonly DynamicEvidenceReceipt[],runId:string):boolean {

@@ -17,6 +17,7 @@ import { scoreHand, type ScoreResult } from '../scoring/scoreHand';
 import { CHARACTER_IDS, type CharacterId } from './characters';
 import { stableHash } from './hash';
 import { assertR2Invariants, r2RulesetFor, transactR2, type R2RunState, type R2StageState } from './r2Run';
+import {applyDynamicEndless} from './r2DynamicEndlessRuntime';
 import type { ScoreTrace } from './scoreR2';
 import type { Condition } from '../content/r2Schema';
 import {resolveR2ModeConfig,type R2ModeSelection,type R2ProgramId} from '../content/r2Modes';
@@ -103,6 +104,7 @@ export interface RunState {
 export type Action =
   | { type: 'StartRun'; seed: string; characterId: CharacterId; rulesVersion?: 'r1' | 'r2';modeConfig?:R2ModeSelection;r2Profile?:'amo-assist-v1'|'combo-growth-v1'|'group-upgrade-v1';r2Identity?:{contentVersion:string;contentHash:string};openingRoute?:R2OpeningRoute }
   | { type: 'LeaveShop' | 'OpenShop' | 'RerollShop' | 'AbandonRun' | 'SkipStage' | 'ContinueEndless' }
+  | { type: 'ActivateDynamicEndless';stageIndex:number }
   | {type:'EnterStage';bossSuitRescueEntryToken?:string}
   | {type:'BuyBossSuitRescue';entryToken?:string;purchasePlayIndex?:number}
   | {type:'BuyPokerPolychrome';opportunityId:string;shopSeq:number;targetId:string}
@@ -209,8 +211,10 @@ export function applyCommand(input: AnyRunState | null, command: Command): Comma
   if (input?.rulesVersion === 'r2' || (!input && command.action.type === 'StartRun' && command.action.rulesVersion === 'r2')) {
     const result = transactR2(input as R2RunState|null, command);
     if (!result.ok) return {...fail(result.code), ...(result.diagnostic ? {diagnostic:result.diagnostic} : {})};
-    const receipt:Receipt = {commandId:command.commandId,fingerprint,seq:result.state.commandSeq+1,...(input?.rulesVersion==='r2'&&command.action.type==='DiscardHand'&&result.state.stage?.laohuanFindProof?.source.commandId===command.commandId?{laohuanFindSnapshot:laohuanFindToken(input)}:{})};
-    result.state.commandSeq++; result.state.receipts.push(receipt);
+    let receipt:Receipt = {commandId:command.commandId,fingerprint,seq:result.state.commandSeq+1,...(input?.rulesVersion==='r2'&&command.action.type==='DiscardHand'&&result.state.stage?.laohuanFindProof?.source.commandId===command.commandId?{laohuanFindSnapshot:laohuanFindToken(input)}:{})};
+    result.state.commandSeq++;
+    try {receipt=applyDynamicEndless(input?.rulesVersion==='r2'?input:null,result.state,command,result.events,receipt);}catch(error){return fail(error instanceof Error?error.message:'dynamic-endless-error');}
+    result.state.receipts.push(receipt);
     assertR2Invariants(result.state);
     return {...result,receipt,duplicate:false};
   }

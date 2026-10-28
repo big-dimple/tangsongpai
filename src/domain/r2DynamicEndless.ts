@@ -22,14 +22,16 @@ export function dynamicEndlessAdvanceAnchor(anchor:string,normalBaseline:string,
 }
 const severeBosses:ReadonlySet<R2BossId>=new Set(['B03','B06','B08','B09','B10','B11','B15','B16']);
 /** A Boss discount changes the next target only; the caller retains the original anchor. */
-export function dynamicEndlessBossTarget(anchor:string,staticBossTarget:string,boss:R2BossId):string {
- return output(maximum(score(staticBossTarget),ceil(score(anchor)*(severeBosses.has(boss)?75n:90n),100n)));
+export function dynamicEndlessBossTarget(anchor:string,staticBossTarget:string,boss:R2BossId,allLiveCardsDisabled=false):string {
+ const percentage=boss==='B03'&&allLiveCardsDisabled?35n:severeBosses.has(boss)?75n:90n;
+ return output(maximum(score(staticBossTarget),ceil(score(anchor)*percentage,100n)));
 }
 
 /** The static phase target is a floor, not a second multiplier on the anchor. */
-export function dynamicEndlessStageTarget(index:number,difficulty:number,anchor:string,boss:R2BossPlan):string {
+export function dynamicEndlessStageTarget(index:number,difficulty:number,anchor:string,boss:R2BossPlan,allLiveCardsDisabled=false,staticFloor?:string):string {
  if(!Number.isSafeInteger(index)||index<24||!r2BossPlanValid(boss))throw Error('invalid-dynamic-stage');
  const spec=r2StageSpec(index,'endless',difficulty,true,true);
  if(!spec)throw Error('numeric-length-limit');
- return index%3===2?dynamicEndlessBossTarget(anchor,spec.targetHeat,boss.definitionId):output(maximum(score(anchor),score(spec.targetHeat)));
+ const floor=staticFloor??spec.targetHeat;
+ return index%3===2?dynamicEndlessBossTarget(anchor,floor,boss.definitionId,allLiveCardsDisabled):output(maximum(score(anchor),score(floor)));
 }

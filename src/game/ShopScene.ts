@@ -226,7 +226,7 @@ export class ShopScene extends Phaser.Scene {
     // Portrait shops open with the bottom owned-card rail folded. The entry
     // button carries its reversible affordance so the primary action remains
     // available without spending a separate row on an arrow control.
-    this.menuActions={viewDeck:()=>this.inspectDeck()};this.registry.set('runMenuActions',this.menuActions);
+    this.menuActions={viewDeck:()=>this.inspectDeck(),viewRules:()=>this.inspectChapter()};this.registry.set('runMenuActions',this.menuActions);
     this.cameras.main.setBackgroundColor('#F3EADB');this.view=new SceneView(this,()=>this.render());
     this.ownedCollapsed=this.view.layout.width<700&&this.view.layout.height>this.view.layout.width;
     this.view.controllerAction=(action,targetId)=>{
@@ -1055,7 +1055,11 @@ export class ShopScene extends Phaser.Scene {
   private inspectChapter():void {
     const owner=runController(this),run=this.run,lifecycle=this.lifecycle;
     const valid=()=>this.scene.isActive()&&this.lifecycle===lifecycle&&runController(this)===owner&&owner?.state===run&&this.run===run&&run.phase==='shop';
-    showPrograms(this.dialog,run,this.ready,(action,seq)=>this.send(action,seq),{valid,directory:()=>{if(valid())void presentStageSelection(this.dialog,run,this);}});
+    const activateDynamic=run.tourMode==='endless'&&!run.dynamicEndless?()=>{
+      if(!valid())return;const nextChapter=Math.floor(run.stageIndex/3)+2;
+      const modal=this.dialog.open('启用动态挑战',`从第 ${nextChapter} 章开始按真实通关表现调整目标；本章已公布目标不变。旧成绩不足以可靠复原，将从后续真实普通场开始采样。Boss 目标会考虑公开限制。`,[{label:'启用动态挑战',primary:true,disabled:!this.ready,run:async()=>{if(valid()&&this.dialog.active(modal)&&await this.send({type:'ActivateDynamicEndless',stageIndex:run.stageIndex},run.commandSeq))this.dialog.close(modal);}}],{closeLabel:'保留当前规则'});
+    }:undefined;
+    showPrograms(this.dialog,run,this.ready,(action,seq)=>this.send(action,seq),{valid,directory:()=>{if(valid())void presentStageSelection(this.dialog,run,this);},activateDynamic});
   }
   private inspectOffer(id:string,makeCards=false,intent?:WorkshopIntent):void {
     if(id===basicChoiceSeat(this.run)?.offerId){this.inspectBasicChoice();return;}

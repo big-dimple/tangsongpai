@@ -26,6 +26,7 @@ import {R2_MODE_CATALOG} from '../content/r2Modes';
 import {readRunProgress} from '../platform/RunProgress';
 import {AudioEngine,type FailureCue} from '../audio/AudioEngine';
 import {getR2Stage} from '../domain/r2Run';
+import type {R2RunState} from '../domain/r2Run';
 import {r2JokerDefinitionFor} from '../domain/r2ContentProfiles';
 import {r2BossText} from '../domain/r2Chapter';
 import {HAND_LABELS} from '../content/handLabels';
@@ -38,6 +39,12 @@ import {stageOutcome} from './stageOutcome';
 import {failureSummary,failureGuidance} from './FailureSummary';
 import {finaleKeepsake} from './FinaleKeepsake';
 import {endlessContinuationCopy} from './EndlessContinuationCopy';
+const nextStagePreview=(run:R2RunState)=>{
+ const locked=getR2Stage(run.stageIndex,run.tourMode,run.difficulty,run);if(locked)return locked;
+ if(run.dynamicEndless?.status!=='active')return;
+ const spec=getR2Stage(run.stageIndex,run.tourMode,run.difficulty,{contentVersion:run.contentVersion,contentHash:run.contentHash});
+ return spec?{...spec,targetHeat:'待定'}:undefined;
+};
 import {selectionPortraitKey,selectionPortraitURL} from './portraits';
 import {showHeroExplanation} from './HeroExplanation';
 import {EffectQueue} from '../core/EffectQueue';
@@ -127,7 +134,7 @@ export class IntermissionScene extends Phaser.Scene {
     const mobile=mobileResultViewport(l.width,l.height),preferred=mobile?Math.max(200,Math.min(342,l.height-350)):settlementContentHeight(l.width,!!resultFacts.hero,resultFacts.tier>=2);
     const pc=pcResultViewport(l.width,l.height);
     let p=resultLayout(l.width,l.height,0,preferred,pc);
-    const nextStage=this.result.cleared&&run.phase==='stage-cleared'?getR2Stage(run.stageIndex,run.tourMode,run.difficulty,run):undefined,skipped=run.phase==='run-lost'?null:run.stage?.skipResult,won=run.phase==='run-won',capped=this.result.cleared&&run.phase==='stage-cleared'&&!nextStage,lost=!this.result.cleared&&!skipped&&!won;
+    const nextStage=this.result.cleared&&run.phase==='stage-cleared'?nextStagePreview(run):undefined,skipped=run.phase==='run-lost'?null:run.stage?.skipResult,won=run.phase==='run-won',capped=this.result.cleared&&run.phase==='stage-cleared'&&!nextStage,lost=!this.result.cleared&&!skipped&&!won;
     const animateIn=this.firstRender&&!gameSession().reducedMotion&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.releaseViewport?.();this.releaseViewport=undefined;this.stopCelebration();v.clear();this.paintSourceArt=undefined;this.sourceArtLayer=undefined;v.paperBackground();if(pc)drawPcSettlementArt(this,v);const backgroundCount=v.root.length;
     const content=this.resultContent=this.add.container(0,0).setName('result/content');
@@ -153,7 +160,7 @@ export class IntermissionScene extends Phaser.Scene {
       const reward=skipped.kind==='coupon'?'下次买牌减2金券':skipped.kind==='gold'?'库存已满，+1金币':SKIP_ITEM_LABELS[skipped.definitionId];
       heading='跳场所得';body=reward+'。没有过关奖金或利息。'+(nextStage?'\n下一场：'+nextStage.name+' · 目标 '+heatText(nextStage.targetHeat):'');
     }else if(nextStage){
-      const nextIdentity=stageIdentity(nextStage.index,nextStage.index%3===2?run.boss:null,run.tourMode,run.difficulty,run)!;
+      const nextIdentity=stageIdentity(nextStage.index,nextStage.index%3===2?run.boss:null,run.tourMode,run.difficulty,{contentVersion:run.contentVersion,contentHash:run.contentHash})!;
       heading=nextIdentity.isBoss?'下一场压轴 · '+nextIdentity.title:'准备下一场';const hero=heroStageContinuity(run);
       body=nextIdentity.isBoss?'目标 '+heatText(nextStage.targetHeat)+' · '+nextIdentity.scope:`${nextStage.name} · 目标 ${heatText(nextStage.targetHeat)}\n筹备后，出牌与弃牌次数补满。`+(!p.short&&hero?'\n'+hero.next:'');
     }else if(won){
@@ -339,7 +346,7 @@ export class IntermissionScene extends Phaser.Scene {
   private async next():Promise<void> {
     if(this.busy)return;this.busy=true;const lifecycle=this.lifecycle,run=runController(this)!.state;this.render();
     try {
-      if(this.result.cleared&&run.phase==='stage-cleared'&&getR2Stage(run.stageIndex,run.tourMode,run.difficulty,run)){
+      if(this.result.cleared&&run.phase==='stage-cleared'&&nextStagePreview(run)){
         const result=await dispatchRun(this,{type:'OpenShop'},run.commandSeq);if(lifecycle!==this.lifecycle||!this.scene.isActive())return;
         if(result.ok){const o=result.state.pokerEncounter?.opportunities.at(-1);this.exitResult('shop',o?.status==='offered'?{pokerEncounterEntryId:o.id}:undefined);return;}
         this.notice='商店尚未保存，请在菜单重试保存。';this.audio.invalid();

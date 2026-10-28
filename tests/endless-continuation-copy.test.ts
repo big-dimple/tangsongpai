@@ -2,6 +2,7 @@ import {describe,expect,it} from 'vitest';
 import {endlessContinuationCopy} from '../src/game/EndlessContinuationCopy';
 import {getR2Stage,R2_CONTENT_VERSION,R2_CONTENT_HASH,R2_LEGACY_CONTENT_VERSION,R2_LEGACY_CONTENT_HASH} from '../src/domain/r2Run';
 import {R2_CORE_BUILD_VERSION,R2_CORE_BUILD_HASH,R2_BOUNDED_CLEAR_VERSION,R2_BOUNDED_CLEAR_HASH,R2_ROUTE_GROWTH_VERSION,R2_ROUTE_GROWTH_HASH,R2_ACTIVE_MULT_VERSION,R2_ACTIVE_MULT_HASH} from '../src/domain/r2GroupUpgrade';
+import {newRunIdentity} from '../src/game/RunLaunch';
 
 const bounded={contentVersion:R2_BOUNDED_CLEAR_VERSION,contentHash:R2_BOUNDED_CLEAR_HASH};
 const historical=[
@@ -12,6 +13,10 @@ const historical=[
 ];
 
 describe('endless confirmation reads the actual run target contract',()=>{
+  it('describes the dynamic identity without promising fixed future targets',()=>{
+    const copy=endlessContinuationCopy(newRunIdentity('azao','group'));
+    expect(copy).toContain('真实通关得分逐场调整');expect(copy).toContain('后续目标暂时待定');expect(copy).toContain('首场目标偏高');expect(copy).not.toContain('同场次目标按');
+  });
   it('reads the core target policy for 1.35 without changing the identity or rounded targets',()=>{
     const identity=Object.freeze({contentVersion:R2_CORE_BUILD_VERSION,contentHash:R2_CORE_BUILD_HASH});
     expect(endlessContinuationCopy(identity)).toContain('同场次目标按 1.35 倍递增，最终向上取整');
