@@ -50,6 +50,18 @@ describe('five card value identity',()=>{
   expect(scoring(s,'c03',pair,0,['card/0']).events.filter(e=>e.sourceDefinitionId==='c03')).toHaveLength(1);
   expect(scoring(s,'jiedongfeng',pair,0).events.filter(e=>e.sourceDefinitionId==='jiedongfeng')).toHaveLength(0);
  });
+ it('counts each eligible suit card and genuine retriggers, but not disabled cards',()=>{
+  for(const legacy of [true,false]){
+   const s=fresh('azao',legacy),hand=cards([2,5,8,10,13],Array(5).fill('hearts'));
+   const value=legacy?'8':'12',all=scoring(s,'c02',hand,5),disabled=scoring(s,'c02',hand,5,['card/0']);
+   expect(all.events.filter(e=>e.sourceDefinitionId==='c02'&&e.operation==='add-heat')).toHaveLength(5);
+   expect(disabled.events.filter(e=>e.sourceDefinitionId==='c02'&&e.operation==='add-heat')).toHaveLength(4);
+   expect(all.events.filter(e=>e.sourceDefinitionId==='c02'&&e.operation==='add-heat').every(e=>e.value.n===value)).toBe(true);
+   const pair=cards([9,9],['hearts','diamonds']),base={rulesVersion:'r2' as const,runId:s.runId,rootId:'value/retrigger',hand:pair,selectedIds:pair.map(c=>c.id),disabledIds:[],definitions:r2JokerDefinitionsFor(s),handLevels:{},playIndex:1,handsBeforePlay:4,previousHandType:null,wager:false,rng:s.rng.rule,characterId:'neutral' as const,routeGrowth:{clears:0,G:0,S:0,F:0}};
+   const t=scoreR2Hand({...base,jokers:['c02','b06'].map(id=>r2CreateJoker(id,id,r2Price(id,'none',s),'none',s))});
+   const hits=t.events.filter(e=>e.sourceDefinitionId==='c02'&&e.operation==='add-heat');expect(hits).toHaveLength(4);expect(hits.filter(e=>e.retriggerDepth===1)).toHaveLength(2);expect(hits.every(e=>e.value.n===value)).toBe(true);
+  }
+ });
  it('actual purchase, play and checkpoint keep the new value; player copy reports each identity',()=>{
   let s=fresh('azao');s.shop!.offers[0]={offerId:'value/offer',definitionId:'d07',price:r2Price('d07','none',s),edition:'none',consumed:false};s=send(s,{type:'BuyOffer',offerId:'value/offer'});s=send(send(s,{type:'LeaveShop'}),{type:'EnterStage'});s=send(s,{type:'PlayHand',selectedIds:[s.handOrder[0]]});expect(s.lastTrace!.events.find(e=>e.sourceDefinitionId==='d07')?.value).toEqual({n:'3',d:'2'});expect(readCheckpoint(makeCheckpoint(s,[])).ok).toBe(true);
   for(const legacy of [true,false]){const r=fresh('azao',legacy),ctx=publicJokerMemoryContext(r,{hand:[],scoringLimited:false,deckSize:52,jokerSlots:5,jokerCount:0});expect(jokerAbilityCopyForRun(r,'d07',undefined,ctx).condition).toContain(legacy?'0.5':'1.5');expect(jokerAbilityCopyForRun(r,'jiedongfeng',undefined,ctx).condition).toContain(legacy?'1.5':'3');}
