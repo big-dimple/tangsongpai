@@ -34,5 +34,7 @@ describe('dynamic score capture',()=>{
   const records=hands.map(h=>h!.hand),receipts=hands.map(h=>h!.receipt),clear=hands.at(-1)!.clear!;
   expect(verifyDynamicClearChain(clear,records,receipts,state.runId)).toBe(true);
   expect(verifyDynamicClearChain(clear,records,receipts.slice(1),state.runId)).toBe(false);
+  const retry=applyCommand(state,clear.command);expect(retry.ok&&retry.duplicate).toBe(true);
+  if(retry.ok)expect(()=>captureDynamicScore(state,retry.state,clear.command,retry.events,retry.receipt)).toThrow('invalid-dynamic-score-transaction');
  });
 });
