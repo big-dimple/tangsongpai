@@ -406,6 +406,7 @@ export class GameScene extends Phaser.Scene {
       const hintVisible=!!this.handHint;this.stopHandHint();if(hintVisible&&this.reducedMotion)this.showHandHint(false);
       this.tweens.timeScale=gameSession().speed;this.time.timeScale=gameSession().speed;
       if(this.reducedMotion){
+        if(this.lastPlayCue?.active){this.lastPlayCue.destroy();this.lastPlayCue=undefined;}
         if(this.toolHand){this.effects.clear();this.toolHand=undefined;this.render();}
         this.heroClimax?.reduce();this.playAuraPulse?.remove();this.playAuraPulse=undefined;this.cameras.main.resetFX();
         this.cardViews.forEach(view=>{view.sheenTween?.remove();view.sheen?.setAlpha(0);this.revealCard(view);});
@@ -419,7 +420,10 @@ export class GameScene extends Phaser.Scene {
       if(this.ownedDrag?.saving)this.ownedDrag.pending();else this.ownedInput?.cancel();
     };
     window.addEventListener('tangsongpai-presentation',settings);
+    const motionPreference=window.matchMedia('(prefers-reduced-motion: reduce)');
+    motionPreference.addEventListener('change',settings);
     this.events.once('shutdown',()=>{
+      motionPreference.removeEventListener('change',settings);
       this.heroPortraitMotion?.destroy();this.heroPortraitMotion=undefined;this.heroPortrait=undefined;this.giftDelivery?.destroy();this.giftDelivery=undefined;this.giftEvent=undefined;
       this.sushiSkillPayoff?.dispose();this.sushiSkillPayoff=undefined;
       this.liueSkillPayoff?.dispose();this.liueSkillPayoff=undefined;
