@@ -47,7 +47,7 @@ export function showHeroPlayReminder(dialog:DetailDialog,run:R2RunState,facts:R2
  const modal=dialog.open(exchange?'先换牌，再出牌？':'这手要用主动技能吗？','主动操作：'+guide.effect+'\n'+guide.risk,[
   {label:exchange?'重选弃牌':'返回用技能',primary:true,run:()=>act(callbacks.back)},
   {label:exchange?'按原选择出牌':'继续出牌',run:()=>act(callbacks.play)},
- ],{summaryBody:exchange?'重新选择1–5张弃牌并押目标。\n确认换牌耗'+r2DiscardCost(run)+'次弃牌'+(run.stage?.boss?.definitionId==='B07'?'＋1金币':'')+(usesTouyeScaling(run)?'；押中按新牌数×2／3／4，失败×0.85。':'；下一手成功×2，失败×0.85。'):hero.name+' · '+hero.passiveName+'\n当前可用，尚未选择本手主动操作。',...(exchange?{collapseRules:true,rulesLabel:'押注规则'}:{}),closeLabel:'取消 · 返回选牌'});
+ ],{summaryBody:exchange?'重新选择1–5张弃牌并押目标。\n确认换牌耗'+r2DiscardCost(run)+'次弃牌'+(run.stage?.boss?.definitionId==='B07'?'＋1金币':'')+(usesTouyeScaling(run)?'；押中按换来并计分的牌数×2／3／4，失败×0.85。':'；下一手成功×2，失败×0.85。'):hero.name+' · '+hero.passiveName+'\n当前可用，尚未选择本手主动操作。',...(exchange?{collapseRules:true,rulesLabel:'押注规则'}:{}),closeLabel:'取消 · 返回选牌'});
  modal.classList.add('hero-play-reminder');
  if(!exchange){const automatic=document.createElement('p');automatic.className='hero-reminder-automatic';automatic.textContent='继续出牌：本手不使用这项主动操作。被动／自动效果仍按各自条件结算，不会一起关闭。返回后仍由你决定是否使用，不会自动发动。';modal.querySelector('.dialog-scroll')!.append(automatic);}
  const off=document.createElement('button');off.type='button';off.className='hero-reminder-disable';off.textContent='不再提醒';off.onclick=()=>act(callbacks.disable);modal.querySelector('.dialog-scroll')!.append(off);

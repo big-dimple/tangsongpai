@@ -1630,7 +1630,7 @@ export class GameScene extends Phaser.Scene {
     const valid=()=>this.ready&&!this.presentation&&this.run===state&&JSON.stringify([...this.selectedIds])===selection;
     const choices=groups.map(g=>({label:`${rankLabel(g.rank)} · ${g.ids.length}张 · ×${Math.min(4,g.ids.length)}`,primary:this.laohuanFindRank===g.rank,disabled:!enabled,run:()=>{if(!valid())return;this.laohuanFindRank=g.rank;this.dialog.close();this.refreshSelection();}}));
     if(this.laohuanFindRank!==null)choices.push({label:'取消本手寻得',primary:false,disabled:false,run:()=>{if(!valid())return;this.laohuanFindRank=null;this.dialog.close();this.refreshSelection();}});
-    const modal=this.dialog.open('辛弃疾 · 寻得','本批实际留牌中，至少两张同点牌参与有效计分时，可选择最大组发动。每场一次；下一手出牌后资格失效。',choices,{summaryBody:enabled?'请选择本手最大同点组':'本场寻得已用或角色能力停用',effectBody:groups.length?'选择并列最大组之一；确认出牌才消耗次数。':'当前选牌未满足条件；仍可正常出牌。',closeLabel:'返回选牌'});fitHeroSkillDialog(modal);
+    const modal=this.dialog.open('辛弃疾 · 寻得','下一手用至少两张刚换来的同点牌计分，就可选寻得：2／3／4张及以上分别×2／×3／×4，每场一次。例如刚换来两张8并用它们组成对子，可选×2。只能选数量最多的同点组；并列时自己选一组。再次弃牌或下一手出牌后，之前换的牌不再算。',choices,{summaryBody:enabled?'请选择本手最大同点组':'本场寻得已用或角色能力停用',effectBody:groups.length?'选择并列最大组之一；确认出牌才消耗次数。':'当前选牌未满足条件；仍可正常出牌。',closeLabel:'返回选牌'});fitHeroSkillDialog(modal);
   }
   private inspectTouye():void {
     if(this.pendingTouye){this.inspectTouyeTargets([...this.selectedIds]);return;}

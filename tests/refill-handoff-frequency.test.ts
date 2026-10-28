@@ -45,5 +45,5 @@ it('Liu quota survives saved retry and forged counters cannot disagree with the 
  const bad=structuredClone(f.state);bad.stage!.erxiangHandoffUses=2;bad.stage!.erxiangHandoffUsed=true;expect(()=>makeCheckpoint(bad,f.journal)).toThrow('invalid-save-erxiang-count');
 });
 it('current selection and details show repeatable Xin and two-use Liu without changing the other four',()=>{
- expect(characterForNewRun('laohuan').detailRules).toContain('每次正常弃牌');expect(characterForNewRun('laohuan').skillTags).not.toContain('每场1次');expect(SELECTION_PRESENTATION.laohuan.cost).toContain('下一手出牌或再次弃牌后旧批失效');expect(characterForNewRun('erxiang').skillTags).toContain('每场2次');expect(SELECTION_PRESENTATION.erxiang.cost).toContain('每场2次');expect(characterForNewRun('amo').quickEffect).toContain('×3');expect(characterForNewRun('xiemu').quickEffect).toContain('2／4／6／8');
+ expect(characterForNewRun('laohuan').detailRules).toContain('每次正常弃牌');expect(characterForNewRun('laohuan').skillTags).not.toContain('每场1次');expect(SELECTION_PRESENTATION.laohuan.cost).toContain('再次弃牌或下一手出牌后失效');expect(characterForNewRun('erxiang').skillTags).toContain('每场2次');expect(SELECTION_PRESENTATION.erxiang.cost).toContain('每场2次');expect(characterForNewRun('amo').quickEffect).toContain('×3');expect(characterForNewRun('xiemu').quickEffect).toContain('2／4／6／8');
 });

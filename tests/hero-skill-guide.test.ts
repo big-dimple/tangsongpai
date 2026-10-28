@@ -9,7 +9,7 @@ const start=(id:CharacterId)=>{let s=createRun({seed:'hero-guide',runId:'hero-gu
 it('six current skills give their actual steps and risks without mutating the run',()=>{
  for(const id of CHARACTER_IDS){const s=start(id),before=structuredClone(s),c=heroSkillGuide(s);expect(c.active).toBe(true);expect(c.step).toBeTruthy();expect(c.effect).toBeTruthy();expect(c.risk).toBeTruthy();expect(s).toEqual(before);}
  expect(heroSkillGuide(start('touye')).step).toContain('选1–5张弃牌');expect(heroSkillGuide(start('touye')).effect).toContain('×0.85');
- expect(heroSkillGuide(start('laohuan'))).toMatchObject({active:true,step:'本批至少两张同点牌有效计分时可发动',effect:'本批2／3／4张同点有效计分分别×2／×3／×4'});expect(heroOperationSteps(start('laohuan'),heroSkillGuide(start('laohuan'))).labels).toEqual(['正常弃牌并留候选','选本批同点计分牌','选择寻得并出牌']);expect(heroSkillGuide(start('erxiang')).effect).toContain('改加倍率');
+ expect(heroSkillGuide(start('laohuan'))).toMatchObject({active:true,step:'下一手用至少两张刚换的同点牌计分',effect:'刚换的2／3／4张及以上同点牌计分，分别×2／×3／×4'});expect(heroOperationSteps(start('laohuan'),heroSkillGuide(start('laohuan'))).labels).toEqual(['正常弃牌并留候选','选刚换的同点牌计分','选择寻得并出牌']);expect(heroSkillGuide(start('erxiang')).effect).toContain('改加倍率');
  expect(heroSkillGuide(start('xiemu')).effect).toContain('付2金 ×1.5');expect(heroSkillGuide(start('azao')).effect).toContain('×1.5／2.5／4');expect(heroSkillGuide(start('amo')).risk).toContain('正常补牌');
 });
 it('Touye unavailable, selected and pending steps come from existing real choices',()=>{

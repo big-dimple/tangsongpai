@@ -26,11 +26,11 @@ describe('秦琼多张新牌倍率',()=>{
   const f=arranged(),s=touyeSend(f.state,touyeBet(f.state,f.discard,'flush'));
   const play=[...f.incoming.slice(0,n),...f.held.slice(0,5-n)],before=structuredClone(s),hand=s.handOrder.map(id=>s.deckInstances.find(c=>c.id===id)!),context=r2ScoreContext(s,hand,play);
   const preview=previewR2Hand({rulesVersion:'r2',runId:s.runId,rootId:'preview',hand,selectedIds:play,disabledIds:s.stage!.disabledIds,jokers:s.jokers,definitions:r2JokerDefinitionsFor(s),handLevels:s.handLevels,playIndex:1,handsBeforePlay:4,previousHandType:null,wager:false,...context});
-  expect(touyeChoice(s,play).status).toContain(`新牌有效计分 ×${m}`);
+  expect(touyeChoice(s,play).status).toContain(`换来的${n}张牌计分 ×${m}`);
   const cmd=touyeCommand(s,{type:'PlayHand',selectedIds:play}),r=applyCommand(s,cmd);expect(r.ok).toBe(true);if(!r.ok)return;const t=r.state.lastTrace!;
   expect(t.touyeWager).toMatchObject({outcome:'won',multiplier:m,core:{activeNewIds:f.incoming.slice(0,n)}});expect(t.finalScore).toBe(preview.scoreRange.minimum);
   const event=t.events.find(e=>e.sourceDefinitionId==='touye')!;expect(event.value.n).toBe(m);expect(t.events.indexOf(event)).toBe(t.events.findIndex(e=>e.phase==='finalScore')-1);
-  expect(savedTouyeWager(t,r.state)).toContain(`${n}张新牌有效计分 ×${m}`);expect(savedBenefit(r.state,t,event)?.effect).toContain(`新牌有效${n}张`);
+  expect(savedTouyeWager(t,r.state)).toContain(`换来的${n}张牌计分 ×${m}`);expect(savedBenefit(r.state,t,event)?.effect).toContain(`换来的牌计分${n}张`);
   expect(readCheckpoint(makeCheckpoint(r.state,[cmd])).ok).toBe(true);expect(applyCommand(r.state,cmd)).toMatchObject({ok:true,duplicate:true});expect(s).toEqual(before);
  });
  it('未押保留原时点；目标错误或零新有效仍×0.85',()=>{

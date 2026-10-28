@@ -58,14 +58,14 @@ describe('normal new-game policy and exact retry creation',()=>{
   expect(characterForNewRun('xiemu').passiveDescription).toContain('付2／4／6／8金');
   expect(getCharacter('xiemu').passiveDescription).toContain('最后可用出牌');
   expect(characterForNewRun('laohuan').passiveDescription).toContain('多看最多2张');
-  expect(characterForNewRun('touye').passiveDescription).toContain('已成型也可押');
-  expect(characterForNewRun('touye').passiveDescription).toContain('本次补入的1／2／3张及以上牌有效计分');
+  expect(characterForNewRun('touye').passiveDescription).toContain('手里已有目标牌型也可押');
+  expect(characterForNewRun('touye').passiveDescription).toContain('刚换来的牌有1／2／3张及以上参与计分');
   expect(characterForNewRun('touye').passiveDescription).not.toMatch(/ID|事务|核心/);
   expect(getCharacter('touye').passiveDescription).toContain('50%');
   expect(getCharacter('laohuan').passiveDescription).toContain('额外 +120');
   expect(getCharacter('amo').buildTip).toContain('单张');
   expect(characterForNewRun('erxiang').passiveName).toBe('垂帘听政');
-  expect(characterForNewRun('erxiang').passiveDescription).toContain('本手所有同点有效计分牌每次计分时');
+  expect(characterForNewRun('erxiang').passiveDescription).toContain('本手参与计分的同点牌，每次计分时');
   expect(getCharacter('erxiang').passiveDescription).toBe('对子、两对、三条的倍率 +1.5。');
  });
 });

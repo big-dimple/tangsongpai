@@ -25,7 +25,7 @@ function facts(s:R2RunState,ids=main){return r2SelectionFacts({hand:s.handOrder.
 it('six public legal inputs only advertise the current valid operation, without mutation or guesses',()=>{
  for(const id of CHARACTER_IDS){let s=entered(id);if(id==='azao'){s=arrange(s,['spades-2','hearts-2','clubs-3','diamonds-3',...cards.slice(4)]);s=arrange(send(s,{type:'PlayHand',selectedIds:s.handOrder.slice(0,4)}));}if(id==='xiemu'){s.gold=10;expect(readCheckpoint(makeCheckpoint(s,[])).ok).toBe(true);}
   const before=structuredClone(s),ids=id==='erxiang'?cards.slice(0,2):main;
-  if(id==='laohuan')expect(heroAbilityCue(s,facts(s,ids),ids)).toMatchObject({label:'寻得',status:'条件未满足',state:'unavailable',available:false,opportunity:false,actionable:true,attention:false,detail:'换牌后选择至少两张本批同点计分牌'});else{
+  if(id==='laohuan')expect(heroAbilityCue(s,facts(s,ids),ids)).toMatchObject({label:'寻得',status:'条件未满足',state:'unavailable',available:false,opportunity:false,actionable:true,attention:false,detail:'下一手用至少两张刚换的同点牌计分'});else{
   expect(heroAbilityCue(s,facts(s,ids),ids,id==='amo')).toMatchObject({label:heroSkillName(id),status:'可用',state:'available'});
   expect(heroAbilityCue(s,facts(s,ids),ids,id==='amo')?.detail).toContain(id==='touye'?'弃牌前':'出牌前');}
   expect(heroAbilityCue(s)?.available).toBe(false);expect(s).toEqual(before);

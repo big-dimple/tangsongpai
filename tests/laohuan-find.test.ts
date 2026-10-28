@@ -167,7 +167,7 @@ it('回放与效果说明读取已提交的点数、数量和倍率',()=>{
  s=laohuanSend(s,{type:'DiscardHand',selectedIds:s.handOrder.slice(0,2)});s=laohuanSend(s,{type:'ChooseRefill',selectedIds:pair});s=laohuanSend(s,{type:'PlayHand',selectedIds:pair,laohuanFindRank:9});
  const trace=s.lastTrace!,event=trace.events.find(e=>e.reasonKey==='laohuan.find')!;
  expect(savedHeroAttachment(trace,'laohuan')?.targetIds).toEqual(pair);expect(heroScoreAction(trace,event)?.targetIds).toEqual(pair);
- expect(savedBenefit(s,trace,event)?.effect).toContain('2张同点有效计分 · ×2');expect(JSON.stringify(formatScoreReview(s,trace))).toContain('寻得 · 9 2张');
+ expect(savedBenefit(s,trace,event)?.effect).toContain('2张刚换的同点牌计分 · ×2');expect(JSON.stringify(formatScoreReview(s,trace))).toContain('寻得 · 9 2张');
 });
 it('旧身份与新身份相同种子及弃牌序列保持补牌和随机流',()=>{
  const old=laohuanDiscardFixture(0,oldFindIdentity());

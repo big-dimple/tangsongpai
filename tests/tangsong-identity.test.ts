@@ -17,7 +17,7 @@ it('binds six displayed identities to the existing technical IDs with three youn
 it('keeps the current skills and real costs while changing their displayed owner',()=>{
  expect(characterForNewRun('amo').passiveDescription).toContain('弃掉手里剩下的牌');
  expect(characterForNewRun('touye').passiveDescription).toContain('照常花弃牌次数');
- expect(characterForNewRun('laohuan').passiveDescription).toContain('再次弃牌或下一手成功出牌后旧批资格失效');
+ expect(characterForNewRun('laohuan').passiveDescription).toContain('再次弃牌或下一次成功出牌后，之前换来的牌不再符合条件');
  expect(characterForNewRun('erxiang').passiveDescription).toContain('每次计分');
  expect(characterForNewRun('azao').passiveDescription).toContain('1／2／3层');
  expect(characterForNewRun('xiemu').passiveDescription).toContain('2／4／6／8金');

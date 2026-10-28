@@ -1,4 +1,5 @@
 import {usesErxiangGroup} from '../domain/r2ErxiangHandoff';
+import {usesLaohuanFind} from '../domain/r2LaohuanFind';
 import {usesTouyeScaling} from '../domain/r2TouyeWager';
 import {erxiangHandoffLimit} from '../domain/r2ErxiangHandoff';
 import {laohuanRefillRepeats} from '../domain/r2LaohuanRefill';
@@ -25,7 +26,8 @@ export function heroSignature(id:CharacterId,run?:R2RunState){
   azao:{cost:'同牌型未释放则清空 · 最高3层',beats:[{label:'两对蓄势',cards:['7♠','7♥','Q♣','Q♦'],result:'存1层'},{label:'换三条',cards:['7♠','7♥','7♣'],result:'再蓄到2层'},{label:'下手释放',cards:[],result:'2层 ×'+R2_AZAO_CHARGE_CONTRACT.tiers[1]}]},
   xiemu:{cost:'两对起 · 真扣金 · 每场一次',beats:[{label:'经营存钱',cards:[],result:'先留'+burn.cost+'金'},{label:'出牌前选支付档',cards:['7♠','7♥','Q♣','Q♦'],result:'扣'+burn.cost+'金'},{label:'关键手兑现',cards:[],result:'角色 ×'+burn.multiplier}]},
  };
- if(usesErxiangGroup(identity))signatures.erxiang.beats=[{label:'先有对子',cards:['8♠','8♥'],result:'对子及以上'},{label:'选择一张8',cards:['8♠','8♥'],result:'同点有效牌逐张转移'},{label:'每次计分',cards:[],result:'两张各转8点，重触再转'}];
+ if(usesLaohuanFind(identity))signatures.laohuan.beats=[{label:'弃2张，多看2张',cards:['8♠','8♥','7♣','Q♦'],result:'选2张留下'},{label:'换来两张8',cards:['8♠','8♥'],result:'留在手中'},{label:'下一手打出对子',cards:['8♠','8♥'],result:'两张都计分，可选×2'}];
+ if(usesErxiangGroup(identity))signatures.erxiang.beats=[{label:'先有对子',cards:['8♠','8♥'],result:'对子及以上'},{label:'选择一张8',cards:['8♠','8♥'],result:'参与计分的同点牌都转移'},{label:'每次计分',cards:[],result:'两张各转8点，再次计分也转'}];
  if(usesTouyeScaling(identity))signatures.touye.beats[2].result='×2／3／4 ／ ×0.85';
  if(id==='amo'&&(!run||usesAmoExile(run)))signatures.amo={cost:(amoExileRequiresKing(run??newRunIdentity(id))?'余牌须含K · ':'')+'弃掉余牌 · 每场1次',beats:[{label:'选这手要打的牌',cards:['2♥','5♥','8♥','J♥','K♥'],result:'五张同花'},{label:'出牌时弃掉余牌',cards:amoExileRequiresKing(run??newRunIdentity(id))?['K♠','9♣','3♣']:['9♠','9♣','3♣'],result:'不再留手'},{label:'当手生效',cards:[],result:'这手得分×'+amoExileMultiplier(run??newRunIdentity(id))}]};
  const ability=run?characterForRun(run):characterForNewRun(id);return {...signatures[id],tag:ability.passiveName,ability};

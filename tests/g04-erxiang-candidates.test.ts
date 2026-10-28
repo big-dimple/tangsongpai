@@ -23,7 +23,7 @@ describe('G04 same-name handoff candidates',()=>{
   expect(new Set(choices.map(c=>c.label)).size).toBe(4);
   for(const [i,id] of ids.entries()){
    const c=choices.find(c=>c.card.id===id)!;expect(c.card).toBe(s.deckInstances.find(c=>c.id===id));expect(c.label).toBe('第'+(order.indexOf(id)+1)+'张 · 9♣');
-   expect(c.points).toBe(9);expect(c.detail).toContain('同点4张首次共36点转倍率，重触逐次转');
+   expect(c.points).toBe(9);expect(c.detail).toContain('同点计分牌4张首次共36点热度改加倍率；再次计分也转');
    expect(erxiangChoice(s,f,id).selected?.card.id).toBe(id);
    if(i===0)expect(c.detail).toContain('无增强；额外加成：普通');
    if(i===1||i===3){expect(c.detail).toContain('热度纸 · 热+20');expect(c.detail).toContain('额外加成：闪箔');expect(c.detail).not.toContain('首次普通29点');}

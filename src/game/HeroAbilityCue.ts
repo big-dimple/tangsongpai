@@ -35,7 +35,7 @@ export function heroAbilityCue(run:R2RunState,facts?:R2SelectionFacts,ids:readon
  if(usesLaohuanFind(run)){
   const enabled=r2RunModeConfig(run).characterAbilityEnabled&&run.stage?.boss?.definitionId!=='B08',used=!!run.stage?.laohuanFindUsed;
   const groups=facts?laohuanFindGroups(run.deckInstances,facts.activeScoringIds,run.stage?.laohuanFindBatch??[]):[],selected=groups.find(g=>g.rank===draft.laohuanFindRank);
-  const detail=run.pendingRefill?'请选择保留的牌':!enabled?'本场寻得停用':used?'本场寻得已用':selected?'已选'+selected.ids.length+'张同点 · ×'+Math.min(4,selected.ids.length):groups.length?'本手可选同点组发动寻得':'换牌后选择至少两张本批同点计分牌';
+  const detail=run.pendingRefill?'请选择保留的牌':!enabled?'本场寻得停用':used?'本场寻得已用':selected?'已选'+selected.ids.length+'张同点 · ×'+Math.min(4,selected.ids.length):groups.length?'本手可选同点组发动寻得':'下一手用至少两张刚换的同点牌计分';
   return {...cue(detail,enabled&&!used&&groups.length>0,enabled&&!used&&groups.length>0,{used,disabled:!enabled,selected:!!selected,pending:!!run.pendingRefill}),label:'寻得'};
  }
  if(laohuanRefillRepeats(run))return cue(r2RunModeConfig(run).characterAbilityEnabled?(run.pendingRefill?'请选择保留的牌':'弃牌后多看两张'):'本模式已停用',false,false,{passive:true});
