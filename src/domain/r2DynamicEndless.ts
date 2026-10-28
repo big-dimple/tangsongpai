@@ -1,5 +1,5 @@
 import {MAX_INTEGER_DIGITS} from './rational';
-import type {R2BossId} from './r2Chapter';
+import {r2BossPlanValid,r2StageSpec,type R2BossId,type R2BossPlan} from './r2Chapter';
 
 /** Exact provisional policy; callers are responsible for real clear evidence and locking. */
 const score=(value:string):bigint=>{
@@ -24,4 +24,12 @@ const severeBosses:ReadonlySet<R2BossId>=new Set(['B03','B06','B08','B09','B10',
 /** A Boss discount changes the next target only; the caller retains the original anchor. */
 export function dynamicEndlessBossTarget(anchor:string,staticBossTarget:string,boss:R2BossId):string {
  return output(maximum(score(staticBossTarget),ceil(score(anchor)*(severeBosses.has(boss)?75n:90n),100n)));
+}
+
+/** The static phase target is a floor, not a second multiplier on the anchor. */
+export function dynamicEndlessStageTarget(index:number,difficulty:number,anchor:string,boss:R2BossPlan):string {
+ if(!Number.isSafeInteger(index)||index<24||!r2BossPlanValid(boss))throw Error('invalid-dynamic-stage');
+ const spec=r2StageSpec(index,'endless',difficulty,true,true);
+ if(!spec)throw Error('numeric-length-limit');
+ return index%3===2?dynamicEndlessBossTarget(anchor,spec.targetHeat,boss.definitionId):output(maximum(score(anchor),score(spec.targetHeat)));
 }

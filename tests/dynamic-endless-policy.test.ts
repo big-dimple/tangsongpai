@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {dynamicEndlessAdvanceAnchor,dynamicEndlessBossTarget,dynamicEndlessInitialAnchor} from '../src/domain/r2DynamicEndless';
+import {dynamicEndlessAdvanceAnchor,dynamicEndlessBossTarget,dynamicEndlessInitialAnchor,dynamicEndlessStageTarget} from '../src/domain/r2DynamicEndless';
 import {MAX_INTEGER_DIGITS} from '../src/domain/rational';
 
 describe('unintegrated dynamic endless arithmetic',()=>{
@@ -13,6 +13,15 @@ describe('unintegrated dynamic endless arithmetic',()=>{
  });
  it('applies the documented boss tiers and preserves the old static floor',()=>{
   expect(dynamicEndlessBossTarget('1000000','1','B09')).toBe('750000');expect(dynamicEndlessBossTarget('1000000','1','B14')).toBe('900000');expect(dynamicEndlessBossTarget('1000000','2000000','B03')).toBe('2000000');
+ });
+ it('applies each phase baseline once, preserving its original static floor',()=>{
+  const boss={definitionId:'B09' as const,disabledSuit:null};
+  expect([24,25,26].map(i=>dynamicEndlessStageTarget(i,0,'20000',boss))).toEqual(['27642','41462','55283']);
+  expect([24,25,26].map(i=>dynamicEndlessStageTarget(i,0,'100000',boss))).toEqual(['100000','100000','75000']);
+  expect(dynamicEndlessStageTarget(26,0,'100000',{definitionId:'B05',disabledSuit:null})).toBe('90000');
+  expect(dynamicEndlessStageTarget(24,1,'20000',boss)).toBe('33170');
+  expect(()=>dynamicEndlessStageTarget(23,0,'1',boss)).toThrow('invalid-dynamic-stage');
+  expect(()=>dynamicEndlessStageTarget(26,0,'1',{definitionId:'B03',disabledSuit:null})).toThrow('invalid-dynamic-stage');
  });
  it('enforces the score length boundary after exact integer arithmetic',()=>{
   const max='9'.repeat(MAX_INTEGER_DIGITS);expect(()=>dynamicEndlessAdvanceAnchor(max,'1','1')).toThrow('numeric-length-limit');
