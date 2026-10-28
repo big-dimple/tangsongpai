@@ -17,10 +17,10 @@ it('binds six displayed identities to the existing technical IDs with three youn
 it('keeps the current skills and real costs while changing their displayed owner',()=>{
  expect(characterForNewRun('amo').passiveDescription).toContain('弃掉手里剩下的牌');
  expect(characterForNewRun('touye').passiveDescription).toContain('照常花弃牌次数');
- expect(characterForNewRun('laohuan').passiveDescription).toContain('正常弃牌额度与附加费用照付');
- expect(characterForNewRun('erxiang').passiveDescription).toContain('首次普通点数');
+ expect(characterForNewRun('laohuan').passiveDescription).toContain('再次弃牌或下一手成功出牌后旧批资格失效');
+ expect(characterForNewRun('erxiang').passiveDescription).toContain('每次计分');
  expect(characterForNewRun('azao').passiveDescription).toContain('1／2／3层');
- expect(characterForNewRun('xiemu').passiveDescription).toContain('3／6／10金');
+ expect(characterForNewRun('xiemu').passiveDescription).toContain('2／4／6／8金');
  for(const c of CHARACTERS)expect(characterForNewRun(c.id).name).toBe(c.name);
  expect(heroText('二响 · 交棒已兑现')).toBe('刘娥 · 交棒已兑现');
  expect(heroText('谢幕·燃金↗')).toBe('花蕊夫人·燃金↗');expect(heroText('逐个谢幕 · 已封禁')).toBe('逐个谢幕 · 已封禁');

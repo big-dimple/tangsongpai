@@ -52,7 +52,7 @@ it.each(['amo','erxiang','azao','xiemu','touye','laohuan'] as const)('%s visual 
  const event=f.cue?.event,beat=event?scorePhrase(f.trace.events,'100',1,f.trace).get(event.eventId)!:{windup:0,flight:0,impact:160,rest:0};
  const observation:HeroAttachmentPhaseEvent={owner:hero==='amo'?'discard':'card',activationId:f.eventId,eventId:event?.eventId,reasonKey:event?.reasonKey??'laohuan.refill',targetIds:f.targetIds,sourceTargetIds:f.targetIds,motion:'full',context,phase:'source'};
  const cue=attachmentPerformanceCue(owner,observation,beat,1);
- if(hero==='laohuan')expect(cue).toBeUndefined();else expect(cue).toMatchObject({owner,sourceId:event!.sourceInstanceId,eventId:event!.eventId,targetIds:hero==='amo'?f.trace.sets.activeScoringIds:f.targetIds,phase:'activate'});
+ if(hero==='laohuan')expect(cue).toBeUndefined();else expect(cue).toMatchObject({owner,sourceId:event!.sourceInstanceId,eventId:event!.eventId,targetIds:hero==='amo'?f.trace.sets.activeScoringIds:hero==='erxiang'?[event!.targetCardId]:f.targetIds,phase:'activate'});
  for(const phase of ['committed','attached','impact','settled','suspended','resumed','cancelled'] as const)expect(attachmentPerformanceCue(owner,{...observation,phase},beat,1)).toBeUndefined();
  for(const wrong of [{eventId:undefined},{sourceTargetIds:[]},{targetIds:['not-saved']},{motion:'reduced' as const},{context:{...context,generation:6}},{context:undefined}])expect(attachmentPerformanceCue(owner,{...observation,...wrong},beat,1)).toBeUndefined();
 });

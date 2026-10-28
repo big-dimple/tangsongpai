@@ -9,7 +9,7 @@ import {heroExplanationCopy} from '../src/game/HeroExplanation';
 import {heroSignature} from '../src/game/HeroSignature';
 import {heroPlaySample} from '../src/game/OpeningPlaySample';
 import {xiemuTiersFor,xiemuBurnStep} from '../src/domain/r2XiemuBurn';
-import {isR2XiemuBalance,isR2XiemuFrequent} from '../src/domain/r2GroupUpgrade';
+import {isR2XiemuBalance,isR2XiemuFrequent,isR2XiemuRevision} from '../src/domain/r2GroupUpgrade';
 import {amoExileCopy} from '../src/game/AmoExileCopy';
 import {HERO_OPENING} from '../src/game/HeroOpeningCopy';
 import {GameScene} from '../src/game/GameScene';
@@ -34,8 +34,8 @@ it('Su story and both sample surfaces describe the actual K-gated threefold play
 });
 it('Flower selection, conditions and example use current real payment tiers',()=>{
  const identity=newRunIdentity('xiemu','group'),tiers=xiemuTiersFor(identity),signature=heroSignature('xiemu'),sample=heroPlaySample('xiemu');
- expect(tiers.map(t=>[t.cost,t.multiplier])).toEqual([[3,1.5],[6,2],[10,3]]);expect(SELECTION_PRESENTATION.xiemu.cost).toContain('3／6／10');expect(heroExplanationCopy('xiemu').when).toContain('至少留有3金');
- const paid=xiemuBurnStep('two-pair',{cost:tiers[0].cost,goldBefore:tiers[0].cost,beforeUsed:false},true,isR2XiemuBalance(identity),isR2XiemuFrequent(identity));
+ expect(tiers.map(t=>[t.cost,t.multiplier])).toEqual([[2,1.5],[4,2],[6,3],[8,4]]);expect(SELECTION_PRESENTATION.xiemu.cost).toContain('2／4／6／8');expect(heroExplanationCopy('xiemu').when).toContain('至少留有2金');
+ const paid=xiemuBurnStep('two-pair',{cost:tiers[0].cost,goldBefore:tiers[0].cost,beforeUsed:false},true,isR2XiemuBalance(identity),isR2XiemuFrequent(identity),isR2XiemuRevision(identity));
  expect(paid.goldAfter).toBe(0);expect(signature.beats[0].result).toBe('先留'+paid.cost+'金');expect(signature.beats[1].result).toBe('扣'+paid.cost+'金');expect(signature.beats[2].result).toBe('角色 ×'+paid.multiplier);expect(sample.result).toContain('×'+paid.multiplier);expect(sample.after.label).toContain('扣'+paid.cost+'金');
 });
 it('Su choice puts a short K/score rule and actual discarded cards before collapsed details',()=>{

@@ -10,7 +10,7 @@ import {R2_PUBLISHED_CONTENT} from '../src/domain/r2PublishedContent';
 import {R2_ASSIST_VERSION} from '../src/domain/r2AssistIdentity';
 import {R2_RULESETS,r2CreateJoker} from '../src/domain/r2Run';
 import {createRun} from '../src/domain/run';
-import {isR2RouteStarter,isR2XiemuBalance} from '../src/domain/r2GroupUpgrade';
+import {isR2RouteStarter,isR2XiemuBalance,isR2LaohuanFind,isR2ErxiangGroup} from '../src/domain/r2GroupUpgrade';
 import {newRunIdentity} from '../src/game/RunLaunch';
 import {makeCheckpoint,readCheckpoint} from '../src/application/checkpoint';
 import {R2_BOSSES,r2BossText} from '../src/domain/r2Chapter';
@@ -38,7 +38,7 @@ it('all six hero rules and every tool/item/edition display use the current card 
 
 it('projects all 72 cards for every saved ruleset without rewriting any definition, checkpoint or storage partition',()=>{
  for(const identity of R2_RULESETS){
-  const r2Identity={contentVersion:identity.contentVersion,contentHash:identity.contentHash},s=createRun({rulesVersion:'r2',characterId:isR2XiemuBalance(identity)?'xiemu':identity.contentVersion===R2_ASSIST_VERSION||identity.amoScoreTiming==='exile-v1'?'amo':'touye',seed:'terms-old',runId:'terms/'+identity.contentVersion,r2Identity,...(isR2RouteStarter(r2Identity)?{openingRoute:'group' as const}:{})});
+  const r2Identity={contentVersion:identity.contentVersion,contentHash:identity.contentHash},s=createRun({rulesVersion:'r2',characterId:isR2LaohuanFind(identity)?'laohuan':isR2ErxiangGroup(identity)?'erxiang':isR2XiemuBalance(identity)?'xiemu':identity.contentVersion===R2_ASSIST_VERSION||identity.amoScoreTiming==='exile-v1'?'amo':'touye',seed:'terms-old',runId:'terms/'+identity.contentVersion,r2Identity,...(isR2RouteStarter(r2Identity)?{openingRoute:'group' as const}:{})});
   const definitions=r2JokerDefinitionsFor(s),checkpoint=makeCheckpoint(s,[]),key=r2ModeStorageKey(s,s.contentHash),before=JSON.stringify({s,definitions,checkpoint,key});
   expect(definitions).toHaveLength(72);expect(readCheckpoint(checkpoint).ok).toBe(true);clean(characterForRun(s));
   const ctx=publicJokerMemoryContext(s,{hand:[],scoringLimited:false,deckSize:s.deckInstances.length,jokerSlots:5,jokerCount:0});

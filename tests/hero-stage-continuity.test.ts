@@ -15,13 +15,13 @@ it('the saved one-layer gain is history, while stage end and next entry really r
  for(const s of [f.cleared,f.shop]){const before=JSON.stringify(s),c=heroStageContinuity(s)!;expect(c.last).toContain('0 → 1层');expect(c.last).toContain('已清层');expect(c.next).toContain('从0层');expect(JSON.stringify(s)).toBe(before);}
  expect(f.entered.stage!.azaoCharge!.charge).toBe(0);expect(heroStageContinuity(f.entered)).toBeUndefined();
 });
-it('burn history keeps the paid 12→2 while the shop decision reads current saved money',()=>{
- const f=heroStageFixture('xiemu'),c=heroStageContinuity(f.shop)!;expect(c.last).toContain('已付10金，12→2');expect(c.last).toContain('实际×3');expect(c.decision).toContain('当前'+f.shop.gold+'金');expect(c.decision).toContain('未到账');expect(f.cleared.stage!.xiemuBurnUsed).toBe(true);expect(f.entered.stage!.xiemuBurnUsed).toBe(false);
- const changed=structuredClone(f.shop);changed.gold=2;const next=heroStageContinuity(changed)!;expect(next.last).toBe(c.last);expect(next.decision).toContain('还差1金');
+it('burn history keeps the paid 12→4 while the shop decision reads current saved money',()=>{
+ const f=heroStageFixture('xiemu'),c=heroStageContinuity(f.shop)!;expect(c.last).toContain('已付8金，12→4');expect(c.last).toContain('实际×4');expect(c.decision).toContain('当前'+f.shop.gold+'金');expect(c.decision).toContain('未到账');expect(f.cleared.stage!.xiemuBurnUsed).toBe(true);expect(f.entered.stage!.xiemuBurnUsed).toBe(false);
+ const changed=structuredClone(f.shop);changed.gold=1;const next=heroStageContinuity(changed)!;expect(next.last).toBe(c.last);expect(next.decision).toContain('还差1金');
 });
 it('old-stage quiet is not the next ordinary stage restriction, and actual upcoming quiet exempts trick',()=>{
  const f=heroStageFixture('azao'),s=structuredClone(f.shop);s.stage!.boss={definitionId:'B08',disabledSuit:null};expect(heroStageContinuity(s)!.next).not.toContain('停用');s.stageIndex=2;s.boss={definitionId:'B08',disabledSuit:null};expect(heroStageContinuity(s)!.next).toContain('静场');
- const trick=initial('laohuan');trick.stageIndex=2;trick.boss={definitionId:'B08',disabledSuit:null};expect(heroStageContinuity(trick)!.next).toContain('每次正常弃牌仍可多看最多2张');expect(heroStageContinuity(trick)!.next).not.toContain('停用');
+ const trick=initial('laohuan');trick.stageIndex=2;trick.boss={definitionId:'B08',disabledSuit:null};expect(heroStageContinuity(trick)!.next).toContain('正常弃牌仍可多看两张');expect(heroStageContinuity(trick)!.next).not.toContain('停用');
 });
 it('skip has no role activation, no old identity promise, and terminal has no next stage',()=>{
  const s=heroSend(initial('azao'),{type:'SkipStage'}),c=heroStageContinuity(s)!;expect(c.last).toContain('没有出牌或角色发动');
@@ -33,5 +33,5 @@ it('disabled challenge never promises an upcoming use or interest gain',()=>{
 });
 
 it.each(['amo','erxiang','touye','laohuan'] as const)('%s returns through real commands without treating an ordinary hand as a used active ability',id=>{
- const f=heroStageFixture(id);expect(f.cleared.phase).toBe('stage-cleared');const c=heroStageContinuity(f.shop)!;expect(c.next).toContain(id==='erxiang'?'恢复为2次':id==='laohuan'?'每次正常弃牌仍可多看最多2张':'恢复为1次');expect(c.last).not.toContain('能力已用');expect(c.last).not.toContain('实际×2');expect(f.entered.phase).toBe('await-input');expect(heroStageContinuity(f.entered)).toBeUndefined();
+ const f=heroStageFixture(id);expect(f.cleared.phase).toBe('stage-cleared');const c=heroStageContinuity(f.shop)!;expect(c.next).toContain(id==='erxiang'?'恢复为2次':id==='laohuan'?'正常弃牌仍可多看两张':'恢复为1次');expect(c.last).not.toContain('能力已用');expect(c.last).not.toContain('实际×2');expect(f.entered.phase).toBe('await-input');expect(heroStageContinuity(f.entered)).toBeUndefined();
 });

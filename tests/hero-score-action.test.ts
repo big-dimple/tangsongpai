@@ -11,9 +11,9 @@ it.each(['amo','erxiang','azao','xiemu','touye','laohuan'] as const)('%s uses ac
  if(hero==='laohuan'){const result=await f.saved.dispatch({type:'PlayHand',selectedIds:[f.targetIds[0]]});expect(result.ok).toBe(true);trace=f.saved.state.lastTrace!;event=trace.events.find(e=>e.sourceType==='card'&&e.targetCardId===f.targetIds[0]&&e.operation==='add-heat');}
  const saved=JSON.stringify(trace),action=heroScoreAction(trace,event!,f.targetIds)!;expect(action?.positive).toBe(true);expect(action.contributions).toHaveLength(1);
  if(hero==='amo'){expect(action.targetIds).toEqual(trace.sets.activeScoringIds);expect(action.costIds).toEqual(trace.amoExile!.discardedIds);expect(action.costIds.some(id=>trace.cards.find(c=>c.id===id)?.rank===13)).toBe(true);expect(action.targetIds.every(id=>!action.costIds.includes(id))).toBe(true);}
- else {expect(action.costIds).toEqual([]);expect(action.targetIds).toEqual(f.targetIds);}
+ else {expect(action.costIds).toEqual([]);expect(action.targetIds).toEqual(hero==='erxiang'?[event!.targetCardId]:f.targetIds);}
  expect(action.contributions[0].target).toBe(hero==='laohuan'?'H':'M');expect(action.contributions[0].kind).toBe(hero==='erxiang'?'add':hero==='laohuan'?'heat':'multiply');expect(!!actualMultiplier(event!)).toBe(!['erxiang','laohuan'].includes(hero));
- if(hero==='xiemu')expect(action.cost).toEqual({kind:'gold',before:40,after:37});if(hero==='azao')expect(action.cost).toEqual({kind:'charge',before:1,after:0});
+ if(hero==='xiemu')expect(action.cost).toEqual({kind:'gold',before:40,after:38});if(hero==='azao')expect(action.cost).toEqual({kind:'charge',before:1,after:0});
  for(const speed of [1,2,4] as const){const beat=scorePhrase(trace.events,'100',speed,trace,f.targetIds).get(event!.eventId)!;expect(beat.strike).toBeDefined();expect(beat.phrase?.paired).toBe(true);const cue=scorePerformanceCue({state:f.after,score:trace,replay:false},event!,{generation:2,signal:new AbortController().signal},beat,speed,'impact')!;expect(cue.targetIds).toEqual(action.targetIds);expect(cue.sourceId).toBe(event!.sourceInstanceId);}
  expect(heroScoreAction(trace,{...event!,eventId:'not-saved'},f.targetIds)).toBeUndefined();expect(heroScoreAction({...trace,rootId:'wrong'},event!,f.targetIds)).toBeUndefined();expect(JSON.stringify(trace)).toBe(saved);
 });

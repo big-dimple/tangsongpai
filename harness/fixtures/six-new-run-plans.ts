@@ -37,7 +37,7 @@ export function sixNewRunPlan(hero:Hero):SixNewRunPlan {
         const action:Action={type:'PlayHand',selectedIds:ids},next=sixSend(state,action);if(next.phase==='stage-cleared'){winner=action;state=next;break;}
       }
       if(!winner)continue;prep.push(winner,{type:'OpenShop'},{type:'LeaveShop'},{type:'EnterStage'});state=enter(sixSend(state,{type:'OpenShop'}));
-      const ids=twoPair(state);if(!ids||state.gold<10)continue;skill.push({type:'PlayHand',selectedIds:ids,xiemuBurn:10});
+      const ids=twoPair(state);if(!ids||state.gold<8)continue;skill.push({type:'PlayHand',selectedIds:ids,xiemuBurn:8});
     }else if(hero==='touye'){
       const ids=state.handOrder.slice(0,5),choice=touyeChoice(state,ids).choices.find(c=>c.target==='two-pair'&&c.available);if(!choice)continue;
       const action:Action={type:'DiscardHand',selectedIds:ids,touyeBet:{target:'two-pair',snapshotToken:touyeChoice(state,ids).snapshotToken}},after=sixSend(state,action),main=twoPair(after);if(!main)continue;

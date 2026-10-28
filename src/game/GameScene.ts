@@ -1411,7 +1411,7 @@ export class GameScene extends Phaser.Scene {
     // The saved outcome is authoritative, but this UI follows the visible score lifecycle.
     const heroCue=this.presentation?{...heroSkillButton(this.characterId,{available:false,activity:'settling'},'本手正在计分；演出结束后更新技能状态。'),available:false,opportunity:false}:heroAbilityCue(this.run,this.selectionPreview(),[...this.selectedIds],this.assistProfile&&assistCandidates(this.assistInput(),r2AssistAvailability(this.run).available).length>0,{laohuanFindRank:this.laohuanFindRank,erxiangTargetId:this.erxiangTargetId,xiemuBurn:this.xiemuBurn,azaoRelease:this.azaoRelease,amoExile:this.amoExile,assistCount:this.assistIds.length,touyePhase:this.touyeSkillPhase});
     if(heroCue&&(this.presentation||['stage-cleared','run-won','run-lost'].includes(this.run.phase)))this.roleText.setText(heroCue.label+' · '+heroCue.status);
-    const heroChosen=!!(this.laohuanFindRank!==null||this.amoExile||this.erxiangTargetId||this.azaoRelease||this.xiemuBurn||this.assistIds.length);
+    const heroChosen=!!(this.laohuanFindRank!=null||this.amoExile||this.erxiangTargetId||this.azaoRelease||this.xiemuBurn||this.assistIds.length);
     if(this.assistProfile&&heroChosen&&!this.presentation&&!this.playing)this.roleText.setText(heroText('阿默·已选助攻×')+(this.assistIds.length===3?4:2));
     if(heroCue&&!this.presentation&&!this.playing&&!heroChosen)this.roleText.setText(heroCue.label);
     if(usesLaohuanFind(this.run)&&heroCue?.state==='selected'&&!this.presentation&&!this.playing)this.roleText.setText(heroCue.detail);
@@ -1782,7 +1782,7 @@ export class GameScene extends Phaser.Scene {
   private async sortHand(mode:'rank'|'suit'):Promise<void> {
     if(!this.ready||this.presentation||this.run.phase!=='await-input')return;
     this.handInput?.cancel();this.view.cancelInteraction();
-    this.laohuanFindRank=null;this.erxiangTargetId=null;this.azaoRelease=false;this.xiemuBurn=0;this.amoExile=false;this.selectedIds.clear();this.assistIds=[];this.assistPage=0;this.candidateGhost=undefined;this.candidateUndo=undefined;this.aiCursor=undefined;this.statusMessage='';
+    this.erxiangTargetId=null;this.azaoRelease=false;this.xiemuBurn=0;this.amoExile=false;this.selectedIds.clear();this.assistIds=[];this.assistPage=0;this.candidateGhost=undefined;this.candidateUndo=undefined;this.aiCursor=undefined;this.statusMessage='';
     this.refreshSelection();
     const cards=[...this.hand].sort((a,b)=>mode==='rank'?b.rank-a.rank||SUITS.indexOf(a.suit)-SUITS.indexOf(b.suit):SUITS.indexOf(a.suit)-SUITS.indexOf(b.suit)||b.rank-a.rank);
     const before=this.handPositions();
