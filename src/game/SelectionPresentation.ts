@@ -1,3 +1,4 @@
+import {usesTouyeScaling} from '../domain/r2TouyeWager';
 import {usesLaohuanFind} from '../domain/r2LaohuanFind';
 import {erxiangHandoffLimit} from '../domain/r2ErxiangHandoff';
 import {laohuanRefillRepeats} from '../domain/r2LaohuanRefill';
@@ -20,6 +21,7 @@ const operations:Record<CharacterId,Omit<SelectionPresentation,'tag'|'hook'>>={
 };
 export function selectionPresentation(id:CharacterId,run?:Pick<R2RunState,'characterId'|'contentVersion'|'contentHash'>):SelectionPresentation {
  const identity=run??{characterId:id,...newRunIdentity(id)},hero=run?characterForRun(run):characterForNewRun(id),copy={...operations[id],tag:hero.passiveName,hook:hero.quickEffect};
+ if(usesTouyeScaling(identity))copy.cost='押中按新牌有效计分数×2／3／4；否则×0.85，每场一次。';
  if(id==='erxiang')copy.cost='这张普通点数不加热度；每场'+erxiangHandoffLimit(identity)+'次。';
  if(id==='laohuan'&&laohuanRefillRepeats(identity)){copy.entry='正常弃牌 → 自动多看 → 自己留牌';copy.when='被动：正常弃牌后自动生效。';copy.cost='每次正常弃牌多看最多2张；照付弃牌成本。';}
  if(usesLaohuanFind(identity)){copy.entry='正常弃牌 → 留候选 → 下一手选择寻得';copy.when='本批至少2张同点参与有效计分。';copy.cost='寻得每场一次；下一手出牌或再次弃牌后旧批失效。';}

@@ -10,7 +10,7 @@ import {r2RunModeConfig} from '../content/r2Modes';
 import {usesAzaoCharge} from '../domain/r2AzaoCharge';
 import {usesXiemuBurn,xiemuInterest} from '../domain/r2XiemuBurn';
 import {usesErxiangHandoff} from '../domain/r2ErxiangHandoff';
-import {usesTouyeWager,usesTouyeNewCore} from '../domain/r2TouyeWager';
+import {usesTouyeWager,usesTouyeNewCore,usesTouyeScaling} from '../domain/r2TouyeWager';
 import {usesLaohuanRefill} from '../domain/r2LaohuanRefill';
 import {usesAmoExile} from '../domain/r2AmoExile';
 import {savedHeroResult} from './HeroAbilityCue';
@@ -40,7 +40,7 @@ export function heroStageContinuity(run:R2RunState):HeroStageContinuity|undefine
  if(azao)return {last,next:'下场从0层重新蓄势',decision:'两对及以上先蓄，换牌型可续蓄；有层后自己决定释放。弃牌保层，过场不保层。'};
  if(xiemu)return {last,next:'下场'+heroSkillName('xiemu')+'次数恢复为1次',decision:`当前${run.gold}金；`+(run.gold<xiemuTiersFor(run)[0].cost?`距最低${xiemuTiersFor(run)[0].cost}金支付档还差${xiemuTiersFor(run)[0].cost-run.gold}金。`:'可自行留钱，或入场选两对及以上再选支付档。')+`按当前本金，角色关末息最多${xiemuInterest(run.gold)}金；购买/支付金币后要按余钱重算，未到账。`};
  if(erxiang)return {last,next:'下场'+heroSkillName('erxiang')+'次数恢复为'+erxiangHandoffLimit(run)+'次',decision:'先凑对子及以上，再选一张会计分的牌，把一次普通点数改加倍率；可以留到后手，改牌工具与增强仍由你选择。'};
- if(touye)return {last,next:'下场'+heroSkillName('touye')+'次数恢复为1次',decision:usesTouyeNewCore(run)?'已成型也可押；先选要弃的牌和目标，下一手至少用一张刚摸的牌凑成目标才×2，否则×0.85。新牌只当配牌或被封住不算，可不押。':'先看当前手牌还凑不出哪些目标，再选弃牌与目标；只赌下一手，成型×2、未成×0.85，可不押。'};
+ if(touye)return {last,next:'下场'+heroSkillName('touye')+'次数恢复为1次',decision:usesTouyeScaling(run)?'押中后按1／2／3张以上新牌有效计分分别×2／3／4；否则×0.85。':usesTouyeNewCore(run)?'已成型也可押；先选要弃的牌和目标，下一手至少用一张刚摸的牌凑成目标才×2，否则×0.85。新牌只当配牌或被封住不算，可不押。':'先看当前手牌还凑不出哪些目标，再选弃牌与目标；只赌下一手，成型×2、未成×0.85，可不押。'};
  if(usesLaohuanFind(run))return {last,next:'下场寻得恢复1次；正常弃牌仍可多看两张',decision:'留牌后下一手可选择最大同点有效计分组发动寻得；静场只能换牌。'};
  if(laohuan)return {last,next:laohuanRefillRepeats(run)?'下场每次正常弃牌仍可多看最多2张':'下场'+heroSkillName('laohuan')+'次数恢复为1次',decision:'先决定保留哪些牌，再自行确认换牌并从真实补牌候选留牌；照付弃牌成本，不能预知补牌。'};
  if(exile)return {last,next:'下场贬谪次数恢复为1次',decision:'选好这手要打的牌，再决定是否弃掉全部余牌，让本手得分变为'+amoExileMultiplier(run)+'倍；至少要有1张余牌，可留到关键手。'+(amoExileRequiresKing(run)?'弃掉的余牌中须有K，主手里的K不算。':'')};

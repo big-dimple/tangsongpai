@@ -49,7 +49,7 @@ export interface ScoreInput {
   /** Only the new saved identity opts into moving explicit active multipliers. */
   activeMultTiming?:'after-route-growth';
   erxiangHandoff?:ErxiangHandoffIntent;
-  touyeWager?:{commit:TouyeCommit|null;newCore?:true};
+  touyeWager?:{commit:TouyeCommit|null;newCore?:true;scaled?:true};
   azaoCharge?:AzaoChargeIntent;
   xiemuBurn?:XiemuBurnIntent;
   laohuanTrick?:true;
@@ -204,8 +204,9 @@ function resolveScore(input: PublicScoreInput, policy: ResolvePolicy): ScoreTrac
   const originalFacts=r2SelectionFacts({hand:cards,selectedIds:input.selectedIds,jokers,definitions:input.definitions,handRules:input.handRules,disabledIds:input.disabledIds,ordinaryPointsSuppressedIds:input.ordinaryPointsSuppressedIds});
   const facts=exile?.use?{...originalFacts,heldIds:[]}:originalFacts;
   const evaluated={type:facts.type,scoringIds:facts.scoringIds};
+  if(input.touyeWager?.scaled!==undefined&&(input.touyeWager.scaled!==true||input.touyeWager.newCore!==true))throw Error('invalid-touye-scaling');
   if(input.touyeWager&&(!['touye','neutral'].includes(input.characterId)||input.wager))throw Error('invalid-touye-score');
-  const touyeWager=input.touyeWager?touyeWagerStep(evaluated.type,input.touyeWager.commit,input.characterId==='touye'&&input.boss?.definitionId!=='B08',facts.activeScoringIds,input.touyeWager.newCore===true):undefined;
+  const touyeWager=input.touyeWager?touyeWagerStep(evaluated.type,input.touyeWager.commit,input.characterId==='touye'&&input.boss?.definitionId!=='B08',facts.activeScoringIds,input.touyeWager.newCore===true,input.touyeWager.scaled===true):undefined;
   if(input.touyeWager?.newCore&&input.touyeWager.commit&&stableHash([...cards.map(c=>c.id)].sort())!==stableHash([...input.touyeWager.commit.refill!.handAfter].sort()))throw Error('invalid-touye-refill-hand');
   if(touyeWager?.commit&&touyeWager.commit.duePlayIndex!==input.playIndex)throw Error('invalid-touye-due-play');
   if(input.laohuanTrick!==undefined&&(input.laohuanTrick!==true||!['laohuan','neutral'].includes(input.characterId)))throw Error('invalid-laohuan-character');
@@ -425,7 +426,7 @@ function resolveScore(input: PublicScoreInput, policy: ResolvePolicy): ScoreTrac
     case 'erxiang': if (!erxiangHandoff&&['pair','two-pair','three-kind'].includes(evaluated.type)) char('add-multiplier', new Rational(3n,2n), {kind:'hand-type-in',values:['pair','two-pair','three-kind']}); break;
     case 'laohuan': if(laohuanFind?.multiplier)activeChar(new Rational(BigInt(laohuanFind.multiplier)),'laohuan.find'); else if (!input.laohuanTrick&&(['straight','flush','straight-flush'].includes(evaluated.type))) char('add-heat', new Rational(120n), {kind:'hand-type-in',values:['straight','flush','straight-flush']}); break;
     case 'azao': if(azaoCharge){if(azaoCharge.multiplier)activeChar(azaoCharge.multiplier==='1.5'?new Rational(3n,2n):azaoCharge.multiplier==='2.5'?new Rational(5n,2n):new Rational(4n));}else if (input.previousHandType !== null && input.previousHandType !== evaluated.type) char('add-multiplier', new Rational(1n)); break;
-    case 'touye': if(touyeWager){if(touyeWager.multiplier)activeChar(touyeWager.multiplier==='2'?new Rational(2n):touyeWager.multiplier==='0.85'?new Rational(17n,20n):new Rational(23n,20n),'touye.'+touyeWager.outcome+(touyeWager.commit?'.'+touyeWager.commit.target:''));}else char('multiply-multiplier', input.wager ? (chance({n:1,d:2}) ? new Rational(2n) : new Rational(3n,4n)) : new Rational(23n,20n)); break;
+    case 'touye': if(touyeWager){if(touyeWager.multiplier)activeChar(['2','3','4'].includes(touyeWager.multiplier)?new Rational(BigInt(touyeWager.multiplier)):touyeWager.multiplier==='0.85'?new Rational(17n,20n):new Rational(23n,20n),'touye.'+touyeWager.outcome+(touyeWager.commit?'.'+touyeWager.commit.target:''));}else char('multiply-multiplier', input.wager ? (chance({n:1,d:2}) ? new Rational(2n) : new Rational(3n,4n)) : new Rational(23n,20n)); break;
     case 'xiemu': if(xiemuBurn){if(xiemuBurn.multiplier)activeChar(xiemuBurn.multiplier===1.5?new Rational(3n,2n):new Rational(BigInt(xiemuBurn.multiplier)));}else if (input.handsBeforePlay === 1) char('multiply-multiplier', new Rational(2n)); break;
   }
   hook('jokerScore');

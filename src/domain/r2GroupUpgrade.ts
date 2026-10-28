@@ -95,6 +95,8 @@ export function withLaohuanFindIdentity(base:{contentVersion:string;contentHash:
 export const R2_XIEMU_REVISION_TIERS=Object.freeze([{cost:2,multiplier:1.5},{cost:4,multiplier:2},{cost:6,multiplier:3},{cost:8,multiplier:4}] as const);
 export function withXiemuRevisionIdentity(base:{contentVersion:string;contentHash:string}) {return {contentVersion:base.contentVersion+'-xiemu-revision-v1',contentHash:stableHash({inherits:base.contentHash,tiers:R2_XIEMU_REVISION_TIERS,payment:'before-score',interest:'unchanged',uses:1})};}
 const XIEMU_REVISION_PROFILE=POKER_HOUSE_PROFILES.filter(p=>p.base.contentVersion===R2_XIEMU_FREQUENT_VERSION).map(p=>Object.freeze({...p,...withXiemuRevisionIdentity(p)}));
+export function withTouyeScalingIdentity(base:{contentVersion:string;contentHash:string}) {return {contentVersion:base.contentVersion+'-touye-scaling-v1',contentHash:stableHash({inherits:base.contentHash,success:'1-new-2-2-new-3-3plus-new-4',failure:'0.85',ordinary:'1.15',proof:'existing-new-core'})};}
+const TOUYE_SCALING_PROFILE=POKER_HOUSE_PROFILES.filter(p=>p.base.contentVersion===R2_S04_FINISH_VERSION).map(p=>Object.freeze({...p,...withTouyeScalingIdentity(p)}));
 const LAOHUAN_FIND_PROFILE=POKER_HOUSE_PROFILES.filter(p=>p.base.contentVersion===R2_HERO_FREQUENCY_VERSION).map(p=>Object.freeze({...p,...withLaohuanFindIdentity(p)}));
 export const R2_HOUSE_PROFILES:readonly (typeof ORIGINAL_HOUSE_PROFILES[number]&{rescueBase?:Readonly<{contentVersion:string;contentHash:string}>;pokerBase?:Readonly<{contentVersion:string;contentHash:string}>})[]=Object.freeze([
   ...ORIGINAL_HOUSE_PROFILES,
@@ -102,7 +104,9 @@ export const R2_HOUSE_PROFILES:readonly (typeof ORIGINAL_HOUSE_PROFILES[number]&
   ...POKER_HOUSE_PROFILES,
   ...LAOHUAN_FIND_PROFILE,
   ...XIEMU_REVISION_PROFILE,
+  ...TOUYE_SCALING_PROFILE,
 ]);
+export const isR2TouyeScaling=(s:{contentVersion?:unknown;contentHash?:unknown})=>TOUYE_SCALING_PROFILE.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
 export const isR2XiemuRevision=(s:{contentVersion?:unknown;contentHash?:unknown})=>XIEMU_REVISION_PROFILE.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
 export const isR2LaohuanFind=(s:{contentVersion?:unknown;contentHash?:unknown})=>LAOHUAN_FIND_PROFILE.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
 export const r2HouseProfile=(s:{contentVersion?:unknown;contentHash?:unknown})=>R2_HOUSE_PROFILES.find(p=>s.contentVersion===p.contentVersion&&s.contentHash===p.contentHash);

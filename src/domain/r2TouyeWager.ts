@@ -1,4 +1,4 @@
-import {isR2TouyeWager,isR2TouyeNewCore} from './r2GroupUpgrade';
+import {isR2TouyeWager,isR2TouyeNewCore,isR2TouyeScaling} from './r2GroupUpgrade';
 import {TOUYE_TARGETS,touyeReachableTypes,touyeTargetReached,type TouyeTarget} from './r2TouyeTargets';
 import {validateCardInstances,type R2HandType} from './evaluateR2';
 import type {PlayingCard} from '../cards/types';
@@ -11,9 +11,10 @@ export interface TouyeRefillProof {drawBefore:string[];drawAfter:string[];discar
 export interface TouyeCorePlay {command:Command;hand:PlayingCard[];disabledIds:string[]}
 export interface TouyeCommit extends TouyeBet {stageIndex:number;duePlayIndex:number;discardCommandId:string;expectedSeq:number;handBefore:PlayingCard[];rules:{fourStraight:boolean;fourFlush:boolean};selectedIds:string[];refill?:TouyeRefill}
 export interface TouyeWager {commit:TouyeCommit|null;resolution:'unused'|'pending'|'played'|'abandoned';corePlay?:TouyeCorePlay|null;refillProof?:TouyeRefillProof|null}
-export interface TouyeWagerTrace {commit:TouyeCommit|null;outcome:'ordinary'|'won'|'lost'|'disabled';multiplier:'1.15'|'2'|'0.85'|null;core?:{contract:'new-core-v1';activeNewIds:string[];lossReason:'target'|'new-core'|null}}
+export interface TouyeWagerTrace {commit:TouyeCommit|null;outcome:'ordinary'|'won'|'lost'|'disabled';multiplier:'1.15'|'2'|'3'|'4'|'0.85'|null;core?:{contract:'new-core-v1';activeNewIds:string[];lossReason:'target'|'new-core'|null}}
 export const emptyTouyeWager=(newCore=false):TouyeWager=>({commit:null,resolution:'unused',...(newCore?{corePlay:null,refillProof:null}:{})});
 export function usesTouyeWager(s:{characterId?:unknown;contentVersion?:unknown;contentHash?:unknown}):boolean{return s.characterId==='touye'&&isR2TouyeWager(s);}
+export function usesTouyeScaling(s:{characterId?:unknown;contentVersion?:unknown;contentHash?:unknown}):boolean{return s.characterId==='touye'&&isR2TouyeScaling(s);}
 export function usesTouyeNewCore(s:{characterId?:unknown;contentVersion?:unknown;contentHash?:unknown}):boolean{return s.characterId==='touye'&&isR2TouyeNewCore(s);}
 export function touyeSnapshotToken(hand:readonly PlayingCard[],rules:TouyeCommit['rules'],stageIndex:number,duePlayIndex:number,expectedSeq:number):string{return stableHash({hand:[...hand].sort((a,b)=>a.id.localeCompare(b.id)),rules,stageIndex,duePlayIndex,expectedSeq});}
 export function validTouyeCommit(c:TouyeCommit,newCore=false):boolean {
@@ -31,10 +32,10 @@ export function validTouyeRefill(c:TouyeCommit,proof:TouyeRefillProof|null|undef
  const before=[...c.handBefore.map(card=>card.id),...proof.drawBefore,...proof.discardBefore,...proof.playedBefore];
  return count>0&&new Set(before).size===before.length&&stableHash(p.refilledIds)===stableHash(proof.drawBefore.slice(-count).reverse())&&stableHash(proof.drawAfter)===stableHash(proof.drawBefore.slice(0,proof.drawBefore.length-count));
 }
-export function touyeWagerStep(type:R2HandType,commit:TouyeCommit|null,enabled:boolean,activeScoringIds:readonly string[]=[],newCore=false):TouyeWagerTrace {
- if(commit&&!validTouyeCommit(commit,newCore))throw Error('invalid-touye-commit');if(commit&&!enabled)throw Error('touye-disabled');
+export function touyeWagerStep(type:R2HandType,commit:TouyeCommit|null,enabled:boolean,activeScoringIds:readonly string[]=[],newCore=false,scaled=false):TouyeWagerTrace {
+ if(scaled&&!newCore)throw Error('invalid-touye-scaling');if(commit&&!validTouyeCommit(commit,newCore))throw Error('invalid-touye-commit');if(commit&&!enabled)throw Error('touye-disabled');
  const activeNewIds=commit&&newCore?commit.refill!.refilledIds.filter(id=>activeScoringIds.includes(id)):[],target=!!commit&&touyeTargetReached(commit.target,type);
  const core=newCore?{core:{contract:'new-core-v1' as const,activeNewIds,lossReason:commit?(!target?'target' as const:!activeNewIds.length?'new-core' as const:null):null}}:{};
  if(!enabled)return{commit:null,outcome:'disabled',multiplier:null,...core};if(!commit)return{commit:null,outcome:'ordinary',multiplier:'1.15',...core};
- const won=target&&(!newCore||activeNewIds.length>0);return{commit,outcome:won?'won':'lost',multiplier:won?'2':'0.85',...core};
+ const won=target&&(!newCore||activeNewIds.length>0);return{commit,outcome:won?'won':'lost',multiplier:won?(scaled&&activeNewIds.length>=3?'4':scaled&&activeNewIds.length===2?'3':'2'):'0.85',...core};
 }
