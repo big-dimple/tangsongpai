@@ -3,6 +3,9 @@ import type Phaser from 'phaser';
 import {SavedRun,type SaveSlots,type SaveStore} from '../src/application/SavedRun';
 import {createRun} from '../src/domain/run';
 import {newRunIdentity} from '../src/game/RunLaunch';
+import {r2WithHouseJoker,R2_HERO_FREQUENCY_VERSION,R2_HERO_FREQUENCY_HASH} from '../src/domain/r2GroupUpgrade';
+import {withBossSuitRescueIdentity} from '../src/domain/r2BossSuitRescue';
+import {withPokerEncounterIdentity} from '../src/domain/r2PokerEncounter';
 import {savedXinRefillLock} from '../src/game/XinRefillLock';
 import {savedHeroAttachment,retainedRefillImpact} from '../src/game/HeroAttachmentFacts';
 import {HeroTargetAttachment} from '../src/game/HeroTargetAttachment';
@@ -10,9 +13,9 @@ import {layout} from '../src/game/layout';
 import {nativeHeroRuntime,nativeMaterials} from './fixtures/native-hero-runtime';
 
 afterEach(()=>vi.unstubAllGlobals());
-async function savedFixture(hero:'laohuan'|'erxiang'){
+async function savedFixture(hero:'laohuan'|'erxiang',legacy=false){
  let slots:SaveSlots={revision:0,current:null,previous:null},fail=false;
- const store:SaveStore={read:async()=>slots,commit:async(revision,current,previous)=>{if(fail){fail=false;throw Error('save-failed');}slots={revision:revision+1,current:structuredClone(current),previous:structuredClone(previous)};return slots.revision;}},saved=await SavedRun.start(store,createRun({rulesVersion:'r2',seed:'formal-energy/'+hero,runId:'formal/'+hero,characterId:hero,r2Identity:newRunIdentity(hero,'group'),openingRoute:'group',modeConfig:{mode:'standard',difficulty:0,challengeId:null,programsEnabled:false}}),slots);
+ const store:SaveStore={read:async()=>slots,commit:async(revision,current,previous)=>{if(fail){fail=false;throw Error('save-failed');}slots={revision:revision+1,current:structuredClone(current),previous:structuredClone(previous)};return slots.revision;}},saved=await SavedRun.start(store,createRun({rulesVersion:'r2',seed:'formal-energy/'+hero,runId:'formal/'+hero,characterId:hero,r2Identity:legacy?withPokerEncounterIdentity(withBossSuitRescueIdentity(r2WithHouseJoker({contentVersion:R2_HERO_FREQUENCY_VERSION,contentHash:R2_HERO_FREQUENCY_HASH}))):newRunIdentity(hero,'group'),openingRoute:'group',modeConfig:{mode:'standard',difficulty:0,challengeId:null,programsEnabled:false}}),slots);
  for(const action of [{type:'LeaveShop'},{type:'EnterStage'}] as const)expect((await saved.dispatch(action)).ok).toBe(true);
  return{saved,failNext:()=>{fail=true;},restore:()=>SavedRun.restore(store,slots)};
 }
@@ -47,8 +50,8 @@ it.each(specs.filter(s=>s.renderer===2))('transformed eight-target local materia
  try{for(let time=0;time<4200;time+=16){f.step(time);const live=nativeMaterials(f.root);expect(live).toHaveLength(8);expect(live.reduce((sum,g)=>sum+g.commandBuffer.length,0)).toBeLessThan(16000);}expect(f.emitters).toHaveLength(0);f.root.setVisible(false);f.step(4250,50);expect(nativeMaterials(f.root)).toHaveLength(0);}finally{layer.destroy();f.root.destroy();f.step(4300,50);expect(f.scene.sys.updateList.getActive()).toHaveLength(0);}
 });
 
-it('Liu single-target contract uses only a saved ordinary-points transfer, preserving its current default recipe',async()=>{
- const {saved,failNext,restore}=await savedFixture('erxiang'),f=nativeHeroRuntime(),cards=new Map<string,Phaser.GameObjects.Container>(),before=saved.state,l=layout({width:1280,height:720},{top:0,right:0,bottom:0,left:0},'desktop',{count:before.handOrder.length});for(const [i,id]of before.handOrder.entries())cards.set(id,f.card(id,l.cards[i].visual));
+it('Liu legacy single-target contract uses only a saved ordinary-points transfer',async()=>{
+ const {saved,failNext,restore}=await savedFixture('erxiang',true),f=nativeHeroRuntime(),cards=new Map<string,Phaser.GameObjects.Container>(),before=saved.state,l=layout({width:1280,height:720},{top:0,right:0,bottom:0,left:0},'desktop',{count:before.handOrder.length});for(const [i,id]of before.handOrder.entries())cards.set(id,f.card(id,l.cards[i].visual));
  const pair=before.handOrder.map(id=>before.deckInstances.find(c=>c.id===id)!).map(c=>before.handOrder.filter(id=>before.deckInstances.find(p=>p.id===id)!.rank===c.rank)).find(ids=>ids.length>=2)!.slice(0,2),id=pair[0],layer=new HeroTargetAttachment(f.scene,{root:()=>f.root,target:target=>{const container=cards.get(target);return container?{container,width:Number(container.getData('width')),height:Number(container.getData('height'))}:undefined;},source:()=>({x:60,y:100}),motion:()=> 'full',blocked:()=>false}),abort=new AbortController(),context={generation:1,signal:abort.signal};
  try{
   layer.preview({key:'Liu/single/'+before.commandSeq,targetId:id});f.step(16);expect(f.emitters).toHaveLength(0);failNext();

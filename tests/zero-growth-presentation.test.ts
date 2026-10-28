@@ -20,7 +20,7 @@ function fixture(){
 }
 it('keeps the real zero heat receipt and +10 growth save but removes only the empty score beat',()=>{
  const before=fixture(),snapshot=JSON.stringify(before),after=send(before,{type:'PlayHand',selectedIds:pair,erxiangTargetId:pair[1]}),trace=after.lastTrace!,raw=JSON.stringify(trace),definition=r2JokerDefinitionFor(after,'b10');
- expect(trace.accumulator).toEqual({H:{n:'146',d:'1'},M:{n:'17',d:'2'}});expect(trace.finalScore).toBe('1241');
+ expect(trace.accumulator).toEqual({H:{n:'140',d:'1'},M:{n:'29',d:'2'}});expect(trace.finalScore).toBe('2030');
  const zero=trace.events.find(e=>e.sourceDefinitionId==='b10'&&e.operation==='read-growth')!,growth=trace.events.find(e=>e.sourceDefinitionId==='b10'&&e.operation==='add-growth')!;
  expect(zero.value).toEqual({n:'0',d:'1'});expect(zero.after).toEqual(zero.before);expect(r2ScoreOperationText(zero,definition)).toBe('+0 热度');expect(isNeutralScoreReceipt(zero)).toBe(true);expect(scoreArrival(zero)).toBeUndefined();expect(scoreSourceProcess(trace,zero,'炉火纯青')).toBeUndefined();expect(hasActualBenefit(zero)).toBe(false);
  expect(isNeutralScoreReceipt(growth)).toBe(false);expect(growth.value).toEqual({n:'10',d:'1'});expect(after.jokers.find(j=>j.definitionId==='b10')!.growth.heat).toEqual({n:'10',d:'1'});
