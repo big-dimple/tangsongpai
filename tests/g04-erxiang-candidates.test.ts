@@ -23,7 +23,7 @@ describe('G04 same-name handoff candidates',()=>{
   expect(new Set(choices.map(c=>c.label)).size).toBe(4);
   for(const [i,id] of ids.entries()){
    const c=choices.find(c=>c.card.id===id)!;expect(c.card).toBe(s.deckInstances.find(c=>c.id===id));expect(c.label).toBe('第'+(order.indexOf(id)+1)+'张 · 9♣');
-   expect(c.points).toBe(9);expect(c.detail).toContain('首次普通9点热度 → 倍率');
+   expect(c.points).toBe(9);expect(c.detail).toContain('同点计分牌4张首次共36点热度改加倍率；再次计分也转');
    expect(erxiangChoice(s,f,id).selected?.card.id).toBe(id);
    if(i===0)expect(c.detail).toContain('无增强；额外加成：普通');
    if(i===1||i===3){expect(c.detail).toContain('热度纸 · 热+20');expect(c.detail).toContain('额外加成：闪箔');expect(c.detail).not.toContain('首次普通29点');}
@@ -31,11 +31,11 @@ describe('G04 same-name handoff candidates',()=>{
   }
   expect(erxiangChoice(s,f).selected).toBeUndefined();expect(s).toEqual(before);
  });
- it('ordinary and enhanced actual commands retain their exact target and redirect only nine ordinary points',()=>{
+ it('ordinary and enhanced actual commands retain their exact target and redirect every same-rank ordinary point',()=>{
   for(const target of ids.slice(0,2)){
    const s=fixture(),a=send(s,{type:'PlayHand',selectedIds:ids,erxiangTargetId:target}),b=send(s,{type:'PlayHand',selectedIds:ids});
    const t=a.lastTrace!,base=b.lastTrace!;expect(t.erxiangHandoff?.targetId).toBe(target);expect(t.erxiangHandoff?.points).toBe(9);
-   expect(t.events.filter(e=>e.reasonKey==='erxiang.handoff')).toHaveLength(1);
+   expect(t.events.filter(e=>e.reasonKey==='erxiang.handoff')).toHaveLength(4);
    // Enhancements retain the playing-card source ID; their identity is in reasonKey.
    const specials=(trace:typeof t)=>trace.events.filter(e=>e.reasonKey.startsWith('edition.')||e.reasonKey.startsWith('enhancement.'));
    for(const trace of [t,base])expect(specials(trace)).toEqual(expect.arrayContaining([

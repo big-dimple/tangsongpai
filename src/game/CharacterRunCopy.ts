@@ -1,3 +1,4 @@
+import {usesLaohuanFind} from '../domain/r2LaohuanFind';
 import {r2HouseBase} from '../domain/r2GroupUpgrade';
 import {erxiangHandoffLimit} from '../domain/r2ErxiangHandoff';
 import {laohuanRefillRepeats} from '../domain/r2LaohuanRefill';
@@ -6,8 +7,8 @@ import {xiemuTiersFor} from '../domain/r2XiemuBurn';
 import {usesAmoExile} from '../domain/r2AmoExile';
 import {AMO_EXILE_NAME,amoExileCopy} from './AmoExileCopy';
 import {heroSkillName} from './HeroSkillPresentation';
-import {usesErxiangHandoff} from '../domain/r2ErxiangHandoff';
-import {usesTouyeWager,usesTouyeNewCore} from '../domain/r2TouyeWager';
+import {usesErxiangHandoff,usesErxiangGroup} from '../domain/r2ErxiangHandoff';
+import {usesTouyeWager,usesTouyeNewCore,usesTouyeScaling} from '../domain/r2TouyeWager';
 import {usesLaohuanRefill} from '../domain/r2LaohuanRefill';
 import {usesXiemuBurn} from '../domain/r2XiemuBurn';
 import {isR2AzaoCharge} from '../domain/r2GroupUpgrade';
@@ -24,13 +25,16 @@ import {isR2XiemuBalance,R2_S04_FINISH_VERSION,R2_S04_FINISH_HASH} from '../doma
 /** Saved-run copy is scoped to its identity; character selection uses the actual new-game identity. */
 function characterDetailsForRun(run:Pick<R2RunState,'characterId'|'contentVersion'|'contentHash'>){
  const character=getCharacter(run.characterId);
- if(usesErxiangHandoff(run)&&erxiangHandoffLimit(run)===2)return {...character,openingPlay:'对子及以上，选一张计分牌的普通点数改加倍率；每场2次。',buildTip:'每场2次，选有效核心把首次普通点数从热度转为同值倍率；可留到后手。',passiveDescription:'每场2次，每手至多选一张有效计分牌：首次普通点数不计热度、改加同值倍率。增强、额外加成与后续重触保留；0点、失效牌或角色封禁时不能发动。'};
- if(usesErxiangHandoff(run))return {...character,openingPlay:'对子及以上，出牌前点击技能按钮选计分牌：一张核心普通点数改加倍率，本场一次。',buildTip:'对子及以上，选一张有效核心把首次普通点数改加倍率；每场一次，可留到后手。',passiveDescription:'每场一次，指定本手有效核心：首次普通点数不计热度、改加同值倍率。增强、版次与后续重触保持原规则；0点、失效牌或角色封禁不可发动。取消不消耗，出牌时才用掉次数。'};
+ if(usesErxiangGroup(run))return {...character,openingPlay:'对子及以上选一张计分牌，同点牌的普通热度改加倍率。',buildTip:'每场2次，选一张计分牌；同点牌每次计分都转移，可能降低得分。',passiveDescription:'每场2次，打出对子及以上时，选一张普通点数不为0、参与计分的牌。本手参与计分的同点牌，每次计分时，把原本加到热度的普通点数改加到倍率。例如两张8首次计分时，各把8点热度改加8倍率；牌再次计分时也会转移。随手打出但不计分的牌、被封住的牌不算；普通点数被压成0也不转。增强和版次仍生效，技能不会增加计分次数。转换可能降低得分；取消不消耗次数，高牌或角色能力停用时不能使用。'};
+ if(usesErxiangHandoff(run)&&erxiangHandoffLimit(run)===2)return {...character,openingPlay:'对子及以上，选一张计分牌的普通点数改加倍率；每场2次。',buildTip:'每场2次，选一张计分牌，把首次普通点数从热度转为同值倍率；可留到后手。',passiveDescription:'每场2次，每手至多选一张参与计分的牌：首次普通点数不计热度、改加同值倍率。增强和版次仍生效；这张牌再次计分时，普通点数仍按原规则加热度。普通点数为0、被封住的牌或角色能力停用时不能发动。'};
+ if(usesErxiangHandoff(run))return {...character,openingPlay:'对子及以上，出牌前选择一张计分牌，普通点数改加倍率，本场一次。',buildTip:'对子及以上，选一张计分牌把首次普通点数改加倍率；每场一次，可留到后手。',passiveDescription:'每场一次，指定一张参与计分的牌：首次普通点数不计热度、改加同值倍率。增强和版次仍生效；这张牌再次计分时，普通点数仍按原规则加热度。普通点数为0、被封住的牌或角色能力停用时不可发动。取消不消耗，出牌时才用掉次数。'};
+ if(usesTouyeScaling(run))return {...character,openingPlay:'押下一手牌型；换来的牌参与计分越多，倍率越高。',buildTip:'押中后，刚换来的1／2／3张及以上计分牌分别×2／3／4；否则×0.85。',passiveDescription:'每场一次，弃1–5张牌并押下一手牌型，照常花弃牌次数。下一手押中，且刚换来的牌有1／2／3张及以上参与计分，分别×2／×3／×4；押错或没有换来的牌计分，则×0.85。例如押对子，用两张刚换来的8组成对子，就算2张；随手打出但不计分、或被封住的牌不算。不押时×1.15，押注结果不再叠加这个倍率。手里已有目标牌型也可押；押后不能再弃牌或改牌。静场和关闭角色能力的挑战不能押。'};
  if(usesTouyeNewCore(run))return {...character,openingPlay:'1选弃牌，2押牌型换牌，3用新摸牌成型。已成型也可押；成×2／不成×0.85。',buildTip:'1选1–5张弃牌；2押下一手牌型并换牌；3至少用一张刚摸回的牌凑成目标。成功×2，否则×0.85；每场一次。',passiveDescription:'1. 选1–5张要弃的牌。\n2. 押下一手牌型，再确认换牌；手里已成型也可押。\n3. 下一手至少用一张刚摸回的牌凑成所押牌型，倍率×2；否则×0.85。新牌只当配牌、没打出或被封住，都不算。\n每场一次，只赌下一手。押后不能再弃牌、用改牌工具或更换、调整唐宋牌。照常花弃牌次数；不押时×1.15。返回或继续存档仍保留押注；静场、禁用角色能力的挑战不能押。'};
  if(usesTouyeWager(run))return {...character,openingPlay:'弃牌前点英雄押未成目标，只赌下一手；成型×2，未成×0.85，本场一次。',buildTip:'每场一次，弃前押当前手牌尚凑不出的成组、顺子或同花；只赌下一手，不能再弃牌。成型×2，未成×0.85；普通不押×1.15。',passiveDescription:'每场一次，押目标与真实弃牌一起提交；目标当前手牌已能凑出就不能押。只赌下一次真实出牌，成型×2、未成×0.85替代普通×1.15，不另扣金币；普通弃牌成本照旧。押后不能再弃、改牌工具或调序唐宋牌，返回恢复保约。静场/无能力挑战停用，'};
+ if(usesLaohuanFind(run))return {...character,openingPlay:'弃牌最多多看两张；刚换来的同点牌计分时可选寻得。',buildTip:'每次弃牌最多多看两张；下一手用刚换来的同点牌计分，可选倍率。',passiveDescription:'每次正常弃牌后多看最多2张，自己选应补的牌，照常花弃牌次数。下一手有至少2张刚换来的同点牌参与计分时，可发动寻得：2／3／4张及以上分别×2／×3／×4，每场一次。例如换来两张8，下一手用它们组成对子，就可选×2；只随手打出但不计分或被封住的牌不算。只能选数量最多的同点组；并列时自己选一组，不叠加。再次弃牌或下一次成功出牌后，之前换来的牌不再符合条件。静场可以换牌但不能寻得；角色能力关闭时两者均停用。'};
  if(laohuanRefillRepeats(run))return {...character,openingPlay:'被动：每次正常弃牌后多看最多2张，自己留下应补张数。',buildTip:'照付正常弃牌成本，每次都多看最多2张；未留候选本场不再抽，没有额外技能次数限制。',passiveDescription:'每次正常弃牌都多看最多2张，亲自留下应补张数；正常弃牌额度与附加费用照付，未留候选本场不再抽。牌堆不足时少看或全部留下。固定候选选完前不能继续操作；静场可用，无能力挑战停用。'};
  if(usesLaohuanRefill(run))return {...character,openingPlay:'弃牌前点击技能按钮确认换牌，多看最多两张并自己留牌，本场一次。',buildTip:'每场一次额外择牌：真实弃牌后多看最多2张，自己留应补数；没留的本场不再抽。三条路线都可用。',passiveDescription:'每场一次，照付实际弃牌成本，确认换牌后多看最多2张，手选应补数；未留候选进已用区、不算再次弃牌。候选不足全留，收起或恢复仍是同批；完成前不能出/弃/用工具。静场可用，无能力挑战停用；'};
- if(isR2XiemuBalance(run)){const costs=xiemuTiersFor(run).map(t=>t.cost).join('／');return {...character,openingPlay:'两对及以上，出牌前可付'+costs+'金换倍率，也可留钱收息。',buildTip:'每场一次，两对及以上付'+costs+'金，本手倍率×1.5／2／3；持币收益与关末息读余钱。',passiveDescription:'每场一次主动付'+costs+'金，本手倍率×1.5／2／3，仅两对及以上主手。不足不降档。过关时奖励前金币每5金额外给1，最多2金；静场不付但保留关末息，无能力挑战全停。'};}
+ if(isR2XiemuBalance(run)){const tiers=xiemuTiersFor(run),costs=tiers.map(t=>t.cost).join('／'),multipliers=tiers.map(t=>t.multiplier).join('／');return {...character,openingPlay:'两对及以上，出牌前可花'+costs+'金换倍率；也可留钱收息。',buildTip:'每场一次，两对及以上付'+costs+'金，倍率分别×'+multipliers+'；利息按剩下的钱算。',passiveDescription:'每场一次，打出两对及以上时，可选择付'+costs+'金，倍率分别×'+multipliers+'。确认出牌时先扣钱；金币不足不能选该档，不会自动换低档。持有金币带来的效果和过关利息，都按扣钱后的余额计算。过关时，奖励前每有5金额外给1金，最多2金。静场不能付钱但仍有额外利息；角色能力关闭时两者都停用。'};}
  if(usesXiemuBurn(run))return {...character,openingPlay:'两对及以上，出牌前可付10／20／30金换倍率，也可留钱收息。',buildTip:'每场一次，两对及以上可付10／20／30金，本手倍率×2／3／4；先扣真金，持币收益和关末息读余钱。留钱还有有限关末息。',passiveDescription:'每场一次主动付10／20／30金，本手倍率×2／3／4，仅两对及以上主手。不足不降档。成功额外关末息：奖励前金币每5金给1，最多2金；不算本次奖励再生息。静场不付、关末息保留；无能力挑战全停。'};
  if(run.characterId==='azao'&&isR2AzaoCharge(run))return {...character,openingPlay:'两对及以上先蓄势；有层时出牌前点英雄释放，换型可继续蓄。',buildTip:'两对及以上先蓄1层，下一手可主动释放。换牌型可继续蓄；重复牌型不释放会清空。弃牌保留，场间清空。',passiveDescription:'两对及以上：首手蓄1层，连续换牌型最多3层。主动释放当前1／2／3层，倍率×1.5／2.5／4；重复合格牌也可释放。释放手不再蓄。重复牌型不释放、对子或高牌出牌清空；弃牌保留，进场／结束清空。'};
  if(run.characterId!=='amo')return character;
@@ -46,11 +50,14 @@ export function usesCurrentHeroText(run:Pick<R2RunState,'characterId'|'contentVe
  return isR2HeroFrequency(run)||usesAmoExile(run)||isR2XiemuBalance(run)||(base.contentVersion===R2_S04_FINISH_VERSION&&base.contentHash===R2_S04_FINISH_HASH);
 }
 export function characterForRun(run:Pick<R2RunState,'characterId'|'contentVersion'|'contentHash'>){
+ if(usesErxiangGroup(run)){const c=characterDetailsForRun(run);return {...c,openingPlay:'openingPlay' in c?c.openingPlay:c.buildTip,passiveName:heroSkillName('erxiang'),quickEffect:'同点计分牌每次普通热度转倍率；每场2次，可能减分。',skillTags:['对子及以上','每场2次','重复计分也转'],detailRules:c.passiveDescription};}
+ if(usesTouyeScaling(run)){const c=characterDetailsForRun(run);return {...c,openingPlay:'openingPlay' in c?c.openingPlay:c.buildTip,passiveName:heroSkillName('touye'),quickEffect:'押中按换来计分的1／2／3张，×2／3／4；否则×0.85。',skillTags:['弃1–5张','每场1次','押下一手牌型'],detailRules:c.passiveDescription};}
+ if(usesLaohuanFind(run)){const c=characterDetailsForRun(run);return {...c,openingPlay:'openingPlay' in c?c.openingPlay:c.buildTip,passiveName:heroSkillName('laohuan'),quickEffect:'弃牌多看最多2张；换来2／3／4张以上同点计分可选×2／3／4。',skillTags:['每次弃牌择牌','寻得每场1次','下一手有效'],detailRules:c.passiveDescription};}
  if(usesAmoExile(run)){const copy=amoExileCopy(run);return {...getCharacter('amo'),passiveName:AMO_EXILE_NAME,passiveDescription:copy.details,openingPlay:copy.rule,quickEffect:(copy.requiresKing?'余牌含K时，':'')+'弃掉余牌，本次得分×'+copy.factor+'。',skillTags:['每场1次',copy.requiresKing?'余牌含K':'至少弃1张'],detailRules:copy.details,buildTip:'选好这手要打的牌，'+(copy.requiresKing?'余牌含K时可':'再决定是否')+'弃掉余牌，把这一手得分变为'+copy.factor+'倍。'};}
  const c=characterDetailsForRun(run),current=usesCurrentHeroText(run),quick=HERO_QUICK_COPY[run.characterId];
  return {...c,openingPlay:'openingPlay' in c?c.openingPlay:c.buildTip,
   passiveName:heroSkillName(run.characterId),
-  quickEffect:laohuanRefillRepeats(run)?'弃牌后多看两张，自行留下应补张数。':isR2XiemuBalance(run)?'付'+xiemuTiersFor(run).map(t=>t.cost).join('／')+'金换×1.5／2／3，也可留钱收息。':current?quick.effect:('openingPlay' in c?c.openingPlay:c.buildTip),
+  quickEffect:laohuanRefillRepeats(run)?'弃牌后多看两张，自行留下应补张数。':isR2XiemuBalance(run)?'付'+xiemuTiersFor(run).map(t=>t.cost).join('／')+'金换×'+xiemuTiersFor(run).map(t=>t.multiplier).join('／')+'，也可留钱收息。':current?quick.effect:('openingPlay' in c?c.openingPlay:c.buildTip),
   skillTags:isR2HeroFrequency(run)?run.characterId==='erxiang'?['对子及以上','每场2次']:['被动','每次正常弃牌','照付弃牌成本']:current?quick.tags:[] as readonly string[],
   detailRules:isR2HeroFrequency(run)||isR2XiemuBalance(run)?c.passiveDescription:current?heroDetailRules(run.characterId):c.passiveDescription};
 }

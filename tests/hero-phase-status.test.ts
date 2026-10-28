@@ -10,7 +10,7 @@ import {heroStageFixture} from '../harness/fixtures/hero-stage-continuity';
 
 it.each(CHARACTER_IDS)('%s says the stage ended, without treating the phase as a disabled ability',id=>{
  const s=heroStageFixture(id).cleared,before=structuredClone(s),cue=heroAbilityCue(s);
- expect(cue).toMatchObject({state:id==='laohuan'?'passive':id==='xiemu'?'used':'ended',status:id==='laohuan'?'被动':id==='xiemu'?'已用':'本场结束',available:false,opportunity:false,actionable:false});if(id==='laohuan')expect(heroExplanationCopy(id,s).now).toContain('本场已结束；这里只查看说明，不会发动技能');expect(cue!.state).not.toBe('disabled');expect(s).toEqual(before);
+ expect(cue).toMatchObject({state:id==='xiemu'?'used':'ended',status:id==='xiemu'?'已用':'本场结束',available:false,opportunity:false,actionable:false});if(id==='laohuan')expect(heroExplanationCopy(id,s).now).toContain('本场已结束；这里只查看说明，不会发动技能');expect(cue!.state).not.toBe('disabled');expect(s).toEqual(before);
 });
 it('a same-type release clears charge, permits a fresh charge, and never sets permanent disable',()=>{
  const released=azaoChargeStep('two-pair',{before:{charge:1,previousQualifiedType:'two-pair'},release:true},true);

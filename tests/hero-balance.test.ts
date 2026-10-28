@@ -72,7 +72,7 @@ it('B08 still blocks both active skills and Q01 keeps both disabled under their 
  for(const hero of ['amo','xiemu'] as const){const i=input(ready(hero)),use=hero==='amo'?{amoExile:{use:true,beforeUsed:false}}:{gold:15,xiemuBurn:{cost:5 as const,goldBefore:20,beforeUsed:false}};
   expect(()=>scoreR2Hand({...i,...use,boss:{definitionId:'B08',disabledSuit:null}})).toThrow(hero==='amo'?'amo-exile-unavailable':'xiemu-disabled');
   let q=createRun({rulesVersion:'r2',characterId:hero,seed:'challenge/q01/0',runId:'balance/q/'+hero,r2Identity:newRunIdentity(hero),openingRoute:'group',modeConfig:{mode:'challenge',difficulty:0,challengeId:'Q01',programsEnabled:false}});q=send(send(q,{type:'LeaveShop'}),{type:'EnterStage'});q.gold=20;
-  expect(applyCommand(q,command(q,{type:'PlayHand',selectedIds:[q.handOrder[0]],...(hero==='amo'?{amoExile:true}:{xiemuBurn:3 as const})}))).toMatchObject({ok:false,code:hero==='amo'?'amo-exile-disabled':'xiemu-disabled',state:q});readable(q);
+  expect(applyCommand(q,command(q,{type:'PlayHand',selectedIds:[q.handOrder[0]],...(hero==='amo'?{amoExile:true}:{xiemuBurn:2 as const})}))).toMatchObject({ok:false,code:hero==='amo'?'amo-exile-disabled':'xiemu-disabled',state:q});readable(q);
  }
 });
 it('bare, five-Joker, holographic and polychrome boundaries retain invested build power with the lower hero ceiling',()=>{
@@ -84,7 +84,7 @@ it('bare, five-Joker, holographic and polychrome boundaries retain invested buil
 });
 
 it('the machine text contract declares both exact new identities and retains legacy mappings',()=>{
- expect(textSpec.currentIdentityOverrides.amo.identityScope).toMatchObject(r2HouseBase(newRunIdentity('amo')));expect(textSpec.currentIdentityOverrides.xiemu.identityScope).toMatchObject(r2HouseBase(newRunIdentity('xiemu')));
- expect(textSpec.currentIdentityOverrides.amo.mechanics.normalIntegerScoreMultiplier).toBe(3);expect(textSpec.currentIdentityOverrides.xiemu.mechanics.goldCosts).toEqual([3,6,10]);expect(textSpec.currentIdentityOverrides.xiemu.mechanics.multipliers).toEqual([1.5,2,3]);
+ expect(textSpec.currentIdentityOverrides.amo.identityScope).toMatchObject(r2HouseBase(newRunIdentity('amo')));expect(textSpec.currentIdentityOverrides.xiemu.identityScope).toMatchObject(newRunIdentity('xiemu'));
+ expect(textSpec.currentIdentityOverrides.amo.mechanics.normalIntegerScoreMultiplier).toBe(3);expect(textSpec.currentIdentityOverrides.xiemu.mechanics.goldCosts).toEqual([2,4,6,8]);expect(textSpec.currentIdentityOverrides.xiemu.mechanics.multipliers).toEqual([1.5,2,3,4]);expect(textSpec.legacyIdentityOverrides['quality-r2-xiemu-burn-v3'].mechanics.goldCosts).toEqual([3,6,10]);
  expect(textSpec.legacyIdentityOverrides['quality-r2-amo-exile-v1'].mechanics.normalIntegerScoreMultiplier).toBe(4);expect(textSpec.heroes.find(h=>h.id==='xiemu')!.mechanics.goldCosts).toEqual([10,20,30]);
 });

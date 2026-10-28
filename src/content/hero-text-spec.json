@@ -5,7 +5,7 @@
   "audience": "按完整局身份阅读的当前/兼容展示规范；不是规则配置，不得导入领域或改存档。",
   "sharedRules": [
     "本次文档修订不改变技术ID、内容身份、命令、价格、RNG、次数/倍率或存档；已发布贬谪是既有批准实现，不在这里再改机制。",
-    "当前普通新苏轼由currentIdentityOverrides.amo描述，为quality-r2-amo-exile-v1；其余五位普通新局为quality-r2-s04-finish-v1。heroes.amo只保留旧助攻展示兼容，旧身份继续读自身规则，不能全局替换。",
+    "当前英雄显示按RunLaunch与CharacterRunCopy选择具体身份；heroes及legacyIdentityOverrides保留旧身份兼容，不能全局替换。",
     "六人都是架空青年形象，跨时代相遇不宣称同代；技能名、故事取熟悉作品或可核对事迹。苏轼/辛弃疾宣言为标明出处的诗文摘句，其余为游戏演绎，不伪造历史名言。",
     "每场=一个stage，非一章或一局；主动草稿需原出牌/弃牌保存确认；禁用态必须展示实际原因。",
     "故事、主题与技能名不替代skillSummary和detailRules；具体资源、可用性与剩余次数始终来自权威代码。"
@@ -350,6 +350,72 @@
       "skillName": "赏赐",
       "motto": "赏赐已备，这一手尽兴。",
       "story": "传世《花蕊夫人宫词》写到宫中散钱与买花钱；牌局借这份赏赐意象，将金币换作关键一手的倍率，也可留钱收息。",
+      "skillSummary": "主动每场1次，选两对及以上且金币足够时，可付2/4/6/8金使倍率×1.5/2/3/4；留钱过关仍有有限额外利息。",
+      "oldSkillNames": [
+        "留钱／燃金"
+      ],
+      "mechanics": {
+        "usesPerStage": 1,
+        "goldCosts": [
+          2,
+          4,
+          6,
+          8
+        ],
+        "multipliers": [
+          1.5,
+          2,
+          3,
+          4
+        ],
+        "extraClearInterestPerGold": 5,
+        "extraClearInterestCap": 2,
+        "timing": "active-after-joker-and-route-growth"
+      },
+      "sourcePaths": [
+        "src/domain/r2XiemuBurn.ts",
+        "src/domain/r2QualifiedHands.ts",
+        "src/domain/r2Run.ts",
+        "src/domain/scoreR2.ts"
+      ],
+      "detailRules": [
+        "先选档再正常出牌；选档不扣钱，确认出牌并保存成功才扣真钱和次数。钱不够不能选该档，也不会自动改用低档；取消不花钱、不耗次数。",
+        "持币唐宋牌和关末利息按扣款后的实际余额计算，花钱不保证净增分或过关。",
+        "额外利息与主动分开计算，不把本次过关奖励再拿来生息。静场不能主动花钱，但保留这份利息；关闭角色能力的挑战两者都停用。",
+        "主动不限定最后一手；倍率在整手唐宋牌与路线加成后计算。"
+      ],
+      "historyBoundary": "选取后蜀女诗人花蕊夫人的文化意象，非前蜀同号人物；徐/费姓氏和部分生平叙述存在不同记载，游戏不钉死姓氏、出生年或死因；“执剑”与青年形象是创作，不声称史实女将或刺杀事迹。 传世宫词中有“库中先散与金钱”“月头支给买花钱”，只借宫廷赏赐意象，作者归属有争议，不将这两句钉死为某一位花蕊夫人亲作。",
+      "historySources": [
+        "https://zh.wikisource.org/wiki/花蕊夫人宮詞",
+        "https://zh.wikisource.org/wiki/十國春秋/卷050",
+        "https://pedia.cloud.edu.tw/Entry/Detail?title=花蕊夫人"
+      ],
+      "mottoAttribution": "借传世《花蕊夫人宫词》赏赐意象作游戏演绎，并非历史原话；宫词作者归属有争议。",
+      "identityScope": {
+        "contentVersion": "quality-r2-xiemu-burn-v3-a11-house-v1-b03-rescue-v1-poker-encounter-v1-xiemu-revision-v1",
+        "contentHash": "json-fnv-v1:c63b69d129674e55",
+        "role": "current-normal-new-run"
+      }
+    }
+  },
+  "identityProjectionContract": {
+    "currentNormalSuShi": "currentIdentityOverrides.amo",
+    "currentOtherFive": "英雄显示由CharacterRunCopy按存档身份投影；当前花蕊见currentIdentityOverrides.xiemu。",
+    "legacyAssistSuShi": "heroes.amo；仅旧助攻身份展示，不是普通新苏轼",
+    "runtimeConsumerBoundary": "src/game/HeroText.ts读取heroes；新身份由CharacterRunCopy/AmoExileCopy投影，旧身份继续按自身规则展示。",
+    "currentRuntimeSource": "RunLaunch/CharacterRunCopy按完整身份采用苏轼弃牌含K、辛弃疾寻得和花蕊2/4/6/8；旧存档及重试保留原合同。",
+    "legacyExileSuShi": "legacyIdentityOverrides.quality-r2-amo-exile-v1，整数得分×4"
+  },
+  "legacyIdentityOverrides": {
+    "quality-r2-xiemu-burn-v3": {
+      "id": "xiemu",
+      "name": "花蕊夫人",
+      "gender": "female",
+      "era": "五代后蜀至宋初文化背景",
+      "theme": "执剑凌风",
+      "skillName": "赏赐",
+      "motto": "赏赐已备，这一手尽兴。",
+      "story": "传世《花蕊夫人宫词》写到宫中散钱与买花钱；牌局借这份赏赐意象，将金币换作关键一手的倍率，也可留钱收息。",
       "skillSummary": "主动每场1次，选两对及以上且金币足够时，可付3/6/10金使倍率×1.5/2/3；留钱过关仍有有限额外利息。",
       "oldSkillNames": [
         "留钱／燃金"
@@ -392,19 +458,9 @@
       "identityScope": {
         "contentVersion": "quality-r2-xiemu-burn-v3",
         "contentHash": "json-fnv-v1:d17ef815020a27c1",
-        "role": "current-normal-new-run"
+        "role": "legacy-v3-normal-run"
       }
-    }
-  },
-  "identityProjectionContract": {
-    "currentNormalSuShi": "currentIdentityOverrides.amo",
-    "currentOtherFive": "秦琼/辛弃疾/刘娥/文成公主仍读取heroes相应条目；花蕊夫人读取currentIdentityOverrides.xiemu",
-    "legacyAssistSuShi": "heroes.amo；仅旧助攻身份展示，不是普通新苏轼",
-    "runtimeConsumerBoundary": "src/game/HeroText.ts仍读取heroes用于旧身份兼容；新苏轼/花蕊由CharacterRunCopy/AmoExileCopy按完整v2身份覆盖。heroes数组逐字段不变，不用文档JSON修改旧局运行时展示。",
-    "currentRuntimeSource": "RunLaunch/CharacterRunCopy按完整v3身份采用苏轼弃牌含K与花蕊3/6/10；v1/v2保存身份及重试保留原合同。",
-    "legacyExileSuShi": "legacyIdentityOverrides.quality-r2-amo-exile-v1，整数得分×4"
-  },
-  "legacyIdentityOverrides": {
+    },
     "quality-r2-amo-exile-v1": {
       "id": "amo",
       "name": "苏轼",

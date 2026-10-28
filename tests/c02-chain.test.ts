@@ -153,11 +153,13 @@ describe('C02 current-content joint event proof',()=>{
     const result=contentCLI();expect(result.status,result.stderr).toBe(0);
     // Vite may prepend a dependency-optimizer status line before the CLI JSON.
     const report=JSON.parse(result.stdout.match(/\{\s*"status"[\s\S]*\}/)?.[0]??'');
-    // One selected program can add one Boss-clear event. The attained 88/91
+    // One selected program can add one Boss-clear event; the Liu E group contract adds
+    // at most one character event per actual card execution. The attained 88/91
     // arithmetic goldens above stay fixed; this is an upper envelope, not attainment.
     expect(report.eventBoundModel.programRewardEventMaximum).toBe(1);
-    expect(report.conservativeEventBound).toBe(319+1);
-    expect(report.legalEventEnvelope.maximumEvents).toBe(91+1);
+    expect(report.conservativeEventBound).toBe(344);
+    expect(report.legalEventEnvelope.maximumEvents).toBe(103);
+    expect(report.legalEventEnvelope.abstractWitness.breakdown.baseCharacterFinal).toBe(14);
     expect(report.legalEventEnvelope.abstractWitness.breakdown.clearRules).toBe(4);
     expect(report.legalEventEnvelope.definitionCount).toBe(72);
     expect(report.legalEventEnvelope.retriggerCapNoticesReachable).toBe(false);

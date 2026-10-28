@@ -3,12 +3,14 @@ import {applyCommand,createRun,type Action,type R2RunState} from '../../src/doma
 import {newRunIdentity} from '../../src/game/RunLaunch';
 import {evaluateR2Hand} from '../../src/domain/evaluateR2';
 import {touyeChoice} from '../../src/game/TouyeWagerCopy';
+import {prepareBossSuitRescueAction} from '../../src/domain/r2BossSuitRescue';
+import {laohuanFindGroups} from '../../src/domain/r2LaohuanFind';
 export const SIX_HEROES=['amo','erxiang','azao','xiemu','touye','laohuan'] as const;
 type Hero=typeof SIX_HEROES[number];
 const modeConfig={mode:'standard',difficulty:0,challengeId:null,programsEnabled:true} as const;
 export const sixNewRun=(hero:Hero,seed:string)=>createRun({seed,runId:'run/'+seed+'/'+hero,characterId:hero,rulesVersion:'r2',r2Identity:newRunIdentity(hero,'group'),openingRoute:'group',modeConfig});
 export function sixSend(state:R2RunState,action:Action):R2RunState {
-  const r=applyCommand(state,{runId:state.runId,commandId:state.runId+'/command/'+(state.commandSeq+1),expectedSeq:state.commandSeq,action});if(!r.ok)throw Error(r.code);return r.state;
+  const r=applyCommand(state,{runId:state.runId,commandId:state.runId+'/command/'+(state.commandSeq+1),expectedSeq:state.commandSeq,action:prepareBossSuitRescueAction(state,action)});if(!r.ok)throw Error(r.code);return r.state;
 }
 const enter=(s:R2RunState)=>sixSend(sixSend(s,{type:'LeaveShop'}),{type:'EnterStage'});
 const cards=(s:R2RunState,ids:readonly string[])=>ids.map(id=>s.deckInstances.find(c=>c.id===id)!);
@@ -37,20 +39,21 @@ export function sixNewRunPlan(hero:Hero):SixNewRunPlan {
         const action:Action={type:'PlayHand',selectedIds:ids},next=sixSend(state,action);if(next.phase==='stage-cleared'){winner=action;state=next;break;}
       }
       if(!winner)continue;prep.push(winner,{type:'OpenShop'},{type:'LeaveShop'},{type:'EnterStage'});state=enter(sixSend(state,{type:'OpenShop'}));
-      const ids=twoPair(state);if(!ids||state.gold<10)continue;skill.push({type:'PlayHand',selectedIds:ids,xiemuBurn:10});
+      const ids=twoPair(state);if(!ids||state.gold<8)continue;skill.push({type:'PlayHand',selectedIds:ids,xiemuBurn:8});
     }else if(hero==='touye'){
       const ids=state.handOrder.slice(0,5),choice=touyeChoice(state,ids).choices.find(c=>c.target==='two-pair'&&c.available);if(!choice)continue;
       const action:Action={type:'DiscardHand',selectedIds:ids,touyeBet:{target:'two-pair',snapshotToken:touyeChoice(state,ids).snapshotToken}},after=sixSend(state,action),main=twoPair(after);if(!main)continue;
       const score=sixSend(after,{type:'PlayHand',selectedIds:main});if(score.lastTrace?.touyeWager?.outcome!=='won')continue;
       skill.push(action,{type:'PlayHand',selectedIds:main});
     }else{
-      const discard:Action={type:'DiscardHand',selectedIds:state.handOrder.slice(0,5),laohuanTrick:true},after=sixSend(state,discard);if(!after.pendingRefill||after.pendingRefill.required!==5)continue;
-      skill.push(discard,{type:'ChooseRefill',selectedIds:after.pendingRefill.candidateIds.slice(0,5)});
+      const discard:Action={type:'DiscardHand',selectedIds:state.handOrder.slice(0,5)},after=sixSend(state,discard);if(!after.pendingRefill||after.pendingRefill.required!==5)continue;
+      const candidates=after.pendingRefill.candidateIds,groups=new Map<number,string[]>();for(const c of cards(after,candidates))groups.set(c.rank,[...(groups.get(c.rank)??[]),c.id]);const pair=[...groups.values()].find(ids=>ids.length>=2);if(!pair)continue;const chosen=candidates.filter(id=>pair.slice(0,2).includes(id)||!pair.includes(id)).slice(0,5);if(!pair.slice(0,2).every(id=>chosen.includes(id)))continue;
+      skill.push(discard,{type:'ChooseRefill',selectedIds:chosen});
     }
     const skillBefore=state;for(const action of skill)state=sixSend(state,action);const skillAfter=state,nextStage:Action[]=[];
     if(state.phase==='stage-cleared'){nextStage.push({type:'OpenShop'},{type:'LeaveShop'},{type:'EnterStage'});state=enter(sixSend(state,{type:'OpenShop'}));}
     if(state.phase!=='await-input')continue;
-    return {hero,seed,shop,initial,prep,skill,skillBefore,skillAfter,nextStage,next:{type:'PlayHand',selectedIds:[state.handOrder[0]],...(hero==='azao'?{azaoRelease:false}:{})}};
+    const groups=hero==='laohuan'?laohuanFindGroups(state.deckInstances,state.handOrder,state.stage?.laohuanFindBatch??[]):[];if(hero==='laohuan'&&!groups.length)continue;const group=groups[0];return {hero,seed,shop,initial,prep,skill,skillBefore,skillAfter,nextStage,next:hero==='laohuan'?{type:'PlayHand',selectedIds:group.ids,laohuanFindRank:group.rank}:{type:'PlayHand',selectedIds:[state.handOrder[0]],...(hero==='azao'?{azaoRelease:false}:{})}};
   }
   throw Error('no-new-run-plan/'+hero);
 }

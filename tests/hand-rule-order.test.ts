@@ -38,6 +38,6 @@ describe('hand rule order follows saved identity and actual character events',()
   });
   it('does not invent final role multipliers for current handoff/refill or missing identity',()=>{
     const erxiang=handScoringOrder({...newRunIdentity('erxiang'),characterId:'erxiang'}),laohuan=handScoringOrder({...newRunIdentity('laohuan'),characterId:'laohuan'});
-    expect(erxiang).toContain('刘娥 · 垂帘听政在对应牌的首次普通点数步骤');expect(laohuan).toContain('补牌操作');for(const copy of [erxiang,laohuan,handScoringOrder()])expect(copy).not.toMatch(/跃马冲阵结果倍率|花蕊夫人 · 赏赐倍率|文成公主 · 和亲倍率|苏轼单张×3/);
+    expect(erxiang).toContain('同点有效牌在每次普通点数步骤转移');expect(laohuan).toContain('寻得倍率（本手选择发动时）');for(const copy of [erxiang,laohuan,handScoringOrder()])expect(copy).not.toMatch(/跃马冲阵结果倍率|花蕊夫人 · 赏赐倍率|文成公主 · 和亲倍率|苏轼单张×3/);
   });
 });

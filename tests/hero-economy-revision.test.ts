@@ -1,3 +1,6 @@
+import {r2WithHouseJoker,R2_XIEMU_FREQUENT_VERSION,R2_XIEMU_FREQUENT_HASH} from '../src/domain/r2GroupUpgrade';
+import {withBossSuitRescueIdentity} from '../src/domain/r2BossSuitRescue';
+import {withPokerEncounterIdentity} from '../src/domain/r2PokerEncounter';
 import {savedHeroAttachment} from '../src/game/HeroAttachmentFacts';
 import {expect,it} from 'vitest';
 import {applyCommand,type R2RunState} from '../src/domain/run';
@@ -18,6 +21,7 @@ import {heroSkillGuide} from '../src/game/HeroSkillGuide';
 import {retainChosenHeroDraft} from '../src/game/HeroSkillDraftLifecycle';
 import {economySend as send,economyStart,economyHand,threeStageBudget} from './fixtures/hero-economy-budget';
 
+const previousXiemu=()=>withPokerEncounterIdentity(withBossSuitRescueIdentity(r2WithHouseJoker({contentVersion:R2_XIEMU_FREQUENT_VERSION,contentHash:R2_XIEMU_FREQUENT_HASH})));
 function ready(hero:'amo'|'xiemu',cash=20){return economyHand(send(send(economyStart(hero,cash),{type:'LeaveShop'}),{type:'EnterStage'}));}
 function input(s:R2RunState,ids:string[]){const hand=s.handOrder.map(id=>s.deckInstances.find(c=>c.id===id)!);return {rulesVersion:'r2' as const,runId:s.runId,rootId:s.runId+'/preview',hand,selectedIds:ids,disabledIds:s.stage!.disabledIds,jokers:s.jokers,definitions:r2JokerDefinitionsFor(s),handLevels:s.handLevels,playIndex:1,handsBeforePlay:4,previousHandType:null,wager:false,rng:s.rng.rule,...r2ScoreContext(s,hand,ids)};}
 function replaceHand(s:R2RunState,ids:string[]){s=structuredClone(s);s.handOrder=ids;s.drawPile=s.deckInstances.map(c=>c.id).filter(id=>!ids.includes(id)&&!s.playedPile.includes(id)&&!s.discardPile.includes(id));return s;}
@@ -41,10 +45,10 @@ it('v2 development saves keep free x3 and5/10/20 prices without receiving the ne
  const f=economyHand(send(send(economyStart('amo',20,{contentVersion:R2_AMO_BALANCE_VERSION,contentHash:R2_AMO_BALANCE_HASH}),{type:'LeaveShop'}),{type:'EnterStage'})),a=replaceHand(f.state,[...f.main,'clubs-3','spades-7','diamonds-9']);expect(amoExileChoice(a,f.main).available).toBe(true);const after=send(a,{type:'PlayHand',selectedIds:f.main,amoExile:true});expect(readCheckpoint(makeCheckpoint(after,[])).ok).toBe(true);
  const x=economyHand(send(send(economyStart('xiemu',20,{contentVersion:R2_XIEMU_BALANCE_VERSION,contentHash:R2_XIEMU_BALANCE_HASH}),{type:'LeaveShop'}),{type:'EnterStage'})).state;expect(xiemuChoice(x,'flush').choices.map(c=>c.cost)).toEqual([5,10,20]);
 });
-it('new prices, public previews and AI use3/6/10, and canceled score drafts cannot spend',()=>{
- const f=ready('xiemu',10),s=f.state,before=structuredClone(s);expect(xiemuChoice(s,'straight-flush').choices.map(c=>[c.cost,c.multiplier])).toEqual([[3,1.5],[6,2],[10,3]]);
+it('previous xiemu identity retains 3/6/10 in previews and real commands',()=>{
+ const f=economyHand(send(send(economyStart('xiemu',10,previousXiemu()),{type:'LeaveShop'}),{type:'EnterStage'})),s=f.state,before=structuredClone(s);expect(xiemuChoice(s,'straight-flush').choices.map(c=>[c.cost,c.multiplier])).toEqual([[3,1.5],[6,2],[10,3]]);
  for(const cost of [3,6,10] as const){const paid={...s,gold:s.gold-cost},i={...input(paid,f.main),xiemuBurn:{cost,goldBefore:s.gold,beforeUsed:false}},preview=previewR2Hand(i),actual=send(s,{type:'PlayHand',selectedIds:f.main,xiemuBurn:cost});expect(preview.scoreRange).toEqual({minimum:actual.lastTrace!.finalScore,maximum:actual.lastTrace!.finalScore});expect(aiScoreContext(i).xiemuFrequent).toBe(true);expect(readCheckpoint(makeCheckpoint(actual,[])).ok).toBe(true);}
- expect(s).toEqual(before);expect(characterForNewRun('xiemu').quickEffect).toContain('3／6／10');expect(amoExileCopy(ready('amo').state).details).toContain('主手里的K不算');
+ expect(s).toEqual(before);expect(characterForNewRun('xiemu').quickEffect).toContain('2／4／6／8');expect(amoExileCopy(ready('amo').state).details).toContain('主手里的K不算');
 });
 it('AI skips main selections which consume every K instead of losing all recommendations or applying an obsolete factor',()=>{
  const f=ready('amo'),s=f.state,i=input(s,f.main),score=aiScoreContext(i,{amoExile:true}),before=JSON.stringify(s);expect(score.amoExileKing).toBe(true);expect(score.heroBalance).toBe(true);
@@ -54,8 +58,8 @@ it('a repaired checksum cannot fake a used K-gated trace with no discarded K',()
  const f=ready('amo'),s=send(f.state,{type:'PlayHand',selectedIds:f.main,amoExile:true}),cp=structuredClone(makeCheckpoint(s,[]));for(const card of cp.state.lastTrace!.cards)if(cp.state.lastTrace!.sets.discardedIds!.includes(card.id)&&card.rank===13)card.rank=12;const {checksum,...body}=cp;expect(readCheckpoint({...body,checksum:stableHash(body)}).ok).toBe(false);
 });
 it('three consecutive real clear commands expose purchase opportunity costs and do not promise every peak is affordable',()=>{
- const low=threeStageBudget({hero:'xiemu',cash:6,purchasePrice:4,burn:3}),mid=threeStageBudget({hero:'xiemu',cash:6,purchasePrice:4,burn:6}),high=threeStageBudget({hero:'xiemu',cash:6,purchasePrice:4,burn:10});expect(low.rows.map(r=>r.end)).toEqual([8,8,10]);expect([low.uses,mid.uses,high.uses]).toEqual([2,1,0]);expect([low.purchases,mid.purchases,high.purchases]).toEqual([3,3,3]);
- const costly=threeStageBudget({hero:'xiemu',cash:6,purchasePrice:6,burn:3});expect([costly.uses,costly.purchases]).toEqual([0,3]);const funded=threeStageBudget({hero:'xiemu',cash:20,purchasePrice:4,burn:10});expect(funded.rows.map(r=>r.end)).toEqual([14,7,12]);expect(funded.uses).toBe(2);
+ const low=threeStageBudget({hero:'xiemu',cash:6,purchasePrice:4,burn:3,identity:previousXiemu()}),mid=threeStageBudget({hero:'xiemu',cash:6,purchasePrice:4,burn:6,identity:previousXiemu()}),high=threeStageBudget({hero:'xiemu',cash:6,purchasePrice:4,burn:10,identity:previousXiemu()});expect(low.rows.map(r=>r.end)).toEqual([8,8,10]);expect([low.uses,mid.uses,high.uses]).toEqual([2,1,0]);expect([low.purchases,mid.purchases,high.purchases]).toEqual([3,3,3]);
+ const costly=threeStageBudget({hero:'xiemu',cash:6,purchasePrice:6,burn:3,identity:previousXiemu()});expect([costly.uses,costly.purchases]).toEqual([0,3]);const funded=threeStageBudget({hero:'xiemu',cash:20,purchasePrice:4,burn:10,identity:previousXiemu()});expect(funded.rows.map(r=>r.end)).toEqual([14,7,12]);expect(funded.uses).toBe(2);
 });
 it('the other four heroes retain zero skill fees under the same fixed two-hand/purchase budget',()=>{
  const reports=(['touye','laohuan','erxiang','azao'] as const).map(hero=>threeStageBudget({hero,cash:6,purchasePrice:4}));expect(reports.every(r=>r.rows.every(s=>s.paid===0&&s.characterGoldDebits===0))).toBe(true);expect(new Set(reports.map(r=>JSON.stringify(r.rows.map(s=>s.end)))).size).toBe(1);

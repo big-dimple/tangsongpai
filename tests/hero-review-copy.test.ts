@@ -17,7 +17,7 @@ describe('saved hero review follows real rule identity and events',()=>{
  for(const p of plans)it(p.hero+' shares its current saved ability name and keeps rule data unchanged',()=>{
   const s=p.hero==='laohuan'?sixSend(p.skillAfter,p.next):p.skillAfter,t=s.lastTrace!,before=JSON.stringify(s),c=characterForRun(s),review=formatScoreReview(s,t),text=visible(review);
   expect(heroSkillTitleForRun(s)).toBe(c.name+' · '+c.passiveName);
-  if(p.hero==='laohuan')expect(t.events.some(e=>e.sourceType==='character')).toBe(false);
+  if(p.hero==='laohuan'){expect(t.events.some(e=>e.reasonKey==='laohuan.find')).toBe(true);expect(text).toContain('辛弃疾 · 寻得');}
   else{const event=t.events.find(e=>e.sourceType==='character')!;expect(text).toContain(heroSkillTitleForRun(s));expect(savedSkillName(s,t,event)).toBe(c.passiveName);}
   if(p.hero==='amo'){expect(text).toContain('苏轼 · 贬谪');expect(text).not.toContain('余音袅袅');expect(text).toContain('本次得分 ×3');expect(text).toContain('贬谪：78 ×3 = 234');expect(review.diagnostics).toContain('贬谪前整数得分 78 ×3 = 234');}
   expect([c.detailRules,c.passiveDescription,heroSkillGuide(p.skillBefore).risk].join('\n')).not.toMatch(/保存成功|成功保存|提交保存|同一事务|角色时点/);

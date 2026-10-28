@@ -38,7 +38,7 @@ describe('core build paid growth and public chapter lock',()=>{
  it.each(CHARACTER_IDS)('%s launches its approved identity with all existing skill capabilities',hero=>{
   const s=start(hero);expect(r2HouseBase(s)).toMatchObject(hero==='amo'?{contentVersion:R2_AMO_KING_VERSION,contentHash:R2_AMO_KING_HASH}:hero==='xiemu'?{contentVersion:R2_XIEMU_FREQUENT_VERSION,contentHash:R2_XIEMU_FREQUENT_HASH}:hero==='erxiang'||hero==='laohuan'?{contentVersion:R2_HERO_FREQUENCY_VERSION,contentHash:R2_HERO_FREQUENCY_HASH}:{contentVersion:R2_S04_FINISH_VERSION,contentHash:R2_S04_FINISH_HASH});expect(isR2CoreBuild(s)).toBe(true);round(s);
   expect(r2ChapterTargetPreview(s)).toEqual({policyVersion:'core-build-target-v1',chapter:1,targets:['400','600','800'],boss:s.boss});
-  const ctx=r2ScoreContext(s,[],[]);expect(ctx.boundedClear).toBe(true);expect(ctx.activeMultTiming).toBe(['touye','xiemu','azao'].includes(hero)?'after-route-growth':undefined);
+  const ctx=r2ScoreContext(s,[],[]);expect(ctx.boundedClear).toBe(true);expect(ctx.activeMultTiming).toBe(['touye','xiemu','azao','laohuan'].includes(hero)?'after-route-growth':undefined);
  });
  it('uses exact fixed 27/20 growth, original difficulty and a single final ceiling',()=>{
   for(const chapter of [1,8,9,10,13,30])for(const d of [0,1,2,3])for(const i of [0,1,2]){
@@ -126,7 +126,7 @@ describe('core build paid growth and public chapter lock',()=>{
  });
  it('Xiemu pays before balance hooks, while Azao charges only on qualified real hands',()=>{
   let x=start('xiemu');x.gold=20;x.jokers=[r2CreateJoker('e08','cash-source',8,undefined,x)];x=boundedArrange(send(send(x,{type:'LeaveShop'}),{type:'EnterStage'}),['hearts-8','spades-8','clubs-8','hearts-9','spades-9']);
-  const burnt=send(x,{type:'PlayHand',selectedIds:x.handOrder.slice(0,5),xiemuBurn:10});expect(burnt.lastTrace!.xiemuBurn).toMatchObject({cost:10,goldBefore:20,goldAfter:10,multiplier:3});expect(burnt.lastTrace!.events.some(e=>e.sourceDefinitionId==='e08')).toBe(false);expect(burnt.stage!.xiemuBurnUsed).toBe(true);round(burnt);
+  const burnt=send(x,{type:'PlayHand',selectedIds:x.handOrder.slice(0,5),xiemuBurn:8});expect(burnt.lastTrace!.xiemuBurn).toMatchObject({cost:8,goldBefore:20,goldAfter:12,multiplier:4});expect(burnt.lastTrace!.events.some(e=>e.sourceDefinitionId==='e08')).toBe(false);expect(burnt.stage!.xiemuBurnUsed).toBe(true);round(burnt);
   let a=boundedArrange(send(send(start('azao'),{type:'LeaveShop'}),{type:'EnterStage'}),['hearts-2','spades-2','clubs-3','diamonds-3']);a=send(a,{type:'PlayHand',selectedIds:['hearts-2','spades-2','clubs-3','diamonds-3']});expect(a.stage!.azaoCharge!.charge).toBe(1);round(a);
   a=boundedArrange(a,['hearts-4','spades-4']);const low=send(a,{type:'PlayHand',selectedIds:['hearts-4','spades-4']});expect(low.stage!.azaoCharge!.charge).toBe(0);round(low);
  });

@@ -38,10 +38,10 @@ describe('adopting another hand keeps only existing valid hero choices',()=>{
     state.stage!.azaoCharge.charge=0;expect(retainChosenHeroDraft(state,facts(state,ids),draft).azaoRelease).toBe(false);
   });
   it('preserves the explicit affordable payment and never silently lowers an invalid tier',()=>{
-    const state=entered('xiemu'),ids=state.handOrder.slice(0,4);state.gold=20;const before=structuredClone(state),chosen={...empty,xiemuBurn:10 as const};
-    const draft=retainChosenHeroDraft(state,facts(state,ids),chosen);expect(draft.xiemuBurn).toBe(10);expect(state).toEqual(before);
-    const trace=energySend(state,{type:'PlayHand',selectedIds:ids,xiemuBurn:draft.xiemuBurn as 10}).lastTrace!.xiemuBurn!;expect(trace.cost).toBe(10);expect(trace.goldBefore-trace.goldAfter).toBe(10);
-    state.gold=9;expect(retainChosenHeroDraft(state,facts(state,ids),chosen).xiemuBurn).toBe(0);state.gold=20;
+    const state=entered('xiemu'),ids=state.handOrder.slice(0,4);state.gold=20;const before=structuredClone(state),chosen={...empty,xiemuBurn:8 as const};
+    const draft=retainChosenHeroDraft(state,facts(state,ids),chosen);expect(draft.xiemuBurn).toBe(8);expect(state).toEqual(before);
+    const trace=energySend(state,{type:'PlayHand',selectedIds:ids,xiemuBurn:draft.xiemuBurn as 8}).lastTrace!.xiemuBurn!;expect(trace.cost).toBe(8);expect(trace.goldBefore-trace.goldAfter).toBe(8);
+    state.gold=7;expect(retainChosenHeroDraft(state,facts(state,ids),chosen).xiemuBurn).toBe(0);state.gold=20;
     expect(retainChosenHeroDraft(state,facts(state,ids.slice(0,2)),chosen).xiemuBurn).toBe(0);
   });
   it('never invents an unchosen target, release or payment, including when abilities become available',()=>{

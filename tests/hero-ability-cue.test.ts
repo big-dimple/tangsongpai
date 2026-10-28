@@ -25,14 +25,14 @@ function facts(s:R2RunState,ids=main){return r2SelectionFacts({hand:s.handOrder.
 it('six public legal inputs only advertise the current valid operation, without mutation or guesses',()=>{
  for(const id of CHARACTER_IDS){let s=entered(id);if(id==='azao'){s=arrange(s,['spades-2','hearts-2','clubs-3','diamonds-3',...cards.slice(4)]);s=arrange(send(s,{type:'PlayHand',selectedIds:s.handOrder.slice(0,4)}));}if(id==='xiemu'){s.gold=10;expect(readCheckpoint(makeCheckpoint(s,[])).ok).toBe(true);}
   const before=structuredClone(s),ids=id==='erxiang'?cards.slice(0,2):main;
-  if(id==='laohuan')expect(heroAbilityCue(s,facts(s,ids),ids)).toMatchObject({label:'众里寻他',status:'被动',state:'passive',available:false,opportunity:false,actionable:false,attention:false,detail:'弃牌后多看两张'});else{
+  if(id==='laohuan')expect(heroAbilityCue(s,facts(s,ids),ids)).toMatchObject({label:'寻得',status:'条件未满足',state:'unavailable',available:false,opportunity:false,actionable:true,attention:false,detail:'下一手用至少两张刚换的同点牌计分'});else{
   expect(heroAbilityCue(s,facts(s,ids),ids,id==='amo')).toMatchObject({label:heroSkillName(id),status:'可用',state:'available'});
   expect(heroAbilityCue(s,facts(s,ids),ids,id==='amo')?.detail).toContain(id==='touye'?'弃牌前':'出牌前');}
   expect(heroAbilityCue(s)?.available).toBe(false);expect(s).toEqual(before);
  }
 });
 it('money, qualification, no discard budget, used handoff and old identities never get a ready accent',()=>{
- const x=entered('xiemu');x.gold=2;expect(heroAbilityCue(x,facts(x),main)).toMatchObject({available:false,label:'赏赐',status:'条件未满足',detail:'不足3金'});
+ const x=entered('xiemu');x.gold=1;expect(heroAbilityCue(x,facts(x),main)).toMatchObject({available:false,label:'赏赐',status:'条件未满足',detail:'不足2金'});
  const e=entered('erxiang');expect(heroAbilityCue(e,facts(e,[cards[0]]),[cards[0]])?.available).toBe(false);
  const a=send(e,{type:'PlayHand',selectedIds:cards.slice(0,2),erxiangTargetId:cards[0]});expect(heroAbilityCue(a)?.available).toBe(false);
  const l=entered('laohuan');l.stage!.discardsLeft=0;expect(heroAbilityCue(l,facts(l),[cards[0]])?.available).toBe(false);
@@ -45,18 +45,18 @@ it('selected, used and pending states are read-only projections of real drafts a
  const t=entered('touye'),ids=cards.slice(6),copy=touyeChoice(t,ids),pending=send(t,{type:'DiscardHand',selectedIds:ids,touyeBet:{target:'three-kind',snapshotToken:copy.snapshotToken}}),snapshot=structuredClone(pending);
  expect(heroAbilityCue(pending)).toMatchObject({label:'跃马冲阵',status:'已押三条',state:'locked',detail:'出牌后结算',available:false,actionable:false,attention:false});expect(pending).toEqual(snapshot);
  const l=entered('laohuan'),refill=send(l,{type:'DiscardHand',selectedIds:cards.slice(6),laohuanTrick:true});
- expect(refill.pendingRefill).not.toBeNull();expect(heroAbilityCue(refill)).toMatchObject({status:'被动',state:'passive',detail:'请选择保留的牌',available:false,actionable:false,attention:false});
+ expect(refill.pendingRefill).not.toBeNull();expect(heroAbilityCue(refill)).toMatchObject({status:'待完成',state:'pending',detail:'请选择保留的牌',available:false,actionable:true,attention:true});
 });
 it('committed handoff and wager results explain actual sources; promises and altered events cannot become receipts',()=>{
  const s=entered('erxiang'),a=send(s,{type:'PlayHand',selectedIds:cards.slice(0,2),erxiangTargetId:cards[0]}),t=a.lastTrace!,e=t.events.find(e=>e.reasonKey==='erxiang.handoff')!;
- expect(savedHeroResult(a)).toContain('8点热度 → 倍率');expect(savedBenefit(a,t,e)).toMatchObject({title:'刘娥 · 垂帘听政 · 已兑现',effect:'8点热度改加倍率（首次普通计分）'});
+ expect(savedHeroResult(a)).toContain('2张同点 · 共16点热度 → 倍率');expect(savedBenefit(a,t,e)).toMatchObject({title:'刘娥 · 垂帘听政 · 已兑现',effect:'8点热度改加倍率（本次计分）'});
  expect(savedBenefit(a,t,{...e,eventId:'not-saved'})).toBeUndefined();
  const amo=entered('amo',true),b=send(amo,{type:'PlayAssistedHand',selectedIds:main,assistIds:cards.slice(4,6)}),bt=b.lastTrace!,be=bt.events.find(e=>e.reasonKey==='amo.assist.pair')!;
  expect(savedBenefit(b,bt,be)?.effect).toBe('副组2张已用 · 实际×2');expect(savedHeroResult(b)).toBe('苏轼 · 余音袅袅 · 副组2张已用 · 实际×2');
 });
 
 it('B08 respects the non-scoring Laohuan exception and never advertises disabled scoring abilities',()=>{
- for(const id of CHARACTER_IDS){let s=createRun({rulesVersion:'r2',characterId:id,runId:'boss-cue-'+id,seed:'group-natural-17',modeConfig:{mode:'standard',difficulty:0,challengeId:null,programsEnabled:false},r2Identity:newRunIdentity(id,'group'),openingRoute:'group'});s=send(s,{type:'LeaveShop'});s.shop=null;s.chapter=3;s.stageIndex=8;s.seenBossIds=['B02','B03','B08'];s.boss={definitionId:'B08',disabledSuit:null};completeControlledRouteHistory(s);s=arrange(send(s,{type:'EnterStage'}));const cue=heroAbilityCue(s,facts(s),main,id==='amo');expect(cue?.available).toBe(false);if(id==='laohuan')expect(cue).toMatchObject({state:'passive',status:'被动',detail:'弃牌后多看两张'});else expect(cue?.status).toBe('已停用');}
+ for(const id of CHARACTER_IDS){let s=createRun({rulesVersion:'r2',characterId:id,runId:'boss-cue-'+id,seed:'group-natural-17',modeConfig:{mode:'standard',difficulty:0,challengeId:null,programsEnabled:false},r2Identity:newRunIdentity(id,'group'),openingRoute:'group'});s=send(s,{type:'LeaveShop'});s.shop=null;s.chapter=3;s.stageIndex=8;s.seenBossIds=['B02','B03','B08'];s.boss={definitionId:'B08',disabledSuit:null};completeControlledRouteHistory(s);s=arrange(send(s,{type:'EnterStage'}));const cue=heroAbilityCue(s,facts(s),main,id==='amo');expect(cue?.available).toBe(false);if(id==='laohuan')expect(cue).toMatchObject({state:'disabled',status:'已停用',detail:'本场寻得停用'});else expect(cue?.status).toBe('已停用');}
 });
 it('Q01 public current states disable every ability cue without a game mutation',()=>{
  for(const id of CHARACTER_IDS){const s=arrange(send(send(createRun({rulesVersion:'r2',characterId:id,runId:'q-cue-'+id,seed:'challenge/q01/0',r2Identity:newRunIdentity(id,'group'),openingRoute:'group',modeConfig:{mode:'challenge',difficulty:0,challengeId:'Q01',programsEnabled:false}}),{type:'LeaveShop'}),{type:'EnterStage'}));expect(heroAbilityCue(s,facts(s),main,id==='amo')).toMatchObject({available:false});}

@@ -39,6 +39,7 @@ export function attachmentPerformanceCue(owner:{state:{runId:string};score:Score
  if(!event||event.sourceType!=='character'||!scoreContributions(event).some(c=>Rational.fromJSON(c.after).compare(Rational.fromJSON(c.before))>0))return;
  const targets=savedScoreTargetIds(owner.score,event);
  const costs=heroScoreAction(owner.score,event)?.costIds??[];
- if(!targets||observation.targetIds.some(id=>!targets.includes(id)&&!costs.includes(id))||observation.sourceTargetIds.some(id=>!observation.targetIds.includes(id)))return;
+ const group=owner.score.erxiangGroup&&event.reasonKey==='erxiang.handoff'?savedHeroAttachment(owner.score,'erxiang')?.targetIds??[]:[];
+ if(!targets||observation.targetIds.some(id=>!targets.includes(id)&&!costs.includes(id)&&!group.includes(id))||observation.sourceTargetIds.some(id=>!observation.targetIds.includes(id)))return;
  return scorePerformanceCue(owner,event,context,beat,speed,'activate');
 }

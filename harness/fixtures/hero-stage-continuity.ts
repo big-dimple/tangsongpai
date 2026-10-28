@@ -9,7 +9,7 @@ export function heroStageFixture(id:CharacterId){
  const ids=['spades-13','hearts-13','clubs-13','spades-12','hearts-12'];
  s.handOrder=[...ids,...s.deckInstances.map(c=>c.id).filter(id=>!ids.includes(id)).slice(0,s.handOrder.length-ids.length)];
  s.drawPile=s.deckInstances.map(c=>c.id).filter(id=>!s.handOrder.includes(id));
- const action:Action={type:'PlayHand',selectedIds:ids,...(id==='xiemu'?{xiemuBurn:10 as const}:id==='azao'?{azaoRelease:false}:{})};
+ const action:Action={type:'PlayHand',selectedIds:ids,...(id==='xiemu'?{xiemuBurn:8 as const}:id==='azao'?{azaoRelease:false}:{})};
  const cleared=heroSend(s,action),shop=heroSend(cleared,{type:'OpenShop'}),entered=heroSend(heroSend(shop,{type:'LeaveShop'}),{type:'EnterStage'});
  return {state:s,ids,action,cleared,shop,entered};
 }

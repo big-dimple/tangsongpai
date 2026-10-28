@@ -1,3 +1,5 @@
+import {usesErxiangGroup} from '../domain/r2ErxiangHandoff';
+import {usesLaohuanFind} from '../domain/r2LaohuanFind';
 import {amoExileMultiplier} from '../domain/r2AmoExile';
 import {heroSkillName,heroSkillTitle} from './HeroSkillPresentation';
 import {heroText} from './HeroIdentity';
@@ -26,7 +28,9 @@ export function handScoringOrder(identity?:HandRuleIdentity):string {
    if(profile.amoScoreTiming==='after-joker')return start+' → '+whole+route+heroText(' → 阿默单张×3（仅打出1张时）。');
    return start+heroText(' → 阿默单张×3（仅打出1张时） → ')+whole+route+'。';
  }
+ if(usesErxiangGroup(identity))return start+' → '+whole+route+'。同点有效牌在每次普通点数步骤转移，先于该牌增强与版次。';
  if(identity.characterId==='erxiang'&&isR2ErxiangHandoff(identity))return start+' → '+whole+route+'。'+heroSkillTitle('erxiang')+'在对应牌的首次普通点数步骤处理，不是唐宋牌计分后的倍率。';
+ if(usesLaohuanFind(identity))return start+' → '+whole+route+' → 寻得倍率（本手选择发动时）。';
  if(identity.characterId==='laohuan'&&isR2LaohuanRefill(identity))return start+' → '+whole+route+'。'+heroSkillTitle('laohuan')+'属于补牌操作，不在计分链额外加角色热度。';
  return start+' → 角色计分（符合该局规则时） → '+whole+route+'。';
 }

@@ -20,8 +20,8 @@ export function economyHand(state:R2RunState){
  s.stage!.disabledIds=s.stage!.boss?r2DisabledCards(s.stage!.boss,s.stage!.index,s.handOrder.map(id=>s.deckInstances.find(c=>c.id===id)!)):[];return {state:s,main};
 }
 /** Controlled public shelves and two real scoring commands per stage; not natural card/offer availability. */
-export function threeStageBudget(options:{hero:CharacterId;cash:number;purchasePrice:4|6;burn?:3|6|10;exile?:boolean}){
- let s=economyStart(options.hero,options.cash);const rows=[];
+export function threeStageBudget(options:{hero:CharacterId;cash:number;purchasePrice:4|6;burn?:3|6|10;exile?:boolean;identity?:{contentVersion:string;contentHash:string}}){
+ let s=economyStart(options.hero,options.cash,options.identity);const rows=[];
  const purchases=options.purchasePrice===4?['pengci','mantangcai','a03']:['a10','c10','c06'];
  for(let index=0;index<3;index++){
   const beforeShop=s.gold,definitionId=purchases[index],offerId=s.runId+'/public/'+index;

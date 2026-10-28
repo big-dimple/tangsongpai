@@ -32,10 +32,12 @@ export function heroScoreAction(trace:ScoreTrace,event:ScoreEvent,retainedIds:re
  if(retained&&positive)return {hero:'laohuan',eventId:event.eventId,sourceInstanceId:event.sourceInstanceId,kind:'retained-card',targetIds:[retained],costIds:[],positive,contributions};
  if(event.sourceType!=='character')return;
  const hero=event.sourceDefinitionId as CharacterId,saved=savedHeroAttachment(trace,hero);
+ if(hero==='erxiang'&&trace.erxiangGroup&&event.reasonKey==='erxiang.handoff'&&event.targetCardId&&positive)return {hero,eventId:event.eventId,sourceInstanceId:event.sourceInstanceId,kind:'handoff',targetIds:[event.targetCardId],costIds:[],positive,contributions};
  if(saved?.event.eventId!==event.eventId)return;
  const main=trace.sets.activeScoringIds.length?trace.sets.activeScoringIds:trace.sets.playedIds;
  const common={hero,eventId:event.eventId,sourceInstanceId:event.sourceInstanceId,positive,contributions,costIds:[] as string[]};
  if(hero==='amo')return trace.amoExile?.use?{...common,kind:'exile',targetIds:[...main],costIds:[...trace.amoExile.discardedIds]}:{...common,kind:'assist',targetIds:[...saved.targetIds??[]]};
+ if(hero==='laohuan'&&trace.laohuanFind?.multiplier&&positive)return {...common,kind:'release',targetIds:[...trace.laohuanFind.activeIds]};
  if(hero==='erxiang'&&positive)return {...common,kind:'handoff',targetIds:[...saved.targetIds??[]]};
  if(hero==='azao'&&trace.azaoCharge?.release&&positive)return {...common,kind:'release',targetIds:[...main],cost:{kind:'charge',before:trace.azaoCharge.before.charge,after:trace.azaoCharge.after.charge}};
  if(hero==='xiemu'&&trace.xiemuBurn?.cost&&positive)return {...common,kind:'release',targetIds:[...main],cost:{kind:'gold',before:trace.xiemuBurn.goldBefore,after:trace.xiemuBurn.goldAfter}};

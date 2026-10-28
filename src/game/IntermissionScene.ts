@@ -167,7 +167,7 @@ export class IntermissionScene extends Phaser.Scene {
       heading='再来一局';
       body=p.tight?'同局重试从开局，构筑不继承。':`${failureSummary(run).resources}\n已过关场次累计热度 ${heatText(run.totalHeat)} · 余额 ${run.gold} 金\n同局重试从开局重新开始，构筑不继承。`;
     }
-    const touye=savedTouyeWager(trace);if(touye&&!nextStage&&!p.short)body=touye+'\n'+body;
+    const touye=savedTouyeWager(trace,run);if(touye&&!nextStage&&!p.short)body=touye+'\n'+body;
     if(p.short)body=body.replace(/。(?=\n|$)/g,'');
     let nextBottom=n.y+n.height;
     if(lost){
@@ -217,7 +217,7 @@ export class IntermissionScene extends Phaser.Scene {
   private jokerDefinition(id:string){return r2JokerDefinitionFor(runController(this)!.state,id);}
   private traceSources(trace:ScoreTrace):string[] {
     const character=getCharacter(runController(this)!.state.characterId);
-    return [...new Set(trace.events.filter(e=>(e.sourceType==='joker'||e.sourceType==='character')&&e.phase!=='afterHand'&&(e.before.H.n!==e.after.H.n||e.before.H.d!==e.after.H.d||e.before.M.n!==e.after.M.n||e.before.M.d!==e.after.M.d||e.operation==='retrigger-card'&&BigInt(e.value.n)>0n)).map(e=>e.sourceType==='character'?(savedTouyeWager(trace)||character.name):cardDefinitionName(this.jokerDefinition(e.sourceDefinitionId))))];
+    return [...new Set(trace.events.filter(e=>(e.sourceType==='joker'||e.sourceType==='character')&&e.phase!=='afterHand'&&(e.before.H.n!==e.after.H.n||e.before.H.d!==e.after.H.d||e.before.M.n!==e.after.M.n||e.before.M.d!==e.after.M.d||e.operation==='retrigger-card'&&BigInt(e.value.n)>0n)).map(e=>e.sourceType==='character'?(savedTouyeWager(trace,runController(this)!.state)||character.name):cardDefinitionName(this.jokerDefinition(e.sourceDefinitionId))))];
   }
   private stopCelebration():void {
     this.outcomeMotion?.dispose();this.outcomeMotion=undefined;

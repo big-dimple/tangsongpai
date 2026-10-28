@@ -1,3 +1,5 @@
+import {usesErxiangGroup} from '../domain/r2ErxiangHandoff';
+import {usesTouyeScaling} from '../domain/r2TouyeWager';
 import {savedAmoExileMultiplier} from './AmoExileCopy';
 import {heroSkillTitleForRun} from './CharacterRunCopy';
 import {savedAmoExileFormula} from './AmoExileCopy';
@@ -50,8 +52,9 @@ function sourceName(run:R2RunState,trace:ScoreTrace,event:ScoreEvent):string {
   }
   if(event.sourceType==='character'){
     const hero=heroSkillTitleForRun(run);
-    if(event.reasonKey.startsWith('touye.won.')||event.reasonKey.startsWith('touye.lost.'))return hero+' · '+(trace.touyeWager?.commit?'押'+HAND_LABELS[trace.touyeWager.commit.target]:'')+(event.reasonKey.startsWith('touye.won.')?' · 达成':' · 输约');
+    if(event.reasonKey.startsWith('touye.won.')||event.reasonKey.startsWith('touye.lost.'))return hero+' · '+(trace.touyeWager?.commit?'押'+HAND_LABELS[trace.touyeWager.commit.target]:'')+(event.reasonKey.startsWith('touye.won.')?' · 达成'+(usesTouyeScaling(run)?' · 新牌'+(trace.touyeWager?.core?.activeNewIds.length??0)+'张':''):' · 输约');
     if(usesTouyeWager(run)&&event.sourceDefinitionId==='touye'&&event.operation==='multiply-multiplier')return hero+' · 常规倍率';
+    if(event.reasonKey==='laohuan.find')return '辛弃疾 · 寻得 · '+rankLabel(trace.cards.find(c=>c.id===trace.laohuanFind!.activeIds[0])!.rank)+' '+trace.laohuanFind!.activeIds.length+'张';
     if(event.sourceDefinitionId==='xiemu'&&event.operation==='multiply-multiplier'&&trace.xiemuBurn?.cost)return hero+' · 支付'+trace.xiemuBurn.cost+'金';
     if(event.sourceDefinitionId==='azao'&&event.operation==='multiply-multiplier'&&trace.azaoCharge?.release)return hero+' · 消耗'+trace.azaoCharge.before.charge+'层释放';
     return hero;
@@ -73,7 +76,7 @@ export function reviewOperationText(run:R2RunState,event:ScoreEvent):string {
   if(event.operation==='route-clear')return '已过关 '+event.resourceBefore+' → '+event.resourceAfter+' 次';
   if(event.operation==='route-clear-family')return '本场用过'+(event.routeFamily?familyHands[event.routeFamily]:'这类牌型')+'，过关记录 '+event.resourceBefore+' → '+event.resourceAfter+' 次';
   if(event.reasonKey==='amo.exile')return '本次得分 ×'+value;
-  if(event.reasonKey==='erxiang.handoff')return value+'点普通热度改加倍率（首次计分）';
+  if(event.reasonKey==='erxiang.handoff')return value+'点普通热度改加倍率（'+(usesErxiangGroup(run)?'本次计分':'首次计分')+'）';
   if(event.operation==='retrigger-card')return '额外再计分 '+value+' 次';
   if(event.operation==='read-growth')return '读取已攒'+(event.before.H.n!==event.after.H.n||event.before.H.d!==event.after.H.d?'热度':'倍率')+' +'+value;
   if(event.operation==='add-heat-per-gold')return '按当时金币加入热度 +'+value;

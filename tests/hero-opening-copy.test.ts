@@ -12,9 +12,9 @@ it('default promises share the current identity copy and describe actual operati
  const copy=(id:typeof CHARACTER_IDS[number])=>characterForNewRun(id).openingPlay;
  for(const id of CHARACTER_IDS)expect(copy(id).length).toBeLessThanOrEqual(52);
  expect(copy('amo')).toMatch(/出牌时.*弃掉.*最终得分 ×3/ );
- expect(copy('erxiang')).toMatch(/对子及以上.*选一张计分牌.*普通点数改加倍率.*每场2次/);expect(copy('erxiang')).not.toMatch(/对子、两对、三条/);
- expect(copy('laohuan')).toMatch(/每次正常弃牌后.*多看最多2张.*自己留下应补张数/);expect(copy('laohuan')).not.toMatch(/多添热度|技能按钮|每场一次/);
- expect(copy('touye')).toMatch(/1选弃牌.*2押牌型.*3用新摸牌成型.*已成型.*×0.85/);expect(copy('touye')).not.toMatch(/机会|随机|ID|事务|核心/);
- expect(copy('azao')).toMatch(/先蓄势.*出牌前.*释放/);expect(copy('xiemu')).toMatch(/出牌前.*付3／6／10金.*留钱/);
+ expect(copy('erxiang')).toMatch(/对子及以上.*选一张计分牌.*同点牌的普通热度改加倍率/);expect(copy('erxiang')).not.toMatch(/对子、两对、三条/);
+ expect(copy('laohuan')).toMatch(/弃牌最多多看两张.*刚换来的同点牌计分/ );expect(copy('laohuan')).not.toMatch(/多添热度|技能按钮|每场一次/);
+ expect(copy('touye')).toMatch(/押下一手牌型.*换来的牌参与计分越多/  );expect(copy('touye')).not.toMatch(/机会|随机|ID|事务|核心/);
+ expect(copy('azao')).toMatch(/先蓄势.*出牌前.*释放/);expect(copy('xiemu')).toMatch(/出牌前.*花2／4／6／8金.*留钱/);
  expect(Object.keys(OPENING_ROUTES).sort()).toEqual([...BUILD_FOCUS].sort());
 });

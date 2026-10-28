@@ -1,3 +1,4 @@
+import {usesTouyeScaling} from '../domain/r2TouyeWager';
 import type {R2RunState} from '../domain/r2Run';
 import {r2JokerDefinitionsFor} from '../domain/r2ContentProfiles';
 import {fractionText} from './scoreText';
@@ -10,5 +11,5 @@ export function touyeComboCue(run:R2RunState):string|undefined {
  const head=next>=minimum&&next<=maximum?'回马枪：第'+next+'手，就是下一手倍率×'+fractionText(op.value)+'。'
   :next<minimum?'回马枪：第'+minimum+'手起倍率×'+fractionText(op.value)+'，还隔'+(minimum-next)+'手。'
   :'回马枪：第'+maximum+'手后不再触发，本场已谢幕。';
- return head+'\n押中同花且两项实际生效，英雄×2与回马枪×'+fractionText(op.value)+'相乘；封禁时不生效。';
+ return head+'\n押中同花且两项实际生效，英雄'+(usesTouyeScaling(run)?'×2／3／4':'×2')+'与回马枪×'+fractionText(op.value)+'相乘；封禁时不生效。';
 }

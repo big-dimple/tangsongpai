@@ -47,7 +47,7 @@ it.each(['mature-win','target-miss'] as const)('shows a saved %s result only aft
  const played=touyeSend(pending,{type:'PlayHand',selectedIds:f.play}),snapshot=structuredClone(played);
  expect(played.lastTrace!.touyeWager!.outcome).toBe(kind==='mature-win'?'won':'lost');
  const actual=touyeChoice(played).settled;
- expect(actual).toContain(kind==='mature-win'?'新摸牌成型×2':'没成所押牌型×0.85');
+ expect(actual).toContain(kind==='mature-win'?'换来的1张牌计分 ×2':'没成所押牌型×0.85');
  expect(heroAbilityCue(played)).toMatchObject({state:'used',status:'已用',detail:actual,available:false,opportunity:false,attention:false});
  expect(savedHeroResult(played)).toContain(actual);expect(played).toEqual(snapshot);
 });
