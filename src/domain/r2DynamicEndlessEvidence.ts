@@ -1,5 +1,6 @@
 import {stableHash} from './hash';
 import {MAX_INTEGER_DIGITS} from './rational';
+import {dynamicEndlessAdvanceAnchor} from './r2DynamicEndless';
 import type {Command,Receipt} from './run';
 import type {R2StageState} from './r2Run';
 import type {ScoreTrace} from './scoreR2';
@@ -50,4 +51,15 @@ export function verifyDynamicClearChain(clear:DynamicClearEvidence,hands:readonl
  }
  const last=hands[hands.length-1];
  return previous===clear.score&&last.score===clear.finalHandScore&&last.rootId===clear.rootId&&stableHash(last.command)===stableHash(clear.command);
+}
+
+export interface DynamicStageSample {clear:DynamicClearEvidence;hands:DynamicHandEvidence[]}
+export interface DynamicAnchorProof {before:string;baseline:string;after:string;current:DynamicStageSample;previous:DynamicStageSample|null}
+/** Both samples must be distinct, committed, non-Boss stage clears in chronological order. */
+export function verifyDynamicAnchorProof(proof:DynamicAnchorProof,receipts:readonly DynamicEvidenceReceipt[],runId:string):boolean {
+ try {
+  if(!proof||!proof.current||proof.current.clear.stageIndex%3===2||!verifyDynamicClearChain(proof.current.clear,proof.current.hands,receipts,runId))return false;
+  if(proof.previous&&(proof.previous.clear.stageIndex%3===2||proof.previous.clear.stageIndex>=proof.current.clear.stageIndex||!verifyDynamicClearChain(proof.previous.clear,proof.previous.hands,receipts,runId)))return false;
+  return proof.after===dynamicEndlessAdvanceAnchor(proof.before,proof.baseline,proof.current.clear.score,proof.previous?.clear.score);
+ }catch{return false;}
 }
