@@ -34,6 +34,7 @@ export const FOLEY = {
  coin:recipe([low(layer(['chip-lay-1','chip-lay-2'],.12,.022),2900)],.07,2),
  spend:recipe([low(layer(['chips-stack-1'],.12,.024),2500)],.04,3),
  spendLast:recipe([low(layer(['chips-stack-1'],.14,.027),2100),low(layer(['impactSoft_medium_000'],.13,.017,.055),1000)],.04,4,2),
+ lastPlay:recipe([strike(.026)],.2,1,2),
  title:recipe([bell(.36,.028)],.3,1,2),
  confirm:recipe([strike(.025),bell(.28,.019,.075)],.2,2,2),
  curtain:recipe([air(layer(['cloth2'],.32,.028)),paper(.20,.012,.075)],.3,2,2),

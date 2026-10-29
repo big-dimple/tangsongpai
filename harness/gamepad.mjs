@@ -33,7 +33,7 @@ async function navigate(page,predicate){
   assert.fail('controller navigation did not reach its target');
 }
 try{
-  await mkdir(output,{recursive:true});({nextControllerTarget}=await server.ssrLoadModule('/src/game/ControllerFocus.ts'));await server.listen();browser=await chromium.launch();
+  await mkdir(output,{recursive:true});({nextControllerTarget}=await server.ssrLoadModule('/src/game/ControllerFocus.ts'));await server.listen();browser=await chromium.launch(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{});
   for(const viewport of [{width:1280,height:800},{width:390,height:844}]){
     const context=await browser.newContext({viewport}),page=await context.newPage(),errors=[];activePage=page;page.on('pageerror',error=>errors.push(String(error)));
     await page.addInitScript(()=>{

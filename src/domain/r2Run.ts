@@ -1,4 +1,5 @@
 import {usesErxiangGroup} from './r2ErxiangHandoff';
+import {assertDynamicEndless,dynamicTarget,type DynamicEndlessRuntime} from './r2DynamicEndlessRuntime';
 import {isR2ErxiangGroup} from './r2GroupUpgrade';
 import {isR2TouyeScaling,isR2LaohuanFind} from './r2GroupUpgrade';
 import {usesTouyeScaling} from './r2TouyeWager';
@@ -123,6 +124,7 @@ interface R2StageBase extends Omit<StageState,'targetHeat'|'heat'|'previousHandT
 /** Profile parsing requires assistUsed for the prototype and forbids it for published runs. */
 export type R2StageState = R2StageBase & {bossSuitRescue?:BossSuitRescue} & {amoExileUsed?:boolean} & {routeGrowth?:R2RouteStage} & {erxiangHandoffUsed?:boolean;erxiangHandoffUses?:number} & {touyeWager?:TouyeWager} & {laohuanTrickUsed?:boolean;laohuanFindUsed?:boolean;laohuanFindBatch?:string[];laohuanFindProof?:LaohuanFindProof|null;laohuanFindLastProof?:LaohuanFindProof|null} & ({assistUsed:boolean}|{assistUsed?:never}) & ({openingDiscard:R2OpeningDiscard|null}|{openingDiscard?:never}) & ({azaoCharge:AzaoCharge}|{azaoCharge?:never}) & ({xiemuBurnUsed:boolean}|{xiemuBurnUsed?:never});
 export interface R2RunState extends Omit<RunState,'schemaVersion'|'rulesVersion'|'stage'|'totalHeat'|'jokers'|'lastScore'|'shop'|'boss'|'outcome'|'difficulty'|'program'|'rng'> {
+  dynamicEndless?:DynamicEndlessRuntime;
   pokerEncounter?:PokerEncounter;
   chapterTargetPlan?:R2ChapterTargetPlan;
   routeGrowth?:R2RouteHistory;
@@ -169,6 +171,7 @@ export function r2CreateJoker(definitionId:string,instanceId:string,paidPrice:nu
 }
 
 export function assertR2Invariants(state:R2RunState):void {
+  assertDynamicEndless(state);
   assertPokerEncounter(state);
   if(isR2AmoExile(state)&&state.characterId!=='amo')throw Error('exile character identity');
   if(isR2XiemuBalance(state)&&state.characterId!=='xiemu')throw Error('xiemu character identity');
@@ -333,12 +336,13 @@ export function assertR2Invariants(state:R2RunState):void {
   for(const cursor of Object.values(state.rng))SeededRng.restore(cursor);
 }
 function refill(state:R2RunState):string[] {const refilled:string[]=[];while(state.handOrder.length<(state.stage?.handLimit??r2RunModeConfig(state).baseHandSize)&&state.drawPile.length){const id=state.drawPile.pop()!;state.handOrder.push(id);refilled.push(id);}return refilled;}
-export function getR2Stage(index:number,tourMode:R2TourMode='normal',difficulty:number=0,identity:{contentVersion?:unknown;contentHash?:unknown;chapterTargetPlan?:R2ChapterTargetPlan}={}):{index:number;name:string;intro:string;targetHeat:string}|undefined {
+export function getR2Stage(index:number,tourMode:R2TourMode='normal',difficulty:number=0,identity:{contentVersion?:unknown;contentHash?:unknown;chapterTargetPlan?:R2ChapterTargetPlan;dynamicEndless?:DynamicEndlessRuntime}={}):{index:number;name:string;intro:string;targetHeat:string}|undefined {
   const spec=r2StageSpec(index,tourMode,difficulty,isR2BoundedClear(identity),isR2CoreBuild(identity));
+  if(spec&&identity.dynamicEndless?.status==='active'&&index>=identity.dynamicEndless.fromStage){const target=dynamicTarget(identity,index);return target===undefined?undefined:{...spec,targetHeat:target};}
   if(spec&&isR2CoreBuild(identity)&&identity.chapterTargetPlan?.chapter===Math.floor(index/3)+1)return {...spec,targetHeat:identity.chapterTargetPlan.targets[index%3]};
   return spec;
 }
-export function r2ChapterTargetPreview(state:R2RunState):R2ChapterTargetPlan|undefined {return isR2CoreBuild(state)?structuredClone(state.chapterTargetPlan):undefined;}
+export function r2ChapterTargetPreview(state:R2RunState):R2ChapterTargetPlan|undefined {return isR2CoreBuild(state)&&state.dynamicEndless?.status!=='active'?structuredClone(state.chapterTargetPlan):undefined;}
 function makeChapter(state:R2RunState):void {
   const rule=SeededRng.restore(state.rng.rule),reward=SeededRng.restore(state.rng.reward);
   state.chapter=Math.floor(state.stageIndex/3)+1;state.chapterHandUsage={};state.normalClearClaimed=false;state.boss=drawR2Boss(rule,state.seenBossIds,state.chapter,state.tourMode);state.seenBossIds.push(state.boss.definitionId);
@@ -661,8 +665,14 @@ export function transactR2(input:R2RunState|null,command:Command):Transaction {
         if(state.phase!=='shop')return fail('wrong-phase');pokerEncounterClose(state,command,events);if(state.shop)state.shop.freeRerolls=0;state.phase='stage-ready';break;
       case 'OpenShop':
         if(state.phase!=='stage-cleared')return fail('wrong-phase');
-        if(!getR2Stage(state.stageIndex,state.tourMode,state.difficulty,state))return fail('numeric-length-limit');
+        if(!r2StageSpec(state.stageIndex,state.tourMode,state.difficulty,isR2BoundedClear(state),isR2CoreBuild(state)))return fail('numeric-length-limit');
         state.phase='shop';if(state.stageIndex%3===0)makeChapter(state);makeR2Shop(state,true);pokerEncounterOpenShop(state);break;
+      case 'ActivateDynamicEndless': {
+        if(state.tourMode!=='endless'||state.mode!=='standard'||state.phase!=='shop'||state.dynamicEndless||action.stageIndex!==state.stageIndex)return fail('dynamic-endless-unavailable');
+        const fromStage=(Math.floor(state.stageIndex/3)+1)*3;
+        if(!r2StageSpec(fromStage,'endless',state.difficulty,isR2BoundedClear(state),isR2CoreBuild(state)))return fail('numeric-length-limit');
+        state.dynamicEndless={version:'dynamic-endless-v1',origin:'choice',activation:structuredClone(command),fromStage,status:'pending',anchor:null,bootstrap:null,previousNormal:null,hands:[],frontier:null,records:[]};break;
+      }
       case 'ContinueEndless': {
         const completion=state.normalCompletion;
         if(state.mode!=='standard'||state.tourMode!=='normal'||state.phase!=='run-won'||state.stageIndex!==24||state.chapter!==8||state.stage?.index!==23||state.stage.clearId!==`${state.runId}/clear/23`||state.outcome?.reason!=='all-stages-cleared'||!completion||completion.clearId!==state.stage.clearId||completion.totalHeat!==state.totalHeat)return fail('not-normal-win');

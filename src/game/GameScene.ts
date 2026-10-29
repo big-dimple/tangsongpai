@@ -42,6 +42,7 @@ import {inventoryFeedback} from './InventoryFeedback';
 import {showSavedToolResult} from './SavedToolResult';
 import {ENHANCEMENT_BRIEF} from './CardSpecialLabels';
 import {fitStatusSummary} from './StatusSummary';
+import {lastPlayWarning,reducedPlayEntry,LastPlayWarningTracker,lastPlayCuePlacement,bossRuleCuePlacement} from './LastPlayWarning';
 import {transactionGrowthChange,handGrowthChanges} from './SavedGrowthChange';
 import {heroActionShortcut,heroShortcutReminder} from './HeroActionShortcut';
 import {AssistRecommendationCache} from './AssistRecommendation';
@@ -135,7 +136,7 @@ import {heatText,fractionText,readableFractionText,readableScoreFormula,accumula
 import {scoreCelebration} from './scoreCelebration';
 import {scoreBeat,scoreFireLevel,fourCardFormation,type ScoreBeat} from './scorePresentation';
 import {stageNotice,discardReferenceCopy} from './stageNotice';
-import {stageIdentity} from './StageIdentity';
+import {stageIdentity,stageSuitLabel} from './StageIdentity';
 import type {R2RunState as RunState,DomainEvent} from '../domain/run';
 import {r2UsesAssist,R2_LIMITS,getR2Stage as getStage,r2ScoreContext,r2DiscardCost} from '../domain/r2Run';
 import {r2ScoringDisabledJokerIds,type Accumulator,type ScoreTrace,type ScoreEvent} from '../domain/scoreR2';
@@ -293,6 +294,9 @@ export class GameScene extends Phaser.Scene {
   private handStart=0;
   private handNavigationButtons:Phaser.GameObjects.Rectangle[]=[];
   private statusMessage='';
+  private readonly lastPlayWarningTracker=new LastPlayWarningTracker();
+  private lastPlayCue?:Phaser.GameObjects.Container;
+  private bossRuleCue?:Phaser.GameObjects.Container;
   private heatText!: Phaser.GameObjects.Text;
   private resourceCounts!:Record<'play'|'discard',Phaser.GameObjects.Text>;
   private goldText!:Phaser.GameObjects.Text;
@@ -403,6 +407,8 @@ export class GameScene extends Phaser.Scene {
       const hintVisible=!!this.handHint;this.stopHandHint();if(hintVisible&&this.reducedMotion)this.showHandHint(false);
       this.tweens.timeScale=gameSession().speed;this.time.timeScale=gameSession().speed;
       if(this.reducedMotion){
+        if(this.lastPlayCue?.active){this.lastPlayCue.destroy();this.lastPlayCue=undefined;}
+        if(this.bossRuleCue?.active){this.bossRuleCue.destroy();this.bossRuleCue=undefined;}
         if(this.toolHand){this.effects.clear();this.toolHand=undefined;this.render();}
         this.heroClimax?.reduce();this.playAuraPulse?.remove();this.playAuraPulse=undefined;this.cameras.main.resetFX();
         this.cardViews.forEach(view=>{view.sheenTween?.remove();view.sheen?.setAlpha(0);this.revealCard(view);});
@@ -416,7 +422,10 @@ export class GameScene extends Phaser.Scene {
       if(this.ownedDrag?.saving)this.ownedDrag.pending();else this.ownedInput?.cancel();
     };
     window.addEventListener('tangsongpai-presentation',settings);
+    const motionPreference=window.matchMedia('(prefers-reduced-motion: reduce)');
+    motionPreference.addEventListener('change',settings);
     this.events.once('shutdown',()=>{
+      motionPreference.removeEventListener('change',settings);
       this.heroPortraitMotion?.destroy();this.heroPortraitMotion=undefined;this.heroPortrait=undefined;this.giftDelivery?.destroy();this.giftDelivery=undefined;this.giftEvent=undefined;
       this.sushiSkillPayoff?.dispose();this.sushiSkillPayoff=undefined;
       this.liueSkillPayoff?.dispose();this.liueSkillPayoff=undefined;
@@ -457,6 +466,8 @@ export class GameScene extends Phaser.Scene {
     this.run=controller.state;
     if(enteredStage&&carriedToolAtHand(this.run,carried))this.carriedTool=carried;
     if(!['await-input','pending-refill'].includes(this.run.phase)||!this.run.stage){this.scene.start('character-select');return;}
+    // Restoring an already-critical stage keeps the warning, without replaying its entrance highlight.
+    this.lastPlayWarningTracker.seed(this.run);
     this.stage=getStage(this.run.stage.index,this.run.tourMode,this.run.difficulty,this.run)!;this.characterId=this.run.characterId;settings();this.audio.setScene(this.stage.index%3===2?'boss':'table');
     this.cameras.main.setBackgroundColor(C.paper);
     this.handInput=new HandSelectionInput(this,{
@@ -549,6 +560,10 @@ export class GameScene extends Phaser.Scene {
       dialog.dataset.stageKind=identity.isBoss?'boss':'normal';
     }
     if(introduceBoss&&this.dialog.current){const modal=this.dialog.current,stop=trackBossRulesVisible(this.run,modal,()=>this.lifecycle===lifecycle&&this.scene.isActive()&&controller.state===this.run&&this.dialog.active(modal));this.events.once('shutdown',stop);}
+    if(enteredStage&&this.run.stage.boss){
+      const stageIndex=this.run.stage.index,announce=()=>{if(this.lifecycle===lifecycle&&this.scene.isActive()&&this.run.stage?.index===stageIndex&&this.run.phase==='await-input'&&!this.playing&&!this.presentation&&!document.querySelector('dialog[open]'))this.presentBossRuleCue();};
+      const modal=this.dialog.current;if(modal)modal.addEventListener('close',()=>queueMicrotask(announce),{once:true});else announce();
+    }
     if(enteredStage){const stopBurst=mountHeroEntranceBurst(this.dialog.current??document.body,this.run.characterId,{context:this.run.stage.boss?'boss':'stage',stageIndex:this.run.stage.index,reducedMotion:this.reducedMotion});this.events.once('shutdown',stopBurst);}
   }
 
@@ -1376,8 +1391,18 @@ export class GameScene extends Phaser.Scene {
     const benefitReminder=latestBenefit?latestBenefit.title+' · '+latestBenefit.effect+' · 上手详情':'';
     const discovery=this.ready&&!this.presentation&&!this.selectedIds.size&&!this.statusMessage&&!reminders?savedGrowthDiscovery(this.run):undefined;
     const guideCue=this.ready&&!this.presentation&&!this.selectedIds.size&&this.handsLeft>1?firstChapterGuide(this.run)?.cue:undefined;
-    const criticalStatus=this.statusMessage||(this.pendingRefill?this.refillHidden?'候选已保存 · 点英雄继续':`留 ${this.pendingRefill.required} 张 · 已选 ${this.selectedIds.size}/${this.pendingRefill.required} · 确认后补入`:'')||(!this.playing&&!this.presentation&&this.handsLeft===1?reason:'');
+    const {warning,highlight}=this.lastPlayWarningTracker.observe(this.run,this.playing||!!this.presentation);
+    if(!warning&&this.lastPlayCue?.active){this.lastPlayCue.destroy();this.lastPlayCue=undefined;}
+    if(this.bossRuleCue?.active&&(this.playing||!!this.presentation||this.run.phase!=='await-input')){this.bossRuleCue.destroy();this.bossRuleCue=undefined;}
+    const detail=this.statusMessage||(this.pendingRefill?this.refillHidden?'候选已保存 · 点英雄继续':`留 ${this.pendingRefill.required} 张 · 已选 ${this.selectedIds.size}/${this.pendingRefill.required} · 确认后补入`:'');
+    const restriction=this.run.stage?.boss&&!this.playing&&!this.presentation&&this.run.phase==='await-input'?'本局限制：'+(reducedPlayEntry(this.run)??notice?.title??'压轴规则'):'';
+    const criticalStatus=warning?(warning.message+(detail?' · '+detail:'')):restriction?restriction+(detail?' · '+detail:''):detail;
     this.statusText.setName(discovery&&!criticalStatus?'growth/discovery':'').setText(criticalStatus||discovery?.full||sweepReminder||selectedReminder||guideCue||reminders||entryReminder||benefitReminder||memoryReminder||reason);
+    this.statusText.setColor(warning?'#9b3027':restriction?'#30251f':'#f3d5ab').setFontStyle(warning?'bold':'normal').setFontSize(warning?16:14);
+    if(warning){
+      this.statusText.setName('warning/last-play');this.resourceCounts.play.setColor('#9b3027').setFontStyle('bold');
+      if(highlight&&!this.reducedMotion)this.presentLastPlayCue();
+    }else {this.resourceCounts.play.setFontStyle('normal');if(restriction)this.statusText.setName('boss/restriction');}
     if(!criticalStatus){
     if(!discovery&&benefitReminder&&!sweepReminder&&!this.statusMessage&&!selectedReminder&&!reminders&&!entryReminder&&this.statusText.width>handWindow.status.width)this.statusText.setText('已保存结果 · 菜单查看上手');
     if(selectedReminder&&this.statusText.width>handWindow.status.width)this.statusText.setText('点所选条件 · 查看来源');
@@ -1389,9 +1414,9 @@ export class GameScene extends Phaser.Scene {
     if(usesTouyeWager(this.run)){const copy=touyeChoice(this.run,[...this.selectedIds]);this.roleText.setText(copy.compact);if(!criticalStatus&&!this.playing&&!this.presentation&&copy.status)this.statusText.setText(copy.status);if(this.pendingTouye)this.view.setEnabled(this.discardButton,false);}
     const safeBottom=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-bottom'))||0;
     if(portrait){this.statusText.setVisible(!!criticalStatus);if(criticalStatus)this.resultText.setVisible(false);}
-    fitStatusSummary(this.statusText,{...handWindow.status,height:Math.max(0,Math.min(handWindow.status.height+(handWindow.mode==='landscape'?12:0),handWindow.height-safeBottom-handWindow.status.y))},!criticalStatus&&selectedReminder?'点所选条件':undefined);
+    fitStatusSummary(this.statusText,{...handWindow.status,height:Math.max(0,Math.min(Math.max(warning?20:0,handWindow.status.height+(handWindow.mode==='landscape'?12:0)),handWindow.height-safeBottom-handWindow.status.y))},!criticalStatus&&selectedReminder?'点所选条件':undefined);
     if(usesLaohuanRefill(this.run))this.roleText.setText(this.roleCaption());
-    if(this.bossSuitRescueButton&&portrait&&criticalStatus&&!this.playing&&!this.presentation){const board=this.view.layout.scoreBoard;this.resultText.setVisible(false);fitScoreLine(this.statusText,{x:board.x+10,y:board.y+7,width:board.width-174,height:30},14);}
+    if(this.bossSuitRescueButton&&portrait&&criticalStatus&&!this.playing&&!this.presentation){const board=this.view.layout.scoreBoard;this.resultText.setVisible(false);if(warning)this.bossSuitRescuePreview?.setVisible(false);fitScoreLine(this.statusText,warning?{x:board.x+10,y:board.y+54,width:board.width-20,height:24}:{x:board.x+10,y:board.y+7,width:board.width-174,height:30},warning?16:14);}
     this.updateHeroControl();this.fitHudReadouts();
     this.resourceCounts.play.setVisible(!this.pendingRefill);this.resourceCounts.discard.setVisible(!this.pendingRefill);
     if(this.pendingRefill){this.view.setEnabled(this.aiButton,false);this.view.setEnabled(this.playButton,this.ready&&!this.refillHidden&&this.selectedIds.size===this.pendingRefill.required);(this.playButton.getData('label') as Phaser.GameObjects.Text).setText('确认留'+this.pendingRefill.required);this.view.setEnabled(this.discardButton,this.ready);(this.discardButton.getData('label') as Phaser.GameObjects.Text).setText(this.refillHidden?'继续选牌':'收起候选');}
@@ -2460,12 +2485,65 @@ export class GameScene extends Phaser.Scene {
     this.cardViews.forEach((view,i)=>{if(this.settledCards.has(view.card.id))return;const area=l.cards[i];view.container.setVisible(area.visible).setPosition(area.visual.x+area.visual.width/2,area.visual.y+area.visual.height/2).setAngle(0);view.hit?.setVisible(false);});
     this.updateHandCount();
   }
+  /** The stage's public rule is displayed without creating an input surface. */
+  private presentBossRuleCue():void {
+    const stage=this.run.stage,boss=stage?.boss;if(!stage||!boss||this.reducedMotion||document.hidden)return;
+    const definition=R2_BOSSES.find(row=>row.id===boss.definitionId);if(!definition)return;
+    const l=this.view.layout,mobile=l.mode==='portrait',width=Math.min(mobile?l.width*.85:360,mobile?l.width*.85:l.playedArea.width);
+    const suit=boss.disabledSuit?' · '+stageSuitLabel(boss.disabledSuit):'';
+    const budget=boss.definitionId==='B09'?' 本场初始'+stage.initialHands+'次出牌。':'';
+    const copy='本局限制：'+definition.name+suit+'\n'+definition.rule+budget;
+    const label=this.add.text(0,0,copy,{fontFamily:UI_FONT,fontSize:mobile?'16px':'18px',color:'#F5E8CC',wordWrap:{width:Math.max(1,width-52),useAdvancedWrap:true},lineSpacing:2});
+    const h=Math.max(72,label.height+24),box=bossRuleCuePlacement(l.width,l.height,l.scoreBoard,l.playedArea,[l.hud,l.jokers,l.scoreBoard,l.hand,l.handLabel,l.piles,l.tools,l.actions,...l.slots],mobile,h);
+    if(!box){label.destroy();return;}
+    this.bossRuleCue?.destroy();
+    const group=this.view.add(this.add.container(box.x,box.y)).setName('boss/restriction-cue').setData('cueBounds',box);
+    const sheet=this.add.graphics().fillStyle(0x160f0c,.24).fillRoundedRect(2,3,box.width-2,box.height-3,6)
+      .fillStyle(0x30251f,.99).fillRoundedRect(0,0,box.width,box.height-3,6)
+      .fillStyle(0x76583c,.14).fillRoundedRect(3,3,box.width-6,17,3)
+      .lineStyle(1,0xc9a65f,.95).strokeRoundedRect(.5,.5,box.width-1,box.height-4,6)
+      .lineStyle(1,0xf5e8cc,.18).strokeRoundedRect(4,4,box.width-8,box.height-11,3);
+    const lines=this.add.graphics().lineStyle(1,0xc9a65f,.8).lineBetween(12,6,box.width-12,6).lineBetween(12,box.height-9,box.width-12,box.height-9).setAlpha(0).setScale(.96,1);
+    const seal=this.add.container(box.width-24,21).setAlpha(0),stamp=this.add.graphics().fillStyle(0xa13e31,1).fillRoundedRect(-9,-9,18,18,2).lineStyle(1,0xf5e8cc,.85).strokeRoundedRect(-7,-7,14,14,1),mark=this.add.text(0,0,'限',{fontFamily:UI_FONT,fontSize:'12px',fontStyle:'bold',color:'#F5E8CC'}).setOrigin(.5);
+    seal.add([stamp,mark]);label.setPosition(16,11);group.add([sheet,lines,label,seal]);this.bossRuleCue=group;
+    const runId=this.run.runId,stageIndex=stage.index,valid=()=>group.active&&this.bossRuleCue===group&&!document.hidden&&!this.reducedMotion&&!document.querySelector('dialog[open]')&&!this.playing&&!this.presentation&&this.run.runId===runId&&this.run.stage?.index===stageIndex&&this.run.phase==='await-input';
+    const live=()=>{if(valid())return true;if(group.active)group.destroy();if(this.bossRuleCue===group)this.bossRuleCue=undefined;return false;};
+    if(live())this.tweens.add({targets:lines,alpha:1,scaleX:1,duration:450,ease:'Sine.easeOut'});
+    this.time.delayedCall(150,()=>{if(!live())return;seal.setAlpha(1).setScale(1.16);this.tweens.add({targets:seal,scaleX:1,scaleY:1,duration:180,ease:'Cubic.easeOut'});});
+    this.time.delayedCall(1850,()=>{if(!live())return;this.tweens.add({targets:group,alpha:0,duration:300,ease:'Sine.easeIn',onComplete:()=>{if(group.active)group.destroy();if(this.bossRuleCue===group)this.bossRuleCue=undefined;}});});
+  }
+  /** Decorative only: the persistent status and every input remain in place. */
+  private presentLastPlayCue():void {
+    const l=this.view.layout,box=lastPlayCuePlacement(l.width,l.height,l.scoreBoard,l.playedArea,
+      [l.hud,l.jokers,l.scoreBoard,l.playedArea,l.hand,l.handLabel,l.piles,l.tools,l.tableActions.play,l.tableActions.discard,...l.slots],l.mode==='portrait');
+    if(!box)return; // No safe room: keep the existing high-contrast static warning.
+    this.lastPlayCue?.destroy();
+    const group=this.view.add(this.add.container(box.x,box.y)).setName('warning/last-play-cue').setData('cueBounds',box),paper=this.add.graphics(),seal=this.add.container(24,22);
+    const frame=this.add.graphics().fillStyle(0x160f0c,.25).fillRoundedRect(1,3,box.width-2,box.height-3,5)
+      .fillStyle(0x30251f,.99).fillRoundedRect(0,0,box.width,box.height-2,5)
+      .fillStyle(0x76583c,.14).fillRoundedRect(3,3,box.width-6,16,3)
+      .lineStyle(1,0xc9a65f,.95).strokeRoundedRect(.5,.5,box.width-1,box.height-3,5)
+      .lineStyle(1,0xf5e8cc,.18).strokeRoundedRect(3.5,3.5,box.width-7,box.height-9,3);
+    group.add(frame);
+    paper.fillStyle(0xc9a65f,.8).fillRect(11,5,box.width-22,1).fillRect(11,box.height-6,box.width-22,1);paper.setAlpha(0).setScale(.94,1);group.add(paper);
+    const stamp=this.add.graphics().fillStyle(0xb8473a,1).fillRoundedRect(-10,-10,20,20,2).lineStyle(1,0xf5e8cc,.9).strokeRoundedRect(-8,-8,16,16,1);
+    const mark=this.add.text(0,0,'末',{fontFamily:UI_FONT,fontSize:'14px',fontStyle:'bold',color:'#F5E8CC'}).setOrigin(.5);seal.add([stamp,mark]);seal.setAlpha(0);group.add(seal);
+    group.add(this.add.text(44,box.height/2,'仅剩最后1次出牌',{fontFamily:UI_FONT,fontSize:l.mode==='portrait'?'16px':'19px',fontStyle:'bold',color:'#F5E8CC'}).setOrigin(0,.5));
+    this.lastPlayCue=group;const runId=this.run.runId,stageIndex=this.run.stage!.index;
+    const valid=()=>group.active&&this.lastPlayCue===group&&!this.playing&&!this.presentation&&!document.hidden&&this.run.runId===runId&&this.run.stage?.index===stageIndex&&this.run.phase==='await-input'&&this.handsLeft===1;
+    const live=()=>{if(valid())return true;if(group.active)group.destroy();if(this.lastPlayCue===group)this.lastPlayCue=undefined;return false;};
+    this.time.delayedCall(150,()=>{if(live())this.tweens.add({targets:paper,alpha:1,scaleX:1,duration:180,ease:'Sine.easeOut'});});
+    this.time.delayedCall(300,()=>{if(!live())return;seal.setAlpha(1).setScale(1.18);this.tweens.add({targets:seal,scaleX:1,scaleY:1,duration:150,ease:'Cubic.easeOut'});this.audio.lastPlayWarning();});
+    this.time.delayedCall(1200,()=>{if(!live())return;this.tweens.add({targets:group,alpha:0,duration:300,ease:'Sine.easeIn',onComplete:()=>{if(group.active)group.destroy();if(this.lastPlayCue===group)this.lastPlayCue=undefined;}});});
+  }
   private async pulseResource(kind:'play'|'discard',before:number,context:EffectContext,after?:number):Promise<void> {
     if(context.signal.aborted)return;
     const count=this.resourceCounts[kind],remaining=after??(kind==='play'?this.handsLeft:this.run.stage!.discardsLeft),amount=before-remaining,cost=kind==='play'?1:r2DiscardCost(this.run);count.setText(remaining+' 次');
+    // The persistent last-play warning supplies the one highlight after scoring completes.
+    if(kind==='play'&&remaining===1&&this.run.phase==='await-input')return;
     this.audio.resourceSpend(kind,remaining,amount,cost);
-    const critical=remaining<2*cost,color=critical?0xf7a281:0xbfe4b7;
-    const note=(kind==='play'?'出牌':'弃牌')+(amount>0?' −'+amount+' 次':amount===0?'次数已返还':' +'+(-amount)+' 次')+(remaining<cost?' · 次数已用完':critical?' · 只剩最后一次':'');
+    const ended=kind==='play'&&this.run.phase!=='await-input',critical=!ended&&remaining<2*cost,color=critical?0xf7a281:0xbfe4b7;
+    const note=(kind==='play'?'出牌':'弃牌')+(amount>0?' −'+amount+' 次':amount===0?'次数已返还':' +'+(-amount)+' 次')+(ended?'':remaining<cost?' · 次数已用完':critical?' · 只剩最后一次':'');
     this.statusMessage=note;this.updateControls();
     const halo=this.view.add(this.add.graphics().setPosition(count.x,count.y));
     halo.fillStyle(color,.18).fillRoundedRect(-26,-16,52,32,8).lineStyle(2,color,.85).strokeRoundedRect(-26,-16,52,32,8);
@@ -2702,7 +2780,7 @@ export class GameScene extends Phaser.Scene {
     this.resourceCounts.play.setText(plays+' 次');this.resourceCounts.discard.setText(discards+' 次');
     if(l.pc){(this.view.root.getByName('hud/play-left') as Phaser.GameObjects.Text)?.setText('出牌 '+plays);(this.view.root.getByName('hud/discard-left') as Phaser.GameObjects.Text)?.setText('弃牌 '+discards);}
     if(this.menuActions)this.menuActions.viewLastHand=!this.presentation&&this.run.lastTrace?()=>this.inspectLastTrace():undefined;
-    const playColor=handActionCountColor('play',!!this.playButton.input?.enabled),discardColor=handActionCountColor('discard',!!this.discardButton.input?.enabled,discards<2*discardCost);
+    const playColor=lastPlayWarning(this.run,this.playing||!!this.presentation)?'#9b3027':handActionCountColor('play',!!this.playButton.input?.enabled),discardColor=handActionCountColor('discard',!!this.discardButton.input?.enabled,discards<2*discardCost);
     if(this.resourceCounts.play.style.color!==playColor)this.resourceCounts.play.setColor(playColor);
     if(this.resourceCounts.discard.style.color!==discardColor)this.resourceCounts.discard.setColor(discardColor);
     const gold=this.presentation?.resourceGold??this.run.gold;

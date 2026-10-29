@@ -30,7 +30,7 @@ import {r2JokerDefinitionsFor} from '../domain/r2ContentProfiles';
 import {r2AssistFacts,AMO_ASSIST_TYPES} from '../domain/r2Assist';
 import {r2SelectionFacts} from '../domain/r2SelectionFacts';
 import {R2_PUBLISHED_JOKERS as R2_JOKERS} from '../domain/r2PublishedContent';
-import {assertR2Invariants,r2RulesetFor,r2UsesAssist,r2ScoreTimingFor,R2_LIMITS,R2_RESOURCE_CONTRACT} from '../domain/r2Run';
+import {assertR2Invariants,getR2Stage,r2RulesetFor,r2UsesAssist,r2ScoreTimingFor,R2_LIMITS,R2_RESOURCE_CONTRACT} from '../domain/r2Run';
 import {createRun,type R2RunState,type Command,type Action} from '../domain/run';
 import {routeStarterStartCommand,routeStarterScoreEvent} from '../domain/r2RouteStarter';
 import {CHARACTER_IDS} from '../domain/characters';
@@ -40,7 +40,7 @@ import {Rational,MAX_INTEGER_DIGITS} from '../domain/rational';
 import {SCORE_LIMITS,SCORE_OPERATIONS,r2ScoringDisabledJokerIds,type ScoreEvent,type ScoreTrace} from '../domain/scoreR2';
 import {SeededRng} from '../core/SeededRng';
 import {stableHash} from '../domain/hash';
-import {r2OrdinarySuppression,r2DisabledCards,R2_AVAILABLE_CHAPTERS,R2_ENDLESS_MAX_CHAPTER,R2_SKIP_CONSUMABLES,r2StageSpec,r2BossHistoryValid,r2BossPlanValid,type R2TourMode,type R2BossPlan} from '../domain/r2Chapter';
+import {r2OrdinarySuppression,r2DisabledCards,R2_AVAILABLE_CHAPTERS,R2_ENDLESS_MAX_CHAPTER,R2_SKIP_CONSUMABLES,r2BossHistoryValid,r2BossPlanValid,type R2TourMode,type R2BossPlan} from '../domain/r2Chapter';
 import {EDITIONS,ENHANCEMENTS,RANKS,SUITS,type PlayingCard} from '../cards/types';
 import {R2_TOOL_CATALOG,type R2LongTermOperation} from '../content/r2Tools';
 import {R2_IMPLEMENTED_TOOL_FEATURES,r2CardSpecialsSupported,r2EditionSupported,r2ItemSupported,r2ToolSupported} from '../domain/r2ToolRuntime';
@@ -732,10 +732,11 @@ function trace(value:unknown,context:{bossSuitRescue:boolean;erxiangTwo:boolean;
 }
 function action(value:unknown,state:R2RunState):void {
   const prototype=r2UsesAssist(state),combo=hasR2ComboGrowthContract(state),profile=isR2GroupUpgrade(state)?'group-upgrade-v1':combo?'combo-growth-v1':'amo-assist-v1';
-  const a=record(value,['type'],['opportunityId','targetId','bossSuitRescueEntryToken','entryToken','purchasePlayIndex','seed','characterId','rulesVersion','openingRoute','modeConfig','r2Profile','r2Identity','assistIds','programId','selectedIds','instanceId','targetIds','enabled','offerId','definitionId','shopSeq','expectedLevel','ids','handType','secondaryHandType','suit','sacrificeId','targetKind','erxiangTargetId','laohuanFindRank','azaoRelease','xiemuBurn','amoExile','laohuanTrick','touyeBet']);
-  const keys:Record<Action['type'],string[]>={StartRun:['seed','characterId','rulesVersion'],BuyPokerPolychrome:['opportunityId','shopSeq','targetId'],SkipPokerEncounter:['opportunityId','shopSeq'],BuyBossSuitRescue:['entryToken','purchasePlayIndex'],LeaveShop:[],EnterStage:[],OpenShop:[],RerollShop:[],AbandonRun:[],SkipStage:[],ContinueEndless:[],ChooseProgram:['programId'],AbandonProgram:[],PracticeHand:['handType','expectedLevel','shopSeq'],PlayHand:['selectedIds'],PlayAssistedHand:['selectedIds','assistIds'],DiscardHand:['selectedIds'],ChooseRefill:['selectedIds'],SellJoker:['instanceId'],UseConsumable:['instanceId','targetIds'],DestroyConsumable:['instanceId'],DestroyLongTermItem:['definitionId'],SetWager:['enabled'],BuyOffer:['offerId'],BuyBasicTool:['definitionId','shopSeq'],ReorderHand:['ids'],ReorderJokers:['ids']};
+  const a=record(value,['type'],['opportunityId','targetId','bossSuitRescueEntryToken','entryToken','purchasePlayIndex','stageIndex','seed','characterId','rulesVersion','openingRoute','modeConfig','r2Profile','r2Identity','assistIds','programId','selectedIds','instanceId','targetIds','enabled','offerId','definitionId','shopSeq','expectedLevel','ids','handType','secondaryHandType','suit','sacrificeId','targetKind','erxiangTargetId','laohuanFindRank','azaoRelease','xiemuBurn','amoExile','laohuanTrick','touyeBet']);
+  const keys:Record<Action['type'],string[]>={StartRun:['seed','characterId','rulesVersion'],BuyPokerPolychrome:['opportunityId','shopSeq','targetId'],SkipPokerEncounter:['opportunityId','shopSeq'],BuyBossSuitRescue:['entryToken','purchasePlayIndex'],LeaveShop:[],EnterStage:[],OpenShop:[],RerollShop:[],AbandonRun:[],SkipStage:[],ContinueEndless:[],ActivateDynamicEndless:['stageIndex'],ChooseProgram:['programId'],AbandonProgram:[],PracticeHand:['handType','expectedLevel','shopSeq'],PlayHand:['selectedIds'],PlayAssistedHand:['selectedIds','assistIds'],DiscardHand:['selectedIds'],ChooseRefill:['selectedIds'],SellJoker:['instanceId'],UseConsumable:['instanceId','targetIds'],DestroyConsumable:['instanceId'],DestroyLongTermItem:['definitionId'],SetWager:['enabled'],BuyOffer:['offerId'],BuyBasicTool:['definitionId','shopSeq'],ReorderHand:['ids'],ReorderJokers:['ids']};
   if(typeof a.type!=='string'||!Object.hasOwn(keys,a.type))fail('unknown-save-command');
   record(a,['type',...keys[a.type as Action['type']]],a.type==='EnterStage'&&usesBossSuitRescue(state)?['bossSuitRescueEntryToken']:a.type==='DiscardHand'?[...(usesLaohuanRefill(state)?['laohuanTrick']:[]),...(usesTouyeWager(state)?['touyeBet']:[])]:a.type==='UseConsumable'?['handType','secondaryHandType','suit','sacrificeId','targetKind']:a.type==='PlayHand'?[...(usesAmoExile(state)?['amoExile']:[]),...(usesErxiangHandoff(state)?['erxiangTargetId']:[]),...(usesLaohuanFind(state)?['laohuanFindRank']:[]),...(usesAzaoCharge(state)?['azaoRelease']:[]),...(usesXiemuBurn(state)?['xiemuBurn']:[])]:a.type==='StartRun'?['modeConfig','r2Identity',...(isR2RouteStarter(state)?['openingRoute']:[]),...(prototype||combo?['r2Profile']:[])]:[]);
+  if(a.type==='ActivateDynamicEndless')integer(a.stageIndex,24,R2_ENDLESS_MAX_CHAPTER*3-1);
   if(a.type==='BuyBasicTool'){if(!isR2BasicChoice(state))fail('invalid-save-basic-choice-command');oneOf(a.definitionId,r2BasicChoiceIds(state));integer(a.shopSeq,1);}
   if(a.type==='BuyPokerPolychrome'||a.type==='SkipPokerEncounter'){if(!usesPokerEncounter(state))fail('invalid-save-poker-command');text(a.opportunityId);integer(a.shopSeq,1);if(a.type==='BuyPokerPolychrome')text(a.targetId);}
   if(a.type==='PracticeHand'){if(!isR2CoreBuild(state))fail('invalid-save-practice-command');oneOf(a.handType,R2_HAND_TYPES);integer(a.expectedLevel,1,29);integer(a.shopSeq,1);}
@@ -788,10 +789,20 @@ function safeTree(value:unknown):void {
     } else if(!['string','number','boolean'].includes(typeof v)&&v!==null)fail('non-json-save');
   };visit(value,0);
 }
+function dynamicPolicy(value:unknown,state:R2RunState):void {
+ const p=record(value,['version','origin','activation','fromStage','status','anchor','bootstrap','previousNormal','hands','frontier','records']);
+ oneOf(p.version,['dynamic-endless-v1']);oneOf(p.origin,['start','choice']);oneOf(p.status,['armed','pending','active']);integer(p.fromStage,24,R2_ENDLESS_MAX_CHAPTER*3);if(p.anchor!==null)score(p.anchor);
+ const command=(value:unknown)=>{const c=record(value,['runId','commandId','expectedSeq','action']);text(c.runId);text(c.commandId);integer(c.expectedSeq,0,state.commandSeq);action(c.action,state);};
+ const hand=(value:unknown)=>{const h=record(value,['stageIndex','before','after','score','rootId','command']);integer(h.stageIndex,0,R2_ENDLESS_MAX_CHAPTER*3-1);score(h.before);score(h.after);score(h.score);text(h.rootId);command(h.command);};
+ const sample=(value:unknown)=>{const s=record(value,['clear','hands']),c=record(s.clear,['stageIndex','clearId','score','target','finalHandScore','rootId','command']);integer(c.stageIndex,0,R2_ENDLESS_MAX_CHAPTER*3-1);text(c.clearId);score(c.score);score(c.target);score(c.finalHandScore);text(c.rootId);command(c.command);array(s.hands,7).forEach(hand);};
+ command(p.activation);if(p.bootstrap!==null)sample(p.bootstrap);if(p.previousNormal!==null)sample(p.previousNormal);array(p.hands,7).forEach(hand);
+ const row=(entry:unknown)=>{const r=record(entry,['index','target','boss','deck','lock','anchorBefore','previousBefore','sample','skip','anchorAfter','previousAfter']);integer(r.index,24,R2_ENDLESS_MAX_CHAPTER*3-1);score(r.target);score(r.anchorBefore);bossPlan(r.boss);const d=record(r.deck,['live','disabled']);integer(d.live,0,R2_RESOURCE_CONTRACT.deckMaximum);integer(d.disabled,0,R2_RESOURCE_CONTRACT.deckMaximum);command(r.lock);if(r.previousBefore!==null)sample(r.previousBefore);if(r.sample!==null)sample(r.sample);if(r.skip!==null)command(r.skip);if(r.anchorAfter!==null)score(r.anchorAfter);if(r.previousAfter!==null)sample(r.previousAfter);};
+ if(p.frontier!==null)row(p.frontier);array(p.records,4).forEach(row);
+}
 function validateState(value:unknown):asserts value is R2RunState {
   // Diagnose old versions before changed fields; retaining/exporting raw saves remains explicit.
   if(value&&typeof value==='object'&&!Array.isArray(value)){const tags=value as Record<string,unknown>;if(tags.schemaVersion!==2||tags.rulesVersion!=='r2'||!r2RulesetFor(tags))fail('incompatible-version');}
-  const s=record(value,[...(usesPokerEncounter(value as R2RunState)?['pokerEncounter']:[]),...(isR2CoreBuild(value as R2RunState)?['chapterTargetPlan']:[]),...(isR2RouteGrowth(value as R2RunState)?['routeGrowth']:[]),...(usesLaohuanRefill(value as R2RunState)?['pendingRefill']:[]),'schemaVersion','rulesVersion','contentVersion','contentHash','runId','seed','commandSeq','mode','difficulty','challengeId','programsEnabled','characterId','chapter','stageIndex','phase','deckInstances','drawPile','handOrder','playedPile','discardPile','destroyedIds','stage','totalHeat','gold','jokers','consumables','longTermItems','program','boss','shop','rng','receipts','lastTrace','handLevels','outcome','seenBossIds','chapterSkipConsumable','purchaseCoupons','safetyNetUsed','spectralModifiers','supplyRewardClaimed','chapterHandUsage','normalClearClaimed','tourMode','normalCompletion','chapterDisabledJokerId','programRerollCoupon',...(isR2RouteStarter(value as R2RunState)?['openingRoute','routeStarter']:[])],isR2RouteStarter(value as R2RunState)?['openingShow']:[]);
+  const s=record(value,[...(usesPokerEncounter(value as R2RunState)?['pokerEncounter']:[]),...(isR2CoreBuild(value as R2RunState)?['chapterTargetPlan']:[]),...(isR2RouteGrowth(value as R2RunState)?['routeGrowth']:[]),...(usesLaohuanRefill(value as R2RunState)?['pendingRefill']:[]),'schemaVersion','rulesVersion','contentVersion','contentHash','runId','seed','commandSeq','mode','difficulty','challengeId','programsEnabled','characterId','chapter','stageIndex','phase','deckInstances','drawPile','handOrder','playedPile','discardPile','destroyedIds','stage','totalHeat','gold','jokers','consumables','longTermItems','program','boss','shop','rng','receipts','lastTrace','handLevels','outcome','seenBossIds','chapterSkipConsumable','purchaseCoupons','safetyNetUsed','spectralModifiers','supplyRewardClaimed','chapterHandUsage','normalClearClaimed','tourMode','normalCompletion','chapterDisabledJokerId','programRerollCoupon',...(isR2RouteStarter(value as R2RunState)?['openingRoute','routeStarter']:[])],[...(isR2RouteStarter(value as R2RunState)?['openingShow']:[]),'dynamicEndless']);
   if(s.schemaVersion!==2||s.rulesVersion!=='r2'||!r2RulesetFor(s))fail('incompatible-version');
   if(isR2AmoExile(s)&&s.characterId!=='amo')fail('invalid-save-exile-character');
   if(isR2XiemuBalance(s)&&s.characterId!=='xiemu')fail('invalid-save-xiemu-character');
@@ -800,6 +811,7 @@ function validateState(value:unknown):asserts value is R2RunState {
   if(s.contentVersion===R2_ASSIST_VERSION&&s.characterId!=='amo')fail('invalid-save-assist-profile');
   const selected=resolveR2ModeConfig({mode:s.mode,difficulty:s.difficulty,challengeId:s.challengeId,programsEnabled:s.programsEnabled});
   const config=selected.ok?selected.config:fail('invalid-save-mode');
+  if(s.dynamicEndless!==undefined)dynamicPolicy(s.dynamicEndless,value as R2RunState);
   if(isR2RouteGrowth(s)&&!validR2RouteHistory(s.routeGrowth,config.startingStageIndex,s.stageIndex as number))fail('invalid-save-route-growth-ledger');
   if(!r2ModeSeedAllowed(config,s.seed)||config.mode==='tutorial'&&s.characterId!=='erxiang')fail('invalid-save-mode-seed-character');
   oneOf(s.tourMode,['normal','endless']);const tourMode=s.tourMode as R2TourMode,chapterMaximum=tourMode==='endless'?R2_ENDLESS_MAX_CHAPTER:R2_AVAILABLE_CHAPTERS,stageMaximum=chapterMaximum*3;
@@ -885,7 +897,7 @@ function validateState(value:unknown):asserts value is R2RunState {
     if(Math.floor((t.index as number)/3)+1===s.chapter&&t.challengeDisabledJokerId!==s.chapterDisabledJokerId)fail('invalid-save-stage-challenge-ban');
     if((t.index as number)%3===2){bossPlan(t.boss);if(t.boss.definitionId!==(s.seenBossIds as string[])[Math.floor((t.index as number)/3)])fail('invalid-save-stage-boss');}
     else if(t.boss!==null)fail('invalid-save-stage-boss');
-    if(t.initialTargetHeat!==r2StageSpec(t.index as number,tourMode,config.difficulty,isR2BoundedClear(s),isR2CoreBuild(s))?.targetHeat)fail('invalid-save-initial-target');
+    if(t.initialTargetHeat!==getR2Stage(t.index as number,tourMode,config.difficulty,value as R2RunState)?.targetHeat)fail('invalid-save-initial-target');
     integer(t.initialHands,R2_RESOURCE_CONTRACT.handsMinimum,config.baseHands+R2_RESOURCE_CONTRACT.handsMaximum-R2_LIMITS.hands);
     integer(t.initialDiscards,config.baseDiscards,config.baseDiscards+R2_RESOURCE_CONTRACT.discardsMaximum-R2_LIMITS.discards);bool(t.doubleDiscardBeforeFirstPlay);
     if(t.index===s.stageIndex&&['await-input','pending-refill','run-lost'].includes(s.phase as string)){
@@ -914,7 +926,7 @@ function validateState(value:unknown):asserts value is R2RunState {
   }
   const rng=record(s.rng,['deck','shop','rule','reward','program','challenge']);Object.values(rng).forEach(cursor);
   const receipts=array(s.receipts,100000);let seq=0;const ids=new Set();
-  for(const r of receipts){const v=record(r,['commandId','fingerprint','seq'],usesLaohuanFind(s)?['laohuanFindSnapshot']:[]);if(v.laohuanFindSnapshot!==undefined)text(v.laohuanFindSnapshot);text(v.commandId);text(v.fingerprint);integer(v.seq,1);if(v.seq!==++seq||ids.has(v.commandId))fail('invalid-save-receipts');ids.add(v.commandId);}
+  for(const r of receipts){const v=record(r,['commandId','fingerprint','seq'],[...(usesLaohuanFind(s)?['laohuanFindSnapshot']:[]),...(s.dynamicEndless?['endlessOutcome']:[])]);if(v.laohuanFindSnapshot!==undefined)text(v.laohuanFindSnapshot);if(v.endlessOutcome!==undefined){text(v.endlessOutcome);if(!/^(?:json-fnv-v1:[0-9a-f]{16})?\|(?:json-fnv-v1:[0-9a-f]{16})?\|(?:json-fnv-v1:[0-9a-f]{16})?\|(?:json-fnv-v1:[0-9a-f]{16})?$/.test(v.endlessOutcome as string))fail('invalid-save-dynamic-receipt');}text(v.commandId);text(v.fingerprint);integer(v.seq,1);if(v.seq!==++seq||ids.has(v.commandId))fail('invalid-save-receipts');ids.add(v.commandId);}
   assertPokerEncounter(s as unknown as R2RunState);
   if(usesPokerEncounter(s)){for(const o of (s as unknown as R2RunState).pokerEncounter!.opportunities){action(o.source.action,s as unknown as R2RunState);if(o.decision)action(o.decision.action,s as unknown as R2RunState);}}
   if(!validR2BasicChoice(s as unknown as R2RunState))fail('invalid-save-basic-choice-quota');

@@ -835,6 +835,7 @@ export class AudioEngine {
   invalid():void {this.cue('invalid','ui');}
   playHand():void {this.duckMusic(.3);this.cue('play');}
   discard():void {this.cue('discard');}
+  lastPlayWarning():void {this.cue('lastPlay','ui');}
   resourceSpend(kind:'play'|'discard',remaining:number,amount=1,cost=amount):void {
     if(!['play','discard'].includes(kind)||!Number.isSafeInteger(remaining)||remaining<0||!Number.isSafeInteger(amount)||amount<1||!Number.isSafeInteger(cost)||cost<1)return;
     const last=remaining<cost*2;this.duckMusic(last?.3:.16);

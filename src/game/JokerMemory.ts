@@ -155,7 +155,8 @@ export function jokerMemory(definition:R2JokerDefinition,instance:R2JokerInstanc
  const groupIncome=definition.hooks.flatMap(h=>h.operations).find(o=>o.kind==='add-gold');
  const groupLabels:Record<string,string[]>={b03:['同点组合长倍率'],b06:['最大同点组再计'],b08:[groupIncome?.kind==='add-gold'?'同点组合过关+'+groupIncome.amount+'金':'条件 ›'],b10:['同点组合长热度']};
  const grouped=R2_GROUP_UPGRADE_IDS.includes(definition.id)&&R2_GROUP_UPGRADE_JOKERS.includes(definition);
- const labelCandidates=isHouseJoker(definition)?['查看效果']:stateCandidates.length?stateCandidates:grouped?groupLabels[definition.id]:combo?comboLabels[definition.id]:(R2_ASSIST_JOKERS.includes(definition)?JOKER_ASSIST_COMPACT[definition.id]:undefined)??JOKER_COMPACT[definition.id]??[R2_OFFER_USE[definition.id]??'条件 ›'];
+ const d07Value=definition.id==='d07'?definition.hooks[0]?.operations[0]:undefined;
+ const labelCandidates=isHouseJoker(definition)?['查看效果']:stateCandidates.length?stateCandidates:grouped?groupLabels[definition.id]:combo?comboLabels[definition.id]:d07Value?.kind==='add-multiplier'?['全计分+'+readableFractionText(d07Value.value),'条件 ›']:(R2_ASSIST_JOKERS.includes(definition)?JOKER_ASSIST_COMPACT[definition.id]:undefined)??JOKER_COMPACT[definition.id]??[R2_OFFER_USE[definition.id]??'条件 ›'];
  const short=labelCandidates[0],savedShort=stateCandidates[0]??'';
  return{instanceId:instance?.instanceId,definitionId:definition.id,name:cardDefinitionName(definition),short,labelCandidates,stateLabel:stateCandidates.length>0,status,statusDetail,saved,savedShort,remaining,remainingUses,usageResetsOnEntry,staticRules,hooks,scoreLimited:ctx.scoringLimited};
 }

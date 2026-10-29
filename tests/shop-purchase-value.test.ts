@@ -25,8 +25,8 @@ it('selected mature sale compares against keeping it, and a business sale separa
  const s=held(fixture('straight',8),['c04','jiedongfeng','e11','e01','e04']);s.jokers[0].growth={heat:{n:'100',d:'1'}};s.jokers[0].edition='foil';s.jokers[0].paidPrice=6;s.jokers[2].growth={coefficient:{n:'3',d:'2'}};const o=stock(s,'f06'),before=structuredClone(s);
  const bad=shopPurchaseValue(s,o,'straight',s.jokers[0])!,better=shopPurchaseValue(s,o,'straight',s.jokers[3])!;
  if(bad.status!=='assessed'||better.status!=='assessed')throw Error('transaction');
- expect(bad.rows[1]).toMatchObject({keep:{minimum:'2805'},change:{minimum:'2722'},delta:{minimum:'-83'}});expect(bad).toMatchObject({refund:3,paid:8,net:5,goldAfter:35,ceiling:1});expect(shopRecommendation(s,o,'straight',s.jokers[0]).stars).toBe(1);
- expect(better.rows[1]).toMatchObject({keep:{minimum:'2805'},change:{minimum:'5610'}});expect(better).toMatchObject({ceiling:2,lostInvestment:true});expect(better.detail).toContain('未出售');expect(s).toEqual(before);
+ expect(bad.rows[1]).toMatchObject({keep:{minimum:'3570'},change:{minimum:'3465'},delta:{minimum:'-105'}});expect(bad).toMatchObject({refund:3,paid:8,net:5,goldAfter:35,ceiling:1});expect(shopRecommendation(s,o,'straight',s.jokers[0]).stars).toBe(1);
+ expect(better.rows[1]).toMatchObject({keep:{minimum:'3570'},change:{minimum:'7140'}});expect(better).toMatchObject({ceiling:2,lostInvestment:true});expect(better.detail).toContain('未出售');expect(s).toEqual(before);
 });
 it('full unspecific stock is conditional and each selected target recomputes cash and losses',()=>{
  const s=held(fixture(),['b02','e02','e06','e05','e11']);s.gold=24;s.purchaseCoupons=1;s.jokers[1].paidPrice=2;s.jokers[4].growth={coefficient:{n:'3',d:'2'}};const o=stock(s,'e08');
@@ -62,7 +62,7 @@ it.each([
  expect(state).toEqual(before);
 });
 it('keeps a purely sampled scoring donor outside the unknown resource-loss cap',()=>{
- const {state,offer,sold}=resourceLossFixture('d07'),value=shopPurchaseValue(state,offer,'group',sold);
+ const {state,offer,sold}=resourceLossFixture('pengci'),value=shopPurchaseValue(state,offer,'group',sold);
  expect(value).toMatchObject({unmeasuredLoss:false,lostInvestment:false,allPositive:true,ceiling:4});
  expect(shopRecommendation(state,offer,'group',sold).stars).toBe(4);
 });

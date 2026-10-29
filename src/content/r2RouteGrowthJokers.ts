@@ -42,9 +42,21 @@ export const R2_HOUSE_JOKERS:readonly R2JokerDefinition[]=freeze(R2_ROUTE_GROWTH
   {phase:'jokerScore',condition:{kind:'hand-type-in',values:['full-house']},operations:[{kind:'multiply-multiplier',value:{n:'2',d:'1'}}]},
   {phase:'jokerScore',condition:{kind:'hand-type-in',values:['flush-house']},operations:[{kind:'multiply-multiplier',value:{n:'3',d:'1'}}]},
 ]} as R2JokerDefinition:d));
+/** A separate immutable definition set: earlier house identities retain their values. */
+const valueChanges:Record<string,{description:string;value:{n:string;d:string}}>= {
+  d07:{description:'实际打出牌全部是有效计分牌时，整手倍率 +1.5；单张也可触发。',value:{n:'3',d:'2'}},
+  jiedongfeng:{description:'顺子、同花及其同花顺、同花葫芦、同花五条升级牌型，整手倍率+3。',value:{n:'3',d:'1'}},
+  b07:{description:'实际打出至少2张且全部都是有效计分牌时，整手热度 +50。',value:{n:'50',d:'1'}},
+  c02:{description:'每张有效计分的红桃或方片，加12热度；杂牌和持牌不触发。',value:{n:'12',d:'1'}},
+  c03:{description:'每张有效计分的黑桃或梅花加12热度；杂牌、失效牌和持牌不触发。',value:{n:'12',d:'1'}},
+};
+export const R2_VALUE_JOKERS:readonly R2JokerDefinition[]=freeze(R2_HOUSE_JOKERS.map(d=>{
+ const change=valueChanges[d.id];if(!change)return d;
+ return {...d,description:change.description,hooks:d.hooks.map(h=>({...h,operations:h.operations.map(op=>op.kind==='add-heat'||op.kind==='add-multiplier'?{...op,value:change.value}:op)}))};
+}));
 export const isHouseJoker=(d:R2JokerDefinition)=>d===R2_HOUSE_JOKERS.find(d=>d.id==='a11');
-const definitionsHashes=new Set([stableHash(R2_ROUTE_GROWTH_JOKERS),stableHash(R2_HOUSE_JOKERS)]);
+const definitionsHashes=new Set([stableHash(R2_ROUTE_GROWTH_JOKERS),stableHash(R2_HOUSE_JOKERS),stableHash(R2_VALUE_JOKERS)]);
 // These module-owned arrays are deeply frozen. Legacy previews need no full
 // 72-card hash on every candidate; arbitrary/copied arrays still get the hash.
 const legacyDefinitionSets=new Set<readonly R2JokerDefinition[]>([R2_PUBLISHED_JOKERS,R2_ASSIST_JOKERS,R2_COMBO_GROWTH_JOKERS,R2_GROUP_UPGRADE_JOKERS]);
-export const hasR2RouteGrowthDefinitions=(definitions:readonly R2JokerDefinition[])=>definitions===R2_ROUTE_GROWTH_JOKERS||definitions===R2_HOUSE_JOKERS||!legacyDefinitionSets.has(definitions)&&definitionsHashes.has(stableHash(definitions));
+export const hasR2RouteGrowthDefinitions=(definitions:readonly R2JokerDefinition[])=>definitions===R2_ROUTE_GROWTH_JOKERS||definitions===R2_HOUSE_JOKERS||definitions===R2_VALUE_JOKERS||!legacyDefinitionSets.has(definitions)&&definitionsHashes.has(stableHash(definitions));

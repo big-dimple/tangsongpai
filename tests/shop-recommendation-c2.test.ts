@@ -6,7 +6,7 @@ import {stableHash} from '../src/domain/hash';
 import {r2CreateJoker} from '../src/domain/r2Run';
 import {r2ColdOpening} from '../src/domain/r2ComboGrowth';
 import {r2Price} from '../src/domain/r2Shop';
-import {shopRecommendation,SHOP_HOUSE_RECOMMENDATION_SEMANTICS,SHOP_C2_RECOMMENDATION_AUDIT} from '../src/game/ShopRecommendation';
+import {shopRecommendation,SHOP_VALUE_RECOMMENDATION_SEMANTICS,SHOP_C2_RECOMMENDATION_AUDIT} from '../src/game/ShopRecommendation';
 import {shopOfferGuidance} from '../src/game/ShopOfferGuidance';
 import {shopRouteGrowthFacts} from '../src/game/ShopRouteGrowthFacts';
 import {shopReplacementTransactionFacts,shopReplacementCompactFacts,shopSaleConsequences} from '../src/game/ShopRouteRelations';
@@ -16,7 +16,7 @@ const rec=(s:ReturnType<typeof shopC2Fixture>,id:string,focus:'group'|'straight'
 const events=(s:ReturnType<typeof shopC2Fixture>,ids:string[],id:string)=>shopC2Score(s,ids).trace.events.filter(e=>e.sourceInstanceId==='held/'+id);
 describe('C2 reviewed semantic alignment, legacy and global ownership remain separate',()=>{
  it('all72 new definitions are reviewed by the new exact semantic contract, without mutating state',()=>{
-  const s=shopC2Fixture(),defs=profiles.r2JokerDefinitionsFor(s),before=JSON.stringify(s);expect(stableHash(defs)).toBe(SHOP_HOUSE_RECOMMENDATION_SEMANTICS);expect(Object.keys(SHOP_C2_RECOMMENDATION_AUDIT).sort()).toEqual(defs.map(d=>d.id).sort());
+  const s=shopC2Fixture(),defs=profiles.r2JokerDefinitionsFor(s),before=JSON.stringify(s);expect(stableHash(defs)).toBe(SHOP_VALUE_RECOMMENDATION_SEMANTICS);expect(Object.keys(SHOP_C2_RECOMMENDATION_AUDIT).sort()).toEqual(defs.map(d=>d.id).sort());
   for(const d of defs)for(const focus of ['group','straight','flush'] as const)expect(rec(s,d.id,focus).stars).toBeGreaterThan(0);expect(JSON.stringify(s)).toBe(before);
  });
  it('a changed C2 definition is pending, rather than blindly authorizing the run hash',()=>{
@@ -34,7 +34,7 @@ describe('C2 reviewed semantic alignment, legacy and global ownership remain sep
  });
  it.each(['flush-house','flush-five'] as const)('c06 and jiedongfeng include actual %s while c07 stays narrow',type=>{
   const s=shopC2PublicDeck(shopC2Fixture(['c06','jiedongfeng','c07']),{7:10,8:10}),ids=type==='flush-house'?['public/7/0','public/7/1','public/7/2','public/8/0','public/8/1']:Array.from({length:5},(_,i)=>'public/7/'+i),before=JSON.stringify(s),t=shopC2Score(s,ids).trace;
-  expect(t.handType).toBe(type);expect(t.jokers.find(j=>j.definitionId==='c06')!.growth.multiplier).toEqual({n:'1',d:'2'});expect(t.events.some(e=>e.sourceInstanceId==='held/jiedongfeng'&&e.operation==='add-multiplier'&&e.value?.n==='3'&&e.value?.d==='2')).toBe(true);expect(t.events.some(e=>e.sourceInstanceId==='held/c07')).toBe(false);
+  expect(t.handType).toBe(type);expect(t.jokers.find(j=>j.definitionId==='c06')!.growth.multiplier).toEqual({n:'1',d:'2'});expect(t.events.some(e=>e.sourceInstanceId==='held/jiedongfeng'&&e.operation==='add-multiplier'&&e.value?.n==='3'&&e.value?.d==='1')).toBe(true);expect(t.events.some(e=>e.sourceInstanceId==='held/c07')).toBe(false);
   expect(rec(s,'c06')).toMatchObject({stars:4,facts:{flushFamilyPossible:true,ordinaryFlushPossible:false,retriggerSource:false}});expect(rec(s,'jiedongfeng').stars).toBe(4);expect(rec(s,'d09').stars).toBe(2);expect(rec(s,'a06').facts.additiveSource).toBe(true);expect(JSON.stringify(s)).toBe(before);
  });
  it('c06 fresh value0 never manufactures a multiplier source; its real saved value reads on nonflush hands',()=>{
