@@ -174,7 +174,7 @@ it('poker front layer retains each destructive, probabilistic and held benefit',
  expect(cardSpecialSummary({id:'held',rank:7,suit:'hearts',enhancement:'voice-paper',edition:'polychrome'})).toContain('倍率×');
 });
 it('lasting copy and deck costs stay in the shared purchase/use front layer',()=>{
- expect(toolInfo('S03').summary).toContain('下一场起永久出牌次数−1');
+ expect(toolInfo('S03').summary).toBe('选择1张扑克，复制出2张新牌，原牌保留；新牌入抽牌堆底，不立即补牌；下一场起永久出牌次数−1');
  expect(toolInfo('S04').summary).toContain('下一场起永久手牌上限−1');
  expect(toolInfo('T12').summary).toContain('概率永久破碎');
  expect(toolInfo('T07').summary).not.toContain('永久出牌');

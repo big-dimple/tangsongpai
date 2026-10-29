@@ -129,7 +129,7 @@ function toolEffectSummary(tool:R2ToolDefinition):string {
  case 'upgrade-hand':return op.handType?`给${HAND_LABELS[op.handType]}升级`:'给一种牌型升级';
  case 'delete-cards':return '永久删掉选中的扑克';
  case 'set-suit':return `把选中的扑克改成${suitNames[op.suit]}${SUIT_SYMBOL[op.suit]}`;
- case 'copy-card':return `复制选中的扑克${op.copies}张，原牌保留；新牌入抽牌堆底，不立即补牌`;
+ case 'copy-card':return tool.id==='S03'?`选择1张扑克，复制出${op.copies}张新牌，原牌保留；新牌入抽牌堆底，不立即补牌`:`复制选中的扑克${op.copies}张，原牌保留；新牌入抽牌堆底，不立即补牌`;
  case 'shift-rank':return `选中的扑克点数${op.delta>0?'+':'−'}${Math.abs(op.delta)}`;
  case 'set-enhancement':return enhancementSummary(enhancementDefinition(op.enhancement));
  case 'add-gold':return `获得${op.amount}金`;
