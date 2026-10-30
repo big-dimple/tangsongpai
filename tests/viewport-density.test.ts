@@ -4,7 +4,10 @@ import {crispText,prepareTextScale} from '../src/game/TextRaster';
 afterEach(()=>vi.unstubAllGlobals());
 it('limits the requested canvas enlargement to a supported logical viewport',()=>{
  expect(canvasSizeFactor(390,844,'large')).toBe(1.2);
- expect(canvasSizeFactor(320,568,'large')).toBe(1);
+ expect(canvasSizeFactor(320,568,'large')).toBe(1.1);
+ expect(canvasSizeFactor(320,567,'large')).toBeCloseTo(1.1*567/568);
+ expect(canvasSizeFactor(320,569,'large')).toBe(1.1);
+ expect(canvasSizeFactor(320,568,'large',{top:20,right:0,bottom:34,left:0})).toBe(1);
  expect(canvasSizeFactor(360,640,'large')).toBe(1.125);
  expect(canvasSizeFactor(1920,1080,'standard')).toBe(1);
 });

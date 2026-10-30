@@ -120,6 +120,7 @@ export class ShopScene extends Phaser.Scene {
   private mobileOffers?:{host:HTMLElement;dispose:()=>void};
   /** Native mobile shelves are presentation-only, but their scroll position is part of the user's task context. */
   private mobileOffersKind?:ShelfKind;
+  private mobileOfferFocus?:{kind:ShelfKind;id:string;zoom:boolean};
   private mobileOffersScrollTop:Record<ShelfKind,number>={jokers:0,tools:0,items:0};
   private refreshDialog?:HTMLDialogElement;
   private shelfPage=0;
@@ -679,6 +680,8 @@ export class ShopScene extends Phaser.Scene {
   private clearInlineWorkshop():void {const old=this.inlineWorkshop;this.inlineWorkshop=undefined;old?.dispose();old?.host.remove();}
   private clearMobileOffers():void {
     const old=this.mobileOffers;this.mobileOffers=undefined;
+    const focused=old?.host.contains(document.activeElement)?document.activeElement as HTMLElement:null,article=focused?.closest<HTMLElement>('[data-offer-id]');
+    this.mobileOfferFocus=article?.dataset.offerId&&this.mobileOffersKind?{kind:this.mobileOffersKind,id:article.dataset.offerId,zoom:focused!.classList.contains('shop-mobile-offer-zoom')}:undefined;
     if(old&&this.mobileOffersKind)this.mobileOffersScrollTop[this.mobileOffersKind]=old.host.scrollTop;
     old?.dispose();old?.host.remove();this.mobileOffersKind=undefined;
   }
@@ -692,6 +695,12 @@ export class ShopScene extends Phaser.Scene {
     if(!rows.length)host.textContent=kind==='items'?'本店暂无长期物品。':'本货架暂无商品。';
     const nativeDown=()=>{if(active())this.view.noteNativeInteraction();};host.addEventListener('pointerdown',nativeDown,{capture:true});
     const dispose=mountShopMobileOffers(host,rows,active,id=>this.selectOffer(id));
+    const focus=this.mobileOfferFocus;this.mobileOfferFocus=undefined;
+    if(focus?.kind===kind&&document.activeElement===document.body){
+      const article=[...host.querySelectorAll<HTMLElement>('.shop-mobile-offer')].find(e=>e.dataset.offerId===focus.id);
+      const button=article?.querySelector<HTMLButtonElement>(focus.zoom?'.shop-mobile-offer-zoom':'.shop-mobile-offer-main');
+      if(button&&!button.disabled)button.focus({preventScroll:true});
+    }
     // A successful purchase or a category redraw must not throw the user's thumb
     // back to the first card. Restore after layout has measured the native list.
     const savedScrollTop=(this.mobileOffersScrollTop??={jokers:0,tools:0,items:0})[kind];

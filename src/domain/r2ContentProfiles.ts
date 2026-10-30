@@ -1,5 +1,5 @@
-import {R2_ROUTE_GROWTH_JOKERS,R2_HOUSE_JOKERS,R2_VALUE_JOKERS,R2_TARGETED_VALUE_JOKERS} from '../content/r2RouteGrowthJokers';
-import {r2HouseProfile,isR2TargetedValue,isR2JokerValue,isR2RouteGrowth,hasR2GroupUpgradeContract} from './r2GroupUpgrade';
+import {R2_ROUTE_GROWTH_JOKERS,R2_HOUSE_JOKERS,R2_VALUE_JOKERS,R2_TARGETED_VALUE_JOKERS,R2_PURCHASE_VALUE_JOKERS} from '../content/r2RouteGrowthJokers';
+import {r2HouseProfile,isR2TargetedValue,isR2PurchaseValue,isR2JokerValue,isR2RouteGrowth,hasR2GroupUpgradeContract} from './r2GroupUpgrade';
 import {R2_GROUP_UPGRADE_JOKERS} from '../content/r2GroupUpgradeJokers';
 import {R2_PUBLISHED_CONTENT,R2_PUBLISHED_JOKERS} from './r2PublishedContent';
 import {R2_ASSIST_HASH,R2_ASSIST_VERSION} from './r2AssistIdentity';
@@ -10,6 +10,7 @@ import {R2_ASSIST_JOKERS} from '../content/r2AssistJokers';
 export interface R2ContentIdentity {contentVersion?:unknown;contentHash?:unknown}
 /** Exact run identity; no global default or mixed-version fallback. */
 export function r2JokerDefinitionsFor(identity:R2ContentIdentity) {
+ if(isR2PurchaseValue(identity))return R2_PURCHASE_VALUE_JOKERS;
  if(isR2TargetedValue(identity))return R2_TARGETED_VALUE_JOKERS;
  if(isR2JokerValue(identity))return R2_VALUE_JOKERS;
  if(r2HouseProfile(identity))return R2_HOUSE_JOKERS;

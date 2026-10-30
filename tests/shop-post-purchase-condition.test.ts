@@ -43,8 +43,8 @@ it('buying zero-growth b10 accounts for the retained Baochang loss',()=>{
 });
 it('new b10 has immediate heat while retaining the same purchase cash warning',()=>{
  const {s,o}=setup(26,'b10');s.jokers.push(r2CreateJoker('e08','held/bao',8,'none',s));s.gold=23;const before=structuredClone(s),g=shopOfferGuidance(s,o);
- expect(g.stars).toBe(2);expect(g.operation).toBe('可购买');expect(g.operationShort).toBe('现金风险');expect(g.detail).toContain('买后19金，暂不触发');expect(g.detail).toContain('每手热度+20');
- const value=JSON.parse(g.recommendation.facts.purchaseValue as string);expect(value).toMatchObject({cashLoss:true,negative:true,positive:true,ceiling:2});expect(value.rows.map((row:{delta:{minimum:string}})=>row.delta.minimum)).toEqual(['3','-48']);expect(baoEvents(send(s,{type:'BuyOffer',offerId:o.offerId}))).toHaveLength(0);expect(s).toEqual(before);
+ expect(g.stars).toBe(2);expect(g.operation).toBe('可购买');expect(g.operationShort).toBe('现金风险');expect(g.detail).toContain('买后19金，暂不触发');expect(g.detail).toContain('每手热度+40');
+ const value=JSON.parse(g.recommendation.facts.purchaseValue as string);expect(value).toMatchObject({cashLoss:true,negative:false,positive:true,ceiling:2});expect(value.rows.map((row:{delta:{minimum:string}})=>row.delta.minimum)).toEqual(['23','2']);expect(baoEvents(send(s,{type:'BuyOffer',offerId:o.offerId}))).toHaveLength(0);expect(s).toEqual(before);
 });
 it('full slots require the specified actual sale, preserve growth/discount consequences and clear on changing selection',()=>{
  const {s,o}=setup(24);s.jokers=['b02','e02','e06','e05','e11'].map((id,i)=>r2CreateJoker(id,'held/'+i,i===1?2:8,'none',s));

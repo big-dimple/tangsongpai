@@ -1122,7 +1122,9 @@ export class GameScene extends Phaser.Scene {
       v.target(target,'card/'+card.id,{tap:()=>this.toggleCard(card.id),detail:()=>this.inspectCard(card.id),focus:()=>{this.focusIndex=i;this.keyboardFocus=true;this.game.canvas.setAttribute('data-hand-input','gamepad');this.showFocusedCard();this.focusFeedback();},blur:()=>{this.keyboardFocus=false;this.focusFeedback();},enter:()=>this.hoverCard(card.id,true),leave:()=>this.hoverCard(card.id,false)});this.cardViews.push(cv);
     });
     if(l.handOverflow){
-      this.handNavigationButtons=[v.button(l.handNavigation.previous,'‹','action/hand-previous',()=>this.scrollHand(-1),this.ready&&l.handStart>0),v.button(l.handNavigation.next,'›','action/hand-next',()=>this.scrollHand(1),this.ready&&l.handStart+l.visibleCardCount<this.hand.length)];
+      const portrait=l.mode==='portrait';
+      this.handNavigationButtons=[v.button(l.handNavigation.previous,portrait?'‹\n手牌\n'+this.hand.length+'/'+this.run.stage!.handLimit:'‹','action/hand-previous',()=>this.scrollHand(-1),this.ready&&l.handStart>0),v.button(l.handNavigation.next,portrait?'›\n'+(l.handStart+1)+'–'+(l.handStart+l.visibleCardCount):'›','action/hand-next',()=>this.scrollHand(1),this.ready&&l.handStart+l.visibleCardCount<this.hand.length)];
+      if(portrait)(this.handNavigationButtons[0].getData('label') as Phaser.GameObjects.Text).setFontSize(11);
     }
     this.updateHandCount();
     this.refreshSelection();
@@ -1134,9 +1136,8 @@ export class GameScene extends Phaser.Scene {
   private updateHandCount():void {
     const l=this.view.layout,limit=this.run.stage!.handLimit;
     const portraitWindow=l.mode==='portrait'&&l.handOverflow;
-    this.handCountText.setText('手牌 '+this.run.handOrder.length+' / '+limit+(l.handOverflow?(portraitWindow?'\n':' · ')+(l.handStart+1)+'–'+(l.handStart+l.visibleCardCount):'')).setVisible((l.mode!=='portrait'&&l.labelHeight>0)||l.handOverflow);
-    // The vacated bottom sorting seat keeps window counts clear of lifted cards.
-    this.handCountText.setPosition(portraitWindow?l.actions.x+2:l.mode==='portrait'?l.hand.x+48:l.handLabel.x,portraitWindow?l.actions.y+(l.actions.height-this.handCountText.height)/2:l.mode==='portrait'?l.hand.y+2:l.handLabel.y);
+    this.handCountText.setText('手牌 '+this.run.handOrder.length+' / '+limit+(l.handOverflow?' · '+(l.handStart+1)+'–'+(l.handStart+l.visibleCardCount):'')).setVisible(!portraitWindow&&l.mode!=='portrait'&&l.labelHeight>0);
+    this.handCountText.setPosition(l.handLabel.x,l.handLabel.y);
   }
   private sweepSheen(view:CardView):void {
     const sheen=view.sheen;if(!sheen||this.reducedMotion||this.presentation||this.playing)return;

@@ -7,7 +7,8 @@ import {chromium} from 'playwright';
 import {enterCurrentStage} from './stage-entry.mjs';
 
 const server=await createServer({mode:'e2e',server:{host:'127.0.0.1',port:5218,strictPort:true}});
-const output='shots/gamepad',report={testedCommit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),checks:[],physicalController:'NOT_RUN'};
+const compactLarge=process.env.GAMEPAD_CANVAS_320==='1';
+const output=compactLarge?'shots/canvas-size-gamepad':'shots/gamepad',report={testedCommit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),checks:[],physicalController:'NOT_RUN'};
 let browser,activePage;
 const buttons={left:14,right:15,up:12,down:13,confirm:0,back:1,play:2,discard:3,previous:4,next:5,rank:6,suit:7,detail:8,menu:9};
 const frames=page=>page.evaluate(()=>new Promise((resolve,reject)=>{let count=0;const game=window.__harness.game,timer=setTimeout(()=>{game.events.off('poststep',step);reject(Error('controller frame timeout'));},5000),step=()=>{if(++count===3){clearTimeout(timer);game.events.off('poststep',step);resolve();}};game.events.on('poststep',step);}));
@@ -34,12 +35,13 @@ async function navigate(page,predicate){
 }
 try{
   await mkdir(output,{recursive:true});({nextControllerTarget}=await server.ssrLoadModule('/src/game/ControllerFocus.ts'));await server.listen();browser=await chromium.launch(process.env.CHROMIUM_PATH?{executablePath:process.env.CHROMIUM_PATH}:{});
-  for(const viewport of [{width:1280,height:800},{width:390,height:844}]){
+  for(const viewport of compactLarge?[{width:320,height:568}]:[{width:1280,height:800},{width:390,height:844}]){
     const context=await browser.newContext({viewport}),page=await context.newPage(),errors=[];activePage=page;page.on('pageerror',error=>errors.push(String(error)));
-    await page.addInitScript(()=>{
+    await page.addInitScript(large=>{
+      if(large)localStorage.setItem('tangsongpai-canvas-size-v1','large');
       window.__testPad={index:0,id:'Xbox test controller',connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
       Object.defineProperty(navigator,'getGamepads',{value:()=>[window.__testPad]});
-    });
+    },compactLarge);
     await page.goto('http://127.0.0.1:5218/?harness=1&seed=gamepad-ui');await page.bringToFront();
     await page.waitForFunction(()=>window.__harness?.game.scene.isActive('title'));await frames(page);
     await press(page,'left');await navigate(page,target=>target.id==='title/action/title-start');await press(page,'confirm',600);

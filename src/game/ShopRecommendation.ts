@@ -50,6 +50,7 @@ export type RecommendationStars=0|1|2|3|4|5;
 export interface ShopRecommendation {stars:RecommendationStars;reason:string;condition:string;detail:string;stage:'early'|'mid'|'late';combination:string;combinationHint:string;facts:Readonly<Record<string,number|boolean|string>>}
 export const SHOP_HOUSE_RECOMMENDATION_SEMANTICS='json-fnv-v1:bf164b81a7433aed';
 export const SHOP_VALUE_RECOMMENDATION_SEMANTICS='json-fnv-v1:21dcf0587210ab84';
+export const SHOP_PURCHASE_VALUE_RECOMMENDATION_SEMANTICS='json-fnv-v1:695909c67b30e242';
 export const SHOP_TARGETED_VALUE_RECOMMENDATION_SEMANTICS='json-fnv-v1:aad9cad02d2e2c9c';
 const hashes=new WeakMap<object,string>();
 /** No affordability rating, RNG, future piles or stored recommendation. Cash gates use purchase cash. */
@@ -61,7 +62,7 @@ export function shopRecommendation(state:R2RunState,offer:R2Offer,focus?:BuildFo
  if(cash?.status==='assessed')state=cash.afterSale;
  const replacementCashRisk=cash?.status==='assessed'?shopDeferredGrowthCashRisk(cash.afterSale,offer):undefined;
  const definitions=r2JokerDefinitionsFor(state);let hash=hashes.get(definitions);if(!hash){hash=stableHash(definitions);hashes.set(definitions,hash);}
- const c2=isR2RouteGrowth(state)&&(hash===SHOP_C2_RECOMMENDATION_SEMANTICS||hash===SHOP_HOUSE_RECOMMENDATION_SEMANTICS||hash===SHOP_VALUE_RECOMMENDATION_SEMANTICS||hash===SHOP_TARGETED_VALUE_RECOMMENDATION_SEMANTICS);
+ const c2=isR2RouteGrowth(state)&&(hash===SHOP_C2_RECOMMENDATION_SEMANTICS||hash===SHOP_HOUSE_RECOMMENDATION_SEMANTICS||hash===SHOP_VALUE_RECOMMENDATION_SEMANTICS||hash===SHOP_TARGETED_VALUE_RECOMMENDATION_SEMANTICS||hash===SHOP_PURCHASE_VALUE_RECOMMENDATION_SEMANTICS);
  const audited=c2||hash===SHOP_RECOMMENDATION_SEMANTICS;
  const routeGrowth=c2?shopRouteGrowthFacts(state):undefined;
  const stage=state.chapter<=2?'early':state.chapter<=5?'mid':'late';

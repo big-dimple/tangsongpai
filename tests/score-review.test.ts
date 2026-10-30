@@ -41,7 +41,7 @@ describe('saved score review display only',()=>{
   const red=formatScoreReview(state,repeated.trace).cards.filter(c=>c.title.startsWith((cardDisplayName('c02'))));expect(red).toHaveLength(2);for(const card of red)expect(card.body).toContain('+12 热度 · 实际触发 5 次');
   const zero=fixture({jokers:[r2CreateJoker('b10','unmet',4,undefined,state)]});
   const growthCard=formatScoreReview(zero.state,zero.trace).cards.find(c=>c.title.includes(cardDisplayName('b10'))&&c.title.includes('本手计分'))!;
-  expect(growthCard.body).toContain('+20 热度 · 实际触发 1 次');expect(growthCard.body).toContain('实际读取 1 次');
+  expect(growthCard.body).toContain('+40 热度 · 实际触发 1 次');expect(growthCard.body).toContain('实际读取 1 次');
   const old=run(true),oldZero=fixture({jokers:[r2CreateJoker('b10','unmet-old',4,undefined,old)]},true);expect(formatScoreReview(oldZero.state,oldZero.trace).cards.some(c=>c.title.includes(cardDisplayName('b10'))&&c.body.includes('实际触发'))).toBe(false);
  });
  it('distinguishes random checks/misses, retriggers, and after-hand growth from scoring',()=>{

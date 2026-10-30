@@ -85,8 +85,8 @@ it.each(['b03','b10'])('new %s has immediate value and uses the actual transacti
  const s=makeReplacementCashRiskFixture(22,id),o=s.shop!.offers[0],sold=s.jokers[2],before=structuredClone(s),cash=shopPurchaseCashFacts(s,o,sold);
  expect(cash.status).toBe('assessed');if(cash.status!=='assessed')throw Error('transaction');
  expect(shopDeferredGrowthCashRisk(cash.afterSale,o)).toBeUndefined();const r=shopRecommendation(s,o,'group',sold),value=JSON.parse(r.facts.purchaseValue as string);
- expect(value).toMatchObject({cashLoss:true,negative:true,ceiling:1,goldAfter:id==='b03'?17:19});
- expect(value.rows.map((row:{delta:{minimum:string}})=>row.delta.minimum)).toEqual(id==='b03'?['-6','-128']:['-38','-151']);expect(r.stars).toBe(1);expect(s).toEqual(before);
+ expect(value).toMatchObject({cashLoss:true,negative:true,ceiling:id==='b03'?2:1,goldAfter:id==='b03'?17:19});
+ expect(value.rows.map((row:{delta:{minimum:string}})=>row.delta.minimum)).toEqual(id==='b03'?['22','-86']:['-18','-101']);expect(r.stars).toBe(id==='b03'?2:1);expect(s).toEqual(before);
 });
 it('a live edition is a real source, while a banned edition does not exempt the same zero-growth reader',()=>{
  const s=replacementCashRiskFixture(22,'b10','foil'),o=s.shop!.offers[0],sold=s.jokers[2];

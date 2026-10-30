@@ -105,12 +105,12 @@ export function scorePedestal(s:Box):Box|undefined {
 }
 /** Phone bands use the actual vertical budget; the preview no longer owns a tall empty centre. */
 function phoneTableAreas(l:ReturnType<typeof capacityLayout>,safe:Insets,start=0){
- const net=l.height-safe.top-safe.bottom,gap=net<680?4:8,x=l.hud.x,w=l.hud.width,count=l.cards.length,pitch=l.width<360&&count===9?30:36;
+ const net=l.height-safe.top-safe.bottom,gap=net<680?4:8,x=l.hud.x,w=l.hud.width,count=l.cards.length,pitch=l.width<320||l.width<360&&count===9?30:36;
  const hud=box(x,safe.top+8,w,52),actions=box(x,l.height-safe.bottom-8-58,w,58),utilityHeight=net>=700?52:44,minPlayed=net<620?60:88;
  const scoreHeight=net<550?72:net<660?96:count>=10&&net<720?92:108,baselineWidth=Math.min(64,(w-48)/5);
  const baselinePlayedTop=hud.y+hud.height+gap+baselineWidth*1.4+gap+scoreHeight+22,maxHand=actions.y-gap-utilityHeight-gap*2-baselinePlayedTop-minPlayed;
  const rows=count>=10&&count<=14&&maxHand>=2*(52*1.4+22)?2:1;
- const columns=rows===2?Math.ceil(count/2):count>9?8:count,desiredWidth=rows===2?64:Math.min(96,w-Math.max(0,columns-1)*pitch);
+ const columns=rows===2?Math.ceil(count/2):count>9?8:count,desiredWidth=rows===2?64:Math.max(52,Math.min(96,w-Math.max(0,columns-1)*pitch));
  const handHeight=Math.min(rows*(desiredWidth*1.4+22),maxHand),cardWidth=(handHeight/rows-22)/1.4;
  // Spend only spare landing space: existing hand faces, rows and score stay intact.
  const slotGap=l.width<360?4:6,slotWidth=Math.min(76,(w-slotGap*4)/5,baselineWidth+Math.max(0,maxHand-handHeight)/1.4),rackWidth=slotWidth*5+slotGap*4;

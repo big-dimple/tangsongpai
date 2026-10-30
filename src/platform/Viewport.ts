@@ -19,8 +19,15 @@ export function requestsLargeText(size:CanvasSize):boolean {
   return size==='large'||size==='auto'&&browserRequestsLargeText();
 }
 /** Keep the reflow viewport within the smallest supported portrait layout. */
-export function canvasSizeFactor(width:number,height:number,size:CanvasSize):number {
-  return requestsLargeText(size)?Math.max(1,Math.min(1.2,width/320,height/568)):1;
+export function canvasSizeFactor(width:number,height:number,size:CanvasSize,safe={top:0,right:0,bottom:0,left:0}):number {
+  if(!requestsLargeText(size))return 1;
+  const requested=Math.max(1,Math.min(1.1,width/(320/1.1),height/(568/1.1)),Math.min(1.2,width/320,height/568));
+  return Math.max(1,Math.min(requested,width/(320/1.1+safe.left+safe.right),height/(568/1.1+safe.top+safe.bottom)));
+}
+export function viewportSafeInsets() {
+  if(typeof document==='undefined'||!document.documentElement||typeof getComputedStyle==='undefined')return {top:0,right:0,bottom:0,left:0};
+  const style=getComputedStyle(document.documentElement),inset=(side:string)=>Math.max(0,parseFloat(style.getPropertyValue('--safe-'+side))||0);
+  return {top:inset('top'),right:inset('right'),bottom:inset('bottom'),left:inset('left')};
 }
 
 /** Keep layout / input in CSS pixels while the framebuffer uses device pixels. */
@@ -48,7 +55,7 @@ export function installViewport(game:Phaser.Game):void {
     const size=selectedCanvasSize();
     if(document.documentElement)document.documentElement.dataset.textSize=requestsLargeText(size)?'large':'normal';
     const backingWidth=Math.ceil(width*density),backingHeight=Math.ceil(height*density);
-    const zoom=1/(density*canvasSizeFactor(width,height,size));
+    const zoom=1/(density*canvasSizeFactor(width,height,size,viewportSafeInsets()));
     logicalSizes.set(game,{width:backingWidth*zoom,height:backingHeight*zoom});
     if(game.scale.width===backingWidth&&game.scale.height===backingHeight&&game.scale.zoom===zoom){game.canvas.style.width=width+'px';game.canvas.style.height=height+'px';syncInputBounds();return;}
     game.scale.zoom=zoom;

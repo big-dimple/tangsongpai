@@ -1,6 +1,6 @@
 import {cardDefinitionName} from './tangsongCardNames';
 import {coefficientLabelCandidates} from './JokerLabel';
-import {isHouseJoker,R2_ROUTE_GROWTH_JOKERS,R2_TARGETED_VALUE_JOKERS} from '../content/r2RouteGrowthJokers';
+import {isHouseJoker,R2_ROUTE_GROWTH_JOKERS,R2_TARGETED_VALUE_JOKERS,R2_PURCHASE_VALUE_JOKERS} from '../content/r2RouteGrowthJokers';
 import {r2DiscardCost} from '../domain/r2Run';
 import {R2_GROUP_UPGRADE_IDS,R2_GROUP_UPGRADE_JOKERS} from '../content/r2GroupUpgradeJokers';
 import {R2_COMBO_GROWTH_JOKERS,R2_COMBO_GROWTH_IDS} from '../content/r2ComboGrowthJokers';
@@ -154,7 +154,7 @@ export function jokerMemory(definition:R2JokerDefinition,instance:R2JokerInstanc
  const comboLabels:Record<string,string[]>={a06:['两对以上×系数'],f10:[definition.hooks.some(h=>h.condition.kind==='opening-discard')?'出牌前首弃备倍率':'首弃前看手牌'],d12:[incomeOp?.kind==='add-gold-per-held'?'成型留≥'+incomeOp.minimum+'给金':'条件 ›'],e04:[incomeOp?.kind==='add-gold-per-capital'?'奖励前每'+incomeOp.divisor+'金+1':'条件 ›']};
  const groupIncome=definition.hooks.flatMap(h=>h.operations).find(o=>o.kind==='add-gold');
  const groupLabels:Record<string,string[]>={b03:['同点组合长倍率'],b06:['最大同点组再计'],b08:[groupIncome?.kind==='add-gold'?'同点组合过关+'+groupIncome.amount+'金':'条件 ›'],b10:['同点组合长热度']};
- const grouped=R2_GROUP_UPGRADE_IDS.includes(definition.id)&&(R2_GROUP_UPGRADE_JOKERS.includes(definition)||R2_TARGETED_VALUE_JOKERS.includes(definition));
+ const grouped=R2_GROUP_UPGRADE_IDS.includes(definition.id)&&(R2_GROUP_UPGRADE_JOKERS.includes(definition)||R2_TARGETED_VALUE_JOKERS.includes(definition)||R2_PURCHASE_VALUE_JOKERS.includes(definition));
  const d07Value=definition.id==='d07'?definition.hooks[0]?.operations[0]:undefined;
  const firstScoreValue=isAssistFirstScore(definition)?definition.hooks[0].operations[0]:undefined;
  const fixed=(definition.id==='b03'||definition.id==='b10'||definition.id==='d10')?definition.hooks.find(h=>h.phase==='jokerScore'&&h.condition.kind==='always'&&h.operations.length===1&&(h.operations[0].kind==='add-heat'||h.operations[0].kind==='add-multiplier'))?.operations[0]:undefined;

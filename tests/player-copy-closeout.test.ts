@@ -48,13 +48,13 @@ it('first scoring copy reads the actual definition even if it is copied',()=>{
 it('new and saved growth and empty-slot cards show their own fixed heat and limits',()=>{
  const s=setup(),old=r2TargetedValueBase(s),ctx=publicJokerMemoryContext(s,{hand:[],scoringLimited:false,deckSize:52,jokerSlots:5,jokerCount:0});
  const b10=jokerAbilityCopyForRun(s,'b10',undefined,ctx),oldB10=jokerAbilityCopyForRun(old,'b10',undefined,ctx);
- expect(b10.condition).toContain('每次出牌热度+20');expect(b10.plain!.line).toContain('每次出牌热度+20');expect(b10.plain!.line).toContain('下次出牌');
+ expect(b10.condition).toContain('每次出牌热度+40');expect(b10.plain!.line).toContain('每次出牌热度+40');expect(b10.plain!.line).toContain('下次出牌');
  expect(oldB10.condition).not.toContain('每次出牌热度+20');expect(oldB10.plain!.line).not.toContain('每次出牌热度+20');
  const b03=jokerAbilityCopyForRun(s,'b03',undefined,ctx),oldB03=jokerAbilityCopyForRun(old,'b03',undefined,ctx);
- expect(b03.condition).toContain('每次出牌倍率+1');expect(b03.condition).toContain('合计最多+4倍率');expect(b03.plain!.line).toContain('每次出牌倍率+1');expect(b03.plain!.line).toContain('下次出牌');expect(b03.plain!.timingLine).toContain('跨场保留');expect(b03.plain!.timingLine).toContain('合计最多+4倍率');
+ expect(b03.condition).toContain('每次出牌倍率+1.5');expect(b03.condition).toContain('合计最多+4.5倍率');expect(b03.plain!.line).toContain('每次出牌倍率+1.5');expect(b03.plain!.line).toContain('下次出牌');expect(b03.plain!.timingLine).toContain('跨场保留');expect(b03.plain!.timingLine).toContain('合计最多+4.5倍率');
  expect(oldB03.condition).not.toContain('每次出牌倍率+1');expect(oldB03.plain!.line).not.toContain('每次出牌倍率+1');
  const d10=jokerAbilityCopyForRun(s,'d10',undefined,ctx),oldD10=jokerAbilityCopyForRun(old,'d10',undefined,ctx);
- expect(d10.condition).toContain('每次出牌热度+12');expect(d10.condition).toContain('最多+60热度');expect(d10.condition).toContain('最多加 48');
+ expect(d10.condition).toContain('每次出牌热度+24');expect(d10.condition).toContain('最多+72热度');expect(d10.condition).toContain('最多加 48');
  expect(oldD10.condition).not.toContain('每次出牌热度+12');expect(oldD10.condition).not.toContain('最多+60热度');
 });
 it('explains the opening-discard multiplier separately for current and older identities',()=>{

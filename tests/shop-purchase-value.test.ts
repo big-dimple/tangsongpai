@@ -16,7 +16,7 @@ it.each([1,3,8])('chapter %i does not give a new zero-growth body mature or futu
 });
 it.each([1,3,8])('chapter %i measures new b03 immediate value without crediting future growth',chapter=>{
  const s=fixture('group',chapter),o=stock(s,'b03'),v=shopPurchaseValue(s,o,'group')!;if(v.status!=='assessed')throw Error('transaction');
- expect(v.rows.map(r=>r.delta)).toEqual([{minimum:'22',maximum:'22'},{minimum:'49',maximum:'49'}]);expect(v.detail).toContain('新牌成长：倍率成长 0');expect(v.detail).toContain('手后成长、未来抽牌');
+ expect(v.rows.map(r=>r.delta)).toEqual([{minimum:'33',maximum:'33'},{minimum:'73',maximum:'73'}]);expect(v.detail).toContain('新牌成长：倍率成长 0');expect(v.detail).toContain('手后成长、未来抽牌');
 });
 it('new c04 retains its immediate +50 body while future growth stays outside the window',()=>{
  const s=fixture('straight'),o=stock(s,'c04'),v=shopPurchaseValue(s,o,'straight')!;if(v.status!=='assessed')throw Error('transaction');
@@ -46,7 +46,7 @@ it('b10 cannot buy away a retained e08 cash gate even with a free slot',()=>{
 });
 it('new b10 compares actual immediate gain with the retained e08 cash loss',()=>{
  const s=held(fixture(),['b02','e08']);s.gold=23;const o=stock(s,'b10'),v=shopPurchaseValue(s,o,'group')!;if(v.status!=='assessed')throw Error('transaction');
- expect(v).toMatchObject({cashLoss:true,interestLoss:true,negative:true,positive:true,ceiling:2});expect(v.rows.map(r=>r.delta.minimum)).toEqual(['3','-48']);expect(shopRecommendation(s,o,'group').stars).toBe(2);expect(v.detail).toContain('买后19金，暂不触发');
+ expect(v).toMatchObject({cashLoss:true,interestLoss:true,negative:false,positive:true,ceiling:2});expect(v.rows.map(r=>r.delta.minimum)).toEqual(['23','2']);expect(shopRecommendation(s,o,'group').stars).toBe(2);expect(v.detail).toContain('买后19金，暂不触发');
 });
 it('selling fresh ordinary e05 loses its onBuyOffer business source despite positive e08 samples',()=>{
  const s=held(fixture(),['b02','e05']);s.gold=40;const o=stock(s,'e08'),before=structuredClone(s),sold=s.jokers[1];
@@ -71,7 +71,7 @@ it.each([
 });
 it('new b03 sale measures its immediate multiplier and still records the unmeasured growth loss',()=>{
  const {state,offer,sold}=resourceLossFixture('b03'),v=shopPurchaseValue(state,offer,'group',sold)!;if(v.status!=='assessed')throw Error('transaction');
- expect(v.rows.map(r=>r.delta.minimum)).toEqual(['-5','49']);expect(v).toMatchObject({unmeasuredLoss:true,ceiling:2,negative:true,positive:true});expect(v.detail).toContain('结算后成长／返还');expect(shopRecommendation(state,offer,'group',sold)).toMatchObject({stars:2,reason:'条件对照有得失'});
+ expect(v.rows.map(r=>r.delta.minimum)).toEqual(['-16','24']);expect(v).toMatchObject({unmeasuredLoss:true,ceiling:2,negative:true,positive:true});expect(v.detail).toContain('结算后成长／返还');expect(shopRecommendation(state,offer,'group',sold)).toMatchObject({stars:2,reason:'条件对照有得失'});
 });
 it('keeps a purely sampled scoring donor outside the unknown resource-loss cap',()=>{
  const {state,offer,sold}=resourceLossFixture('pengci'),value=shopPurchaseValue(state,offer,'group',sold);

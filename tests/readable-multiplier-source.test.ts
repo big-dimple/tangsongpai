@@ -9,7 +9,7 @@ import {buildGrowthProgress} from '../src/game/BuildGrowthProgress';
 import {growthPayoffs} from '../src/game/GrowthPayoff';
 it('controlled native scoring keeps the reported fraction and floor receipt exact',()=>{
  const f=readableMultiplierFixture('group'),before=JSON.stringify(f.state),s=energySend(f.state,{type:'PlayHand',selectedIds:f.selectedIds});
- expect(s.lastTrace!.accumulator).toEqual({H:{n:'801',d:'1'},M:{n:'36639',d:'64'}});expect(s.lastTrace!.finalScore).toBe('458559');expect(s.lastTrace!.events.find(e=>e.sourceDefinitionId==='b10'&&e.operation==='add-heat')?.value).toEqual({n:'20',d:'1'});expect(JSON.stringify(f.state)).toBe(before);
+ expect(s.lastTrace!.accumulator).toEqual({H:{n:'821',d:'1'},M:{n:'36639',d:'64'}});expect(s.lastTrace!.finalScore).toBe('470009');expect(s.lastTrace!.events.find(e=>e.sourceDefinitionId==='b10'&&e.operation==='add-heat')?.value).toEqual({n:'40',d:'1'});expect(JSON.stringify(f.state)).toBe(before);
 });
 it('the actual held-label and growth consumers read the saved coefficient; existing rules remain exact',()=>{
  const f=readableMultiplierFixture('straight'),before=JSON.stringify(f.state),j=f.state.jokers[0],d=r2JokerDefinitionFor(f.state,j.definitionId);

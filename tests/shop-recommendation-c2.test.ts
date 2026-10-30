@@ -6,7 +6,7 @@ import {stableHash} from '../src/domain/hash';
 import {r2CreateJoker} from '../src/domain/r2Run';
 import {r2ColdOpening} from '../src/domain/r2ComboGrowth';
 import {r2Price} from '../src/domain/r2Shop';
-import {shopRecommendation,SHOP_TARGETED_VALUE_RECOMMENDATION_SEMANTICS,SHOP_C2_RECOMMENDATION_AUDIT} from '../src/game/ShopRecommendation';
+import {shopRecommendation,SHOP_PURCHASE_VALUE_RECOMMENDATION_SEMANTICS,SHOP_C2_RECOMMENDATION_AUDIT} from '../src/game/ShopRecommendation';
 import {shopOfferGuidance} from '../src/game/ShopOfferGuidance';
 import {shopRouteGrowthFacts} from '../src/game/ShopRouteGrowthFacts';
 import {shopReplacementTransactionFacts,shopReplacementCompactFacts,shopSaleConsequences} from '../src/game/ShopRouteRelations';
@@ -16,7 +16,7 @@ const rec=(s:ReturnType<typeof shopC2Fixture>,id:string,focus:'group'|'straight'
 const events=(s:ReturnType<typeof shopC2Fixture>,ids:string[],id:string)=>shopC2Score(s,ids).trace.events.filter(e=>e.sourceInstanceId==='held/'+id);
 describe('C2 reviewed semantic alignment, legacy and global ownership remain separate',()=>{
  it('all72 new definitions are reviewed by the new exact semantic contract, without mutating state',()=>{
-  const s=shopC2Fixture(),defs=profiles.r2JokerDefinitionsFor(s),before=JSON.stringify(s);expect(stableHash(defs)).toBe(SHOP_TARGETED_VALUE_RECOMMENDATION_SEMANTICS);expect(Object.keys(SHOP_C2_RECOMMENDATION_AUDIT).sort()).toEqual(defs.map(d=>d.id).sort());
+  const s=shopC2Fixture(),defs=profiles.r2JokerDefinitionsFor(s),before=JSON.stringify(s);expect(stableHash(defs)).toBe(SHOP_PURCHASE_VALUE_RECOMMENDATION_SEMANTICS);expect(Object.keys(SHOP_C2_RECOMMENDATION_AUDIT).sort()).toEqual(defs.map(d=>d.id).sort());
   for(const d of defs)for(const focus of ['group','straight','flush'] as const)expect(rec(s,d.id,focus).stars).toBeGreaterThan(0);expect(JSON.stringify(s)).toBe(before);
  });
  it('a changed C2 definition is pending, rather than blindly authorizing the run hash',()=>{
