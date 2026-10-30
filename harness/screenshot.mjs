@@ -27,6 +27,21 @@ const report={testedCommit:execFileSync('git',['rev-parse','HEAD'],{encoding:'ut
 const state=async page=>{await page.waitForFunction(()=>!!window.__harness?.game.registry.get('runController'));return page.evaluate(()=>window.__harness.game.registry.get('runController').state);};
 const next=(page,seq)=>page.waitForFunction(seq=>window.__harness.game.registry.get('runController').state.commandSeq>seq&&window.__harness.game.registry.get('runController').status==='idle',seq);
 const ready=page=>page.waitForFunction(()=>{const s=window.__harness.game.scene.getScene('game');return s.scene.isActive()&&!s.playing&&s.cardViews.length>0;});
+const waitPersistentStorage=async(page,touch)=>{
+  for(let attempt=0;attempt<2;attempt++){
+    await page.waitForTimeout(3000);
+    if(await page.evaluate(()=>window.__harness.game.registry.get('persistentStorageReady')===true))return;
+    await openRunMenu(page,touch);
+    const retry=page.getByRole('button',{name:'重试读取',exact:true});
+    if(await retry.isVisible()){
+      if(touch)await retry.tap();else await retry.click();
+      await page.waitForFunction(()=>window.__harness.game.registry.get('persistentStorageReady')===true,null,{timeout:15000});
+      await toggleRunMenu(page,touch);return;
+    }
+    await toggleRunMenu(page,touch);
+  }
+  throw new Error('Persistent storage did not become ready before durable smoke run');
+};
 const revealCard=async(page,id)=>{
   for(let step=0;step<14;step++){
     const info=await page.evaluate(id=>{const s=window.__harness.game.scene.getScene('game'),card=s.cardViews.find(c=>c.card.id===id),index=s.cardViews.findIndex(c=>c.card.id===id);return {visible:!!card?.container.visible,index,start:s.view.layout.handStart};},id);
@@ -64,6 +79,10 @@ try {
       await openMenuSection(page,'more',true);const full=page.locator('.run-fullscreen-toggle');await full.tap();await page.waitForFunction(()=>document.fullscreenElement===document.documentElement&&!document.querySelector('.run-menu-modal').open);
       assert.equal(await full.getAttribute('aria-pressed'),'true');await openMenuSection(page,'more',true);await page.getByRole('button',{name:'退出全屏',exact:true}).tap();await page.waitForFunction(()=>document.fullscreenElement===null&&!document.querySelector('.run-menu-modal').open);fullscreen='PASS (menu browser API; physical toolbar/orientation NOT_RUN)';
     }
+    // The reload assertion below intentionally exercises a durable run. WebKit
+    // can still be finishing its first IndexedDB open when the title appears;
+    // retry the persistent boot before starting this controlled smoke run.
+    await waitPersistentStorage(page,touch);
     await tapUI(page,'title','action/title-start',touch);await waitScene(page,'character-select');
     assert.equal(await page.locator('.qiyu-ensemble-burst-canvas').count(),0,'hero selection does not replay the opening ensemble');
     const count=await page.evaluate(()=>{const s=window.__harness.game.scene.getScene('character-select');const walk=list=>list.reduce((n,o)=>n+(o.name.startsWith('character/')?1:0)+(o.list?walk(o.list):0),0);return walk(s.children.list);});assert.equal(count,6);

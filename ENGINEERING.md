@@ -8,7 +8,7 @@
 - 建议使用 Node.js 22，依赖使用 `npm ci` 和锁文件安装。
 - 游戏是纯静态 H5；核心运行不需要后端、Blender 或素材生成工具。
 
-开发侧按改动运行适用检查并按授权提交、推送 main。新加坡机器的 CI、构建及自动发布由用户另行配置；GitHub Actions 不再是项目部署依赖。以下命令供开发机和部署侧按需使用，提交不代表已经部署。
+开发侧按改动运行适用检查，提交和推送以当前任务授权为准。本机部署侧每分钟检查 main，在独立工作树中运行 CI、构建并发布到 Cloudflare Pages；GitHub Actions 不再是发布依赖。提交或推送不代表已经部署。
 
 ```bash
 npm run dev             # 开发服务器
@@ -119,6 +119,7 @@ tools/          离线素材工具
 - 内容版本、规则身份、模式和内容哈希共同隔离存档；旧数据不静默迁移或清空，应保留导出路径。
 - 多标签页使用写者租约或版本比较，避免两个页面互相覆盖。
 - 首屏恢复读取有 2.5 秒上限；用户在恢复尚未完成或读取失败时明确开始新局，可立即进入页面内存存储，不等待旧局读取；仍须取得写者租约，保护其他正在游戏的页面。过期恢复的读取、失败和收尾不得覆盖新局、释放新操作的忙碌锁或改写存储状态。
+- 超时但尚未开始新局时，菜单的“重试读取”会重新绑定 IndexedDB 并恢复持久存储；已有内存新局不被重试读取覆盖。浏览器冒烟在验证刷新恢复前等待持久存储就绪，避免把有意的内存兜底误判为持久化失败。
 - 内存新局通过菜单外的轻量常驻状态条提示“本局暂未保存，刷新会丢失”，菜单标记待处理提示；旧档仍保留。刷新恢复原 IndexedDB 存档，不自动迁移或把内存局宣称为已持久化。存储恢复后重新加载并开始的新局仍按正常租约、revision 校验和检查点备份写入，再次刷新恢复新局。内存控制器在同页继续或接管时仍绑定原内存存储，不能混入磁盘 revision。`player-entry-storage.test.ts` 覆盖无存档、未结束旧局、挂起、迟到成功/失败/租约、保存失败重试及新局刷新。 `node tests/player-entry-recovery.browser.mjs` 用 Chromium 的真实 IndexedDB、Web Locks 与页面刷新验证五条主路径；可用 `SMOKE_CHROMIUM_EXECUTABLE_PATH` 指定已有浏览器。`node tests/player-entry-recovery-ui.browser.mjs` 通过真实触控验证首页→选角→路线→商店→牌桌，断言关闭菜单时风险提示可见且不覆盖按钮、迟到恢复不跳回旧局，按 HEAD 保存报告和截图。这两个脚本需显式执行，不属于默认 CI browser scope。
 
 ## 7. 表现、输入与资源
@@ -167,13 +168,11 @@ tools/          离线素材工具
 
 牌面遮挡检查测量包含父容器变换的实际四边形相交面积；旋转后的外接矩形包含牌外空白，不能代替真实遮挡。
 
-用户计划在新加坡机器重新配置 CI、构建及自动发布；在完成配置和验证之前，不假定它已经生效。仓库保留的 GitHub 工作流和 `scripts/tangsongpai-autodeploy.sh` 是旧流程文件，其当前实现仍依赖 GitHub 构建产物与检查；保留不等于部署流程已经迁移，也不自动更新服务器脚本或 crontab。
+本机 crontab 每分钟执行 `/usr/local/bin/tangsongpai-autodeploy.sh`；仓库源码是 `scripts/tangsongpai-autodeploy.sh`，修改后须单独安装到执行路径。脚本以 flock 防止重叠，fetch `origin/main` 后等待 5 分钟无新提交，持续提交时最多等待 10 分钟，再在临时 detached worktree 中安装锁定依赖并运行 `npm run verify:ci -- --scope=all`：单元测试、内容校验、类型检查、生产构建，以及 Chromium／Firefox／WebKit 的桌面和手机冒烟测试；手柄相关文件变更时另跑手柄浏览器检查。本机 Vitest 单 worker 运行，Node 堆上限设为 1536 MiB；Playwright 浏览器版本按锁文件安装，浏览器系统依赖需预先安装。失败不会上传，同一失败版本十分钟后重试；`--force` 可立即重试并重验所有门禁。
 
-旧服务器以 `/var/lib/tangsongpai-deploy/deployed-revision` 和 `https://pai.hp666.cc/build-info.json` 核对线上 revision；新加坡机器的具体部署方案尚待用户配置，应以实际运行配置和线上返回的版本验证，不预设旧路径已迁移。不能只比较本机 HEAD 和远端 `main`，也不能把 push 或构建成功当成线上已更新。
+构建产物必须标识目标完整 SHA 和 clean 状态，上传前重新 fetch；若 main 已前进但仍包含该提交，完成本次发布，随后合并处理新提交；若 main 改写且不再包含该提交，则不上传。上传后只有公网 `https://pai.hp666.cc/build-info.json` 返回该 clean revision 才更新 `/var/lib/tangsongpai-deploy/deployed-revision`；传播延迟时记录待确认版本并在后续轮询确认。上传成功后 `scripts/tangsongpai-cache-cloudflare.py`（安装为 `/usr/local/bin/tangsongpai-cache-cloudflare.py`）登记素材哈希，后续上传可复用未变文件；缓存登记失败不影响已有上传，但下次可能重传。日志在 `/var/log/tangsongpai-autodeploy.log`，最近一次 CI 报告在 `/var/lib/tangsongpai-deploy/reports/latest/`。临时工作树删除，不重置或覆盖开发工作区；线上版本、提交状态和 CI 结果分别核对。
 
-GitHub 仓库为 `big-dimple/tangsongpai`；Cloudflare Pages 项目仍为 `dachoupai`，这是现用托管标识，不能随仓库改名替换。技术 ID、存档格式、内容版本与哈希同样不能做全仓名称替换。
-
-检查失败时查看日志并修复，不通过放宽检查或伪造结果交付。开发侧验证、提交／push、新加坡机器的构建和实际线上状态分别报告；仓库中的旧 GitHub Actions 状态不作为本项目新的部署依赖。
+GitHub 仓库为 `big-dimple/tangsongpai`，Cloudflare Pages 项目为 `dachoupai`。三个 GitHub 工作流已禁用，不是本机发布门禁；自动检查不代表真人、美术、设备或平衡验收。检查失败时查看日志并修复，不通过放宽检查或伪造结果交付。
 
 ## 9. 文档维护
 

@@ -44,6 +44,10 @@ export class GameSession {
     document.addEventListener('visibilitychange',()=>{if(document.hidden){void this.run?.flush();void this.replacement?.flush();}});
   }
   get temporaryRun():boolean {return this.saveStore!==this.storage&&!!this.run;}
+  /** True when the current session can persist a new run to IndexedDB. */
+  get persistentReady():boolean {
+    return this.saveStore===this.storage&&this.loaded&&!this.restoreInFlight&&!this.storageUnavailable;
+  }
   get pendingRun():SavedRun|undefined {return this.replacement;}
   subscribe(listener:()=>void):()=>void {this.listeners.add(listener);return ()=>this.listeners.delete(listener);}
   private changed():void {
@@ -61,6 +65,13 @@ export class GameSession {
     if(!this.replacement)return false;this.notice=this.pendingNotice();this.changed();return true;
   }
   async initialize():Promise<void> {
+    // A timed-out empty boot switches to a volatile store so the player can
+    // enter immediately. If no run has started yet, an explicit retry should
+    // switch back to IndexedDB and finish the real restore instead of reading
+    // the empty volatile store forever.
+    if(this.saveStore!==this.storage&&this.loaded&&!this.run&&!this.replacement){
+      this.saveStore=this.storage;this.loaded=false;this.storageUnavailable=false;this.notice='';
+    }
     if(this.working||this.restoreInFlight||this.run||this.blockPending())return;
     // Boot recovery is background work; the home new-game action must stay enabled.
     this.restoreInFlight=true;const generation=++this.restoreGeneration;this.changed();

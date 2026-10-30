@@ -45,6 +45,17 @@ describe('new player and persisted-run entry',()=>{
    const run=await s.start('timeout-new','amo');expect(run?.status).toBe('idle');expect(run?.state.seed).toBe('timeout-new');expect(slots).toEqual(before);expect(s.notice).toContain('刷新会丢失');expect(s.working).toBe(false);
   } finally {vi.useRealTimers();}
  });
+ it('retries persistent restore after a timed-out empty startup',async()=>{
+  const before=await savedOldRun();hangRead=true;vi.useFakeTimers();
+  try {
+   const s=new GameSession(),initializing=s.initialize();
+   await vi.advanceTimersByTimeAsync(2500);await initializing;
+   expect(s.run).toBeUndefined();expect(s.persistentReady).toBe(false);
+   hangRead=false;await s.initialize();
+   expect(s.state()?.seed).toBe('old-unfinished');expect(s.persistentReady).toBe(true);expect(s.notice).toBe('');
+   expect(slots).toEqual(before);
+  } finally {vi.useRealTimers();}
+ });
  it('a failed first save remains pending and retries the same run exactly once',async()=>{
   const s=new GameSession();await s.initialize();failWrite=true;expect(await s.start('quota-case','amo')).toBeUndefined();expect(slots.current).toBeNull();const pending=s.pendingRun!.exportJSON();
   failWrite=false;expect(await s.retry()).toBe(true);expect(s.run!.exportJSON()).toBe(pending);expect(slots.revision).toBe(1);

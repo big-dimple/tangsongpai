@@ -169,12 +169,13 @@ export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|un
   panel.append(more);
   function refreshState():void {
     const run=session.run,pending=session.pendingRun,saving=pending??run;
+    game.registry.set('persistentStorageReady',session.persistentReady);
     if(run){game.registry.set('runController',run);game.registry.set('runState',run.state);}else{game.registry.remove('runController');game.registry.remove('runState');}
     const elsewhere=!!session.lease.elsewhere||run?.status==='readonly';
     status.textContent=session.storageUnavailable?'浏览器暂时无法保存进度，请重试。':!session.loaded?(session.notice?'暂时无法读取进度，请重试。':'正在准备…'):pending?'这次操作还没保存，请重试，或取消返回原进度。':elsewhere?'游戏已在另一页打开。':run?.status==='paused'?(run.lastError==='quota-exceeded'?'空间不足，暂时无法保存。请清理浏览器空间后重试。':'暂时无法保存进度，请重试。'):run?.status==='saving'?'正在保存…':session.notice||'';
     resume.hidden=!run;resume.textContent=elsewhere?'在这里继续':'继续游戏';resume.disabled=session.working||!!pending||!!run&&!['idle','readonly'].includes(run.status);
     retry.hidden=saving?.status!=='paused';retry.disabled=session.working;cancelCandidate.hidden=!pending;cancelCandidate.disabled=session.working||saving?.status==='saving';
-    reload.hidden=session.loaded&&!session.storageUnavailable;reload.disabled=session.working||!!pending||!session.notice;
+    reload.hidden=session.persistentReady||!!run||!!pending||!session.notice;reload.disabled=session.working||!!pending||!session.notice;
     takeover.hidden=!!run||!session.loaded||!session.lease.elsewhere;takeover.disabled=session.working||!!pending;
     start.disabled=session.working||!!pending||!session.loaded||session.storageUnavailable||!!run&&!session.lease.writable||run?.status==='saving'||run?.status==='paused';
     start.className='run-menu-new dialog-primary';
