@@ -21,7 +21,7 @@ it('explains multiplication and the separate gift condition without changing the
  expect(copy.detail).toContain('被封禁计分时暂停');
  expect(copy.shelf).not.toContain('+1.5');
  const paused=jokerExtraBonusCopy('polychrome',{definitionId:'c12',chapterDisabled:true});
- expect(paused.shelf).toBe('多彩 · 额外倍率×1.5（本章暂停）');expect(paused.detail).toContain('本章封角期间暂停');
+ expect(paused.shelf).toBe('多彩 · 额外倍率×1.5（本章暂停）');expect(paused.detail).toContain('本章计分封禁期间暂停');
 });
 
 it('matches actual C12 multiplication on a high card before any straight/flush gift qualification',()=>{

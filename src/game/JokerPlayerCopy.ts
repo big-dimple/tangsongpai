@@ -3,14 +3,14 @@ import {playerText} from './Brand';
 import {cardDefinitionName} from './tangsongCardNames';
 import {jokerPlainCopy} from './JokerPlainCopy';
 import {jokerSavedGrowthCopy} from './JokerSavedGrowthCopy';
-import {R2_ROUTE_GROWTH_IDS,R2_ROUTE_GROWTH_JOKERS,R2_VALUE_JOKERS} from '../content/r2RouteGrowthJokers';
+import {R2_ROUTE_GROWTH_IDS,R2_ROUTE_GROWTH_JOKERS,R2_VALUE_JOKERS,R2_TARGETED_VALUE_JOKERS} from '../content/r2RouteGrowthJokers';
 import {JOKER_ROUTE_GROWTH_TEMPLATES} from './JokerRouteGrowthTemplates';
 import {R2_GROUP_HAND_TYPES,r2LargestScoringRankGroup} from '../domain/r2GroupHands';
 import {R2_GROUP_UPGRADE_IDS,R2_GROUP_UPGRADE_JOKERS} from '../content/r2GroupUpgradeJokers';
 import {JOKER_GROUP_UPGRADE_TEMPLATES} from './JokerGroupUpgradeTemplates';
 import {R2_COMBO_GROWTH_JOKERS,R2_COMBO_GROWTH_IDS} from '../content/r2ComboGrowthJokers';
 import {JOKER_COMBO_GROWTH_TEMPLATES} from './JokerComboGrowthTemplates';
-import {JOKER_ASSIST_TEMPLATES} from './JokerAssistTemplates';
+import {isAssistFirstScore,JOKER_ASSIST_TEMPLATES} from './JokerAssistTemplates';
 import {R2_ASSIST_JOKERS,R2_ASSIST_ADAPTED_IDS} from '../content/r2AssistJokers';
 import templates from './JokerPlayerTemplates.json';
 import type {CardAbilityCopy} from './CardCopy';
@@ -69,16 +69,28 @@ export function jokerPlayerCopy(definition:R2JokerDefinition,instance:R2JokerIns
   return {condition:line,value:'',state:'',rules:'',flavor:'',summary:line,compact:line,narrow:line,benefit:line,playerCopy:true,minimal:true,plain:{line,tile:line,status:'',essential:'',details:'',fallback:false}};
  }
  const combo=R2_COMBO_GROWTH_IDS.includes(definition.id)&&R2_COMBO_GROWTH_JOKERS.includes(definition);
- const grouped=R2_GROUP_UPGRADE_IDS.includes(definition.id)&&R2_GROUP_UPGRADE_JOKERS.includes(definition);
+ const grouped=R2_GROUP_UPGRADE_IDS.includes(definition.id)&&(R2_GROUP_UPGRADE_JOKERS.includes(definition)||R2_TARGETED_VALUE_JOKERS.includes(definition));
  const route=R2_ROUTE_GROWTH_IDS.includes(definition.id)&&(R2_ROUTE_GROWTH_JOKERS.includes(definition)||R2_VALUE_JOKERS.includes(definition));
- const template=route?JOKER_ROUTE_GROWTH_TEMPLATES[definition.id]:grouped?JOKER_GROUP_UPGRADE_TEMPLATES[definition.id]:combo?JOKER_COMBO_GROWTH_TEMPLATES[definition.id]:R2_ASSIST_ADAPTED_IDS.includes(definition.id)&&R2_ASSIST_JOKERS.includes(definition)?JOKER_ASSIST_TEMPLATES[definition.id]:copyTemplates[definition.id];
+ const template=route?JOKER_ROUTE_GROWTH_TEMPLATES[definition.id]:grouped?JOKER_GROUP_UPGRADE_TEMPLATES[definition.id]:combo?JOKER_COMBO_GROWTH_TEMPLATES[definition.id]:R2_ASSIST_ADAPTED_IDS.includes(definition.id)&&(R2_ASSIST_JOKERS.includes(definition)||isAssistFirstScore(definition))?JOKER_ASSIST_TEMPLATES[definition.id]:copyTemplates[definition.id];
  if(!template)return{condition:'查看这张牌的条件与效果。',value:'完整规则见下方。',state:instance?'按实际出牌与交易判断':'尚未购买，买入后才会生效',flavor:'',rules:playerText(definition.description),summary:'条件与效果 · 查看',compact:memory.short,narrow:memory.short,benefit:'条件与效果',playerCopy:true};
  const values:Record<string,string>={};for(const[key,binding]of Object.entries(template.bindings))values[key]=formatted(bindingValue(binding.source,definition),binding.format);
  const growth=instance?{...r2GrowthMinimums(definition),...instance.growth}:{};
  for(const key of ['heat','multiplier','pendingHeat','coefficient'])values['saved_'+key]=fractionText(growth[key]??zero);
  Object.assign(values,{remaining:String(memory.remaining??''),remainingUses:String(memory.remainingUses??''),usage_scope:ctx.inStage?'本场':'下场',entry_hand_limit_state:ctx.inStage&&ctx.entryHandLimit!==undefined?'本场入场时手牌上限：'+ctx.entryHandLimit:'下次进场时判断',previous_hand_type:ctx.previousHandTypeKnown===false?'未知（旧记录未保存）':ctx.previousHandType?HAND_LABELS[ctx.previousHandType]:'没有上一手',reward_progress:memory.savedShort,current_context_value:instance?r2JokerValue(instance,ctx,definition):''});
  const render=(text:string)=>playerText(text.replace(/\{([\w]+)\}/g,(_,key)=>values[key]??'见完整规则'));
- const main=render(template.main).replaceAll('整手倍率','本次出牌的倍率'),limits=template.limits.map(render),rules=template.rules.map(render),state:string[]=[];
+ const fixed=(definition.id==='b03'||definition.id==='b10'||definition.id==='d10')?definition.hooks.find(h=>h.phase==='jokerScore'&&h.condition.kind==='always'&&h.operations.length===1&&(h.operations[0].kind==='add-heat'||h.operations[0].kind==='add-multiplier'))?.operations[0]:undefined;
+ let main=render(template.main).replaceAll('整手倍率','本次出牌的倍率');
+ if(fixed?.kind==='add-heat'){
+  main=`每次出牌热度+${fractionText(fixed.value)}；`+main;
+  const empty=definition.hooks.flatMap(h=>h.operations).find(o=>o.kind==='add-heat-per-empty-slot');
+  if(empty?.kind==='add-heat-per-empty-slot')main+=`两项合计最多+${fractionText(Rational.fromJSON(fixed.value).add(Rational.fromJSON(empty.cap)).toJSON())}热度。`;
+ }
+ if(fixed?.kind==='add-multiplier'){
+  main=`每次出牌倍率+${fractionText(fixed.value)}；`+main;
+  const growth=definition.hooks.flatMap(h=>h.operations).find(o=>o.kind==='add-growth'&&o.key==='multiplier');
+  if(growth?.kind==='add-growth')main+=`固定加成与成长合计最多+${fractionText(Rational.fromJSON(fixed.value).add(Rational.fromJSON(growth.cap)).toJSON())}倍率。`;
+ }
+ const limits=template.limits.map(render),rules=template.rules.map(render),state:string[]=[];
  const random=definition.hooks.some(h=>h.operations.some(o=>o.kind==='chance-add-heat'));
  if(!instance)state.push('尚未购买，买入后才会生效');
  else{
@@ -121,7 +133,7 @@ export function jokerPlayerCopy(definition:R2JokerDefinition,instance:R2JokerIns
    if((e.operation==='read-growth'||e.operation==='consume-growth')&&BigInt(e.value.n)===0n)state.push('本手成长加成+0');
    if(e.operation==='read-coefficient'&&Rational.fromJSON(e.value).compare(new Rational(1n))===0)state.push('本手成长加成×1');
    if(e.operation==='multiply-coefficient'&&e.growthBefore&&e.growthAfter){const changed=Rational.fromJSON(e.growthAfter).compare(Rational.fromJSON(e.growthBefore))>0;state.push('出牌结算后系数×'+fractionText(e.value)+'：'+fractionText(e.growthBefore)+' → '+fractionText(e.growthAfter)+(changed?'，下次出牌生效':'，已达上限，本次未增加'));}
-   if(e.operation==='consume-rescue')state.push('救火已消耗；返还次数也不会恢复');
+   if(e.operation==='consume-rescue')state.push('倍率已消耗；返还次数也不会恢复');
    if(grouped&&e.operation==='add-gold')state.push('实际同点组合过关收入 +'+fractionText(e.value)+'金');
    if(e.operation==='add-gold-per-held')state.push('实际留牌过关收入 +'+fractionText(e.value)+'金');
    if(e.operation==='add-gold-per-capital')state.push('奖励前本金 '+e.goldBeforeRewards+'金；实际额外收入 +'+fractionText(e.value)+'金');

@@ -45,7 +45,7 @@ export function r2MechanismBadge(definition:R2JokerDefinition){
   const alternation=operations.find(operation=>operation.kind==='multiply-coefficient-once');
   if(alternation?.kind==='multiply-coefficient-once')return {label:'交替成长',value:'系数 ×'+fractionText(alternation.value),paper:0xf0d3c7};
   const rescue=operations.find(operation=>operation.kind==='rescue-multiplier');
-  if(rescue?.kind==='rescue-multiplier')return {label:'一次救火',value:'×'+fractionText(rescue.value),paper:0xe2e3ed};
+  if(rescue?.kind==='rescue-multiplier')return {label:'首次弃牌备倍率',value:'×'+fractionText(rescue.value),paper:0xe2e3ed};
   const income=operations.find(operation=>operation.kind==='add-gold-per-held'||operation.kind==='add-gold-per-capital');
   if(income?.kind==='add-gold-per-held')return {label:'实际留牌收入',value:'留≥'+income.minimum+' · 最多'+income.cap+'金',paper:0xf2dfbc};
   if(income?.kind==='add-gold-per-capital')return {label:'奖励前本金收入',value:'每'+income.divisor+'金+1 · 最多'+income.cap+'金',paper:0xf2dfbc};
@@ -167,8 +167,8 @@ export function r2ScoreOperationText(event:ScoreEvent,definition?:R2JokerDefinit
   if(event.operation==='rescue-hand')return '返还 '+value+' 次出牌'+resource;
   if(event.operation==='refund-hand')return '返还 '+value+' 次出牌'+resource+'（本场一次）';
   if(event.operation==='multiply-coefficient')return '出牌结算后系数 ×'+value+(event.growthBefore&&event.growthAfter?'：'+fractionText(event.growthBefore)+' → '+fractionText(event.growthAfter):'')+' · 下一次出牌生效';
-  if(event.operation==='rescue-multiplier')return '救火 ×'+value+' 倍率';
-  if(event.operation==='consume-rescue')return '救火已消耗';
+  if(event.operation==='rescue-multiplier')return '倍率 ×'+value;
+  if(event.operation==='consume-rescue')return '倍率已消耗';
   if(event.operation==='add-gold-per-held')return '实际留牌收入 +'+value+' 金'+resource;
   if(event.operation==='add-gold-per-capital')return '奖励前本金 '+event.goldBeforeRewards+' 金 · 实际额外收入 +'+value+' 金'+resource;
   if(event.operation==='read-coefficient')return '×'+value+' 系数 · 本手读取';
@@ -197,8 +197,8 @@ export function r2TransactionText(event:JokerTransaction,source:R2JokerDefinitio
   else if(event.operation==='add-gold'&&event.rewardDefinitionId)effect=cardDefinitionName(getR2Tool(event.rewardDefinitionId))+' · 库存已满转 +'+amount+' 金';
   else if(event.operation==='increment-clear-cycle')effect='过关计数 '+event.resourceBefore+' → '+event.resourceAfter;
   else if(event.operation==='add-gold'||event.operation==='add-gold-limited')effect='+'+amount+' 金';
-  else if(event.operation==='arm-rescue')effect='救火已备好 · 下一次出牌后消耗';
-  else if(event.operation==='consume-rescue')effect='救火已消耗';
+  else if(event.operation==='arm-rescue')effect='倍率已准备 · 下一次出牌后消耗';
+  else if(event.operation==='consume-rescue')effect='倍率已消耗';
   else if(event.operation==='add-gold-per-held')effect='实际留牌收入 +'+amount+' 金';
   else if(event.operation==='add-gold-per-capital')effect='奖励前本金 '+event.goldBeforeRewards+' 金 · 实际额外收入 +'+amount+' 金';
   else if(event.operation==='multiply-coefficient')effect=coefficientChangeText(event.operation,event.growthBefore,event.growthAfter);

@@ -33,9 +33,9 @@ it('C2 fixed score, later growth, sale retention and opening rescue match their 
  expect(fields(copy('c06'))).toContain('0.5');for(const hand of ['同花','同花顺','同花葫芦','同花五条'])expect(copy('c06').plain!.timingLine).toContain(hand);
  expect(copy('jiedongfeng').plain!.essential).toContain('每次出牌只加一次');expect(copy('jiedongfeng').plain!.line).toContain('倍率+1.5');
  expect(copy('e11').plain!.essential).toContain('出售其他唐宋牌保留已有倍数，但本场不增长');expect(copy('e11').plain!.essential).toContain('出售本牌后重买从 ×1');
- expect(copy('f10').plain!.line).toContain('首次成功弃牌');expect(copy('f10').plain!.line).toContain('×3');expect(copy('f10').plain!.essential).toContain('不要求弃牌前缺少成型牌');
+ expect(copy('f10').plain!.line).toContain('首次出牌前第一次成功弃牌');expect(copy('f10').plain!.line).toContain('×3');expect(copy('f10').plain!.essential).toContain('不要求弃牌前缺少成型牌');
  const j=r2CreateJoker('c04','mature',8,undefined,s);j.growth.heat={n:'100',d:'1'};const capped=jokerAbilityCopyForRun(s,'c04',j,context(s));expect(capped.plain!.timingLine).toContain('最多攒+100热度');expect(capped.plain!.tile).toContain('不再增加');
- const rescue=r2CreateJoker('f10','rescue',8,undefined,s);rescue.counters!.rescueArmed=true;expect(jokerAbilityCopyForRun(s,'f10',rescue,{...context(s),inStage:true}).state).toContain('救火待出牌');
+ const rescue=r2CreateJoker('f10','rescue',8,undefined,s);rescue.counters!.rescueArmed=true;expect(jokerAbilityCopyForRun(s,'f10',rescue,{...context(s),inStage:true}).state).toContain('倍率待出牌');
 });
 it('C2 summary, expanded rules and existing shop recommendation share the upgraded family',()=>{
  const s=start(),offer={offerId:'copy-offer',definitionId:'mantangcai',price:r2Price('mantangcai',undefined,s),consumed:false};

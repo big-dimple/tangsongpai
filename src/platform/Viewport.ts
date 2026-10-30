@@ -1,6 +1,23 @@
 import type Phaser from 'phaser';
 export const FRAMEBUFFER_PIXELS=9_000_000;
 const logicalSizes=new WeakMap<Phaser.Game,{width:number;height:number}>();
+const sizeKey='tangsongpai-canvas-size-v1';
+const sizeEvent='tangsongpai-canvas-size-change';
+export type CanvasSize='auto'|'standard'|'large';
+export function canvasSize():CanvasSize {try{const stored=localStorage.getItem(sizeKey);return stored==='large'||stored==='standard'?stored:'auto';}catch{return 'auto';}}
+export function setCanvasSize(size:CanvasSize):void {try{localStorage.setItem(sizeKey,size);}catch{/* The setting still applies for this page. */} currentSize=size;window.dispatchEvent(new Event(sizeEvent));}
+let currentSize:CanvasSize|undefined;
+export function selectedCanvasSize():CanvasSize {return currentSize??canvasSize();}
+/** CSS medium reflects the browser's default font size even when the page sets a root size. */
+export function browserRequestsLargeText():boolean {
+  if(typeof document==='undefined'||!document.body||typeof getComputedStyle==='undefined')return false;
+  const probe=document.createElement('span');probe.style.cssText='position:fixed;visibility:hidden;pointer-events:none;font-size:medium';document.body.append(probe);
+  try{return parseFloat(getComputedStyle(probe).fontSize)>=20;}finally{probe.remove();}
+}
+/** Keep the reflow viewport within the smallest supported portrait layout. */
+export function canvasSizeFactor(width:number,height:number,size:CanvasSize):number {
+  return (size==='large'||size==='auto'&&browserRequestsLargeText())?Math.max(1,Math.min(1.2,width/320,height/568)):1;
+}
 
 /** Keep layout / input in CSS pixels while the framebuffer uses device pixels. */
 export function viewportMetrics() {
@@ -24,20 +41,25 @@ export function installViewport(game:Phaser.Game):void {
   };
   const resize=()=>{
     const {width,height,density}=viewportMetrics();
-    logicalSizes.set(game,{width,height});
     const backingWidth=Math.ceil(width*density),backingHeight=Math.ceil(height*density);
-    if(game.scale.width===backingWidth&&game.scale.height===backingHeight&&game.scale.zoom===1/density){game.canvas.style.width=width+'px';game.canvas.style.height=height+'px';syncInputBounds();return;}
-    game.scale.zoom=1/density;
+    const zoom=1/(density*canvasSizeFactor(width,height,selectedCanvasSize()));
+    logicalSizes.set(game,{width:backingWidth*zoom,height:backingHeight*zoom});
+    if(game.scale.width===backingWidth&&game.scale.height===backingHeight&&game.scale.zoom===zoom){game.canvas.style.width=width+'px';game.canvas.style.height=height+'px';syncInputBounds();return;}
+    game.scale.zoom=zoom;
     game.scale.resize(backingWidth,backingHeight);
     // Phaser autoRound floors backing/zoom CSS dimensions at fractional DPR.
     game.canvas.style.width=width+'px';game.canvas.style.height=height+'px';syncInputBounds();
+    // Phaser emits resize before its CSS size is restored; native overlays need final bounds.
+    game.scale.emit?.('resize',game.scale.gameSize,game.scale.baseSize,game.scale.displaySize);
   };
   const observer=new ResizeObserver(resize);observer.observe(host);
   window.visualViewport?.addEventListener('resize',resize);
   window.addEventListener('resize',resize);
+  window.addEventListener('focus',resize);
+  window.addEventListener(sizeEvent,resize);
   let media:MediaQueryList;const watchDensity=()=>{media?.removeEventListener('change',changed);media=window.matchMedia(`(resolution: ${window.devicePixelRatio||1}dppx)`);media.addEventListener('change',changed);};
   const changed=()=>{resize();watchDensity();};watchDensity();
-  game.events.once('destroy',()=>{observer.disconnect();window.visualViewport?.removeEventListener('resize',resize);window.removeEventListener('resize',resize);media.removeEventListener('change',changed);logicalSizes.delete(game);});
+  game.events.once('destroy',()=>{observer.disconnect();window.visualViewport?.removeEventListener('resize',resize);window.removeEventListener('resize',resize);window.removeEventListener('focus',resize);window.removeEventListener(sizeEvent,resize);media.removeEventListener('change',changed);logicalSizes.delete(game);});
   resize();
 }
 

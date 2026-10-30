@@ -23,15 +23,15 @@ interface SampleCopy extends Omit<CardAbilityCopy,'bodyActive'|'editionActive'|'
 }
 const samples:Record<string,SampleCopy>={
   f09:{condition:'这场还没成功弃牌？',value:'整手倍率 ×1.5',benefit:'倍率×1.5',summary:'这场没弃过牌，整手倍率×1.5',compact:'不弃×1.5',narrow:'×1.5',operation:'multiply-multiplier',
-    flavor:'稿子不换，好戏照演。',rules:'每次出牌时，只要本场成功弃牌次数为0，整手倍率乘1.5。成功弃牌后，本场不再获得本体×1.5；额外加成仍正常结算。返还弃牌次数也不能恢复本体资格，下一场重新判定。Boss计分封禁时，原有计分效果与额外加成均暂停。'},
+    flavor:'稳住手牌，积累优势。',rules:'每次出牌时，只要本场成功弃牌次数为0，整手倍率乘1.5。成功弃牌后，本场不再获得本体×1.5；额外加成仍正常结算。返还弃牌次数也不能恢复本体资格，下一场重新判定。Boss计分封禁时，原有计分效果与额外加成均暂停。'},
   f04:{condition:'出牌开始时只剩 3 金币或更少？',value:'整手倍率 +3',benefit:'倍率+3',summary:'出牌时不超过3金，整手倍率+3',compact:'≤3金+3',narrow:'+3倍',operation:'add-multiplier',
     flavor:'钱包躺平，倍率上班。',rules:'本次出牌开始时金币≤3，整手倍率加3，不是乘3。读取本手开始时的金币快照；本手幸运牌等收入不会改变本手资格。之后的出牌按那一手开始时的金币重新判断。'},
   a03:{condition:'这手只打出 1 张牌？',value:'整手热度 +35',benefit:'热度+35',summary:'只出1张牌，整手热度+35',compact:'单张+35',narrow:'+35热',operation:'add-heat',
-    flavor:'一张牌，也能独占舞台。',rules:'实际打出的牌恰好1张时，整手热度加35。看打出张数，不是参与计分的张数；打出多张高牌，即使只有一张提供点数，也不触发。本体每手判断一次，扑克重触发不重复整手能力。'},
+    flavor:'一张牌，也能得高分。',rules:'实际打出的牌恰好1张时，整手热度加35。看打出张数，不是参与计分的张数；打出多张高牌，即使只有一张提供点数，也不触发。本体每手判断一次，扑克重触发不重复整手能力。'},
   pengci:{condition:'这手牌型是高牌？',value:'整手倍率 +2',benefit:'倍率+2',summary:'打出高牌，整手倍率+2',compact:'高牌+2',narrow:'+2倍',operation:'add-multiplier',
     flavor:'牌型不凑巧，倍率来帮忙。',rules:'按实际打出牌组判定，牌型为高牌时，整手倍率加2。高牌不等于只打1张：打出多张但未组成更高牌型，也可能是高牌。读取正式牌型判定，不按有几张牌参与计分猜测。'},
   huimaqiang:{condition:'轮到本场第 3、4、5 次出牌？',value:'整手倍率 ×2',benefit:'倍率×2',summary:'本场第3至5手，整手倍率×2',compact:'3–5手×2',narrow:'×2',operation:'multiply-multiplier',
-    flavor:'好戏连台前三段，枪枪回马。',rules:'本场第3、4、5次成功出牌时，整手倍率乘2；第6次起不再触发。当前将要出的是已完成次数加1；弃牌不推进出牌序号，返还出牌机会也不回退序号。进入下一场从第1次重新计数。'},
+    flavor:'把握时机，再出一击。',rules:'本场第3、4、5次成功出牌时，整手倍率乘2；第6次起不再触发。当前将要出的是已完成次数加1；弃牌不推进出牌序号，返还出牌机会也不回退序号。进入下一场从第1次重新计数。'},
 };
 
 /** Five curated presentations; actual hand activity comes from the shared public/recorded ledger. */
@@ -64,7 +64,7 @@ export function cardAbilityCopy(id:string,context:CardAbilityContext):CardAbilit
     else {
       const next=context.playIndex+1,inWindow=next>=3&&next<=5;
       result.state=`下一手是本场第 ${next} 次出牌 · ${inWindow?'本体倍率×2':next<3?'第 3 次触发倍率×2':'第 5 次后不再触发'}`;
-      result.compact=inWindow?`第${next}手×2`:next<3?'待第3手':'不再触发';result.narrow=inWindow?sample.narrow:next<3?'待3':'已谢幕';
+      result.compact=inWindow?`第${next}手×2`:next<3?'待第3手':'不再触发';result.narrow=inWindow?sample.narrow:next<3?'待3':'已结束';
     }
   }else {result.state='选牌后判断';result.compact='待选牌';result.narrow='待选';}
   if(result.bodyActive!==undefined){
@@ -79,7 +79,7 @@ export function cardAbilityCopy(id:string,context:CardAbilityContext):CardAbilit
         if(id==='f04')result.state=`本手开始 ${context.gold} 金币 · 需要≤3金币`;
         if(id==='huimaqiang'&&context.playIndex!==undefined){
           const next=context.playIndex+1;
-          result.state=next>=3&&next<=5?`本手是本场第 ${next} 次 · 本体倍率×2`:`本手是本场第 ${next} 次 · 需要第3至5次`;result.compact=next>=3&&next<=5?`第${next}手×2`:next<3?'待第3手':'不再触发';result.narrow=next>=3&&next<=5?sample.narrow:next<3?'待3':'已谢幕';
+          result.state=next>=3&&next<=5?`本手是本场第 ${next} 次 · 本体倍率×2`:`本手是本场第 ${next} 次 · 需要第3至5次`;result.compact=next>=3&&next<=5?`第${next}手×2`:next<3?'待第3手':'不再触发';result.narrow=next>=3&&next<=5?sample.narrow:next<3?'待3':'已结束';
         }
       }
     }

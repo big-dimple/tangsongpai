@@ -49,10 +49,10 @@ export function jokerExtraBonusCopy(edition?:Edition,context:{definitionId?:stri
   const example=edition==='polychrome'?'（如倍率4→6）':'';
   const condition=context.definitionId==='c12'?'不用先达成过关赠品条件；这项加成只用于这张唐宋牌的计分。赠送花色染仍须在同一场分别打出普通顺子和普通同花，再成功过关；同花顺不能替代。花色染只改变扑克花色，保留受染扑克原有的额外加成，不会因此把扑克变成多彩':'卡牌原有计分效果的条件没达成，也会有这项加成';
   return {label:row.name,shelf:`${row.name} · 额外${mathText(effect)}`+(context.chapterDisabled?'（本章暂停）':''),
-    detail:`${row.name} · 额外加成：`+(context.chapterDisabled?'本章封角期间暂停。':'')+`每次出牌先算这张唐宋牌原有的计分效果，再将${action}${example}。${condition}；被封禁计分时暂停。`};
+    detail:`${row.name} · 额外加成：`+(context.chapterDisabled?'本章计分封禁期间暂停。':'')+`每次出牌先算这张唐宋牌原有的计分效果，再将${action}${example}。${condition}；被封禁计分时暂停。`};
 }
 function enhancementDefinition(id:NonNullable<PlayingCard['enhancement']>):R2EnhancementDefinition {
-  const row=R2_ENHANCEMENTS.find(row=>row.id===id);if(!row)throw Error(`unknown-enhancement: ${id}`);return row;
+  const row=R2_ENHANCEMENTS.find(row=>row.id===id);if(!row)throw Error(`unknown-enhancement: ${id}`);return {...row,name:cardDefinitionName(row)};
 }
 function mathText(effect:NonNullable<R2EditionDefinition['effect']>):string {
   const value=fractionText(effect.value);
@@ -126,10 +126,10 @@ function targetText(tool:R2ToolDefinition):string {
 function toolEffectSummary(tool:R2ToolDefinition):string {
  const op=tool.operation;
  switch(op.kind){
- case 'upgrade-hand':return op.handType?`给${HAND_LABELS[op.handType]}升级`:'给一种牌型升级';
- case 'delete-cards':return '永久删掉选中的扑克';
+ case 'upgrade-hand':return op.handType?`已发现的${HAND_LABELS[op.handType]}升${op.levels}级`:`选择一种已发现牌型，升${op.levels}级`;
+ case 'delete-cards':return tool.target.kind==='cards'?`选择${range(tool.target.minimum,tool.target.maximum)}张扑克，永久删除`:'永久删掉选中的扑克';
  case 'set-suit':return `把选中的扑克改成${suitNames[op.suit]}${SUIT_SYMBOL[op.suit]}`;
- case 'copy-card':return tool.id==='S03'?`选择1张扑克，复制出${op.copies}张新牌，原牌保留；新牌入抽牌堆底，不立即补牌`:`复制选中的扑克${op.copies}张，原牌保留；新牌入抽牌堆底，不立即补牌`;
+ case 'copy-card':return tool.id==='S03'?`选择1张扑克，复制出${op.copies}张新牌，原牌保留；新牌入抽牌堆底，不立即补牌；下一场洗牌后可能抽到`:`复制选中的扑克${op.copies}张，原牌保留；新牌入抽牌堆底，不立即补牌`;
  case 'shift-rank':return `选中的扑克点数${op.delta>0?'+':'−'}${Math.abs(op.delta)}`;
  case 'set-enhancement':return enhancementSummary(enhancementDefinition(op.enhancement));
  case 'add-gold':return `获得${op.amount}金`;
@@ -165,7 +165,7 @@ function operationText(tool:R2ToolDefinition):string {
     case 'upgrade-hand':return `${op.handType?`固定升级${HAND_LABELS[op.handType]}`:'所选牌型'}等级+${op.levels}，上限${limits.handLevelMaximum}级。只影响未来出牌，已确定的计分与回看保持原结果。`;
     case 'delete-cards':return '永久删除所选扑克，随后各场也不再出现。当前场不补抽被删掉的手牌。';
     case 'set-suit':return `所选扑克永久改为${suitNames[op.suit]}${SUIT_SYMBOL[op.suit]}，保留点数、增强和原有额外加成；不会给扑克新增多彩等加成。`;
-    case 'copy-card':return `保留原牌，新建${op.copies}张完整复制，复制点数、花色、增强和额外加成，不复制本场临时失效。新牌置于真实抽牌堆底部，不洗牌、不立即补抽，牌组最多${limits.deckMaximum}张。`;
+    case 'copy-card':return `保留原牌，新建${op.copies}张完整复制，复制点数、花色、增强和额外加成，不复制本场临时失效。新牌置于真实抽牌堆底部，不洗牌、不立即补抽。`+(tool.phases.includes('await-input')?'场内使用时，抽到堆底才可能拿到新牌；':'')+`下一场入场时整副有效牌组重新洗牌，新牌可能在发牌或之后补牌时抽到，不保证抽到。牌组最多${limits.deckMaximum}张。`;
     case 'shift-rank':return `所选扑克点数${op.delta>0?'+':'−'}${Math.abs(op.delta)}，保持花色、增强和额外加成。点数范围${op.minimum}至${op.maximum}（A），不循环：${op.delta>0?'A不能再升':'2不能再降'}。`;
     case 'set-enhancement':{
       const enhancement=enhancementDefinition(op.enhancement);
@@ -238,7 +238,7 @@ export function toolInfo(id:string,identity:R2ContentIdentity={}):ToolInfo {
   const cached=toolCache.get(cacheKey);if(cached)return cached;
   const family=toolFamilyLabel(tool.family);
   const info=Object.freeze({name:cardDefinitionName(tool),family:tool.family,label:`${family} · ${cardDefinitionName(tool)}`,
-    summary:(finish?`第${R2_S04_FINISH_CONTRACT.minimumChapter}章起，已有至少50%目标花色才可收尾；`:'')+toolSummary(tool),description:`${tool.phases.map(phase=>phase==='shop'?'商店':'待出牌').join(' / ')}可用。${targetText(tool)}${operationText(tool)}`+(finish?`第${R2_S04_FINISH_CONTRACT.minimumChapter}章起，目标花色须占存活牌组至少50%，销毁牌不计。获取和使用时分别重核；买后若未达标，可保留或放弃。店内染色跨过门槛不会自动换货，须按原价刷新或过关后等下一店；均不保证出现独幕。`:''),
+    summary:(finish?`第${R2_S04_FINISH_CONTRACT.minimumChapter}章起，已有至少50%目标花色才可收尾；`:'')+toolSummary(tool),description:`${tool.phases.map(phase=>phase==='shop'?'商店':'待出牌').join(' / ')}可用。${targetText(tool)}${operationText(tool)}`+(finish?`第${R2_S04_FINISH_CONTRACT.minimumChapter}章起，目标花色须占存活牌组至少50%，销毁牌不计。获取和使用时分别重核；买后若未达标，可保留或放弃。店内染色跨过门槛不会自动换货，须按原价刷新或过关后等下一店；均不保证出现${cardDefinitionName(tool)}。`:''),
     cost:toolCost(tool,price),risk:toolRisk(tool),artUrl:goodsArtUrl(id,'tool-card','thumbnail')??toolArt(tool),detailArtUrl:goodsArtUrl(id,'tool-card','detail'),fallbackArtUrl:toolArt(tool)});
   toolCache.set(cacheKey,info);return info;
 }
@@ -265,7 +265,7 @@ const itemCache=new Map<string,ItemInfo>();
 export function itemInfo(id:string):ItemInfo {
   const cached=itemCache.get(id);if(cached)return cached;
   const item=R2_LONG_TERM_ITEMS.find(row=>row.id===id);if(!item)throw Error(`unknown-r2-item: ${id}`);
-  const info=Object.freeze({name:item.name,summary:itemDescription(item).replace(/^商店基准售价[^。]*。/,'').split('。')[0],description:itemDescription(item),artUrl:goodsArtUrl(id,'item-card','thumbnail')??itemArt(item),detailArtUrl:goodsArtUrl(id,'item-card','detail'),fallbackArtUrl:itemArt(item)});
+  const info=Object.freeze({name:cardDefinitionName(item),summary:itemDescription(item).replace(/^商店基准售价[^。]*。/,'').split('。')[0],description:itemDescription(item),artUrl:goodsArtUrl(id,'item-card','thumbnail')??itemArt(item),detailArtUrl:goodsArtUrl(id,'item-card','detail'),fallbackArtUrl:itemArt(item)});
   itemCache.set(id,info);return info;
 }
 
@@ -334,7 +334,7 @@ function toolArt(tool:R2ToolDefinition):string {
     case 'exchange-hand-levels':body=`<path d="M118 203h63v113l-31-22-32 22ZM204 203h63v113l-31-22-32 22" fill="${colors.jade}" stroke="${colors.brass}"/>${text(150,265,`−${op.loss}`,27)}${text(236,265,`+${op.gain}`,27)}${arrow(143,352)}${arrow(238,332,false)}`;break;
     case 'rare-joker-reward':body=`<path d="M192 182l60 39 15 51-75 74-75-74 15-51ZM132 221h120l-60 125ZM117 272h150" fill="${colors.jade}" stroke="${colors.brass}"/>${star(192,249,18)}${text(192,379,'稀有机缘',17)}`;break;
     case 'set-joker-edition':body=`<path d="M120 222l18-24 17 27 13-22 14 41-6 77-27 15-28-29Z" stroke="${colors.brass}" stroke-dasharray="4 5" opacity=".5"/><path d="M207 210l18-24 17 27 14-22 13 41-6 81-27 18-28-29Z" fill="${colors.jade}" stroke="${colors.brass}"/><path d="M224 249l13-4 11 4m-18 31 16 0"/>${star(236,363,13)}`;break;
-    case 'clear-deck-specials':body=`${cardShape(144,203)}${cardShape(189,216)}<path d="M132 327l109-97 17 19-109 97ZM131 329l-20 16 9 24 27-23" fill="${colors.brass}" stroke="${colors.paperLight}"/>${star(269,298,11)}${star(238,349,8)}${text(192,384,'净台',16)}`;break;
+    case 'clear-deck-specials':body=`${cardShape(144,203)}${cardShape(189,216)}<path d="M132 327l109-97 17 19-109 97ZM131 329l-20 16 9 24 27-23" fill="${colors.brass}" stroke="${colors.paperLight}"/>${star(269,298,11)}${star(238,349,8)}${text(192,384,'清除特效',16)}`;break;
     default:return impossible(op);
   }
   return framedArt(tool.id,cardDefinitionName(tool),toolFamilyLabel(tool.family),body);
@@ -355,5 +355,5 @@ function itemArt(item:R2LongTermDefinition):string {
     case 'first-normal-clear-per-chapter':glyph=`<path d="M128 225h128v99H128ZM120 218l17-22 26 13 29-16 28 16 29-13 16 22" fill="${colors.red}" stroke="${colors.brass}"/>${circle(191,271,33)}${text(191,281,`+${op.gold}`,28)}`;break;
     default:return impossible(op);
   }
-  return framedArt(item.id,item.name,'长期道具',glyph);
+  return framedArt(item.id,cardDefinitionName(item),'长期道具',glyph);
 }

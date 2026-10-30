@@ -1,11 +1,12 @@
 import type {R2RunState} from '../domain/r2Run';
 import type {Suit} from '../cards/types';
 import {r2S04Facts,r2S04Issue} from '../domain/r2S04';
+import {cardDisplayName} from './tangsongCardNames';
 
 const names={hearts:'红桃',diamonds:'方片',clubs:'梅花',spades:'黑桃'} as const;
 export function s04IssueText(state:R2RunState,suit?:Suit):string|undefined {
  const issue=r2S04Issue(state,suit),facts=r2S04Facts(state);
- if(issue==='s04-chapter-gated')return `第${facts.minimumChapter}章起才可获取和使用独幕，当前第${facts.chapter}章。`;
+ if(issue==='s04-chapter-gated')return `第${facts.minimumChapter}章起才可获取和使用${cardDisplayName('S04')}，当前第${facts.chapter}章。`;
  if(issue==='no-effect')return '有效牌组已全部是该花色，没有变化。';
  if(issue==='s04-suit-density'){
   const row=facts.suits.find(row=>row.suit===suit);

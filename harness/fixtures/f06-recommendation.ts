@@ -2,10 +2,10 @@ import {createRun,applyCommand,assertRunInvariants} from '../../src/domain/run';
 import {newRunIdentity} from '../../src/game/RunLaunch';
 import {r2Price} from '../../src/domain/r2Shop';
 import {r2ChapterBossIds,lockR2ChapterTargets} from '../../src/domain/r2Chapter';
-import {isR2CoreBuild,isR2RouteGrowth,r2DynamicEndlessBase,r2HouseProfile,R2_SUIT_CHOICE_VERSION,R2_SUIT_CHOICE_HASH} from '../../src/domain/r2GroupUpgrade';
+import {isR2CoreBuild,isR2RouteGrowth,r2DynamicEndlessBase,r2TargetedValueBase,r2HouseProfile,R2_SUIT_CHOICE_VERSION,R2_SUIT_CHOICE_HASH} from '../../src/domain/r2GroupUpgrade';
 
 /** Controlled invariant-valid shop projection, not natural progress or acquisition. */
-export function f06RecommendationFixture(chapter=6,options:{disabled?:boolean;boss?:boolean;legacy?:boolean;preEncounter?:boolean}={}){
+export function f06RecommendationFixture(chapter=6,options:{disabled?:boolean;boss?:boolean;legacy?:boolean;preEncounter?:boolean;preTargetedValue?:boolean}={}){
  const modeConfig=options.disabled?{mode:'challenge' as const,difficulty:0 as const,challengeId:'Q11' as const,programsEnabled:false}:{mode:'standard' as const,difficulty:0 as const,challengeId:null,programsEnabled:false};
  const current=newRunIdentity('laohuan','group');
  const valueBase=r2DynamicEndlessBase(current);
@@ -13,7 +13,8 @@ export function f06RecommendationFixture(chapter=6,options:{disabled?:boolean;bo
  const valueIdentity={contentVersion:valueBase.contentVersion,contentHash:valueBase.contentHash};
  // Synthetic later histories have no real encounter receipts; never fabricate them.
  // Late chapters are synthetic; use the actual pre-dynamic value identity rather than fabricate a dynamic history.
- const r2Identity=options.legacy?{contentVersion:R2_SUIT_CHOICE_VERSION,contentHash:R2_SUIT_CHOICE_HASH}:options.preEncounter?r2HouseProfile(current)!.pokerBase!:chapter>8?valueIdentity:current;
+ const previous=r2TargetedValueBase(current) as {contentVersion:string;contentHash:string};
+ const r2Identity=options.legacy?{contentVersion:R2_SUIT_CHOICE_VERSION,contentHash:R2_SUIT_CHOICE_HASH}:options.preEncounter?r2HouseProfile(current)!.pokerBase!:chapter>8?valueIdentity:options.preTargetedValue?previous:current;
  let s=createRun({seed:options.disabled?'challenge/q11/0':'f06-recommendation',runId:'f06-recommendation',characterId:'laohuan',rulesVersion:'r2',r2Identity,openingRoute:'group',modeConfig});
  for(const type of ['LeaveShop','SkipStage','OpenShop'] as const){const r=applyCommand(s,{runId:s.runId,commandId:s.runId+'/fixture/'+(s.commandSeq+1),expectedSeq:s.commandSeq,action:{type}});if(!r.ok)throw Error(r.code);s=r.state;}
  s.tourMode=chapter>8?'endless':'normal';s.chapter=chapter;s.stageIndex=Math.max(1,(chapter-1)*3)+(options.boss?2:0);s.stage=null;

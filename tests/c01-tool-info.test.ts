@@ -4,6 +4,9 @@ import {ENHANCEMENTS,type PlayingCard} from '../src/cards/types';
 import {toolInfo,itemInfo,cardSpecialSummary,cardSpecialText,editionLabel,editionEffectText,toolFamilyLabel} from '../src/game/r2ToolInfo';
 import {scoreBeat} from '../src/game/scorePresentation';
 import type {ScoreEvent} from '../src/domain/scoreR2';
+import {cardDefinitionName} from '../src/game/tangsongCardNames';
+import {enhancementReference,enhancementCardHelp} from '../src/game/EnhancementReference';
+import {enhancementText} from '../src/game/CardSpecialLabels';
 
 const card:PlayingCard={id:'visible/card',rank:2,suit:'hearts'};
 const detail=(id:string)=>{const info=toolInfo(id);return `${info.description}\n${info.cost}\n${info.risk}`;};
@@ -21,13 +24,13 @@ describe('C01 public tool and item details',()=>{
     expect(R2_TOOLS).toHaveLength(39);expect(R2_LONG_TERM_ITEMS).toHaveLength(12);
     for(const row of R2_TOOLS){
       const info=toolInfo(row.id);
-      expect(info.name).toBe(row.id==='T18'?'换货券':row.name);expect(info.family).toBe(row.family);
-      expect(info.label).toContain(toolFamilyLabel(row.family));expect(info.label).toContain(row.id==='T18'?'换货券':row.name);
+      expect(info.name).toBe(cardDefinitionName(row));expect(info.family).toBe(row.family);
+      expect(info.label).toContain(toolFamilyLabel(row.family));expect(info.label).toContain(cardDefinitionName(row));
       for(const field of [info.description,info.cost,info.risk,info.artUrl])expect(field.length).toBeGreaterThan(8);
       expect(`${info.description}${info.risk}`).not.toMatch(/待实现|暂无|TODO|rng|nextSeed|drawPile/i);
     }
     for(const row of R2_LONG_TERM_ITEMS){
-      const info=itemInfo(row.id);expect(info.name).toBe(row.name);
+      const info=itemInfo(row.id);expect(info.name).toBe(cardDefinitionName(row));
       expect(info.description).toContain('本局');expect(info.description).toContain('不可出售');
       expect(info.description).toContain('4');expect(info.fallbackArtUrl).toMatch(/^data:image\/svg\+xml,/);
     }
@@ -174,10 +177,22 @@ it('poker front layer retains each destructive, probabilistic and held benefit',
  expect(cardSpecialSummary({id:'held',rank:7,suit:'hearts',enhancement:'voice-paper',edition:'polychrome'})).toContain('倍率×');
 });
 it('lasting copy and deck costs stay in the shared purchase/use front layer',()=>{
- expect(toolInfo('S03').summary).toBe('选择1张扑克，复制出2张新牌，原牌保留；新牌入抽牌堆底，不立即补牌；下一场起永久出牌次数−1');
+ expect(toolInfo('S03').summary).toBe('选择1张扑克，复制出2张新牌，原牌保留；新牌入抽牌堆底，不立即补牌；下一场洗牌后可能抽到；下一场起永久出牌次数−1');
+ expect(toolInfo('S03').name).toBe('重演');
+ expect(toolInfo('S03').description).toContain('下一场入场时整副有效牌组重新洗牌');
+ expect(toolInfo('S03').description).toContain('不保证抽到');
+ expect(toolInfo('T07').description).toContain('场内使用时，抽到堆底才可能拿到新牌');
+ expect(toolInfo('T07').description).toContain('下一场入场时整副有效牌组重新洗牌');
  expect(toolInfo('S04').summary).toContain('下一场起永久手牌上限−1');
  expect(toolInfo('T12').summary).toContain('概率永久破碎');
  expect(toolInfo('T07').summary).not.toContain('永久出牌');
+});
+
+it('uses the same player name for the retrigger enhancement throughout its shared views',()=>{
+ const card:PlayingCard={id:'encore',rank:7,suit:'hearts',enhancement:'encore-paper'};
+ expect(cardSpecialText(card)).toContain('重计纸');expect(cardSpecialSummary(card)).toContain('重计纸');
+ expect(enhancementText(card)).toContain('重计纸');expect(enhancementReference('encore-paper').name).toContain('重计纸');
+ expect(enhancementCardHelp('encore-paper')).toContain('再计券');expect(toolInfo('T15').description).toContain('重计纸');
 });
 
 it('glass scoring and held additive timing stay explicit without doubling claims',()=>{

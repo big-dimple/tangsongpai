@@ -3,7 +3,7 @@ import type {PlayingCard} from '../src/cards/types';
 import {CHARACTER_IDS} from '../src/domain/characters';
 import {createRun,applyCommand,type R2RunState,type Action} from '../src/domain/run';
 import {r2CreateJoker} from '../src/domain/r2Run';
-import {r2JokerValueBase,isR2ErxiangGroup,isR2LaohuanFind,isR2TouyeScaling,isR2XiemuRevision} from '../src/domain/r2GroupUpgrade';
+import {r2TargetedValueBase,r2JokerValueBase,isR2ErxiangGroup,isR2LaohuanFind,isR2TouyeScaling,isR2XiemuRevision} from '../src/domain/r2GroupUpgrade';
 import {r2JokerDefinitionsFor} from '../src/domain/r2ContentProfiles';
 import {R2_HOUSE_JOKERS,R2_VALUE_JOKERS} from '../src/content/r2RouteGrowthJokers';
 import {validateR2Content} from '../src/content/r2Schema';
@@ -16,7 +16,7 @@ import {SHOP_VALUE_RECOMMENDATION_SEMANTICS} from '../src/game/ShopRecommendatio
 import {stableHash} from '../src/domain/hash';
 
 const ids=['d07','jiedongfeng','b07','c02','c03'];
-function fresh(hero:typeof CHARACTER_IDS[number],legacy=false){const identity=newRunIdentity(hero,'group');return createRun({rulesVersion:'r2',runId:'value/'+hero+(legacy?'/old':''),seed:'value-balance',characterId:hero,openingRoute:'group',r2Identity:legacy?r2JokerValueBase(identity) as {contentVersion:string;contentHash:string}:identity});}
+function fresh(hero:typeof CHARACTER_IDS[number],legacy=false){const identity=r2TargetedValueBase(newRunIdentity(hero,'group')) as {contentVersion:string;contentHash:string};return createRun({rulesVersion:'r2',runId:'value/'+hero+(legacy?'/old':''),seed:'value-balance',characterId:hero,openingRoute:'group',r2Identity:legacy?r2JokerValueBase(identity) as {contentVersion:string;contentHash:string}:identity});}
 function send(s:R2RunState,action:Action){const r=applyCommand(s,{runId:s.runId,commandId:'value/'+s.commandSeq,expectedSeq:s.commandSeq,action});if(!r.ok)throw Error(r.code);return r.state;}
 function cards(ranks:number[],suits:PlayingCard['suit'][]):PlayingCard[]{return ranks.map((rank,i)=>({id:'card/'+i,rank:rank as PlayingCard['rank'],suit:suits[i]}));}
 function scoring(s:R2RunState,id:string,hand:PlayingCard[],clears:number,disabledIds:string[]=[]){return scoreR2Hand({rulesVersion:'r2',runId:s.runId,rootId:'value/score',hand,selectedIds:hand.map(c=>c.id),disabledIds,jokers:[r2CreateJoker(id,id,r2Price(id,'none',s),'none',s)],definitions:r2JokerDefinitionsFor(s),handLevels:{},playIndex:1,handsBeforePlay:4,previousHandType:null,wager:false,rng:s.rng.rule,characterId:'neutral',routeGrowth:{clears,G:clears,S:clears,F:clears}});}

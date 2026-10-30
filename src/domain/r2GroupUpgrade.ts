@@ -1,6 +1,6 @@
 import {withBossSuitRescueIdentity} from './r2BossSuitRescueIdentity';
 import {withPokerEncounterIdentity} from './r2PokerEncounterIdentity';
-import {R2_ROUTE_GROWTH_JOKERS,R2_HOUSE_JOKERS,R2_VALUE_JOKERS} from '../content/r2RouteGrowthJokers';
+import {R2_ROUTE_GROWTH_JOKERS,R2_HOUSE_JOKERS,R2_VALUE_JOKERS,R2_TARGETED_VALUE_JOKERS} from '../content/r2RouteGrowthJokers';
 import {R2_BOUNDED_TARGET_CONTRACT,R2_CORE_BUILD_TARGET_CONTRACT} from './r2Chapter';
 import {R2_BOUNDED_ROUTE_RULE,R2_ROUTE_GROWTH_RULE} from './r2RouteGrowth';
 import {TOUYE_ACCEPTED} from './r2TouyeTargets';
@@ -114,14 +114,22 @@ const VALUE_HOUSE_PROFILES=VALUE_BASE_PROFILES.map(p=>Object.freeze({...p,conten
 /** A separate identity reserves the new endless contract; old starts keep their original receipt. */
 const DYNAMIC_ENDLESS_CONTRACT=Object.freeze({version:'dynamic-endless-v1',scope:'endless-only',sample:'actual-non-boss-stage-total',confirmation:'two-successes',anchor:'max-baseline-ceil-105pct-min-two-times-ceil-35pct-confirmed-35pct',boss:'public-tiers-b03-all-live-disabled-35pct-with-static-floor',rounding:'integer-ceil',locking:'one-stage-before-entry'});
 const DYNAMIC_HOUSE_PROFILES=VALUE_HOUSE_PROFILES.map(p=>Object.freeze({...p,contentVersion:p.contentVersion+'-dynamic-endless-v1',contentHash:stableHash({inherits:p.contentHash,policy:DYNAMIC_ENDLESS_CONTRACT}),dynamicBase:Object.freeze({contentVersion:p.contentVersion,contentHash:p.contentHash})}));
-const ALL_VALUE_HOUSE_PROFILES=Object.freeze([...VALUE_HOUSE_PROFILES,...DYNAMIC_HOUSE_PROFILES]);
+const TARGETED_VALUE_PROFILES=DYNAMIC_HOUSE_PROFILES.map(p=>Object.freeze({...p,contentVersion:p.contentVersion+'-targeted-value-v1',contentHash:stableHash({inherits:p.contentHash,jokers:R2_TARGETED_VALUE_JOKERS}),heatBase:Object.freeze({contentVersion:p.contentVersion,contentHash:p.contentHash})}));
+const ALL_VALUE_HOUSE_PROFILES=Object.freeze([...VALUE_HOUSE_PROFILES,...DYNAMIC_HOUSE_PROFILES,...TARGETED_VALUE_PROFILES]);
+export function withTargetedValueIdentity(base:{contentVersion:string;contentHash:string}) {
+ const profile=TARGETED_VALUE_PROFILES.find(p=>p.heatBase.contentVersion===base.contentVersion&&p.heatBase.contentHash===base.contentHash);
+ if(!profile)throw Error('unsupported-targeted-value-base');
+ return {contentVersion:profile.contentVersion,contentHash:profile.contentHash};
+}
+export const isR2TargetedValue=(s:{contentVersion?:unknown;contentHash?:unknown})=>TARGETED_VALUE_PROFILES.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
+export const r2TargetedValueBase=(s:{contentVersion?:unknown;contentHash?:unknown})=>TARGETED_VALUE_PROFILES.find(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash)?.heatBase??s;
 export function withDynamicEndlessIdentity(base:{contentVersion:string;contentHash:string}) {
  const profile=DYNAMIC_HOUSE_PROFILES.find(p=>p.dynamicBase.contentVersion===base.contentVersion&&p.dynamicBase.contentHash===base.contentHash);
  if(!profile)throw Error('unsupported-dynamic-endless-base');
  return {contentVersion:profile.contentVersion,contentHash:profile.contentHash};
 }
-export const isR2DynamicEndless=(s:{contentVersion?:unknown;contentHash?:unknown})=>DYNAMIC_HOUSE_PROFILES.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
-export const r2DynamicEndlessBase=(s:{contentVersion?:unknown;contentHash?:unknown})=>DYNAMIC_HOUSE_PROFILES.find(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash)?.dynamicBase??s;
+export const isR2DynamicEndless=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...DYNAMIC_HOUSE_PROFILES,...TARGETED_VALUE_PROFILES].some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
+export const r2DynamicEndlessBase=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...DYNAMIC_HOUSE_PROFILES,...TARGETED_VALUE_PROFILES].find(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash)?.dynamicBase??s;
 export function withJokerValueIdentity(base:{contentVersion:string;contentHash:string}) {
  const profile=VALUE_HOUSE_PROFILES.find(p=>p.valueBase.contentVersion===base.contentVersion&&p.valueBase.contentHash===base.contentHash);
  if(!profile)throw Error('unsupported-joker-value-base');

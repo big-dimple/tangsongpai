@@ -1,6 +1,7 @@
 import {it,expect} from 'vitest';
 import {createRun,applyCommand} from '../src/domain/run';
 import {newRunIdentity} from '../src/game/RunLaunch';
+import {r2TargetedValueBase} from '../src/domain/r2GroupUpgrade';
 import {shopOfferGuidance} from '../src/game/ShopOfferGuidance';
 import {toolPurpose} from '../src/game/RouteFitCue';
 import {toolInfo} from '../src/game/r2ToolInfo';
@@ -9,7 +10,7 @@ import {getR2Tool} from '../src/content/r2Tools';
 import {r2PurchasePrice} from '../src/domain/r2Shop';
 import {r2CreateJoker} from '../src/domain/r2Run';
 
-const shop=()=>createRun({rulesVersion:'r2',seed:'phone-shop-decision',runId:'phone-shop-decision',characterId:'erxiang',r2Identity:newRunIdentity('erxiang','flush'),openingRoute:'flush'});
+const shop=(old=false)=>{const current=newRunIdentity('erxiang','flush');return createRun({rulesVersion:'r2',seed:'phone-shop-decision',runId:'phone-shop-decision',characterId:'erxiang',r2Identity:old?r2TargetedValueBase(current) as {contentVersion:string;contentHash:string}:current,openingRoute:'flush'});};
 it('the photographed choices state new growth, actual cost and conditions without turning the starter into a ranking',()=>{
  const s=shop();s.gold=6;s.shop!.offers=[{offerId:'a11',definitionId:'a11',price:11,edition:'foil',consumed:false},{offerId:'e06',definitionId:'e06',price:6,consumed:false},{offerId:'c06',definitionId:'c06',price:6,consumed:false}];
  const before=structuredClone(s),growth=shopOfferGuidance(s,s.shop!.offers[2]),sale=shopOfferGuidance(s,s.shop!.offers[1]);
@@ -19,7 +20,8 @@ it('the photographed choices state new growth, actual cost and conditions withou
  const next=shopOfferGuidance(bought.state,bought.state.shop!.offers[1]);expect(next.operation).toBe('差6金');expect(next.stars).toBe(3);expect(next.decision.transaction).toBe('还差6金');
 });
 it('candidate spending and Qin Qiong conflicts remain explicit instead of becoming a positive connection',()=>{
- const s=shop();s.gold=21;s.jokers=[r2CreateJoker('e08','capital',8,'none',s)];s.shop!.offers=[{offerId:'new',definitionId:'b10',price:4,consumed:false}];expect(shopOfferGuidance(s,s.shop!.offers[0]).decision.connection).toContain('20');expect(shopOfferGuidance(s,s.shop!.offers[0]).decision.now).toBe('打出对子等同点组合后，攒+10热度，下次出牌起任意牌型都能用。');
+ const s=shop();s.gold=21;s.jokers=[r2CreateJoker('e08','capital',8,'none',s)];s.shop!.offers=[{offerId:'new',definitionId:'b10',price:4,consumed:false}];expect(shopOfferGuidance(s,s.shop!.offers[0]).decision.connection).toContain('20');expect(shopOfferGuidance(s,s.shop!.offers[0]).decision.now).toBe('每次出牌热度+20；打出对子等同点组合后，攒+10热度，下次出牌起任意牌型都能用。');
+ const old=shop(true);old.gold=21;old.jokers=[r2CreateJoker('e08','capital',8,'none',old)];old.shop!.offers=[{offerId:'new',definitionId:'b10',price:4,consumed:false}];expect(shopOfferGuidance(old,old.shop!.offers[0]).decision.connection).toContain('20');expect(shopOfferGuidance(old,old.shop!.offers[0]).decision.now).toBe('打出对子等同点组合后，攒+10热度，下次出牌起任意牌型都能用。');
  const q=createRun({rulesVersion:'r2',seed:'qin-decision',runId:'qin-decision',characterId:'touye',r2Identity:newRunIdentity('touye','group'),openingRoute:'group'});q.shop!.offers=[{offerId:'qin',definitionId:'f09',price:4,consumed:false}];expect(shopOfferGuidance(q,q.shop!.offers[0]).decision.connection).toContain('秦琼弃牌技能');
 });
 it('new c04 keeps its conditional fixed heat and zero initial growth separate in shelf and purchase copy',()=>{

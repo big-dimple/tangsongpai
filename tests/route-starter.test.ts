@@ -9,7 +9,7 @@ import {makeCheckpoint,readCheckpoint} from '../src/application/checkpoint';
 import {SavedRun,type SaveSlots,type SaveStore} from '../src/application/SavedRun';
 import {evaluateR2Hand} from '../src/domain/evaluateR2';
 import {r2JokerDefinitionsFor} from '../src/domain/r2ContentProfiles';
-import {R2_ROUTE_GROWTH_JOKERS,R2_VALUE_JOKERS} from '../src/content/r2RouteGrowthJokers';
+import {R2_ROUTE_GROWTH_JOKERS,R2_TARGETED_VALUE_JOKERS} from '../src/content/r2RouteGrowthJokers';
 import {newRunIdentity,launchIdentity} from '../src/game/RunLaunch';
 import {starterOffer,starterShopCue,starterSelection} from '../src/game/RouteStarter';
 import {keyHighlight,keyHighlightBeat,starterRepeatBeat} from '../src/game/JokerKeyHighlight';
@@ -30,7 +30,7 @@ describe('atomic first-shelf route contract',()=>{
  for(const characterId of CHARACTER_IDS)for(const route of Object.keys(R2_ROUTE_STARTERS) as R2OpeningRoute[])it(characterId+'/'+route+' keeps three original-price offers and a truly corresponding affordable ordinary card',()=>{
   const s=start(route,characterId),offer=s.shop!.offers.find(o=>o.definitionId===R2_ROUTE_STARTERS[route])!;
   expect(r2HouseBase(s).contentHash).toBe(characterId==='amo'?R2_AMO_KING_HASH:characterId==='xiemu'?R2_XIEMU_FREQUENT_HASH:characterId==='erxiang'||characterId==='laohuan'?R2_HERO_FREQUENCY_HASH:R2_S04_FINISH_HASH);expect(s.shop!.offers).toHaveLength(3);expect(offer.edition).toBe('none');expect(offer.price).toBe(route==='flush'?6:4);expect(offer.price).toBeLessThanOrEqual(s.gold);expect(starterOffer(s,offer)?.label).toContain('起手');expect(readCheckpoint(makeCheckpoint(s,[])).ok).toBe(true);expect(start(route,characterId)).toEqual(s);
-  const old=createRun({seed:s.seed,runId:s.runId,characterId,rulesVersion:'r2',r2Profile:'group-upgrade-v1',modeConfig:mode});expect(r2JokerDefinitionsFor(s)).toBe(R2_VALUE_JOKERS);expect(r2JokerDefinitionsFor(old)).not.toBe(R2_ROUTE_GROWTH_JOKERS);expect(s.rng.shop).not.toEqual(old.rng.shop);expect(s.shop!.toolOffers[0].definitionId).toEqual(old.shop!.toolOffers[0].definitionId);expect(s.shop!.toolOffers).toHaveLength(1);expect(s.shop!.itemOffers).toEqual(old.shop!.itemOffers);
+  const old=createRun({seed:s.seed,runId:s.runId,characterId,rulesVersion:'r2',r2Profile:'group-upgrade-v1',modeConfig:mode});expect(r2JokerDefinitionsFor(s)).toBe(R2_TARGETED_VALUE_JOKERS);expect(r2JokerDefinitionsFor(old)).not.toBe(R2_ROUTE_GROWTH_JOKERS);expect(s.rng.shop).not.toEqual(old.rng.shop);expect(s.shop!.toolOffers[0].definitionId).toEqual(old.shop!.toolOffers[0].definitionId);expect(s.shop!.toolOffers).toHaveLength(1);expect(s.shop!.itemOffers).toEqual(old.shop!.itemOffers);
   const previousIdentity=characterId==='erxiang'?{contentVersion:R2_ERXIANG_HANDOFF_VERSION,contentHash:R2_ERXIANG_HANDOFF_HASH}:{contentVersion:R2_TOOL_SUPPLY_VERSION,contentHash:R2_TOOL_SUPPLY_HASH};
   const previous=createRun({seed:s.seed,runId:s.runId,characterId,rulesVersion:'r2',r2Identity:previousIdentity,openingRoute:route,modeConfig:mode});expect(previous.contentHash).toBe(previousIdentity.contentHash);expect(previous.shop!.toolOffers).toHaveLength(2);expect(s.rng).toEqual(previous.rng);expect(s.shop!.toolOffers).toEqual(previous.shop!.toolOffers.slice(0,1));expect(launchIdentity(characterId,{kind:'retry',run:previous})).toEqual(previousIdentity);expect(send(previous,{type:'RerollShop'}).shop!.toolOffers).toHaveLength(2);
   expect(s.shop!.offers.filter((o,i)=>JSON.stringify(o)!==JSON.stringify(old.shop!.offers[i])).length).toBeLessThanOrEqual(1);

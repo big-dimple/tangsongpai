@@ -31,7 +31,7 @@ import {mountForgetTechniqueAttentionElement} from './ForgetTechniqueAttention';
 export const SKIP_ITEM_LABELS:Record<string,string>=Object.fromEntries(R2_TOOLS.map(tool=>[tool.id,cardDefinitionName(tool)]));
 const SUIT_NAMES:Record<Suit,string>={spades:'黑桃',hearts:'红桃',clubs:'梅花',diamonds:'方片'};
 const cardName=(card:PlayingCard)=>rankLabel(card.rank)+SUIT_SYMBOL[card.suit];
-const enhancementName=(card:PlayingCard)=>R2_ENHANCEMENTS.find(enhancement=>enhancement.id===card.enhancement)?.name??'无增强';
+const enhancementName=(card:PlayingCard)=>cardDefinitionName(R2_ENHANCEMENTS.find(enhancement=>enhancement.id===card.enhancement))??'无增强';
 interface Choice {id:string;name:string;detail:string;card?:PlayingCard;joker?:R2JokerInstance}
 interface Selection {ids:Set<string>;sacrificeId?:string;handType?:R2HandType;secondaryHandType?:R2HandType;suit?:Suit;targetKind:'card'|'joker'}
 const rarePool=(state:R2RunState)=>r2Pool(state.jokers.map(joker=>joker.definitionId),state.safetyNetUsed?['f07']:[]).filter(joker=>joker.rarity==='rare');
@@ -117,10 +117,10 @@ function selectionIssue(tool:R2ToolDefinition,state:R2RunState,selection:Selecti
       if(state.jokers.length>=r2JokerCapacity(state))return '唐宋牌槽已满，请先腾出一个槽位。';
       if(!rarePool(state).length)return '当前没有可获得的未持有稀有唐宋牌。';break;
     case 'clear-deck-specials': {
-      if(state.spectralModifiers.cleanSlateBonus)return '本局已使用过净台。';
+      if(state.spectralModifiers.cleanSlateBonus)return `本局已使用过${cardDefinitionName(tool)}。`;
       const modified=state.deckInstances.filter(card=>!state.destroyedIds.includes(card.id)&&(card.enhancement!==undefined||(card.edition??'none')!=='none'));
       if(modified.length<operation.minimumModifiedCards)return `至少 ${operation.minimumModifiedCards} 张不同牌有增强或额外加成；当前 ${modified.length} 张。`;
-      if(!getR2Stage(state.stageIndex,state.tourMode,state.difficulty,state)||r2HandLimit({...state,spectralModifiers:{...state.spectralModifiers,cleanSlateBonus:state.spectralModifiers.cleanSlateBonus+operation.handBonus}})-r2HandLimit(state)!==operation.handBonus)return '下一场手牌容量不能实际增加，无法净台。';break;
+      if(!getR2Stage(state.stageIndex,state.tourMode,state.difficulty,state)||r2HandLimit({...state,spectralModifiers:{...state.spectralModifiers,cleanSlateBonus:state.spectralModifiers.cleanSlateBonus+operation.handBonus}})-r2HandLimit(state)!==operation.handBonus)return '下一场手牌容量不能实际增加，无法使用。';break;
     }
     case 'free-reroll':if(!r2Pool(state.jokers.map(joker=>joker.definitionId),state.safetyNetUsed?['f07']:[]).length&&!r2ToolAcquisitionPool(state).length)return '当前没有可刷新的候选。';break;
     case 'add-gold':if(!Number.isSafeInteger(state.gold+operation.amount))return '金币已达可保存上限，无法继续增加。';break;
@@ -243,7 +243,7 @@ export function showConsumables(dialog:DetailDialog,state:R2RunState,ready:boole
     const operation=tool.operation;
     if(operation.kind==='random-enhancement'||operation.kind==='random-edition'){
       const probability=document.createElement('p'),total=operation.choices.reduce((sum,choice)=>sum+choice.weight,0);probability.className='tool-public-probability';
-      probability.textContent='概率：'+operation.choices.map(choice=>`${operation.kind==='random-enhancement'?R2_ENHANCEMENTS.find(enhancement=>enhancement.id===choice.id)!.name:editionLabel(choice.id as 'foil'|'holographic'|'polychrome')} ${choice.weight}/${total}`).join('、')+'。使用后揭晓结果。';panel.append(probability);
+      probability.textContent='概率：'+operation.choices.map(choice=>`${operation.kind==='random-enhancement'?cardDefinitionName(R2_ENHANCEMENTS.find(enhancement=>enhancement.id===choice.id)!):editionLabel(choice.id as 'foil'|'holographic'|'polychrome')} ${choice.weight}/${total}`).join('、')+'。使用后揭晓结果。';panel.append(probability);
     }
     const risks=document.createElement('details'),riskTitle=document.createElement('summary'),riskText=document.createElement('p');risks.className='tool-full-risk';riskTitle.textContent='风险与完整说明';riskText.textContent=info.risk;risks.append(riskTitle,riskText);
     risks.append(destroy);const route=d.querySelector('.route-fit-caption');if(route)risks.append(route);
@@ -305,7 +305,7 @@ export function showConsumables(dialog:DetailDialog,state:R2RunState,ready:boole
       for(const choice of selected)if(choice.card){
         if(operation.kind==='set-suit')lines.push(`${cardName(choice.card)} → ${rankLabel(choice.card.rank)}${SUIT_SYMBOL[operation.suit]}；${cardSpecialText(choice.card)}`);
         else if(operation.kind==='shift-rank')lines.push(`${cardName(choice.card)} → ${rankLabel(Math.max(operation.minimum,Math.min(operation.maximum,choice.card.rank+operation.delta)) as PlayingCard['rank'])}${SUIT_SYMBOL[choice.card.suit]}；${cardSpecialText(choice.card)}`);
-        else if(operation.kind==='set-enhancement')lines.push(`${cardName(choice.card)}：${enhancementName(choice.card)} → ${R2_ENHANCEMENTS.find(enhancement=>enhancement.id===operation.enhancement)!.name}；${choice.card.enhancement!==undefined&&choice.card.enhancement!==operation.enhancement?'原增强将被替换，其效果不再保留。':'保留其他属性。'}\n当前 ${cardSpecialText(choice.card)}。`);
+        else if(operation.kind==='set-enhancement')lines.push(`${cardName(choice.card)}：${enhancementName(choice.card)} → ${cardDefinitionName(R2_ENHANCEMENTS.find(enhancement=>enhancement.id===operation.enhancement)!)}；${choice.card.enhancement!==undefined&&choice.card.enhancement!==operation.enhancement?'原增强将被替换，其效果不再保留。':'保留其他属性。'}\n当前 ${cardSpecialText(choice.card)}。`);
         else lines.push(`${operation.kind==='delete-cards'?'永久删除：':''}${cardName(choice.card)} · ${cardSpecialText(choice.card)}`);
       }
       for(const choice of selected)if(choice.joker)lines.push(`${choice.name} · ${jokerExtraBonusCopy(choice.joker.edition,{definitionId:choice.joker.definitionId}).detail}\n${operation.kind==='set-joker-edition'?`额外加成 → ${jokerExtraBonusCopy(operation.edition,{definitionId:choice.joker.definitionId}).detail}；原支付 ${choice.joker.paidPrice} 金与已有成长保留。`:'这张牌原有能力、原支付金额与已有成长保留。'}`);
@@ -329,7 +329,7 @@ export function showConsumables(dialog:DetailDialog,state:R2RunState,ready:boole
       if(operation.kind==='add-gold')lines.push(`金币 ${state.gold} → ${state.gold+operation.amount}。`);
       if(operation.kind==='free-reroll')lines.push(state.shop?`本次免费刷新，不扣金币；刷新计数 ${state.shop.rerollCount} → ${state.shop.rerollCount+1}。\n下次收费刷新 ${r2PaidRerollPrice(state)} → ${r2PaidRerollPrice({...state,shop:{...state.shop,rerollCount:state.shop.rerollCount+1}})} 金。长期道具货架保留，不触发成长。`:'请在商店免费刷新货架。');
       const cleared=operation.kind==='clear-deck-specials'?known.filter(c=>c.enhancement||(c.edition??'none')!=='none'):[];
-      const clearing=cleared.length?[`净台：${cleared.length} 张不同牌；失去 ${cleared.filter(c=>c.enhancement).length} 项增强、${cleared.filter(c=>(c.edition??'none')!=='none').length} 项额外加成。`]:[];
+      const clearing=cleared.length?[`清除特效：${cleared.length} 张不同牌；失去 ${cleared.filter(c=>c.enhancement).length} 项增强、${cleared.filter(c=>(c.edition??'none')!=='none').length} 项额外加成。`]:[];
       if(!issue)cleared.forEach((card,index)=>renderCardChange(changes,toolCardChange(tool,card)!,index));
       const replacementNotes=selected.flatMap(choice=>choice.card?toolCardChange(tool,choice.card)?.note.startsWith('替换原增强')?[toolCardChange(tool,choice.card)!.note]:[]:[]);
       const exchangeCost=operation.kind==='exchange-hand-levels'&&!issue&&selection.secondaryHandType?[`遗忘代价：${HAND_LABELS[selection.secondaryHandType]} Lv.${state.handLevels[selection.secondaryHandType]} → ${state.handLevels[selection.secondaryHandType]!-operation.loss}`]:[];

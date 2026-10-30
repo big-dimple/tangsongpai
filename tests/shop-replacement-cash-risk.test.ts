@@ -1,6 +1,6 @@
 import {lockR2ChapterTargets} from '../src/domain/r2Chapter';
 import {it,expect} from 'vitest';
-import {replacementCashRiskFixture} from '../harness/fixtures/replacement-cash-risk';
+import {replacementCashRiskFixture as makeReplacementCashRiskFixture} from '../harness/fixtures/replacement-cash-risk';
 import {shopDeferredGrowthCashRisk} from '../src/game/ShopReplacementCashRisk';
 import {shopRecommendation} from '../src/game/ShopRecommendation';
 import {shopOfferGuidance} from '../src/game/ShopOfferGuidance';
@@ -14,6 +14,8 @@ import {makeCheckpoint,readCheckpoint} from '../src/application/checkpoint';
 import {r2ScoringDisabledJokerIds,scoreR2Hand} from '../src/domain/scoreR2';
 import {r2JokerDefinitionsFor} from '../src/domain/r2ContentProfiles';
 const send=(s:R2RunState,action:Action)=>{const r=applyCommand(s,{runId:s.runId,commandId:s.runId+'/test/'+(s.commandSeq+1),expectedSeq:s.commandSeq,action});if(!r.ok)throw Error(r.code);return r.state;};
+// These cases exercise the exact legacy zero-immediate-growth contract.
+const replacementCashRiskFixture=(gold=22,id='b10',edition:'none'|'foil'='none')=>makeReplacementCashRiskFixture(gold,id,edition,true);
 const risk=(s:R2RunState,i=2)=>{const o=s.shop!.offers[0],sold=s.jokers[i],cash=shopPurchaseCashFacts(s,o,sold);if(cash.status!=='assessed')return;return shopDeferredGrowthCashRisk(cash.afterSale,o);};
 it('rates the real selected trade lower when a zero-growth buy disables retained Baochang',()=>{
  const s=replacementCashRiskFixture(),o=s.shop!.offers[0],sold=s.jokers[2],before=structuredClone(s);
@@ -79,11 +81,18 @@ it('ordinary zero-growth readers are eligible, while immediate heat, retrigger a
  for(const id of ['c04','b06','a06','f06']){const s=replacementCashRiskFixture(22,id);expect(risk(s)).toBeUndefined();}
  expect(risk(replacementCashRiskFixture(22,'b10','foil'))).toBeUndefined();
 });
+it.each(['b03','b10'])('new %s has immediate value and uses the actual transaction comparison',id=>{
+ const s=makeReplacementCashRiskFixture(22,id),o=s.shop!.offers[0],sold=s.jokers[2],before=structuredClone(s),cash=shopPurchaseCashFacts(s,o,sold);
+ expect(cash.status).toBe('assessed');if(cash.status!=='assessed')throw Error('transaction');
+ expect(shopDeferredGrowthCashRisk(cash.afterSale,o)).toBeUndefined();const r=shopRecommendation(s,o,'group',sold),value=JSON.parse(r.facts.purchaseValue as string);
+ expect(value).toMatchObject({cashLoss:true,negative:true,ceiling:1,goldAfter:id==='b03'?17:19});
+ expect(value.rows.map((row:{delta:{minimum:string}})=>row.delta.minimum)).toEqual(id==='b03'?['-6','-128']:['-38','-151']);expect(r.stars).toBe(1);expect(s).toEqual(before);
+});
 it('a live edition is a real source, while a banned edition does not exempt the same zero-growth reader',()=>{
  const s=replacementCashRiskFixture(22,'b10','foil'),o=s.shop!.offers[0],sold=s.jokers[2];
  const after=send(send(s,{type:'SellJoker',instanceId:sold.instanceId}),{type:'BuyOffer',offerId:o.offerId}),fresh=after.jokers.find(j=>j.definitionId==='b10')!;
  expect(shopC2Score(after,['spades-7','hearts-7']).trace.events.some(e=>e.sourceInstanceId===fresh.instanceId&&e.operation==='add-heat'&&e.value?.n==='25')).toBe(true);
- const banned=f06RecommendationFixture(2,{disabled:true});banned.jokers=s.jokers;banned.gold=22;banned.shop!.offers=s.shop!.offers;banned.chapterDisabledJokerId='b10';assertRunInvariants(banned);
+ const banned=f06RecommendationFixture(2,{disabled:true,preTargetedValue:true});banned.jokers=s.jokers;banned.gold=22;banned.shop!.offers=s.shop!.offers;banned.chapterDisabledJokerId='b10';assertRunInvariants(banned);
  expect(risk(banned)).toBeDefined();expect(shopRecommendation(banned,o,'group',banned.jokers[2]).stars).toBe(1);
 });
 it('one actual retrigger compensation improves the fixed hand, without claiming every retrigger trade pays',()=>{
@@ -93,9 +102,9 @@ it('one actual retrigger compensation improves the fixed hand, without claiming 
  expect(t.events.some(e=>e.sourceDefinitionId==='b06'&&e.operation==='retrigger-card')).toBe(true);expect(BigInt(t.finalScore)).toBeGreaterThan(BigInt(before.finalScore));expect(risk(s)).toBeUndefined();
 });
 it('a currently banned retained cash source and a changed hand-rule donor are not assumed to supply lost strength',()=>{
- const prepared=replacementCashRiskFixture(),s=f06RecommendationFixture(2,{disabled:true});s.jokers=prepared.jokers;s.gold=22;s.shop!.offers=prepared.shop!.offers;s.chapterDisabledJokerId='e08';assertRunInvariants(s);
+ const prepared=replacementCashRiskFixture(),s=f06RecommendationFixture(2,{disabled:true,preTargetedValue:true});s.jokers=prepared.jokers;s.gold=22;s.shop!.offers=prepared.shop!.offers;s.chapterDisabledJokerId='e08';assertRunInvariants(s);
  expect(risk(s)).toBeUndefined();expect(shopRecommendation(s,s.shop!.offers[0],'group',s.jokers[2]).stars).toBe(1);
- const boss=f06RecommendationFixture(8,{boss:true});boss.jokers=prepared.jokers;boss.gold=22;boss.shop!.offers=prepared.shop!.offers;assertRunInvariants(boss);expect(risk(boss)).toBeUndefined();
+ const boss=f06RecommendationFixture(8,{boss:true,preTargetedValue:true});boss.jokers=prepared.jokers;boss.gold=22;boss.shop!.offers=prepared.shop!.offers;assertRunInvariants(boss);expect(risk(boss)).toBeUndefined();
  const modifiers=replacementCashRiskFixture();modifiers.jokers[2]=r2CreateJoker('c08','held/rule',0,'none',modifiers);expect(risk(modifiers)).toBeDefined();
 });
 it('invalid purchase projections are not promoted to evidence and queries leave state/RNG untouched',()=>{

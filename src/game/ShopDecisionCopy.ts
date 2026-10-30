@@ -1,4 +1,5 @@
 import {playerText} from './Brand';
+import {playerJokerDescription} from './JokerDescription';
 import type {R2RunState} from '../domain/run';
 import type {R2Offer} from '../domain/r2Shop';
 import type {R2JokerInstance} from '../content/r2Schema';
@@ -26,7 +27,7 @@ export function shopDecisionCopy(run:R2RunState,offer:R2Offer,sold?:R2JokerInsta
  const growth=d.hooks.find(h=>h.operations.some(o=>o.kind==='add-growth'));
  const gain=growth?.operations.find(o=>o.kind==='add-growth');
  if(ability.minimal){const [now,later]=ability.condition.split('\n');return {now,later,kind:'条件收益',connection:'',transaction:offer.consumed?'已收入':'',purchaseAbility:ability,full:ability.condition};}
- let now=plain?.effectLine??plain?.tile.split('\n').slice(0,2).join(' · ')??playerText(d.description);
+ let now=plain?.effectLine??plain?.tile.split('\n').slice(0,2).join(' · ')??playerText(playerJokerDescription(d));
  let later=plain?.timingLine?.split('；')[0]??plain?.tile.split('\n')[0]??'';
  let kind=plain?.growthDecision?'培养':'条件收益',purchaseAbility:CardAbilityCopy|undefined=plain?.growthDecision?ability:undefined;
  if(read?.kind==='read-growth'&&gain?.kind==='add-growth'&&read.key===gain.key&&!plain?.fallback&&!plain?.growthDecision){

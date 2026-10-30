@@ -6,7 +6,7 @@ import {stableHash} from '../src/domain/hash';
 import {r2CreateJoker} from '../src/domain/r2Run';
 import {r2ColdOpening} from '../src/domain/r2ComboGrowth';
 import {r2Price} from '../src/domain/r2Shop';
-import {shopRecommendation,SHOP_VALUE_RECOMMENDATION_SEMANTICS,SHOP_C2_RECOMMENDATION_AUDIT} from '../src/game/ShopRecommendation';
+import {shopRecommendation,SHOP_TARGETED_VALUE_RECOMMENDATION_SEMANTICS,SHOP_C2_RECOMMENDATION_AUDIT} from '../src/game/ShopRecommendation';
 import {shopOfferGuidance} from '../src/game/ShopOfferGuidance';
 import {shopRouteGrowthFacts} from '../src/game/ShopRouteGrowthFacts';
 import {shopReplacementTransactionFacts,shopReplacementCompactFacts,shopSaleConsequences} from '../src/game/ShopRouteRelations';
@@ -16,7 +16,7 @@ const rec=(s:ReturnType<typeof shopC2Fixture>,id:string,focus:'group'|'straight'
 const events=(s:ReturnType<typeof shopC2Fixture>,ids:string[],id:string)=>shopC2Score(s,ids).trace.events.filter(e=>e.sourceInstanceId==='held/'+id);
 describe('C2 reviewed semantic alignment, legacy and global ownership remain separate',()=>{
  it('all72 new definitions are reviewed by the new exact semantic contract, without mutating state',()=>{
-  const s=shopC2Fixture(),defs=profiles.r2JokerDefinitionsFor(s),before=JSON.stringify(s);expect(stableHash(defs)).toBe(SHOP_VALUE_RECOMMENDATION_SEMANTICS);expect(Object.keys(SHOP_C2_RECOMMENDATION_AUDIT).sort()).toEqual(defs.map(d=>d.id).sort());
+  const s=shopC2Fixture(),defs=profiles.r2JokerDefinitionsFor(s),before=JSON.stringify(s);expect(stableHash(defs)).toBe(SHOP_TARGETED_VALUE_RECOMMENDATION_SEMANTICS);expect(Object.keys(SHOP_C2_RECOMMENDATION_AUDIT).sort()).toEqual(defs.map(d=>d.id).sort());
   for(const d of defs)for(const focus of ['group','straight','flush'] as const)expect(rec(s,d.id,focus).stars).toBeGreaterThan(0);expect(JSON.stringify(s)).toBe(before);
  });
  it('a changed C2 definition is pending, rather than blindly authorizing the run hash',()=>{
@@ -42,7 +42,7 @@ describe('C2 reviewed semantic alignment, legacy and global ownership remain sep
  });
  it('f10 can arm on the first pre-play discard without a cold miss, unlike the retained old identity',()=>{
   let s=shopC2Fixture(['f10']);s=shopC2Send(s,{type:'LeaveShop'}).state;s=shopC2Send(s,{type:'EnterStage'}).state;const formed=['spades-7','hearts-7','clubs-8','diamonds-8','spades-2'];s.handOrder=[...formed,...s.deckInstances.filter(c=>!formed.includes(c.id)).slice(0,s.stage!.handLimit-formed.length).map(c=>c.id)];s.drawPile=s.deckInstances.map(c=>c.id).filter(id=>!s.handOrder.includes(id));assertRunInvariants(s);s=shopC2Send(s,{type:'DiscardHand',selectedIds:['spades-2']}).state;
-  expect(r2ColdOpening(s.stage!.openingDiscard)).toBe(false);expect(s.jokers[0].counters?.rescueArmed).toBe(true);expect(rec(shopC2Fixture(),'f10').condition).toContain('未出牌首弃');expect(rec(shopC2Fixture([],true),'f10').condition).toContain('先弃牌预备');
+  expect(r2ColdOpening(s.stage!.openingDiscard)).toBe(false);expect(s.jokers[0].counters?.rescueArmed).toBe(true);expect(rec(shopC2Fixture(),'f10').condition).toContain('未出牌首弃');expect(rec(shopC2Fixture([],true),'f10').condition).toContain('弃前未成两对以上');
  });
  it('four real command clears give G1.35, and sale/buy do not erase or award run-owned history',()=>{
   const proof=shopC2EarnedHistory(),s=proof.state;expect(s.routeGrowth).toMatchObject({clears:4,G:4,S:0,F:0});expect(proof.commands.filter(c=>c.action.type==='PlayHand')).toHaveLength(4);assertRunInvariants(s);

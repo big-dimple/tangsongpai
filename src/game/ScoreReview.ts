@@ -59,9 +59,9 @@ function sourceName(run:R2RunState,trace:ScoreTrace,event:ScoreEvent):string {
     if(event.sourceDefinitionId==='azao'&&event.operation==='multiply-multiplier'&&trace.azaoCharge?.release)return hero+' · 消耗'+trace.azaoCharge.before.charge+'层释放';
     return hero;
   }
-  const enhancement=event.reasonKey.startsWith('enhancement.')?R2_ENHANCEMENTS.find(item=>item.id===event.reasonKey.split('.')[1])?.name:undefined;
+  const enhancement=event.reasonKey.startsWith('enhancement.')?cardDefinitionName(R2_ENHANCEMENTS.find(item=>item.id===event.reasonKey.split('.')[1])):undefined;
   if(event.sourceType==='card')return enhancement??(edition?edition.slice(0,-3):'扑克普通点数');
-  const known=R2_LONG_TERM_ITEMS.find(item=>item.id===event.sourceDefinitionId)?.name
+  const known=cardDefinitionName(R2_LONG_TERM_ITEMS.find(item=>item.id===event.sourceDefinitionId))
     ??cardDefinitionName(R2_TOOLS.find(item=>item.id===event.sourceDefinitionId))
     ??R2_MODE_CATALOG.programs.find(item=>item.id===event.sourceDefinitionId)?.name
     ??R2_BOSSES.find(item=>item.id===event.sourceDefinitionId)?.name;

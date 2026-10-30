@@ -207,6 +207,7 @@ function trace(value:unknown,context:{bossSuitRescue:boolean;erxiangTwo:boolean;
   const groupRetriggers=new Map<string,number>(),groupCaps=new Set<string>(),cardRetriggers=new Map<string,number>(),cardRoots=new Map<string,string>();
   const assistWholeEffects=new Set<string>(),assistEditionSources=new Set<string>();
   const emptySlotRewards=new Set<string>();
+  const targetedValueRewards=new Set<string>();
   const lifetimeCounts=new Map<string,number>(),rescues=new Set<string>();let previousEvent:Record<string,unknown>|undefined;
   const sealTargets:string[]=[];let halves=0,finalSeen=false,clearSeen=false;
   let programReward:string|null=null;
@@ -306,7 +307,8 @@ function trace(value:unknown,context:{bossSuitRescue:boolean;erxiangTwo:boolean;
     }
     if(adaptedJoker&&!validatedEdition&&!comboSource){
       const definition=R2_JOKERS.find(d=>d.id===sourceJoker.definitionId)!;
-      const hook=definition.hooks.find(h=>h.phase===e.phase&&stableHash(h.condition)===stableHash(e.visibleCondition));
+      const hook=definition.hooks.find(h=>h.phase===e.phase&&stableHash(h.condition)===stableHash(e.visibleCondition)&&
+        (!(['b10','b03'].includes(sourceJoker.definitionId)&&['add-heat','add-multiplier'].includes(e.operation as string))||h.operations.some(o=>o.kind===e.operation)));
       const op=hook?.operations.find(o=>o.kind===e.operation||o.kind==='retrigger-card'&&e.operation==='retrigger-cap');
       if(!hook||!op)fail('invalid-save-assist-joker-definition');
       const cards=t.cards as PlayingCard[],disabled=bossSuitDisabledCards(boss,stage.index,cards,exempt);
@@ -344,6 +346,16 @@ function trace(value:unknown,context:{bossSuitRescue:boolean;erxiangTwo:boolean;
       if(amount.compare(expected)!==0||Rational.fromJSON(before.H).add(expected).compare(Rational.fromJSON(after.H))!==0||
         Rational.fromJSON(before.M).compare(Rational.fromJSON(after.M))!==0)fail('invalid-save-empty-slot-reward');
       emptySlotRewards.add(sourceJoker.instanceId);
+    }
+    if(e.sourceType==='joker'&&sourceJoker&&['b03','b10','d10'].includes(sourceJoker.definitionId)&&e.reasonKey===`${sourceJoker.definitionId}.${sourceJoker.definitionId==='b03'?'add-multiplier':'add-heat'}`){
+      const definition=R2_JOKERS.find(d=>d.id===sourceJoker.definitionId)!;
+      const kind=sourceJoker.definitionId==='b03'?'add-multiplier':'add-heat';
+      const hook=definition.hooks.find(h=>h.phase==='jokerScore'&&h.condition.kind==='always'&&h.operations.length===1&&h.operations[0].kind===kind);
+      const op=hook?.operations[0],expectedPrevious=sourceJoker.definitionId==='d10'?'add-heat-per-empty-slot':'read-growth';
+      if(!op||op.kind!==kind||e.operation!==kind||e.phase!=='jokerScore'||finalSeen||e.targetCardId!==undefined||e.retriggerDepth!==0||e.rootEventId!==e.eventId||stableHash(e.visibleCondition)!==stableHash(hook!.condition)||targetedValueRewards.has(sourceJoker.instanceId)||previousEvent?.sourceInstanceId!==sourceJoker.instanceId||previousEvent.operation!==expectedPrevious||amount.compare(Rational.fromJSON(op.value)))fail('invalid-save-targeted-value-source');
+      const before=e.before as {H:unknown;M:unknown},after=e.after as {H:unknown;M:unknown};
+      if((kind==='add-heat'?Rational.fromJSON(before.H).add(amount):Rational.fromJSON(before.H)).compare(Rational.fromJSON(after.H))||(kind==='add-multiplier'?Rational.fromJSON(before.M).add(amount):Rational.fromJSON(before.M)).compare(Rational.fromJSON(after.M)))fail('invalid-save-targeted-value-delta');
+      targetedValueRewards.add(sourceJoker.instanceId);
     }
     if(e.operation==='halve-base-heat'){
       const base=events[0] as Record<string,unknown>,before=e.before as {H:unknown;M:unknown},after=e.after as {H:unknown;M:unknown},original=base.after as {H:unknown;M:unknown};
@@ -543,6 +555,12 @@ function trace(value:unknown,context:{bossSuitRescue:boolean;erxiangTwo:boolean;
   for(const source of jokerSources.values())if(((prototype||combo)&&R2_ASSIST_ADAPTED_IDS.includes(source.definitionId))||combo&&R2_COMBO_GROWTH_IDS.includes(source.definitionId)||R2_GROUP_UPGRADE_IDS.includes(source.definitionId)||routeProfile&&['mantangcai','c04','c06','jiedongfeng'].includes(source.definitionId)){
     const expected=!!R2_TOOL_CATALOG.editions.find(row=>row.id===(source.edition??'none'))?.effect&&!disabledJokers.has(source.instanceId);
     if(assistEditionSources.has(source.instanceId)!==expected)fail('invalid-save-assist-joker-edition-count');
+  }
+  for(const source of jokerSources.values())if(['b03','b10','d10'].includes(source.definitionId)){
+    const definition=R2_JOKERS.find(d=>d.id===source.definitionId)!;
+    const kind=source.definitionId==='b03'?'add-multiplier':'add-heat';
+    const hasBase=definition.hooks.some(h=>h.phase==='jokerScore'&&h.condition.kind==='always'&&h.operations.some(o=>o.kind===kind));
+    if(targetedValueRewards.has(source.instanceId)!==(hasBase&&!disabledJokers.has(source.instanceId)))fail('invalid-save-targeted-value-count');
   }
   if(group){
     assertGroupTraceExecutions(t as unknown as ScoreTrace,R2_JOKERS,stage);

@@ -13,12 +13,14 @@ import type {BuildFocus} from '../../src/game/BuildDirectionPreferences';
 import type {PlayingCard} from '../../src/cards/types';
 import {exactScore} from '../scoring-calibration/model';
 import {r2ChapterBossIds,lockR2ChapterTargets} from '../../src/domain/r2Chapter';
+import {r2TargetedValueBase} from '../../src/domain/r2GroupUpgrade';
 
 export const BASE_SHA='4d2ff4ca8487f2f00b55516822d1a28ac3c1751f';
 export function command(s:R2RunState,action:Action){return applyCommand(s,{runId:s.runId,commandId:s.runId+'/contract/'+(s.commandSeq+1),expectedSeq:s.commandSeq,action});}
 export function send(s:R2RunState,action:Action){const r=command(s,action);if(!r.ok)throw Error(r.code);assertRunInvariants(r.state);return r.state;}
-export function fixture(route:BuildFocus='group',chapter=1){
- let s=createRun({seed:'cost-contract-fixed',runId:'cost-contract',characterId:'laohuan',rulesVersion:'r2',r2Identity:newRunIdentity('laohuan',route),openingRoute:route,modeConfig:{mode:'standard',difficulty:0,challengeId:null,programsEnabled:false}});
+export function fixture(route:BuildFocus='group',chapter=1,preTargetedValue=false){
+ const current=newRunIdentity('laohuan',route),identity=preTargetedValue?r2TargetedValueBase(current) as {contentVersion:string;contentHash:string}:current;
+ let s=createRun({seed:'cost-contract-fixed',runId:'cost-contract',characterId:'laohuan',rulesVersion:'r2',r2Identity:identity,openingRoute:route,modeConfig:{mode:'standard',difficulty:0,challengeId:null,programsEnabled:false}});
  for(const type of ['LeaveShop','SkipStage','OpenShop'] as const)s=send(s,{type});
  // Explicit late-stage projection with mandatory Boss clear ledger, no family
  // qualifications. Invariant-valid controlled input, not proof of reachable history.

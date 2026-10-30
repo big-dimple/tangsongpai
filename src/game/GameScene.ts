@@ -129,7 +129,7 @@ import {Haptics,type HapticScope} from '../haptics/Haptics';
 import { rankLabel, SUIT_SYMBOL, SUITS, type Suit, type PlayingCard } from '../cards/types';
 import {EffectQueue,type EffectContext} from '../core/EffectQueue';
 import {r2JokerDefinitionsFor,r2JokerDefinitionFor} from '../domain/r2ContentProfiles';
-import {cardDisplayName} from './tangsongCardNames';
+import {cardDefinitionName,cardDisplayName} from './tangsongCardNames';
 import {readR2Modifiers,type R2JokerInstance} from '../content/r2Schema';
 import {HAND_LABELS} from '../content/handLabels';
 import {heatText,fractionText,readableFractionText,readableScoreFormula,accumulatorRollValue} from './scoreText';
@@ -212,7 +212,7 @@ const ENHANCEMENT_UI={
   'glass-paper':{name:'玻璃纸',mark:'玻',ink:0x287687,text:'本牌计分时，倍率 ×1.5；本次出牌结算后有 1/4 概率销毁。'},
   'voice-paper':{name:'留声纸',mark:'声',ink:0x47627d,text:'本牌留在手中时，倍率 +1。'},
   'gold-paper':{name:'金纸',mark:'金',ink:0x86602c,text:'本牌留到过关时，金币 +1；每场最多 5 金。'},
-  'encore-paper':{name:'返场纸',mark:'返',ink:0x725783,text:'本牌计分时，自重触发一次；不会再次自触发。'},
+  'encore-paper':{name:'重计纸',mark:'重',ink:0x725783,text:'本牌计分时，再计分一次；额外计分不会再次触发此效果。'},
   'lucky-paper':{name:'幸运纸',mark:'运',ink:0xb68238,text:'每次计分独立判定：1/5 倍率 +4，1/15 金币 +10；每次出牌幸运金币合计最多 20。'},
 } as const;
 
@@ -269,6 +269,7 @@ export class GameScene extends Phaser.Scene {
   private layoutRefreshPending=false;
   private touyeSkillPhase?:TouyeSkillPhase;
   private ownedInput?:OwnedJokerInput;
+  private ownedFocus=0;
   private ownedDrag?:OwnedJokerDragVisual;
   private lifecycle=0;
   private intent=0;
@@ -490,18 +491,20 @@ export class GameScene extends Phaser.Scene {
     this.ownedInput.surface.addEventListener('pointermove',event=>{
       if(event.pointerType!=='mouse'||event.buttons||!this.ready||this.presentation||this.run.phase!=='await-input'||this.ownedDrag)return;
       const r=this.game.canvas.getBoundingClientRect(),x=(event.clientX-r.left)*this.scale.width*this.scale.zoom/r.width,y=(event.clientY-r.top)*this.scale.height*this.scale.zoom/r.height;
-      const index=this.view.layout.slots.findIndex(b=>x>=b.x&&x<=b.x+b.width&&y>=b.y&&y<=b.y+b.height),id=this.run.jokers[index]?.instanceId;
+      const layout=this.view.layout,index=layout.slots.findIndex((b,i)=>{const width=layout.pc?Math.min(layout.jokers.width/5,layout.jokers.x+layout.jokers.width-b.x):b.width;return i<this.run.jokers.length&&x>=b.x&&x<=b.x+width&&y>=b.y&&y<=b.y+b.height;}),id=this.run.jokers[index]?.instanceId;
+      const slot=layout.slots[index];this.ownedInput!.surface.style.cursor=id&&this.ownedReady&&slot&&x<=slot.x+slot.width?'grab':'pointer';
       if(this.hoveredJokerId===id)return;if(this.hoveredJokerId)this.hoverJoker(this.hoveredJokerId,false);if(id)this.hoverJoker(id,true);
     });
     this.ownedInput.surface.addEventListener('pointerleave',()=>{if(this.hoveredJokerId&&!this.ownedDrag)this.hoverJoker(this.hoveredJokerId,false);});
-    const ownedSurface=this.ownedInput.surface;let ownedFocus=0;
+    const ownedSurface=this.ownedInput.surface;
     ownedSurface.setAttribute('aria-hidden','false');ownedSurface.setAttribute('role','group');ownedSurface.tabIndex=0;
+    ownedSurface.addEventListener('focus',()=>this.syncOwnedFocus());
     ownedSurface.addEventListener('keydown',event=>{
       if(!this.ownedReady||!this.run.jokers.length||!['ArrowLeft','ArrowRight','Enter',' '].includes(event.key))return;
       event.preventDefault();event.stopPropagation();
-      ownedFocus=(ownedFocus+(event.key==='ArrowLeft'?-1:event.key==='ArrowRight'?1:0)+this.run.jokers.length)%this.run.jokers.length;
-      const joker=this.run.jokers[ownedFocus];ownedSurface.setAttribute('aria-label',this.jokerDefinition(joker.definitionId).name+'；'+this.jokerValue(joker)+'；左右键切换，Enter查看与调序');
-      if(event.key==='Enter'||event.key===' ')this.inspectJoker(joker.instanceId);else this.hoverJoker(joker.instanceId,true);
+      this.ownedFocus=(this.ownedFocus+(event.key==='ArrowLeft'?-1:event.key==='ArrowRight'?1:0)+this.run.jokers.length)%this.run.jokers.length;
+      this.syncOwnedFocus();
+      if(event.key==='Enter'||event.key===' ')this.inspectJoker(this.run.jokers[this.ownedFocus].instanceId);
     });
     ownedSurface.addEventListener('blur',()=>{if(this.hoveredJokerId)this.hoverJoker(this.hoveredJokerId,false);});
     const inspectOpponent=()=>{
@@ -907,6 +910,7 @@ export class GameScene extends Phaser.Scene {
       const pressure=bossJokerPressure({...this.bossPressureContext(),jokers},j.instanceId);if(pressure)mountBossPressure(this,marker,b.width,b.height,pressure);
       const visual=ownedJokerScoreLayer(this,marker);mountPolychromeCardIridescence(this,visual,marker.getData('scoreArtBounds')??{x:-b.width/2,y:-b.height/2,width:b.width,height:b.height},j.edition);
       mountOwnedJokerIdle(this,marker,{ordinal:i,reducedMotion:()=>this.reducedMotion,canFloat:()=>!this.playing&&!this.presentation&&!this.ownedDrag&&this.hoveredJokerId!==j.instanceId,canTilt:()=>!this.playing&&!this.presentation&&!this.ownedDrag});this.jokerViews.set(j.instanceId,marker);
+      const focusRing=this.add.rectangle(0,0,b.width+4,b.height+4,0,0).setStrokeStyle(3,T.red,1).setVisible(false);marker.add(focusRing).setData('focusRing',focusRing);
       const hit=v.rect({x:b.x,y:b.y,width:b.width,height:b.height},T.ink).setFillStyle(T.ink,.001).setStrokeStyle();marker.setData('hit',hit);
       v.target(hit,'joker/'+j.instanceId,{tap:()=>this.inspectJoker(j.instanceId),detail:()=>this.inspectJoker(j.instanceId),enter:()=>this.hoverJoker(j.instanceId,true),leave:()=>this.hoverJoker(j.instanceId,false)});
     });
@@ -914,6 +918,13 @@ export class GameScene extends Phaser.Scene {
     const lastRight=last?(l.pc?Math.min(last.x+l.jokers.width/5,l.jokers.x+l.jokers.width):last.x+last.width):0;
     this.ownedInput?.setBounds(!this.presentation&&this.run.phase==='await-input'&&last?{x:first.x,y:first.y,width:lastRight-first.x,height:first.height}:undefined);
     this.ownedInput?.surface.setAttribute('aria-label','持有唐宋牌：'+jokers.map(j=>this.jokerDefinition(j.definitionId).name).join('、')+'；左右键切换，Enter查看与调序');
+    if(document.activeElement===this.ownedInput?.surface)this.syncOwnedFocus();
+  }
+  private syncOwnedFocus():void {
+    const surface=this.ownedInput?.surface;if(!surface||!this.run.jokers.length)return;
+    this.ownedFocus=Math.min(this.ownedFocus,this.run.jokers.length-1);
+    const joker=this.run.jokers[this.ownedFocus];surface.setAttribute('aria-label',this.jokerDefinition(joker.definitionId).name+'；'+this.jokerValue(joker)+'；左右键切换，Enter查看与调序');
+    if(this.ownedReady)this.hoverJoker(joker.instanceId,true);
   }
   private jokerMechanism(marker:Phaser.GameObjects.Container,x:number,y:number,size:number,joker:R2JokerInstance):void {
     drawJokerMotif(this,marker,joker.definitionId,x,y,size,this.jokerDefinition(joker.definitionId));
@@ -1187,6 +1198,7 @@ export class GameScene extends Phaser.Scene {
     if(this.ownedDrag)return;
     if(!view.active||this.playing||this.presentation)return;
     const frame=view.getData('frame') as Phaser.GameObjects.Rectangle,hit=view.getData('hit') as Phaser.GameObjects.Rectangle,hovered=this.jokerViews.get(this.hoveredJokerId??'')===view,x=Number(view.getData('baseX')),y=Number(view.getData('baseY')),scale=1;
+    (view.getData('focusRing') as Phaser.GameObjects.Rectangle|undefined)?.setVisible(hovered&&document.activeElement===this.ownedInput?.surface);
     this.tweens.killTweensOf(view);if(hovered)frame.setStrokeStyle(1,T.brass,.5);else frame.setStrokeStyle();
     if(animate&&!this.reducedMotion)this.tweens.add({targets:view,x,y,angle:0,scaleX:scale,scaleY:scale,duration:120,ease:'Sine.easeOut'});else {view.setPosition(x,y).setAngle(0).setScale(scale);}
     if(hovered)this.view.root.bringToTop(view);else if(hit?.active)this.view.root.moveBelow<Phaser.GameObjects.GameObject>(view,hit);
@@ -1717,7 +1729,7 @@ export class GameScene extends Phaser.Scene {
     const xiemu=usesXiemuBurn(this.run)?xiemuChoice(this.run,this.selectionPreview()?.type,this.xiemuBurn):undefined;
     const azao=usesAzaoCharge(this.run)?azaoChoice(this.run,this.selectionPreview()?.type):undefined;
     const roleState=xiemu?xiemu.details:azao?azao.compact+'\n'+azao.hold+'\n默认不释放；在确认出牌前选择，取消不消耗。':!ability?'本次挑战关闭角色被动、初始赠送与押注。':notice?.wagerDisabled?'静场：本场角色计分与押注停用；非计分过关奖励保留。':this.characterId==='xiemu'?(stage.handsLeft===1?'当前为最后一手：倍率 ×2，过关额外 +2 金。':'距离最后一手还有 '+(stage.handsLeft-1)+' 次。'):this.characterId==='touye'?(stage.wagerUsed?'本场押注已用。':stage.wagerSelected?'本手已押注：50% ×2 / 50% ×0.75。':'本场押注未用；默认倍率 ×1.15。'):'';
-    const body=(savedXiemuBurn(this.run)?savedXiemuBurn(this.run)+'\n\n':'')+(savedAzaoCharge(this.run)?savedAzaoCharge(this.run)+'\n\n':'')+(challenge?challenge.name+'：'+challenge.description+'\n\n':'')+(xiemu?roleState+'\n'+(ability?c.passiveDescription:''):(ability?c.passiveDescription+'\n':'')+roleState)+'\n'+this.stage.name+'：'+this.stage.intro+'\n'+(notice?.warning?notice.details+'\n':'')+(stage.boss?'本场压轴':'本章压轴预告')+' '+heroText(r2BossText(stage.boss??this.run.boss))+'\n弃牌成本：'+r2DiscardCost(this.run)+(notice?.discardGoldCost?' 次 +1金币':' 次')+'；本场已弃 '+stage.discardsUsed+' 次。\n当前手牌上限 '+stage.handLimit+'，扩容修正后的硬上限14。\n'+(this.run.jokers.some(joker=>joker.definitionId==='c08')?'少一级：普通顺子可用4张，A234合法；同花顺仍须5张。\n':'')+(this.run.safetyNetUsed?'安全网本局已经使用，不会再次触发。':this.run.jokers.some(joker=>joker.definitionId==='f07')?'安全网：耗尽出牌且仍有可用手牌时救场一次，成功过关不触发。':'');
+    const body=(savedXiemuBurn(this.run)?savedXiemuBurn(this.run)+'\n\n':'')+(savedAzaoCharge(this.run)?savedAzaoCharge(this.run)+'\n\n':'')+(challenge?challenge.name+'：'+challenge.description+'\n\n':'')+(xiemu?roleState+'\n'+(ability?c.passiveDescription:''):(ability?c.passiveDescription+'\n':'')+roleState)+'\n'+this.stage.name+'：'+this.stage.intro+'\n'+(notice?.warning?notice.details+'\n':'')+(stage.boss?'本场压轴':'本章压轴预告')+' '+heroText(r2BossText(stage.boss??this.run.boss))+'\n弃牌成本：'+r2DiscardCost(this.run)+(notice?.discardGoldCost?' 次 +1金币':' 次')+'；本场已弃 '+stage.discardsUsed+' 次。\n当前手牌上限 '+stage.handLimit+'，扩容修正后的硬上限14。\n'+(this.run.jokers.some(joker=>joker.definitionId==='c08')?cardDisplayName('c08')+'：普通顺子可用4张，A234合法；同花顺仍须5张。\n':'')+(this.run.safetyNetUsed?'安全网本局已经使用，不会再次触发。':this.run.jokers.some(joker=>joker.definitionId==='f07')?'安全网：耗尽出牌且仍有可用手牌时救场一次，成功过关不触发。':'');
     const guide=heroSkillGuide(this.run,this.selectionPreview(),[...this.selectedIds],this.assistProfile&&assistCandidates(this.assistInput(),r2AssistAvailability(this.run).available).length>0,{xiemuBurn:this.xiemuBurn,azaoRelease:this.azaoRelease,amoExile:this.amoExile,assistCount:this.assistIds.length});
     const actions=[{label:'培养手记',run:()=>this.inspectJourney()},...(xiemu?[...xiemu.choices.map(choice=>({label:this.xiemuBurn===choice.cost?'已选'+choice.label:choice.label,detail:[choice.reason,choice.details].filter(Boolean).join(' · '),primary:this.xiemuBurn===choice.cost,disabled:!this.ready||!choice.available,run:()=>{if(!this.ready||!xiemuChoice(this.run,this.selectionPreview()?.type).choices.find(c=>c.cost===choice.cost)?.available)return;this.xiemuBurn=choice.cost;this.dialog.close();this.updateControls();}})),...(this.xiemuBurn?[{label:'取消本手支付',run:()=>{this.xiemuBurn=0;this.dialog.close();this.updateControls();}}]:[])]:[]),...(azao?[{label:azaoReleaseLabel(azao,this.azaoRelease),primary:true,disabled:!this.ready||(!this.azaoRelease&&!azao.available),run:()=>{if(!this.ready||!azaoChoice(this.run,this.selectionPreview()?.type).available){this.laohuanFindRank=null;this.erxiangTargetId=null;this.azaoRelease=false;this.xiemuBurn=0;this.amoExile=false;this.dialog.close();this.updateControls();return;}this.azaoRelease=!this.azaoRelease;this.dialog.close();this.updateControls();}}]:[]),{label:'查看物品',run:()=>showConsumables(this.dialog,this.run,this.ready&&!this.pendingRefill&&!this.pendingTouye,(a,seq)=>this.command(a,seq))},{label:'上一手详情',disabled:!this.run.lastTrace,run:()=>this.inspectLastTrace()},...(this.run.program?[{label:'本章节目单',run:()=>showPrograms(this.dialog,this.run,this.ready&&!this.pendingTouye,(a,seq)=>this.command(a,seq))}]:[]),...(this.characterId==='touye'?[{label:notice?.wagerDisabled?'本场不能押注':stage.wagerSelected?'取消本手押注':'押注本手',disabled:!this.ready||stage.wagerUsed||notice?.wagerDisabled,run:async()=>{await this.command({type:'SetWager',enabled:!stage.wagerSelected});if(this.dialog.active(dialog))this.inspectRole();}}]:[])];
     const auxiliary=new Set(['培养手记','查看物品','上一手详情','本章节目单']);
@@ -2098,7 +2110,7 @@ export class GameScene extends Phaser.Scene {
     const card=(this.presentation?.score??this.run.lastTrace)?.cards.find(card=>card.id===event.targetCardId);
     const item=R2_LONG_TERM_ITEMS.find(item=>item.id===event.sourceDefinitionId),tool=R2_TOOLS.find(tool=>tool.id===event.sourceDefinitionId),program=R2_MODE_CATALOG.programs.find(program=>program.id===event.sourceDefinitionId);
     const boss=R2_BOSSES.find(boss=>boss.id===event.sourceDefinitionId),sealed=(this.presentation?.score??this.run.lastTrace)?.sourceJokers.find(joker=>joker.instanceId===event.targetJokerInstanceId);
-    return item?.name??tool?.name??program?.name??(boss?boss.name+(sealed?' · '+this.jokerDefinition(sealed.definitionId).name:''):card?edition+rankLabel(card.rank)+SUIT_SYMBOL[card.suit]:HAND_LABELS[event.sourceDefinitionId as keyof typeof HAND_LABELS]??'计分牌');
+    return cardDefinitionName(item)??cardDefinitionName(tool)??program?.name??(boss?boss.name+(sealed?' · '+this.jokerDefinition(sealed.definitionId).name:''):card?edition+rankLabel(card.rank)+SUIT_SYMBOL[card.suit]:HAND_LABELS[event.sourceDefinitionId as keyof typeof HAND_LABELS]??'计分牌');
   }
   private setAccumulator(value:Accumulator):void {
     this.scoreHeat.setText(readableFractionText(value.H));this.scoreMult.setText(readableFractionText(value.M));

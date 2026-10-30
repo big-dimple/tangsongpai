@@ -1,7 +1,13 @@
 import {afterEach,expect,it,vi} from 'vitest';
-import {viewportMetrics,FRAMEBUFFER_PIXELS,installViewport} from '../src/platform/Viewport';
+import {viewportMetrics,FRAMEBUFFER_PIXELS,installViewport,canvasSizeFactor} from '../src/platform/Viewport';
 import {crispText,prepareTextScale} from '../src/game/TextRaster';
 afterEach(()=>vi.unstubAllGlobals());
+it('limits the requested canvas enlargement to a supported logical viewport',()=>{
+ expect(canvasSizeFactor(390,844,'large')).toBe(1.2);
+ expect(canvasSizeFactor(320,568,'large')).toBe(1);
+ expect(canvasSizeFactor(360,640,'large')).toBe(1.125);
+ expect(canvasSizeFactor(1920,1080,'standard')).toBe(1);
+});
 it.each([1,1.25])('keeps native canvas pointer coordinates aligned after CSS resize at DPR%s',dpr=>{
  let width=320,height=568,resized!:()=>void;
  const canvas={style:{width:'320px',height:'568px'},getBoundingClientRect(){return {width:parseFloat(this.style.width),height:parseFloat(this.style.height)};}};

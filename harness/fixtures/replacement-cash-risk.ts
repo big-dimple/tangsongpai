@@ -7,8 +7,8 @@ import {shopOfferGuidance} from '../../src/game/ShopOfferGuidance';
 import {shopC2Score} from './shop-c2-align';
 
 /** Current invariant-valid controlled shop, not natural acquisition or play. */
-export function replacementCashRiskFixture(gold=22,id='b10',edition:'none'|'foil'='none'){
- const s=f06RecommendationFixture(2);s.gold=gold;
+export function replacementCashRiskFixture(gold=22,id='b10',edition:'none'|'foil'='none',preTargetedValue=false){
+ const s=f06RecommendationFixture(2,{preTargetedValue});s.gold=gold;
  s.jokers=['e08','b02','e01','e03','e04'].map((id,i)=>r2CreateJoker(id,'held/'+id,i===2?0:8,'none',s));
  s.shop!.offers=[{offerId:'public/'+id,definitionId:id,price:r2Price(id,edition,s),edition,consumed:false}];
  assertRunInvariants(s);return s;

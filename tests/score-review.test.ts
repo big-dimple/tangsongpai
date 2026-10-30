@@ -2,6 +2,7 @@ import {cardDisplayName} from '../src/game/tangsongCardNames';
 import {describe,expect,it} from 'vitest';
 import {createRun} from '../src/domain/run';
 import {newRunIdentity} from '../src/game/RunLaunch';
+import {r2TargetedValueBase} from '../src/domain/r2GroupUpgrade';
 import {r2CreateJoker} from '../src/domain/r2Run';
 import {r2JokerDefinitionsFor} from '../src/domain/r2ContentProfiles';
 import {scoreR2Hand,type ScoreInput} from '../src/domain/scoreR2';
@@ -9,9 +10,9 @@ import {SeededRng} from '../src/core/SeededRng';
 import type {PlayingCard} from '../src/cards/types';
 import {formatScoreReview,reviewOperationText,reviewScoreText} from '../src/game/ScoreReview';
 import {exactFractionText} from '../src/game/scoreText';
-const run=()=>createRun({seed:'review-only',runId:'review-only',characterId:'xiemu',rulesVersion:'r2',r2Identity:newRunIdentity('xiemu','straight'),openingRoute:'straight',modeConfig:{mode:'standard',difficulty:0,challengeId:null,programsEnabled:false}});
-function fixture(extra:Partial<ScoreInput>={}){
- const state=run(),hand:PlayingCard[]=[3,4,5,6,7].map((rank,i)=>({id:'p/'+i,rank:rank as PlayingCard['rank'],suit:'hearts',enhancement:'multiplier-paper'}));
+const run=(old=false)=>{const current=newRunIdentity('xiemu','straight');return createRun({seed:'review-only',runId:'review-only',characterId:'xiemu',rulesVersion:'r2',r2Identity:old?r2TargetedValueBase(current) as {contentVersion:string;contentHash:string}:current,openingRoute:'straight',modeConfig:{mode:'standard',difficulty:0,challengeId:null,programsEnabled:false}});};
+function fixture(extra:Partial<ScoreInput>={},old=false){
+ const state=run(old),hand:PlayingCard[]=[3,4,5,6,7].map((rank,i)=>({id:'p/'+i,rank:rank as PlayingCard['rank'],suit:'hearts',enhancement:'multiplier-paper'}));
  const input:ScoreInput={rulesVersion:'r2',runId:state.runId,rootId:'saved-review',characterId:'neutral',hand,selectedIds:hand.map(c=>c.id),disabledIds:[],jokers:[],definitions:r2JokerDefinitionsFor(state),handLevels:{},playIndex:1,handsBeforePlay:4,previousHandType:null,wager:false,rng:new SeededRng('review-only').snapshot(),amoScoreTiming:'assist-v1',routeGrowth:{clears:21,G:0,S:21,F:21},...extra};
  return {state,input,trace:scoreR2Hand(input)};
 }
@@ -39,7 +40,9 @@ describe('saved score review display only',()=>{
   const repeated=fixture({jokers:[r2CreateJoker('c02','red-one',4,undefined,state),r2CreateJoker('c02','red-two',4,undefined,state)]});
   const red=formatScoreReview(state,repeated.trace).cards.filter(c=>c.title.startsWith((cardDisplayName('c02'))));expect(red).toHaveLength(2);for(const card of red)expect(card.body).toContain('+12 热度 · 实际触发 5 次');
   const zero=fixture({jokers:[r2CreateJoker('b10','unmet',4,undefined,state)]});
-  expect(formatScoreReview(zero.state,zero.trace).cards.some(c=>c.title.includes(cardDisplayName('b10'))&&c.body.includes('实际触发'))).toBe(false);
+  const growthCard=formatScoreReview(zero.state,zero.trace).cards.find(c=>c.title.includes(cardDisplayName('b10'))&&c.title.includes('本手计分'))!;
+  expect(growthCard.body).toContain('+20 热度 · 实际触发 1 次');expect(growthCard.body).toContain('实际读取 1 次');
+  const old=run(true),oldZero=fixture({jokers:[r2CreateJoker('b10','unmet-old',4,undefined,old)]},true);expect(formatScoreReview(oldZero.state,oldZero.trace).cards.some(c=>c.title.includes(cardDisplayName('b10'))&&c.body.includes('实际触发'))).toBe(false);
  });
  it('distinguishes random checks/misses, retriggers, and after-hand growth from scoring',()=>{
   const {state,trace}=fixture({jokers:[r2CreateJoker('c04','growth',4,undefined,run())]});

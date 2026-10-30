@@ -5,7 +5,7 @@ import {createRun,applyCommand,type R2RunState} from '../src/domain/run';
 import {r2CreateJoker,assertR2Invariants} from '../src/domain/r2Run';
 import {r2HouseBase,r2HouseProfile,r2JokerValueBase} from '../src/domain/r2GroupUpgrade';
 import {r2JokerDefinitionsFor,r2JokerDefinitionFor} from '../src/domain/r2ContentProfiles';
-import {R2_ROUTE_GROWTH_JOKERS,R2_HOUSE_JOKERS,R2_VALUE_JOKERS,hasR2RouteGrowthDefinitions} from '../src/content/r2RouteGrowthJokers';
+import {R2_ROUTE_GROWTH_JOKERS,R2_HOUSE_JOKERS,R2_VALUE_JOKERS,R2_TARGETED_VALUE_JOKERS,hasR2RouteGrowthDefinitions} from '../src/content/r2RouteGrowthJokers';
 import {r2Price,R2_ECONOMY,r2PurchasePrice,r2Pool} from '../src/domain/r2Shop';
 import {R2_EDITIONS} from '../src/content/r2Tools';
 import {scoreR2Hand} from '../src/domain/scoreR2';
@@ -21,7 +21,7 @@ function run(hero:typeof CHARACTER_IDS[number]='amo',legacy=false){const identit
 function send(s:R2RunState,action:Parameters<typeof applyCommand>[1]['action']){const r=applyCommand(s,{runId:s.runId,commandId:'c/'+s.commandSeq,expectedSeq:s.commandSeq,action});if(!r.ok)throw Error(r.code);assertR2Invariants(r.state);return r.state as R2RunState;}
 function cards(ranks:number[],flush=false):PlayingCard[]{return ranks.map((rank,i)=>({id:'c/'+i,rank:rank as PlayingCard['rank'],suit:flush?'hearts':i%2?'clubs':'spades'}));}
 it('all six new games bind only the revised a11 while exact old checkpoints and retry remain valid',()=>{
- for(const hero of CHARACTER_IDS){const s=run(hero),old=run(hero,true);expect(r2HouseProfile(s)).toBeDefined();expect(r2JokerDefinitionsFor(s)).toBe(R2_VALUE_JOKERS);expect(r2JokerDefinitionsFor(r2JokerValueBase(s))).toBe(R2_HOUSE_JOKERS);expect(r2JokerDefinitionsFor(old)).toBe(R2_ROUTE_GROWTH_JOKERS);expect(readCheckpoint(makeCheckpoint(s,[])).ok).toBe(true);expect(readCheckpoint(makeCheckpoint(old,[])).ok).toBe(true);expect(launchIdentity(hero,{kind:'retry',run:old})).toEqual(r2HouseBase(s));}
+ for(const hero of CHARACTER_IDS){const s=run(hero),old=run(hero,true);expect(r2HouseProfile(s)).toBeDefined();expect(r2JokerDefinitionsFor(s)).toBe(R2_TARGETED_VALUE_JOKERS);expect(r2JokerDefinitionsFor(r2JokerValueBase(s))).toBe(R2_HOUSE_JOKERS);expect(r2JokerDefinitionsFor(old)).toBe(R2_ROUTE_GROWTH_JOKERS);expect(readCheckpoint(makeCheckpoint(s,[])).ok).toBe(true);expect(readCheckpoint(makeCheckpoint(old,[])).ok).toBe(true);expect(launchIdentity(hero,{kind:'retry',run:old})).toEqual(r2HouseBase(s));}
  expect(R2_HOUSE_JOKERS.filter((d,i)=>d!==R2_ROUTE_GROWTH_JOKERS[i]).map(d=>d.id)).toEqual(['a11']);expect(hasR2RouteGrowthDefinitions(R2_HOUSE_JOKERS)).toBe(true);
 });
 it.each([[false,'full-house','2'],[true,'flush-house','3']] as const)('actual %s house applies one multiplier and no retrigger', (flush,type,factor)=>{

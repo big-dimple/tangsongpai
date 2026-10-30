@@ -54,9 +54,19 @@ export const R2_VALUE_JOKERS:readonly R2JokerDefinition[]=freeze(R2_HOUSE_JOKERS
  const change=valueChanges[d.id];if(!change)return d;
  return {...d,description:change.description,hooks:d.hooks.map(h=>({...h,operations:h.operations.map(op=>op.kind==='add-heat'||op.kind==='add-multiplier'?{...op,value:change.value}:op)}))};
 }));
+/** Independent revision: previously saved value identities keep their definitions. */
+const targetedValueChanges:Record<string,{description:string;value:string;kind:'add-heat'|'add-multiplier'}>= {
+ d10:{description:'每手热度+12，另每个空唐宋牌槽加12热度，最多4个空槽。',value:'12',kind:'add-heat'},
+ b10:{description:'每手热度+20；任何成组牌型结算后热度成长+10，上限+100，下次起生效；每手任意牌型均加入已有成长，跨场保留。',value:'20',kind:'add-heat'},
+ b03:{description:'每手倍率+1；任何成组牌型结算后倍率成长+0.25，上限+3，下次起生效；每手任意牌型均加入已有成长，跨场保留。',value:'1',kind:'add-multiplier'},
+};
+export const R2_TARGETED_VALUE_JOKERS:readonly R2JokerDefinition[]=freeze(R2_VALUE_JOKERS.map(d=>{
+ const change=targetedValueChanges[d.id];if(!change)return d;
+ return {...d,description:change.description,hooks:[...d.hooks,{phase:'jokerScore',condition:{kind:'always'},operations:[{kind:change.kind,value:{n:change.value,d:'1'}}]}]};
+}));
 export const isHouseJoker=(d:R2JokerDefinition)=>d===R2_HOUSE_JOKERS.find(d=>d.id==='a11');
-const definitionsHashes=new Set([stableHash(R2_ROUTE_GROWTH_JOKERS),stableHash(R2_HOUSE_JOKERS),stableHash(R2_VALUE_JOKERS)]);
+const definitionsHashes=new Set([stableHash(R2_ROUTE_GROWTH_JOKERS),stableHash(R2_HOUSE_JOKERS),stableHash(R2_VALUE_JOKERS),stableHash(R2_TARGETED_VALUE_JOKERS)]);
 // These module-owned arrays are deeply frozen. Legacy previews need no full
 // 72-card hash on every candidate; arbitrary/copied arrays still get the hash.
 const legacyDefinitionSets=new Set<readonly R2JokerDefinition[]>([R2_PUBLISHED_JOKERS,R2_ASSIST_JOKERS,R2_COMBO_GROWTH_JOKERS,R2_GROUP_UPGRADE_JOKERS]);
-export const hasR2RouteGrowthDefinitions=(definitions:readonly R2JokerDefinition[])=>definitions===R2_ROUTE_GROWTH_JOKERS||definitions===R2_HOUSE_JOKERS||definitions===R2_VALUE_JOKERS||!legacyDefinitionSets.has(definitions)&&definitionsHashes.has(stableHash(definitions));
+export const hasR2RouteGrowthDefinitions=(definitions:readonly R2JokerDefinition[])=>definitions===R2_ROUTE_GROWTH_JOKERS||definitions===R2_HOUSE_JOKERS||definitions===R2_VALUE_JOKERS||definitions===R2_TARGETED_VALUE_JOKERS||!legacyDefinitionSets.has(definitions)&&definitionsHashes.has(stableHash(definitions));

@@ -88,11 +88,18 @@ export const TANGSONG_CARD_NAMES: Readonly<Record<string, string>> = Object.free
   f12: '压轴好戏'
 });
 
+// Player-facing names only; definition names and IDs remain save and rules inputs.
+const PLAYER_NAME_OVERRIDES: Readonly<Record<string, string>> = Object.freeze({
+  f12: '待时而发', 'encore-paper': '重计纸',
+  T02: '精简牌组', T15: '再计券', S03: '重演', S04: '同花改造',
+  S07: '多彩转赠', S08: '清除特效', U02: '弃牌券', U03: '出牌许可'
+});
+
 /**
  * 获取面向玩家的唐宋正名（若未收录则降级为默认名或ID）
  */
 export function cardDisplayName(definitionId: string, defaultName?: string): string {
-  return definitionId==='T18'?'换货券':TANGSONG_CARD_NAMES[definitionId] ?? defaultName ?? definitionId;
+  return definitionId==='T18'?'换货券':PLAYER_NAME_OVERRIDES[definitionId] ?? TANGSONG_CARD_NAMES[definitionId] ?? defaultName ?? definitionId;
 }
 
 /** UI-only name projection; the original definition remains the rule/hash input. */

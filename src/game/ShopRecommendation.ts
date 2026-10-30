@@ -20,6 +20,8 @@ import {shopPurchaseCashFacts} from './ShopRouteRelations';
 import type {R2JokerInstance} from '../content/r2Schema';
 import {shopDeferredGrowthCashRisk} from './ShopReplacementCashRisk';
 import {shopPurchaseValue} from './ShopPurchaseValue';
+import {fractionText} from './scoreText';
+import {playerJokerDescription} from './JokerDescription';
 
 /** Audited against the renamed Tang-Song 72 definitions. Changed/older semantics require review. */
 export const SHOP_RECOMMENDATION_SEMANTICS='json-fnv-v1:f8364d4b8abe5def';
@@ -48,6 +50,7 @@ export type RecommendationStars=0|1|2|3|4|5;
 export interface ShopRecommendation {stars:RecommendationStars;reason:string;condition:string;detail:string;stage:'early'|'mid'|'late';combination:string;combinationHint:string;facts:Readonly<Record<string,number|boolean|string>>}
 export const SHOP_HOUSE_RECOMMENDATION_SEMANTICS='json-fnv-v1:bf164b81a7433aed';
 export const SHOP_VALUE_RECOMMENDATION_SEMANTICS='json-fnv-v1:21dcf0587210ab84';
+export const SHOP_TARGETED_VALUE_RECOMMENDATION_SEMANTICS='json-fnv-v1:aad9cad02d2e2c9c';
 const hashes=new WeakMap<object,string>();
 /** No affordability rating, RNG, future piles or stored recommendation. Cash gates use purchase cash. */
 export function shopRecommendation(state:R2RunState,offer:R2Offer,focus?:BuildFocus,sold?:R2JokerInstance):ShopRecommendation {
@@ -58,7 +61,7 @@ export function shopRecommendation(state:R2RunState,offer:R2Offer,focus?:BuildFo
  if(cash?.status==='assessed')state=cash.afterSale;
  const replacementCashRisk=cash?.status==='assessed'?shopDeferredGrowthCashRisk(cash.afterSale,offer):undefined;
  const definitions=r2JokerDefinitionsFor(state);let hash=hashes.get(definitions);if(!hash){hash=stableHash(definitions);hashes.set(definitions,hash);}
- const c2=isR2RouteGrowth(state)&&(hash===SHOP_C2_RECOMMENDATION_SEMANTICS||hash===SHOP_HOUSE_RECOMMENDATION_SEMANTICS||hash===SHOP_VALUE_RECOMMENDATION_SEMANTICS);
+ const c2=isR2RouteGrowth(state)&&(hash===SHOP_C2_RECOMMENDATION_SEMANTICS||hash===SHOP_HOUSE_RECOMMENDATION_SEMANTICS||hash===SHOP_VALUE_RECOMMENDATION_SEMANTICS||hash===SHOP_TARGETED_VALUE_RECOMMENDATION_SEMANTICS);
  const audited=c2||hash===SHOP_RECOMMENDATION_SEMANTICS;
  const routeGrowth=c2?shopRouteGrowthFacts(state):undefined;
  const stage=state.chapter<=2?'early':state.chapter<=5?'mid':'late';
@@ -144,7 +147,7 @@ export function shopRecommendation(state:R2RunState,offer:R2Offer,focus?:BuildFo
   const cap=value?.calibrated&&value.status==='blocked'?1:value?.calibrated&&value.status==='needs-selection'?2:value?.status==='assessed'&&value.calibrated?value.ceiling:5;
   const finalStars=Math.min(actualStars,cap) as RecommendationStars;
   const valueReason=stars<=1?actualReason:value?.calibrated&&value.status==='needs-selection'?'替换待核':value?.calibrated&&value.status==='blocked'?'当前不可购买':value?.status==='assessed'&&value.calibrated&&value.negative?(value.positive?'条件对照有得失':'保留对照更高'):value?.status==='assessed'&&value.calibrated&&actualStars>cap?(value.cashLoss?'购后条件受损':value.lostInvestment?'替换会丢已有收益':value.unmeasuredLoss?'替换有未估代价':value.interestLoss?'购款降低利息档':!value.positive?'新购收益待成长':actualReason):actualReason;
-  return {stars:finalStars,reason:valueReason,condition:value?.status==='needs-selection'?'先指定替换对象，再核净补强 · '+actualCondition:actualCondition,stage,combination,combinationHint:potential&&finalStars>=3?'组合潜力：'+potential+'。':'',facts:{...facts,...(value?{purchaseValue:JSON.stringify(value)}:{}),...(limited?{replacementCashRisk:JSON.stringify(replacementCashRisk)}:{})},detail:(value?value.detail+'\n':'')+(limited?("购款将停用"+cardDisplayName('e08')+"；")+actualCondition+'。\n':'')+reason+'；'+condition+(d?'。'+playerText(d.description):'')+(finalStars>=4?`\n公开依据：最大同点组${largest}张，前两组${largest+second}/${cards.length}张；最大花色${largestSuit}/${cards.length}张；已持逐牌加成${heldCardPayoff?'有':'无'}；剩余场次窗口${potentialStages}。`:'')+'\n'+combination+(routeGrowth?'\n'+routeGrowth.detail:'')};
+  return {stars:finalStars,reason:valueReason,condition:value?.status==='needs-selection'?'先指定替换对象，再核净补强 · '+actualCondition:actualCondition,stage,combination,combinationHint:potential&&finalStars>=3?'组合潜力：'+potential+'。':'',facts:{...facts,...(value?{purchaseValue:JSON.stringify(value)}:{}),...(limited?{replacementCashRisk:JSON.stringify(replacementCashRisk)}:{})},detail:(value?value.detail+'\n':'')+(limited?("购款将停用"+cardDisplayName('e08')+"；")+actualCondition+'。\n':'')+reason+'；'+condition+(d?'。'+playerText(playerJokerDescription(d)):'')+(finalStars>=4?`\n公开依据：最大同点组${largest}张，前两组${largest+second}/${cards.length}张；最大花色${largestSuit}/${cards.length}张；已持逐牌加成${heldCardPayoff?'有':'无'}；剩余场次窗口${potentialStages}。`:'')+'\n'+combination+(routeGrowth?'\n'+routeGrowth.detail:'')};
  };
  if(sold&&cash?.status==='blocked')return result(0,'替换不可执行','先核对出售限制');
  if(!audited||!rule||!d)return result(0,'规则待核','该身份尚未审计');
@@ -153,14 +156,16 @@ export function shopRecommendation(state:R2RunState,offer:R2Offer,focus?:BuildFo
  if(scoreHooks&&state.stageIndex%3===2&&state.boss.definitionId==='B16'&&d.rarity==='rare')return result(1,'本场稀有计分停用','封禁结束再考虑');
  const growth=(ready:boolean,reason:string,condition:string)=>result(ready&&growthWindow?4:stage==='late'?2:3,reason,condition+(stage==='late'?' · 新购从初值开始':''));
  const count=(predicate:(c:typeof cards[number])=>boolean)=>cards.filter(predicate).length;
+ const fixedHeat=d.hooks.filter(h=>h.phase==='jokerScore'&&h.condition.kind==='always').flatMap(h=>h.operations).find(o=>o.kind==='add-heat');
+ const fixedMultiplier=d.hooks.filter(h=>h.phase==='jokerScore'&&h.condition.kind==='always').flatMap(h=>h.operations).find(o=>o.kind==='add-multiplier');
  const groupFit=focus==='group'||groupRecord,flushFit=focus==='flush'||flushRecord,straightFit=focus==='straight';
  switch(rule){
    case 'group-heat-c2':return result(largest<2?1:groupFit?(stage==='late'?2:3):2,'成组热度+90','含五条与同花升级牌型');
    case 'straight-heat-growth-c2':return !straightFamilyPossible?result(1,'缺顺子成长条件','新购成长为0'):growth(straightFit||straightConcentrated||!!trace&&['straight','straight-flush'].includes(trace.handType),'顺子热度与成长','热+50 · 成长+10/上限100');
    case 'flush-family-growth-c2':return !flushFamilyPossible?result(1,'缺同花族成长条件','新购成长为0'):growth(flushFit||flushConcentrated||!!trace&&['flush-house','flush-five'].includes(trace.handType),'同花族长倍率','含同花升级 · +0.5/上限6');
-   case 'route-family-add-c2':return result(!straightFamilyPossible&&!flushFamilyPossible?1:straightReady||flushReady||flushConcentrated&&flushFamilyPossible?4:straightFit||flushFit?3:2,'顺花族加倍率1.5','含同花葫芦与同花五条');
+   case 'route-family-add-c2':{const op=d.hooks.flatMap(h=>h.operations).find(o=>o.kind==='add-multiplier');return result(!straightFamilyPossible&&!flushFamilyPossible?1:straightReady||flushReady||flushConcentrated&&flushFamilyPossible?4:straightFit||flushFit?3:2,'顺花族加倍率'+(op?.kind==='add-multiplier'?fractionText(op.value):''),'含同花葫芦与同花五条');}
    case 'sale-keeps-coefficient-c2':return result(stage==='late'?2:potentialStages>=6?4:3,'不出售跨场成长','卖其他牌保倍率 · 下一场不成长');
-   case 'opening-discard-rescue-c2':return result(largest>=3||second>=2||straightFamilyPossible||flushFamilyPossible?3:2,'首次弃牌备救火','未出牌首弃 · 下手两对以上×3');
+   case 'opening-discard-rescue-c2':return result(largest>=3||second>=2||straightFamilyPossible||flushFamilyPossible?3:2,'首次弃牌准备倍率','未出牌首弃 · 下手两对以上×3');
   case 'triple':return result(largest<3?1:groupReady?4:groupFit?3:2,'主手三条加倍率','需主手三条');
   case 'group-heat':return result(largest<2?1:groupFit?(stage==='late'?2:3):2,'成组基础热度','普通成组牌型');
   case 'pair-score':return result(largest<2?1:groupReady&&heldCardPayoff?4:groupFit?3:2,'同点逐牌加倍率','计分点数实际重复');
@@ -171,7 +176,7 @@ export function shopRecommendation(state:R2RunState,offer:R2Offer,focus?:BuildFo
   case 'red-score':case 'black-score':{const n=count(c=>rule==='red-score'?['hearts','diamonds'].includes(c.suit):['spades','clubs'].includes(c.suit));return result(n===0?1:n>=Math.ceil(cards.length*.7)?4:3,'对应花色逐牌加热',rule==='red-score'?'有效红桃或方片':'有效黑桃或梅花');}
   case 'straight-heat':return result(!straightPossible?1:straightFit?(stage==='late'?2:3):2,'顺子基础热度','普通顺子或同花顺');
   case 'straight-flush-add':return result(straightReady||flushReady?4:straightFit||flushFit?3:2,'顺花加倍率','普通顺花或同花顺');
-  case 'group-growth':case 'group-heat-growth':return largest<2?result(1,'缺成组成长条件','新购成长为0'):growth(groupFit,rule==='group-growth'?'持续长倍率':'持续长热度','成组后增长 · 下手生效');
+  case 'group-growth':case 'group-heat-growth':{const base=rule==='group-heat-growth'&&fixedHeat?.kind==='add-heat'?'每手热度+'+fractionText(fixedHeat.value)+' · ':rule==='group-growth'&&fixedMultiplier?.kind==='add-multiplier'?'每手倍率+'+fractionText(fixedMultiplier.value)+' · ':'';return largest<2?result(base?2:1,'缺成组成长条件',base+'新购成长为0'):growth(groupFit,rule==='group-growth'?'持续长倍率':'持续长热度',base+'成组后增长 · 下手生效');}
   case 'flush-growth':return largestSuit<5?result(1,'缺同花成长条件','新购成长为0'):growth(flushFit,'持续长倍率','普通同花后增长');
   case 'repeat-growth':return growth(qualifiedReady,'重复主手长热度','连续相同合格主手');
   case 'held-growth':return growth(cards.length>=8,'留牌长热度','每手留至少3张');
@@ -209,7 +214,7 @@ export function shopRecommendation(state:R2RunState,offer:R2Offer,focus?:BuildFo
   case 'four-flush':return result(largestSuit<4?1:flushFit?4:2,'普通四花更易成型','扩展同花仍需5张');
   case 'small-deck':return result(cards.length>40||r2HandLimit(state)>=14?1:cards.length<=32?4:3,'小牌组扩手','下次进场 · 牌组≤40');
   case 'hand-space':return result(r2HandLimit(state)>=14?1:3,'增加下场手牌','下次进场 · 总上限14');
-  case 'empty-slots':return result(state.jokers.length>=r2JokerCapacity(state)-1?1:stage==='late'?2:3,'空槽加热','买入也占一槽');
+  case 'empty-slots':return result(state.jokers.length>=r2JokerCapacity(state)-1?(fixedHeat?2:1):stage==='late'?2:3,'空槽加热',(fixedHeat?.kind==='add-heat'?'每手热度+'+fractionText(fixedHeat.value)+' · ':'')+'买入也占一槽');
   case 'capital-heat':return result(state.gold>=15?3:2,'持金加热度','每金+2 · 最多60');
   case 'low-capital':return result(state.gold<=3?3:2,'低余额加倍率','计分前余额≤3金');
   case 'purchase-discount':return result(potentialStages>=6?3:2,'后续首购省金','买它不减本笔 · 不保回本');
@@ -224,7 +229,7 @@ export function shopRecommendation(state:R2RunState,offer:R2Offer,focus?:BuildFo
   case 'discard-refund':return result(3,'增加一次弃牌机会','每场首次成功弃牌');
   case 'single-discard-income':return result(potentialStages<3?2:3,'单弃带来收入','每场最多两次');
   case 'discard-charge':return result(flushFit?3:2,'同色弃牌蓄热','下手消费 · 场末清零');
-  case 'opening-rescue':return result(groupFit?3:2,'开场缺件救火','先弃牌预备 · 下手成组');
+  case 'opening-rescue':return result(groupFit?3:2,'首次弃牌准备倍率','弃前未成两对以上 · 下手两对以上×3');
   case 'quad-refund':return result(largest>=4&&groupReady?3:2,'四条未过关返手','每场一次 · 不保过关');
   case 'rescue':return result(state.safetyNetUsed?1:3,'耗尽出牌时续手','每局一次 · 需有可用牌');
   case 'first-score':return result(retriggerSource?4:3,'首有效牌加热','合格主手 · 重触可再读');

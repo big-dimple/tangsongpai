@@ -1,11 +1,11 @@
 import {cardDefinitionName} from './tangsongCardNames';
 import {coefficientLabelCandidates} from './JokerLabel';
-import {isHouseJoker,R2_ROUTE_GROWTH_JOKERS} from '../content/r2RouteGrowthJokers';
+import {isHouseJoker,R2_ROUTE_GROWTH_JOKERS,R2_TARGETED_VALUE_JOKERS} from '../content/r2RouteGrowthJokers';
 import {r2DiscardCost} from '../domain/r2Run';
 import {R2_GROUP_UPGRADE_IDS,R2_GROUP_UPGRADE_JOKERS} from '../content/r2GroupUpgradeJokers';
 import {R2_COMBO_GROWTH_JOKERS,R2_COMBO_GROWTH_IDS} from '../content/r2ComboGrowthJokers';
 import {R2_ASSIST_JOKERS} from '../content/r2AssistJokers';
-import {JOKER_ASSIST_COMPACT} from './JokerAssistTemplates';
+import {isAssistFirstScore,JOKER_ASSIST_COMPACT} from './JokerAssistTemplates';
 import {r2JokerDefinitionFor,type R2ContentIdentity} from '../domain/r2ContentProfiles';
 import {jokerPlayerCopy}from'./JokerPlayerCopy';
 import type {ScoreEvent}from'../domain/scoreR2';
@@ -76,9 +76,9 @@ function operationDescription(op:Operation,ctx:JokerMemoryContext):string {
   case'add-growth':return'单次成长 +'+fractionText(op.value)+'，封顶'+fractionText(op.cap);
   case'read-coefficient':return'读取当前保存的倍率系数';
   case'multiply-coefficient-once':return'每场首次不同的两对及以上出牌接续后系数 ×'+fractionText(op.value)+'，下一次生效，封顶'+fractionText(op.cap);
-  case'arm-rescue':return'备好一次救火，后续弃牌不叠加';
-  case'consume-rescue':return'下一次实际出牌后消耗救火，无论命中或被封禁';
-  case'rescue-multiplier':return'已备好救火时倍率 ×'+fractionText(op.value);
+  case'arm-rescue':return'自动准备一次倍率，后续弃牌不叠加';
+  case'consume-rescue':return'下一次实际出牌后消耗，无论牌型是否符合或被封禁';
+  case'rescue-multiplier':return'已准备倍率时 ×'+fractionText(op.value);
   case'add-gold-per-held':return'实际留至少'+op.minimum+'张才每张给1金，上限'+op.cap+'金，补牌不算';
   case'add-gold-per-capital':return'按过关奖励前每'+op.divisor+'金币给1金，上限'+op.cap+'金';
   case'add-coefficient':return'单次系数成长 +'+fractionText(op.value)+'，封顶'+fractionText(op.cap);
@@ -130,7 +130,7 @@ export function jokerMemory(definition:R2JokerDefinition,instance:R2JokerInstanc
  // Missing additive storage is a real zero, never a claim about its history.
  const savedGrowth=instance?{...r2GrowthMinimums(definition),...instance.growth}:{};
  let saved=instance?r2JokerStateText({...instance,growth:savedGrowth},definition):'尚未购入；不代表已触发';
- if(combo&&instance){if(definition.id==='a06')saved+='；'+(ctx.inStage?(instance.counters?.alternationUsed?'本场已成长':'本场成长尚可用'):'下场重置成长次数');if(definition.id==='f10')saved=instance.counters?.rescueArmed?'救火已备好；下一次出牌后消耗':!ctx.inStage?'下场首次弃牌前检查':ctx.playIndex>0||ctx.discardsUsed>0?'本场启动机会已用；救火未备好':'首次弃牌前检查；救火未备好';}
+ if(combo&&instance){if(definition.id==='a06')saved+='；'+(ctx.inStage?(instance.counters?.alternationUsed?'本场已成长':'本场成长尚可用'):'下场重置成长次数');if(definition.id==='f10')saved=instance.counters?.rescueArmed?'倍率已准备；下一次出牌后消耗':!ctx.inStage?'下场首次弃牌时检查':ctx.playIndex>0||ctx.discardsUsed>0?'本场准备机会已用':'出牌前首次弃牌时检查';}
  const remaining=instance&&life?.kind==='expire-after-hands'?Math.max(0,life.limit-(instance.counters?.handsScored??0)):undefined;
  const scoreHooks=hooks.filter(h=>['onCardScore','onHeldCard','jokerScore'].includes(h.phase)),satisfied=scoreHooks.filter(h=>h.status==='条件满足');
  const currentStatus:MemoryStatus|'部分条件满足'=satisfied.length?satisfied.length===scoreHooks.length?'条件满足':'部分条件满足':scoreHooks.some(h=>h.status==='待选牌')?'待选牌':scoreHooks.some(h=>h.status==='当前未满足')?'当前未满足':'事件时检查';
@@ -146,17 +146,21 @@ export function jokerMemory(definition:R2JokerDefinition,instance:R2JokerInstanc
  const stored=Object.entries(savedGrowth).filter(([key,value])=>key==='coefficient'||BigInt(value.n)!==0n);
  // First-layer labels are readable; saved/rules above keep their exact numbers.
  const valueLabel=stored.map(([key,value])=>(key==='coefficient'?'系数×':key==='pendingHeat'?'蓄热':key==='multiplier'?'倍+':'热+')+readableFractionText(value)).join('／');
- const stateCandidates=combo&&definition.id==='f10'&&instance?[instance.counters?.rescueArmed?'救火待出牌':ctx.inStage&&(ctx.playIndex>0||ctx.discardsUsed>0)?'本场机会已用':'首弃前检查']:remaining!==undefined?['余'+remaining+'手']:remainingUses!==undefined?['余'+remainingUses+'次']:
+ const stateCandidates=combo&&definition.id==='f10'&&instance?[instance.counters?.rescueArmed?'倍率待出牌':ctx.inStage&&(ctx.playIndex>0||ctx.discardsUsed>0)?'本场机会已用':'首弃时检查']:remaining!==undefined?['余'+remaining+'手']:remainingUses!==undefined?['余'+remainingUses+'次']:
   definition.id==='f09'&&ctx.inStage&&ctx.discardsUsed>0?['已弃牌']:
   instance&&definition.hooks.some(h=>h.operations.some(op=>op.kind==='reward-consumable-every-clears'))?[instance.counters?.stageClears===1?'下关赠票':'再2关赠票']:
   valueLabel?[valueLabel,...(stored.length===1&&stored[0][0]==='coefficient'?coefficientLabelCandidates(stored[0][1]):[])]:[];
  const incomeOp=definition.hooks.flatMap(h=>h.operations).find(o=>o.kind==='add-gold-per-held'||o.kind==='add-gold-per-capital');
- const comboLabels:Record<string,string[]>={a06:['两对以上×系数'],f10:[definition.hooks.some(h=>h.condition.kind==='opening-discard')?'首次弃牌救火':'冷开局救火'],d12:[incomeOp?.kind==='add-gold-per-held'?'成型留≥'+incomeOp.minimum+'给金':'条件 ›'],e04:[incomeOp?.kind==='add-gold-per-capital'?'奖励前每'+incomeOp.divisor+'金+1':'条件 ›']};
+ const comboLabels:Record<string,string[]>={a06:['两对以上×系数'],f10:[definition.hooks.some(h=>h.condition.kind==='opening-discard')?'出牌前首弃备倍率':'首弃前看手牌'],d12:[incomeOp?.kind==='add-gold-per-held'?'成型留≥'+incomeOp.minimum+'给金':'条件 ›'],e04:[incomeOp?.kind==='add-gold-per-capital'?'奖励前每'+incomeOp.divisor+'金+1':'条件 ›']};
  const groupIncome=definition.hooks.flatMap(h=>h.operations).find(o=>o.kind==='add-gold');
  const groupLabels:Record<string,string[]>={b03:['同点组合长倍率'],b06:['最大同点组再计'],b08:[groupIncome?.kind==='add-gold'?'同点组合过关+'+groupIncome.amount+'金':'条件 ›'],b10:['同点组合长热度']};
- const grouped=R2_GROUP_UPGRADE_IDS.includes(definition.id)&&R2_GROUP_UPGRADE_JOKERS.includes(definition);
+ const grouped=R2_GROUP_UPGRADE_IDS.includes(definition.id)&&(R2_GROUP_UPGRADE_JOKERS.includes(definition)||R2_TARGETED_VALUE_JOKERS.includes(definition));
  const d07Value=definition.id==='d07'?definition.hooks[0]?.operations[0]:undefined;
- const labelCandidates=isHouseJoker(definition)?['查看效果']:stateCandidates.length?stateCandidates:grouped?groupLabels[definition.id]:combo?comboLabels[definition.id]:d07Value?.kind==='add-multiplier'?['全计分+'+readableFractionText(d07Value.value),'条件 ›']:(R2_ASSIST_JOKERS.includes(definition)?JOKER_ASSIST_COMPACT[definition.id]:undefined)??JOKER_COMPACT[definition.id]??[R2_OFFER_USE[definition.id]??'条件 ›'];
+ const firstScoreValue=isAssistFirstScore(definition)?definition.hooks[0].operations[0]:undefined;
+ const fixed=(definition.id==='b03'||definition.id==='b10'||definition.id==='d10')?definition.hooks.find(h=>h.phase==='jokerScore'&&h.condition.kind==='always'&&h.operations.length===1&&(h.operations[0].kind==='add-heat'||h.operations[0].kind==='add-multiplier'))?.operations[0]:undefined;
+ const empty=definition.id==='d10'?definition.hooks.flatMap(h=>h.operations).find(o=>o.kind==='add-heat-per-empty-slot'):undefined;
+ const fixedLabels=fixed?.kind==='add-heat'?(empty?.kind==='add-heat-per-empty-slot'?['热+'+readableFractionText(fixed.value)+'，空槽+'+readableFractionText(empty.value),'条件 ›']:['每手热+'+readableFractionText(fixed.value)+'，成组成长','条件 ›']):fixed?.kind==='add-multiplier'?['每手倍率+'+readableFractionText(fixed.value)+'，成组成长','条件 ›']:undefined;
+ const labelCandidates=isHouseJoker(definition)?['查看效果']:stateCandidates.length?stateCandidates:fixedLabels??(grouped?groupLabels[definition.id]:combo?comboLabels[definition.id]:d07Value?.kind==='add-multiplier'?['全计分+'+readableFractionText(d07Value.value),'条件 ›']:firstScoreValue?.kind==='add-heat'?['两对及以上首张+'+readableFractionText(firstScoreValue.value),'条件 ›']:(R2_ASSIST_JOKERS.includes(definition)?JOKER_ASSIST_COMPACT[definition.id]:undefined)??JOKER_COMPACT[definition.id]??[R2_OFFER_USE[definition.id]??'条件 ›']);
  const short=labelCandidates[0],savedShort=stateCandidates[0]??'';
  return{instanceId:instance?.instanceId,definitionId:definition.id,name:cardDefinitionName(definition),short,labelCandidates,stateLabel:stateCandidates.length>0,status,statusDetail,saved,savedShort,remaining,remainingUses,usageResetsOnEntry,staticRules,hooks,scoreLimited:ctx.scoringLimited};
 }

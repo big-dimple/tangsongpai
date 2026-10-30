@@ -22,8 +22,8 @@ it('five identities preserve all default condition/effect words and limits acros
 it('rescue groups startup and next-play payoff without losing qualification or mandatory consumption',()=>{
  for(const identity of identities.slice(-2)){
   const p=copy('f10',identity),rows=p.steps!;
-  expect(rows.steps).toHaveLength(2);expect(rows.steps[0].when).toContain('本场未出牌');expect(rows.steps[0].when).toContain('第一次成功弃牌前');expect(rows.steps[0].effect).toContain('备好一次救火');expect(rows.steps[1].when).toContain('下一次出牌若为两对及以上');expect(rows.steps[1].effect).toContain('倍率×3');
-  expect(rows.limits.join('\n')).toContain('计分被封禁也作废');expect(rows.limits.join('\n')).toContain('不重武装');expect(rows.limits).toContain('两对及以上：不含对子、高牌。');expect(rows.status).toContain('尚未购买');
+  expect(rows.steps).toHaveLength(2);expect(rows.steps[0].when).toContain('本场未出牌');expect(rows.steps[0].when).toContain('第一次成功弃牌前');expect(rows.steps[0].effect).toContain('自动准备倍率');expect(rows.steps[1].when).toContain('下一次出牌为两对及以上');expect(rows.steps[1].effect).toContain('倍率×3');
+  expect(rows.limits.join('\n')).toContain('计分封禁也作废');expect(rows.limits.join('\n')).toContain('每场最多准备一次');expect(rows.limits).toContain('两对及以上：不含对子、高牌。');expect(rows.status).toContain('尚未购买');
  }
 });
 it('coefficient ceilings stay upfront for growth and reset families',()=>{

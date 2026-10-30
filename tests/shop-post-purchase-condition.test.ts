@@ -2,6 +2,7 @@ import {cardDisplayName} from '../src/game/tangsongCardNames';
 import {it,expect} from 'vitest';
 import {createRun,applyCommand,assertRunInvariants,type R2RunState} from '../src/domain/run';
 import {newRunIdentity} from '../src/game/RunLaunch';
+import {r2TargetedValueBase} from '../src/domain/r2GroupUpgrade';
 import {r2CreateJoker,r2ScoreContext} from '../src/domain/r2Run';
 import {r2Price} from '../src/domain/r2Shop';
 import {r2JokerDefinitionsFor} from '../src/domain/r2ContentProfiles';
@@ -9,8 +10,8 @@ import {scoreR2Hand} from '../src/domain/scoreR2';
 import {shopRecommendation} from '../src/game/ShopRecommendation';
 import {shopOfferGuidance} from '../src/game/ShopOfferGuidance';
 import {shopPurchaseCashFacts,shopPurchaseConditionLosses,shopReplacementTransactionFacts,shopReplacementCompactFacts} from '../src/game/ShopRouteRelations';
-function setup(gold:number,id='e08'){
- let s=createRun({seed:'post-purchase-condition',runId:'post-purchase-condition',characterId:'laohuan',rulesVersion:'r2',r2Identity:newRunIdentity('laohuan','group'),openingRoute:'group'});
+function setup(gold:number,id='e08',old=false){
+ const current=newRunIdentity('laohuan','group');let s=createRun({seed:'post-purchase-condition',runId:'post-purchase-condition',characterId:'laohuan',rulesVersion:'r2',r2Identity:old?r2TargetedValueBase(current) as {contentVersion:string;contentHash:string}:current,openingRoute:'group'});
  // Leave the protected starter shop through public commands before specifying test stock.
  for(const type of ['LeaveShop','SkipStage','OpenShop'] as const)s=send(s,{type});
  s.gold=gold;s.purchaseCoupons=0;s.jokers=[r2CreateJoker('b02','held/base',4,'none',s)];
@@ -36,9 +37,14 @@ it.each([[26,18,2,false],[28,20,3,true]] as const)('new Baochang uses actual %i�
  expect(s).toEqual(before);
 });
 it('buying zero-growth b10 accounts for the retained Baochang loss',()=>{
- const {s,o}=setup(26,'b10');s.jokers.push(r2CreateJoker('e08','held/bao',8,'none',s));s.gold=23;
+ const {s,o}=setup(26,'b10',true);s.jokers.push(r2CreateJoker('e08','held/bao',8,'none',s));s.gold=23;
  const before=structuredClone(s),g=shopOfferGuidance(s,o);expect(g.stars).toBe(1);expect(g.operation).toBe('可购买');expect(g.operationShort).toBe('现金风险');expect(g.detail).toContain('23→19');expect(g.detail).toContain((cardDisplayName('e08')+"买后19金，暂不触发"));
  expect(baoEvents(send(s,{type:'BuyOffer',offerId:o.offerId}))).toHaveLength(0);expect(s).toEqual(before);
+});
+it('new b10 has immediate heat while retaining the same purchase cash warning',()=>{
+ const {s,o}=setup(26,'b10');s.jokers.push(r2CreateJoker('e08','held/bao',8,'none',s));s.gold=23;const before=structuredClone(s),g=shopOfferGuidance(s,o);
+ expect(g.stars).toBe(2);expect(g.operation).toBe('可购买');expect(g.operationShort).toBe('现金风险');expect(g.detail).toContain('买后19金，暂不触发');expect(g.detail).toContain('每手热度+20');
+ const value=JSON.parse(g.recommendation.facts.purchaseValue as string);expect(value).toMatchObject({cashLoss:true,negative:true,positive:true,ceiling:2});expect(value.rows.map((row:{delta:{minimum:string}})=>row.delta.minimum)).toEqual(['3','-48']);expect(baoEvents(send(s,{type:'BuyOffer',offerId:o.offerId}))).toHaveLength(0);expect(s).toEqual(before);
 });
 it('full slots require the specified actual sale, preserve growth/discount consequences and clear on changing selection',()=>{
  const {s,o}=setup(24);s.jokers=['b02','e02','e06','e05','e11'].map((id,i)=>r2CreateJoker(id,'held/'+i,i===1?2:8,'none',s));

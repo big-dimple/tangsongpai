@@ -1,4 +1,5 @@
 import type {JokerPlayerTemplate} from './JokerPlayerCopy';
+import type {R2JokerDefinition} from '../content/r2Schema';
 
 const binding=(source:string,format='fractionText')=>({source,format});
 const value=binding('definition.hooks[0].operations[0].value');
@@ -13,4 +14,8 @@ export const JOKER_ASSIST_TEMPLATES:Readonly<Record<string,JokerPlayerTemplate>>
  a12:{main:'本场每次出牌的主手都不超过 {maximum} 张，过关时额外获得 {gold} 金币。',limits:['助攻牌不计入主手张数；任何一手主手出5张，就失去本场奖励。'],rules:['必须实际出牌并成功过关；失败和跳场不发。主手内的附带牌、停用牌仍计入张数。'],state:[],bindings:{maximum:binding('definition.hooks[0].condition.maximum','plain'),gold:binding('definition.hooks[0].operations[0].amount','plain')}},
 };
 
-export const JOKER_ASSIST_COMPACT:Readonly<Record<string,readonly string[]>>={pengci:['主手三条 +2'],a03:['两对及以上首张+15','条件 ›'],a05:['连续同型两对及以上成长','条件 ›'],a06:['连续异型两对及以上×1.5','条件 ›'],a10:['留人头 ×1.25'],a11:['葫芦再计分'],a12:['主手≤4 · +3金']};
+/** Recognize the same a03 rule when a content identity changes its value. */
+export function isAssistFirstScore(d:R2JokerDefinition):boolean {
+ const h=d.hooks[0];return d.id==='a03'&&d.hooks.length===1&&h.phase==='onCardScore'&&h.condition.kind==='scoring-position'&&h.condition.position==='first'&&h.operations.length===1&&h.operations[0].kind==='add-heat';
+}
+export const JOKER_ASSIST_COMPACT:Readonly<Record<string,readonly string[]>>={pengci:['主手三条 +2'],a05:['连续同型两对及以上成长','条件 ›'],a06:['连续异型两对及以上×1.5','条件 ›'],a10:['留人头 ×1.25'],a11:['葫芦再计分'],a12:['主手≤4 · +3金']};

@@ -9,6 +9,7 @@ import {readAudioPreferences} from '../audio/preferences';
 import {Haptics} from '../haptics/Haptics';
 import {installHapticSetting} from '../haptics/HapticSetting';
 import {installFullscreen} from '../platform/Fullscreen';
+import {canvasSizeFactor,selectedCanvasSize,setCanvasSize} from '../platform/Viewport';
 
 export interface RunMenuActions {
   viewDeck?:()=>void;
@@ -140,6 +141,12 @@ export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|un
   },primary);primary.prepend(start);
   const speedLabel=document.createElement('label'),speed=document.createElement('select');speedLabel.textContent='演出速度 ';
   for(const value of [1,2,4]){const option=document.createElement('option');option.value=String(value);option.textContent=`${value}×`;speed.append(option);}speed.value=String(session.speed);speedLabel.append(speed);settings.append(speedLabel);
+  const sizeLabel=document.createElement('label'),size=document.createElement('select');sizeLabel.textContent='画面大小 ';
+  for(const [value,label] of [['auto','跟随浏览器字号'],['standard','标准'],['large','较大（最多1.2倍）']] as const){const option=document.createElement('option');option.value=value;option.textContent=label;size.append(option);}
+  size.value=selectedCanvasSize();sizeLabel.append(size);settings.append(sizeLabel);
+  const sizeHint=document.createElement('small');sizeHint.className='canvas-size-hint';settings.append(sizeHint);
+  const refreshSizeHint=()=>{const bounds=game.canvas.getBoundingClientRect(),factor=canvasSizeFactor(bounds.width,bounds.height,selectedCanvasSize());sizeHint.textContent=`当前画布 ${Math.round(factor*100)}%。跟随模式在浏览器默认字号达到20px时放大画布文字和按钮，部分页面会重新排布；小窗口会限制放大，320×568及以下无法放大。`;};
+  size.onchange=()=>{setCanvasSize(size.value==='large'?'large':size.value==='standard'?'standard':'auto');refreshSizeHint();};refreshSizeHint();globalThis.addEventListener?.('resize',refreshSizeHint);globalThis.addEventListener?.('focus',refreshSizeHint);
   const reduced=document.createElement('input'),reducedLabel=document.createElement('label');reduced.type='checkbox';reduced.checked=session.reducedMotion;reducedLabel.append(reduced,document.createTextNode(' 减少动态'));settings.append(reducedLabel);
   const presentation=()=>session.preferences(Number(speed.value) as 1|2|4,reduced.checked);
   speed.onchange=presentation;reduced.onchange=presentation;
@@ -189,5 +196,5 @@ export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|un
   const refreshLiveActions=()=>{const scene=sceneKey();if(scene!==lastScene){lastScene=scene;close(interaction.state().open);}if(modal.open){refreshActions();interaction.refresh();}};game.events.on('poststep',refreshLiveActions);
   const refreshMenuActions=(_parent:unknown,key:string)=>{if(key==='runMenuActions')refreshActions();};
   for(const event of ['setdata','changedata','removedata'])game.registry.events.on(event,refreshMenuActions);
-  game.events.once('destroy',()=>{game.events.off('poststep',refreshLiveActions);removeInteraction();catalogDialog.close();unsubscribe();unsubscribeFullscreen();for(const event of ['setdata','changedata','removedata'])game.registry.events.off(event,refreshMenuActions);fullscreen.dispose();removeHapticSetting();haptics.dispose();if(modal.open)modal.close();host.remove();});
+  game.events.once('destroy',()=>{game.events.off('poststep',refreshLiveActions);globalThis.removeEventListener?.('resize',refreshSizeHint);globalThis.removeEventListener?.('focus',refreshSizeHint);removeInteraction();catalogDialog.close();unsubscribe();unsubscribeFullscreen();for(const event of ['setdata','changedata','removedata'])game.registry.events.off(event,refreshMenuActions);fullscreen.dispose();removeHapticSetting();haptics.dispose();if(modal.open)modal.close();host.remove();});
 }

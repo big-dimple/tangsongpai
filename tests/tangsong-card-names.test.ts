@@ -13,7 +13,7 @@ describe('Tang-Song 72 Card Names', () => {
     expect(half1.assets).toHaveLength(36);
     for (const card of half1.assets) {
       expect(TANGSONG_CARD_NAMES[card.id], `Mismatch for ID ${card.id}`).toBe(card.name);
-      expect(cardDisplayName(card.id)).toBe(card.name);
+      expect(cardDisplayName(card.id)).toBe(card.id==='f12'?'待时而发':card.name);
     }
   });
 
@@ -22,12 +22,20 @@ describe('Tang-Song 72 Card Names', () => {
     expect(half2.assets).toHaveLength(36);
     for (const card of half2.assets) {
       expect(TANGSONG_CARD_NAMES[card.id], `Mismatch for ID ${card.id}`).toBe(card.name);
-      expect(cardDisplayName(card.id)).toBe(card.name);
+      expect(cardDisplayName(card.id)).toBe(card.id==='f12'?'待时而发':card.name);
     }
   });
 
   it('provides safe fallback for unknown IDs', () => {
     expect(cardDisplayName('unknown-card', '默认名字')).toBe('默认名字');
     expect(cardDisplayName('unknown-card')).toBe('unknown-card');
+  });
+
+  it('projects themed goods names without changing their stored definitions', () => {
+    expect(cardDisplayName('T02')).toBe('精简牌组');
+    expect(cardDisplayName('S03')).toBe('重演');
+    expect(cardDisplayName('S04')).toBe('同花改造');
+    expect(cardDisplayName('S08')).toBe('清除特效');
+    expect(cardDisplayName('U03')).toBe('出牌许可');
   });
 });

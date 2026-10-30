@@ -55,7 +55,7 @@ it('joker-score arithmetic is once per qualified hand rather than per matching c
   const p=copy(id);expect(p.line).toContain('每次出牌，');expect(p.tile).toContain('每次出牌');
   expect(p.line).not.toContain('每张');
  }
- const step=copy('c04');expect(step.line).toBe('顺子或同花顺热度+50；出牌后攒+10热度，下次出牌起任意牌型都能用。');expect(step.tile).toContain('顺子/同花顺热度+50');expect(step.line).not.toContain('每张');
+ const step=copy('c04');expect(step.line).toBe('顺子或同花顺热度+50；出牌后攒+10热度，下次出牌起任意牌型都能用。');expect(step.tile).toContain('顺子或同花顺热度+50');expect(step.tile).toContain('顺子/同花顺后攒+10热度');expect(step.tile).toContain('下次起任意牌型都能用');expect(step.line).not.toContain('每张');
  expect(copy('e08').line).toContain('倍率×1.8');
 });
 

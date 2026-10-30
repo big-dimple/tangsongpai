@@ -3,11 +3,12 @@ import {R2_ENHANCEMENTS} from '../content/r2Tools';
 import type {R2RunState} from '../domain/run';
 import type {DetailDialog} from './DetailDialog';
 import {editionLabel} from './r2ToolInfo';
+import {cardDefinitionName} from './tangsongCardNames';
 
 type Scope='remaining'|'all';
 type EnhancementFilter='all'|'none'|'enhanced';
 export type DeckInspectionState=Pick<R2RunState,'phase'|'deckInstances'|'destroyedIds'|'drawPile'|'handOrder'|'playedPile'|'discardPile'>;
-const enhancementNames=Object.fromEntries(R2_ENHANCEMENTS.map(row=>[row.id,row.name]));
+const enhancementNames=Object.fromEntries(R2_ENHANCEMENTS.map(row=>[row.id,cardDefinitionName(row)]));
 
 /** A public, sorted view of instances; never expose draw order or mutate the saved deck. */
 export function deckInspectionText(state:DeckInspectionState,scope:Scope,enhancement:EnhancementFilter):string {

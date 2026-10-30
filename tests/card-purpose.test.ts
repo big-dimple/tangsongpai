@@ -7,7 +7,7 @@ describe('shared first-layer card purpose',()=>{
   for(const tool of R2_TOOLS){const info=toolInfo(tool.id);expect(info.summary.length).toBeGreaterThan(0);expect(info.summary).not.toMatch(/手绘卡面|机制示意|已确定的计分|回看保持|商店基准售价/);expect(info.description.length).toBeGreaterThan(0);expect(info.cost.length).toBeGreaterThan(0);expect(goodsArtPortrait(info)).not.toHaveProperty('caption');}
  });
  it('uses the requested upgrade purpose and reads actual pair base progression',()=>{
-  expect(toolInfo('T01').summary).toBe('给一种牌型升级');expect(handLevelChangeText('pair',1,2)).toContain('基础热度 35 → 50；基础倍率 2 → 2.5');
+  expect(toolInfo('T01').summary).toBe('选择一种已发现牌型，升1级');expect(handLevelChangeText('pair',1,2)).toContain('基础热度 35 → 50；基础倍率 2 → 2.5');
  });
  it('keeps destructive glass risk and both independent lucky gains visible, with detailed exceptions separate',()=>{
   const glass=toolInfo('T12'),lucky=toolInfo('T19');
