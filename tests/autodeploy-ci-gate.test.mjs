@@ -2,18 +2,20 @@ import {expect,it} from 'vitest';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import {spawnSync} from 'node:child_process';
+import {execFileSync,spawnSync} from 'node:child_process';
 
 const revision='a'.repeat(40),previous='b'.repeat(40),source=fs.readFileSync('scripts/tangsongpai-autodeploy.sh','utf8');
+const shellPath=value=>process.platform==='win32'?execFileSync('cygpath',['-u',value],{encoding:'utf8'}).trim():value;
 function deployment({ci='17',build='23',artifactRevision=revision,force=false}={}){
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'tangsongpai-deploy-test-')),bin=path.join(root,'bin'),state=path.join(root,'state');
   try{
     fs.mkdirSync(bin);fs.mkdirSync(state);fs.mkdirSync(path.join(root,'.git'));fs.writeFileSync(path.join(state,'deployed-revision'),previous+'\n');
     const quote=value=>"'"+value.replaceAll("'","'\\''")+"'",script=path.join(root,'deploy.sh');
-    let candidate=source.replace('export PATH="','export PATH="'+bin+':');
-    for(const [name,value]of Object.entries({PROJECT_DIR:root,STATE_DIR:state,LOG_FILE:path.join(root,'log'),LOCK_FILE:path.join(root,'lock')}))candidate=candidate.replace(new RegExp('^'+name+'=.*$','m'),name+'='+quote(value));
-    candidate=candidate.replace('/usr/local/bin/deploy-to-cloudflare-pages.py',quote(path.join(bin,'upload')));fs.writeFileSync(script,candidate);
+    let candidate=source.replace('export PATH="','export PATH="'+shellPath(bin)+(process.platform==='win32'?':$PATH':'')+':');
+    for(const [name,value]of Object.entries({PROJECT_DIR:root,STATE_DIR:state,LOG_FILE:path.join(root,'log'),LOCK_FILE:path.join(root,'lock')}))candidate=candidate.replace(new RegExp('^'+name+'=.*$','m'),name+'='+quote(shellPath(value)));
+    candidate=candidate.replace('/usr/local/bin/deploy-to-cloudflare-pages.py',quote(shellPath(path.join(bin,'upload'))));fs.writeFileSync(script,candidate);
     const stub=(name,text)=>fs.writeFileSync(path.join(bin,name),'#!/usr/bin/env bash\nset -eu\n'+text,{mode:0o755});
+    stub('flock','exit 0\n');
     stub('git',`case "$*" in
       'branch --show-current') echo main;;
       'fetch origin main --quiet') exit 0;;
@@ -38,7 +40,7 @@ function deployment({ci='17',build='23',artifactRevision=revision,force=false}={
     stub('upload','echo upload >> "$DEPLOY_TEST_ROOT/calls"\ntouch "$DEPLOY_TEST_ROOT/uploaded"\n');
     const info=revision=>JSON.stringify({revision,sourceStatus:'clean',modified:false});
     for(const [file,value]of Object.entries({'artifact.json':artifactRevision,'current.json':revision,'previous.json':previous}))fs.writeFileSync(path.join(root,file),info(value));
-    const result=spawnSync('bash',[script,...(force?['--force']:[])],{encoding:'utf8',env:{...process.env,DEPLOY_TEST_ROOT:root,DEPLOY_TEST_REVISION:revision,DEPLOY_TEST_CI:ci,DEPLOY_TEST_BUILD:build}});
+    const result=spawnSync('bash',[script,...(force?['--force']:[])],{encoding:'utf8',env:{...process.env,DEPLOY_TEST_ROOT:shellPath(root),DEPLOY_TEST_REVISION:revision,DEPLOY_TEST_CI:ci,DEPLOY_TEST_BUILD:build}});
     const read=file=>fs.existsSync(file)?fs.readFileSync(file,'utf8'):'';
     return {status:result.status,stderr:result.stderr,log:read(path.join(root,'log')),calls:read(path.join(root,'calls')),deployed:read(path.join(state,'deployed-revision')).trim()};
   }finally{fs.rmSync(root,{recursive:true,force:true});}

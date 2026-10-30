@@ -61,7 +61,7 @@ it('only reads allowed current metadata, including nested metadata, and leaves b
 });
 it('does not follow a metadata symlink into an external private folder',async()=>{
   await fixture(async(dir,put)=>{
-    await put('external/synthetic.txt',libraryId);await fs.mkdir(path.join(dir,'art/sources'),{recursive:true});await fs.symlink(path.join(dir,'external'),'art/sources/handdrawn-runtime-link'.split('/').reduce((p,n)=>path.join(p,n),dir));
+    await put('external/synthetic.txt',libraryId);await fs.mkdir(path.join(dir,'art/sources'),{recursive:true});await fs.symlink(path.join(dir,'external'),'art/sources/handdrawn-runtime-link'.split('/').reduce((p,n)=>path.join(p,n),dir),process.platform==='win32'?'junction':'dir');
     const report=await auditPublicArtPrivacy(dir);expect(report.issues).toEqual([{file:'art/sources/handdrawn-runtime-link',type:'unsafe-symlink',count:1}]);expect(formatPublicArtPrivacy(report).includes(libraryId)).toBe(false);
   });
 });
@@ -69,7 +69,7 @@ it('the actual content entry fails before domain validation/SSR server creation 
   await fixture(async(dir,put)=>{
     await put('public/assets/handdrawn-p08/manifest.json',JSON.stringify({sourceLibraryId:libraryId}));
     for(const file of ['scripts/verify-content.mjs','scripts/public-art-privacy.mjs'])await put(file,await fs.readFile(path.join(root,file),'utf8'));
-    await fs.symlink(path.join(root,'node_modules'),path.join(dir,'node_modules'));
+    await fs.symlink(path.join(root,'node_modules'),path.join(dir,'node_modules'),process.platform==='win32'?'junction':'dir');
     const result=spawnSync(process.execPath,[path.join(dir,'scripts/verify-content.mjs')],{cwd:dir,encoding:'utf8'});
     expect(result.status).toBe(1);expect(result.stdout).toBe('');expect(result.stderr.includes(libraryId)).toBe(false);
     const diagnostic=JSON.parse(result.stderr);expect(diagnostic.status).toBe('FAIL');expect(diagnostic.issues.map(issue=>issue.type).sort()).toEqual(['library-identity-field','private-file-identity']);
