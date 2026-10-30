@@ -1,5 +1,5 @@
 import {afterEach,expect,it,vi} from 'vitest';
-import {viewportMetrics,FRAMEBUFFER_PIXELS,installViewport,canvasSizeFactor} from '../src/platform/Viewport';
+import {viewportMetrics,FRAMEBUFFER_PIXELS,installViewport,canvasSizeFactor,requestsLargeText} from '../src/platform/Viewport';
 import {crispText,prepareTextScale} from '../src/game/TextRaster';
 afterEach(()=>vi.unstubAllGlobals());
 it('limits the requested canvas enlargement to a supported logical viewport',()=>{
@@ -7,6 +7,16 @@ it('limits the requested canvas enlargement to a supported logical viewport',()=
  expect(canvasSizeFactor(320,568,'large')).toBe(1);
  expect(canvasSizeFactor(360,640,'large')).toBe(1.125);
  expect(canvasSizeFactor(1920,1080,'standard')).toBe(1);
+});
+it('derives the native text preference from the selected setting and browser medium',()=>{
+ let medium='16px';
+ vi.stubGlobal('document',{body:{append:vi.fn()},createElement:()=>({style:{cssText:''},remove:vi.fn()})});
+ vi.stubGlobal('getComputedStyle',()=>({fontSize:medium}));
+ expect(requestsLargeText('auto')).toBe(false);
+ expect(requestsLargeText('large')).toBe(true);
+ medium='24px';
+ expect(requestsLargeText('auto')).toBe(true);
+ expect(requestsLargeText('standard')).toBe(false);
 });
 it.each([1,1.25])('keeps native canvas pointer coordinates aligned after CSS resize at DPR%s',dpr=>{
  let width=320,height=568,resized!:()=>void;

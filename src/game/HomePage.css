@@ -31,3 +31,9 @@
 @media(prefers-reduced-motion:reduce){.title-home *,.title-home *::before,.title-home *::after{animation:none!important;transition:none!important}}
 @media(max-width:560px){.title-home .load-brand h1{font-size:clamp(36px,22cqw,64px)}.title-home .load-card{width:clamp(26px,20cqw,57px);height:calc(clamp(26px,20cqw,57px)*1.4)}.title-home .home-actions button{padding:12px 16px}}
 @container(max-width:220px){.title-home .load-side{display:none}}
+
+/* The canvas setting also applies to native text. The root's rem follows the
+   browser default; manual large mode has a 20px floor. */
+html[data-text-size="large"] .title-home :is(.home-save,.home-hint,.home-notice,.home-footer,.load-brand p,.home-actions button){font-size:max(20px,1rem);line-height:1.5;letter-spacing:normal}
+html[data-text-size="large"] .title-home .home-actions button{min-height:52px}
+html[data-text-size="large"] .title-home .home-entry{overflow-wrap:anywhere}

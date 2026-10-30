@@ -44,3 +44,37 @@
   & > .dialog-content > .dialog-scroll { height:auto;overflow:auto; }
  }
 }
+
+/* Give enlarged native copy room to reflow. Scrolling the complete dialog also
+   keeps its header and actions reachable when they wrap on a short screen. */
+html[data-text-size="large"] .detail-dialog[open] {
+ display:block !important;
+ height:auto !important;
+ max-height:calc(100dvh - var(--safe-top) - var(--safe-bottom) - 24px);
+ overflow:auto !important;
+}
+html[data-text-size="large"] .detail-dialog :is(.dialog-content,.dialog-scroll,.tool-workspace,.tool-selection-dock,.tool-preview-scroll) {
+ min-height:0;
+ height:auto !important;
+ max-height:none !important;
+ overflow:visible !important;
+}
+html[data-text-size="large"] .detail-dialog .dialog-content { grid-template-rows:auto !important; }
+html[data-text-size="large"] .detail-dialog :is(p,li,label,legend,summary,button,select,input,textarea,small,figcaption,.card-ability span,.card-ability strong,.experience-card-stat,.dialog-body,.dialog-copy,.dialog-effect,.dialog-purchase-summary,.dialog-edition-summary,.dialog-rarity,.dialog-eyebrow) {
+ font-size:max(20px,1rem) !important;
+ line-height:1.5 !important;
+ overflow-wrap:anywhere;
+}
+html[data-text-size="large"] .detail-dialog :is(h2,h3,h4) { font-size:max(22px,1.1rem) !important;line-height:1.35 !important;overflow-wrap:anywhere; }
+html[data-text-size="large"] .detail-dialog .dialog-actions { display:flex !important;flex-wrap:wrap !important; }
+html[data-text-size="large"] .detail-dialog .dialog-actions button { flex:1 1 140px;min-width:0;min-height:48px; }
+html[data-text-size="large"] .detail-dialog--illustrated .dialog-content { grid-template-columns:minmax(0,1fr) !important; }
+html[data-text-size="large"] .detail-dialog--illustrated .dialog-card-art { width:min(180px,100%);height:auto;max-height:220px;justify-self:center; }
+html[data-text-size="large"] .detail-dialog :is(.dialog-card-image,.dialog-portrait,.dialog-art-visual) { max-height:200px;max-width:100%;object-fit:contain; }
+html[data-text-size="large"] .detail-dialog--art-background > .dialog-header { display:block; }
+html[data-text-size="large"] .detail-dialog--art-background .dialog-art-original { margin:8px 0; }
+html[data-text-size="large"] .catalog-result p { display:block;overflow:visible;-webkit-line-clamp:unset; }
+@media(max-width:560px) {
+ html[data-text-size="large"] .catalog-query { grid-template-columns:minmax(0,1fr); }
+ html[data-text-size="large"] .catalog-query label:last-child { grid-column:auto; }
+}
