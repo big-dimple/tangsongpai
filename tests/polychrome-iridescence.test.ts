@@ -74,11 +74,11 @@ describe('persistent polychrome edge',()=>{
     for(const p of path){expect(p.x).toBeGreaterThanOrEqual(-38);expect(p.x).toBeLessThanOrEqual(38);expect(p.y).toBeGreaterThanOrEqual(-48);expect(p.y).toBeLessThanOrEqual(48);expect(Math.min(p.x+40,40-p.x,p.y+50,50-p.y)).toBeLessThan(4);}
     expect(iridescenceColor(0)).toBe(iridescenceColor(1));expect(iridescenceColor(.25)).not.toBe(iridescenceColor(.75));
   });
-  it('creates the thicker poker-only inlay below the face, with a static reduced-motion frame',()=>{
+  it('creates a fine spectral poker-only edge below the face, with a static reduced-motion frame',()=>{
     const f=fixture(),scene=f.scene as unknown as Phaser.Scene,host=f.host as unknown as Phaser.GameObjects.Container,b={x:-40,y:-50,width:80,height:100};
     for(const edition of ['none','foil','holographic'] as const)expect(mountPlayingCardIridescence(scene,host,b,edition)).toBeUndefined();
     reduce=true;const edge=mountPlayingCardIridescence(scene,host,b,'polychrome') as unknown as Graphic;
-    expect(edge.getData('effect')).toBe('poker-polychrome');expect(edge.widths).toContain(5.4);expect(edge.colors.size).toBeGreaterThan(5);
+    expect(edge.getData('effect')).toBe('poker-polychrome');expect(edge.widths).toContain(2.4);expect(Math.max(...edge.widths)).toBeLessThanOrEqual(2.4);expect(edge.colors.size).toBeGreaterThan(5);
     const draws=edge.draws;for(let i=0;i<100;i++)f.step();expect(edge.draws).toBe(draws);expect(edge.getData('motion')).toBe('static');
     for(const p of iridescencePath(b,48,3)){expect(Math.min(p.x+40,40-p.x,p.y+50,50-p.y)).toBeLessThanOrEqual(5);}
     f.events.emit('shutdown');

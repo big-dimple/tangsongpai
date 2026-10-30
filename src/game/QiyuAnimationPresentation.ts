@@ -126,25 +126,23 @@ function startPolychromeEdgeLoop(canvas: HTMLCanvasElement, reducedMotion: boole
   const render = (phase: number) => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const count = path.length - 1;
-    ctx.strokeStyle = '#8d6747';ctx.globalAlpha = .72;ctx.lineWidth = 5.4;
-    ctx.beginPath();ctx.roundRect(7,7,canvas.width-14,canvas.height-14,4);ctx.stroke();
     for (let i = 0; i < count; i++) {
       const a = path[i];
       const b = path[i + 1];
       const position = i / count;
-      const color = hexColor(playingCardIridescenceColor(position));
+      const color = hexColor(playingCardIridescenceColor(position - Math.sin(phase * Math.PI * 2) * .04));
       const glint = Math.pow((1 + Math.cos((position - phase) * Math.PI * 2)) / 2, 48);
       ctx.strokeStyle = color;
       ctx.globalAlpha = .94;
-      ctx.lineWidth = 3.4;
+      ctx.lineWidth = 2.4;
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(b.x, b.y);
       ctx.stroke();
 
       if(glint <= .08) continue;
-      ctx.strokeStyle = '#ffedbd';ctx.globalAlpha = .48 * glint;
-      ctx.lineWidth = 1.15;
+      ctx.strokeStyle = '#ffffff';ctx.globalAlpha = .65 * glint;
+      ctx.lineWidth = .8;
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(b.x, b.y);
@@ -371,7 +369,8 @@ export function mountHeroLiveStageCanvas(
   triggerPulse();
   const loop = (now: number) => {
     if (disposed || !hostNode.isConnected) return;
-    paintFrame((now - startTime) / 1000);
+    // A frame timestamp may precede construction when the main thread is busy.
+    paintFrame(Math.max(0, (now - startTime) / 1000));
     rafId = requestAnimationFrame(loop);
   };
   rafId = requestAnimationFrame(loop);
@@ -396,6 +395,7 @@ export function enhanceBlindSelectEntrance(
   characterId: CharacterId,
   stageIndex: number,
   reducedMotion = false,
+  onShown?: () => void,
 ): () => void {
   if (!dialog || typeof window === 'undefined' || typeof document === 'undefined') {
     return () => {};
@@ -407,6 +407,7 @@ export function enhanceBlindSelectEntrance(
       context: isBoss ? 'boss' : 'stage',
       stageIndex,
       reducedMotion,
+      onShown,
     }),
   );
 

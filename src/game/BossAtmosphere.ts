@@ -6,6 +6,7 @@ import type {Box} from './layout';
 import {cssViewport} from '../platform/Viewport';
 import {advanceEntryParticleField,paintEntryParticleBrush,ENTRY_PARTICLE_BUDGET,type EntryParticleField} from './EntryDepthParticles';
 import {bossAtmosphereKey,bossGhostArea,bossParticleCount,bossParticleVisible,createBossParticleField,BOSS_ATMOSPHERE_BUDGET,BOSS_GHOST_RESOURCE,type BossAtmosphereMode} from './BossAtmosphereModel';
+import {textDensity} from './TextRaster';
 
 export const BOSS_GHOST_KEY='boss/general-95008f17';
 const BOSS_GHOST_URL=assetUrl('assets/boss/general-95008f17.png');
@@ -80,8 +81,9 @@ class BossAtmosphere {
   const key=this.readRun&&bossAtmosphereKey(this.readRun(),this.mode);if(!key||this.mode!=='preparation')return;
   const seen=announced.get(this.scene.game)??new Set<string>();announced.set(this.scene.game,seen);if(seen.has(key))return;
   const area=bossGhostArea(this.width,this.height,this.protected,this.options.ghostArea);if(!area)return;seen.add(key);
-  this.announcement=this.scene.add.text(area.x+8,area.y+area.height/2,'BOSS 来袭',{fontSize:'16px',fontFamily:'"Microsoft YaHei",sans-serif',color:'#8b4035'}).setOrigin(0,.5).setName('boss/arrival');this.layer.add(this.announcement);
-  this.announcementTimer=this.scene.time.delayedCall(1400,()=>{this.announcement?.destroy();this.announcement=undefined;this.announcementTimer=undefined;});
+  const density=textDensity(this.scene);
+  this.announcement=this.scene.add.text(Math.round((area.x+8)*density)/density,Math.round((area.y+area.height/2)*density)/density,'BOSS 来袭',{fontSize:'16px',fontFamily:'"Microsoft YaHei",sans-serif',color:'#8b4035',resolution:density}).setOrigin(0,.5).setName('boss/arrival');this.layer.add(this.announcement);
+  this.announcementTimer=this.scene.time.delayedCall(2200,()=>{this.announcement?.destroy();this.announcement=undefined;this.announcementTimer=undefined;});
  }
  private readonly tick=(_time:number,delta:number)=>{
   if(this.destroyed)return;if(!this.readRun||!bossAtmosphereKey(this.readRun(),this.mode)){this.destroy();return;}if(!this.visible()||this.still()){this.refresh();return;}

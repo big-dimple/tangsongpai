@@ -8,8 +8,8 @@ export const IRIDESCENCE_FRAME_MS=1000/15;
 export const IRIDESCENCE_CYCLE_MS=7200;
 const managers=new WeakMap<Phaser.Scene,IridescenceManager>();
 const palette=[0xf17eae,0xd79bfa,0x85b6f5,0x57d9db,0x9bdd9d,0xf4d282,0xf4a17c,0xf17eae];
-// Mineral pigments and aged gold, chosen to sit on the warm paper of the playing cards.
-const pokerPalette=[0xc5685f,0xc78b6a,0xd1b16c,0x84a78a,0x6d9e9c,0x788db3,0xa87f9c,0xc5685f];
+// Clear spectral hues, not a metallic frame: the paper and printed indices remain dominant.
+const pokerPalette=[0xe9519d,0xa65bea,0x596fec,0x22b8db,0x38c69e,0xf0b94b,0xf16f72,0xe9519d];
 type Point={x:number;y:number};
 type Viewport={left:number;top:number;right:number;bottom:number};
 type EdgeKind='polychrome'|'poker-polychrome'|'forget-technique';
@@ -67,14 +67,12 @@ function draw(entry:Entry,phase:number):void {
   const g=entry.edge,path=entry.path,count=path.length-1,warm=entry.kind==='forget-technique';
   g.clear();
   if(entry.kind==='poker-polychrome'){
-    const b=entry.bounds;
-    // A dark gold underlay gives the coloured inlay definition against pale paper.
-    g.lineStyle(5.4,0x8d6747,.72).strokeRoundedRect(b.x+3,b.y+3,b.width-6,b.height-6,4);
+    // A single fine spectral foil line, with a small travelling white reflection.
     for(let i=0;i<count;i++){
       const a=path[i],b=path[i+1],position=i/count;
-      g.lineStyle(3.4,playingCardIridescenceColor(position),.94).lineBetween(a.x,a.y,b.x,b.y);
+      g.lineStyle(2.4,playingCardIridescenceColor(position-Math.sin(phase*Math.PI*2)*.04),.95).lineBetween(a.x,a.y,b.x,b.y);
       const glint=Math.pow((1+Math.cos((position-phase)*Math.PI*2))/2,48);
-      if(glint>.08)g.lineStyle(1.15,0xffedbd,.48*glint).lineBetween(a.x,a.y,b.x,b.y);
+      if(glint>.08)g.lineStyle(.8,0xffffff,.65*glint).lineBetween(a.x,a.y,b.x,b.y);
     }
     entry.lastPhase=phase;
     g.setData('phase',phase).setData('draws',(g.getData('draws')??0)+1);

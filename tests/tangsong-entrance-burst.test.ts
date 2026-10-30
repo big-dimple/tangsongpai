@@ -153,13 +153,13 @@ function createMockElement(tagName: string): MockNode {
   return node;
 }
 
-function setupDomDouble() {
+function setupDomDouble(width=960,height=540,dpr=2) {
   const body = createMockElement('body');
   body.isConnected = true;
 
   const mockDoc = {
     body,
-    createElement: (tag: string) => createMockElement(tag),
+    createElement: (tag: string) => {const node=createMockElement(tag);node.getBoundingClientRect=()=>({width,height,left:0,top:0});return node;},
     querySelector: (sel: string) => body.querySelector(sel),
     querySelectorAll: (sel: string) => body.querySelectorAll(sel),
     addEventListener: vi.fn(),
@@ -167,9 +167,9 @@ function setupDomDouble() {
   };
 
   const mockWin = {
-    innerWidth: 960,
-    innerHeight: 540,
-    devicePixelRatio: 2,
+    innerWidth: width,
+    innerHeight: height,
+    devicePixelRatio: dpr,
     matchMedia: () => ({matches: false}),
     requestAnimationFrame: vi.fn((_cb: FrameRequestCallback) => 1),
     cancelAnimationFrame: vi.fn(),
@@ -227,11 +227,14 @@ describe('TangSongEntranceBurst presentation and shadow isolation', () => {
   });
 
   it('mountHeroEntranceBurst respects reducedMotion and does not mount', () => {
+    const onShown=vi.fn();
     const stop = mountHeroEntranceBurst(dom.body as unknown as HTMLElement, 'amo', {
       context: 'qiyu',
       reducedMotion: true,
       playAudio: false,
+      onShown,
     });
+    expect(onShown).not.toHaveBeenCalled();
     expect(dom.body.children.length).toBe(0);
     stop();
     expect(dom.body.children.length).toBe(0);
@@ -253,12 +256,24 @@ describe('TangSongEntranceBurst presentation and shadow isolation', () => {
     expect(dom.body.querySelector('.qiyu-entrance-burst-canvas')).toBeNull();
   });
 
+  it.each([1,2,3])('renders the phone entrance at physical pixel density %i without an input surface', dpr => {
+    dom=setupDomDouble(390,844,dpr);
+    const stop=mountHeroEntranceBurst(dom.body as unknown as HTMLElement,'amo',{context:'stage',playAudio:false});
+    const host=dom.body.querySelector('.qiyu-entrance-burst-canvas')!;
+    const canvas=host.shadowRoot!.children.find(node=>node.tagName==='CANVAS') as MockNode & {width:number;height:number};
+    expect(canvas.width).toBe(390*dpr);expect(canvas.height).toBe(844*dpr);expect(host.style.pointerEvents).toBe('none');
+    stop();expect(dom.body.querySelector('.qiyu-entrance-burst-canvas')).toBeNull();
+  });
+
   it('mountHeroEntranceBurst rearms for a new run without replaying the ensemble', () => {
+    const onShown=vi.fn();
     const first = mountHeroEntranceBurst(dom.body as unknown as HTMLElement, 'amo', {
       context: 'stage',
       reducedMotion: false,
       playAudio: false,
+      onShown,
     });
+    expect(onShown).toHaveBeenCalledTimes(1);
     expect(dom.body.querySelector('.qiyu-entrance-burst-canvas')).not.toBeNull();
     first();
 
@@ -267,10 +282,12 @@ describe('TangSongEntranceBurst presentation and shadow isolation', () => {
         context,
         reducedMotion: false,
         playAudio: false,
+        onShown,
       });
       expect(dom.body.querySelector('.qiyu-entrance-burst-canvas')).toBeNull();
       skip();
     }
+    expect(onShown).toHaveBeenCalledTimes(1);
 
     resetHeroEntranceForNewRun();
     expect(dom.body.querySelector('.qiyu-ensemble-burst-canvas')).toBeNull();

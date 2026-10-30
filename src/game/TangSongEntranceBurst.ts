@@ -93,7 +93,8 @@ function prepareStage(hostNode: HTMLElement, canvas: HTMLCanvasElement, ctx: Can
   const rect = hostNode.getBoundingClientRect();
   const vw = Math.max(1, rect.width || window.innerWidth || 960);
   const vh = Math.max(1, rect.height || window.innerHeight || 540);
-  const dpr = Math.min(2, Math.max(1, window.devicePixelRatio || 1));
+  // Match the actual display density up to the same nine-megapixel budget as the game.
+  const dpr = Math.min(3, Math.max(1, window.devicePixelRatio || 1), Math.sqrt(9_000_000 / (vw * vh)));
   const pw = Math.round(vw * dpr);
   const ph = Math.round(vh * dpr);
   if (canvas.width !== pw || canvas.height !== ph) {
@@ -376,6 +377,7 @@ export function mountHeroEntranceBurst(
     stageIndex?: number;
     reducedMotion?: boolean;
     playAudio?: boolean;
+    onShown?: () => void;
   } = {},
 ): () => void {
   if (typeof window === 'undefined' || typeof document === 'undefined' || !host) return () => {};
@@ -390,6 +392,7 @@ export function mountHeroEntranceBurst(
   heroEntrancePlayed = true;
   const {hostNode, canvas, ctx} = shadow;
   host.append(hostNode);
+  options.onShown?.();
 
   const profile = qiyuHeroProfile(characterId);
   const stageNum = (options.stageIndex ?? 0) + 1;
@@ -566,21 +569,21 @@ export function mountHeroEntranceBurst(
     const medalY = portrait ? -barHalfH * 0.42 : 0;
     drawMedallion(ctx, avatarImg, profile, medalX, medalY, medalR);
 
+    // Keep the lettering upright even while the decorative band tilts.
+    ctx.save();
+    ctx.rotate(portrait ? 0.035 : 0.05);
     ctx.textBaseline = 'middle';
     if (portrait) {
       ctx.textAlign = 'center';
       const maxW = barW - 60;
       ctx.fillStyle = GOLD;
-      fitFont(ctx, `◆ ${badge}`, 'bold', 14, SERIF, maxW, 10);
+      fitFont(ctx, `◆ ${badge}`, 'bold', Math.max(14, 14 / s.scale), SERIF, maxW, 12 / s.scale);
       ctx.fillText(`◆ ${badge}`, 0, medalY + medalR + 20);
       ctx.fillStyle = '#fff8ea';
-      ctx.shadowColor = 'rgba(196, 63, 46, 0.65)';
-      ctx.shadowBlur = 10;
       fitFont(ctx, `${profile.name} · ${profile.title}`, 'bold', 28, SERIF, maxW, 16);
       ctx.fillText(`${profile.name} · ${profile.title}`, 0, medalY + medalR + 50);
-      ctx.shadowBlur = 0;
       ctx.fillStyle = '#bfe3dc';
-      fitFont(ctx, subtitle, 'normal', 14, SANS, maxW, 10);
+      fitFont(ctx, subtitle, 'normal', Math.max(14, 14 / s.scale), SANS, maxW, 12 / s.scale);
       ctx.fillText(subtitle, 0, medalY + medalR + 80);
     } else {
       ctx.textAlign = 'left';
@@ -591,15 +594,13 @@ export function mountHeroEntranceBurst(
       fitFont(ctx, `◆ ${badge} · ${profile.sceneTitle}`, 'bold', 14, SERIF, maxW, 10);
       ctx.fillText(`◆ ${badge} · ${profile.sceneTitle}`, textLeft, -barHalfH * 0.5);
       ctx.fillStyle = '#fff8ea';
-      ctx.shadowColor = 'rgba(196, 63, 46, 0.65)';
-      ctx.shadowBlur = 12;
       fitFont(ctx, `${profile.name} · ${profile.title}`, 'bold', 30, SERIF, maxW, 16);
       ctx.fillText(`${profile.name} · ${profile.title}`, textLeft, 0);
-      ctx.shadowBlur = 0;
       ctx.fillStyle = '#bfe3dc';
       fitFont(ctx, subtitle, 'normal', 15, SANS, maxW, 10);
       ctx.fillText(subtitle, textLeft, barHalfH * 0.52);
     }
+    ctx.restore();
 
     // Travelling light sweep.
     ctx.globalAlpha = fadeOut;

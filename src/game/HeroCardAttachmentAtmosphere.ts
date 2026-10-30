@@ -3,6 +3,7 @@ import type {AttachmentDraft} from './HeroTargetAttachmentState';
 import {clearInkRuns,exteriorOrbitPoint,type InkBox,type InkPoint} from './AssistInkGeometry';
 import {drawHeroLineCurrent} from './HeroLineCurrent';
 
+export const HERO_SOURCE_CURRENT_MS=900;
 export const HERO_ATMOSPHERE_BUDGET={targets:5,particlesPerTarget:6,particles:30,sourceHeads:2,portraitHz:20,desktopHz:30} as const;
 export type HeroAtmosphereKey='exile'|'handoff'|'charge'|'burn'|'wager'|'retain'|'legacy-assist';
 export interface AtmosphereStyle {key:HeroAtmosphereKey;ink:number;glow:number;spark:number;shape:'smoke'|'flame'|'petal'|'ember'|'vortex'|'leaf';period:number}

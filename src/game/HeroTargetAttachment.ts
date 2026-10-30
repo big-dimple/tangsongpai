@@ -3,7 +3,7 @@ import {cardVisualRoot} from './CardVisualRoot';
 import type {EffectContext} from '../core/EffectQueue';
 import {HeroTargetAttachmentState,ATTACHMENT_RELEASE_MS,type AttachmentDraft,type AttachmentMotion} from './HeroTargetAttachmentState';
 import type {InkBox,InkPoint} from './AssistInkGeometry';
-import {drawHeroAtmosphere,drawHeroOriginStream,heroAtmosphereStyle,HERO_ATMOSPHERE_BUDGET} from './HeroCardAttachmentAtmosphere';
+import {drawHeroAtmosphere,drawHeroOriginStream,heroAtmosphereStyle,HERO_SOURCE_CURRENT_MS,HERO_ATMOSPHERE_BUDGET} from './HeroCardAttachmentAtmosphere';
 import {textDensity} from './TextRaster';
 import {UI_FONT} from './theme';
 import type {ScoreTrace} from '../domain/scoreR2';
@@ -177,7 +177,7 @@ export class HeroTargetAttachment {
   this.sourceEcho.sync(root,style,state.clock,layout.protectedBoxes,full&&style.key==='legacy-assist'&&!state.suppressSource&&!state.failed,(releasing?1.5:1)*(1-release),layout.portrait);
   const staticKey=JSON.stringify([boxes,style.key,state.phase,full,smoke.size,prepared]);if(releasing||this.staticKey!==staticKey){if(style.key!=='legacy-assist')this.atmosphere.clear().setData('stats',{markers:0,particles:0,presentation:'visible-surface'});else{const stats=drawHeroAtmosphere(this.atmosphere,{style,clock:state.clock,targets:boxes,protectedBoxes:layout.protectedBoxes,full:false,alpha:1-release,failed:state.failed});this.atmosphere.setData('stats',stats);}this.staticKey=staticKey;}
   this.atmosphere.setData('phase',state.phase).setData('memberIds',members.map(t=>t.id)).setData('costIds',style.key==='exile'?layout.costIds:[]).setData('protectedPrint',layout.protectedBoxes).setData('clock',state.clock).setData('cadenceHz',hz).setData('sourceKind',source?.kind);
-  const progress=(state.clock-this.pulseAfter)/600;
+  const progress=(state.clock-this.pulseAfter)/HERO_SOURCE_CURRENT_MS;
   if(full&&this.state.accepted&&!state.suppressSource&&!releasing&&!state.failed&&source&&progress>=0&&progress<=1){
    this.phases.publish('source');
    if(this.destroyed||this.state.value!==state||this.phaseContext?.signal.aborted)return;

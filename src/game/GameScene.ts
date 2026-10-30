@@ -43,6 +43,8 @@ import {showSavedToolResult} from './SavedToolResult';
 import {ENHANCEMENT_BRIEF} from './CardSpecialLabels';
 import {fitStatusSummary} from './StatusSummary';
 import {lastPlayWarning,reducedPlayEntry,LastPlayWarningTracker,lastPlayCuePlacement,bossRuleCuePlacement} from './LastPlayWarning';
+import {scheduleStageEntryCaption} from './StageEntryCaption';
+import {qiyuHeroProfile} from '../domain/qiyuEvent';
 import {transactionGrowthChange,handGrowthChanges} from './SavedGrowthChange';
 import {heroActionShortcut,heroShortcutReminder} from './HeroActionShortcut';
 import {AssistRecommendationCache} from './AssistRecommendation';
@@ -173,7 +175,7 @@ import {R2_BOSSES,r2BossText,r2DisabledCards} from '../domain/r2Chapter';
 import {showConsumables} from './ConsumableDialog';
 import {gameToolInventoryBox,toolInventoryLabel,toolInventoryPlayedArea,toolInventoryProgressY} from './ToolInventoryEntry';
 import {fitScoreLine} from './ScoreTextLayout';
-import {crispText} from './TextRaster';
+import {crispText,prepareTextScale,textDensity} from './TextRaster';
 import {PAPER_THEME as T,PAPER_CSS as C,UI_FONT,P00_ASSETS,assetUrl} from './theme';
 import {cardPipRowOffset} from './CardPipLayout';
 import {playedFootprint} from './layout';
@@ -298,6 +300,7 @@ export class GameScene extends Phaser.Scene {
   private readonly lastPlayWarningTracker=new LastPlayWarningTracker();
   private lastPlayCue?:Phaser.GameObjects.Container;
   private bossRuleCue?:Phaser.GameObjects.Container;
+  private stageEntranceShown=false;
   private heatText!: Phaser.GameObjects.Text;
   private resourceCounts!:Record<'play'|'discard',Phaser.GameObjects.Text>;
   private goldText!:Phaser.GameObjects.Text;
@@ -457,7 +460,7 @@ export class GameScene extends Phaser.Scene {
     });
     this.xinRefillSequence=new XinRefillSequence(this);
     const carried=carriedToolAtEntry(controller.state,data?.carriedTool)?data?.carriedTool:undefined;
-    let enteredStage=false;
+    let enteredStage=false;this.stageEntranceShown=false;
     if(controller.state.phase==='stage-ready'){
       this.audio.setScene('shop');this.audio.preloadSceneMusic(controller.state.stageIndex%3===2?'boss':'table');
       const enter=await this.awaitStageEntry(lifecycle,data?.preparedBossOwner===controller);
@@ -568,7 +571,7 @@ export class GameScene extends Phaser.Scene {
       const stageIndex=this.run.stage.index,announce=()=>{if(this.lifecycle===lifecycle&&this.scene.isActive()&&this.run.stage?.index===stageIndex&&this.run.phase==='await-input'&&!this.playing&&!this.presentation&&!document.querySelector('dialog[open]'))this.presentBossRuleCue();};
       const modal=this.dialog.current;if(modal)modal.addEventListener('close',()=>queueMicrotask(announce),{once:true});else announce();
     }
-    if(enteredStage){const stopBurst=mountHeroEntranceBurst(this.dialog.current??document.body,this.run.characterId,{context:this.run.stage.boss?'boss':'stage',stageIndex:this.run.stage.index,reducedMotion:this.reducedMotion});this.events.once('shutdown',stopBurst);}
+    if(enteredStage){const stageIndex=this.run.stage.index,runId=this.run.runId,profile=qiyuHeroProfile(this.run.characterId),subtitle=this.run.stage.boss?profile.confirmLine:profile.allusion;let scheduled=false;const continueCaption=(delay:number)=>{if(scheduled)return;scheduled=true;scheduleStageEntryCaption(this,this.view,profile.name+' · '+profile.title+'\n'+subtitle,()=>this.lifecycle===lifecycle&&this.scene.isActive()&&this.view.root.active&&this.run.runId===runId&&this.run.stage?.index===stageIndex&&this.run.phase==='await-input'&&!this.playing&&!this.presentation&&!this.bossRuleCue?.active&&!this.lastPlayCue?.active,delay);};const stopBurst=mountHeroEntranceBurst(this.dialog.current??document.body,this.run.characterId,{context:this.run.stage.boss?'boss':'stage',stageIndex,reducedMotion:this.reducedMotion,onShown:()=>continueCaption(1250)});if(this.stageEntranceShown)continueCaption(0);this.events.once('shutdown',stopBurst);}
   }
 
   /** Closing the directory keeps this stage-ready run mounted until the player reopens it. */
@@ -582,14 +585,14 @@ export class GameScene extends Phaser.Scene {
       this.events.once('shutdown',cancel);
       const open=(directory:boolean)=>{
         if(opening||lifecycle!==this.lifecycle||runController(this)!==controller)return;
-        opening=true;
+        opening=true;this.stageEntranceShown=false;
         void (async()=>{
           let stopDirectoryEntrance:(()=>void)|undefined;
           try {
             const skipDirectory=!directory&&bossRulesSeen(controller.state);
             const directoryPromise=skipDirectory?Promise.resolve(true):presentOpponentEntrance(this.dialog,controller.state,this,()=>this.openStagePrograms?.());
             if(!skipDirectory&&this.dialog.current?.classList.contains('blind-select-dialog')){
-              stopDirectoryEntrance=enhanceBlindSelectEntrance(this.dialog.current,controller.state.characterId,controller.state.stageIndex,this.reducedMotion);
+              stopDirectoryEntrance=enhanceBlindSelectEntrance(this.dialog.current,controller.state.characterId,controller.state.stageIndex,this.reducedMotion,()=>{this.stageEntranceShown=true;});
               this.events.once('shutdown',()=>stopDirectoryEntrance?.());
             }
             const enter=await directoryPromise;
@@ -764,7 +767,7 @@ export class GameScene extends Phaser.Scene {
     }
     const play=l.tableActions.play;
     this.playAura=v.add(this.add.graphics().lineStyle(2,T.red,.7).strokeRoundedRect(play.x-3,play.y-3,play.width+6,play.height+6,9).setAlpha(0));
-    this.statusText=v.text(l.status.x,l.status.y,'',14,'#f3d5ab',l.status.width);
+    this.statusText=v.text(l.status.x,l.status.y,'',14,'#30251f',l.status.width);
     this.inventoryButton=v.button(l.pc?.utilities.inventory??heroSidebarUtilities(l)?.inventory??gameToolInventoryBox(l),toolInventoryLabel(this.run),'action/tool-inventory',()=>this.inspectInventory());
     inventoryFeedback(this,this.inventoryButton,this.run,this.ready,this.reducedMotion,!!l.pc);
     this.controlsLive=true;
@@ -1413,7 +1416,7 @@ export class GameScene extends Phaser.Scene {
     const restriction=this.run.stage?.boss&&!this.playing&&!this.presentation&&this.run.phase==='await-input'?'本局限制：'+(reducedPlayEntry(this.run)??notice?.title??'压轴规则'):'';
     const criticalStatus=warning?(warning.message+(detail?' · '+detail:'')):restriction?restriction+(detail?' · '+detail:''):detail;
     this.statusText.setName(discovery&&!criticalStatus?'growth/discovery':'').setText(criticalStatus||discovery?.full||sweepReminder||selectedReminder||guideCue||reminders||entryReminder||benefitReminder||memoryReminder||reason);
-    this.statusText.setColor(warning?'#9b3027':restriction?'#30251f':'#f3d5ab').setFontStyle(warning?'bold':'normal').setFontSize(warning?16:14);
+    this.statusText.setColor(warning?'#9b3027':'#30251f').setFontStyle(warning?'bold':'normal').setFontSize(warning?16:14);
     if(warning){
       this.statusText.setName('warning/last-play');this.resourceCounts.play.setColor('#9b3027').setFontStyle('bold');
       if(highlight&&!this.reducedMotion)this.presentLastPlayCue();
@@ -2144,9 +2147,9 @@ export class GameScene extends Phaser.Scene {
     return this.scorePosture.play(card.container,{context,arrival:impact,duration:beat.impact,ordinal:Math.max(0,ordinal),reducedMotion:this.reducedMotion,faceGlow:card.faceGlow,edgeGlow:card.edgeGlow});
   }
   private floatNote(note:string,x:number,y:number,color:string,duration:number,context:EffectContext):Promise<void> {
-    const group=this.view.add(this.add.container(x,y)),text=this.add.text(0,0,note,{fontFamily:UI_FONT,fontSize:this.view.layout.mode==='desktop'?'22px':'18px',fontStyle:'bold',color:C.ink,resolution:Math.max(1,1/this.scale.zoom)}).setOrigin(.5);
+    const density=textDensity(this),group=this.view.add(this.add.container(x,y)),text=this.add.text(0,0,note,{fontFamily:UI_FONT,fontSize:this.view.layout.mode==='desktop'?'22px':'18px',fontStyle:'bold',color:C.ink,resolution:density}).setOrigin(.5).setName('notice/float-text');
     const width=text.width+16,height=text.height+8,plate=this.view.material({x:-width/2,y:-height/2,width,height},0x30545a,0x17323c,5).setAlpha(.94);
-    x=Phaser.Math.Clamp(x,width/2+6,this.view.layout.width-width/2-6);y=Math.max(y,height/2+28);group.setPosition(x,y);
+    x=Math.round(Phaser.Math.Clamp(x,width/2+6,this.view.layout.width-width/2-6)*density)/density;y=Math.round(Math.max(y,height/2+28)*density)/density;group.setPosition(x,y);crispText(text);
     const edge=this.add.graphics().lineStyle(1,0xc9d1b0,.65).strokeRoundedRect(-width/2,-height/2,width,height,5);
     group.add([plate,edge,text]);this.keepScoreReadable();
     return this.animate({targets:group,y:y-(this.reducedMotion?0:22),alpha:{from:1,to:0},duration,ease:'Sine.easeOut'},context).then(()=>group.destroy());
@@ -2508,24 +2511,24 @@ export class GameScene extends Phaser.Scene {
     const suit=boss.disabledSuit?' · '+stageSuitLabel(boss.disabledSuit):'';
     const budget=boss.definitionId==='B09'?' 本场初始'+stage.initialHands+'次出牌。':'';
     const copy='本局限制：'+definition.name+suit+'\n'+definition.rule+budget;
-    const label=this.add.text(0,0,copy,{fontFamily:UI_FONT,fontSize:mobile?'16px':'18px',color:'#F5E8CC',wordWrap:{width:Math.max(1,width-52),useAdvancedWrap:true},lineSpacing:2});
+    const density=textDensity(this),label=this.add.text(0,0,copy,{fontFamily:UI_FONT,fontSize:mobile?'16px':'18px',color:'#F5E8CC',resolution:density,wordWrap:{width:Math.max(1,width-52),useAdvancedWrap:true},lineSpacing:2}).setName('boss/restriction-text');
     const h=Math.max(72,label.height+24),box=bossRuleCuePlacement(l.width,l.height,l.scoreBoard,l.playedArea,[l.hud,l.jokers,l.scoreBoard,l.hand,l.handLabel,l.piles,l.tools,l.actions,...l.slots],mobile,h);
     if(!box){label.destroy();return;}
     this.bossRuleCue?.destroy();
-    const group=this.view.add(this.add.container(box.x,box.y)).setName('boss/restriction-cue').setData('cueBounds',box);
+    const group=this.view.add(this.add.container(Math.round(box.x*density)/density,Math.round(box.y*density)/density)).setName('boss/restriction-cue').setData('cueBounds',box);
     const sheet=this.add.graphics().fillStyle(0x160f0c,.24).fillRoundedRect(2,3,box.width-2,box.height-3,6)
       .fillStyle(0x30251f,.99).fillRoundedRect(0,0,box.width,box.height-3,6)
       .fillStyle(0x76583c,.14).fillRoundedRect(3,3,box.width-6,17,3)
       .lineStyle(1,0xc9a65f,.95).strokeRoundedRect(.5,.5,box.width-1,box.height-4,6)
       .lineStyle(1,0xf5e8cc,.18).strokeRoundedRect(4,4,box.width-8,box.height-11,3);
     const lines=this.add.graphics().lineStyle(1,0xc9a65f,.8).lineBetween(12,6,box.width-12,6).lineBetween(12,box.height-9,box.width-12,box.height-9).setAlpha(0).setScale(.96,1);
-    const seal=this.add.container(box.width-24,21).setAlpha(0),stamp=this.add.graphics().fillStyle(0xa13e31,1).fillRoundedRect(-9,-9,18,18,2).lineStyle(1,0xf5e8cc,.85).strokeRoundedRect(-7,-7,14,14,1),mark=this.add.text(0,0,'限',{fontFamily:UI_FONT,fontSize:'12px',fontStyle:'bold',color:'#F5E8CC'}).setOrigin(.5);
-    seal.add([stamp,mark]);label.setPosition(16,11);group.add([sheet,lines,label,seal]);this.bossRuleCue=group;
+    const seal=this.add.container(Math.round((box.width-24)*density)/density,21).setAlpha(0),stamp=this.add.graphics().fillStyle(0xa13e31,1).fillRoundedRect(-9,-9,18,18,2).lineStyle(1,0xf5e8cc,.85).strokeRoundedRect(-7,-7,14,14,1),mark=this.add.text(0,0,'限',{fontFamily:UI_FONT,fontSize:'12px',fontStyle:'bold',color:'#F5E8CC',resolution:density}).setOrigin(.5);
+    prepareTextScale(mark,1.16);seal.add([stamp,mark]);label.setPosition(16,11);crispText(label);group.add([sheet,lines,label,seal]);this.bossRuleCue=group;
     const runId=this.run.runId,stageIndex=stage.index,valid=()=>group.active&&this.bossRuleCue===group&&!document.hidden&&!this.reducedMotion&&!document.querySelector('dialog[open]')&&!this.playing&&!this.presentation&&this.run.runId===runId&&this.run.stage?.index===stageIndex&&this.run.phase==='await-input';
     const live=()=>{if(valid())return true;if(group.active)group.destroy();if(this.bossRuleCue===group)this.bossRuleCue=undefined;return false;};
     if(live())this.tweens.add({targets:lines,alpha:1,scaleX:1,duration:450,ease:'Sine.easeOut'});
     this.time.delayedCall(150,()=>{if(!live())return;seal.setAlpha(1).setScale(1.16);this.tweens.add({targets:seal,scaleX:1,scaleY:1,duration:180,ease:'Cubic.easeOut'});});
-    this.time.delayedCall(1850,()=>{if(!live())return;this.tweens.add({targets:group,alpha:0,duration:300,ease:'Sine.easeIn',onComplete:()=>{if(group.active)group.destroy();if(this.bossRuleCue===group)this.bossRuleCue=undefined;}});});
+    this.time.delayedCall(3000,()=>{if(!live())return;this.tweens.add({targets:group,alpha:0,duration:300,ease:'Sine.easeIn',onComplete:()=>{if(group.active)group.destroy();if(this.bossRuleCue===group)this.bossRuleCue=undefined;}});});
   }
   /** Decorative only: the persistent status and every input remain in place. */
   private presentLastPlayCue():void {
@@ -2533,7 +2536,7 @@ export class GameScene extends Phaser.Scene {
       [l.hud,l.jokers,l.scoreBoard,l.playedArea,l.hand,l.handLabel,l.piles,l.tools,l.tableActions.play,l.tableActions.discard,...l.slots],l.mode==='portrait');
     if(!box)return; // No safe room: keep the existing high-contrast static warning.
     this.lastPlayCue?.destroy();
-    const group=this.view.add(this.add.container(box.x,box.y)).setName('warning/last-play-cue').setData('cueBounds',box),paper=this.add.graphics(),seal=this.add.container(24,22);
+    const density=textDensity(this),group=this.view.add(this.add.container(Math.round(box.x*density)/density,Math.round(box.y*density)/density)).setName('warning/last-play-cue').setData('cueBounds',box),paper=this.add.graphics(),seal=this.add.container(24,22);
     const frame=this.add.graphics().fillStyle(0x160f0c,.25).fillRoundedRect(1,3,box.width-2,box.height-3,5)
       .fillStyle(0x30251f,.99).fillRoundedRect(0,0,box.width,box.height-2,5)
       .fillStyle(0x76583c,.14).fillRoundedRect(3,3,box.width-6,16,3)
@@ -2542,14 +2545,14 @@ export class GameScene extends Phaser.Scene {
     group.add(frame);
     paper.fillStyle(0xc9a65f,.8).fillRect(11,5,box.width-22,1).fillRect(11,box.height-6,box.width-22,1);paper.setAlpha(0).setScale(.94,1);group.add(paper);
     const stamp=this.add.graphics().fillStyle(0xb8473a,1).fillRoundedRect(-10,-10,20,20,2).lineStyle(1,0xf5e8cc,.9).strokeRoundedRect(-8,-8,16,16,1);
-    const mark=this.add.text(0,0,'末',{fontFamily:UI_FONT,fontSize:'14px',fontStyle:'bold',color:'#F5E8CC'}).setOrigin(.5);seal.add([stamp,mark]);seal.setAlpha(0);group.add(seal);
-    group.add(this.add.text(44,box.height/2,'仅剩最后1次出牌',{fontFamily:UI_FONT,fontSize:l.mode==='portrait'?'16px':'19px',fontStyle:'bold',color:'#F5E8CC'}).setOrigin(0,.5));
+    const mark=this.add.text(0,0,'末',{fontFamily:UI_FONT,fontSize:'14px',fontStyle:'bold',color:'#F5E8CC',resolution:density}).setOrigin(.5);prepareTextScale(mark,1.18);seal.add([stamp,mark]);seal.setAlpha(0);group.add(seal);
+    const label=this.add.text(44,box.height/2,'仅剩最后1次出牌',{fontFamily:UI_FONT,fontSize:l.mode==='portrait'?'16px':'19px',fontStyle:'bold',color:'#F5E8CC',resolution:density}).setOrigin(0,.5).setName('warning/last-play-text');crispText(label);group.add(label);
     this.lastPlayCue=group;const runId=this.run.runId,stageIndex=this.run.stage!.index;
     const valid=()=>group.active&&this.lastPlayCue===group&&!this.playing&&!this.presentation&&!document.hidden&&this.run.runId===runId&&this.run.stage?.index===stageIndex&&this.run.phase==='await-input'&&this.handsLeft===1;
     const live=()=>{if(valid())return true;if(group.active)group.destroy();if(this.lastPlayCue===group)this.lastPlayCue=undefined;return false;};
     this.time.delayedCall(150,()=>{if(live())this.tweens.add({targets:paper,alpha:1,scaleX:1,duration:180,ease:'Sine.easeOut'});});
     this.time.delayedCall(300,()=>{if(!live())return;seal.setAlpha(1).setScale(1.18);this.tweens.add({targets:seal,scaleX:1,scaleY:1,duration:150,ease:'Cubic.easeOut'});this.audio.lastPlayWarning();});
-    this.time.delayedCall(1200,()=>{if(!live())return;this.tweens.add({targets:group,alpha:0,duration:300,ease:'Sine.easeIn',onComplete:()=>{if(group.active)group.destroy();if(this.lastPlayCue===group)this.lastPlayCue=undefined;}});});
+    this.time.delayedCall(2200,()=>{if(!live())return;this.tweens.add({targets:group,alpha:0,duration:300,ease:'Sine.easeIn',onComplete:()=>{if(group.active)group.destroy();if(this.lastPlayCue===group)this.lastPlayCue=undefined;}});});
   }
   private async pulseResource(kind:'play'|'discard',before:number,context:EffectContext,after?:number):Promise<void> {
     if(context.signal.aborted)return;

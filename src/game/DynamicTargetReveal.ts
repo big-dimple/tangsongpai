@@ -1,9 +1,11 @@
 import type Phaser from 'phaser';
 import type {Box} from './layout';
 import type {SceneView} from './SceneView';
+import {crispText} from './TextRaster';
 
 /** Ornament a number already shown by the saved stage. Never creates input or predicts a target. */
 export function mountDynamicTargetReveal(scene:Phaser.Scene,view:SceneView,target:Phaser.GameObjects.Text,box:Box,reduced:()=>boolean,dark:boolean):void {
+ crispText(target);
  if(reduced()||document.hidden)return;
  const bounds=target.getBounds(),width=Math.min(bounds.width+8,box.width),height=Math.min(bounds.height+8,box.height);
  const x=Math.max(box.x,Math.min(bounds.centerX-width/2,box.x+box.width-width)),y=Math.max(box.y,Math.min(bounds.centerY-height/2,box.y+box.height-height));

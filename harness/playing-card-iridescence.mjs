@@ -5,7 +5,7 @@ import {createServer} from 'vite';
 import {chromium} from 'playwright';
 import {tapUI,waitScene} from './ui.mjs';
 
-const out=resolve('shots/playing-card-iridescence'),port=5757;await mkdir(out,{recursive:true});
+const out=resolve(process.env.PLAYING_CARD_OUTPUT??'shots/playing-card-iridescence'),port=5757;await mkdir(out,{recursive:true});
 const server=await createServer({mode:'e2e',cacheDir:resolve(out,'vite'),server:{host:'127.0.0.1',port,strictPort:true,watch:null,hmr:false},logLevel:'error'});await server.listen();
 const {settlementReady}=await server.ssrLoadModule('/harness/fixtures/settlement.ts');const {makeCheckpoint,readCheckpoint}=await server.ssrLoadModule('/src/application/checkpoint.ts');
 const s=settlementReady('boss-win').state;const hand=s.handOrder.map(id=>s.deckInstances.find(c=>c.id===id));hand.forEach((c,i)=>c.edition=i<5?'polychrome':i===5?'foil':i===6?'holographic':'none');hand[0].suit='clubs';
