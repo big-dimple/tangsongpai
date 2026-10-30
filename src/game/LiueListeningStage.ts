@@ -3,6 +3,7 @@ import type {Box} from './layout';
 import type {EffectContext} from '../core/EffectQueue';
 import type {ScoreBeat} from './scorePresentation';
 import {heroEyesKey} from './portraits';
+import {drawHeroLineCurrent} from './HeroLineCurrent';
 
 const INK=0x3b3430,JADE=0x367b80,GOLD=0xc19a59,PAPER=0xf4e6c9;
 const overlaps=(a:Box,b:Box)=>a.x<b.x+b.width+6&&a.x+a.width>b.x-6&&a.y<b.y+b.height+6&&a.y+a.height>b.y-6;
@@ -40,7 +41,7 @@ export interface LiueListeningView {step:(elapsed:number)=>void;dispose:()=>void
 export async function playLiueListeningStage(scene:Phaser.Scene,root:Phaser.GameObjects.Container,skill:Box,slot:Box,eventId:string,targetId:string,context:EffectContext,reduced:()=>boolean,speed:number,beat:ScoreBeat,charge?:(progress:number)=>void):Promise<LiueListeningView|undefined> {
  if(context.signal.aborted||!root.active)return;
  const group=scene.add.container(0,0).setName('hero/liue-listening-stage').setData('eventId',eventId).setData('targetId',targetId).setData('bounds',slot);root.add(group);
- const aura=scene.add.graphics().setName('hero/liue-sound-waves'),ear=scene.add.graphics().setName('hero/liue-listening-ear'),gaze=scene.add.container(skill.x+skill.width/2,skill.y+skill.height/2).setName('hero/liue-skill-gaze');group.add([aura,ear,gaze]);
+ const aura=scene.add.graphics().setName('hero/liue-sound-waves'),currentInk=scene.add.graphics().setName('hero/liue-sound-current'),ear=scene.add.graphics().setName('hero/liue-listening-ear'),gaze=scene.add.container(skill.x+skill.width/2,skill.y+skill.height/2).setName('hero/liue-skill-gaze');group.add([aura,currentInk,ear,gaze]);
  const key=heroEyesKey('erxiang');if(scene.textures.exists(key)){const image=scene.add.image(0,0,key),source=image.frame;const scale=Math.min((skill.width-8)/source.width,(skill.height-6)/source.height);image.setScale(scale);gaze.add(image);}
  const cx=slot.x+slot.width/2,cy=slot.y+slot.height/2,earHeight=Math.min(112,slot.height-10),radius=slot.width*.47;
  drawLiueListeningEar(ear,cx,cy,earHeight);ear.setData('anatomyScale',earHeight/94).setData('bounds',{x:cx-earHeight*.3,y:cy-earHeight*.5,width:earHeight*.6,height:earHeight});
@@ -51,7 +52,7 @@ export async function playLiueListeningStage(scene:Phaser.Scene,root:Phaser.Game
  context.signal.addEventListener('abort',dispose,{once:true});scene.events.once('shutdown',dispose);document.addEventListener('visibilitychange',hidden);window.addEventListener('blur',dispose);group.once('destroy',groupDestroyed);
  const paint=(charge:number,release:number,phase:string)=>{
   if(disposed)return;const still=reduced();group.setData('phase',phase).setData('release',release);ear.setAlpha(Math.min(1,charge*3)*(1-release*.5));gaze.setAlpha(Math.max(0,1-charge*1.7));
-  aura.clear();const opacity=Math.min(1,charge*3)*(1-release);
+  aura.clear();currentInk.clear();const opacity=Math.min(1,charge*3)*(1-release),electricHeads:{x:number;y:number}[]=[];let electricSegments=0;
   aura.fillStyle(PAPER,.83*opacity).fillEllipse(cx,cy,slot.width*.96,slot.height*.94);
   // Broad, separated wave fronts converge once, then open out on the saved
   // target's release. Their changing radius supplies force; the ear stays still.
@@ -59,7 +60,9 @@ export async function playLiueListeningStage(scene:Phaser.Scene,root:Phaser.Game
    const base=earHeight*.38,gap=(radius-base-24)/3,r=base+i*gap+(still?0:(1-charge)*gap*1.6+release*gap*2),rx=Math.min(radius-24,r),ry=Math.min(slot.height*.43,earHeight*(.22+i*.14));
    const points=Array.from({length:25},(_,j)=>{const a=-.95+j/24*1.9;return{x:cx+side*(20+Math.cos(a)*rx),y:cy+Math.sin(a)*ry};});
    aura.lineStyle(7, PAPER,.9*opacity).strokePoints(points,false).lineStyle(i===0?3.5:2.5,i===1?GOLD:JADE,(.92-i*.12)*opacity).strokePoints(points,false);
+   if(!still&&i===1){const arc=(u:number)=>{const a=-.95+u*1.9;return{x:cx+side*(20+Math.cos(a)*rx),y:cy+Math.sin(a)*ry};},current=drawHeroLineCurrent(currentInk,arc,0,1,charge+release,[],GOLD,opacity);electricSegments+=current.segments;electricHeads.push(...current.heads);}
   }
+  currentInk.setData('electricSegments',electricSegments).setData('electricHeads',electricHeads);
   aura.lineStyle(2,GOLD,.6*opacity).strokeEllipse(cx,cy,earHeight*.77,earHeight+6);
  };
  const cursor={t:0};paint(0,0,'charge');charge?.(0);

@@ -406,6 +406,8 @@ button[aria-busy=true] { border-style:dashed; }
 .candidate-card-face { position:relative; display:flex; flex-direction:column; align-items:center; flex:0 1 52px; min-width:30px; height:76px; border:1px solid #a38b66; border-radius:4px; background:#fff9ee; box-shadow:1px 2px 0 #d7cbb7; color:#26313a; }
 .candidate-card-face[data-red="true"] { color:#b8473a; }
 .candidate-card-face[data-disabled="true"] { background:#e2e0da; border-style:dashed; }
+/* Small reference cards keep the selection/disabled border; the inlay is decorative only. */
+.candidate-card-face[data-edition="polychrome"]::before { content:'';position:absolute;inset:1px;border:2px solid transparent;border-radius:3px;background:linear-gradient(#fff9ee,#fff9ee) padding-box,conic-gradient(#c5685f,#d1b16c,#84a78a,#6d9e9c,#788db3,#a87f9c,#c5685f) border-box;mask:linear-gradient(#000 0 0) border-box,linear-gradient(#000 0 0) padding-box;mask-composite:exclude;pointer-events:none; }
 .candidate-card-face strong { align-self:flex-start; padding:1px 3px; font-size:14px; line-height:18px; white-space:nowrap; }
 .candidate-card-face img { width:30px; height:42px; object-fit:contain; }
 .candidate-card-pip { font:30px/42px Georgia,serif; }

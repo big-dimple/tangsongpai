@@ -81,7 +81,7 @@ import {ScorePosture,scoreCardPose} from './ScorePosture';
 import {CardBodyMotion} from './CardBodyMotion';
 import {ImageAfterimages} from './ImageAfterimages';
 import {ownedJokerScoreLayer,mountOwnedJokerIdle,ownedJokerMotionCue,ownedJokerMotionDuration,playOwnedJokerScoreMotion,ownedJokerLiftRoom,OWNED_SOURCE_REBOUND} from './OwnedJokerScoreMotion';
-import {mountPolychromeCardIridescence} from './PolychromeCardIridescence';
+import {mountPolychromeCardIridescence,mountPlayingCardIridescence} from './PolychromeCardIridescence';
 import {bossCardPressure,bossJokerPressure,type BossPressureContext} from './BossPressure';
 import {mountBossPressure} from './BossPressureView';
 import {readableMultiplierEffect} from './ScoreEventCaption';
@@ -453,6 +453,7 @@ export class GameScene extends Phaser.Scene {
       onPhase:event=>this.observeHeroAttachmentPhase(event),
       blocked:()=>!this.scene.isActive()||!!document.querySelector('dialog[open]')||!this.ready&&!this.presentation&&!this.refillPresentation,
       labelExclusions:()=>[...[this.heroActionButton,this.passiveHeroSkill?.anchor,this.inventoryButton,this.playButton,this.discardButton,this.rankButton,this.suitButton,this.aiButton].flatMap(o=>o?.active&&o.visible?[o.getBounds()]:[]),...(this.targetAttachment?.handoffEarExclusions()??[])],
+      sourceExclusions:()=>{const b=this.view.layout.scoreBoard,m=this.view.root.getWorldTransformMatrix(),points=[[b.x,b.y],[b.x+b.width,b.y],[b.x,b.y+b.height],[b.x+b.width,b.y+b.height]].map(([x,y])=>m.transformPoint(x,y)),x=Math.min(...points.map(p=>p.x)),y=Math.min(...points.map(p=>p.y));return[{x,y,width:Math.max(...points.map(p=>p.x))-x,height:Math.max(...points.map(p=>p.y))-y}];},
     });
     this.xinRefillSequence=new XinRefillSequence(this);
     const carried=carriedToolAtEntry(controller.state,data?.carriedTool)?data?.carriedTool:undefined;
@@ -1033,6 +1034,8 @@ export class GameScene extends Phaser.Scene {
 
     }
     const scoringMark=this.add.text(-b.width/2+edge,b.height/2-21,'★',{fontFamily:UI_FONT,fontSize:'14px',fontStyle:'bold',color:C.jade,resolution}).setVisible(false);
+    // Inlay is under the printed indices and artwork so it cannot obscure them.
+    mountPlayingCardIridescence(this,c,{x:-b.width/2,y:-b.height/2,width:b.width,height:b.height},card.edition);
     c.add([...faceArt,label,corner,scoringMark]);
     const selectionMark=this.add.text(-b.width/2+edge+9,-b.height/2+edge+label.height+11,'✓',{fontFamily:UI_FONT,fontSize:'14px',fontStyle:'bold',color:C.ink,backgroundColor:C.jadeSoft,padding:{x:4,y:1},resolution}).setOrigin(.5).setVisible(false);c.add(selectionMark);
     if(card.enhancement){
@@ -1077,8 +1080,7 @@ export class GameScene extends Phaser.Scene {
   private editionTrim(container:Phaser.GameObjects.Container,width:number,height:number,edition:PlayingCard['edition'],joker=false):void {
     if(!edition||edition==='none')return;
     const rim=this.add.graphics(),colors=edition==='foil'?[0xc0e9f5]:edition==='holographic'?[0xc8a8f5,0x8fe5d9]:[0xf3bc79,0xe390c7,0x93d9e5,0xbce09f];
-    if(edition==='polychrome')mountPolychromeCardIridescence(this,container,{x:-width/2,y:-height/2,width,height},edition);
-    else colors.forEach((color,i)=>{rim.lineStyle(1.5,color,.9).strokeRoundedRect(-width/2+3+i*1.7,-height/2+3+i*1.7,width-6-i*3.4,height-6-i*3.4,5);});
+    if(edition!=='polychrome')colors.forEach((color,i)=>{rim.lineStyle(1.5,color,.9).strokeRoundedRect(-width/2+3+i*1.7,-height/2+3+i*1.7,width-6-i*3.4,height-6-i*3.4,5);});
     const label=edition==='foil'?'箔':edition==='holographic'?'虹':'彩',labelY=joker?-height/2+12:height/2-12;
     rim.fillStyle(colors[0],.9).fillCircle(width/2-12,labelY,8);container.add(rim);container.setData('editionRim',rim);
     container.add(this.add.text(width/2-12,labelY,label,{fontFamily:UI_FONT,fontSize:'11px',fontStyle:'bold',color:'#17383c',resolution:Math.max(1,1/this.scale.zoom)}).setOrigin(.5).setName('edition-badge'));

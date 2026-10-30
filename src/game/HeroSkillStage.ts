@@ -5,6 +5,7 @@ import type {EffectContext} from '../core/EffectQueue';
 import {heroEyesKey} from './portraits';
 import {heroSkillName} from './HeroSkillPresentation';
 import {UI_FONT} from './theme';
+import {drawHeroLineCurrent} from './HeroLineCurrent';
 
 const colors:Record<CharacterId,number>={amo:0xb88632,erxiang:0x9b3d46,laohuan:0x287f79,touye:0x635141,azao:0x427e83,xiemu:0xb37c32};
 /** A saved skill owns one paper stage inside its existing, temporarily locked hit.
@@ -12,9 +13,9 @@ const colors:Record<CharacterId,number>={amo:0xb88632,erxiang:0x9b3d46,laohuan:0
 export async function playHeroSkillStage(scene:Phaser.Scene,root:Phaser.GameObjects.Container,box:Box,hero:CharacterId,eventId:string,context:EffectContext,reduced:()=>boolean,speed:number,stageBox:Box=box):Promise<void>{
  if(context.signal.aborted||!root.active)return;
  const w=stageBox.width,h=stageBox.height,c=colors[hero],group=scene.add.container(stageBox.x+w/2,stageBox.y+h/2).setName('hero/skill-stage').setData('eventId',eventId).setData('heroId',hero);root.add(group);
- const paper=scene.add.graphics(),ink=scene.add.graphics();group.add(paper);
+ const paper=scene.add.graphics(),ink=scene.add.graphics().setName('hero/skill-stage-ink'),currentInk=scene.add.graphics().setName('hero/skill-stage-current');group.add(paper);
  const texture=heroEyesKey(hero),eye=scene.textures.exists(texture)?scene.add.image(0,-2,texture).setDisplaySize(w-12,h-8).setName('hero/skill-stage-eyes'):undefined;if(eye)group.add(eye);
- group.add(ink);
+ group.add([ink,currentInk]);
  const title=scene.add.text(w/2-10,1,heroSkillName(hero),{fontFamily:UI_FONT,fontSize:Math.min(32,w*.15)+'px',fontStyle:'bold',color:'#302c27',stroke:'#f4e6c9',strokeThickness:3}).setOrigin(1,.5);group.add(title);
  const cursor={t:0};let tween:Phaser.Tweens.Tween|undefined,done=false,resolve!:()=>void;
  const promise=new Promise<void>(r=>resolve=r);
@@ -33,10 +34,12 @@ export async function playHeroSkillStage(scene:Phaser.Scene,root:Phaser.GameObje
   paper.clear().fillStyle(0x302c27,.23).fillRect(-w/2+3,-h/2+4,w,h).fillStyle(0xf4e6c9).fillPoints([{x:-w/2,y:-h/2+2},{x:w/2-5,y:-h/2},{x:w/2,y:h/2-3},{x:-w/2+3,y:h/2}],true).lineStyle(3,c).strokeRect(-w/2+2,-h/2+2,w-4,h-4);
   if(eye){eye.setAlpha(still?.35:1-strike*.55).setX(still?0:-12*(1-charge));}
   title.setAlpha(still?1:strike).setX(w/2-10+(still?0:12*(1-strike)));
-  ink.clear();
-  if(t>=.32){for(let i=0;i<3;i++){const len=(w*.14+i*6)*(1-strike*.3);ink.lineStyle(3-i*.6,c,.65).lineBetween(-w/2+6,-h/2+7+i*5,-w/2+6+len,-h/2+4+i*5).lineBetween(w/2-6-len,h/2-4-i*5,w/2-6,h/2-7-i*5);}}
+  ink.clear();currentInk.clear();const electricHeads:{x:number;y:number}[]=[];let electricSegments=0;
+  if(t>=.32){for(let i=0;i<3;i++){const len=(w*.14+i*6)*(1-strike*.3),a={x:-w/2+6,y:-h/2+7+i*5},b={x:a.x+len,y:-h/2+4+i*5},z={x:w/2-6,y:h/2-7-i*5},q={x:z.x-len,y:h/2-4-i*5};ink.lineStyle(3-i*.6,c,.65).lineBetween(a.x,a.y,b.x,b.y).lineBetween(q.x,q.y,z.x,z.y);if(!still&&i===1){for(const [from,to] of [[a,b],[q,z]]){const current=drawHeroLineCurrent(currentInk,u=>({x:from.x+(to.x-from.x)*u,y:from.y+(to.y-from.y)*u}),0,1,t,[],c,.8);electricSegments+=current.segments;electricHeads.push(...current.heads);}}}}
+  currentInk.setData('electricSegments',electricSegments).setData('electricHeads',electricHeads);
   if(!still&&t<.32){for(let i=0;i<3;i++)ink.lineStyle(3-i*.5,c,.8).lineBetween(-w/2+4,-h/2+6+i*6,-w/2+8+charge*(18+i*5),-h/2+6+i*6);return;}
   ink.setAlpha(still?1:Math.min(1,strike*4));
+  currentInk.setAlpha(still?0:Math.min(1,strike*4));
   const x=-w/2+Math.max(29,w*.23),y=0,r=Math.min(37,h*.33),travel=still?0:(1-p)*22;
   if(hero==='azao'){
    // Two silk lengths meet in a real contract seal, wide enough to read on phones.

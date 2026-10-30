@@ -10,7 +10,8 @@ import {rankLabel, SUIT_SYMBOL, type PlayingCard} from '../cards/types';
 import {ENHANCEMENT_BRIEF} from './CardSpecialLabels';
 import {handdrawnPath} from './HanddrawnArt';
 import {assetUrl} from './theme';
-import {iridescenceColor, iridescencePath} from './PolychromeCardIridescence';
+import {iridescenceColor, playingCardIridescenceColor, iridescencePath, IRIDESCENCE_CYCLE_MS} from './PolychromeCardIridescence';
+import {gameSession} from './session';
 import {inkBurstFrame} from './InkBurst';
 import {createShadowCanvasHost, mountHeroEntranceBurst} from './TangSongEntranceBurst';
 import {AudioEngine} from '../audio/AudioEngine';
@@ -114,31 +115,36 @@ function createVisualCardElement(
 function startPolychromeEdgeLoop(canvas: HTMLCanvasElement, reducedMotion: boolean): () => void {
   const ctx = canvas.getContext('2d');
   if (!ctx) return () => {};
-  const path = iridescencePath({x: 4, y: 4, width: canvas.width - 8, height: canvas.height - 8}, 64);
+  const path = iridescencePath({x: 4, y: 4, width: canvas.width - 8, height: canvas.height - 8}, 64, 3);
   let disposed = false;
   let rafId = 0;
   let lastPaint = 0;
-  const start = performance.now();
+  let elapsed = 0;
+  let still = reducedMotion;
+  const media = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   const render = (phase: number) => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     const count = path.length - 1;
+    ctx.strokeStyle = '#8d6747';ctx.globalAlpha = .72;ctx.lineWidth = 5.4;
+    ctx.beginPath();ctx.roundRect(7,7,canvas.width-14,canvas.height-14,4);ctx.stroke();
     for (let i = 0; i < count; i++) {
       const a = path[i];
       const b = path[i + 1];
       const position = i / count;
-      const color = hexColor(iridescenceColor(position - phase));
-      const glint = Math.pow((1 + Math.cos((position - phase) * Math.PI * 4)) / 2, 10);
+      const color = hexColor(playingCardIridescenceColor(position));
+      const glint = Math.pow((1 + Math.cos((position - phase) * Math.PI * 2)) / 2, 48);
       ctx.strokeStyle = color;
-      ctx.globalAlpha = 0.22 + 0.18 * glint;
-      ctx.lineWidth = 5.2;
+      ctx.globalAlpha = .94;
+      ctx.lineWidth = 3.4;
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(b.x, b.y);
       ctx.stroke();
 
-      ctx.globalAlpha = 0.84 + 0.16 * glint;
-      ctx.lineWidth = 2.2;
+      if(glint <= .08) continue;
+      ctx.strokeStyle = '#ffedbd';ctx.globalAlpha = .48 * glint;
+      ctx.lineWidth = 1.15;
       ctx.beginPath();
       ctx.moveTo(a.x, a.y);
       ctx.lineTo(b.x, b.y);
@@ -148,20 +154,28 @@ function startPolychromeEdgeLoop(canvas: HTMLCanvasElement, reducedMotion: boole
   };
 
   render(0);
-  if (reducedMotion) return () => {};
-
   const tick = (now: number) => {
-    if (disposed) return;
+    if (disposed || still || document.hidden) {rafId=0;return;}
     if (now - lastPaint >= 66) {
+      if(lastPaint)elapsed+=Math.min(now-lastPaint,132);
       lastPaint = now;
-      render(((now - start) / 4800) % 1);
+      render((elapsed / IRIDESCENCE_CYCLE_MS) % 1);
     }
     rafId = requestAnimationFrame(tick);
   };
-  rafId = requestAnimationFrame(tick);
+  const refresh=()=>{
+    still=gameSession().reducedMotion||media.matches;
+    if(rafId){cancelAnimationFrame(rafId);rafId=0;}
+    lastPaint=0;
+    if(still)render(0);else if(!document.hidden)rafId=requestAnimationFrame(tick);
+  };
+  const unsubscribe=gameSession().subscribe(refresh);
+  media.addEventListener('change',refresh);document.addEventListener('visibilitychange',refresh);
+  if(!still&&!document.hidden)rafId=requestAnimationFrame(tick);
   return () => {
     disposed = true;
     cancelAnimationFrame(rafId);
+    unsubscribe();media.removeEventListener('change',refresh);document.removeEventListener('visibilitychange',refresh);
   };
 }
 

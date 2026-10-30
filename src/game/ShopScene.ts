@@ -856,7 +856,7 @@ export class ShopScene extends Phaser.Scene {
       const cards=dialog.querySelectorAll<HTMLElement>('.experience-card');
       rows.forEach((row,i)=>{const card=cards[i];card.dataset.choiceGroup=R2_SUIT_DYE_IDS.includes(row.id)?'dyes':'basic';const cue=routeFitCue(this.run,'tools',row.id);if(cue){card.dataset.routeFit=cue.focus;card.style.setProperty('--route-fit',cue.css);const copy=card.querySelector('p');if(copy&&R2_SUIT_DYE_IDS.includes(row.id))copy.textContent+=' · '+cue.label;}});
       const tabs=document.createElement('div');tabs.className='basic-choice-groups';tabs.setAttribute('aria-label','工具分组');
-      for(const [group,label] of [['basic','改牌 · 5项'],['dyes','染色 · 4项']]){const button=document.createElement('button');button.type='button';button.textContent=label;button.setAttribute('aria-pressed',String(dialog.dataset.choiceGroup===group));button.onclick=()=>{dialog.dataset.choiceGroup=group;for(const tab of tabs.querySelectorAll('button'))tab.setAttribute('aria-pressed',String(tab===button));};tabs.append(button);}
+      for(const [group,label] of [['basic',`改牌 · ${rows.filter(row=>!R2_SUIT_DYE_IDS.includes(row.id)).length}项`],['dyes','染色 · 4项']]){const button=document.createElement('button');button.type='button';button.textContent=label;button.setAttribute('aria-pressed',String(dialog.dataset.choiceGroup===group));button.onclick=()=>{dialog.dataset.choiceGroup=group;for(const tab of tabs.querySelectorAll('button'))tab.setAttribute('aria-pressed',String(tab===button));};tabs.append(button);}
       dialog.querySelector('.experience-cards')?.before(tabs);
     }
 

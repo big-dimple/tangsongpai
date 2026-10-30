@@ -3,13 +3,13 @@ import {EventEmitter} from 'node:events';
 import type Phaser from 'phaser';
 const preferences=vi.hoisted(()=>({reducedMotion:false,listeners:new Set<()=>void>()}));
 vi.mock('../src/game/session',()=>({gameSession:()=>({...preferences,subscribe:(f:()=>void)=>{preferences.listeners.add(f);return ()=>preferences.listeners.delete(f);}})}));
-import {mountPolychromeCardIridescence,mountForgetTechniqueAttention,iridescencePath,iridescenceColor} from '../src/game/PolychromeCardIridescence';
+import {mountPolychromeCardIridescence,mountPlayingCardIridescence,mountForgetTechniqueAttention,iridescencePath,iridescenceColor} from '../src/game/PolychromeCardIridescence';
 
 class Graphic extends EventEmitter {
   data=new Map<string,unknown>();visible=true;draws=0;destroyed=false;
   setName(_s:string){return this;}setData(k:string,v:unknown){this.data.set(k,v);return this;}getData(k:string){return this.data.get(k);}
   setVisible(v:boolean){this.visible=v;return this;}clear(){this.draws++;return this;}
-  colors=new Set<unknown>();lineStyle(_width:number,color:number,..._args:unknown[]){this.colors.add(color);return this;}lineBetween(..._args:unknown[]){return this;}
+  colors=new Set<unknown>();widths:number[]=[];lineStyle(width:number,color:number,..._args:unknown[]){this.colors.add(color);this.widths.push(width);return this;}lineBetween(..._args:unknown[]){return this;}strokeRoundedRect(..._args:unknown[]){return this;}
   destroy(){if(this.destroyed)return;this.destroyed=true;this.emit('destroy');this.removeAllListeners();}
 }
 function fixture(){
@@ -73,5 +73,14 @@ describe('persistent polychrome edge',()=>{
     const b={x:-40,y:-50,width:80,height:100},path=iridescencePath(b);expect(path[0]).toEqual(path.at(-1));
     for(const p of path){expect(p.x).toBeGreaterThanOrEqual(-38);expect(p.x).toBeLessThanOrEqual(38);expect(p.y).toBeGreaterThanOrEqual(-48);expect(p.y).toBeLessThanOrEqual(48);expect(Math.min(p.x+40,40-p.x,p.y+50,50-p.y)).toBeLessThan(4);}
     expect(iridescenceColor(0)).toBe(iridescenceColor(1));expect(iridescenceColor(.25)).not.toBe(iridescenceColor(.75));
+  });
+  it('creates the thicker poker-only inlay below the face, with a static reduced-motion frame',()=>{
+    const f=fixture(),scene=f.scene as unknown as Phaser.Scene,host=f.host as unknown as Phaser.GameObjects.Container,b={x:-40,y:-50,width:80,height:100};
+    for(const edition of ['none','foil','holographic'] as const)expect(mountPlayingCardIridescence(scene,host,b,edition)).toBeUndefined();
+    reduce=true;const edge=mountPlayingCardIridescence(scene,host,b,'polychrome') as unknown as Graphic;
+    expect(edge.getData('effect')).toBe('poker-polychrome');expect(edge.widths).toContain(5.4);expect(edge.colors.size).toBeGreaterThan(5);
+    const draws=edge.draws;for(let i=0;i<100;i++)f.step();expect(edge.draws).toBe(draws);expect(edge.getData('motion')).toBe('static');
+    for(const p of iridescencePath(b,48,3)){expect(Math.min(p.x+40,40-p.x,p.y+50,50-p.y)).toBeLessThanOrEqual(5);}
+    f.events.emit('shutdown');
   });
 });

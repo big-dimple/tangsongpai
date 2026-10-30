@@ -8,20 +8,26 @@ export const IRIDESCENCE_FRAME_MS=1000/15;
 export const IRIDESCENCE_CYCLE_MS=7200;
 const managers=new WeakMap<Phaser.Scene,IridescenceManager>();
 const palette=[0xf17eae,0xd79bfa,0x85b6f5,0x57d9db,0x9bdd9d,0xf4d282,0xf4a17c,0xf17eae];
+// Mineral pigments and aged gold, chosen to sit on the warm paper of the playing cards.
+const pokerPalette=[0xc5685f,0xc78b6a,0xd1b16c,0x84a78a,0x6d9e9c,0x788db3,0xa87f9c,0xc5685f];
 type Point={x:number;y:number};
 type Viewport={left:number;top:number;right:number;bottom:number};
-type EdgeKind='polychrome'|'forget-technique';
+type EdgeKind='polychrome'|'poker-polychrome'|'forget-technique';
 type Entry={kind:EdgeKind;host:Phaser.GameObjects.Container;edge:Phaser.GameObjects.Graphics;bounds:Box;path:Point[];lastPhase?:number;remove:()=>void};
 
 export function iridescenceColor(position:number):number {
-  const p=((position%1+1)%1)*(palette.length-1),i=Math.floor(p),t=p-i,a=palette[i],b=palette[i+1];
+  return paletteColor(palette,position);
+}
+export function playingCardIridescenceColor(position:number):number {return paletteColor(pokerPalette,position);}
+function paletteColor(colors:number[],position:number):number {
+  const p=((position%1+1)%1)*(colors.length-1),i=Math.floor(p),t=p-i,a=colors[i],b=colors[i+1];
   const channel=(shift:number)=>Math.round(((a>>shift)&255)*(1-t)+((b>>shift)&255)*t);
   return (channel(16)<<16)|(channel(8)<<8)|channel(0);
 }
 
 /** Equal-distance samples keep the travelling highlight smooth around all four corners. */
-export function iridescencePath(b:Box,segments=64):Point[] {
-  const inset=2,x=b.x+inset,y=b.y+inset,w=b.width-inset*2,h=b.height-inset*2,r=Math.min(5,w/4,h/4);
+export function iridescencePath(b:Box,segments=64,inset=2):Point[] {
+  const x=b.x+inset,y=b.y+inset,w=b.width-inset*2,h=b.height-inset*2,r=Math.min(5,w/4,h/4);
   const horizontal=w-2*r,vertical=h-2*r,arc=Math.PI*r/2,perimeter=2*(horizontal+vertical)+4*arc;
   const parts=[horizontal,arc,vertical,arc,horizontal,arc,vertical,arc];
   return Array.from({length:segments+1},(_,i)=>{
@@ -60,6 +66,20 @@ function visible(entry:Entry,scene:Phaser.Scene,view:Viewport):boolean {
 function draw(entry:Entry,phase:number):void {
   const g=entry.edge,path=entry.path,count=path.length-1,warm=entry.kind==='forget-technique';
   g.clear();
+  if(entry.kind==='poker-polychrome'){
+    const b=entry.bounds;
+    // A dark gold underlay gives the coloured inlay definition against pale paper.
+    g.lineStyle(5.4,0x8d6747,.72).strokeRoundedRect(b.x+3,b.y+3,b.width-6,b.height-6,4);
+    for(let i=0;i<count;i++){
+      const a=path[i],b=path[i+1],position=i/count;
+      g.lineStyle(3.4,playingCardIridescenceColor(position),.94).lineBetween(a.x,a.y,b.x,b.y);
+      const glint=Math.pow((1+Math.cos((position-phase)*Math.PI*2))/2,48);
+      if(glint>.08)g.lineStyle(1.15,0xffedbd,.48*glint).lineBetween(a.x,a.y,b.x,b.y);
+    }
+    entry.lastPhase=phase;
+    g.setData('phase',phase).setData('draws',(g.getData('draws')??0)+1);
+    return;
+  }
   // Both passes share one path: a soft inner feather and a fine coloured edge, never nested frames.
   for(let i=0;i<count;i++){
     const a=path[i],b=path[i+1],position=i/count,color=warm?0xe3b76f:iridescenceColor(position-phase);
@@ -129,6 +149,11 @@ export function mountPolychromeCardIridescence(scene:Phaser.Scene,host:Phaser.Ga
   if(edition!=='polychrome')return;
   return mountEdge(scene,host,bounds,'polychrome');
 }
+/** Playing-card inlay is independent of the portrait-card edition frame. */
+export function mountPlayingCardIridescence(scene:Phaser.Scene,host:Phaser.GameObjects.Container,bounds:Box,edition?:Edition):Phaser.GameObjects.Graphics|undefined {
+  if(edition!=='polychrome')return;
+  return mountEdge(scene,host,bounds,'poker-polychrome');
+}
 /** S05 is an explicit discovery cue, with warm light instead of an edition/rainbow signal. */
 export function mountForgetTechniqueAttention(scene:Phaser.Scene,host:Phaser.GameObjects.Container,bounds:Box,toolId:string):Phaser.GameObjects.Graphics|undefined {
   if(toolId!=='S05')return;
@@ -136,10 +161,10 @@ export function mountForgetTechniqueAttention(scene:Phaser.Scene,host:Phaser.Gam
 }
 function mountEdge(scene:Phaser.Scene,host:Phaser.GameObjects.Container,bounds:Box,kind:EdgeKind):Phaser.GameObjects.Graphics|undefined {
   if(bounds.width<12||bounds.height<12)return;
-  const edge=scene.add.graphics().setName('card/'+(kind==='polychrome'?'polychrome-iridescence':'forget-technique-attention')).setData('effect',kind).setData('bounds',{...bounds});
-  if(kind==='polychrome')edge.setData('edition','polychrome');else edge.setData('toolId','S05');
+  const edge=scene.add.graphics().setName('card/'+(kind==='poker-polychrome'?'playing-card-iridescence':kind==='polychrome'?'polychrome-iridescence':'forget-technique-attention')).setData('effect',kind).setData('bounds',{...bounds});
+  if(kind!=='forget-technique')edge.setData('edition','polychrome');else edge.setData('toolId','S05');
   host.add(edge);
   const manager=managers.get(scene)??new IridescenceManager(scene);managers.set(scene,manager);
-  const entry:Entry={kind,host,edge,bounds:{...bounds},path:iridescencePath(bounds,bounds.width<100?48:64),remove:()=>manager.remove(entry)};
+  const entry:Entry={kind,host,edge,bounds:{...bounds},path:iridescencePath(bounds,bounds.width<100?48:64,kind==='poker-polychrome'?3:2),remove:()=>manager.remove(entry)};
   manager.add(entry);return edge;
 }

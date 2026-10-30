@@ -23,7 +23,9 @@ it('a second saved choice keeps both cards owned but draws its actual source str
  vi.stubGlobal('window',{addEventListener:vi.fn(),removeEventListener:vi.fn()});vi.stubGlobal('document',{hidden:false,addEventListener:vi.fn(),removeEventListener:vi.fn()});const root=new Node(),cards=new Map<string,Node>(),stream=vi.spyOn(atmosphere,'drawHeroOriginStream'),graphics=()=>{const g=new Proxy(new Node(),{get:(target,key):any=>key in target?Reflect.get(target,key):()=>g});g.type='Graphics';return g;};for(const [id,x]of [['prior/kept',80],['new/kept',220]] as const){const card=new Node().setPosition(x,600).setData('cardFace',true).setData('width',38).setData('height',60);cards.set(id,card);root.add(card);}const scene={events:new EventEmitter(),game:{renderer:{type:2}},scale:{width:390,height:844,zoom:1},textures:{exists:()=>true},add:{graphics,text:(_x:number,_y:number,text:string)=>Object.assign(new Node(),{type:'Text',text}),particles:(_x:number,_y:number,_key:string,config:any)=>new Emitter(config)}},layer=new HeroTargetAttachment(scene as unknown as Phaser.Scene,{root:()=>root as unknown as Phaser.GameObjects.Container,target:id=>{const container=cards.get(id);return container?{container:container as unknown as Phaser.GameObjects.Container,width:38,height:60}:undefined;},source:()=>({x:30,y:60}),motion:()=> 'full',blocked:()=>false}),owned=[...cards.keys()],draft={key:'saved/second-choice',targetId:owned[0],targetIds:owned,kind:'candidate' as const,label:'已留',releaseReason:'laohuan.refill',confirmed:true};
  try{
   layer.preview({...draft,sourceTargetIds:['new/kept']});
-  expect(stream).toHaveBeenLastCalledWith(expect.anything(),{x:30,y:60},[{x:201,y:570,width:38,height:60}],expect.anything(),0,expect.anything(),1);
+  const current=root.list.find(n=>n.name==='hero/target-current');expect(current).toBeDefined();
+  expect(stream.mock.calls.at(-1)?.slice(0,7)).toEqual([expect.anything(),{x:30,y:60},[{x:201,y:570,width:38,height:60}],expect.anything(),0,expect.anything(),1]);
+  expect(stream.mock.calls.at(-1)?.[7]).toBe(current);
   expect(root.list.find(n=>n.name==='hero/target-travel')?.data.targetIds).toEqual(['new/kept']);
   for(const card of cards.values())expect(card.list.find(n=>n.name==='hero/target-tag')?.text).toBe('已留');
   scene.events.emit('update',0,50);layer.preview({...draft,sourceTargetIds:['new/kept']});
@@ -31,6 +33,7 @@ it('a second saved choice keeps both cards owned but draws its actual source str
   expect(root.list.find(n=>n.name==='hero/target-travel')?.data.progress).toBeGreaterThan(0);
   layer.preview({...draft,sourceTargetIds:[]});scene.events.emit('update',0,50);
   expect(root.list.some(n=>n.name==='hero/target-travel')).toBe(false);
+  expect(current?.active).toBe(false);expect(root.list.some(n=>n.name==='hero/target-current')).toBe(false);
   layer.preview({...draft,key:'other/hero-default'});
   expect(stream.mock.calls.at(-1)?.[2]).toEqual([{x:61,y:570,width:38,height:60},{x:201,y:570,width:38,height:60}]);
  }finally{layer.destroy();stream.mockRestore();}

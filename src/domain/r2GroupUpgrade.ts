@@ -116,28 +116,35 @@ const DYNAMIC_ENDLESS_CONTRACT=Object.freeze({version:'dynamic-endless-v1',scope
 const DYNAMIC_HOUSE_PROFILES=VALUE_HOUSE_PROFILES.map(p=>Object.freeze({...p,contentVersion:p.contentVersion+'-dynamic-endless-v1',contentHash:stableHash({inherits:p.contentHash,policy:DYNAMIC_ENDLESS_CONTRACT}),dynamicBase:Object.freeze({contentVersion:p.contentVersion,contentHash:p.contentHash})}));
 const TARGETED_VALUE_PROFILES=DYNAMIC_HOUSE_PROFILES.map(p=>Object.freeze({...p,contentVersion:p.contentVersion+'-targeted-value-v1',contentHash:stableHash({inherits:p.contentHash,jokers:R2_TARGETED_VALUE_JOKERS}),heatBase:Object.freeze({contentVersion:p.contentVersion,contentHash:p.contentHash})}));
 const PURCHASE_VALUE_PROFILES=TARGETED_VALUE_PROFILES.map(p=>Object.freeze({...p,contentVersion:p.contentVersion+'-purchase-value-v1',contentHash:stableHash({inherits:p.contentHash,jokers:R2_PURCHASE_VALUE_JOKERS}),purchaseBase:Object.freeze({contentVersion:p.contentVersion,contentHash:p.contentHash})}));
-const ALL_VALUE_HOUSE_PROFILES=Object.freeze([...VALUE_HOUSE_PROFILES,...DYNAMIC_HOUSE_PROFILES,...TARGETED_VALUE_PROFILES,...PURCHASE_VALUE_PROFILES]);
+const VOICE_CHOICE_PROFILES=PURCHASE_VALUE_PROFILES.map(p=>Object.freeze({...p,contentVersion:p.contentVersion+'-voice-choice-v1',contentHash:stableHash({inherits:p.contentHash,tool:'T13',price:4,quota:'shared-basic-choice',duplicate:'independent-of-random-shelf',legacy:'no-migration'}),voiceBase:Object.freeze({contentVersion:p.contentVersion,contentHash:p.contentHash})}));
+const ALL_VALUE_HOUSE_PROFILES=Object.freeze([...VALUE_HOUSE_PROFILES,...DYNAMIC_HOUSE_PROFILES,...TARGETED_VALUE_PROFILES,...PURCHASE_VALUE_PROFILES,...VOICE_CHOICE_PROFILES]);
+export const isR2VoiceChoice=(s:{contentVersion?:unknown;contentHash?:unknown})=>VOICE_CHOICE_PROFILES.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
+export function withVoiceChoiceIdentity(base:{contentVersion:string;contentHash:string}) {
+ const p=VOICE_CHOICE_PROFILES.find(p=>p.voiceBase.contentVersion===base.contentVersion&&p.voiceBase.contentHash===base.contentHash);
+ if(!p)throw Error('unsupported-voice-choice-base');
+ return {contentVersion:p.contentVersion,contentHash:p.contentHash};
+}
 export function withPurchaseValueIdentity(base:{contentVersion:string;contentHash:string}) {
  const profile=PURCHASE_VALUE_PROFILES.find(p=>p.purchaseBase.contentVersion===base.contentVersion&&p.purchaseBase.contentHash===base.contentHash);
  if(!profile)throw Error('unsupported-purchase-value-base');
  return {contentVersion:profile.contentVersion,contentHash:profile.contentHash};
 }
-export const isR2PurchaseValue=(s:{contentVersion?:unknown;contentHash?:unknown})=>PURCHASE_VALUE_PROFILES.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
-export const r2PurchaseValueBase=(s:{contentVersion?:unknown;contentHash?:unknown})=>PURCHASE_VALUE_PROFILES.find(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash)?.purchaseBase??s;
+export const isR2PurchaseValue=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...PURCHASE_VALUE_PROFILES,...VOICE_CHOICE_PROFILES].some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
+export const r2PurchaseValueBase=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...PURCHASE_VALUE_PROFILES,...VOICE_CHOICE_PROFILES].find(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash)?.purchaseBase??s;
 export function withTargetedValueIdentity(base:{contentVersion:string;contentHash:string}) {
  const profile=TARGETED_VALUE_PROFILES.find(p=>p.heatBase.contentVersion===base.contentVersion&&p.heatBase.contentHash===base.contentHash);
  if(!profile)throw Error('unsupported-targeted-value-base');
  return {contentVersion:profile.contentVersion,contentHash:profile.contentHash};
 }
 export const isR2TargetedValue=(s:{contentVersion?:unknown;contentHash?:unknown})=>TARGETED_VALUE_PROFILES.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
-export const r2TargetedValueBase=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...TARGETED_VALUE_PROFILES,...PURCHASE_VALUE_PROFILES].find(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash)?.heatBase??s;
+export const r2TargetedValueBase=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...TARGETED_VALUE_PROFILES,...PURCHASE_VALUE_PROFILES,...VOICE_CHOICE_PROFILES].find(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash)?.heatBase??s;
 export function withDynamicEndlessIdentity(base:{contentVersion:string;contentHash:string}) {
  const profile=DYNAMIC_HOUSE_PROFILES.find(p=>p.dynamicBase.contentVersion===base.contentVersion&&p.dynamicBase.contentHash===base.contentHash);
  if(!profile)throw Error('unsupported-dynamic-endless-base');
  return {contentVersion:profile.contentVersion,contentHash:profile.contentHash};
 }
-export const isR2DynamicEndless=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...DYNAMIC_HOUSE_PROFILES,...TARGETED_VALUE_PROFILES,...PURCHASE_VALUE_PROFILES].some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
-export const r2DynamicEndlessBase=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...DYNAMIC_HOUSE_PROFILES,...TARGETED_VALUE_PROFILES,...PURCHASE_VALUE_PROFILES].find(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash)?.dynamicBase??s;
+export const isR2DynamicEndless=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...DYNAMIC_HOUSE_PROFILES,...TARGETED_VALUE_PROFILES,...PURCHASE_VALUE_PROFILES,...VOICE_CHOICE_PROFILES].some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
+export const r2DynamicEndlessBase=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...DYNAMIC_HOUSE_PROFILES,...TARGETED_VALUE_PROFILES,...PURCHASE_VALUE_PROFILES,...VOICE_CHOICE_PROFILES].find(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash)?.dynamicBase??s;
 export function withJokerValueIdentity(base:{contentVersion:string;contentHash:string}) {
  const profile=VALUE_HOUSE_PROFILES.find(p=>p.valueBase.contentVersion===base.contentVersion&&p.valueBase.contentHash===base.contentHash);
  if(!profile)throw Error('unsupported-joker-value-base');
@@ -166,8 +173,8 @@ export function isR2ActiveMultTiming(identity:{contentVersion?:unknown;contentHa
 export function isR2TouyeNewCore(identity:{contentVersion?:unknown;contentHash?:unknown}):boolean{return identity.contentVersion===R2_TOUYE_CORE_VERSION&&identity.contentHash===R2_TOUYE_CORE_HASH||isR2ActiveMultTiming(identity);}
 export function isR2RouteGrowth(identity:{contentVersion?:unknown;contentHash?:unknown}):boolean{return identity.contentVersion===R2_ROUTE_GROWTH_VERSION&&identity.contentHash===R2_ROUTE_GROWTH_HASH||isR2TouyeNewCore(identity);}
 export function isR2SuitChoice(identity:{contentVersion?:unknown;contentHash?:unknown}):boolean{return identity.contentVersion===R2_SUIT_CHOICE_VERSION&&identity.contentHash===R2_SUIT_CHOICE_HASH||isR2RouteGrowth(identity);}
-export const r2BasicChoiceIds=(identity:{contentVersion?:unknown;contentHash?:unknown})=>isR2SuitChoice(identity)?R2_SUIT_CHOICE_IDS:R2_BASIC_TOOL_IDS;
-export const r2BasicChoiceBasePrice=(id:string)=>R2_SUIT_DYE_IDS.includes(id)?4:2;
+export const r2BasicChoiceIds=(identity:{contentVersion?:unknown;contentHash?:unknown})=>isR2VoiceChoice(identity)?[...R2_SUIT_CHOICE_IDS,'T13']:isR2SuitChoice(identity)?R2_SUIT_CHOICE_IDS:R2_BASIC_TOOL_IDS;
+export const r2BasicChoiceBasePrice=(id:string)=>R2_SUIT_DYE_IDS.includes(id)||id==='T13'?4:2;
 export function isR2BasicChoice(identity:{contentVersion?:unknown;contentHash?:unknown}):boolean{return identity.contentVersion===R2_BASIC_CHOICE_VERSION&&identity.contentHash===R2_BASIC_CHOICE_HASH||isR2SuitChoice(identity);}
 export function isR2ErxiangHandoff(identity:{contentVersion?:unknown;contentHash?:unknown}):boolean{return identity.contentVersion===R2_ERXIANG_HANDOFF_VERSION&&identity.contentHash===R2_ERXIANG_HANDOFF_HASH||isR2BasicChoice(identity);}
 export function isR2ToolSupply(identity:{contentVersion?:unknown;contentHash?:unknown}):boolean{return identity.contentVersion===R2_TOOL_SUPPLY_VERSION&&identity.contentHash===R2_TOOL_SUPPLY_HASH||isR2ErxiangHandoff(identity);}

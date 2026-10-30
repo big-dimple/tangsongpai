@@ -23,6 +23,7 @@ export interface HeroTargetAttachmentOptions {
  root:()=>Phaser.GameObjects.Container|undefined;target:(id:string)=>AttachmentCard|undefined;
  source:()=>HeroEffectOrigin|undefined;motion:()=>AttachmentMotion;blocked:()=>boolean;
  labelExclusions?:()=>readonly InkBox[];
+ sourceExclusions?:()=>readonly InkBox[];
  onPhase?:HeroAttachmentPhaseObserver;
 }
 type Mark={container:Phaser.GameObjects.Container;edge:Phaser.GameObjects.Graphics;label?:Phaser.GameObjects.Text;ear?:Phaser.GameObjects.Graphics;earWorld?:InkBox};
@@ -38,6 +39,7 @@ export class HeroTargetAttachment {
  private readonly marks=new Map<string,Mark>();
  private atmosphere?:Phaser.GameObjects.Graphics;
  private flight?:Phaser.GameObjects.Graphics;
+ private flightCurrent?:Phaser.GameObjects.Graphics;
  private cadence=0;
  private pulseAfter=0;
  private staticKey='';
@@ -65,7 +67,7 @@ export class HeroTargetAttachment {
   this.sourceEcho=new HeroSourceEcho(scene);
   this.liveSmoke=new HeroLiveSmoke(scene);this.refillSmoke=new HeroLiveSmoke(scene);
   this.phases=new HeroAttachmentPhases(options.onPhase);this.refillPhases=new HeroAttachmentPhases(options.onPhase);
-  this.sushi=new SushiDiscardCardPresentation(scene,options.root,id=>{const card=options.target(id);return card?{id,...card}:undefined;},()=>options.motion()!=='full',options.source,options.onPhase,()=>options.labelExclusions?.()??[]);
+  this.sushi=new SushiDiscardCardPresentation(scene,options.root,id=>{const card=options.target(id);return card?{id,...card}:undefined;},()=>options.motion()!=='full',options.source,options.onPhase,()=>options.labelExclusions?.()??[],()=>options.sourceExclusions?.()??[]);
   scene.events.on('update',this.tick);scene.events.once('shutdown',this.destroy,this);
   window.addEventListener('blur',this.blur);window.addEventListener('focus',this.focus);document.addEventListener('visibilitychange',this.visibility);
  }
@@ -90,7 +92,7 @@ export class HeroTargetAttachment {
  clear(cause='cleared'):void {this.burstAbort?.();this.burstAbort=undefined;this.refillSmoke.clear();this.refillPhases.end(cause);this.phases.end(cause);this.phaseContext=undefined;this.phaseReason=undefined;this.sushi.clear(cause);this.state.clear();this.disposeVisuals();}
  private hide():void {this.burstAbort?.();this.burstAbort=undefined;this.sushi.suspend();this.phases.suspend('hidden');this.state.suspend();if(!this.state.value)this.phases.end('hidden');this.pulseAfter=Infinity;this.disposeVisuals();}
  private removeMark(id:string):void {const mark=this.marks.get(id);mark?.edge.destroy();mark?.label?.destroy();mark?.ear?.destroy();this.marks.delete(id);}
- private disposeVisuals():void {this.particles.clear();this.liveSmoke.clear();this.sourceEcho.clear();for(const id of [...this.marks.keys()])this.removeMark(id);this.atmosphere?.destroy();this.atmosphere=undefined;this.flight?.destroy();this.flight=undefined;this.staticKey='';}
+ private disposeVisuals():void {this.particles.clear();this.liveSmoke.clear();this.sourceEcho.clear();for(const id of [...this.marks.keys()])this.removeMark(id);this.atmosphere?.destroy();this.atmosphere=undefined;this.flight?.destroy();this.flight=undefined;this.flightCurrent?.destroy();this.flightCurrent=undefined;this.staticKey='';}
  private localBounds(root:Phaser.GameObjects.Container,b:InkBox):InkBox {const m=root.getWorldTransformMatrix(),points=[[b.x,b.y],[b.x+b.width,b.y],[b.x,b.y+b.height],[b.x+b.width,b.y+b.height]].map(([x,y])=>m.applyInverse(x,y)),x=Math.min(...points.map(p=>p.x)),y=Math.min(...points.map(p=>p.y));return{x,y,width:Math.max(...points.map(p=>p.x))-x,height:Math.max(...points.map(p=>p.y))-y};}
  /** Exact Graphics ink bounds in world coordinates feed the existing scene exclusions. */
  handoffEarExclusions():InkBox[] {
@@ -175,12 +177,12 @@ export class HeroTargetAttachment {
   this.sourceEcho.sync(root,style,state.clock,layout.protectedBoxes,full&&style.key==='legacy-assist'&&!state.suppressSource&&!state.failed,(releasing?1.5:1)*(1-release),layout.portrait);
   const staticKey=JSON.stringify([boxes,style.key,state.phase,full,smoke.size,prepared]);if(releasing||this.staticKey!==staticKey){if(style.key!=='legacy-assist')this.atmosphere.clear().setData('stats',{markers:0,particles:0,presentation:'visible-surface'});else{const stats=drawHeroAtmosphere(this.atmosphere,{style,clock:state.clock,targets:boxes,protectedBoxes:layout.protectedBoxes,full:false,alpha:1-release,failed:state.failed});this.atmosphere.setData('stats',stats);}this.staticKey=staticKey;}
   this.atmosphere.setData('phase',state.phase).setData('memberIds',members.map(t=>t.id)).setData('costIds',style.key==='exile'?layout.costIds:[]).setData('protectedPrint',layout.protectedBoxes).setData('clock',state.clock).setData('cadenceHz',hz).setData('sourceKind',source?.kind);
-  const progress=(state.clock-this.pulseAfter)/420;
+  const progress=(state.clock-this.pulseAfter)/600;
   if(full&&this.state.accepted&&!state.suppressSource&&!releasing&&!state.failed&&source&&progress>=0&&progress<=1){
    this.phases.publish('source');
    if(this.destroyed||this.state.value!==state||this.phaseContext?.signal.aborted)return;
-   if(!this.flight?.active){this.flight=this.scene.add.graphics().setName('hero/target-travel');root.add(this.flight);}const stats=drawHeroOriginStream(this.flight,source.point,sourceBoxes,style,progress,layout.protectedBoxes,1-release);this.flight.setData('stats',stats).setData('progress',progress).setData('sourceKind',source.kind).setData('source',source.point).setData('targetIds',sourceMembers.map(t=>t.id));
-  }else{this.flight?.destroy();this.flight=undefined;}
+   if(!this.flight?.active){this.flight=this.scene.add.graphics().setName('hero/target-travel');root.add(this.flight);}if(!this.flightCurrent?.active){this.flightCurrent=this.scene.add.graphics().setName('hero/target-current');root.add(this.flightCurrent);}const protectedBoxes=[...layout.protectedBoxes,...(this.options.sourceExclusions?.()??[]).map(b=>this.localBounds(root,b))],stats=drawHeroOriginStream(this.flight,source.point,sourceBoxes,style,progress,protectedBoxes,1-release,this.flightCurrent);this.flight.setData('stats',stats).setData('progress',progress).setData('sourceKind',source.kind).setData('source',source.point).setData('targetIds',sourceMembers.map(t=>t.id));this.flightCurrent.setData('stats',stats).setData('progress',progress).setData('protectedBoxes',protectedBoxes);
+  }else{this.flight?.destroy();this.flight=undefined;this.flightCurrent?.destroy();this.flightCurrent=undefined;}
   if(this.state.accepted)this.phases.publish('attached');
  }
  destroy():void {if(this.destroyed)return;this.destroyed=true;this.clear('destroyed');this.scene.events.off('update',this.tick);this.scene.events.off('shutdown',this.destroy,this);window.removeEventListener('blur',this.blur);window.removeEventListener('focus',this.focus);document.removeEventListener('visibilitychange',this.visibility);}

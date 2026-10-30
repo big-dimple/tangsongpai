@@ -85,6 +85,8 @@ it('bare, five-Joker, holographic and polychrome boundaries retain invested buil
 
 it('the machine text contract declares both exact new identities and retains legacy mappings',()=>{
  expect(textSpec.currentIdentityOverrides.amo.identityScope).toMatchObject(r2HouseBase(newRunIdentity('amo')));expect(textSpec.currentIdentityOverrides.xiemu.identityScope).toMatchObject(newRunIdentity('xiemu'));
+ const previousVersion='quality-r2-xiemu-burn-v3-a11-house-v1-b03-rescue-v1-poker-encounter-v1-xiemu-revision-v1-joker-value-v1-dynamic-endless-v1-targeted-value-v1-purchase-value-v1' as const;
+ const previous=textSpec.legacyIdentityOverrides[previousVersion];expect(previous.identityScope).toEqual({contentVersion:previousVersion,contentHash:'json-fnv-v1:a9081e58cd37cb3c',role:'legacy-purchase-value-v1'});expect(previous.mechanics.goldCosts).toEqual([2,4,6,8]);expect(previous.mechanics.multipliers).toEqual([1.5,2,3,4]);
  expect(textSpec.currentIdentityOverrides.amo.mechanics.normalIntegerScoreMultiplier).toBe(3);expect(textSpec.currentIdentityOverrides.xiemu.mechanics.goldCosts).toEqual([2,4,6,8]);expect(textSpec.currentIdentityOverrides.xiemu.mechanics.multipliers).toEqual([1.5,2,3,4]);expect(textSpec.legacyIdentityOverrides['quality-r2-xiemu-burn-v3'].mechanics.goldCosts).toEqual([3,6,10]);
  expect(textSpec.legacyIdentityOverrides['quality-r2-amo-exile-v1'].mechanics.normalIntegerScoreMultiplier).toBe(4);expect(textSpec.heroes.find(h=>h.id==='xiemu')!.mechanics.goldCosts).toEqual([10,20,30]);
 });

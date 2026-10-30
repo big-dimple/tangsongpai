@@ -10,7 +10,7 @@ const copy:Record<R2ToolEnhancement,{purpose:string;summary:string;example:strin
  'heat-paper':{purpose:'计分加热度',summary:'打出并计分时，每次热度+20。',example:'例如：给一张7加上热度纸；它参与计分时，除了点数热度，还加20热度。',rules:'普通计分和额外计分每次都加20热度；留在手里不加。',aliases:[]},
  'multiplier-paper':{purpose:'计分加倍率',summary:'打出并计分时，每次倍率+2。',example:'例如：这张牌计分前倍率是3，计分时加2，变成5。',rules:'普通计分和额外计分每次都加2倍率，是加法，不是乘2；留在手里不加。',aliases:[]},
  'glass-paper':{purpose:'加倍但可能碎',summary:'打出并计分时倍率×1.5；手后有1/4概率永久破碎。',example:'例如：倍率是10时，这张牌计分会把倍率乘到15；这一手结束后，它可能碎掉，以后抽不到。',rules:'玻璃牌就是带玻璃纸增强的扑克。每次普通或额外计分都乘1.5；本手结算后，每张实际计分的原牌只判一次1/4破碎，未过关也判。重计分不会增加破碎判定次数。留在手里或打出但不参与计分时，不加倍也不判破碎。破碎是永久删牌，可以低于主动删牌的最低张数。',aliases:['玻璃牌']},
- 'voice-paper':{purpose:'留牌加倍率',summary:'留在手里，每次出牌倍率+1；打出去就不加。',example:'就像备用牌：你打出一对，把带留声纸的另一张牌留在手里，这手倍率就+1。',rules:'每次出牌，每张有效留牌加1倍率，只算一次；其他牌重计分不会让它多加。倍率是加1，不是乘倍。已打出、被用作助攻消耗或被Boss停用的牌都不算有效留牌。',aliases:['留牌加倍率','备用牌']},
+ 'voice-paper':{purpose:'留牌加倍率',summary:'留在手里，每次出牌倍率+1；打出去就不加。',example:'就像备用牌：你打出一对，把带留声纸的另一张牌留在手里，这手倍率就+1。',rules:'每次出牌，每张有效留牌加1倍率，只算一次；其他牌重计分不会让它多加。余音绕梁会在前两张有效留声纸各自加1后分别把倍率乘1.2，按手牌顺序处理。留声纸本身是加1，不是乘倍。已打出、被用作助攻消耗或被Boss停用的牌都不算有效留牌。',aliases:['留牌加倍率','备用牌']},
  'gold-paper':{purpose:'留牌过关拿钱',summary:'过关那手留在手里，每张+1金；每场最多5金。',example:'例如：过关时还留着两张有效金纸牌，额外拿2金；没过关的出牌不会发这笔钱。',rules:'只读取实际过关那手的有效留牌，每张给1金，每场总共最多5金。打出、助攻消耗或停用的牌不算；之后补进手里的牌不追补这笔奖励。',aliases:['金牌']},
  'encore-paper':{purpose:'同一张再计分',summary:'打出并计分时，这张牌再计分1次。',example:'例如：这张7原本只计一次点数，现在再计一次；额外计分也会触发它的有效额外加成和相应唐宋牌能力。',rules:'第一次有效计分后，再计分1次；额外那次不会又触发重计纸，不能无限循环。与唐宋牌的额外计分共用每张最多4次上限。留在手里不触发。',aliases:['重计牌']},
  'lucky-paper':{purpose:'计分抽小奖',summary:'每次计分：1/5概率倍率+4，1/15概率+10金；每手最多20金。',example:'像两次独立抽奖：倍率奖和金币奖分别抽，可以都中、只中一个或都不中。',rules:'每次普通或额外计分，两项独立判定，先倍率后金币。金币奖每手最多20金，达到上限仍判定；金币不增加热度或倍率。留在手里不抽奖。',aliases:[]},
@@ -33,7 +33,7 @@ export function enhancementToolAcquisition(id:string,identity:R2ContentIdentity,
  if(!r2ToolSupported(id))return '当前版本未开放这件工具，无法通过它获得增强。';
  if(run&&!r2ToolAllowed(run,id))return '当前挑战禁止获取和赋予增强，这件工具在本局不可获得或使用。';
  const chooser=isR2BasicChoice(identity),fixed=chooser&&r2BasicChoiceIds(identity).includes(id);
- return '商店 → 道具 → '+(fixed?'基础自选，或出现同名商品时的本店现货':'本店现货')+'，购买“'+cardDefinitionName(tool)+'”。'+(fixed?'基础自选每店共选1件；仍须有合法可改目标。':'这是随机现货'+(chooser?'，不在基础自选':'')+'；每店不保证出现，还须有合法可改目标。')+'\n买后从库存选“'+cardDefinitionName(tool)+'”，选择'+(tool.target.kind==='cards'?(tool.target.minimum===tool.target.maximum?tool.target.maximum:tool.target.minimum+'–'+tool.target.maximum):'')+'张扑克并确认使用。商店可选有效牌组，待出牌时只选当前手牌。成功后消耗1件工具，使用不另付金币；覆盖旧增强会永久失去旧效果。';
+ return (fixed?'商店 → 自选做牌（基础自选），或商店 → 道具 → 本店现货':'商店 → 道具 → 本店现货')+'，购买“'+cardDefinitionName(tool)+'”。'+(fixed?'自选做牌与升级、改牌、染色共用每店1次；仍须有合法可改目标。':'这是随机现货'+(chooser?'，不在基础自选':'')+'；每店不保证出现，还须有合法可改目标。')+'\n买后从库存选“'+cardDefinitionName(tool)+'”，选择'+(tool.target.kind==='cards'?(tool.target.minimum===tool.target.maximum?tool.target.maximum:tool.target.minimum+'–'+tool.target.maximum):'')+'张扑克并确认使用。商店可选有效牌组，待出牌时只选当前手牌。成功后消耗1件工具，使用不另付金币；覆盖旧增强会永久失去旧效果。';
 }
 
 export function enhancementAcquisition(id:R2ToolEnhancement,identity:R2ContentIdentity,run?:R2RunState):string {
