@@ -8,7 +8,7 @@
 - 建议使用 Node.js 22，依赖使用 `npm ci` 和锁文件安装。
 - 游戏是纯静态 H5；核心运行不需要后端、Blender 或素材生成工具。
 
-开发侧按改动运行适用检查，提交和推送以当前任务授权为准。本机部署侧每分钟检查 main，在独立工作树中运行 CI、构建并发布到 Cloudflare Pages；GitHub Actions 不再是发布依赖。提交或推送不代表已经部署。
+开发侧默认在推送 main 前，在本地电脑或独立远端开发电脑完成完整 CI，按改动补跑专项；所有模型使用同一要求，用户明确指示例外时如实报告。提交和推送以当前任务授权为准。部署服务器每分钟检查 main，在独立工作树中仅做 Vite 构建并发布到 Cloudflare Pages；它不执行完整 CI 或类型检查，GitHub Actions 不参与发布。提交或推送不代表已经部署。
 
 ```bash
 npm run dev             # 开发服务器
@@ -163,15 +163,30 @@ tools/          离线素材工具
 - `domain`：`npm test` 与 `npm run verify:content`。
 - `browser`：`npm run build` 与 `npm run verify:smoke`。
 
-`npm run verify:ci -- --scope=domain|browser|all` 可执行对应组合。专项恢复、布局、故障和素材检查只在相关改动时运行。测试使用的 JSON／压缩夹具属于代码输入，不为追求目录整洁而删除。
+推送 main 前，在开发者本地或独立的远端开发电脑安装锁定依赖和三种 Playwright 浏览器，再运行完整 CI。以下分别为 Bash 和 PowerShell 命令：
+
+```bash
+npm ci
+npx playwright install chromium firefox webkit
+SMOKE_BROWSERS=chromium,firefox,webkit npm run verify:ci -- --scope=all
+```
+
+```powershell
+npm ci
+npx playwright install chromium firefox webkit
+$env:SMOKE_BROWSERS = 'chromium,firefox,webkit'
+npm run verify:ci -- --scope=all
+```
+
+`npm run verify:ci -- --scope=domain|browser|all` 也可执行对应组合；默认只选 Chromium，完整三浏览器检查须显式设置 `SMOKE_BROWSERS`。专项恢复、布局、故障和素材检查按相关改动另跑。检查未运行或失败时明确报告，不以本机发布成功代替 CI 结果。测试使用的 JSON／压缩夹具属于代码输入，不为追求目录整洁而删除。
 
 手柄、场景输入、选择卡片或对应 harness 发生变更时，按适用范围另跑 `test:gamepad:browser`；专项结果与失败截图保存在 `shots/gamepad/` 中。
 
 牌面遮挡检查测量包含父容器变换的实际四边形相交面积；旋转后的外接矩形包含牌外空白，不能代替真实遮挡。
 
-本机 crontab 每分钟执行 `/usr/local/bin/tangsongpai-autodeploy.sh`；仓库源码是 `scripts/tangsongpai-autodeploy.sh`，修改后须单独安装到执行路径。脚本以 flock 防止重叠，fetch `origin/main` 后等待 5 分钟无新提交，持续提交时最多等待 10 分钟，再在临时 detached worktree 中安装锁定依赖并依次运行 `verify:ci` 的 domain 和 browser 门禁：单元测试、内容校验、类型检查、生产构建，以及 Chromium／Firefox／WebKit 的桌面和手机冒烟测试；手柄相关文件变更时另跑手柄浏览器检查。同一提交和运行环境在 24 小时内重试时，可复用已通过并验证过报告的 domain 结果，browser 门禁仍完整重跑；`--force` 重验全部门禁。本机 Vitest 单 worker 运行，Node 堆上限设为 1536 MiB；Playwright 浏览器版本按锁文件安装，浏览器系统依赖需预先安装。各阶段有执行时限（domain、browser 分别最多 30 分钟），失败不会上传；同一版本连续失败按 10、20、40、60 分钟间隔重试，新版本独立处理。冒烟测试把构建放在独立进程，浏览器启动前释放构建内存，并继续验证真实游戏及存档恢复。
+部署服务器的 crontab 每分钟执行 `/usr/local/bin/tangsongpai-autodeploy.sh`；仓库源码是 `scripts/tangsongpai-autodeploy.sh`，修改后须单独安装到执行路径。脚本以 flock 防止重叠，fetch `origin/main` 后等待 5 分钟无新提交，持续提交时最多等待 10 分钟，再在临时 detached worktree 中执行 `npm ci` 和 `npx vite build`。它不执行完整 CI、类型检查或浏览器测试；这些检查在开发电脑推送前完成。Node 堆上限为 1536 MiB，构建尽力降低 CPU 与磁盘调度优先级。各阶段有执行时限；构建失败不会上传，同一版本连续失败按 10、20、40、60 分钟间隔重试，新版本独立处理，`--force` 可立即重试构建。
 
-构建产物必须标识目标完整 SHA 和 clean 状态，上传前重新 fetch；若 main 已前进但仍包含该提交，完成本次发布，随后合并处理新提交；若 main 改写且不再包含该提交，则不上传。上传后只有公网 `https://pai.hp666.cc/build-info.json` 返回该 clean revision 才更新 `/var/lib/tangsongpai-deploy/deployed-revision`；传播延迟时记录待确认版本并在后续轮询确认。上传成功后 `scripts/tangsongpai-cache-cloudflare.py`（安装为 `/usr/local/bin/tangsongpai-cache-cloudflare.py`）登记素材哈希，后续上传可复用未变文件；缓存登记失败不影响已有上传，但下次可能重传。日志在 `/var/log/tangsongpai-autodeploy.log`，最近一次 CI 报告在 `/var/lib/tangsongpai-deploy/reports/latest/`。临时工作树删除，不重置或覆盖开发工作区；线上版本、提交状态和 CI 结果分别核对。
+构建产物必须标识目标完整 SHA 和 clean 状态，上传前重新 fetch；若 main 已前进但仍包含该提交，完成本次发布，随后合并处理新提交；若 main 改写且不再包含该提交，则不上传。上传后只有公网 `https://pai.hp666.cc/build-info.json` 返回该 clean revision 才更新 `/var/lib/tangsongpai-deploy/deployed-revision`；传播延迟时记录待确认版本并在后续轮询确认。上传成功后 `scripts/tangsongpai-cache-cloudflare.py`（安装为 `/usr/local/bin/tangsongpai-cache-cloudflare.py`）登记素材哈希，后续上传可复用未变文件；缓存登记失败不影响已有上传，但下次可能重传。日志在 `/var/log/tangsongpai-autodeploy.log`；`/var/lib/tangsongpai-deploy/reports/latest/` 只可能是旧 CI 记录，不能代表当前发布已通过 CI。临时工作树删除，不重置或覆盖开发工作区；线上版本、提交状态和 CI 结果分别核对。
 
 GitHub 仓库为 `big-dimple/tangsongpai`，Cloudflare Pages 项目为 `dachoupai`。三个 GitHub 工作流已禁用，不是本机发布门禁；自动检查不代表真人、美术、设备或平衡验收。检查失败时查看日志并修复，不通过放宽检查或伪造结果交付。
 

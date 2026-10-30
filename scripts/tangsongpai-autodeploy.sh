@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
-# Cron polls main every minute; CI and the Pages upload use an isolated checkout.
+# Cron polls main every minute; Vite and the Pages upload use an isolated checkout.
 set -euo pipefail
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 export PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
-export SMOKE_BROWSERS=chromium,firefox,webkit
-export VITEST_MAX_WORKERS=1
 export NODE_OPTIONS="--max-old-space-size=1536"
 export GIT_TERMINAL_PROMPT=0
 
@@ -91,9 +89,9 @@ record_success() {
     printf '%s\n' "$REMOTE_HASH" >"$STATE_DIR/deployed-revision.tmp"
     mv "$STATE_DIR/deployed-revision.tmp" "$STATE_DIR/deployed-revision"
     rm -f "$STATE_DIR/pending-revision" "$STATE_DIR/failed-revision" "$STATE_DIR/observed-revision"
-    log "Successfully deployed $REMOTE_HASH to Cloudflare Pages."
+    log "Successfully deployed $REMOTE_HASH to Cloudflare Pages (Vite build only; CI not run)."
 }
-# Only an upload that passed this machine's CI may be finalized on a later poll.
+# Only an upload previously started by this script may be finalized on a later poll.
 if [ "${1:-}" != --force ] && [ "$(cat "$STATE_DIR/pending-revision" 2>/dev/null || true)" = "$REMOTE_HASH" ] && verify_public >/dev/null 2>&1; then
     record_success
     exit 0
@@ -130,7 +128,7 @@ if [ "${1:-}" != --force ]; then
     fi
 fi
 
-log "Checking $REMOTE_HASH locally (last deployed: ${DEPLOYED_HASH:-unknown})."
+log "Building $REMOTE_HASH locally with Vite (last deployed: ${DEPLOYED_HASH:-unknown}; CI not run)."
 # Let interactive work take priority while the server builds and tests.
 renice 10 -p "$$" >/dev/null 2>&1 || true
 ionice -c 2 -n 7 -p "$$" >/dev/null 2>&1 || true
@@ -138,74 +136,7 @@ TEMP_DIR=$(mktemp -d /tmp/tangsongpai-deploy.XXXXXX)
 timeout --kill-after=30s 3m git worktree add --detach "$TEMP_DIR/source" "$REMOTE_HASH"
 cd "$TEMP_DIR/source"
 timeout --kill-after=30s 10m npm ci --prefer-offline --no-audit --no-fund
-timeout --kill-after=30s 20m npx playwright install chromium firefox webkit
-# Keep a verified domain result for this exact revision and runtime. A browser
-# failure must not make the machine repeat thousands of already-passed tests.
-CACHE_KEY=$( { node --version; npm --version; uname -srm; sha256sum "$0"; } | sha256sum | cut -d' ' -f1 )
-domain_cached=0
-if [ "${1:-}" != --force ] && [ -f "$STATE_DIR/domain-ci.json" ] && python3 - "$STATE_DIR/domain-ci.json" "$REMOTE_HASH" "$CACHE_KEY" <<'PY'
-import json, sys, time
-from pathlib import Path
-try:
-    cache = json.loads(Path(sys.argv[1]).read_text())
-    report = cache['report']
-    steps = report['steps']
-    valid = (cache['revision'] == sys.argv[2] and cache['runtime'] == sys.argv[3]
-        and 0 <= time.time() - cache['completedAt'] <= 86400
-        and report['scope'] == 'domain' and report['testedCommit'] == sys.argv[2]
-        and report['status'] == 'PASS' and report['exitCode'] == 0
-        and report['before'] == report['after']
-        and [step['name'] for step in steps] == ['test', 'verify:content']
-        and all(step['status'] == 'PASS' and step['childExitCode'] == 0 for step in steps))
-except (OSError, ValueError, KeyError, TypeError):
-    valid = False
-raise SystemExit(0 if valid else 1)
-PY
-then
-    domain_cached=1
-    log "Reusing passed domain checks for $REMOTE_HASH."
-    mkdir -p shots/ci
-    python3 - "$STATE_DIR/domain-ci.json" <<'PY'
-import json, sys
-from pathlib import Path
-cache = json.loads(Path(sys.argv[1]).read_text())
-Path('shots/ci/domain.json').write_text(json.dumps(cache['report'], indent=2) + '\n')
-PY
-fi
-if [ "$domain_cached" = 0 ]; then
-    timeout --kill-after=30s 30m npm run verify:ci -- --scope=domain
-    python3 - "$STATE_DIR/domain-ci.json" "$REMOTE_HASH" "$CACHE_KEY" <<'PY'
-import json, os, sys, time
-from pathlib import Path
-report = json.loads(Path('shots/ci/domain.json').read_text())
-steps = report['steps']
-if not (report['scope'] == 'domain' and report['testedCommit'] == sys.argv[2]
-        and report['status'] == 'PASS' and report['exitCode'] == 0
-        and report['before'] == report['after']
-        and [step['name'] for step in steps] == ['test', 'verify:content']
-        and all(step['status'] == 'PASS' and step['childExitCode'] == 0 for step in steps)):
-    raise SystemExit('Domain CI report does not prove a clean successful run')
-path = Path(sys.argv[1])
-temp = path.with_suffix('.tmp')
-temp.write_text(json.dumps({'revision': sys.argv[2], 'runtime': sys.argv[3], 'completedAt': time.time(), 'report': report}) + '\n')
-os.replace(temp, path)
-PY
-fi
-timeout --kill-after=30s 30m npm run verify:ci -- --scope=browser
-
-# Preserve the prior CI's change-sensitive controller check.
-run_controller=0
-if [ -z "$DEPLOYED_HASH" ] || ! git cat-file -e "$DEPLOYED_HASH^{commit}" 2>/dev/null; then
-    run_controller=1
-else
-    changed_files=$(git diff --name-only "$DEPLOYED_HASH" "$REMOTE_HASH")
-    if grep -Eq '^(src/(game/(GamepadNavigation|ControllerFocus|ControllerScene|SceneView|WholeActionSurface|GameScene|ShopScene|CharacterSelectScene|RunMenu|IntermissionScroll|DetailDialog|BuildJourneyDialog|ConsumableDialog)|platform/GamepadInput)|src/main\.ts|harness/(gamepad|ui|stage-entry)\.mjs|tests/(gamepad|controller|whole-action)|\.github/workflows/ci\.yml)' <<<"$changed_files"; then
-        run_controller=1
-    fi
-fi
-if [ "$run_controller" = 1 ]; then
-    timeout --kill-after=30s 15m npm run test:gamepad:browser
-fi
+timeout --kill-after=30s 10m npx vite build
 python3 - dist/build-info.json "$REMOTE_HASH" <<'PY'
 import json, sys
 from pathlib import Path
@@ -218,10 +149,10 @@ if not (path.parent / 'index.html').is_file():
 print('Verified clean build revision:', info['revision'])
 PY
 if [ -n "$(git status --porcelain)" ]; then
-    log 'CI changed the checkout; refusing to publish.'
+    log 'The checkout changed during the build; refusing to publish.'
     exit 1
 fi
-# Finish this checked version even if more commits arrive during CI. A rewritten
+# Finish this build even if more commits arrive during it. A rewritten
 # main must still contain it; otherwise it is no longer a valid release target.
 timeout --kill-after=30s 2m git -C "$PROJECT_DIR" fetch origin main --quiet
 if ! git -C "$PROJECT_DIR" merge-base --is-ancestor "$REMOTE_HASH" origin/main; then
