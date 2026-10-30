@@ -8,7 +8,7 @@
 - 建议使用 Node.js 22，依赖使用 `npm ci` 和锁文件安装。
 - 游戏是纯静态 H5；核心运行不需要后端、Blender 或素材生成工具。
 
-开发侧默认在推送 main 前，在本地电脑或独立远端开发电脑完成完整 CI，按改动补跑专项；所有模型使用同一要求，用户明确指示例外时如实报告。提交和推送以当前任务授权为准。部署服务器每分钟检查 main，在独立工作树中仅做 Vite 构建并发布到 Cloudflare Pages；它不执行完整 CI 或类型检查，GitHub Actions 不参与发布。提交或推送不代表已经部署。
+开发侧默认在推送 main 前，在 Dot 远端开发电脑或本机完成完整 CI 与唯一生产构建，按改动补跑专项；所有模型使用同一要求，用户明确指示例外时如实报告。没有 Dot 的 AI 须在可用的本地开发电脑执行相同 CI 与构建并按同一契约交付；没有可用环境时报告阻塞，不能省略检查或让新加坡生产机代跑。提交和推送以当前任务授权为准。目标分工是开发侧交付已校验的生产产物，新加坡服务器仅取件、校验并发布；新交接与部署脚本尚待接入，旧脚本仍会在服务器构建。GitHub Actions 不参与发布。提交、产物交付与部署是不同状态。
 
 ```bash
 npm run dev             # 开发服务器
@@ -163,7 +163,7 @@ tools/          离线素材工具
 - `domain`：`npm test` 与 `npm run verify:content`。
 - `browser`：`npm run build` 与 `npm run verify:smoke`。
 
-推送 main 前，在 Dot 远端开发电脑或开发者本机执行完整 CI。`npm ci` 按锁文件安装依赖；`verify:ci` 顺序运行完整单元测试、内容校验、类型检查与生产构建、Chromium 桌面和手机冒烟。优先使用已安装的系统 Chrome／Chromium，通过项目支持的路径配置；以下分别为 Bash 和 PowerShell 示例，路径按实际机器调整：
+推送 main 前，在 Dot 远端开发电脑或开发者本机执行完整 CI。`npm ci` 按锁文件安装依赖；`verify:ci` 顺序运行完整单元测试、内容校验、类型检查与唯一生产构建、Chromium 桌面和手机冒烟。冒烟脚本另建供测试使用的 e2e 预览，不是交付的生产包；生产产物为 `dist/`。优先使用已安装的系统 Chrome／Chromium，通过项目支持的路径配置；以下分别为 Bash 和 PowerShell 示例，路径按实际机器调整：
 
 ```bash
 npm ci
@@ -183,11 +183,14 @@ npm run verify:ci -- --scope=all
 
 牌面遮挡检查测量包含父容器变换的实际四边形相交面积；旋转后的外接矩形包含牌外空白，不能代替真实遮挡。
 
-新加坡部署侧由用户另行改造和安装脚本；交接目标是读取同一个已推送 main SHA、按锁文件安装依赖、构建、验证版本并发布。开发侧 CI 结果与服务器发布状态分别报告；服务器不依赖 GitHub Actions，也不自动执行完整 CI 或类型检查。当前仓库脚本 `scripts/tangsongpai-autodeploy.sh` 使用独立工作树运行 `npm ci` 和 `npx vite build`，但提交仓库不会自动更新服务器 `/usr/local/bin/tangsongpai-autodeploy.sh`。建议部署侧设计健康检查与失败时保留旧版；此处不宣称它们已实现。
+产物交接契约（**待接入，不是当前自动功能**）：
 
-当前仓库脚本以 flock 防止重叠，fetch `origin/main` 后等待 5 分钟无新提交，持续提交时最多等待 10 分钟。Node 堆上限为 1536 MiB，构建尽力降低 CPU 与磁盘调度优先级。各阶段有执行时限；构建失败不会上传，同一版本连续失败按 10、20、40、60 分钟间隔重试，新版本独立处理，`--force` 可立即重试构建。
+1. 开发侧对准备推送的干净提交完成上述 CI，核对 `dist/index.html` 和 `dist/build-info.json` 中的完整 commit SHA、`sourceStatus: clean`、`modified: false`，把这份生产 `dist/` 打成压缩归档并计算 SHA256。归档解开后根目录应包含这两个文件；不把 `dist/` 提交到 main。
+2. 推荐由后续改造接入 GitHub Release 资产：以完整 commit SHA 对应的版本或标签定位该提交，提供 `dist.tar.gz`、其 SHA256 校验文件与 manifest。manifest 至少记录完整源码 SHA、归档名和 SHA256、生产构建的版本信息以及该 SHA 的 CI 结果。使用已授权且可验证来源的渠道；校验和只验证一致性，不能单独证明来源可信。所有资产上传并核对成功后才发布完成标记（如发布完整 Release）；缺件、上传失败或未完成发布时，不能视为产物已交付。仓库当前没有 Release，尚未验证上传权限或自动取件能力；这一方案须由后续改造实现，不依赖 GitHub Actions artifact。
+3. 新加坡部署程序应只获取已完整发布且与目标 main 提交对应的产物，核验来源、manifest、SHA256、归档内 build-info 的 SHA 与 clean 状态，并安全解压至独立版本目录；拒绝不安全路径或不完整内容。验证通过后原子切换，执行健康检查；失败时保留或恢复上一可用版本。不得因 main 提前更新就部署缺失或未完成交付的包，也不得无意回退到较旧版本。服务器不执行 `npm ci`、构建或测试。
+4. 分别记录并报告代码推送 SHA、CI 状态、产物交付状态和实际部署 SHA；只有产物成功上传并发布才算交付，main push 本身不是可部署产物。具体存储访问与部署系统的原子切换、健康检查和回滚由新加坡侧实现并验证，不在本文假称已具备。
 
-构建产物必须标识目标完整 SHA 和 clean 状态，上传前重新 fetch；若 main 已前进但仍包含该提交，完成本次发布，随后合并处理新提交；若 main 改写且不再包含该提交，则不上传。上传后只有公网 `https://pai.hp666.cc/build-info.json` 返回该 clean revision 才更新 `/var/lib/tangsongpai-deploy/deployed-revision`；传播延迟时记录待确认版本并在后续轮询确认。上传成功后 `scripts/tangsongpai-cache-cloudflare.py`（安装为 `/usr/local/bin/tangsongpai-cache-cloudflare.py`）登记素材哈希，后续上传可复用未变文件；缓存登记失败不影响已有上传，但下次可能重传。日志在 `/var/log/tangsongpai-autodeploy.log`；`/var/lib/tangsongpai-deploy/reports/latest/` 只可能是旧 CI 记录，不能代表当前发布已通过 CI。临时工作树删除，不重置或覆盖开发工作区；线上版本、提交状态和 CI 结果分别核对。
+现状：仓库中的 `scripts/tangsongpai-autodeploy.sh` 仍在服务器执行 `npm ci` 和 `npx vite build`，也尚未实现上述产物接收契约；仓库脚本变更不会自动更新服务器 `/usr/local/bin/tangsongpai-autodeploy.sh`。在用户的另一侧完成改造和安装之前，不能把目标流程描述为已生效。旧日志 `/var/log/tangsongpai-autodeploy.log` 和 `/var/lib/tangsongpai-deploy/reports/latest/` 不代表新流程或当前 CI 已通过。
 
 GitHub 仓库为 `big-dimple/tangsongpai`，Cloudflare Pages 项目为 `dachoupai`。三个 GitHub 工作流已禁用，不是本机发布门禁；自动检查不代表真人、美术、设备或平衡验收。检查失败时查看日志并修复，不通过放宽检查或伪造结果交付。
 

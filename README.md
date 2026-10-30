@@ -8,7 +8,7 @@
 
 建议使用 Node.js 22 和 npm：
 
-以下命令供开发机使用；本机 `/var/www/tangsongpai` 为低配服务器，默认由 GitHub CI 构建与测试，详见 [ENGINEERING](ENGINEERING.md#8-测试ci-与发布)。
+以下命令供开发机使用；目标流程由 Dot 或其他可用开发电脑完成 CI 和生产构建，新加坡服务器接收并发布产物，不依赖 GitHub Actions。产物交接尚待接入，详见 [ENGINEERING](ENGINEERING.md#8-测试ci-与发布)。
 
 ```bash
 npm ci
