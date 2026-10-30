@@ -20,7 +20,7 @@ npm run preview         # 预览构建产物
 npm run verify          # 类型检查、测试、构建
 ```
 
-浏览器、恢复、布局、素材等专项命令见 `package.json`。按实际改动选择检查，不必为纯文档修改运行完整浏览器矩阵。
+浏览器、恢复、布局、素材等专项命令见 `package.json`。专项检查按实际改动选择；用户明确要求例外时如实报告未执行或失败的检查。
 
 手柄专项为 `npm run test:gamepad:browser`：注入浏览器设备快照，经真实导航与按钮完成选角、商店、选牌与出牌，并检查弹窗隔离、长按、重连与整块点击。输出位于 `shots/gamepad/`，不代替实体手柄验收；输入边沿、摇杆漂移、焦点几何和点击转发由常规 Vitest 用例覆盖。
 
@@ -163,28 +163,29 @@ tools/          离线素材工具
 - `domain`：`npm test` 与 `npm run verify:content`。
 - `browser`：`npm run build` 与 `npm run verify:smoke`。
 
-推送 main 前，在开发者本地或独立的远端开发电脑安装锁定依赖和三种 Playwright 浏览器，再运行完整 CI。以下分别为 Bash 和 PowerShell 命令：
+推送 main 前，在 Dot 远端开发电脑或开发者本机执行完整 CI。`npm ci` 按锁文件安装依赖；`verify:ci` 顺序运行完整单元测试、内容校验、类型检查与生产构建、Chromium 桌面和手机冒烟。优先使用已安装的系统 Chrome／Chromium，通过项目支持的路径配置；以下分别为 Bash 和 PowerShell 示例，路径按实际机器调整：
 
 ```bash
 npm ci
-npx playwright install chromium firefox webkit
-SMOKE_BROWSERS=chromium,firefox,webkit npm run verify:ci -- --scope=all
+SMOKE_BROWSERS=chromium SMOKE_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run verify:ci -- --scope=all
 ```
 
 ```powershell
 npm ci
-npx playwright install chromium firefox webkit
-$env:SMOKE_BROWSERS = 'chromium,firefox,webkit'
+$env:SMOKE_BROWSERS = 'chromium'
+$env:SMOKE_CHROMIUM_EXECUTABLE_PATH = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
 npm run verify:ci -- --scope=all
 ```
 
-`npm run verify:ci -- --scope=domain|browser|all` 也可执行对应组合；默认只选 Chromium，完整三浏览器检查须显式设置 `SMOKE_BROWSERS`。专项恢复、布局、故障和素材检查按相关改动另跑。检查未运行或失败时明确报告，不以本机发布成功代替 CI 结果。测试使用的 JSON／压缩夹具属于代码输入，不为追求目录整洁而删除。
+`npm run verify:ci -- --scope=domain|browser|all` 也可执行对应组合；`all` 默认只选 Chromium，上述配置明确指定系统浏览器。也可使用已安装的 Playwright Chromium。专项恢复、布局、故障和素材检查按相关改动另跑。检查全部通过后核对 `shots/ci/all.json` 中的提交 SHA、各步骤状态和退出码，以及前后源码、索引和 HEAD 一致；确认检查覆盖即将推送的提交，才推送 main。检查未运行或失败时明确报告，不以发布成功代替 CI 结果。测试使用的 JSON／压缩夹具属于代码输入，不为追求目录整洁而删除。
 
-手柄、场景输入、选择卡片或对应 harness 发生变更时，按适用范围另跑 `test:gamepad:browser`；专项结果与失败截图保存在 `shots/gamepad/` 中。
+手柄、场景输入、选择卡片或对应 harness 发生变更时，按适用范围另跑 `test:gamepad:browser`；该脚本的系统浏览器路径变量为 `CHROMIUM_PATH`，与冒烟脚本的 `SMOKE_CHROMIUM_EXECUTABLE_PATH` 不同。专项结果与失败截图保存在 `shots/gamepad/` 中，同样核对提交 SHA、结果和退出码。
 
 牌面遮挡检查测量包含父容器变换的实际四边形相交面积；旋转后的外接矩形包含牌外空白，不能代替真实遮挡。
 
-部署服务器的 crontab 每分钟执行 `/usr/local/bin/tangsongpai-autodeploy.sh`；仓库源码是 `scripts/tangsongpai-autodeploy.sh`，修改后须单独安装到执行路径。脚本以 flock 防止重叠，fetch `origin/main` 后等待 5 分钟无新提交，持续提交时最多等待 10 分钟，再在临时 detached worktree 中执行 `npm ci` 和 `npx vite build`。它不执行完整 CI、类型检查或浏览器测试；这些检查在开发电脑推送前完成。Node 堆上限为 1536 MiB，构建尽力降低 CPU 与磁盘调度优先级。各阶段有执行时限；构建失败不会上传，同一版本连续失败按 10、20、40、60 分钟间隔重试，新版本独立处理，`--force` 可立即重试构建。
+新加坡部署侧由用户另行改造和安装脚本；交接目标是读取同一个已推送 main SHA、按锁文件安装依赖、构建、验证版本并发布。开发侧 CI 结果与服务器发布状态分别报告；服务器不依赖 GitHub Actions，也不自动执行完整 CI 或类型检查。当前仓库脚本 `scripts/tangsongpai-autodeploy.sh` 使用独立工作树运行 `npm ci` 和 `npx vite build`，但提交仓库不会自动更新服务器 `/usr/local/bin/tangsongpai-autodeploy.sh`。建议部署侧设计健康检查与失败时保留旧版；此处不宣称它们已实现。
+
+当前仓库脚本以 flock 防止重叠，fetch `origin/main` 后等待 5 分钟无新提交，持续提交时最多等待 10 分钟。Node 堆上限为 1536 MiB，构建尽力降低 CPU 与磁盘调度优先级。各阶段有执行时限；构建失败不会上传，同一版本连续失败按 10、20、40、60 分钟间隔重试，新版本独立处理，`--force` 可立即重试构建。
 
 构建产物必须标识目标完整 SHA 和 clean 状态，上传前重新 fetch；若 main 已前进但仍包含该提交，完成本次发布，随后合并处理新提交；若 main 改写且不再包含该提交，则不上传。上传后只有公网 `https://pai.hp666.cc/build-info.json` 返回该 clean revision 才更新 `/var/lib/tangsongpai-deploy/deployed-revision`；传播延迟时记录待确认版本并在后续轮询确认。上传成功后 `scripts/tangsongpai-cache-cloudflare.py`（安装为 `/usr/local/bin/tangsongpai-cache-cloudflare.py`）登记素材哈希，后续上传可复用未变文件；缓存登记失败不影响已有上传，但下次可能重传。日志在 `/var/log/tangsongpai-autodeploy.log`；`/var/lib/tangsongpai-deploy/reports/latest/` 只可能是旧 CI 记录，不能代表当前发布已通过 CI。临时工作树删除，不重置或覆盖开发工作区；线上版本、提交状态和 CI 结果分别核对。
 
