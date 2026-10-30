@@ -4,7 +4,7 @@ import {execFileSync} from 'node:child_process';
 import {access,mkdir,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {chromium,firefox,webkit} from 'playwright';
-import {build,preview} from 'vite';
+import {preview} from 'vite';
 import {waitScene,tapUI,point,tapMenuAction,confirmHeroRoute,enterOpeningShop,toggleRunMenu,openRunMenu,openMenuSection} from './ui.mjs';
 import {armResourcePulse,waitResourcePulse} from './resource-pulse.mjs';
 import {currentNewRunIdentity} from './fixtures/current-new-run-identity.mjs';
@@ -54,7 +54,11 @@ const dom=async(page,name,touch)=>{const b=page.getByRole('button',{name,exact:t
 await mkdir('shots',{recursive:true});
 if(process.env.SMOKE_REUSE_BUILD==='1'){
   await access(path.join(outDir,'index.html'));report.build='existing shots/smoke-build (SMOKE_REUSE_BUILD=1)';
-}else await build({mode:'e2e',build:{outDir,emptyOutDir:true},logLevel:'warn'});
+}else{
+  // Build in a child so its TypeScript/Vite heap and esbuild service are
+  // released before the browser engines run on the small deployment host.
+  execFileSync(process.execPath,[path.join(root,'node_modules/vite/bin/vite.js'),'build','--mode','e2e','--outDir',outDir,'--emptyOutDir','--logLevel','warn'],{cwd:root,stdio:'inherit'});
+}
 const server=await preview({build:{outDir},preview:{port,strictPort:true,host:'127.0.0.1'}}),base=`http://127.0.0.1:${port}/?harness=1&seed=p00-core-ui`;
 let browser,activePage;
 try {
@@ -196,7 +200,7 @@ try {
     const playFeedback=await waitResourcePulse(page,'play');
     await ready(page);const played=await state(page);
     assert.equal(played.stage.handsLeft,discarded.stage.handsLeft-1);assert.equal(played.stage.discardsLeft,discarded.stage.discardsLeft);assert.ok(BigInt(played.stage.heat)>BigInt(discarded.stage.heat));assert.ok(played.lastTrace);
-    await page.reload();await waitScene(page,'title');assert.deepEqual(await state(page),played,'refresh restores the full determined result');
+    await page.reload();await waitScene(page,'title');await waitPersistentStorage(page,touch);assert.deepEqual(await state(page),played,'refresh restores the full determined result');
     await tapUI(page,'title','action/title-continue',touch);await waitScene(page,'game');await ready(page);assert.deepEqual(await state(page),played,'continue never re-scores');
     if(touch){
       const held=played.handOrder[0];await tapUI(page,'game','card/'+held,true);
@@ -313,7 +317,7 @@ try {
         assert.equal(discarded.stage.handsLeft,4);assert.equal(discarded.stage.discardsLeft,2);assert.equal(discarded.handOrder.length,9);assert.ok(discarded.discardPile.includes(ninth));
         const held=discarded.handOrder[0];await revealCard(page,held);await tapUI(page,'game','card/'+held,true);await page.waitForFunction(id=>window.__harness.game.scene.getScene('game').selectedIds.has(id),held);await tapUI(page,'game','action/play',true);await next(page,discarded.commandSeq);await ready(page);
         const played=await state(page);assert.equal(played.stage.handsLeft,3);assert.equal(played.handOrder.length,9);assert.ok(BigInt(played.stage.heat)>0n);
-        await page.reload();await waitScene(page,'title');assert.deepEqual(await state(page),played);await tapUI(page,'title','action/title-continue',true);await waitScene(page,'game');await ready(page);assert.deepEqual(await state(page),played);
+        await page.reload();await waitScene(page,'title');await waitPersistentStorage(page,true);assert.deepEqual(await state(page),played);await tapUI(page,'title','action/title-continue',true);await waitScene(page,'game');await ready(page);assert.deepEqual(await state(page),played);
         const restoredNinth=played.handOrder[8];await revealCard(page,restoredNinth);await tapUI(page,'game','card/'+restoredNinth,true);await page.waitForFunction(id=>window.__harness.game.scene.getScene('game').selectedIds.has(id),restoredNinth);
         report.checks.push({engine,browserVersion:browser.version(),profile:fixture.profile,status:'PASS',seed:fixture.seed,handLimit:9,viewport,deviceScaleFactor:3,covered:['natural-6-gold-buy','nine-visible-card-models','ninth-card-touch','sort-keeps-selection','discard-refills-nine','play-refills-nine','reload-preserves-complete-state','restored-ninth-card-touch'],physicalDevice:'NOT_RUN'});
       }else{
@@ -340,7 +344,7 @@ try {
         assert.deepEqual(events.map(e=>e.operation),['rescue-hand','destroy-joker']);assert.equal(events[0].resourceBefore,0);assert.equal(events[0].resourceAfter,1);
         const observation=await page.evaluate(()=>{clearInterval(window.__c00RescueTimer);return window.__c00RescueObservation;});for(const event of events)assert.ok(observation.some(o=>o.id===event.eventId),'each rescue source has an actual ordered impact');
         if(saveScreens)await page.screenshot({path:'shots/c00-last-hand-rescue.png'});
-        await page.reload();await waitScene(page,'title');assert.deepEqual(await state(page),rescued);await tapUI(page,'title','action/title-continue',true);await waitScene(page,'game');await ready(page);assert.deepEqual(await state(page),rescued);
+        await page.reload();await waitScene(page,'title');await waitPersistentStorage(page,true);assert.deepEqual(await state(page),rescued);await tapUI(page,'title','action/title-continue',true);await waitScene(page,'game');await ready(page);assert.deepEqual(await state(page),rescued);
         await tapMenuAction(page,'回看上一手',true);await page.waitForFunction(()=>window.__harness.game.scene.getScene('game').isPresenting);await ready(page);assert.deepEqual(await state(page),rescued,'replay uses persisted destroyed source and never refunds again');
         const last=rescued.handOrder.map(id=>rescued.deckInstances.find(c=>c.id===id)).sort((a,b)=>a.rank-b.rank)[0];await revealCard(page,last.id);await tapUI(page,'game','card/'+last.id,true);await page.waitForFunction(id=>window.__harness.game.scene.getScene('game').selectedIds.has(id),last.id);await tapUI(page,'game','action/play',true);await next(page,rescued.commandSeq);await waitScene(page,'intermission');const lost=await state(page);
         assert.equal(lost.phase,'run-lost');assert.equal(lost.stage.handsLeft,0);assert.equal(lost.stage.playIndex,5);assert.equal(lost.gold,0);assert.equal(lost.lastTrace.events.some(e=>e.operation==='rescue-hand'),false);

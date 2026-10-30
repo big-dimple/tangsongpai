@@ -168,7 +168,7 @@ tools/          离线素材工具
 
 牌面遮挡检查测量包含父容器变换的实际四边形相交面积；旋转后的外接矩形包含牌外空白，不能代替真实遮挡。
 
-本机 crontab 每分钟执行 `/usr/local/bin/tangsongpai-autodeploy.sh`；仓库源码是 `scripts/tangsongpai-autodeploy.sh`，修改后须单独安装到执行路径。脚本以 flock 防止重叠，fetch `origin/main` 后等待 5 分钟无新提交，持续提交时最多等待 10 分钟，再在临时 detached worktree 中安装锁定依赖并运行 `npm run verify:ci -- --scope=all`：单元测试、内容校验、类型检查、生产构建，以及 Chromium／Firefox／WebKit 的桌面和手机冒烟测试；手柄相关文件变更时另跑手柄浏览器检查。本机 Vitest 单 worker 运行，Node 堆上限设为 1536 MiB；Playwright 浏览器版本按锁文件安装，浏览器系统依赖需预先安装。失败不会上传，同一失败版本十分钟后重试；`--force` 可立即重试并重验所有门禁。
+本机 crontab 每分钟执行 `/usr/local/bin/tangsongpai-autodeploy.sh`；仓库源码是 `scripts/tangsongpai-autodeploy.sh`，修改后须单独安装到执行路径。脚本以 flock 防止重叠，fetch `origin/main` 后等待 5 分钟无新提交，持续提交时最多等待 10 分钟，再在临时 detached worktree 中安装锁定依赖并依次运行 `verify:ci` 的 domain 和 browser 门禁：单元测试、内容校验、类型检查、生产构建，以及 Chromium／Firefox／WebKit 的桌面和手机冒烟测试；手柄相关文件变更时另跑手柄浏览器检查。同一提交和运行环境在 24 小时内重试时，可复用已通过并验证过报告的 domain 结果，browser 门禁仍完整重跑；`--force` 重验全部门禁。本机 Vitest 单 worker 运行，Node 堆上限设为 1536 MiB；Playwright 浏览器版本按锁文件安装，浏览器系统依赖需预先安装。各阶段有执行时限（domain、browser 分别最多 30 分钟），失败不会上传；同一版本连续失败按 10、20、40、60 分钟间隔重试，新版本独立处理。冒烟测试把构建放在独立进程，浏览器启动前释放构建内存，并继续验证真实游戏及存档恢复。
 
 构建产物必须标识目标完整 SHA 和 clean 状态，上传前重新 fetch；若 main 已前进但仍包含该提交，完成本次发布，随后合并处理新提交；若 main 改写且不再包含该提交，则不上传。上传后只有公网 `https://pai.hp666.cc/build-info.json` 返回该 clean revision 才更新 `/var/lib/tangsongpai-deploy/deployed-revision`；传播延迟时记录待确认版本并在后续轮询确认。上传成功后 `scripts/tangsongpai-cache-cloudflare.py`（安装为 `/usr/local/bin/tangsongpai-cache-cloudflare.py`）登记素材哈希，后续上传可复用未变文件；缓存登记失败不影响已有上传，但下次可能重传。日志在 `/var/log/tangsongpai-autodeploy.log`，最近一次 CI 报告在 `/var/lib/tangsongpai-deploy/reports/latest/`。临时工作树删除，不重置或覆盖开发工作区；线上版本、提交状态和 CI 结果分别核对。
 

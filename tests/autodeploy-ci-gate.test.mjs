@@ -6,12 +6,12 @@ import {execFileSync,spawnSync} from 'node:child_process';
 
 const revision='a'.repeat(40),previous='b'.repeat(40),source=fs.readFileSync('scripts/tangsongpai-autodeploy.sh','utf8');
 const shellPath=value=>process.platform==='win32'?execFileSync('cygpath',['-u',value],{encoding:'utf8'}).trim():value;
-function deployment({fail='',buildRevision=revision,servedRevision=previous,already=false,pending=false,force=true,advance=false,diverged=false,dirty=false,cooldown=false,propagated=true,controller=false,cacheFails=false,firstAge=null,lastAge=null}={}){
+function deployment({fail='',domainStatus='PASS',buildRevision=revision,servedRevision=previous,already=false,pending=false,force=true,advance=false,diverged=false,dirty=false,cooldown=false,cooldownAge=0,cooldownCount=null,cooldownRevision=revision,propagated=true,controller=false,cacheFails=false,firstAge=null,lastAge=null,retryAfterDomain=false,tamperCache='',retryForce=false}={}){
   const root=fs.mkdtempSync(path.join(os.tmpdir(),'tangsongpai-deploy-test-')),bin=path.join(root,'bin'),state=path.join(root,'state');
   try {
     fs.mkdirSync(bin);fs.mkdirSync(state);fs.writeFileSync(path.join(state,'deployed-revision'),(already?revision:previous)+'\n');
     if(pending)fs.writeFileSync(path.join(state,'pending-revision'),revision+'\n');
-    if(cooldown)fs.writeFileSync(path.join(state,'failed-revision'),revision+' '+Math.floor(Date.now()/1000)+'\n');
+    if(cooldown)fs.writeFileSync(path.join(state,'failed-revision'),cooldownRevision+' '+(Math.floor(Date.now()/1000)-cooldownAge)+(cooldownCount===null?'':' '+cooldownCount)+'\n');
     if(firstAge!==null){const now=Math.floor(Date.now()/1000);fs.writeFileSync(path.join(state,'observed-revision'),`${revision} ${now-firstAge} ${now-lastAge}\n`);}
     const quote=value=>"'"+value.replaceAll("'","'\\''")+"'",script=path.join(root,'deploy.sh');
     let candidate=source.replace('export PATH="','export PATH="'+shellPath(bin)+(process.platform==='win32'?':$PATH':'')+':');
@@ -19,6 +19,7 @@ function deployment({fail='',buildRevision=revision,servedRevision=previous,alre
     candidate=candidate.replace('/usr/local/bin/deploy-to-cloudflare-pages.py',quote(shellPath(path.join(bin,'upload')))).replace('/usr/local/bin/tangsongpai-cache-cloudflare.py',quote(shellPath(path.join(bin,'cache'))));fs.writeFileSync(script,candidate);
     const stub=(name,text)=>fs.writeFileSync(path.join(bin,name),'#!/usr/bin/env bash\nset -eu\n'+text,{mode:0o755});
     stub('flock','exit 0\n');
+    stub('timeout','shift 2\nif [ "$DEPLOY_FAIL" = timeout ] && [ "${5:-}" = --scope=browser ]; then exit 124; fi\nexec "$@"\n');
     stub('git',`echo "git $*" >> "$DEPLOY_TEST_ROOT/calls"
 if [ "\${1:-}" = -C ]; then shift 2; fi
 case "$*" in
@@ -33,8 +34,9 @@ case "$*" in
   *) echo "unexpected git: $*" >&2; exit 2;;
 esac\n`);
     stub('npm',`echo "npm $*" >> "$DEPLOY_TEST_ROOT/calls"
-if { [ "$DEPLOY_FAIL" = install ] && [ "$1" = ci ]; } || { [ "$DEPLOY_FAIL" = ci ] && [ "\${2:-}" = verify:ci ]; }; then exit 1; fi
-if [ "\${2:-}" = verify:ci ]; then cp "$DEPLOY_TEST_ROOT/build.json" dist/build-info.json; echo fixture > dist/index.html; fi\n`);
+if { [ "$DEPLOY_FAIL" = install ] && [ "$1" = ci ]; } || { [ "$DEPLOY_FAIL" = ci ] && [ "\${2:-}" = verify:ci ]; } || { [ "$DEPLOY_FAIL" = browser ] && [ "\${4:-}" = --scope=browser ]; }; then exit 1; fi
+if [ "\${4:-}" = --scope=domain ]; then mkdir -p shots/ci; cp "$DEPLOY_TEST_ROOT/domain.json" shots/ci/domain.json; fi
+if [ "\${4:-}" = --scope=browser ]; then cp "$DEPLOY_TEST_ROOT/build.json" dist/build-info.json; echo fixture > dist/index.html; fi\n`);
     stub('npx','echo npx "$*" >> "$DEPLOY_TEST_ROOT/calls"\nif [ "$DEPLOY_FAIL" = browsers ]; then exit 1; fi\n');
     stub('sleep',':\n');
     stub('cache','echo cache >> "$DEPLOY_TEST_ROOT/calls"\nif [ "$DEPLOY_CACHE_FAIL" = 1 ]; then exit 1; fi\n');
@@ -42,20 +44,32 @@ if [ "\${2:-}" = verify:ci ]; then cp "$DEPLOY_TEST_ROOT/build.json" dist/build-
     stub('upload','echo upload >> "$DEPLOY_TEST_ROOT/calls"\ntouch "$DEPLOY_TEST_ROOT/uploaded"\n');
     const info=rev=>JSON.stringify({revision:rev,sourceStatus:'clean',modified:false});
     for(const [file,rev] of Object.entries({'build.json':buildRevision,'current.json':revision,'served.json':servedRevision}))fs.writeFileSync(path.join(root,file),info(rev));
+    fs.writeFileSync(path.join(root,'domain.json'),JSON.stringify({scope:'domain',testedCommit:revision,status:domainStatus,exitCode:0,before:{head:revision},after:{head:revision},steps:[{name:'test',status:'PASS',childExitCode:0},{name:'verify:content',status:'PASS',childExitCode:0}]}));
     const env={...process.env,DEPLOY_TEST_ROOT:shellPath(root),DEPLOY_REVISION:revision,DEPLOY_PREVIOUS:previous,DEPLOY_FAIL:fail,DEPLOY_ADVANCE:advance?'1':'0',DEPLOY_DIVERGED:diverged?'1':'0',DEPLOY_DIRTY:dirty?'1':'0',DEPLOY_PROPAGATED:propagated?'1':'0',DEPLOY_CONTROLLER:controller?'1':'0',DEPLOY_CACHE_FAIL:cacheFails?'1':'0'};
     const result=spawnSync('bash',[script,...(force?['--force']:[])],{encoding:'utf8',env});
     const read=file=>fs.existsSync(file)?fs.readFileSync(file,'utf8'):'';
-    return {status:result.status,stderr:result.stderr,log:read(path.join(root,'log')),calls:read(path.join(root,'calls')),deployed:read(path.join(state,'deployed-revision')).trim()};
+    let retry;
+    if(retryAfterDomain){
+      fs.writeFileSync(path.join(state,'failed-revision'),revision+' '+(Math.floor(Date.now()/1000)-601)+' 1\n');
+      fs.writeFileSync(path.join(state,'observed-revision'),`${revision} ${Math.floor(Date.now()/1000)-601} ${Math.floor(Date.now()/1000)-601}\n`);
+      if(tamperCache){const cacheFile=path.join(state,'domain-ci.json'),cache=JSON.parse(fs.readFileSync(cacheFile,'utf8'));if(tamperCache==='revision')cache.revision=previous;else if(tamperCache==='runtime')cache.runtime='other';else if(tamperCache==='expired')cache.completedAt-=86401;else cache.report.status='FAIL';fs.writeFileSync(cacheFile,JSON.stringify(cache));}
+      const result2=spawnSync('bash',[script,...(retryForce?['--force']:[])],{encoding:'utf8',env:{...env,DEPLOY_FAIL:''}});
+      retry={status:result2.status,stderr:result2.stderr};
+    }
+    return {status:result.status,stderr:result.stderr,log:read(path.join(root,'log')),calls:read(path.join(root,'calls')),deployed:read(path.join(state,'deployed-revision')).trim(),failed:read(path.join(state,'failed-revision')).trim(),retry};
   } finally {fs.rmSync(root,{recursive:true,force:true});}
 }
 it('runs local CI in a separate worktree before uploading and verifying the public revision',()=>{
   const r=deployment();expect(r.status,r.log+r.stderr).toBe(0);expect(r.deployed).toBe(revision);
-  expect(r.calls).toMatch(/worktree add --detach/);expect(r.calls).toMatch(/npm ci[\s\S]*npm run verify:ci -- --scope=all[\s\S]*upload[\s\S]*curl/);
+  expect(r.calls).toMatch(/worktree add --detach/);expect(r.calls).toMatch(/npm ci[\s\S]*npm run verify:ci -- --scope=domain[\s\S]*npm run verify:ci -- --scope=browser[\s\S]*upload[\s\S]*curl/);
   expect(r.calls).not.toMatch(/reset --hard/);
 });
-it.each(['ci','install','browsers'])('does not publish after failed %s',fail=>{
+it.each(['ci','install','browsers','timeout'])('does not publish after failed %s',fail=>{
   const r=deployment({fail});
   expect(r.status).not.toBe(0);expect(r.deployed).toBe(previous);expect(r.calls).not.toContain('upload');
+});
+it('does not accept an unsuccessful domain report even if the command exits zero',()=>{
+  const r=deployment({domainStatus:'FAIL'});expect(r.status).not.toBe(0);expect(r.deployed).toBe(previous);expect(r.calls).not.toContain('upload');
 });
 it('rejects mismatched metadata and a dirty checkout',()=>{
   for(const options of [{buildRevision:previous},{dirty:true}]){const r=deployment(options);expect(r.status).not.toBe(0);expect(r.deployed).toBe(previous);expect(r.calls).not.toContain('upload');}
@@ -83,6 +97,13 @@ it('honors the retry cooldown and allows force to bypass it',()=>{
   const waiting=deployment({cooldown:true,force:false});expect(waiting.status).toBe(0);expect(waiting.calls).not.toMatch(/npm|upload/);
   const forced=deployment({cooldown:true,force:true});expect(forced.status,forced.log).toBe(0);expect(forced.calls).toContain('npm run verify:ci');
 });
+it('backs off repeated failures of the same revision, but not a new revision',()=>{
+  const first=deployment({fail:'ci'});expect(first.failed.split(' ')[2]).toBe('1');expect(first.log).toContain('Retry after 10 minutes');
+  const again=deployment({fail:'ci',cooldown:true,cooldownAge:601});expect(again.failed.split(' ')[2]).toBe('2');expect(again.log).toContain('Retry after 20 minutes');
+  const waiting=deployment({force:false,cooldown:true,cooldownAge:601,cooldownCount:2,firstAge:601,lastAge:601});expect(waiting.calls).not.toMatch(/npm|upload/);
+  const newRevision=deployment({force:false,cooldown:true,cooldownRevision:previous,firstAge:601,lastAge:601});expect(newRevision.status,newRevision.log).toBe(0);expect(newRevision.calls).toContain('upload');
+  const capped=deployment({fail:'ci',cooldown:true,cooldownAge:4000,cooldownCount:4});expect(capped.failed.split(' ')[2]).toBe('4');expect(capped.log).toContain('Retry after 60 minutes');
+});
 
 it('coalesces pushes for five quiet minutes but starts after at most ten minutes',()=>{
   const fresh=deployment({force:false});expect(fresh.status).toBe(0);expect(fresh.calls).not.toMatch(/npm|upload/);
@@ -92,4 +113,19 @@ it('coalesces pushes for five quiet minutes but starts after at most ten minutes
 
 it('keeps a verified deployment successful if cache registration fails',()=>{
   const r=deployment({cacheFails:true});expect(r.status,r.log).toBe(0);expect(r.deployed).toBe(revision);expect(r.log).toContain('Asset cache registration failed');
+});
+it('reuses only a passed domain result for the same revision and still reruns the browser gate after failure',()=>{
+  const r=deployment({fail:'browser',retryAfterDomain:true});
+  expect(r.status).not.toBe(0);expect(r.retry.status,r.log+r.retry.stderr).toBe(0);
+  expect(r.calls.match(/npm run verify:ci -- --scope=domain/g)).toHaveLength(1);
+  expect(r.calls.match(/npm run verify:ci -- --scope=browser/g)).toHaveLength(2);
+  expect(r.log).toContain('Reusing passed domain checks for '+revision);expect(r.deployed).toBe(revision);
+});
+it.each(['revision','runtime','status','expired'])('does not reuse a cached domain report with mismatched %s',tamperCache=>{
+  const r=deployment({fail:'browser',retryAfterDomain:true,tamperCache});expect(r.retry.status,r.log).toBe(0);
+  expect(r.calls.match(/npm run verify:ci -- --scope=domain/g)).toHaveLength(2);
+});
+it('force reruns domain checks even if a matching result is cached',()=>{
+  const r=deployment({fail:'browser',retryAfterDomain:true,retryForce:true});expect(r.retry.status,r.log).toBe(0);
+  expect(r.calls.match(/npm run verify:ci -- --scope=domain/g)).toHaveLength(2);
 });
