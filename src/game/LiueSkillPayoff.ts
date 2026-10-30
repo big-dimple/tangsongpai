@@ -17,7 +17,7 @@ export function mountLiueSkillPayoff(scene:Phaser.Scene,button:Phaser.GameObject
  const saved=savedHeroAttachment(trace,'erxiang'),event=trace.erxiangGroup?trace.events.find(e=>e.eventId===eventId&&e.sourceType==='character'&&e.sourceDefinitionId==='erxiang'&&e.reasonKey==='erxiang.handoff'):saved?.event,label=button?.getData('label') as Phaser.GameObjects.Text|undefined,status=button?.getData('skillStatus') as Phaser.GameObjects.Text|undefined;
  if(!event||event.eventId!==eventId||event.phase!=='onCardScore'||event.operation!=='add-multiplier'||(!trace.erxiangGroup&&event.retriggerDepth!==0)||event.value.d!=='1'||BigInt(event.value.n)<=0n||trace.erxiangHandoff?.points!==Number(event.value.n)||options.context.signal.aborted||!options.root.active||!button?.active||!label?.active||button.getData('liueSkillPayoff'))return;
  const source=options.cards.find(c=>c.id===event.targetCardId&&c.container.active&&c.container.visible);if(!source)return;
- const amount=event.value.n,token={eventId,targetId:source.id,amount,arrived:false},rest={text:label.text,color:label.style.color,sx:label.scaleX,sy:label.scaleY,y:label.y,status:status?.text,statusColor:status?.style.color};
+ const amount=event.value.n,retrigger=event.retriggerDepth>0,token={eventId,targetId:source.id,amount,arrived:false},rest={text:label.text,color:label.style.color,sx:label.scaleX,sy:label.scaleY,y:label.y,status:status?.text,statusColor:status?.style.color};
  let disposed=false,buttonClosing=false,elapsed=0,origin:{x:number;y:number}|undefined,group:Phaser.GameObjects.Container|undefined,packet:Phaser.GameObjects.Text|undefined,ink:Phaser.GameObjects.Graphics|undefined;
  const local=(x:number,y:number)=>options.root.getWorldTransformMatrix().applyInverse(x,y);
  const destination=()=>{const b=label.getBounds();return local(b.centerX,b.centerY);};
@@ -26,7 +26,7 @@ export function mountLiueSkillPayoff(scene:Phaser.Scene,button:Phaser.GameObject
  const refresh=()=>{if(disposed||!token.arrived||!button.active||!label.active||button.getData('liueSkillPayoff')!==token)return;
   label.setText('听政 +'+amount+'倍率').setColor(LIUE_PAYOFF_INK);
   const fit=Math.min(rest.sx,(button.width-12)/Math.max(1,label.width)),p=options.reduced?1:Math.max(0,Math.min(1,(elapsed-options.beat.windup-options.beat.flight)/Math.max(1,options.beat.impact))),bounce=options.reduced?0:Math.sin(Math.PI*p);
-  label.setScale(fit*(1+.055*bounce),Math.min(rest.sy,fit)*(1+.055*bounce)).setY(rest.y-2*bounce);status?.setText('本次已转入').setColor(LIUE_PAYOFF_INK);
+  label.setScale(fit*(1+.055*bounce),Math.min(rest.sy,fit)*(1+.055*bounce)).setY(rest.y-2*bounce);status?.setText(retrigger?'重触已转入':'本次已转入').setColor(LIUE_PAYOFF_INK);
  };
  const hidden=()=>{if(document.hidden)dispose();};
  const buttonDestroyed=()=>{buttonClosing=true;dispose();};
@@ -39,7 +39,7 @@ export function mountLiueSkillPayoff(scene:Phaser.Scene,button:Phaser.GameObject
  if(!options.reduced){
   group=scene.add.container(0,0).setName('hero/liue-skill-flight').setData('eventId',eventId).setData('targetId',source.id).setData('amount',amount);options.root.add(group);
   ink=scene.add.graphics().setName('hero/liue-transfer-ink');
-  packet=scene.add.text(0,0,'+'+amount+' 倍率',{fontFamily:UI_FONT,fontSize:'26px',fontStyle:'bold',color:LIUE_PAYOFF_INK,backgroundColor:PAPER_CSS.paperLight,padding:{x:5,y:2},resolution:textDensity(scene)}).setOrigin(.5).setName('hero/liue-skill-packet');group.add([ink,packet]);
+  packet=scene.add.text(0,0,(retrigger?'重触 ':'')+'+'+amount+' 倍率',{fontFamily:UI_FONT,fontSize:'26px',fontStyle:'bold',color:LIUE_PAYOFF_INK,backgroundColor:PAPER_CSS.paperLight,padding:{x:5,y:2},resolution:textDensity(scene)}).setOrigin(.5).setName('hero/liue-skill-packet');group.add([ink,packet]);
  }
  const charge=(progress:number)=>{if(disposed||token.arrived||!group?.active||!packet?.active||!source.container.active)return;
   const p=Math.max(0,Math.min(1,progress));origin=sourcePoint();packet.setPosition(origin.x,origin.y+12*(1-p)).setAlpha(Math.min(1,p*4)).setScale(.92+.08*p);group.setData('phase','charge').setData('origin',origin).setData('destination',destination()).setData('progress',p);

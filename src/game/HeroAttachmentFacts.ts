@@ -17,6 +17,6 @@ export function savedHeroAttachment(trace:ScoreTrace,hero:CharacterId){
     hero==='xiemu'&&e.reasonKey==='xiemu.multiply-multiplier'&&!!trace.xiemuBurn?.cost||
     hero==='touye'&&!!trace.touyeWager?.commit&&(e.reasonKey.startsWith('touye.won.')||e.reasonKey.startsWith('touye.lost.'))));
   if(!event)return;
-  const ids=hero==='laohuan'?trace.laohuanFind?.activeIds:hero==='amo'?(trace.amoExile?.use?trace.amoExile.discardedIds:trace.assist!.ids):hero==='erxiang'?(trace.erxiangGroup?[...new Set(trace.events.filter(e=>e.reasonKey==='erxiang.handoff').map(e=>e.targetCardId!).filter(Boolean))]:[trace.erxiangHandoff!.targetId!]):hero==='touye'?(trace.touyeWager?.outcome==='won'?trace.touyeWager.core?.activeNewIds:undefined):trace.sets.activeScoringIds.length?trace.sets.activeScoringIds:trace.sets.playedIds;
+  const ids=hero==='laohuan'?trace.laohuanFind?.activeIds:hero==='amo'?(trace.amoExile?.use?trace.amoExile.discardedIds:trace.assist!.ids):hero==='erxiang'?(trace.erxiangGroup?[...new Set(trace.events.filter(e=>e.reasonKey==='erxiang.handoff').map(e=>e.targetCardId!).filter(Boolean))]:[trace.erxiangHandoff!.targetId!]):hero==='touye'?(trace.touyeWager?.outcome==='won'?trace.touyeWager.core?.activeNewIds:undefined):hero==='azao'||hero==='xiemu'?trace.sets.activeScoringIds:trace.sets.activeScoringIds.length?trace.sets.activeScoringIds:trace.sets.playedIds;
   return {event,targetIds:ids?[...ids]:undefined};
 }

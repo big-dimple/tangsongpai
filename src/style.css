@@ -462,8 +462,12 @@ button[aria-busy=true] { border-style:dashed; }
 .detail-dialog[data-shop-context] .dialog-actions { display:flex;flex-wrap:wrap;gap:8px;border-top:1px solid #C7B89D;background:#FFF9EE; }
 .detail-dialog[data-shop-context] .dialog-actions button { min-height:44px;flex:1 1 120px; }
 .detail-dialog[data-shop-context] .dialog-actions .dialog-primary { background:#B8473A;color:#FFF9EE;border-color:#B8473A;min-height:56px; }
-.detail-dialog[data-shop-context] .dialog-actions .dialog-primary:disabled { background:#D8D1C3;color:#595B59;border-color:#858B89; }
+.detail-dialog[data-shop-context] .dialog-actions .dialog-primary:not(:disabled):hover { background:#9F3228; }
+.detail-dialog[data-shop-context] .dialog-actions .dialog-primary:not(:disabled):active { background:#843029; }
+.detail-dialog[data-shop-context] .dialog-actions .dialog-primary:disabled { background:#D8D1C3;color:#595B59;border-color:#858B89;transform:none; }
 .detail-dialog[data-shop-context] .dialog-close { box-shadow:none;background:#FFF9EE; }
+.detail-dialog[data-shop-context] .dialog-close:not(:disabled):hover { background:#E2E8E5; }
+.detail-dialog[data-shop-context] .dialog-close:not(:disabled):active { background:#C9D7D2; }
 @media(max-width:560px) and (orientation:portrait) {
  .detail-dialog[data-shop-context=purchase] .dialog-actions .dialog-primary,
  .detail-dialog[data-shop-context=sale] .dialog-actions .dialog-primary { flex-basis:100%;order:-1; }

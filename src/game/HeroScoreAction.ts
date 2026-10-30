@@ -39,8 +39,8 @@ export function heroScoreAction(trace:ScoreTrace,event:ScoreEvent,retainedIds:re
  if(hero==='amo')return trace.amoExile?.use?{...common,kind:'exile',targetIds:[...main],costIds:[...trace.amoExile.discardedIds]}:{...common,kind:'assist',targetIds:[...saved.targetIds??[]]};
  if(hero==='laohuan'&&trace.laohuanFind?.multiplier&&positive)return {...common,kind:'release',targetIds:[...trace.laohuanFind.activeIds]};
  if(hero==='erxiang'&&positive)return {...common,kind:'handoff',targetIds:[...saved.targetIds??[]]};
- if(hero==='azao'&&trace.azaoCharge?.release&&positive)return {...common,kind:'release',targetIds:[...main],cost:{kind:'charge',before:trace.azaoCharge.before.charge,after:trace.azaoCharge.after.charge}};
- if(hero==='xiemu'&&trace.xiemuBurn?.cost&&positive)return {...common,kind:'release',targetIds:[...main],cost:{kind:'gold',before:trace.xiemuBurn.goldBefore,after:trace.xiemuBurn.goldAfter}};
+ if(hero==='azao'&&trace.azaoCharge?.release&&positive)return {...common,kind:'release',targetIds:[...trace.sets.activeScoringIds],cost:{kind:'charge',before:trace.azaoCharge.before.charge,after:trace.azaoCharge.after.charge}};
+ if(hero==='xiemu'&&trace.xiemuBurn?.cost&&positive)return {...common,kind:'release',targetIds:[...trace.sets.activeScoringIds],cost:{kind:'gold',before:trace.xiemuBurn.goldBefore,after:trace.xiemuBurn.goldAfter}};
  if(hero==='touye'&&trace.touyeWager?.commit){
   if(trace.touyeWager.outcome==='won'&&positive)return {...common,kind:'wager-won',targetIds:[...trace.touyeWager.core?.activeNewIds??saved.targetIds??[]]};
   if(trace.touyeWager.outcome==='lost'&&!positive)return {...common,kind:'wager-lost',targetIds:[...trace.touyeWager.commit.refill?.refilledIds??[]]};

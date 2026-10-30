@@ -29,5 +29,18 @@ describe('stage-local azao charge candidate',()=>{
  it('save failure holds original charge; retry same release candidate consumes once and restores',async()=>{let before=send(entered(),{type:'PlayHand',selectedIds:main});before=arranged(before,['spades-14','hearts-14','clubs-8','hearts-8']);let slots:SaveSlots={revision:1,current:makeCheckpoint(before,[]),previous:null},fail=true;const commits:string[]=[];const store:SaveStore={read:async()=>slots,commit:async(revision,cp,backup)=>{commits.push(JSON.stringify(cp));if(fail)throw Error('quota-exceeded');slots={revision:revision+1,current:cp,previous:backup};return slots.revision;}};const saved=SavedRun.restore(store,slots);const r=await saved.dispatch({type:'PlayHand',selectedIds:before.handOrder,azaoRelease:true});expect(r.ok).toBe(false);expect(saved.state).toEqual(before);fail=false;expect((await saved.retry()).ok).toBe(true);expect(commits[1]).toBe(commits[0]);expect(saved.state.stage!.azaoCharge!.charge).toBe(0);expect(SavedRun.restore(store,slots).state).toEqual(saved.state);expect((await saved.retry()).ok).toBe(false);});
  it('public choice needs selected qualification and shows consequence; saved repeat uses short hero cue',()=>{let before=send(entered(),{type:'PlayHand',selectedIds:main});expect(azaoChoice(before,'two-pair').available).toBe(true);expect(azaoChoice(before,'two-pair').hold).toContain('清空');expect(azaoChoice(before,'pair').available).toBe(false);before=arranged(before,['spades-14','hearts-14','clubs-8','hearts-8']);const after=send(before,{type:'PlayHand',selectedIds:before.handOrder,azaoRelease:true}),key=keyHighlight(after,after.lastTrace!,before.stage!.heat,undefined,false)!;expect(key.kind).toBe('multiply');expect(key.fact.title).toContain('和亲');expect(heroClimaxValue(after,after.lastTrace!,key)).toBeUndefined();});
  it('last-hand hold copy is conditional and names stage clearing without assuming no refund/rescue',()=>{const before=send(entered(),{type:'PlayHand',selectedIds:main}),last=structuredClone(before);last.stage!.handsLeft=1;const copy=azaoChoice(last,'full-house');expect(copy.hold).toContain('可蓄至 2 层');expect(copy.hold).toContain('本场结束即清空');expect(copy.hold).not.toContain('结算后蓄');last.stage!.rescueUsed=true;expect(azaoChoice(last,'full-house').hold).toEqual(copy.hold);expect(last.stage!.azaoCharge).toEqual(before.stage!.azaoCharge);expect(azaoChoice(before,'full-house').hold).toContain('结算后蓄 2 层');});
+ it('explains the saved hand that gained or cleared charge and shows the previous type before selection',()=>{
+  const first=send(entered(),{type:'PlayHand',selectedIds:main}),snapshot=structuredClone(first);
+  expect(savedAzaoCharge(first)).toContain('本手两对 · 蓄势 0 → 1层');expect(azaoChoice(first).hold).toContain('上手两对');
+  const repeated=arranged(first,['spades-14','hearts-14','clubs-8','hearts-8']);
+  const held=send(repeated,{type:'PlayHand',selectedIds:repeated.handOrder});expect(savedAzaoCharge(held)).toContain('本手两对与上手同型 · 蓄势 1 → 0层');
+  const low=arranged(first,['spades-14','hearts-9']);const played=send(low,{type:'PlayHand',selectedIds:['spades-14']});expect(savedAzaoCharge(played)).toContain('本手高牌未达两对 · 蓄势 1 → 0层');
+  expect(first).toEqual(snapshot);
+ });
+ it('distinguishes a full charge from a gain without inventing a multiplier',()=>{
+  const s=entered(),trace=scoreR2Hand({...input(s,main),azaoCharge:{before:{charge:3,previousQualifiedType:'straight'},release:false}});
+  const result={...s,lastTrace:trace};expect(savedAzaoCharge(result)).toContain('本手两对 · 已满3层，维持蓄势');expect(savedAzaoCharge(result)).not.toContain('实际 ×');
+  s.stage!.azaoCharge={charge:3,previousQualifiedType:'straight'};expect(azaoChoice(s).hold).toContain('换型保层');
+ });
 
 });

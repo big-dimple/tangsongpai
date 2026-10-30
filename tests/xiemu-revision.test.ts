@@ -9,7 +9,7 @@ import {r2ScoreContext,r2CreateJoker} from '../src/domain/r2Run';
 import {r2JokerDefinitionsFor} from '../src/domain/r2ContentProfiles';
 import {previewR2Hand} from '../src/domain/scoreR2';
 import {makeCheckpoint,readCheckpoint} from '../src/application/checkpoint';
-import {xiemuChoice} from '../src/game/XiemuBurnCopy';
+import {xiemuChoice,savedXiemuBurn} from '../src/game/XiemuBurnCopy';
 import {characterForRun} from '../src/game/CharacterRunCopy';
 import {aiScoreContext} from '../src/game/AiHandCandidates';
 import {SavedRun,type SaveStore,type SaveSlots} from '../src/application/SavedRun';
@@ -58,6 +58,13 @@ it('两对以下与静场拒绝，挑战关闭角色能力',()=>{
 it.each([[4,2,2],[5,2,3],[8,6,2],[10,8,2]] as const)('跨利息门槛本金%i，支付%i后余额%i',(gold,cost,after)=>{
  const f=ready(gold),r=applyCommand(f.state,command(f.state,f.main,cost));expect(r.ok).toBe(true);if(!r.ok)return;
  expect(r.state.lastTrace!.combo!.goldBeforeRewards).toBe(after);const interest=r.state.lastTrace!.events.find(e=>e.sourceDefinitionId==='xiemu'&&e.phase==='onStageClear');expect(Number(interest?.value.n??0)).toBe(Math.min(2,Math.floor(after/5)));
+ expect(savedXiemuBurn(r.state)).toContain('额外关末息+0金；奖励前本金'+after+'金，不足5金');
+});
+it('does not report zero interest before a clear or when the challenge disables the character',()=>{
+ const f=ready(4),first=applyCommand(f.state,{runId:f.state.runId,commandId:'no-clear',expectedSeq:f.state.commandSeq,action:{type:'PlayHand',selectedIds:['clubs-3']}});
+ expect(first.ok).toBe(true);if(first.ok){expect(first.state.phase).toBe('await-input');expect(savedXiemuBurn(first.state)).not.toContain('额外关末息+0');}
+ let q=createRun({seed:'challenge/q01/0',runId:'xiemu/q01-zero',characterId:'xiemu',rulesVersion:'r2',r2Identity:identity(),openingRoute:'group',modeConfig:{mode:'challenge',difficulty:0,challengeId:'Q01',programsEnabled:false}});q.gold=4;
+ q=economySend(economySend(q,{type:'LeaveShop'}),{type:'EnterStage'});const h=economyHand(q),clear=economySend(h.state,{type:'PlayHand',selectedIds:h.main});expect(clear.phase).toBe('stage-cleared');expect(clear.lastTrace!.combo!.goldBeforeRewards).toBe(4);expect(savedXiemuBurn(clear)).not.toContain('额外关末息+0');
 });
 it('AI 预览沿用所选档和扣后余额，重复查看不触碰真实状态',()=>{
  const {state:s,main}=ready(12),hand=s.handOrder.map(id=>s.deckInstances.find(c=>c.id===id)!),context=r2ScoreContext(s,hand,main),stage=s.stage!;

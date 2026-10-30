@@ -27,7 +27,7 @@ export function assistInkCurls(box:InkBox,clock:number):InkPoint[][] {
   });
 }
 
-function crosses(a:InkPoint,b:InkPoint,box:InkBox,pad:number):boolean {
+export function inkSegmentCrosses(a:InkPoint,b:InkPoint,box:InkBox,pad:number):boolean {
   let low=0,high=1;
   for(const [origin,delta,min,max]of [[a.x,b.x-a.x,box.x-pad,box.x+box.width+pad],[a.y,b.y-a.y,box.y-pad,box.y+box.height+pad]]){
     if(Math.abs(delta)<1e-8){if(origin<min||origin>max)return false;continue;}
@@ -40,7 +40,7 @@ export function clearInkRuns(points:readonly InkPoint[],protectedBoxes:readonly 
   const runs:InkPoint[][]=[];let run:InkPoint[]=[];
   for(let i=1;i<points.length;i++){
     const a=points[i-1],b=points[i];
-    if(protectedBoxes.some(box=>crosses(a,b,box,radius))){if(run.length>1)runs.push(run);run=[];continue;}
+    if(protectedBoxes.some(box=>inkSegmentCrosses(a,b,box,radius))){if(run.length>1)runs.push(run);run=[];continue;}
     if(!run.length)run.push(a);run.push(b);
   }if(run.length>1)runs.push(run);return runs;
 }

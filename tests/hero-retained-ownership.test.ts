@@ -4,6 +4,7 @@ vi.mock('../src/game/session',()=>({gameSession:()=>({speed:1})}));
 import {GameScene} from '../src/game/GameScene';
 import {EffectQueue} from '../src/core/EffectQueue';
 import {retainedRefillImpact} from '../src/game/HeroAttachmentFacts';
+import {makeCheckpoint,readCheckpoint} from '../src/application/checkpoint';
 import {laohuanDiscardFixture,laohuanSend,XIN_DISCARD} from './fixtures/laohuan-discard-handoff';
 const before=laohuanDiscardFixture(),pending=laohuanSend(before,{type:'DiscardHand',selectedIds:XIN_DISCARD,laohuanTrick:true}),kept=pending.pendingRefill!.candidateIds.slice(0,pending.pendingRefill!.required),saved=laohuanSend(pending,{type:'ChooseRefill',selectedIds:kept});
 it('actual Scene owns all saved candidates immediately, including partial picks, and hiding removes their field',()=>{
@@ -11,6 +12,17 @@ it('actual Scene owns all saved candidates immediately, including partial picks,
 });
 it('actual Scene selection sync keeps only saved retained instances, independently of the next selected hand',()=>{
  const s=Object.create(GameScene.prototype) as any,preview=vi.fn(),fresh=kept.slice(0,1);Object.assign(s,{cardViews:[],run:structuredClone(saved),playing:false,presentation:undefined,selectedIds:new Set(),targetAttachment:{preview},appliedRefill:{runId:saved.runId,stageIndex:saved.stage!.index,eventId:'saved/refill',ids:[...kept],sourceIds:fresh}});s.syncHeroTargetAttachment();expect(preview).toHaveBeenLastCalledWith(expect.objectContaining({confirmed:true,targetIds:kept,sourceTargetIds:fresh,label:'已留'}));s.selectedIds=new Set(saved.handOrder.slice(0,2));s.syncHeroTargetAttachment();expect(preview).toHaveBeenLastCalledWith(expect.objectContaining({targetIds:kept,sourceTargetIds:fresh}));s.run=laohuanSend(saved,{type:'PlayHand',selectedIds:fresh});s.syncHeroTargetAttachment();expect(preview).toHaveBeenLastCalledWith(expect.objectContaining({targetIds:kept.slice(1),sourceTargetIds:[]}));delete s.appliedRefill.sourceIds;s.syncHeroTargetAttachment();expect(preview).toHaveBeenLastCalledWith(expect.objectContaining({targetIds:kept.slice(1),sourceTargetIds:[]}));s.appliedRefill=undefined;s.syncHeroTargetAttachment();expect(preview).toHaveBeenLastCalledWith(undefined);
+});
+it('restores the saved batch and highlights only the chosen tied find group, then restores retained marks on cancel',()=>{
+ let run=structuredClone(laohuanDiscardFixture()),byRank=new Map<number,string[]>();for(const id of run.drawPile){const rank=run.deckInstances.find(c=>c.id===id)!.rank;byRank.set(rank,[...(byRank.get(rank)??[]),id]);}
+ const pairs=[...byRank.values()].filter(v=>v.length>=2).slice(0,2),ids=[...pairs[0].slice(0,2),...pairs[1].slice(0,2)],filler=run.drawPile.filter(id=>!ids.includes(id)).slice(0,2),candidate=[...ids,...filler];run.drawPile=[...run.drawPile.filter(id=>!candidate.includes(id)),...candidate.slice().reverse()];
+ run=laohuanSend(run,{type:'DiscardHand',selectedIds:run.handOrder.slice(0,4)});run=laohuanSend(run,{type:'ChooseRefill',selectedIds:ids});
+ const restored=readCheckpoint(makeCheckpoint(run,[]));expect(restored.ok).toBe(true);if(!restored.ok)throw Error('checkpoint');
+ const s=Object.create(GameScene.prototype) as any,preview=vi.fn(),rank=run.deckInstances.find(c=>c.id===ids[0])!.rank;Object.assign(s,{cardViews:[],run:restored.checkpoint.state,playing:false,presentation:undefined,selectedIds:new Set(ids),laohuanFindRank:null,targetAttachment:{preview},selectionPreview:()=>({activeScoringIds:ids})});
+ s.syncHeroTargetAttachment();expect(preview).toHaveBeenLastCalledWith(expect.objectContaining({targetIds:ids,label:'已留',sourceTargetIds:[]}));
+ s.laohuanFindRank=rank;s.syncHeroTargetAttachment();expect(preview).toHaveBeenLastCalledWith(expect.objectContaining({targetIds:ids.slice(0,2),label:'寻得待放',releaseReason:'laohuan.find'}));
+ s.laohuanFindRank=run.deckInstances.find(c=>c.id===ids[2])!.rank;s.syncHeroTargetAttachment();expect(preview).toHaveBeenLastCalledWith(expect.objectContaining({targetIds:ids.slice(2),releaseReason:'laohuan.find'}));
+ s.laohuanFindRank=null;s.syncHeroTargetAttachment();expect(preview).toHaveBeenLastCalledWith(expect.objectContaining({targetIds:ids,label:'已留'}));
 });
 it('a retained-card burst follows only the first positive actual ordinary scoring event, never a multiplier or retrigger',()=>{
  const played=laohuanSend(saved,{type:'PlayHand',selectedIds:kept}),trace=played.lastTrace!,event=trace.events.find(e=>e.sourceType==='card'&&e.phase==='onCardScore'&&e.sourceDefinitionId.startsWith('rank-')&&e.operation==='add-heat')!,snapshot=JSON.stringify(trace);expect(event).toBeDefined();expect(retainedRefillImpact(event,kept)).toBe(event.targetCardId);expect(retainedRefillImpact(event,[])).toBeUndefined();expect(retainedRefillImpact({...event,retriggerDepth:1},kept)).toBeUndefined();expect(retainedRefillImpact({...event,value:{n:'0',d:'1'}},kept)).toBeUndefined();expect(retainedRefillImpact({...event,sourceType:'character',operation:'multiply-multiplier'},kept)).toBeUndefined();expect(JSON.stringify(trace)).toBe(snapshot);

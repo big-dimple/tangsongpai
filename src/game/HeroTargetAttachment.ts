@@ -17,6 +17,7 @@ import {HeroSourceEcho} from './HeroSourceEcho';
 import {HeroLiveSmoke} from './HeroLiveSmoke';
 import {heroInkBox,heroVisiblePatch,type HeroInkBox} from './HeroVisibleSurface';
 import {drawHandoffEar} from './HandoffEar';
+import {HeroTargetAfterglow} from './HeroTargetAfterglow';
 
 export interface AttachmentCard {container:Phaser.GameObjects.Container;visual?:Phaser.GameObjects.Container;rank?:number;width:number;height:number;center?:{x:number;y:number};labelWidth?:number}
 export interface HeroTargetAttachmentOptions {
@@ -47,6 +48,7 @@ export class HeroTargetAttachment {
  private destroyed=false;
  private readonly sushi:SushiDiscardCardPresentation;
  private readonly particles:HeroSkillParticles;
+ private readonly afterglow:HeroTargetAfterglow;
 
  private readonly sourceEcho:HeroSourceEcho;
  private readonly liveSmoke:HeroLiveSmoke;
@@ -56,6 +58,8 @@ export class HeroTargetAttachment {
  private readonly refillPhases:HeroAttachmentPhases;
  private phaseContext?:EffectContext;
  private phaseReason?:string;
+ private confirmedGlowTargets:readonly string[]=[];
+ private readonly glowImpacts=new Set<string>();
  private readonly sourceKeys=new Set<string>();
  private readonly blur=()=>{this.blurred=true;this.hide();};
  private readonly focus=()=>{this.blurred=false;};
@@ -63,6 +67,7 @@ export class HeroTargetAttachment {
  private readonly tick=(_time:number,delta:number)=>this.update(delta,false);
  constructor(private readonly scene:Phaser.Scene,private readonly options:HeroTargetAttachmentOptions){
   this.particles=new HeroSkillParticles(scene);
+  this.afterglow=new HeroTargetAfterglow(scene,()=>this.options.motion());
 
   this.sourceEcho=new HeroSourceEcho(scene);
   this.liveSmoke=new HeroLiveSmoke(scene);this.refillSmoke=new HeroLiveSmoke(scene);
@@ -71,7 +76,7 @@ export class HeroTargetAttachment {
   scene.events.on('update',this.tick);scene.events.once('shutdown',this.destroy,this);
   window.addEventListener('blur',this.blur);window.addEventListener('focus',this.focus);document.addEventListener('visibilitychange',this.visibility);
  }
- preview(draft:AttachmentDraft|undefined):void {if(this.destroyed)return;if(draft?.releaseReason==='amo.exile'){this.clear();return;}this.sushi.clear();const previous=this.state.value?.generation;this.state.setMotion(this.options.motion());this.state.preview(draft);const changed=previous!==this.state.value?.generation;if(changed){this.phases.end('replaced');this.phaseContext=undefined;this.phaseReason=undefined;this.disposeVisuals();this.pulseAfter=0;if(draft?.confirmed)this.activateSource(draft.key);}this.update(0,changed);}
+ preview(draft:AttachmentDraft|undefined):void {if(this.destroyed)return;if(draft?.releaseReason==='amo.exile'){this.clear();return;}this.sushi.clear();const previous=this.state.value?.generation;this.state.setMotion(this.options.motion());this.state.preview(draft);const changed=previous!==this.state.value?.generation;if(changed){this.afterglow.clear();this.phases.end('replaced');this.phaseContext=undefined;this.phaseReason=undefined;this.disposeVisuals();this.pulseAfter=0;if(draft?.confirmed)this.activateSource(draft.key);}this.update(0,changed);}
  previewSushiDiscard(ids:readonly string[]):void {if(this.destroyed)return;this.phases.end('replaced');this.phaseContext=undefined;this.phaseReason=undefined;this.state.clear();this.disposeVisuals();if(!ids.length){this.sushi.clear();return;}this.sushi.preview(ids);this.sushi.step(0,true);}
  previewSushiKings(ids:readonly string[],factor:3|4):void {if(this.destroyed)return;this.phases.end('replaced');this.phaseContext=undefined;this.phaseReason=undefined;this.state.clear();this.disposeVisuals();if(!ids.length){this.sushi.clear();return;}this.sushi.prepareKings(ids,factor);this.sushi.step(0,true);}
  beginSushiDiscard(trace:ScoreTrace,context:EffectContext):boolean {return !this.destroyed&&this.sushi.bindSaved(trace,context);}
@@ -84,13 +89,15 @@ export class HeroTargetAttachment {
   const cancel=()=>{this.refillSmoke.clear();this.refillPhases.end('aborted');};context.signal.addEventListener('abort',cancel,{once:true});this.burstAbort=()=>{context.signal.removeEventListener('abort',cancel);cancel();};
  }
  private activateSource(key:string):void {this.pulseAfter=this.sourceKeys.has(key)||this.options.motion()!=='full'?Infinity:0;this.sourceKeys.add(key);}
- consume(targetId:string,eventId:string,context:EffectContext):void {if(this.destroyed)return;const previous=this.state.value?.eventId;if(this.state.consume(targetId,eventId,context)){this.phaseContext=context;if(!previous)this.activateSource(this.state.value!.key);}this.update(0);}
- commit(eventId:string,context:EffectContext):void {const id=this.state.value?.targetId;if(id)this.consume(id,eventId,context);}
+ consume(targetId:string,eventId:string,context:EffectContext,confirmedTargets:readonly string[]=[]):void {if(this.destroyed)return;const previous=this.state.value?.eventId;if(this.state.consume(targetId,eventId,context)){this.phaseContext=context;if(!previous){this.confirmedGlowTargets=[...confirmedTargets];this.glowImpacts.clear();this.activateSource(this.state.value!.key);this.startAfterglow(context,this.confirmedGlowTargets);}}this.update(0);}
+ commit(eventId:string,context:EffectContext,confirmedTargets:readonly string[]=[]):void {const id=this.state.value?.targetId;if(id)this.consume(id,eventId,context,confirmedTargets);}
  retainTargets(ids:readonly string[]):void {this.state.retainTargets(ids);this.update(0);}
  resolveSaved(draft:AttachmentDraft,eventId:string,context:EffectContext):void {if(context.signal.aborted)return;this.preview(draft);this.commit(eventId,context);this.release({eventId,reasonKey:draft.releaseReason},context);}
- release(event:{eventId:string;targetCardId?:string;reasonKey?:string},context:EffectContext):void {if(this.destroyed)return;if(this.state.release(event,context)){this.phaseReason=event.reasonKey;this.phases.setReason(event.reasonKey);this.phases.publish('impact');if(!this.state.value){this.phases.publish('settled');this.phases.end();}}this.update(0);}
- clear(cause='cleared'):void {this.burstAbort?.();this.burstAbort=undefined;this.refillSmoke.clear();this.refillPhases.end(cause);this.phases.end(cause);this.phaseContext=undefined;this.phaseReason=undefined;this.sushi.clear(cause);this.state.clear();this.disposeVisuals();}
- private hide():void {this.burstAbort?.();this.burstAbort=undefined;this.sushi.suspend();this.phases.suspend('hidden');this.state.suspend();if(!this.state.value)this.phases.end('hidden');this.pulseAfter=Infinity;this.disposeVisuals();}
+ private startAfterglow(context:EffectContext,ids:readonly string[]):void {const root=this.options.root();if(!root?.active||context.signal.aborted||!ids.length)return;const members=ids.map(id=>({id,card:this.options.target(id)})).filter((v):v is {id:string;card:AttachmentCard}=>!!v.card?.container.active&&v.card.container.visible);if(members.length)this.afterglow.play({root,cards:members.map(({id,card})=>({id,...card})),masks:()=>[...this.layout(root,new Set(members.map(v=>v.card.container))).masks,...(this.options.sourceExclusions?.()??[]).slice(0,-1).map(b=>({...this.localBounds(root,b),inkKind:'art' as const}))],signal:context.signal,isCurrent:card=>this.options.target(card.id)?.container===card.container});}
+ impactConfirmedTarget(event:{eventId:string;targetCardId?:string;reasonKey?:string},context:EffectContext):void {const id=event.targetCardId;if(this.destroyed||event.reasonKey!=='erxiang.handoff'||!id||!this.confirmedGlowTargets.includes(id)||this.glowImpacts.has(event.eventId))return;this.glowImpacts.add(event.eventId);this.startAfterglow(context,[id]);}
+ release(event:{eventId:string;targetCardId?:string;reasonKey?:string},context:EffectContext):void {if(this.destroyed)return;if(this.state.release(event,context)){this.phaseReason=event.reasonKey;this.phases.setReason(event.reasonKey);this.phases.publish('impact');if(this.state.value?.failed)this.afterglow.clear();else if(event.reasonKey!=='erxiang.handoff')this.startAfterglow(context,event.targetCardId?this.confirmedGlowTargets.filter(id=>id===event.targetCardId):this.confirmedGlowTargets);if(!this.state.value){this.phases.publish('settled');this.phases.end();}}this.update(0);}
+ clear(cause='cleared'):void {this.confirmedGlowTargets=[];this.glowImpacts.clear();this.afterglow.clear();this.burstAbort?.();this.burstAbort=undefined;this.refillSmoke.clear();this.refillPhases.end(cause);this.phases.end(cause);this.phaseContext=undefined;this.phaseReason=undefined;this.sushi.clear(cause);this.state.clear();this.disposeVisuals();}
+ private hide():void {this.afterglow.clear();this.burstAbort?.();this.burstAbort=undefined;this.sushi.suspend();this.phases.suspend('hidden');this.state.suspend();if(!this.state.value)this.phases.end('hidden');this.pulseAfter=Infinity;this.disposeVisuals();}
  private removeMark(id:string):void {const mark=this.marks.get(id);mark?.edge.destroy();mark?.label?.destroy();mark?.ear?.destroy();this.marks.delete(id);}
  private disposeVisuals():void {this.particles.clear();this.liveSmoke.clear();this.sourceEcho.clear();for(const id of [...this.marks.keys()])this.removeMark(id);this.atmosphere?.destroy();this.atmosphere=undefined;this.flight?.destroy();this.flight=undefined;this.flightCurrent?.destroy();this.flightCurrent=undefined;this.staticKey='';}
  private localBounds(root:Phaser.GameObjects.Container,b:InkBox):InkBox {const m=root.getWorldTransformMatrix(),points=[[b.x,b.y],[b.x+b.width,b.y],[b.x,b.y+b.height],[b.x+b.width,b.y+b.height]].map(([x,y])=>m.applyInverse(x,y)),x=Math.min(...points.map(p=>p.x)),y=Math.min(...points.map(p=>p.y));return{x,y,width:Math.max(...points.map(p=>p.x))-x,height:Math.max(...points.map(p=>p.y))-y};}
@@ -181,9 +188,9 @@ export class HeroTargetAttachment {
   if(full&&this.state.accepted&&!state.suppressSource&&!releasing&&!state.failed&&source&&progress>=0&&progress<=1){
    this.phases.publish('source');
    if(this.destroyed||this.state.value!==state||this.phaseContext?.signal.aborted)return;
-   if(!this.flight?.active){this.flight=this.scene.add.graphics().setName('hero/target-travel');root.add(this.flight);}if(!this.flightCurrent?.active){this.flightCurrent=this.scene.add.graphics().setName('hero/target-current');root.add(this.flightCurrent);}const protectedBoxes=[...layout.protectedBoxes,...(this.options.sourceExclusions?.()??[]).map(b=>this.localBounds(root,b))],stats=drawHeroOriginStream(this.flight,source.point,sourceBoxes,style,progress,protectedBoxes,1-release,this.flightCurrent);this.flight.setData('stats',stats).setData('progress',progress).setData('sourceKind',source.kind).setData('source',source.point).setData('targetIds',sourceMembers.map(t=>t.id));this.flightCurrent.setData('stats',stats).setData('progress',progress).setData('protectedBoxes',protectedBoxes);
+   if(!this.flight?.active){this.flight=this.scene.add.graphics().setName('hero/target-travel');root.add(this.flight);}if(!this.flightCurrent?.active){this.flightCurrent=this.scene.add.graphics().setName('hero/target-current');root.add(this.flightCurrent);}const barriers=(this.options.sourceExclusions?.()??[]).map(b=>this.localBounds(root,b)),protectedBoxes=[...layout.protectedBoxes,...barriers],stats=drawHeroOriginStream(this.flight,source.point,sourceBoxes,style,progress,protectedBoxes,1-release,this.flightCurrent,barriers);this.flight.setData('stats',stats).setData('progress',progress).setData('sourceKind',source.kind).setData('source',source.point).setData('targetIds',sourceMembers.map(t=>t.id));this.flightCurrent.setData('stats',stats).setData('progress',progress).setData('protectedBoxes',protectedBoxes);
   }else{this.flight?.destroy();this.flight=undefined;this.flightCurrent?.destroy();this.flightCurrent=undefined;}
   if(this.state.accepted)this.phases.publish('attached');
  }
- destroy():void {if(this.destroyed)return;this.destroyed=true;this.clear('destroyed');this.scene.events.off('update',this.tick);this.scene.events.off('shutdown',this.destroy,this);window.removeEventListener('blur',this.blur);window.removeEventListener('focus',this.focus);document.removeEventListener('visibilitychange',this.visibility);}
+ destroy():void {if(this.destroyed)return;this.destroyed=true;this.clear('destroyed');this.afterglow.destroy();this.scene.events.off('update',this.tick);this.scene.events.off('shutdown',this.destroy,this);window.removeEventListener('blur',this.blur);window.removeEventListener('focus',this.focus);document.removeEventListener('visibilitychange',this.visibility);}
 }

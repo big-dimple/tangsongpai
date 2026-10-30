@@ -3,7 +3,8 @@ import {mountSushiSkillPayoff,SUSHI_PAYOFF_GOLD} from '../src/game/SushiSkillPay
 import {nativeHeroRuntime} from './fixtures/native-hero-runtime';
 import {currentHeroReceipt} from './fixtures/current-hero-receipt';
 import {sushiSkillLocationFixture} from '../harness/fixtures/sushi-skill-location';
-import {applyCommand,type Action,type R2RunState} from '../src/domain/run';
+import {applyCommand,createRun,type Action,type R2RunState} from '../src/domain/run';
+import {R2_AMO_EXILE_VERSION,R2_AMO_EXILE_HASH} from '../src/domain/r2GroupUpgrade';
 import {makeCheckpoint,readCheckpoint} from '../src/application/checkpoint';
 afterEach(()=>vi.unstubAllGlobals());
 function setup(){
@@ -30,6 +31,16 @@ it('abort/hidden/shutdown restore paid-cost faces and cannot revive a gold cue; 
 });
 it('reduced motion delivers only the true result, without fracture or permanent gold',async()=>{
  const r=await currentHeroReceipt('amo'),f=setup(),job=mountSushiSkillPayoff(f.scene,f.button,r.trace,r.eventId,{context:{generation:1,signal:new AbortController().signal},beat,reduced:true,root:f.root,cards:[]})!;job.step(200);expect(f.draw).not.toHaveBeenCalled();job.arrive();expect(f.label.text).toBe('本次得分 ×3');job.dispose();expect(f.label.text).toBe('余音袅袅');f.root.destroy();
+});
+it('a saved legacy no-K cost sends the factor from a real discarded card without inventing a fracture',()=>{
+ let state=createRun({seed:'legacy-exile-payoff',runId:'legacy-exile-payoff',characterId:'amo',rulesVersion:'r2',openingRoute:'group',r2Identity:{contentVersion:R2_AMO_EXILE_VERSION,contentHash:R2_AMO_EXILE_HASH},modeConfig:{mode:'standard',difficulty:0,challengeId:null,programsEnabled:false}});
+ const send=(action:Action)=>{const result=applyCommand(state,{runId:state.runId,commandId:state.runId+'/'+state.commandSeq,expectedSeq:state.commandSeq,action});if(!result.ok)throw Error(result.code);state=result.state;};
+ send({type:'LeaveShop'});send({type:'EnterStage'});const ids=['spades-8','hearts-8','clubs-7','diamonds-7','spades-2','hearts-2','clubs-3','diamonds-4'];state.handOrder=ids;state.drawPile=state.deckInstances.map(c=>c.id).filter(id=>!ids.includes(id));
+ expect(readCheckpoint(makeCheckpoint(state,[])).ok).toBe(true);send({type:'PlayHand',selectedIds:ids.slice(0,2),amoExile:true});const trace=state.lastTrace!,event=trace.events.find(e=>e.reasonKey==='amo.exile')!;
+ expect(trace.amoExile?.discardedIds).toEqual(ids.slice(2));expect(event.value).toEqual({n:'4',d:'1'});
+ const f=setup(),cards=ids.map((id,i)=>({id,container:f.card(id,{x:20+i*78,y:420,width:72,height:100})})),release=vi.fn(),job=mountSushiSkillPayoff(f.scene,f.button,trace,event.eventId,{context:{generation:1,signal:new AbortController().signal},beat,reduced:false,root:f.root,cards,releaseKings:release})!;
+ job.step(300);const flight=f.root.getByName('hero/sushi-skill-flight') as any,packet=flight.getByName('hero/sushi-skill-packet');expect(flight.getData('originId')).toBe('clubs-7');expect(flight.getData('sourceIds')).toEqual(['clubs-7']);expect(packet.text).toBe('×4');expect(packet.visible).toBe(true);expect(flight.list.some((o:any)=>o.name==='hero/sushi-cost-king-shard')).toBe(false);expect(f.draw).not.toHaveBeenCalled();expect(release).not.toHaveBeenCalled();expect(cards.every(c=>c.container.alpha===1)).toBe(true);
+ job.arrive();expect(f.label.text).toBe('本次得分 ×4');job.dispose();f.root.destroy();
 });
 it('skill use then two complete hands without K scores 306/22/22: CD is usage only, never an ongoing buff',async()=>{
  const fixture=await sushiSkillLocationFixture();let state=fixture.state;expect(readCheckpoint(makeCheckpoint(state,[])).ok).toBe(true);

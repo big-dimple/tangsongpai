@@ -275,7 +275,7 @@ export class GameScene extends Phaser.Scene {
   private ownedDrag?:OwnedJokerDragVisual;
   private lifecycle=0;
   private intent=0;
-  private presentation?:{generation:number;lifecycle:number;intent:number;state:RunState;score:ScoreTrace;phrase:Map<string,ScoreBeat>;hand:readonly PlayingCard[];displayHeat:string;originHeat:string;replay:boolean;previousTrace:ScoreTrace|null;credited:boolean;resourcePlayLeft?:number;resourceGold?:number;resourceTools?:number;gifts:readonly SavedStageGift[]};
+  private presentation?:{generation:number;lifecycle:number;intent:number;state:RunState;score:ScoreTrace;phrase:Map<string,ScoreBeat>;hand:readonly PlayingCard[];retainedIds:string[];displayHeat:string;originHeat:string;replay:boolean;previousTrace:ScoreTrace|null;credited:boolean;resourcePlayLeft?:number;resourceGold?:number;resourceTools?:number;gifts:readonly SavedStageGift[]};
   private characterId!: CharacterId;
   private laohuanFindRank:number|null=null;
   private erxiangTargetId:string|null=null;
@@ -456,7 +456,7 @@ export class GameScene extends Phaser.Scene {
       onPhase:event=>this.observeHeroAttachmentPhase(event),
       blocked:()=>!this.scene.isActive()||!!document.querySelector('dialog[open]')||!this.ready&&!this.presentation&&!this.refillPresentation,
       labelExclusions:()=>[...[this.heroActionButton,this.passiveHeroSkill?.anchor,this.inventoryButton,this.playButton,this.discardButton,this.rankButton,this.suitButton,this.aiButton].flatMap(o=>o?.active&&o.visible?[o.getBounds()]:[]),...(this.targetAttachment?.handoffEarExclusions()??[])],
-      sourceExclusions:()=>{const b=this.view.layout.scoreBoard,m=this.view.root.getWorldTransformMatrix(),points=[[b.x,b.y],[b.x+b.width,b.y],[b.x,b.y+b.height],[b.x+b.width,b.y+b.height]].map(([x,y])=>m.transformPoint(x,y)),x=Math.min(...points.map(p=>p.x)),y=Math.min(...points.map(p=>p.y));return[{x,y,width:Math.max(...points.map(p=>p.x))-x,height:Math.max(...points.map(p=>p.y))-y}];},
+      sourceExclusions:()=>{const l=this.view.layout,m=this.view.root.getWorldTransformMatrix(),rack=l.mode==='portrait'?l.slots.slice(0,this.run.jokers.length):[l.jokers];return [l.scoreBoard,...rack,l.playedArea].map(b=>{const points=[[b.x,b.y],[b.x+b.width,b.y],[b.x,b.y+b.height],[b.x+b.width,b.y+b.height]].map(([x,y])=>m.transformPoint(x,y)),x=Math.min(...points.map(p=>p.x)),y=Math.min(...points.map(p=>p.y));return{x,y,width:Math.max(...points.map(p=>p.x))-x,height:Math.max(...points.map(p=>p.y))-y};});},
     });
     this.xinRefillSequence=new XinRefillSequence(this);
     const carried=carriedToolAtEntry(controller.state,data?.carriedTool)?data?.carriedTool:undefined;
@@ -1231,8 +1231,10 @@ export class GameScene extends Phaser.Scene {
       this.previewHeroTargets(!this.refillHidden&&ids.length?{key:pending.discardCommandId+'/candidates',targetId:ids[0],targetIds:ids,selectedIds:selected,kind:'candidate',label:'候选',resolvedLabel:'已留',releaseReason:'laohuan.refill',confirmed:true,suppressSource:true,ignite:this.xinRefillSequence?.active===true}:undefined);return;
     }
     if(usesLaohuanRefill(this.run)){
-      const saved=this.appliedRefill,ids=saved?.runId===this.run.runId&&saved.stageIndex===this.run.stage?.index?saved.ids.filter(id=>this.run.handOrder.includes(id)):[];if(!ids.length)this.appliedRefill=undefined;
-      this.previewHeroTargets(ids.length?{key:saved!.eventId,targetId:ids[0],targetIds:ids,sourceTargetIds:(saved!.sourceIds??[]).filter(id=>ids.includes(id)),kind:'candidate',label:'已留',resolvedLabel:'已留',releaseReason:'laohuan.refill',confirmed:true}:undefined);return;
+      const saved=this.appliedRefill,find=usesLaohuanFind(this.run),prior=saved?.runId===this.run.runId&&saved.stageIndex===this.run.stage?.index?saved.ids:[],batch=find?this.run.stage?.laohuanFindBatch??[]:[],ids=(batch.length?batch:prior).filter(id=>this.run.handOrder.includes(id));if(!ids.length)this.appliedRefill=undefined;
+      const facts=find&&this.laohuanFindRank!==null?this.selectionPreview():undefined,group=facts?laohuanFindGroups(this.hand,facts.activeScoringIds,ids).find(g=>g.rank===this.laohuanFindRank):undefined;
+      if(group?.ids.length){this.previewHeroTargets({key:key(group.ids)+'/find/'+group.rank,targetId:group.ids[0],targetIds:group.ids,kind:'group',label:'寻得待放',resolvedLabel:'已寻得',releaseReason:'laohuan.find'});return;}
+      this.previewHeroTargets(ids.length?{key:saved?.eventId??JSON.stringify([this.run.runId,this.run.stage?.index,'retained',ids]),targetId:ids[0],targetIds:ids,sourceTargetIds:(saved?.sourceIds??[]).filter(id=>ids.includes(id)),kind:'candidate',label:'已留',resolvedLabel:'已留',releaseReason:'laohuan.refill',confirmed:true}:undefined);return;
     }
     if(usesAmoExile(this.run)){const choice=amoExileChoice(this.run,[...this.selectedIds]);if(this.amoExile&&choice.available)this.targetAttachment?.previewSushiKings(choice.discardedIds,amoExileCopy(this.run).factor);else this.previewHeroTargets(undefined);return;}
     if(this.assistProfile){
@@ -1243,7 +1245,7 @@ export class GameScene extends Phaser.Scene {
       const pending=touyeChoice(this.run).pending,ids=pending?.refill?.refilledIds.filter(id=>this.run.handOrder.includes(id));
       this.previewHeroTargets(ids?.length?{key:pending!.discardCommandId,targetId:ids[0],targetIds:ids,kind:'wager',label:'新·待判',resolvedLabel:'已参与',releaseReason:'touye.',confirmed:true}:undefined);return;
     }
-    const preview=this.selectionPreview(),main=preview?.activeScoringIds.length?preview.activeScoringIds:preview?.playedIds??[];
+    const preview=this.selectionPreview(),main=preview?.activeScoringIds??[];
     if(usesAzaoCharge(this.run)){
       const chosen=this.azaoRelease&&azaoChoice(this.run,preview?.type).available;
       this.previewHeroTargets(chosen&&main.length?{key:key(main),targetId:main[0],targetIds:main,kind:'group',label:'本手待放',resolvedLabel:'已释放',releaseReason:'azao.multiply-multiplier'}:undefined);return;
@@ -2318,7 +2320,7 @@ export class GameScene extends Phaser.Scene {
     if(benefit){this.statusText.setName('benefit/live').setText(readableMultiplierEffect(benefit.effect,event.value));this.statusText.setData('benefit',benefit);if(this.statusText.width>this.view.layout.status.width)this.statusText.setText(benefit.title+' · 结果见上手详情');}
 
     const plainExile=event.reasonKey==='amo.exile';
-    const heroAction=this.presentation?heroScoreAction(this.presentation.score,event,this.appliedRefill?.ids??[]):undefined;
+    const heroAction=this.presentation?heroScoreAction(this.presentation.score,event,this.presentation.retainedIds):undefined;
     // The saved target card owns this sample's pose and arrival, rather than a second portrait gesture.
     if(heroAction||plainExile)key=undefined;
     if(key&&(key.kind==='payoff'||key.kind==='burst')&&this.shownPayoffs.has(key.eventId))key=undefined;
@@ -2352,7 +2354,7 @@ export class GameScene extends Phaser.Scene {
       this.sushiSkillPayoff=payoff;
     }
     const shared={context,beat:timing,portrait:this.view.layout.mode==='portrait',liftRoom:18,effects:()=>!this.reducedMotion&&!this.presentation?.replay,targets:{H:this.scoreHeat,M:this.scoreMult},cells:{H:cells[0],M:cells[1]},animate:(config:Phaser.Types.Tweens.TweenBuilderConfig,c:EffectContext)=>this.animate(config,c),refresh:()=>this.fitScoreReadouts(),onRebound:(remaining:number)=>this.consumeScorePerformance(event,'rebound',{...timing,impact:remaining},context,number),onStep:(elapsed:number)=>{heroPose?.step(elapsed);kingCharge?.step(elapsed);listening?.step(elapsed);if(liue)this.liueSkillPayoff?.step(elapsed);if(plainExile)this.sushiSkillPayoff?.step(elapsed);},onDispose:()=>{heroPose?.dispose();kingCharge?.dispose();listening?.dispose();if(liue)this.liueSkillPayoff?.finishAnimation();if(plainExile)this.sushiSkillPayoff?.finishAnimation();}};
-    const heroStrike=heroAction&&(heroPose||kingCharge)&&this.view.root?.active?(heroAction.positive?prepareHeroScoreStrike(this,this.view.root,heroAction,heroCards,shared):prepareHeroLossPose(this,heroAction,heroCards,shared)):undefined;
+    const heroStrike=heroAction&&(heroPose||kingCharge||plainExile&&!this.reducedMotion&&!this.presentation?.replay)&&this.view.root?.active?(heroAction.positive?prepareHeroScoreStrike(this,this.view.root,heroAction,heroCards,shared):prepareHeroLossPose(this,heroAction,heroCards,shared)):undefined;
     if(heroPose&&!heroStrike)heroPose.dispose();if(listening&&!heroStrike)listening.dispose();
     const strike=heroStrike??(strikeCue&&marker?prepareJokerScoreStrike(this,this.view.root,marker,strikeCue,{...shared,onStep:undefined,onDispose:undefined,textureKey:jokerArtKey(event.sourceDefinitionId)??'',artBounds:marker.getData('scoreArtBounds')??{x:-32,y:-45,width:64,height:90},liftRoom:ownedJokerLiftRoom(marker,this.view.layout.mode==='portrait'?this.view.layout.hud.y+this.view.layout.hud.height+2:4)}):undefined);
     if((plainExile&&!heroStrike||heroAction&&!heroStrike)&&timing.phrase)timing.phrase={...timing.phrase,paired:false};
@@ -2393,8 +2395,8 @@ export class GameScene extends Phaser.Scene {
     if(context.signal.aborted)return;
     // The domain result is already saved. Only the display and SFX arrive with this hit.
     this.scoreTotal.setData('eventPhase','impact');process?.arrive();if(liue)this.liueSkillPayoff?.arrive();if(plainExile)this.sushiSkillPayoff?.arrive();
-    if(!this.presentation?.replay)this.targetAttachment?.release(event,context);
-    const retainedImpact=!this.presentation?.replay&&retainedRefillImpact(event,this.appliedRefill?.ids??[]);if(retainedImpact&&this.appliedRefill){this.targetAttachment?.impactRetainedCard(retainedImpact,event.eventId,context);this.appliedRefill.ids=this.appliedRefill.ids.filter(id=>id!==retainedImpact);}
+    if(!this.presentation?.replay){this.targetAttachment?.release(event,context);if(event.sourceType==='character'&&event.sourceDefinitionId==='erxiang')this.targetAttachment?.impactConfirmedTarget(event,context);}
+    const retainedImpact=!this.presentation?.replay&&retainedRefillImpact(event,this.presentation?.retainedIds??[]);if(retainedImpact&&this.presentation){if(!this.presentation.score.laohuanFind?.activeIds.includes(retainedImpact))this.targetAttachment?.impactRetainedCard(retainedImpact,event.eventId,context);this.presentation.retainedIds=this.presentation.retainedIds.filter(id=>id!==retainedImpact);if(this.appliedRefill)this.appliedRefill.ids=this.appliedRefill.ids.filter(id=>id!==retainedImpact);}
     const impactCue=!scoreArrival(event)&&this.presentation?sourceImpact(this.presentation.score,event):undefined,impactSource=impactCue?this.jokerViews.get(impactCue.instanceId):undefined;
     const releaseSourceImpact=impactCue&&impactSource?mountSourceImpact(this,impactSource,impactCue,context.signal):undefined;
     restoreKey?.strike?.();
@@ -2624,8 +2626,8 @@ export class GameScene extends Phaser.Scene {
   private async presentTrace(score:ScoreTrace,state:RunState,views:readonly CardView[],lifecycle:number,intent:number,beforeHeat=this.heat,replay=false,previousTrace:ScoreTrace|null=this.run.lastTrace,beforeHands?:number,beforeGold?:number,gifts:readonly SavedStageGift[]=[],heroReceipt?:{before:RunState;result:CommandResult<RunState>}):Promise<void> {
     this.effects.clear();const generation=this.effects.generation;
     const originHeat=replay?(BigInt(beforeHeat)>BigInt(score.finalScore)?BigInt(beforeHeat)-BigInt(score.finalScore):0n).toString():beforeHeat;
-    const orderedEvents=remainingScoreEvents(score).filter(event=>!isNeutralScoreReceipt(event)),phrase=scorePhrase(orderedEvents,this.stage.targetHeat,gameSession().speed,score,this.appliedRefill?.ids??[]);
-    const hand=score.cards,presentation={generation,lifecycle,intent,state,score,phrase,hand,displayHeat:beforeHeat,originHeat,replay,previousTrace,credited:replay,resourcePlayLeft:!replay&&beforeHands!==undefined?beforeHands-1:undefined,resourceGold:!replay?beforeGold:undefined,resourceTools:!replay?gifts[0]?.inventoryBefore:undefined,gifts:replay?[]:gifts};this.presentation=presentation;
+    const retainedIds=replay?[]:[...new Set([...(this.appliedRefill?.ids??[]),...(score.laohuanFind?.batchIds??[])])],orderedEvents=remainingScoreEvents(score).filter(event=>!isNeutralScoreReceipt(event)),phrase=scorePhrase(orderedEvents,this.stage.targetHeat,gameSession().speed,score,retainedIds);
+    const hand=score.cards,presentation={generation,lifecycle,intent,state,score,phrase,hand,retainedIds,displayHeat:beforeHeat,originHeat,replay,previousTrace,credited:replay,resourcePlayLeft:!replay&&beforeHands!==undefined?beforeHands-1:undefined,resourceGold:!replay?beforeGold:undefined,resourceTools:!replay?gifts[0]?.inventoryBefore:undefined,gifts:replay?[]:gifts};this.presentation=presentation;
     if(replay){
       this.handStart=0;
       this.cardViews.forEach(view=>{view.hit?.destroy();view.sheenTween?.remove();this.tweens.killTweensOf(view.container);view.container.destroy();});
@@ -2650,7 +2652,7 @@ export class GameScene extends Phaser.Scene {
     this.effects.enqueue(async context=>{
       const attachment=replay||score.amoExile?.use?undefined:savedHeroAttachment(score,this.run.characterId);
       if(!replay&&score.amoExile?.use)this.targetAttachment?.beginSushiDiscard(score,context);
-      else if(attachment){if(attachment.targetIds)this.targetAttachment?.retainTargets(attachment.targetIds);this.targetAttachment?.commit(attachment.event.eventId,context);}else this.targetAttachment?.clear();
+      else if(attachment){if(attachment.targetIds)this.targetAttachment?.retainTargets(attachment.targetIds);this.targetAttachment?.commit(attachment.event.eventId,context,attachment.targetIds??[]);}else if(!presentation.retainedIds.length)this.targetAttachment?.clear();
       this.scoreHaptic?.scope.cancel();this.scoreHaptic=replay?undefined:{generation:context.generation,scope:Haptics.shared.createScope(context.signal)};
       if(!replay)this.audio.playHand();
       await Promise.all([...(score.xiemuBurn?.cost&&!replay?[this.rollGold(score.xiemuBurn.goldBefore,score.xiemuBurn.goldAfter,Math.max(140,65*gameSession().speed),context,false)]:[]),...(beforeHands!==undefined&&!replay?[this.pulseResource('play',beforeHands,context,beforeHands-1)]:[]),...landing.map(async({view,box},i)=>{

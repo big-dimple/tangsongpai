@@ -19,6 +19,14 @@ it('enhancement/foil remain separate and every saved group conversion, including
  const r=await receipt(8,true),f=runtime(),options={context:{generation:1,signal:new AbortController().signal},beat,reduced:false,root:f.root,cards:r.selectedIds.map(id=>({id,container:f.card}))};expect(r.trace.events.filter(e=>e.reasonKey==='erxiang.handoff')).toHaveLength(5);expect(r.trace.events.some(e=>e.retriggerDepth===1)).toBe(true);expect(r.trace.events.some(e=>e.reasonKey.startsWith('edition.'))).toBe(true);
  for(const e of r.trace.events){const job=mountLiueSkillPayoff(f.scene,f.button,r.trace,e.eventId,options);expect(!!job).toBe(e.reasonKey==='erxiang.handoff');job?.dispose();}f.root.destroy();
 });
+it('labels only the saved retrigger transfers as retriggers, including in reduced motion',async()=>{
+ const r=await receipt(8,true),f=runtime(),events=r.trace.events.filter(e=>e.reasonKey==='erxiang.handoff'),cards=r.selectedIds.map(id=>({id,container:f.card}));
+ expect(events.some(e=>e.retriggerDepth===0)).toBe(true);expect(events.some(e=>e.retriggerDepth===1)).toBe(true);
+ for(const e of events)for(const reduced of [false,true]){const job=mountLiueSkillPayoff(f.scene,f.button,r.trace,e.eventId,{context:{generation:1,signal:new AbortController().signal},beat,reduced,root:f.root,cards})!;
+  job.charge(1);const flight=f.root.getByName('hero/liue-skill-flight') as any;if(!reduced)expect(flight.getByName('hero/liue-skill-packet').text).toBe((e.retriggerDepth?'重触 ':'')+'+8 倍率');else expect(flight).toBeNull();
+  job.arrive();expect(f.status.text).toBe(e.retriggerDepth?'重触已转入':'本次已转入');expect(f.label.text).toBe('听政 +8倍率');job.dispose();
+ }f.root.destroy();
+});
 it.each(['abort','hidden','blur','shutdown','destroy','button','card','root'] as const)('%s clears all transient ink and cannot revive the receipt',async end=>{
  const r=await receipt(),f=runtime(),abort=new AbortController(),doc=new Map<string,()=>void>(),win=new Map<string,()=>void>();document.addEventListener=((n:string,fn:()=>void)=>doc.set(n,fn)) as any;window.addEventListener=((n:string,fn:()=>void)=>win.set(n,fn)) as any;
  const job=mountLiueSkillPayoff(f.scene,f.button,r.trace,r.event.eventId,{context:{generation:1,signal:abort.signal},beat,reduced:false,root:f.root,cards:[{id:r.targetId,container:f.card}]})!;job.charge(1);job.arrive();

@@ -12,11 +12,12 @@ interface CostCard {id:string;container:Phaser.GameObjects.Container}
 interface Options {context:EffectContext;beat:ScoreBeat;reduced:boolean;root?:Phaser.GameObjects.Container;cards:readonly CostCard[];releaseKings?:()=>void;onDispose?:()=>void}
 let ordinal=0;
 /** Real saved cost kings shatter; ONE intact multiplier travels to the existing
- * skill control. Samples the shared score clock, with no rule or lasting buff. */
+ * skill control. Legacy no-K costs use a real discarded card as the origin,
+ * without a fracture. Samples the score clock, with no rule or lasting buff. */
 export function mountSushiSkillPayoff(scene:Phaser.Scene,button:Phaser.GameObjects.Rectangle|undefined,trace:ScoreTrace,eventId:string,options:Options){
  const receipt=savedSushiDiscardReceipt(trace,eventId),event=trace.events.find(e=>e.eventId===eventId),label=button?.getData('label') as Phaser.GameObjects.Text|undefined,status=button?.getData('skillStatus') as Phaser.GameObjects.Text|undefined;
  if(!receipt||!event||options.context.signal.aborted||!button?.active||!label?.active)return;
- const sourceIds=receipt.discardedIds.filter(id=>trace.cards.some(c=>c.id===id&&c.rank===13)),kings=sourceIds.flatMap(id=>options.cards.filter(c=>c.id===id&&c.container.active)),source=kings[0];
+ const kingIds=receipt.discardedIds.filter(id=>trace.cards.some(c=>c.id===id&&c.rank===13)),kings=kingIds.flatMap(id=>options.cards.filter(c=>c.id===id&&c.container.active)),source=kings[0]??(!kingIds.length?receipt.discardedIds.flatMap(id=>options.cards.filter(c=>c.id===id&&c.container.active))[0]:undefined),sourceIds=kingIds.length?kingIds:source?[source.id]:[];
  const token={eventId,value:'本次得分 ×'+readableFractionText(event.value),arrived:false,sourceIds,originId:source?.id},rest={text:label.text,color:label.style.color,sx:label.scaleX,sy:label.scaleY,y:label.y,status:status?.text,statusColor:status?.style.color};
  let disposed=false,elapsed=0,landedAt:number|undefined,flight:Phaser.GameObjects.Container|undefined,packet:Phaser.GameObjects.Text|undefined,flare:Phaser.GameObjects.Graphics|undefined,origin:{x:number;y:number}|undefined,sacrificed=false;
  const textures:string[]=[],hiddenKings:{container:Phaser.GameObjects.Container;alpha:number}[]=[],pieces:{image:Phaser.GameObjects.Image;x:number;y:number;dx:number;dy:number;angle:number}[]=[];
@@ -48,7 +49,7 @@ export function mountSushiSkillPayoff(scene:Phaser.Scene,button:Phaser.GameObjec
   if(token.arrived){refresh();const t=Math.max(0,Math.min(1,(time-(landedAt??time))/Math.min(220,options.beat.impact)));if(flare?.active){const at=destination(),w=label.width+12+8*t,h=label.height+8+5*t;flare.clear().lineStyle(2,0xd5aa57,.85*(1-t)).strokeRoundedRect(at.x-w/2,at.y-h/2,w,h,5);for(const sign of [-1,1])flare.beginPath().moveTo(at.x+sign*(w/2+3),at.y).lineTo(at.x+sign*(w/2+7+6*t),at.y).strokePath();}if(t===1)finishAnimation();return;}
   if(!flight?.active||!packet?.active||!source?.container.active)return;
   const b=source.container.getBounds(),current=local(b.centerX,b.centerY);if(!origin||!sacrificed)origin=current;
-  if(time>=fractureAt)sacrifice();
+  if(kings.length&&time>=fractureAt)sacrifice();
   const f=Math.max(0,Math.min(1,(time-fractureAt)/Math.max(1,fractureEnd-fractureAt)));flight.setData('fractureProgress',f);for(const piece of pieces)piece.image.setPosition(piece.x+piece.dx*f,piece.y+piece.dy*f+9*f*f).setAlpha((1-f)**1.4).setAngle(piece.angle*f);
   const target=destination(),p=Math.max(0,Math.min(1,(time-options.beat.windup)/Math.max(1,options.beat.flight)));
   if(time<options.beat.windup){packet.setVisible(false);flight.setData('phase',sacrificed?'sacrifice':'charge');}
