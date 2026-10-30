@@ -1,9 +1,0 @@
-{
-  "cloth2.ogg": {
-    "url": "https://raw.githubusercontent.com/jarlah/dungeon-haskell/master/assets/sfx/miss.ogg",
-    "bytes": 11787,
-    "sha256": "8a7451193c38bc05483aec25dd193e163a15d44cf7fff04ac7912573231b0201",
-    "license": "CC0-1.0",
-    "heard": false
-  }
-}
