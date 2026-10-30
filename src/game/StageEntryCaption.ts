@@ -10,6 +10,7 @@ export function scheduleStageEntryCaption(scene:Phaser.Scene,view:SceneView,copy
  const stop=()=>{if(stopped)return;stopped=true;if(delay!==undefined)window.clearTimeout(delay);if(expiry!==undefined)window.clearTimeout(expiry);scene.events.off('update',check);scene.events.off('shutdown',stop);if(group?.active)group.destroy();};
  const check=()=>{if(!valid()||document.hidden||document.querySelector('dialog[open]'))stop();};
  scene.events.once('shutdown',stop);
+ scene.events.on('update',check);
  // The full-screen entrance lasts 1.25s. Its caption continues only after the veil has gone.
  delay=window.setTimeout(()=>{
   delay=undefined;if(!valid()||document.hidden||document.querySelector('dialog[open]')){stop();return;}
@@ -20,6 +21,6 @@ export function scheduleStageEntryCaption(scene:Phaser.Scene,view:SceneView,copy
   group=view.add(scene.add.container(Math.round(box.x*density)/density,Math.round(box.y*density)/density)).setName('opening/continuation').setData('cueBounds',box);
   const sheet=scene.add.graphics().fillStyle(0x30251f,.98).fillRoundedRect(0,0,box.width,box.height,6).lineStyle(1,0xc9a65f,.95).strokeRoundedRect(.5,.5,box.width-1,box.height-1,6);
   label.setPosition(12,10);crispText(label);group.add([sheet,label]);
-  scene.events.on('update',check);expiry=window.setTimeout(stop,2200);
+  expiry=window.setTimeout(stop,2200);
  },delayMs);
 }
