@@ -8,7 +8,7 @@
 
 建议使用 Node.js 22 和 npm：
 
-以下命令供开发机使用；main 的 GitHub Actions 负责独立 CI 和 Release 产物，服务器接收并发布产物。实际工作流和部署状态须单独核实，详见 [ENGINEERING](ENGINEERING.md)。
+以下命令供开发机使用。main 的 GitHub Actions 负责 CI 和 Release；服务器消费契约及实际安装核验见 [ENGINEERING](ENGINEERING.md)。
 
 ```bash
 npm ci
