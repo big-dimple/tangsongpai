@@ -19,7 +19,7 @@ export function drawMobileSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run
  const paper=view.add(scene.add.graphics().setName('result-art/stage').setData('bounds',b));
  // The masthead carries only the result. The played hand gets its own full-width
  // receipt below, rather than competing with the number in a narrow right rail.
- const tag=fit(textX,b.y+18,skipped?'本场跳过':'本场总热度',14,textWidth-12,C.jade,'result/hand');
+ const tag=fit(textX,b.y+18,skipped?'本场跳过':'本场总得分',14,textWidth-12,C.jade,'result/hand');
  const score=fit(textX,tag.y+tag.height+8,heatText(facts.stageTotal),compact?38:50,textWidth-12,lost?C.ink:facts.tier>=2?C.red:C.ink,'result/score').setFontFamily(SCORE_FONT).setFontStyle('bold').setData('exactScore',facts.stageTotal).setData('mobilePoster',true);
  if(score.width>textWidth-12)score.setScale((textWidth-12)/score.width);
  const formula=formulaOverride?.split(' · ')[0]??(skipped?'没有本场计分':lost?'目标 '+heatText(run.stage!.targetHeat):'目标 '+heatText(run.stage!.targetHeat)+'\n已过关');

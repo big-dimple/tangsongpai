@@ -46,7 +46,7 @@ const all=[{name:'pc',width:1366,height:768,phone:false},{name:'phone390',width:
 const names=(process.env.FULLRACK_VIEWPORTS??'pc,phone390,phone320').split(',');
 const modes=(process.env.FULLRACK_MODES??'normal').split(',');
 const browser=await chromium.launch({executablePath:process.env.SMOKE_CHROMIUM_EXECUTABLE_PATH??'/usr/bin/chromium',args:['--disable-gpu','--disable-software-rasterizer']});
-const report={scope:'Validated controlled five-joker inventory and public hand; actual GameScene, native skill/play input and saved score events. Chromium software emulation; not natural acquisition, live site, physical hardware or aesthetic acceptance. Video is silent.',legacyCommit:legacyCommit??null,cases:[]};
+const report={scope:'Validated controlled five-joker inventory and public hand; actual GameScene, native skill/play input, saved score events and post-mix browser audio. Chromium software emulation; not natural acquisition, live site, physical hardware, human listening or aesthetic acceptance.',legacyCommit:legacyCommit??null,cases:[]};
 try {
  for(const spec of all.filter(x=>names.includes(x.name)))for(const mode of modes){
   const row={...spec,mode,errors:[]};report.cases.push(row);
@@ -57,6 +57,8 @@ try {
     const speed=mode==='speed2'?2:mode==='speed4'?4:1;
     localStorage.setItem('tangsongpai-presentation-v1',JSON.stringify({speed,reducedMotion:mode==='reduced'}));
     localStorage.setItem('tangsongpai-audio-v2',JSON.stringify({version:2,music:0,sfx:mode==='muted'?0:.8}));
+    const original=AudioContext.prototype.createWaveShaper;
+    AudioContext.prototype.createWaveShaper=function(...args){const node=original.apply(this,args);window.__fullrackCeiling=node;return node;};
    },mode);
    await page.route('**/__fullrack-bootstrap',route=>route.fulfill({contentType:'text/html',body:'<!doctype html><title>controlled checkpoint</title>'}));
    await page.goto(`http://127.0.0.1:${port}/__fullrack-bootstrap`);
@@ -69,13 +71,16 @@ try {
    for(const id of selectedIds)await tapUI(page,'game','card/'+id,spec.phone);
    await tapUI(page,'game','hero/action-shortcut',spec.phone);
    const index=before.handOrder.indexOf(selectedIds[0])+1,choice=page.getByRole('button',{name:new RegExp('^第'+index+'张 · ')});if(spec.phone)await choice.tap();else await choice.click();
+   await page.waitForFunction(()=>{const s=window.__harness.game.scene.getScene('game');return s.audio?.context?.state==='running'&&window.__fullrackCeiling;});
    await page.evaluate(()=>{
-    const g=window.__harness.game,s=g.scene.getScene('game');
-    const stream=g.canvas.captureStream(25),recorder=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp8'}),chunks=[];
+    const g=window.__harness.game,s=g.scene.getScene('game'),engine=s.audio,dest=engine.context.createMediaStreamDestination();window.__fullrackCeiling.connect(dest);
+    const capture=g.canvas.captureStream(25),stream=new MediaStream([...capture.getVideoTracks(),...dest.stream.getAudioTracks()]),recorder=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp8,opus'}),chunks=[];
     recorder.ondataavailable=e=>chunks.push(e.data);recorder.start();
-    const p=window.__fullrack={recorder,chunks,stream,frames:[],sources:[],shots:{}};
+    const p=window.__fullrack={recorder,chunks,stream,dest,frames:[],sources:[],shots:{},events:[],fires:[]};
+    const originalEvent=s.showScoreEvent;s.showScoreEvent=function(event,...args){p.events.push({at:performance.now(),eventId:event.eventId});return originalEvent.call(this,event,...args);};
+    const originalFire=engine.playHighMultiplierFire;engine.playHighMultiplierFire=function(options){const result=originalFire.call(this,options);p.fires.push({at:performance.now(),active:[...this.voices].some(v=>v.highMultiplierFire)});return result;};
     const walk=list=>list.flatMap(o=>[o,...(o.list?walk(o.list):[])]);
-    p.tick=()=>{if(!s.scene.isActive())return;const objects=walk(s.view.root?.list??[]),current=objects.find(o=>o.name==='hero/target-current'&&o.active&&o.visible&&(o.getData('stats')?.electricSegments??0)>0);if(current){const stats=current.getData('stats');p.sources.push({at:performance.now(),eventId:current.getData('eventId'),progress:current.getData('progress'),burstSegments:stats.sourceBurstSegments??0,fallbackSegments:stats.scoreFallbackSegments??0});if(!p.shots.current)p.shots.current=g.canvas.toDataURL('image/png').split('base64,')[1];if(stats.scoreFallbackSegments>0&&!p.shots.fallback)p.shots.fallback=g.canvas.toDataURL('image/png').split('base64,')[1];}const a=objects.find(o=>o.name==='score/high-multiplier-aura'&&o.active&&o.visible);if(!a)return;const count=a.getData('visibleSegments')??0;p.frames.push({at:performance.now(),elapsed:a.getData('elapsed'),segments:count,eventId:a.getData('eventId')});if(count>0&&!p.shots.first)p.shots.first=g.canvas.toDataURL('image/png').split('base64,')[1];if(count>0&&a.getData('elapsed')>=600&&!p.shots.peak)p.shots.peak=g.canvas.toDataURL('image/png').split('base64,')[1];};g.events.on('postrender',p.tick);
+    p.tick=()=>{if(!s.scene.isActive())return;const objects=walk(s.view.root?.list??[]),current=objects.find(o=>o.name==='hero/target-current'&&o.active&&o.visible&&(o.getData('stats')?.electricSegments??0)>0);if(current){const stats=current.getData('stats');p.sources.push({at:performance.now(),eventId:current.getData('eventId'),progress:current.getData('progress'),burstSegments:stats.sourceBurstSegments??0,fallbackSegments:stats.scoreFallbackSegments??0});if(!p.shots.current)p.shots.current=g.canvas.toDataURL('image/png').split('base64,')[1];if(stats.scoreFallbackSegments>0&&!p.shots.fallback)p.shots.fallback=g.canvas.toDataURL('image/png').split('base64,')[1];}const a=objects.find(o=>o.name==='score/high-multiplier-aura'&&o.active&&o.visible);if(!a)return;const count=a.getData('visibleSegments')??0;p.frames.push({at:performance.now(),elapsed:a.getData('elapsed'),segments:count,eventId:a.getData('eventId'),eventCount:p.events.length,fireVoices:[...engine.voices].filter(v=>v.highMultiplierFire).length});if(count>0&&!p.shots.first)p.shots.first=g.canvas.toDataURL('image/png').split('base64,')[1];if(count>0&&a.getData('elapsed')>=600&&!p.shots.peak)p.shots.peak=g.canvas.toDataURL('image/png').split('base64,')[1];if(count>0&&p.events.length>=2&&!p.shots.scoring)p.shots.scoring=g.canvas.toDataURL('image/png').split('base64,')[1];};g.events.on('postrender',p.tick);
    });
    await tapUI(page,'game','action/play',spec.phone);
    await page.waitForFunction(seq=>window.__harness.game.registry.get('runController').state.commandSeq>seq,before.commandSeq);
@@ -88,11 +93,21 @@ try {
     assert.equal(row.speedChangeClean,true,'changing speed releases the existing visual immediately');
    }
    await page.waitForFunction(()=>{const g=window.__harness.game,s=g.scene.getScene('game');return g.scene.isActive('intermission')||s.ready&&!s.playing&&!s.presentation;});
-   const result=await page.evaluate(async()=>{const g=window.__harness.game,p=window.__fullrack;g.events.off('postrender',p.tick);await new Promise(resolve=>{p.recorder.onstop=resolve;p.recorder.stop();});const bytes=[...new Uint8Array(await new Blob(p.chunks,{type:'video/webm'}).arrayBuffer())];for(const t of p.stream.getTracks())t.stop();return{bytes,frames:p.frames,sources:p.sources,shots:p.shots};});
+   const result=await page.evaluate(async()=>{const g=window.__harness.game,p=window.__fullrack,s=g.scene.getScene('game');g.events.off('postrender',p.tick);await new Promise(resolve=>{p.recorder.onstop=resolve;p.recorder.stop();});const bytes=[...new Uint8Array(await new Blob(p.chunks,{type:'video/webm'}).arrayBuffer())];for(const t of p.stream.getTracks())t.stop();window.__fullrackCeiling.disconnect(p.dest);return{bytes,frames:p.frames,sources:p.sources,events:p.events,fires:p.fires,voices:[...s.audio.voices].filter(v=>v.highMultiplierFire).length,shots:p.shots};});
    await writeFile(resolve(out,`${spec.name}-${mode}.webm`),Buffer.from(result.bytes));for(const [k,v]of Object.entries(result.shots))await writeFile(resolve(out,`${spec.name}-${mode}-${k}.png`),Buffer.from(v,'base64'));
-   row.frames=result.frames;row.sources=result.sources;row.score=after.lastTrace.finalScore;row.crossing=crossing.eventId;
+   row.frames=result.frames;row.sources=result.sources;row.events=result.events;row.fires=result.fires;row.remainingFireVoices=result.voices;row.score=after.lastTrace.finalScore;row.crossing=crossing.eventId;
    if(mode==='reduced')assert.equal(result.frames.length,0,'reduced motion has no animated aura');else assert.ok(result.frames.some(f=>f.segments>0),'full rack must not eliminate every flame');
-   if(mode==='normal')assert.ok(result.sources.some(s=>s.eventId===crossing.eventId&&s.fallbackSegments>0),'full rack needs a visible source cue for the actual committed event');
+   if(mode==='normal'){
+    assert.ok(result.sources.some(s=>s.eventId===crossing.eventId),'full rack needs a visible source cue for the actual committed event');
+    const visible=result.frames.filter(f=>f.segments>0);assert.ok(result.events.length>1);
+    assert.ok(visible[0].at<result.events[0].at,'flames start before the first actual scoring event');
+    assert.ok(visible.at(-1).at>=result.events.at(-1).at,'flames persist through the last scoring event');
+    assert.ok(result.fires.some(f=>f.active),'the fire audio voice actually started');
+    assert.ok(visible.filter(f=>f.at>=result.fires[0].at&&f.at<=result.events.at(-1).at).every(f=>f.fireVoices===1),'the fire stays active through the scoring events');
+   }
+   assert.ok(result.frames.every(f=>f.fireVoices<=1),'the fire audio must not stack');
+   assert.equal(result.voices,0,'no fire voice remains after presentation');
+   if(mode==='muted')assert.ok(result.fires.every(f=>!f.active),'muted fire does not start an audio voice');
    assert.deepEqual(row.errors,[]);row.status='PASS';console.log(`${spec.name}-${mode} PASS score=${row.score} frames=${row.frames.length}`);
   }catch(error){row.status='FAIL';row.error=String(error.stack??error);console.error(row.error);await page.screenshot({path:resolve(out,`${spec.name}-${mode}-failure.png`)}).catch(()=>{});}
   finally{await context.close();await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2));}

@@ -48,7 +48,7 @@ function cueForScoreEvent(trace:ScoreTrace,event:ScoreEvent):ScoreHighMultiplier
 }
 
 /**
- * Inspect a saved scoring trace at the event's impact, never a hand preview.
+ * Inspect a committed scoring trace, never a hand preview.
  * One hand can yield several eligible events; the presentation owns its own cap
  * and cancellation. Replay is explicit so opening the saved history stays quiet.
  */

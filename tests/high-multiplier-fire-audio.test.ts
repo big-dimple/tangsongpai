@@ -33,31 +33,30 @@ describe('high multiplier flame audio',()=>{
     expect(samples.every(Number.isFinite)).toBe(true);
     expect(Math.max(...samples.map(Math.abs))).toBeLessThan(1);
     expect(Math.sqrt(samples.reduce((sum:number,n:number)=>sum+n*n,0)/samples.length)).toBeGreaterThan(.05);
+    const energy=samples.reduce((sum:number,n:number)=>sum+n*n,0);
+    const change=samples.reduce((sum:number,n:number,i:number)=>i?sum+(n-samples[i-1])**2:sum,0);
+    expect(change/energy).toBeLessThan(.8); // Bounds sharp sample-to-sample energy at this fixture's 8 kHz.
+    expect(samples.at(-1)).toBeCloseTo(samples[0],7); // The sustained loop has no boundary click.
   });
 
-  it.each([1,2,4] as const)('starts at the visual cue and ends after 1.7 / %i seconds without changing pitch',speed=>{
+  it.each([1,2,4] as const)('sustains at %ix until the owner requests a fade without changing pitch',speed=>{
     const {engine,inside,context,gains,sources,options}=fixture();
-    engine.playHighMultiplierFire({...options,speed});
+    const fire=engine.playHighMultiplierFire({...options,speed});
     expect(sources).toHaveLength(1);
-    const source=sources[0],voice=[...inside.voices][0] as any,duration=1.7/speed;
+    const source=sources[0],voice=[...inside.voices][0] as any,duration=.45/speed;
     expect(source.start).toHaveBeenCalledWith(context.currentTime);
-    expect(source.stop).toHaveBeenCalledWith(context.currentTime+duration);
+    expect(source.loop).toBe(true);expect(source.stop).not.toHaveBeenCalled();
     expect(source.playbackRate.value).toBe(1);
     expect(voice.gain.connect).toHaveBeenCalledWith(gains.sfx);
+    fire.fadeOut(450/speed);
+    expect(source.stop).toHaveBeenCalledWith(context.currentTime+duration);
     expect(voice.gain.gain.linearRampToValueAtTime).toHaveBeenLastCalledWith(0,context.currentTime+duration);
-    expect(voice.peak).toBeLessThanOrEqual(.16);
+    expect(voice.peak).toBeLessThanOrEqual(.06);
   });
 
-  it.each([1,2,4] as const)('uses only the remaining visible time at %ix when the first flame is delayed',speed=>{
-    const {engine,context,sources,options}=fixture();
-    engine.playHighMultiplierFire({...options,speed,remainingMs:1300});
-    const duration=1.3/speed;expect(sources[0].stop).toHaveBeenCalledWith(context.currentTime+duration);
-  });
-
-  it('does not start an invalid or already-finished visual window',()=>{
-    const {engine,sources,options}=fixture();
-    for(const remainingMs of [0,-1,Number.NaN,Number.POSITIVE_INFINITY])engine.playHighMultiplierFire({...options,remainingMs});
-    expect(sources).toHaveLength(0);
+  it('stops safely when asked to fade for an invalid duration',()=>{
+    const {engine,inside,sources,options}=fixture(),fire=engine.playHighMultiplierFire(options);
+    fire.fadeOut(Number.NaN);expect(inside.voices.size).toBe(0);expect(sources[0].disconnect).toHaveBeenCalledOnce();
   });
 
   it('layers over a real score impact without consuming its numeric voice budget or shortening its fire tail',()=>{
@@ -76,11 +75,11 @@ describe('high multiplier flame audio',()=>{
     const first=engine.playHighMultiplierFire(options);
     for(let i=0;i<40;i++)engine.playHighMultiplierFire(options);
     expect(sources).toHaveLength(1);expect(inside.voices.size).toBe(1);
-    first();first();expect(inside.voices.size).toBe(0);
+    first.stop();first.stop();expect(inside.voices.size).toBe(0);
     context.currentTime+=.1;
-    const second=engine.playHighMultiplierFire(options);first();
+    const second=engine.playHighMultiplierFire(options);first.stop();
     expect(sources).toHaveLength(2);expect(buffers).toHaveLength(1);expect(inside.voices.size).toBe(1);
-    second();expect(inside.voices.size).toBe(0);
+    second.stop();expect(inside.voices.size).toBe(0);
   });
 
   it('cleans up on ended or abort, including its abort listener',()=>{
@@ -117,9 +116,9 @@ describe('high multiplier flame audio',()=>{
     if(boundary==='scene')engine.setScene('table');
     if(boundary==='cancel')engine.cancelPresentation();
     if(boundary==='score-stop')engine.stopScoreFire();
-    if(boundary==='dispose')dispose();
+    if(boundary==='dispose')dispose.stop();
     expect(inside.voices.size).toBe(0);expect(sources[0].disconnect).toHaveBeenCalledOnce();
-    dispose();engine.stopScoreFire();expect(sources[0].disconnect).toHaveBeenCalledOnce();
+    dispose.stop();engine.stopScoreFire();expect(sources[0].disconnect).toHaveBeenCalledOnce();
   });
 
   it('does not evict existing or already scheduled effects when the shared voice budget is full',()=>{
@@ -147,6 +146,6 @@ describe('high multiplier flame audio',()=>{
     const remove=vi.spyOn(controller.signal,'removeEventListener');
     const dispose=engine.playHighMultiplierFire(options);
     expect(inside.voices.size).toBe(0);expect(remove).toHaveBeenCalledWith('abort',expect.any(Function));
-    expect(()=>dispose()).not.toThrow();
+    expect(()=>dispose.stop()).not.toThrow();
   });
 });

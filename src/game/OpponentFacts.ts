@@ -36,8 +36,8 @@ export function opponentSavedStatus(trace:ScoreTrace|null|undefined):string {
 export function opponentOutcome(run:Pick<R2RunState,'phase'|'stage'>,trace:ScoreTrace):OpponentBeat|undefined {
   if(run.stage?.boss?.definitionId!=='B05'||trace.bossContext?.boss?.definitionId!=='B05')return;
   const final=finalResultEvent(trace);if(!final)return;
-  if(run.phase==='stage-cleared'||run.phase==='run-won')return {kind:'won',quote:'你的招，我认了。',title:'回音墙 · 你赢了这场',effect:heatText(run.stage.heat)+' / '+heatText(run.stage.targetHeat)+' 热度',eventId:final.eventId};
-  if(run.phase==='run-lost')return {kind:'lost',quote:'这一场，我接住了。',title:'回音墙 · 本场未过',effect:heatText(run.stage.heat)+' / '+heatText(run.stage.targetHeat)+' 热度',eventId:final.eventId};
+  if(run.phase==='stage-cleared'||run.phase==='run-won')return {kind:'won',quote:'你的招，我认了。',title:'回音墙 · 你赢了这场',effect:heatText(run.stage.heat)+' / '+heatText(run.stage.targetHeat)+' 分',eventId:final.eventId};
+  if(run.phase==='run-lost')return {kind:'lost',quote:'这一场，我接住了。',title:'回音墙 · 本场未过',effect:heatText(run.stage.heat)+' / '+heatText(run.stage.targetHeat)+' 分',eventId:final.eventId};
 }
 /** Ordered key cues only. Ordinary repeats, opening and unconfirmed facts add no waiting slot. */
 export function opponentCuePlan(run:Pick<R2RunState,'phase'|'stage'>,trace:ScoreTrace,shown:ReadonlySet<string>,replay=false):OpponentCue[] {

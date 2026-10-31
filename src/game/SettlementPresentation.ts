@@ -97,7 +97,7 @@ export function drawSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2Run
  view.add(paper);
  const paperTexture=scene.textures.exists('p00-paper')?view.add(scene.add.tileSprite(b.x+3,b.y+3,b.width-6,b.height-6,'p00-paper').setOrigin(0).setAlpha(.08)):undefined;
  const main=p.score,compact=p.compact;
- const hand=skipped?'本场跳过':'本场总热度';
+ const hand=skipped?'本场跳过':'本场总得分';
  const tag=fit(view,main.x,main.y,hand,14,main.width,C.jade,'result/hand');
  // The stage total is the result. The last trace explains one contributing hand only.
  const exactScore=facts.stageTotal,scoreLabel=(exactScore.length>15&&/[1-9]/.test(exactScore.slice(3))?'≈':'')+heatText(exactScore);

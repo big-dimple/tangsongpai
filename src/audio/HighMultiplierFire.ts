@@ -1,6 +1,6 @@
-/** A short, original synthetic fire: turbulent low air and irregular sparks.
- * No recording or gameplay RNG is used. Cache the resulting buffer per context. */
-export const HIGH_MULTIPLIER_FIRE_SECONDS = 1.7;
+/** Original synthetic low fire and slowly varying air, with no crackle samples
+ * or gameplay RNG. The loop is cached per audio context. */
+export const HIGH_MULTIPLIER_FIRE_SECONDS = 8;
 
 export function createHighMultiplierFire(context: BaseAudioContext): AudioBuffer {
   const rate = context.sampleRate;
@@ -11,21 +11,24 @@ export function createHighMultiplierFire(context: BaseAudioContext): AudioBuffer
     seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5;
     return (seed >>> 0) / 0x100000000;
   };
-  const lowStep = 1 - Math.exp(-2 * Math.PI * 155 / rate);
-  const airStep = 1 - Math.exp(-2 * Math.PI * 2100 / rate);
-  const swayStep = 1 - Math.exp(-1 / (rate * .035));
-  const sparkDecay = Math.exp(-1 / (rate * .006));
-  let low = 0, air = 0, sway = .8, target = .8, nextSway = 0, spark = 0;
+  const lowStep = 1 - Math.exp(-2 * Math.PI * 125 / rate);
+  const airStep = 1 - Math.exp(-2 * Math.PI * 650 / rate);
+  const swayStep = 1 - Math.exp(-1 / (rate * .22));
+  let low = 0, air = 0, sway = .8, target = .8, nextSway = 0;
   for (let i = 0; i < data.length; i++) {
     const noise = random() * 2 - 1;
     low += lowStep * (noise - low);
     air += airStep * (noise - air);
-    if (--nextSway <= 0) { target = .5 + random() * .65; nextSway = rate * (.03 + random() * .09); }
+    if (--nextSway <= 0) { target = .48 + random() * .64; nextSway = rate * (.35 + random() * .55); }
     sway += swayStep * (target - sway);
-    spark *= sparkDecay;
-    if (random() < 25 / rate) spark = Math.min(1, spark + .3 + random() * .7);
-    // Soft saturation keeps rare coincident sparks bounded before the mix bus.
-    data[i] = Math.tanh((low * 2.5 + (air - low) * .8) * sway + (noise - air) * spark * .6);
+    data[i] = Math.tanh((low * 3.2 + (air - low) * 1.4) * sway);
+  }
+  // Return to the first sample smoothly so a long scoring sequence can loop
+  // without a discontinuity or a sharp transient at the boundary.
+  const tail = Math.min(data.length, Math.ceil(rate * .2)), anchor = data[0];
+  for (let i = 0; i < tail; i++) {
+    const t = i / Math.max(1, tail - 1), blend = t * t * (3 - 2 * t), index = data.length - tail + i;
+    data[index] = data[index] * (1 - blend) + anchor * blend;
   }
   return buffer;
 }

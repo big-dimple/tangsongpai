@@ -196,7 +196,7 @@ import {savedXinRefillLock} from './XinRefillLock';
 import {XinRefillSequence,xinRefillEyeSlot} from './XinRefillSequence';
 import {cssViewport} from '../platform/Viewport';
 import {firstScoreHighMultiplierCue} from './ScoreHighMultiplierCue';
-import {mountHighMultiplierAura} from './HighMultiplierAura';
+import {HIGH_MULTIPLIER_FADE_MS,mountHighMultiplierAura} from './HighMultiplierAura';
 type KeyCueCleanup=(()=>void)&{hero?:boolean;strike?:()=>void;release?:()=>Promise<void>};
 
 const MAX_SELECTED = R2_LIMITS.maxSelected;
@@ -216,7 +216,7 @@ const PIP_LAYOUTS: Record<number,ReadonlyArray<readonly [number,number]>> = {
   10:[[-.34,-.5],[.34,-.5],[0,-.335],[-.34,-.17],[.34,-.17],[-.34,.17],[.34,.17],[0,.335],[-.34,.5],[.34,.5]],
 };
 const ENHANCEMENT_UI={
-  'heat-paper':{name:'热度纸',mark:'热',ink:0xa34c31,text:'本牌计分时，热度 +20。'},
+  'heat-paper':{name:'筹码纸',mark:'筹',ink:0xa34c31,text:'本牌计分时，筹码 +20。'},
   'multiplier-paper':{name:'倍率纸',mark:'倍',ink:0xa63d39,text:'本牌计分时，倍率 +2。'},
   'glass-paper':{name:'玻璃纸',mark:'玻',ink:0x287687,text:'本牌计分时，倍率 ×1.5；本次出牌结算后有 1/4 概率销毁。'},
   'voice-paper':{name:'留声纸',mark:'声',ink:0x47627d,text:'本牌留在手中时，倍率 +1。'},
@@ -282,7 +282,7 @@ export class GameScene extends Phaser.Scene {
   private ownedDrag?:OwnedJokerDragVisual;
   private lifecycle=0;
   private intent=0;
-  private presentation?:{generation:number;lifecycle:number;intent:number;state:RunState;score:ScoreTrace;phrase:Map<string,ScoreBeat>;hand:readonly PlayingCard[];retainedIds:string[];displayHeat:string;originHeat:string;replay:boolean;previousTrace:ScoreTrace|null;credited:boolean;resourcePlayLeft?:number;resourceGold?:number;resourceTools?:number;gifts:readonly SavedStageGift[];auraEventId?:string;auraPlayed:boolean};
+  private presentation?:{generation:number;lifecycle:number;intent:number;state:RunState;score:ScoreTrace;phrase:Map<string,ScoreBeat>;hand:readonly PlayingCard[];retainedIds:string[];displayHeat:string;originHeat:string;replay:boolean;previousTrace:ScoreTrace|null;credited:boolean;resourcePlayLeft?:number;resourceGold?:number;resourceTools?:number;gifts:readonly SavedStageGift[];auraEventId?:string;auraPlayed:boolean;auraEnding:boolean};
   private characterId!: CharacterId;
   private laohuanFindRank:number|null=null;
   private erxiangTargetId:string|null=null;
@@ -741,7 +741,7 @@ export class GameScene extends Phaser.Scene {
     this.goldText=l.shortLandscape?v.text(h.x+h.width-12,goldY,'',14,C.brass).setOrigin(1,0):v.text(h.x+12,goldY,'',14,l.pc?C.mutedInk:C.brass,h.width-24);
     if(!portrait){
 
-      v.text(h.x+12,l.mode==='desktop'?sidebar.target.y:h.y+(l.shortLandscape?130:146),'目标 '+heatText(this.stage.targetHeat),l.pc?24:14,C.jade,h.width-24).setName('hud/target');
+      v.text(h.x+12,l.mode==='desktop'?sidebar.target.y:h.y+(l.shortLandscape?130:146),'目标分数 '+heatText(this.stage.targetHeat),l.pc?24:14,C.jade,h.width-24).setName('hud/target');
       const progressY=toolInventoryProgressY(l,l.mode==='desktop'?sidebar.progress.y:h.y+(l.shortLandscape?152:168));v.rect({x:h.x+12,y:progressY,width:h.width-24,height:5},0x45595b).setStrokeStyle();
       this.progressBar=v.rect({x:h.x+12,y:progressY,width:1,height:5},T.jade).setOrigin(0,.5).setPosition(h.x+12,progressY+2.5).setStrokeStyle();
     }
@@ -753,7 +753,7 @@ export class GameScene extends Phaser.Scene {
     }
     this.renderJokerRack();
     const s=l.scoreBoard;
-    this.resultText=v.text(s.x+8,s.y+6,l.pc?'本手计分 · 等待选牌':'选牌，准备开演',17,C.ink).setName('score/source');
+    this.resultText=v.text(s.x+8,s.y+6,l.pc?'本手计分 · 等待选牌':'选牌，准备出牌',17,C.ink).setName('score/source');
     this.bossSuitRescueButton=undefined;this.bossSuitRescuePreview=undefined;
     if(usesBossSuitRescue(this.run)&&bossSuitRescueQualified(this.run.stage!.boss,this.run.stage!.bossSuitRescue)){
       this.bossSuitRescueButton=v.button({x:s.x+s.width-150,y:s.y+3,width:144,height:44},bossSuitRescueLabel(this.run),'boss/suit-rescue',()=>this.inspectBossSuitRescue(),this.ready);
@@ -761,7 +761,7 @@ export class GameScene extends Phaser.Scene {
       this.bossSuitRescuePreview=v.text(s.x+10,s.y+50,'',14,C.jade,s.width-20).setName('boss/suit-rescue-preview');
     }
     mountTableScoreMarks(this,v.root,s);
-    this.scoreLabels=['热度','倍率','本手得分'].map(label=>v.text(0,0,label,14,C.mutedInk).setOrigin(.5,0));
+    this.scoreLabels=['筹码','倍率','本手得分'].map(label=>v.text(0,0,label,14,C.mutedInk).setOrigin(.5,0));
     this.scoreHeat=v.text(0,0,'—',26,C.jade).setOrigin(.5,0).setName('score/heat');
     this.scoreMult=v.text(0,0,'—',26,C.red).setOrigin(.5,0).setName('score/multiplier');
     this.scoreTotal=v.text(0,0,'—',44,C.ink).setOrigin(.5,0).setName('score/total');
@@ -2026,7 +2026,7 @@ export class GameScene extends Phaser.Scene {
     // PC keeps the scoring lanes legible before a hand is committed. Dashes
     // are deliberate: no guessed score is presented as a saved result.
     if(this.view.layout.pc&&!this.bossSuitRescueButton){
-      this.scoreLabels.forEach((label,i)=>label.setText(['热度','倍率','本手得分'][i]).setVisible(true));
+      this.scoreLabels.forEach((label,i)=>label.setText(['筹码','倍率','本手得分'][i]).setVisible(true));
       [this.scoreHeat,this.scoreMult,this.scoreTotal].forEach(text=>text.setText('—').setData('fullText','—').setVisible(true));
       this.view.root.list.filter(o=>o.name.startsWith('score/formula-')).forEach(o=>(o as Phaser.GameObjects.Text).setVisible(true));
       if(!preview)this.resultText.setText('选择手牌 · 出牌后计分');
@@ -2190,14 +2190,15 @@ export class GameScene extends Phaser.Scene {
     const presentation=this.presentation,root=this.view?.root;
     if(!presentation||presentation.replay||presentation.auraPlayed||presentation.auraEventId!==event.eventId||context.signal.aborted||!root?.active)return;
     presentation.auraPlayed=true;this.highMultiplierAuraDispose?.();
-    let stopFire=()=>{};
+    let fire={stop:()=>{},fadeOut:(_durationMs:number)=>{}};
     this.highMultiplierAuraDispose=mountHighMultiplierAura(this,{root,eventId:event.eventId,signal:context.signal,reduced:()=>this.reducedMotion,
       getBoard:()=>this.view.layout.scoreBoard,getViewport:()=>({x:0,y:0,...cssViewport(this)}),getGuards:()=>this.highMultiplierAuraGuards(),
       speed:()=>gameSession().speed,
-      onVisibleOnce:remainingMs=>{
+      ending:()=>presentation.auraEnding,
+      onVisibleOnce:()=>{
         if(context.signal.aborted||this.reducedMotion||this.presentation!==presentation||this.view.root!==root)return;
-        stopFire=this.audio.playHighMultiplierFire({signal:context.signal,speed:gameSession().speed,reducedMotion:this.reducedMotion,replay:presentation.replay,remainingMs});
-      },onDispose:()=>stopFire(),
+        fire=this.audio.playHighMultiplierFire({signal:context.signal,speed:gameSession().speed,reducedMotion:this.reducedMotion,replay:presentation.replay});
+      },onEnding:durationMs=>fire.fadeOut(durationMs/gameSession().speed),onDispose:()=>fire.stop(),
       isCurrent:()=>this.presentation===presentation&&this.view.root===root&&this.scene.isActive()});
   }
 
@@ -2694,7 +2695,7 @@ export class GameScene extends Phaser.Scene {
     const originHeat=replay?(BigInt(beforeHeat)>BigInt(score.finalScore)?BigInt(beforeHeat)-BigInt(score.finalScore):0n).toString():beforeHeat;
     const retainedIds=replay?[]:[...new Set([...(this.appliedRefill?.ids??[]),...(score.laohuanFind?.batchIds??[])])],orderedEvents=remainingScoreEvents(score).filter(event=>!isNeutralScoreReceipt(event)),phrase=scorePhrase(orderedEvents,this.stage.targetHeat,gameSession().speed,score,retainedIds);
     const auraEventId=firstScoreHighMultiplierCue({...score,events:orderedEvents.filter(event=>!gifts.some(gift=>gift.eventId===event.eventId))},replay)?.eventId;
-    const hand=score.cards,presentation={generation,lifecycle,intent,state,score,phrase,hand,retainedIds,displayHeat:beforeHeat,originHeat,replay,previousTrace,credited:replay,resourcePlayLeft:!replay&&beforeHands!==undefined?beforeHands-1:undefined,resourceGold:!replay?beforeGold:undefined,resourceTools:!replay?gifts[0]?.inventoryBefore:undefined,gifts:replay?[]:gifts,auraEventId,auraPlayed:false};this.presentation=presentation;
+    const hand=score.cards,presentation={generation,lifecycle,intent,state,score,phrase,hand,retainedIds,displayHeat:beforeHeat,originHeat,replay,previousTrace,credited:replay,resourcePlayLeft:!replay&&beforeHands!==undefined?beforeHands-1:undefined,resourceGold:!replay?beforeGold:undefined,resourceTools:!replay?gifts[0]?.inventoryBefore:undefined,gifts:replay?[]:gifts,auraEventId,auraPlayed:false,auraEnding:false};this.presentation=presentation;
     if(replay){
       this.handStart=0;
       this.cardViews.forEach(view=>{view.hit?.destroy();view.sheenTween?.remove();this.tweens.killTweensOf(view.container);view.container.destroy();});
@@ -2706,7 +2707,7 @@ export class GameScene extends Phaser.Scene {
     this.scoreTotal.setAlpha(replay?1:.62);
     this.view.root.list.filter(o=>o.name.startsWith('score/formula-')).forEach(o=>(o as Phaser.GameObjects.Text).setVisible(true));
     (this.view.root.list.find(o=>o.name==='score/total-pedestal') as Phaser.GameObjects.Graphics|undefined)?.setVisible(true);
-    this.scoreLabels.forEach((label,i)=>label.setText(['热度','倍率','本手得分'][i]));this.resultText.setText((replay?'回看 · ':'打出 · ')+HAND_LABELS[score.handType]);
+    this.scoreLabels.forEach((label,i)=>label.setText(['筹码','倍率','本手得分'][i]));this.resultText.setText((replay?'回看 · ':'打出 · ')+HAND_LABELS[score.handType]);
     this.settledCards.clear();const consumedIds=[...score.sets.playedIds,...(score.sets.assistConsumedIds??[])],boxes=this.landingBoxes(consumedIds.length);
     const landing=consumedIds.map((id,i)=>{
       const view=views.find(view=>view.card.id===id)??this.cardViews.find(view=>view.card.id===id)??this.cardPiece(score.cards.find(card=>card.id===id)!,boxes[i]);
@@ -2717,6 +2718,10 @@ export class GameScene extends Phaser.Scene {
     const base=score.events[0],baseProduct=Rational.fromJSON(base.after.H).multiply(Rational.fromJSON(base.after.M)).floor().toString();
     const baseCue=!replay&&BigInt(baseProduct)>0n&&scoreFireLevel(originHeat,baseProduct,this.stage.targetHeat)>0;
     this.effects.enqueue(async context=>{
+      // The trace was already committed by the real command. A future eligible
+      // impact can therefore start the presentation without previewing RNG.
+      const openingAura=orderedEvents.find(event=>event.eventId===presentation.auraEventId);
+      if(openingAura)this.showHighMultiplierAura(openingAura,context);
       const attachment=replay||score.amoExile?.use?undefined:savedHeroAttachment(score,this.run.characterId);
       if(!replay&&score.amoExile?.use)this.targetAttachment?.beginSushiDiscard(score,context);
       else if(attachment){if(attachment.targetIds)this.targetAttachment?.retainTargets(attachment.targetIds);this.targetAttachment?.commit(attachment.event.eventId,context,attachment.targetIds??[]);}else if(!presentation.retainedIds.length)this.targetAttachment?.clear();
@@ -2768,6 +2773,11 @@ export class GameScene extends Phaser.Scene {
       const number=numberImpact(event,this.stage.targetHeat,multiplyOrdinal+1);if(number?.kind==='multiply')multiplyOrdinal++;
       const beat=phrase.get(event.eventId)!;this.effects.enqueue(context=>this.showScoreEvent(event,Math.max(0,index),beat,context,payoffByEvent.get(event.eventId),number));
     }
+    this.effects.enqueue(async context=>{
+      if(this.presentation!==presentation||!presentation.auraPlayed||!this.highMultiplierAuraDispose||this.reducedMotion)return;
+      presentation.auraEnding=true;
+      await this.wait(HIGH_MULTIPLIER_FADE_MS+50,context);
+    });
     const charge=!replay&&heroReceipt&&savedHeroCharge(heroReceipt.before,heroReceipt.result);
     if(charge&&heroReceipt)this.effects.enqueue(async context=>{const beat=this.heroReceiptBeat(charge.targetIds.length);this.resultText.setText('文成公主 · '+(charge.gained?'蓄势 ':'蓄势清空 ')+charge.before+' → '+charge.after);this.statusText.setText('蓄势已保存 · 本次没有额外倍率').setData('heroChargeReceipt',charge);if(charge.gained)this.consumeSavedHeroAction(charge.eventId,charge.sourceInstanceId,charge.targetIds,context,beat.impact,.22);const portrait=this.heroPortraitMotion?.bindChargeGesture(heroReceipt.before,heroReceipt.result,{context,beat});await this.playHeroReceipt(charge.targetIds,charge.eventId,beat,context,portrait,charge.gained);});
     // Outcome follows every score/resource event, including post-result settlements.
@@ -2814,11 +2824,11 @@ export class GameScene extends Phaser.Scene {
     const goldEarned = this.run.stage!.goldEarned, rewardClearId=cleared&&cueReward?this.run.stage!.clearId:undefined;
 
     if (cleared) {
-      this.resultText.setText(`过关 · ${heatText(stageHeat)} 热度`);
+      this.resultText.setText(`过关 · ${heatText(stageHeat)} 分`);
 
     } else {
       this.resultText.setText(
-        `冷场 · 差 ${heatText((BigInt(this.stage.targetHeat)>BigInt(stageHeat)?BigInt(this.stage.targetHeat)-BigInt(stageHeat):0n).toString())} 热度`,
+        `未过关 · 还差 ${heatText((BigInt(this.stage.targetHeat)>BigInt(stageHeat)?BigInt(this.stage.targetHeat)-BigInt(stageHeat):0n).toString())} 分`,
       );
     }
 
@@ -2861,7 +2871,7 @@ export class GameScene extends Phaser.Scene {
   private updateHud(): void {
     this.refreshToolInventory();
     this.stage={...this.stage,targetHeat:this.run.stage!.targetHeat};
-    (this.view.root.getByName('hud/target') as Phaser.GameObjects.Text|undefined)?.setText('目标 '+heatText(this.stage.targetHeat));
+    (this.view.root.getByName('hud/target') as Phaser.GameObjects.Text|undefined)?.setText('目标分数 '+heatText(this.stage.targetHeat));
     const l=this.view.layout,displayHeat=this.presentation?.displayHeat??this.heat,remaining=(BigInt(this.stage.targetHeat)>BigInt(displayHeat)?BigInt(this.stage.targetHeat)-BigInt(displayHeat):0n).toString();
     this.heatText.setText(l.mode==='portrait'?heatText(displayHeat)+' / '+heatText(this.stage.targetHeat):(l.pc?'累计 ':'')+heatText(displayHeat));
     const discardCost=r2DiscardCost(this.run),discards=this.run.stage!.discardsLeft,plays=this.presentation?.resourcePlayLeft??this.handsLeft;
@@ -2872,7 +2882,7 @@ export class GameScene extends Phaser.Scene {
     if(this.resourceCounts.play.style.color!==playColor)this.resourceCounts.play.setColor(playColor);
     if(this.resourceCounts.discard.style.color!==discardColor)this.resourceCounts.discard.setColor(discardColor);
     const gold=this.presentation?.resourceGold??this.run.gold;
-    this.goldText.setText(l.shortLandscape?gold+' 金':'金币 '+gold+(l.mode==='desktop'?'\n还需 '+heatText(remaining)+' 热度':''));
+    this.goldText.setText(l.shortLandscape?gold+' 金':'金币 '+gold+(l.mode==='desktop'?'\n还需 '+heatText(remaining)+' 分':''));
     if(l.mode==='desktop'&&this.progressBar?.active){
       // Keep the two actual text rows within the HUD's dedicated gold region.
       const sidebar=l.pc?.heroRows??heroSidebarRows(l.hud);fitScoreLine(this.goldText,sidebar.gold,l.pc?20:14);

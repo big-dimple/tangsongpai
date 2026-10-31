@@ -32,21 +32,21 @@ function fixture(spec={width:1280,height:720,density:1,renderer:2}){
   const f=nativeHeroRuntime(spec),signal=new AbortController();
   const table=layout({width:spec.width,height:spec.height},{top:0,left:0,right:0,bottom:0},spec.width<600?'portrait':'desktop',{count:8},{pc:spec.width>=600});
   let board:Box|undefined=table.scoreBoard,viewport:Box|undefined={x:0,y:0,width:spec.width,height:spec.height},guards:readonly Box[]|undefined=[];
-  let reduced=false,current=true,clock=0;
+  let reduced=false,current=true,ending=false,clock=0;
   const opts:HighMultiplierAuraOptions={root:f.root,eventId:'saved/hand/event-4',signal:signal.signal,
-    getBoard:()=>board,getViewport:()=>viewport,getGuards:()=>guards,reduced:()=>reduced,isCurrent:()=>current};
+    getBoard:()=>board,getViewport:()=>viewport,getGuards:()=>guards,reduced:()=>reduced,isCurrent:()=>current,ending:()=>ending};
   const play=()=>mountHighMultiplierAura(f.scene,opts);
   const step=(delta:number)=>{clock+=delta;f.scene.events.emit('postupdate',clock,delta);};
   const ink=()=>f.root.list.find(o=>o.name==='score/high-multiplier-aura') as Phaser.GameObjects.Graphics|undefined;
   return {...f,signal,table,opts,play,step,ink,setBoard:(value:Box|undefined)=>board=value,
     setViewport:(value:Box|undefined)=>viewport=value,setGuards:(value:readonly Box[]|undefined)=>guards=value,
-    setReduced:(value:boolean)=>reduced=value,setCurrent:(value:boolean)=>current=value};
+    setReduced:(value:boolean)=>reduced=value,setCurrent:(value:boolean)=>current=value,setEnding:(value:boolean)=>ending=value};
 }
 
 afterEach(()=>{vi.restoreAllMocks();vi.unstubAllGlobals();});
 
 describe('high-multiplier visual on actual Phaser Graphics',()=>{
-  it('animates individually staggered curved purple tongues with bright cores, then removes them at 1.7s',()=>{
+  it('holds staggered purple tongues throughout scoring and fades when the owner finishes',()=>{
     const f=fixture(),random=vi.spyOn(Math,'random');f.play();const ink=f.ink()!;
     expect(ink).toBeTruthy();expect(ink.input).toBeNull();expect(ink.getData('eventId')).toBe('saved/hand/event-4');
     f.step(120);const early=painted(ink),earlyCount=ink.getData('visibleSegments'),earlyBuffer=[...ink.commandBuffer];
@@ -56,8 +56,9 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
     expect(peak.map(p=>p.color)).toContain(0x7943c9);expect(peak.map(p=>p.color)).toContain(0xffeaff);
     expect(new Set(peak.filter(p=>p.color===0x7943c9).map(p=>p.alpha.toFixed(3))).size).toBeGreaterThan(3);
     expect(peak.some(p=>p.points.length>20)).toBe(true);expect(early.every(p=>p.alpha>=0&&p.alpha<=1)).toBe(true);
-    f.step(1000);const fading=painted(ink);expect(Math.max(...fading.map(p=>p.alpha))).toBeLessThan(Math.max(...peak.map(p=>p.alpha)));
-    expect(f.ink()).toBe(ink);f.step(299);expect(f.ink()).toBe(ink);f.step(1);
+    f.step(4000);expect(f.ink()).toBe(ink);expect(ink.getData('visibleSegments')).toBeGreaterThan(0);
+    f.setEnding(true);f.step(0);f.step(350);const fading=painted(ink);expect(Math.max(...fading.map(p=>p.alpha))).toBeLessThan(Math.max(...peak.map(p=>p.alpha)));
+    expect(f.ink()).toBe(ink);f.step(99);expect(f.ink()).toBe(ink);f.step(1);
     expect(f.ink()).toBeUndefined();expect(ink.active).toBe(false);expect(random).not.toHaveBeenCalled();
     expect(f.scene.events.listenerCount('postupdate')).toBe(0);
   });
@@ -218,11 +219,11 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
     f.setReduced(false);f.play();f.step(400);expect(f.ink()).toBeTruthy();f.setReduced(true);f.step(16);expect(f.ink()).toBeUndefined();
   });
 
-  it('starts audio only on first visible ink with the remaining time, and releases it once on abort',()=>{
+  it('starts audio only on first visible ink and releases it once on abort',()=>{
     const f=fixture(),disposed=vi.fn(),visible=vi.fn(()=>f.signal.abort());
     f.opts.onVisibleOnce=visible;f.opts.onDispose=disposed;f.setGuards([{x:0,y:0,width:1280,height:720}]);
     const stop=f.play();f.step(400);expect(visible).not.toHaveBeenCalled();
-    f.setGuards([]);f.step(16);expect(visible).toHaveBeenCalledExactlyOnceWith(1284);
+    f.setGuards([]);f.step(16);expect(visible).toHaveBeenCalledOnce();
     expect(disposed).toHaveBeenCalledOnce();expect(f.ink()).toBeUndefined();expect(f.scene.events.listenerCount('postupdate')).toBe(0);
     stop();expect(disposed).toHaveBeenCalledOnce();
   });
@@ -235,7 +236,7 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
   it.each([1,2,4] as const)('advances and cleans up at presentation speed %sx',speed=>{
     const f=fixture();f.opts.speed=()=>speed;f.play();
     f.step(400/speed);expect(f.ink()?.getData('elapsed')).toBe(400);
-    f.step(1299/speed);expect(f.ink()).toBeTruthy();f.step(1/speed);
+    f.step(4000/speed);expect(f.ink()).toBeTruthy();f.setEnding(true);f.step(0);f.step(449/speed);expect(f.ink()).toBeTruthy();f.step(1/speed);
     expect(f.ink()).toBeUndefined();expect(f.scene.events.listenerCount('postupdate')).toBe(0);
   });
 

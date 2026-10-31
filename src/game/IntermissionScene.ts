@@ -179,13 +179,13 @@ export class IntermissionScene extends Phaser.Scene {
     }else if(won){
       const progress=readRunProgress(),qualified=run.mode==='standard'&&!!run.normalCompletion;
       heading=run.mode==='challenge'?R2_MODE_CATALOG.challenges.find(row=>row.id===run.challengeId)!.name+' · 通关':run.mode==='tutorial'?'教学对局通关':'八章通关';
-      body=`${character.name} · 已过关场次累计热度 ${heatText(run.totalHeat)}\n`+(qualified?'构筑与金币已保留，可自愿继续无尽对局。':'本模式结果已保存，可同种子再试或选择下一次对局。');
+      body=`${character.name} · 已过关场次累计得分 ${heatText(run.totalHeat)}\n`+(qualified?'构筑与金币已保留，可自愿继续无尽对局。':'本模式结果已保存，可同种子再试或选择下一次对局。');
       if(qualified&&progress.ok&&progress.progress.standardWins[run.difficulty])body+='\n'+(run.difficulty<3?`D${run.difficulty+1} 与挑战已解锁。`:'四档难度已达最高档；挑战已解锁。');
     }else if(capped){
       heading='已达数值上限';body='进度已保存。可查看本场、在菜单导出，或返回选角。';
     }else if(lost){
       heading='再来一局';
-      body=p.tight?'同局重试从开局，构筑不继承。':`${failureSummary(run).resources}\n已过关场次累计热度 ${heatText(run.totalHeat)} · 余额 ${run.gold} 金\n同局重试从开局重新开始，构筑不继承。`;
+      body=p.tight?'同局重试从开局，构筑不继承。':`${failureSummary(run).resources}\n已过关场次累计得分 ${heatText(run.totalHeat)} · 余额 ${run.gold} 金\n同局重试从开局重新开始，构筑不继承。`;
     }
     const touye=savedTouyeWager(trace,run);if(touye&&!nextStage&&!p.short)body=touye+'\n'+body;
     if(p.short)body=body.replace(/。(?=\n|$)/g,'');
@@ -306,7 +306,7 @@ export class IntermissionScene extends Phaser.Scene {
   private inspectResult():void {
     const run=runController(this)!.state,stage={...getR2Stage(this.result.stageIndex,run.tourMode,run.difficulty,run)!,targetHeat:run.stage!.targetHeat};
     const last=stageOutcome(run.stage!,run.lastTrace).last,impact=last?savedBossImpact(run,last):'';
-    this.dialog.open('本场详情',`${run.tourMode==='endless'?'无尽 · ':''}${stage.name}\n热度 ${heatText(this.result.stageHeat)} / ${heatText(stage.targetHeat)}\n${this.result.cleared?'过关收益':'本场收益'} ${this.result.goldEarned} 金 · 余额 ${run.gold} 金\n剩余出牌 ${this.result.handsLeft} · 剩余弃牌 ${run.stage?.discardsLeft??0}\n\n当前构筑：`+(run.jokers.map(j=>cardDefinitionName(this.jokerDefinition(j.definitionId))).join('、')||'空')+'\n\n'+(run.stage?.boss?'本场压轴：'+heroText(r2BossText(run.stage.boss)):'本场为普通场。')+(impact?'\n\n'+impact:''),[...(last?[{label:'回看最后一手',run:()=>this.inspectLastHand()}]:[]),...(run.phase==='run-lost'?[{label:'再战建议',run:()=>this.inspectFailure()}]:[])]);
+    this.dialog.open('本场详情',`${run.tourMode==='endless'?'无尽 · ':''}${stage.name}\n累计得分 ${heatText(this.result.stageHeat)} / 目标分数 ${heatText(stage.targetHeat)}\n${this.result.cleared?'过关收益':'本场收益'} ${this.result.goldEarned} 金 · 余额 ${run.gold} 金\n剩余出牌 ${this.result.handsLeft} · 剩余弃牌 ${run.stage?.discardsLeft??0}\n\n当前构筑：`+(run.jokers.map(j=>cardDefinitionName(this.jokerDefinition(j.definitionId))).join('、')||'空')+'\n\n'+(run.stage?.boss?'本场压轴：'+heroText(r2BossText(run.stage.boss)):'本场为普通场。')+(impact?'\n\n'+impact:''),[...(last?[{label:'回看最后一手',run:()=>this.inspectLastHand()}]:[]),...(run.phase==='run-lost'?[{label:'再战建议',run:()=>this.inspectFailure()}]:[])]);
   }
   private inspectLastHand():void {
     const run=runController(this)!.state,trace=stageOutcome(run.stage!,run.lastTrace).last;if(!trace)return;

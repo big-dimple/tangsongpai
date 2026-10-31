@@ -57,7 +57,7 @@ export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2R
  const resources=text(side.x+side.width/2,heroName.y+heroName.height+4,'金币 '+run.gold+'　·　出牌余量 '+run.stage!.handsLeft,15,side.width,'#d8cdb8','result/resources').setOrigin(.5,0);
  if(facts.hero)text(side.x+side.width/2,resources.y+resources.height+4,(facts.heroSkill??'角色能力')+' · '+facts.heroCopy.replace('本手兑现 · ',''),14,side.width-16,C.redSoft,'result/hero-effect').setOrigin(.5,0).setAlign('center');
 
- const tag=centered(b.y,skipped?'本场跳过':'本场总热度',16,b.width,C.jade,'result/hand');
+ const tag=centered(b.y,skipped?'本场跳过':'本场总得分',16,b.width,C.jade,'result/hand');
  const exactScore=facts.stageTotal,copy=(exactScore.length>15&&/[1-9]/.test(exactScore.slice(3))?'≈':'')+heatText(exactScore);
  const score=centered(tag.y+tag.height+2,copy,compact?40:64,b.width,lost||skipped?C.ink:C.red,'result/score').setFontFamily(SCORE_FONT).setFontStyle('bold').setData('exactScore',exactScore).setData('pcPoster',true);
  // Font family and weight can change the measured width after creation.

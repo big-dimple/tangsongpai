@@ -28,7 +28,7 @@ const css=`
 `;
 /** Six semantic choices with facts and explicit detail actions, owned by the selection scene. */
 export function showSelectionComparison(dialog:DetailDialog,options:{selectedId?:CharacterId;abilityEnabled:boolean;tutorial:boolean;select:(id:CharacterId)=>void;inspect:(id:CharacterId)=>void}){
- const d=dialog.open('谁来撑这场戏？',options.abilityEnabled?'每位英雄都能玩三条路线，挑你想怎么操作。':'当前模式关闭角色能力；以下是普通局玩法参考。',[],{closeLabel:'回到选角'});
+ const d=dialog.open('选择一位英雄',options.abilityEnabled?'每位英雄都能玩三条路线，挑你想怎么操作。':'当前模式关闭角色能力；以下是普通局玩法参考。',[],{closeLabel:'回到选角'});
  d.classList.add('selection-comparison');
  const style=document.createElement('style');style.textContent=css;d.append(style);
  const grid=document.createElement('section');grid.className='selection-roster';grid.setAttribute('aria-label','六英雄操作与代价');

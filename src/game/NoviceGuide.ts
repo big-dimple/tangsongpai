@@ -195,16 +195,16 @@ function contribution(events:readonly ScoreEvent[]):string {
  const event=events[0],same=events.filter(e=>e.operation===event.operation&&e.value.n===event.value.n&&e.value.d===event.value.d&&e.reasonKey===event.reasonKey);
  const value=fractionText(event.value),targets=same.map(e=>e.targetCardId);
  if((event.operation==='add-multiplier'||event.operation==='add-heat')&&same.length>1){
-  const stat=event.operation==='add-multiplier'?'倍率':'热度';
+  const stat=event.operation==='add-multiplier'?'倍率':'筹码';
   if(same.every(e=>e.phase==='onCardScore'&&e.targetCardId)&&new Set(targets).size===same.length)return `让${same.length}张计分牌各加 ${value} ${stat}`;
   return `触发${same.length}次，每次加 ${value} ${stat}`;
  }
  if(event.operation==='add-multiplier')return `让倍率 +${value}`;
- if(event.operation==='add-heat')return `让热度 +${value}`;
+ if(event.operation==='add-heat')return `让筹码 +${value}`;
  if(event.operation==='multiply-multiplier')return `让倍率 ×${value}`;
  if(event.operation==='retrigger-card')return `让计分牌额外计分 ${value} 次`;
  const heat=Rational.fromJSON(event.after.H).compare(Rational.fromJSON(event.before.H))>0;
- return heat?`让热度 ${fractionText(event.before.H)} → ${fractionText(event.after.H)}`:`让倍率 ${fractionText(event.before.M)} → ${fractionText(event.after.M)}`;
+ return heat?`让筹码 ${fractionText(event.before.H)} → ${fractionText(event.after.H)}`:`让倍率 ${fractionText(event.before.M)} → ${fractionText(event.after.M)}`;
 }
 function offers(s:R2RunState):string[] {
  if(s.phase!=='shop'||s.stageIndex<1||!s.shop||s.jokers.length>=r2JokerCapacity(s))return [];
@@ -237,7 +237,7 @@ function deriveHint(s:R2RunState,journal?:readonly Command[]):NoviceGuideHint {
   if(s.stage?.index===0&&(s.stage.discardsLeft<=0||s.drawPile.length===0))return {step:'replay',cue:'这场暂时不能换牌',body:'本场弃牌次数或可抽的牌已用完。可以继续出牌，或重练换牌。',fact};
   const stage=s.stage;
   const replacement=stage&&s.handOrder.length===stage.handLimit&&s.drawPile.length>=5?'换等量新牌':'从牌堆补牌，牌不足会少补';
-  return {step:'discard',cue:'看看目标，再试试弃牌',body:`选1–5张想换的牌，点「弃牌」。花${r2DiscardCost(s)}次弃牌${replacement}，不消耗出牌次数。热度 ${fact.pairHeat} × 倍率 ${fact.pairMultiplier} = ${fact.pairScore} 分，累计 ${stage?.heat??'见牌桌'} / 目标 ${stage?.targetHeat??'见牌桌'}。出牌剩 ${stage?.handsLeft??'见牌桌'} 次，弃牌剩 ${stage?.discardsLeft??'见牌桌'} 次。`,fact};
+  return {step:'discard',cue:'看看目标，再试试弃牌',body:`选1–5张想换的牌，点「弃牌」。花${r2DiscardCost(s)}次弃牌${replacement}，不消耗出牌次数。筹码 ${fact.pairHeat} × 倍率 ${fact.pairMultiplier} = ${fact.pairScore} 分，累计得分 ${stage?.heat??'见牌桌'} / 目标分数 ${stage?.targetHeat??'见牌桌'}。出牌剩 ${stage?.handsLeft??'见牌桌'} 次，弃牌剩 ${stage?.discardsLeft??'见牌桌'} 次。`,fact};
  }
  if(!facts.independent)return {step:'independent',cue:'现在自己决定出什么',body:'已换入新牌。自己选1–5张，再点「出牌」。两张同点数是对子；5张同花色是同花，不必连号。想看牌型可点「条件帮助」。',fact};
  if(!facts.cleared)return {step:'independent',cue:'继续向目标出牌',body:'你已经独立出过一手。继续选牌，达到本场目标；次数用完也可以重练。',fact};

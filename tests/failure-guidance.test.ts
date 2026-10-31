@@ -16,7 +16,7 @@ describe('failure guidance reads real saved terminal facts',()=>{
  it('uses the exact saved gap and last hand, never replaying or recommending a guaranteed win',()=>{
   const {after}=failureRetryFixture('hands'),facts=failureGuidance(after)!;
   expect(facts.gap).toContain(String(BigInt(after.stage!.targetHeat)-BigInt(after.stage!.heat)));
-  expect(facts.canReview).toBe(true);expect(facts.advice[0].body).toContain('保存热度');expect(facts.advice[0].body).toContain('例如');
+  expect(facts.canReview).toBe(true);expect(facts.advice[0].body).toContain('记录得分');expect(facts.advice[0].body).toContain('例如');
   expect(facts.advice.map(a=>a.body).join()).not.toMatch(/一定能|保证过关|继承余额|你浪费了/);
  });
  it('only offers boss responses when this saved last hand records an actual restriction',()=>{

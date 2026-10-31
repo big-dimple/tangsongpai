@@ -494,7 +494,7 @@ export class ShopScene extends Phaser.Scene {
     v.text(p.x,p.top+4,'唐宋牌 · 商店',26,PAPER_CSS.ink).setColor('#fff7e4').setFontStyle('bold').setName('shop/title');
     v.text(pc.left.x+12,pc.left.y+8,stage.name,22,PAPER_CSS.ink,pc.left.width-24).setName('shop/stage');
     v.text(pc.left.x+12,pc.left.y+56,'下一场目标',16,PAPER_CSS.mutedInk,pc.left.width-24);
-    const target=v.text(pc.left.x+12,pc.left.y+86,heatText(stage.targetHeat)+' 热度',30,PAPER_CSS.red,pc.left.width-24).setFontStyle('bold').setName('shop/target');
+    const target=v.text(pc.left.x+12,pc.left.y+86,heatText(stage.targetHeat)+' 分',30,PAPER_CSS.red,pc.left.width-24).setFontStyle('bold').setName('shop/target');
     this.revealDynamicTarget(target,{x:pc.left.x+12,y:pc.left.y+86,width:pc.left.width-24,height:46});
     this.drawBalance({x:pc.left.x+12,y:pc.left.y+138,width:pc.left.width-24,height:44},false,24);
     v.button({...p.chapter,x:p.chapter.x+12,width:p.chapter.width-24},programEntryLabel(this.run),'action/chapter',()=>this.inspectChapter());

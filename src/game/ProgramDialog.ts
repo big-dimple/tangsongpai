@@ -56,7 +56,7 @@ export function showPrograms(dialog:DetailDialog,state:R2RunState,ready:boolean,
       run:()=>choose(id)}));
     const modal=dialog.open('本章节目单',body,[...actions,{label:'本章不接',disabled:!canChoose,run:()=>choose(null)},...extra],{closeLabel:'暂不选择'});return;
   }
-  const condition=program.selectedId?programDescription(program.selectedId):'正常演出即可，本章不追节目单目标。';
+  const condition=program.selectedId?programDescription(program.selectedId):'正常对局即可，本章不追节目单目标。';
   const body=prefix+condition+'\n\n本章实际出牌：'+usage+'\n当前金币：'+state.gold+'\n最后机会过关：'+(program.lastOpportunityClear?'已达成':'未达成')+'\n\n跳场不计入条件；暖场、正场达成时不会提前发奖。';
   dialog.open('本章节目单',body,[...(program.selectedId&&!program.abandoned&&!program.claimed?[{
     label:'放弃本章节目单',disabled:!ready||['run-won','run-lost'].includes(state.phase),run:()=>{

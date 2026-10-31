@@ -18,7 +18,8 @@ type Voice = { source: AudioScheduledSourceNode; secondarySources?:AudioSchedule
 export type ScoreSourceCue = 'card' | 'held' | 'character' | 'joker' | 'boss' | 'retrigger';
 export type ScoreRollKind = 'heat' | 'mult' | 'total';
 export interface ScoreImpactTiming { durationMs?:number; signal?:AbortSignal; paired?:boolean; pulse?:number; accentWeight?:number }
-export interface HighMultiplierFireOptions {signal:AbortSignal; speed:1|2|4; reducedMotion:boolean; replay:boolean; remainingMs?:number}
+export interface HighMultiplierFireOptions {signal:AbortSignal; speed:1|2|4; reducedMotion:boolean; replay:boolean}
+export interface HighMultiplierFireHandle {stop():void; fadeOut(durationMs:number):void}
 
 export interface BGMTrackMeta {
   id: string;
@@ -495,41 +496,43 @@ export class AudioEngine {
     }
   }
 
-  /** Short fire layer at the real purple-flame onset; never queues a missed cue. */
-  playHighMultiplierFire(options:HighMultiplierFireOptions):()=>void {
-    const noop=()=>{};
+  /** One sustained fire layer, owned by the committed visual and never queued. */
+  playHighMultiplierFire(options:HighMultiplierFireOptions):HighMultiplierFireHandle {
+    const noop={stop:()=>{},fadeOut:()=>{}};
     if(options.signal.aborted||options.reducedMotion||options.replay||!this.canPlay('sfx')||this.context!.state!=='running')return noop;
     const context=this.context!,now=context.currentTime;
     for(const voice of this.voices)if(voice.highMultiplierFire){
       if((voice.endsAt??Infinity)>now)return noop;
       this.release(voice);
     }
-    const speed=options.speed===2||options.speed===4?options.speed:1;
-    const remaining=options.remainingMs??HIGH_MULTIPLIER_FIRE_SECONDS*1000;
-    if(!Number.isFinite(remaining)||remaining<=0)return noop;
-    // The first visible flame may be delayed by protected score ink. Fade out
-    // with the actual remaining visual window rather than cutting off a tail.
-    const duration=Math.min(HIGH_MULTIPLIER_FIRE_SECONDS,remaining/1000)/speed,peak=.16;
+    const speed=options.speed===2||options.speed===4?options.speed:1,peak=.06;
     // Include scheduled tails, and leave room for score impacts rather than evict them.
-    if([...this.voices].filter(v=>v.bus!=='music'&&(v.startsAt??0)<now+duration&&(v.endsAt??Infinity)>now).length>=EFFECT_VOICE_BUDGET)return noop;
+    if([...this.voices].filter(v=>v.bus!=='music'&&(v.startsAt??0)<now+HIGH_MULTIPLIER_FIRE_SECONDS&&(v.endsAt??Infinity)>now).length>=EFFECT_VOICE_BUDGET)return noop;
     let voice:Voice|undefined;
     try {
       const buffer=this.highMultiplierFireBuffer??createHighMultiplierFire(context);
       this.highMultiplierFireBuffer=buffer;
       const source=context.createBufferSource(),gain=context.createGain();
-      source.buffer=buffer;
+      source.buffer=buffer;source.loop=true;
       gain.gain.setValueAtTime(0,now);
-      gain.gain.linearRampToValueAtTime(peak,now+Math.min(.05,duration*.2));
-      gain.gain.setValueAtTime(peak,now+duration-Math.min(.28,duration*.4));
-      gain.gain.linearRampToValueAtTime(0,now+duration);
+      gain.gain.linearRampToValueAtTime(peak,now+.28/speed);
       source.connect(gain);gain.connect(this.gains!.sfx);
-      voice={source,gain,bus:'sfx',highMultiplierFire:true,startsAt:now,endsAt:now+duration,priority:0,peak};
+      voice={source,gain,bus:'sfx',highMultiplierFire:true,startsAt:now,endsAt:Infinity,priority:0,peak};
       this.retain(voice);
       const owned=voice,stop=()=>this.release(owned);
       options.signal.addEventListener('abort',stop,{once:true});
       voice.cleanup=()=>options.signal.removeEventListener('abort',stop);
-      source.start(now);source.stop(now+duration);
-      return stop;
+      source.start(now);
+      return {stop,fadeOut:(durationMs:number)=>{
+        if(!this.voices.has(owned))return;
+        if(!Number.isFinite(durationMs)||durationMs<=0){stop();return;}
+        const at=context.currentTime,end=at+Math.min(durationMs,1000)/1000,param=gain.gain;
+        try {
+          if(typeof param.cancelAndHoldAtTime==='function')param.cancelAndHoldAtTime(at);
+          else {param.cancelScheduledValues(at);param.setValueAtTime(Math.min(peak,param.value),at);}
+          param.linearRampToValueAtTime(0,end);owned.endsAt=end;source.stop(end);
+        }catch{stop();}
+      }};
     }catch{if(voice)this.release(voice);return noop;}
   }
 
