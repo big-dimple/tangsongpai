@@ -37,7 +37,12 @@ it('moves along the original curve and excludes protected print with stroke clea
  expect(new Set(a.fills.map(f=>f.color))).toEqual(new Set([0x76c8f2,0x1768c3,0xf3fdff]));
  expect(a.fills.every(f=>f.points.length===4)).toBe(true);
  const widths=(color:number)=>a.fills.filter(f=>f.color===color).flatMap(({points:p})=>[Math.hypot(p[0].x-p[3].x,p[0].y-p[3].y),Math.hypot(p[1].x-p[2].x,p[1].y-p[2].y)]);
- expect(Math.max(...widths(0x1768c3))).toBeGreaterThan(3);expect(Math.min(...widths(0x1768c3))).toBeLessThan(1.5);expect(Math.max(...widths(0xf3fdff))).toBeGreaterThan(2.2);
+ const blue=widths(0x1768c3),white=widths(0xf3fdff);
+ // At phone size the main body and white core must remain legible, while
+ // pointed ends and the four-pixel protected radius are still respected.
+ expect(Math.max(...blue)).toBeGreaterThan(5.4);expect(Math.min(...blue)).toBeLessThan(1.5);
+ expect(blue.filter(width=>width>4).length).toBeGreaterThan(4);expect(Math.max(...blue)).toBeLessThanOrEqual(6.2+1e-6);
+ expect(Math.max(...white)).toBeGreaterThan(3);expect(Math.max(...white)).toBeLessThanOrEqual(3.4+1e-6);
  expect(a.strokes).toHaveLength(0);
  expect(drawHeroLineCurrent(a.g,curve,0,1,.2,[{x:-5,y:-5,width:110,height:40}],0xffaa44,1)).toEqual({segments:0,heads:[]});
 });

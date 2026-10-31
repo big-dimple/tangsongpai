@@ -83,6 +83,14 @@ const TONGUES:Tongue[]=[
     'M 253 78 C 253 71 252 64 253 57 C 255 61 255 66 255 70 C 257 66 258 62 258 58 C 260 64 258 71 257 77 Z'),
   tongue(true,'M 269 70 C 266 64 268 57 270 52 C 272 47 272 42 270 37 C 276 42 276 49 273 55 C 271 61 273 66 271 69 Z')
 ];
+// Two shorter phone-edge plumes bridge the large tips and the small wisps.
+// They remain separate contours, each with its own bright center and timing.
+const PHONE_TONGUES:Tongue[]=[
+  tongue(false,'M -7 0 C -10 -7 -8 -12 -7 -17 C -6 -21 -8 -25 -7 -29 C -2 -24 -2 -18 -3 -14 C 0 -19 1 -23 0 -27 C 6 -22 6 -16 4 -12 C 8 -15 10 -18 9 -21 C 13 -14 9 -8 7 -4 L 6 0 Z',
+    'M -3 -2 C -5 -7 -4 -11 -4 -15 C -2 -12 -2 -9 -1 -7 C 1 -10 2 -13 2 -16 C 5 -12 4 -8 3 -4 L 3 -2 Z'),
+  tongue(true,'M -5 0 C -7 -6 -5 -11 -4 -15 C -2 -20 -4 -23 -3 -25 C 1 -22 2 -18 1 -14 C 3 -17 5 -21 4 -23 C 9 -18 7 -13 6 -10 C 9 -11 10 -15 11 -16 C 13 -10 10 -5 8 -2 L 8 0 Z',
+    'M -2 -2 C -3 -6 -2 -9 -1 -13 C 1 -11 1 -8 1 -7 C 3 -9 4 -12 4 -14 C 7 -10 6 -6 5 -3 L 5 -2 Z')
+];
 
 /** Clip a polygon to a rectangle. Its convex clip bounds also contain the renderer's triangles. */
 function clip(points:readonly Point[],b:Box):Point[] {
@@ -213,8 +221,10 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
     const leftTight=boardWorld.x-fit.x<sideRoom,rightTight=fit.x+fit.width-boardWorld.x-boardWorld.width<sideRoom;
     const raisedTop=leftTight||rightTight;
     let visible=0;
-    for(let index=0;index<TONGUES.length;index++){
-      const shape=TONGUES[index],delay=(index%5)*46+Math.floor(index/5)*23+(raisedTop&&index===7?60:0),age=elapsed-delay;
+    const tongues=raisedTop?[...TONGUES,...PHONE_TONGUES]:TONGUES;
+    for(let index=0;index<tongues.length;index++){
+      const shape=tongues[index],added=index>=TONGUES.length;
+      const delay=added?(shape.right?155:100):(index%5)*46+Math.floor(index/5)*23+(raisedTop&&index===7?60:0),age=elapsed-delay;
       if(age<=0)continue;
       const alpha=smooth(age/290)*smooth((DURATION-elapsed)/(410+delay));if(alpha<=.005)continue;
       const grow=.72+.28*smooth(age/420),rise=4.6*clamp(age/(DURATION-delay)),offset=shape.right?board.x+board.width-250*scale:board.x;
@@ -226,13 +236,14 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
       const side=index===0||index===1||index===8||index===9;
       const relocated=side&&raisedTop,top=relocated||raisedTop&&!side;
       const main=index===0||index===8,inset=Math.min(board.width*(main ? .28 : .34),scale*(main ? 90 : 110));
-      const anchorX=relocated?(shape.right?board.x+board.width-inset:board.x+inset):offset+shape.centerX*scale;
+      const bridgeInset=Math.min(board.width*(shape.right ? .18 : .23),scale*(shape.right ? 57 : 67));
+      const anchorX=added?(shape.right?board.x+board.width-bridgeInset:board.x+bridgeInset):relocated?(shape.right?board.x+board.width-inset:board.x+inset):offset+shape.centerX*scale;
       const anchorY=top?board.y-EDGE/minimum-.5:board.y+shape.baseY*scale;
       // Keep the relocated flames in the short band between the score frame
       // and the listening illustration, where their tips remain legible.
       const ribbon=raisedTop&&(index===3||index===6);
-      const scaleX=scale*(relocated ? .75 : ribbon ? (shape.right ? .36 : .42) : raisedTop&&index===2 ? .85 : raisedTop&&index===7 ? .72 : 1);
-      const scaleY=scale*(relocated ? (shape.right ? .47 : .33) : ribbon ? .38 : raisedTop&&index===2 ? .80 : raisedTop&&index===7 ? .61 : 1);
+      const scaleX=scale*(added ? (shape.right ? .68 : .70) : relocated ? .75 : ribbon ? (shape.right ? .36 : .42) : raisedTop&&index===2 ? .85 : raisedTop&&index===7 ? .72 : 1);
+      const scaleY=scale*(added ? (shape.right ? .70 : .78) : relocated ? (shape.right ? .47 : .33) : ribbon ? .68 : raisedTop&&index===2 ? .80 : raisedTop&&index===7 ? .61 : 1);
       // The phone's raised, shorter flames need visible motion of their own,
       // not just a common fade. Each contour keeps a different, slow phase.
       const breathing=raisedTop ? 1+.14*Math.sin(phase+index*.57) : 1;

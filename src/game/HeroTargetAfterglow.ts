@@ -1,6 +1,6 @@
 import type Phaser from 'phaser';
 import {type InkBox,type InkPoint} from './AssistInkGeometry';
-import {drawElectricFork,electricFork,electricSeed,electricVariation,ELECTRIC_CLEARANCE_PX} from './HeroElectricGeometry';
+import {drawElectricFork,electricFork,electricSeed,electricVariation,ELECTRIC_CLEARANCE_PX,ELECTRIC_OUTER_RADIUS_PX} from './HeroElectricGeometry';
 import {cardVisualRoot} from './CardVisualRoot';
 import {cssViewport} from '../platform/Viewport';
 import type {HeroInkBox} from './HeroVisibleSurface';
@@ -78,7 +78,7 @@ export class HeroTargetAfterglow {
   glow.ink.clear().setData('electricSegments',0).setData('electricHeads',[]);if(!Number.isFinite(scale)||!Number.isFinite(minimum)||minimum<.01)return;
   // A screen-space stroke must not grow under nonuniform transforms. Protect
   // its widest half-width plus antialiasing even along the compressed axis.
-  const clearance=2.9/scale+(ELECTRIC_CLEARANCE_PX-2.9)/minimum,pad=clearance+1.1/minimum;
+  const clearance=ELECTRIC_OUTER_RADIUS_PX/scale+(ELECTRIC_CLEARANCE_PX-ELECTRIC_OUTER_RADIUS_PX)/minimum,pad=clearance+1.1/minimum;
   // The unrotated local face already protects this card's paper. Reprojecting
   // that paper's world AABB into a rotating body would enlarge it twice and
   // erase every exterior spark. Real art and text remain protected.
@@ -101,7 +101,9 @@ export class HeroTargetAfterglow {
    const travel=.5+.5*Math.sin(glow.elapsed/(320+variation*180)+variation*6.28),u=direction>0?.10+.24*travel:.90-.24*travel,p=edgeAnchor(card.width,card.height,pad,side,u),tangent={x:-p.ny*direction,y:p.nx*direction},outward={x:p.nx,y:p.ny};
    const sideLength=side%2?card.height:card.width,available=(direction>0?1-u:u)*sideLength-clearance;
    const length=Math.min(((lane===0?48:lane===1?21:15)+variation*4)*(1-.30*age)/scale,sideLength*.70,available);if(length<4/scale)continue;
-   const result=drawElectricFork(glow.ink,electricFork(p,tangent,outward,length,seed+lane*31,(glow.elapsed+(seed%370))/105,.85),boxes,scale,alpha*(lane===0?1:lane===1?.68:.50),visible,clearance);
+   // Offset the pulse per real card so a group does not flicker in unison.
+   const pulse=.82+.18*(.5+.5*Math.sin(glow.elapsed/185+variation*6.28));
+   const result=drawElectricFork(glow.ink,electricFork(p,tangent,outward,length,seed+lane*31,(glow.elapsed+(seed%370))/85,.85),boxes,scale,alpha*pulse*(lane===0?1:lane===1?.68:.50),visible,clearance);
    segments+=result.segments;heads.push(...result.heads);
    if(result.segments&&!attached){
     // The blue-white contact touches only the outer border. Card print, art,
