@@ -4,6 +4,7 @@ import {FOLEY,FOLEY_SAMPLES,type FoleyKind,type Layer} from './foley';
 import {sampleBody,type SampleBody} from './sampleBody';
 import {musicSourcePath} from './MusicSourceFormats';
 import {performanceAudioFacts,type PerformanceAudioCue} from './PerformanceAudio';
+import {createHighMultiplierFire,HIGH_MULTIPLIER_FIRE_SECONDS} from './HighMultiplierFire';
 import {awardForScore,chainRate,scoreStrikeRate,scoreStrikeStep,scoreStrikeOrdinal,scoreReboundInterval,scoreArrivalKind,MAX_RECORDED_RATE,EFFECT_VOICE_BUDGET,SCORE_VOICE_BUDGET,SCORE_GAIN_BUDGET,ACCENT_TAIL_FLOOR} from './mixPolicy';
 
 export type AudioBus = 'master' | 'music' | 'sfx' | 'ui';
@@ -13,10 +14,11 @@ type VoiceBus = Exclude<AudioBus, 'master'>;
 type MusicTrack = { title: string; runtimePath: string;fallbackRuntimePath?:string };
 type MusicSlot = { element: HTMLAudioElement; node?: MediaElementAudioSourceNode; gain?: GainNode;
   track?: MusicTrack; path?:string;resumeAt?:{path:string;track:string;position:number};warming?:boolean; cancelAttempt?: () => void };
-type Voice = { source: AudioScheduledSourceNode; secondarySources?:AudioScheduledSourceNode[]; gain: GainNode; filter?: BiquadFilterNode; bus: VoiceBus; scoreAccent?: boolean; roll?: ScoreRollKind; semantic?: FoleyKind; startsAt?:number; endsAt?:number; priority?:number; peak?:number; nominalGain?:number; cleanup?:()=>void };
+type Voice = { source: AudioScheduledSourceNode; secondarySources?:AudioScheduledSourceNode[]; gain: GainNode; filter?: BiquadFilterNode; bus: VoiceBus; scoreAccent?: boolean; highMultiplierFire?:boolean; roll?: ScoreRollKind; semantic?: FoleyKind; startsAt?:number; endsAt?:number; priority?:number; peak?:number; nominalGain?:number; cleanup?:()=>void };
 export type ScoreSourceCue = 'card' | 'held' | 'character' | 'joker' | 'boss' | 'retrigger';
 export type ScoreRollKind = 'heat' | 'mult' | 'total';
 export interface ScoreImpactTiming { durationMs?:number; signal?:AbortSignal; paired?:boolean; pulse?:number; accentWeight?:number }
+export interface HighMultiplierFireOptions {signal:AbortSignal; speed:1|2|4; reducedMotion:boolean; replay:boolean; remainingMs?:number}
 
 export interface BGMTrackMeta {
   id: string;
@@ -54,6 +56,7 @@ export class AudioEngine {
   private context?: AudioContext;
   private gains?: Record<AudioBus, GainNode>;
   private scoreSamples=new Map<string,AudioBuffer>();
+  private highMultiplierFireBuffer?:AudioBuffer;
   private sampleBodies=new Map<string,SampleBody>();
   private scoreSampleTask?:Promise<void>;
   private readonly sampleAttempts = new Map<string, number>();
@@ -492,10 +495,48 @@ export class AudioEngine {
     }
   }
 
-  /** Compatibility cleanup name; no continuous burning sources remain. */
+  /** Short fire layer at the real purple-flame onset; never queues a missed cue. */
+  playHighMultiplierFire(options:HighMultiplierFireOptions):()=>void {
+    const noop=()=>{};
+    if(options.signal.aborted||options.reducedMotion||options.replay||!this.canPlay('sfx')||this.context!.state!=='running')return noop;
+    const context=this.context!,now=context.currentTime;
+    for(const voice of this.voices)if(voice.highMultiplierFire){
+      if((voice.endsAt??Infinity)>now)return noop;
+      this.release(voice);
+    }
+    const speed=options.speed===2||options.speed===4?options.speed:1;
+    const remaining=options.remainingMs??HIGH_MULTIPLIER_FIRE_SECONDS*1000;
+    if(!Number.isFinite(remaining)||remaining<=0)return noop;
+    // The first visible flame may be delayed by protected score ink. Fade out
+    // with the actual remaining visual window rather than cutting off a tail.
+    const duration=Math.min(HIGH_MULTIPLIER_FIRE_SECONDS,remaining/1000)/speed,peak=.16;
+    // Include scheduled tails, and leave room for score impacts rather than evict them.
+    if([...this.voices].filter(v=>v.bus!=='music'&&(v.startsAt??0)<now+duration&&(v.endsAt??Infinity)>now).length>=EFFECT_VOICE_BUDGET)return noop;
+    let voice:Voice|undefined;
+    try {
+      const buffer=this.highMultiplierFireBuffer??createHighMultiplierFire(context);
+      this.highMultiplierFireBuffer=buffer;
+      const source=context.createBufferSource(),gain=context.createGain();
+      source.buffer=buffer;
+      gain.gain.setValueAtTime(0,now);
+      gain.gain.linearRampToValueAtTime(peak,now+Math.min(.05,duration*.2));
+      gain.gain.setValueAtTime(peak,now+duration-Math.min(.28,duration*.4));
+      gain.gain.linearRampToValueAtTime(0,now+duration);
+      source.connect(gain);gain.connect(this.gains!.sfx);
+      voice={source,gain,bus:'sfx',highMultiplierFire:true,startsAt:now,endsAt:now+duration,priority:0,peak};
+      this.retain(voice);
+      const owned=voice,stop=()=>this.release(owned);
+      options.signal.addEventListener('abort',stop,{once:true});
+      voice.cleanup=()=>options.signal.removeEventListener('abort',stop);
+      source.start(now);source.stop(now+duration);
+      return stop;
+    }catch{if(voice)this.release(voice);return noop;}
+  }
+
+  /** Release score accents and the separately owned high-multiplier fire. */
   stopScoreFire(): void {
     this.scoreRebounds=new WeakMap();
-    for(const voice of this.voices)if(voice.scoreAccent)this.release(voice);
+    for(const voice of this.voices)if(voice.scoreAccent||voice.highMultiplierFire)this.release(voice);
   }
 
   getTrackForScene(scene: AudioScene): MusicTrack {
@@ -801,7 +842,7 @@ export class AudioEngine {
       else this.release(voice);
     }
     if(recipe.priority>=3){
-      for(const voice of active)if((voice.priority??1)<recipe.priority)this.softenTail(voice,time);
+      for(const voice of active)if((voice.priority??1)<recipe.priority&&!voice.highMultiplierFire)this.softenTail(voice,time);
     }
     return layers.flatMap(({layer,name})=>{
       const voice=this.recordedCue(name,duration===undefined?layer.duration:Math.min(duration,layer.duration),layer.gain*bounded(strength,1.2),bus,rate*(layer.rate??1),offset+(layer.delay??0),layer);

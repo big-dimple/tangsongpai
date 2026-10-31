@@ -218,6 +218,20 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
     f.setReduced(false);f.play();f.step(400);expect(f.ink()).toBeTruthy();f.setReduced(true);f.step(16);expect(f.ink()).toBeUndefined();
   });
 
+  it('starts audio only on first visible ink with the remaining time, and releases it once on abort',()=>{
+    const f=fixture(),disposed=vi.fn(),visible=vi.fn(()=>f.signal.abort());
+    f.opts.onVisibleOnce=visible;f.opts.onDispose=disposed;f.setGuards([{x:0,y:0,width:1280,height:720}]);
+    const stop=f.play();f.step(400);expect(visible).not.toHaveBeenCalled();
+    f.setGuards([]);f.step(16);expect(visible).toHaveBeenCalledExactlyOnceWith(1284);
+    expect(disposed).toHaveBeenCalledOnce();expect(f.ink()).toBeUndefined();expect(f.scene.events.listenerCount('postupdate')).toBe(0);
+    stop();expect(disposed).toHaveBeenCalledOnce();
+  });
+
+  it('does not start audio when a visual cue is rejected before mounting',()=>{
+    const f=fixture(),visible=vi.fn(),disposed=vi.fn();f.opts.onVisibleOnce=visible;f.opts.onDispose=disposed;
+    f.setReduced(true);f.play();f.step(400);expect(f.ink()).toBeUndefined();expect(visible).not.toHaveBeenCalled();expect(disposed).not.toHaveBeenCalled();
+  });
+
   it.each([1,2,4] as const)('advances and cleans up at presentation speed %sx',speed=>{
     const f=fixture();f.opts.speed=()=>speed;f.play();
     f.step(400/speed);expect(f.ink()?.getData('elapsed')).toBe(400);

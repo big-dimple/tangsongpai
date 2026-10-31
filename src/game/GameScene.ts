@@ -2190,9 +2190,14 @@ export class GameScene extends Phaser.Scene {
     const presentation=this.presentation,root=this.view?.root;
     if(!presentation||presentation.replay||presentation.auraPlayed||presentation.auraEventId!==event.eventId||context.signal.aborted||!root?.active)return;
     presentation.auraPlayed=true;this.highMultiplierAuraDispose?.();
+    let stopFire=()=>{};
     this.highMultiplierAuraDispose=mountHighMultiplierAura(this,{root,eventId:event.eventId,signal:context.signal,reduced:()=>this.reducedMotion,
       getBoard:()=>this.view.layout.scoreBoard,getViewport:()=>({x:0,y:0,...cssViewport(this)}),getGuards:()=>this.highMultiplierAuraGuards(),
       speed:()=>gameSession().speed,
+      onVisibleOnce:remainingMs=>{
+        if(context.signal.aborted||this.reducedMotion||this.presentation!==presentation||this.view.root!==root)return;
+        stopFire=this.audio.playHighMultiplierFire({signal:context.signal,speed:gameSession().speed,reducedMotion:this.reducedMotion,replay:presentation.replay,remainingMs});
+      },onDispose:()=>stopFire(),
       isCurrent:()=>this.presentation===presentation&&this.view.root===root&&this.scene.isActive()});
   }
 

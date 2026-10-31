@@ -19,6 +19,10 @@ export interface HighMultiplierAuraOptions {
   speed?:()=>1|2|4;
   /** Optional owner check for view replacement or a changed score presentation. */
   isCurrent?:()=>boolean;
+  /** Called once when flame ink first appears, with its remaining visual time. */
+  onVisibleOnce?:(remainingMs:number)=>void;
+  /** Release any resource owned by the mounted effect. */
+  onDispose?:()=>void;
 }
 
 type Point={x:number;y:number};
@@ -117,7 +121,7 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
   if(signal.aborted||options.reduced()||!shown(root)||(typeof document!=='undefined'&&document.hidden)||options.isCurrent?.()===false)return noop;
   const ink=scene.add.graphics().setName('score/high-multiplier-aura').setData('eventId',options.eventId).setData('elapsed',0).setData('visibleSegments',0);
   root.add(ink);
-  let elapsed=0,disposed=false,destroyingInk=false;
+  let elapsed=0,disposed=false,destroyingInk=false,notifiedVisible=false;
   const dispose=()=>{
     if(disposed)return;disposed=true;
     scene.events.off('postupdate',tick);scene.events.off('shutdown',dispose);scene.events.off('destroy',dispose);
@@ -125,6 +129,7 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
     if(typeof document!=='undefined')document.removeEventListener('visibilitychange',hidden);
     if(typeof window!=='undefined')window.removeEventListener('blur',dispose);
     if(!destroyingInk&&ink.active)ink.destroy();
+    options.onDispose?.();
   };
   const inkDestroyed=()=>{destroyingInk=true;dispose();};
   const hidden=()=>{if(document.hidden)dispose();};
@@ -195,6 +200,7 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
       visible++;
     }
     ink.setData('visibleSegments',visible);
+    if(visible>0&&!notifiedVisible){notifiedVisible=true;options.onVisibleOnce?.(DURATION-elapsed);}
   };
   scene.events.on('postupdate',tick);scene.events.once('shutdown',dispose);scene.events.once('destroy',dispose);
   scene.events.once('sleep',dispose);scene.events.once('pause',dispose);root.once('destroy',dispose);ink.once('destroy',inkDestroyed);signal.addEventListener('abort',dispose,{once:true});
