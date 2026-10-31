@@ -183,6 +183,8 @@ npm run verify:ci -- --scope=all
 
 牌面遮挡检查测量包含父容器变换的实际四边形相交面积；旋转后的外接矩形包含牌外空白，不能代替真实遮挡。
 
+产物接收脚本变更时，在开发电脑额外运行 `python3 -m unittest discover -s tests -p 'test_tangsongpai_artifact.py'`（Windows 可用 `python`）；生产服务器不执行测试或构建。
+
 ### 开发电脑：交付 Release 给服务器
 
 服务器当前每分钟检查 GitHub `big-dimple/tangsongpai` 的 main，**只接收与 main 的完整提交 SHA 完全一致的已发布 Release，匹配依据是 Release 资产 `manifest.json` 的 `sourceRevision`，不是 Release 标签名**。它不读取入库的 `dist/`，也不会在服务器上安装依赖、构建或测试。当前服务器的取件脚本已安装；仓库中旧的自动部署脚本尚未同步，不能以它判断服务器实际行为。没有匹配的 Release 时，服务器保留线上旧版本并继续等待。
@@ -221,7 +223,7 @@ gh release edit "v$revision" --repo big-dimple/tangsongpai --draft=false
 
 Windows PowerShell 使用 `python scripts/prepare-release-artifact.py`、`$revision = (git rev-parse HEAD).Trim()`、`$artifactDir = "shots/deploy/$revision"`，其余 `gh release create/download/edit` 参数相同；用 `Get-FileHash -Algorithm SHA256` 和文件内容核对下载资产。发布后确认三个资产均已上传、Release 不再是草稿、标签指向该 SHA，且远端 main 仍是该 SHA。认证应使用有仓库访问权限的账号；SHA256 只证明文件一致，不单独证明来源。
 
-分别报告推送 SHA、CI 状态、Release 交付和公网 `https://pai.hp666.cc/build-info.json` 的实际 revision；Release 发布后服务器通常在下一分钟开始处理，上传与域名传播还需要时间，不保证固定上线时刻。服务器只获取、校验、上传和确认；没有匹配包或验证失败时不会把旧版本称为新版本。历史本机 CI 报告不代表当前提交通过 CI。
+分别报告推送 SHA、CI 状态、Release 交付和公网 `https://pai.hp666.cc/build-info.json` 的实际 revision；Release 发布后服务器通常在下一分钟开始处理，上传与域名传播还需要时间，不保证固定上线时刻。服务器只获取、校验、上传和确认；没有匹配包或验证失败时不会把旧版本称为新版本。历史本机 CI 报告不代表当前提交通过 CI。用户明确要求对某个完整 SHA 例外时，人工执行部署脚本时可指定 `--allow-unverified-ci=<完整SHA>`；仅该 SHA 可在失败后自动重试，确认成功或 main 变化时清除，CI 不通过或未核实仍须如实报告，不能绕过来源、SHA256、构建信息和健康检查。
 
 GitHub 仓库为 `big-dimple/tangsongpai`，Cloudflare Pages 项目为 `dachoupai`。三个 GitHub 工作流已禁用，不是本机发布门禁；自动检查不代表真人、美术、设备或平衡验收。检查失败时查看日志并修复，不通过放宽检查或伪造结果交付。
 
