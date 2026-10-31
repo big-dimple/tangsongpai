@@ -1,12 +1,13 @@
 /** Re-derive only the supplied A11 source; --check is read-only. */
 import sharp from 'sharp';
 import {readFile,writeFile} from 'node:fs/promises';
+import {originalPath} from './source-originals.mjs';
 import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const root='art/sources/handdrawn-runtime-20261017-half1',manifestPath='public/assets/handdrawn-p08/manifest.json';
 const receipt=JSON.parse(await readFile(root+'/manifest.json','utf8')),manifest=JSON.parse(await readFile(manifestPath,'utf8'));
-const entry=receipt.assets.find(a=>a.id==='a11'),asset=manifest.assets.find(a=>a.id==='a11'),source=await readFile(root+'/'+entry.sourceFile);
+const entry=receipt.assets.find(a=>a.id==='a11'),asset=manifest.assets.find(a=>a.id==='a11'),source=await readFile(originalPath(root+'/'+entry.sourceFile));
 assert.equal(hash(source),entry.sourceSHA256);const meta=await sharp(source).metadata();assert.deepEqual([meta.width,meta.height],[1696,2528]);
 for(const [purpose,width,height,quality] of [['thumbnail',128,160,80],['detail',615,768,78]]){
  const bytes=await sharp(source,{failOn:'none'}).resize(width,height,{fit:'contain',background:'#000'}).webp({quality,effort:6}).toBuffer();

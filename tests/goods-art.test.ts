@@ -5,6 +5,7 @@ import manifest from '../public/assets/handdrawn-tools/manifest.json';
 import {GOODS_ART,goodsArtUrl} from '../src/game/GoodsArt';
 import {JOKER_ART} from '../src/game/jokerArt';
 import {toolInfo,itemInfo,goodsArtPortrait} from '../src/game/r2ToolInfo';
+import {originalPath,sourceInventory} from '../scripts/source-originals.mjs';
 const finalToolIds=['P08','P09','P10','P12','S01','T19','S03','S04','S05','S06','S07','S08'];
 it('binds all twelve items and thirty-nine tools to reviewed, complete source derivatives',()=>{
   const expectedIds=[...Array.from({length:19},(_,i)=>'T'+String(i+1).padStart(2,'0')),...Array.from({length:12},(_,i)=>'P'+String(i+1).padStart(2,'0')),...Array.from({length:8},(_,i)=>'S'+String(i+1).padStart(2,'0')),...Array.from({length:12},(_,i)=>'U'+String(i+1).padStart(2,'0'))].sort();
@@ -16,9 +17,10 @@ it('binds all twelve items and thirty-nine tools to reviewed, complete source de
   expect(source.domainIds).toEqual(expectedIds);expect(receipt.unmapped).toEqual([]);
   expect(receipt.assets).toHaveLength(51);
   for(const a of receipt.assets){
-    const original=readFileSync(new URL('../art/sources/'+receipt.batch+'/'+a.sourceFilename,import.meta.url));
-    expect(createHash('sha256').update(original).digest('hex')).toBe(a.sourceSHA256);
-    expect(original.length).toBe(a.sourceBytes);expect(a.pixelObservation).toBeTruthy();
+    const source='art/sources/'+receipt.batch+'/'+a.sourceFilename,archived=sourceInventory().get(source);
+    expect(archived).toMatchObject({sha256:a.sourceSHA256,bytes:a.sourceBytes});
+    if(process.env.TANGSONGPAI_ASSETS_ROOT){const original=readFileSync(originalPath(source));expect(createHash('sha256').update(original).digest('hex')).toBe(a.sourceSHA256);expect(original.length).toBe(a.sourceBytes);}
+    expect(a.pixelObservation).toBeTruthy();
     expect(a.geometry).toEqual({fit:'contain',entireSourceSampled:true,noStretch:true,sourceCropPixels:{left:0,top:0,width:a.sourceWidth,height:a.sourceHeight},background:'#F3EADB',insetBoundingBoxes:{thumbnail:{left:4,top:5,width:120,height:150},detail:{left:19,top:24,width:576,height:720}}});
     const runtime=GOODS_ART.find(row=>row.domainId===a.domainId)!;
     expect(runtime.id).toBe(a.id);expect(runtime.category).toBe(a.category);

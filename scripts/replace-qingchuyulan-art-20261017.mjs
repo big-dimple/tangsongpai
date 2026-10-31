@@ -4,12 +4,13 @@ import fs from 'node:fs';
 import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 import {HASH_POLICY} from './handdrawn-provenance.mjs';
+import {originalPath} from './source-originals.mjs';
 const root='art/sources/qingchuyulan-art-20261017',receiptPath=root+'/manifest.json';
 const runtimePath='public/assets/handdrawn-p08/manifest.json',check=!process.argv.includes('--write');
 assert.ok(process.argv.slice(2).every(a=>['--check','--write'].includes(a))&&!(process.argv.includes('--check')&&process.argv.includes('--write')),'use --check (default) or --write');
 const hash=bytes=>createHash('sha256').update(bytes).digest('hex');
 const runtime=JSON.parse(fs.readFileSync(runtimePath,'utf8')),asset=runtime.assets.find(a=>a.id==='c06');
-const source=fs.readFileSync(root+'/c06-qingchuyulan-original.png'),meta=await sharp(source).metadata();
+const source=fs.readFileSync(originalPath(root+'/c06-qingchuyulan-original.png')),meta=await sharp(source).metadata();
 assert.equal(hash(source),'7b530adb5ede95719ad37f4813e90f0ad42faa657763b7f5c60152a3f3b963e9');
 assert.deepEqual([meta.width,meta.height],[1122,1402]);
 const previous=fs.existsSync(receiptPath)?JSON.parse(fs.readFileSync(receiptPath,'utf8')).previous:

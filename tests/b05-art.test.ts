@@ -8,18 +8,24 @@ import {R2_JOKERS} from '../src/content/r2Schema';
 import {HANDDRAWN_ART} from '../src/game/HanddrawnArt';
 import {JOKER_ART, jokerArtUrl, jokerArtPreviewUrl} from '../src/game/jokerArt';
 import {PRELOAD_PIXEL_BUDGET, sceneResources} from '../src/game/SceneResources';
+import {originalPath,sourceInventory} from '../scripts/source-originals.mjs';
 
-it('binds the user filename 风鸣朝阳.png to the actual B05 凤鸣朝阳 display ID and preserves the complete PNG', async () => {
+it('binds the user filename 风鸣朝阳.png to the B05 display ID and archived source receipt', () => {
   expect(receipt.id).toBe('b05'); expect(receipt.sourceOriginalName).toBe('风鸣朝阳.png');
   expect(TANGSONG_CARD_NAMES[receipt.id]).toBe('凤鸣朝阳');
   expect(R2_JOKERS.find(a => a.id === receipt.id)?.name).toBe('合唱班');
-  const original = fs.readFileSync(new URL('../art/sources/fengmingchaoyang-art-20261017/' + receipt.sourceFilename, import.meta.url));
+  const source='art/sources/fengmingchaoyang-art-20261017/' + receipt.sourceFilename;
+  expect(sourceInventory().get(source)).toMatchObject({bytes:3737032,sha256:'11055d52940eecf33d815a82b23f51171480723aaa2983e15edd37e68a6b1e45'});
+  expect(receipt.geometry).toMatchObject({fit:'contain',entireSourceSampled:true,noStretch:true,sourceCropPixels:{left:0,top:0,width:1122,height:1402}});
+});
+
+it.skipIf(!process.env.TANGSONGPAI_ASSETS_ROOT)('strictly decodes and hashes the private original B05 PNG', async () => {
+  const original = fs.readFileSync(originalPath('art/sources/fengmingchaoyang-art-20261017/' + receipt.sourceFilename));
   expect(original.length).toBe(3737032);
   expect(createHash('sha256').update(original).digest('hex')).toBe('11055d52940eecf33d815a82b23f51171480723aaa2983e15edd37e68a6b1e45');
   // Metadata alone accepted the truncated old JPEG. Require a full strict decode of this new original.
   const decoded = await sharp(original, {failOn:'warning'}).raw().toBuffer({resolveWithObject:true});
   expect([decoded.info.width, decoded.info.height]).toEqual([1122, 1402]);
-  expect(receipt.geometry).toMatchObject({fit:'contain',entireSourceSampled:true,noStretch:true,sourceCropPixels:{left:0,top:0,width:1122,height:1402}});
 });
 
 it('routes B05 thumbnails and the shared detail/zoom URL to new content paths with exact cache hashes', () => {

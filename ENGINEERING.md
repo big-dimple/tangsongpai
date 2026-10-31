@@ -153,7 +153,7 @@ tools/          离线素材工具
 - 音频统一走应用级总线，处理解锁、后台 suspend、音量偏好和实例清理。
 - 资源使用注册表与 `BASE_URL`；源素材、运行时变体和预览文件分开，首屏只加载必要资源。`BootScene` 先关闭静态首屏并进入标题，旧局 IndexedDB 恢复与 opening 图片恢复由 `prepareDestinationBackground` 后台运行；缺图保留 `ResourceRecovery` 重试，不得阻塞新局入口。
 - 当前素材清单为 `docs/assets/inventory.json`，素材检查工具位于 `tools/blender/`。
-- 原始素材的完整副本保存在私有仓库 `big-dimple/tangsongpai-assets`，正式运行图、音频和模型仍由 `public/assets/` 管理。`docs/assets/source-archive.json` 固定已验证的资产提交和清单摘要，`docs/assets/source-inventory.jsonl` 按原路径记录 542 个文件的字节数及 SHA256。迁出按批次进行，尚未迁出的文件仍在 `art/sources/`。获取该私有仓库的对应提交后，在项目根目录运行 `node scripts/verify-source-archive.mjs <资产仓库检出目录>`，检查提交、文件集合、大小和逐文件 SHA256；这项私有源素材检查不等同于公开 CI 的运行资源检查。
+- 原始素材的完整副本保存在私有仓库 `big-dimple/tangsongpai-assets`，正式运行图、音频和模型仍由 `public/assets/` 管理。`docs/assets/source-archive.json` 固定已验证的资产提交和清单摘要，`docs/assets/source-inventory.jsonl` 按原路径记录 542 个文件的字节数及 SHA256。获取对应提交后，设置 `TANGSONGPAI_ASSETS_ROOT` 为资产仓库检出目录并运行 `npm run test:source-archive`，逐文件校验 SHA256 并执行原图检查；需要读取原图的素材重建脚本也使用此变量。公开 CI 只能核对来源清单与运行资源，不能把未读取的原图称为已验证；B05 严格原图解码测试在没有私有素材时跳过。
 - 英雄文案数据为 `src/content/hero-text-spec.json`；清理文档不改其内容，也不将文案技能说明当成所有旧存档共用的规则。
 
 本轮三条视觉重做线的实现入口已经合并：`PcTableLayout`/`StageTableArt` 负责牌桌，`ShopLayout`/`ShopScene`/`ShopArt`/`ShopMobileOffers` 负责商店，`IntermissionLayout`/`PcSettlementPresentation`/`MobileSettlementPresentation` 负责结算。后续只处理用户试玩后可复现的工程问题，不把检查数量写成审美结论。
