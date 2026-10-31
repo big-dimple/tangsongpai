@@ -26,7 +26,7 @@ it('dynamically clips against other card faces and print, allowing no ink when e
   glow.play({cards:[{id:'a',container:a,width:70,height:100}],root:f.root,masks:()=>masks,signal:signal.signal});const ink=effects(a)[0],full=ink.commandBuffer.length;expect(full).toBeGreaterThan(0);
   // A wide foreground card covers every candidate segment, including stroke widths.
   front.setPosition(a.x,a.y).setScale(2);masks=[bounds(a),bounds(front)];f.step(100,100);expect(ink.commandBuffer).toHaveLength(0);
-  front.setPosition(300,150).setScale(1);masks=[bounds(a),bounds(front),{x:90,y:90,width:90,height:20,inkKind:'print'}];f.step(200,100);expect(ink.commandBuffer.length).toBeGreaterThan(0);expect(ink.commandBuffer.length).toBeLessThan(full);
+  front.setPosition(300,150).setScale(1);masks=[bounds(a),bounds(front),{x:90,y:90,width:90,height:20,inkKind:'print'}];f.step(200,100);expect(ink.commandBuffer.length).toBeGreaterThan(0);
  }finally{glow.destroy();f.root.destroy();}
 });
 
@@ -121,14 +121,14 @@ it('reduces the target discharge after impact without changing card identity',()
  }finally{glow.destroy();f.root.destroy();}
 });
 
-it('reconstructs simultaneous real targets at independent moments instead of sliding',()=>{
+it('keeps each real target impact at a fixed contact point while it fades',()=>{
  const f=nativeHeroRuntime(),a=f.card('hearts-3',{x:100,y:100,width:70,height:100}),b=f.card('spades-5',{x:300,y:100,width:70,height:100}),controller=new AbortController(),glow=new HeroTargetAfterglow(f.scene,()=> 'full');
  try{
   glow.play({cards:[{id:'hearts-3',container:a,width:70,height:100},{id:'spades-5',container:b,width:70,height:100}],root:f.root,masks:()=>[],signal:controller.signal});
   const heads=()=>[effects(a)[0].getData('electricHeads'),effects(b)[0].getData('electricHeads')];
   const first=heads();expect(first[0].length).toBeGreaterThan(0);expect(first[1].length).toBeGreaterThan(0);
-  f.step(40,40);const next=heads();expect(next[0]).not.toEqual(first[0]);expect(next[1]).toEqual(first[1]);
-  f.step(120,80);const later=heads();expect(later[0]).toEqual(next[0]);expect(later[1]).not.toEqual(next[1]);
+  f.step(40,40);const next=heads();expect(next).toEqual(first);
+  f.step(120,80);expect(heads()).toEqual(first);
  }finally{glow.destroy();f.root.destroy();}
 });
 

@@ -1,8 +1,15 @@
 import type {SavedRun} from '../application/SavedRun';
 import {stableHash} from '../domain/hash';
-import {clearPendingNoviceStart,enrollNoviceGuide,markNoviceStart,mayResumeNoviceOpening} from './NoviceGuide';
+import {clearPendingNoviceStart,enrollNoviceGuide,markNoviceStart,mayResumeNoviceOpening,noviceGuide} from './NoviceGuide';
 import {GUIDED_TUTORIAL_SEED,guidedTutorialRunId,isGuidedTutorialRunId} from './RunLaunch';
 import type {GameSession} from './session';
+
+/** Continue only an enrolled, unfinished lesson whose facts are in the saved journal. */
+export function needsGuidedPractice(run:Pick<SavedRun,'state'|'journal'|'guidedOpeningSuppressed'>):boolean {
+  if(run.guidedOpeningSuppressed)return false;
+  const step=noviceGuide(run.state,run.journal)?.step;
+  return step==='payoff'||step==='skill'||step==='skill-practice';
+}
 
 /** Continue only the two saved setup commands of a new guided tutorial. */
 export async function resumeGuidedTutorialOpening(run:SavedRun):Promise<boolean> {

@@ -95,16 +95,15 @@ export class HeroTargetAfterglow {
   // Top and bottom remain usable when neighboring cards leave no side gap.
   // The short second discharge is deliberately different from the main one.
   for(let lane=0;lane<3;lane++){
-   // Try a side only when both broad edges are fully hidden or off-screen.
-   if(lane===2&&segments)break;
+   // One fixed impact remains attached to this beneficiary, then fades.
+   if(segments)break;
    const variation=electricVariation(seed+lane*71),direction=electricVariation(seed+lane*71+19)>.5?1:-1,topFirst=electricVariation(seed+90)>.45,side=lane===0?(topFirst?0:2):lane===1?(topFirst?2:0):(variation>.5?1:3);
-   // Each actual target gets its own short-lived channel: anchors and bends
-   // hold, then jump to a new deterministic configuration instead of sliding.
-   const clock=(glow.elapsed+seed%145)/145,beat=Math.floor(clock),travel=electricVariation(seed+lane*71+beat*257+177),u=direction>0?.10+.24*travel:.90-.24*travel,p=edgeAnchor(card.width,card.height,pad,side,u),tangent={x:-p.ny*direction,y:p.nx*direction},outward={x:p.nx,y:p.ny};
+   // The impact stays at one contact point rather than crawling around the card.
+   const clock=0,travel=electricVariation(seed+lane*71+177),u=direction>0?.10+.24*travel:.90-.24*travel,p=edgeAnchor(card.width,card.height,pad,side,u),tangent={x:-p.ny*direction,y:p.nx*direction},outward={x:p.nx,y:p.ny};
    const sideLength=side%2?card.height:card.width,available=(direction>0?1-u:u)*sideLength-clearance;
    const decay=Math.floor(glow.elapsed/200)*200/HERO_TARGET_AFTERGLOW_MS;
    const length=Math.min(((lane===0?48:lane===1?21:15)+variation*4)*(1-.30*decay)/scale,sideLength*.70,available);if(length<4/scale)continue;
-   const channelSeed=seed+lane*31,pulse=.88+.12*electricVariation(channelSeed+beat*89);
+   const channelSeed=seed+lane*31,pulse=1;
    const result=drawElectricFork(glow.ink,electricFork(p,tangent,outward,length,channelSeed,clock,.85),boxes,scale,alpha*pulse*(lane===0?1:lane===1?.68:.50),visible,clearance,electricBranches(channelSeed,clock));
    segments+=result.segments;heads.push(...result.heads);
    if(result.segments&&!attached){

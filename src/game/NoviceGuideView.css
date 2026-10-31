@@ -4,6 +4,8 @@
 .novice-guide.is-inline .novice-guide-panel { position:relative;width:100%;margin:0 0 8px; }
 .novice-guide-rings,.novice-guide-ring { position:fixed;pointer-events:none; }
 .novice-guide-ring { box-sizing:border-box;border:2px solid #ffe39b;border-radius:7px;box-shadow:0 0 0 2px #704922,0 0 10px #ffda7a99; }
+/* Native modal focus belongs to the actionable button itself. */
+.detail-dialog button.novice-focus-action { outline:3px solid #d39c41;outline-offset:2px;box-shadow:0 0 10px #e0b05b80; }
 .novice-guide-panel,.novice-guide-reopen { position:fixed;box-sizing:border-box;pointer-events:auto;touch-action:manipulation; }
 .novice-guide-panel { overflow:auto;overscroll-behavior:contain;padding:4px 8px 6px;border:1px solid #a77b47;border-radius:8px;background:#fff7e7;color:#193940;box-shadow:0 3px 14px #102b3690,inset 0 0 0 2px #fffdf3; }
 .novice-guide-header { display:flex;align-items:center;gap:2px; }

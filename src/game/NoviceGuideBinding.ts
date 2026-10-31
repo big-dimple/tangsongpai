@@ -77,7 +77,7 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
   let stopped=false,suspended=false,actionPending=false,view:NoviceGuideHandle|undefined;
   let sourceRun:SavedRun|undefined,sourceState:R2RunState|undefined,sourceJournal:SavedRun['journal']|undefined;
   let hint:NoviceGuideHint|undefined,shownHint:NoviceGuideHint|undefined,shownHintKey='',shownMotion:boolean|undefined;
-  let actionError='',shownError='';
+  let actionError='',shownError='',sawPair=false,scoreFeedbackStart:number|undefined;
   let geometry:NoviceGuideGeometry={},geometryKey='',lastMeasurement=-Infinity;
   let inlineHost:HTMLElement|undefined;
 
@@ -92,7 +92,9 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
   ]);
   const measure=(current:NoviceGuideHint,force:boolean)=>{
     const now=performance.now();
-    if(!force&&now-lastMeasurement<32)return false;
+    // Track a moving/raised card at display cadence; a two-frame delay leaves
+    // the ring visibly behind while a phone hand is being sorted.
+    if(!force&&now-lastMeasurement<16)return false;
     lastMeasurement=now;
     const next=options.getGeometry(current),key=makeGeometryKey(next),changed=key!==geometryKey;
     geometry=next;geometryKey=key;return changed;
@@ -126,8 +128,15 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
     if(stopped)return;
     const run=activeRun();
     if(!run){removeView();return;}
-    const prefs=presentation(run),current=hint?(options.presentHint?.(hint)??hint):undefined;
+    const prefs=presentation(run);let current=hint?(options.presentHint?.(hint)??hint):undefined;
     if(!current||!canShow(run,current)){removeView();return;}
+    if(current.step==='pair')sawPair=true;
+    if(current.step==='discard'&&sawPair&&scoreFeedbackStart===undefined)scoreFeedbackStart=performance.now();
+    if(current.step==='discard'&&current.focus!=='discard'&&scoreFeedbackStart!==undefined){
+      const elapsed=performance.now()-scoreFeedbackStart,stage=run.state.stage;
+      if(elapsed<1300)current={...current,focus:'score',body:`这一手得 ${current.fact?.pairScore??'0'} 分。`};
+      else if(elapsed<2600&&stage)current={...current,focus:'goal',body:`累计 ${stage.heat} / ${stage.targetHeat} 分。`};
+    }
     const currentKey=JSON.stringify([current.step,current.cue,current.body,current.details,current.recommendedCardIds,current.offerIds,current.focus]);
     const hintChanged=shownHintKey!==currentKey;
     const nextInlineHost=options.getInlineHost?.(),hostChanged=nextInlineHost!==inlineHost;inlineHost=nextInlineHost;

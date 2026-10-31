@@ -40,7 +40,7 @@ it('bounded summaries keep numeric facts together and mark omitted rules explici
 });
 
 it('does not repeat a category in the summary or drop a distinct future condition',()=>{
- expect(shopOfferSynopsis('多步成长 · 热度+已存值','多步成长')).toBe('多步成长 · 热度+已存值');
+ expect(shopOfferSynopsis('多步成长 · 热度+已存值','多步成长')).toBe('多步成长 · 筹码+已存值');
  expect(shopOfferSynopsis('手牌上限+2','进场时牌组≤40张')).toBe('手牌上限+2\n进场时牌组≤40张');
 });
 

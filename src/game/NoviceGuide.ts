@@ -36,7 +36,7 @@ export interface NoviceGuideHint {
  details?:string;
  recommendedCardIds?:string[];
  offerIds?:string[];
- focus?:'play'|'discard'|'hero';
+ focus?:'play'|'discard'|'hero'|'score'|'goal';
  fact?:NoviceGuideFact;
 }
 type Preferences={disabled:boolean;enrolled?:string;muted:boolean;skipped:NoviceGuideStep[]};
@@ -245,7 +245,13 @@ function deriveHint(s:R2RunState,journal?:readonly Command[]):NoviceGuideHint {
     skillContribution:fractionText(facts.skill.events.filter(e=>e.reasonKey==='erxiang.handoff').reduce((sum,e)=>{const before=Rational.fromJSON(e.before.M),after=Rational.fromJSON(e.after.M);return sum.add(after.add(new Rational(-before.n,before.d)));},new Rational(0n)).toJSON())}:{})};
  if(facts.skillPractice)return {step:'complete',cue:'练习完成',body:'你已学会出牌、换牌和技能。',fact};
  if(s.phase==='run-lost')return {step:'replay',cue:'可以再练一次',body:'本局已结束，练习尚未完成。可以重新练习，或开始普通局。',fact};
- if(facts.skill)return {step:'skill-practice',cue:'刘娥技能生效了',body:`${fact.skillContribution} 点转为倍率。${s.phase==='await-input'?'再自己打一手。':'下场自己打一手。'}`,fact};
+ if(facts.skill){
+  // The fixed tutorial's next real stage can be B01. Keep its actual discard
+  // cost visible without interrupting the one-hand practice with a full Boss briefing.
+  const firstB01=s.phase==='await-input'&&s.stage?.boss?.definitionId==='B01'&&s.stage.playIndex===0;
+  return firstB01?{step:'skill-practice',cue:`${fact.skillContribution} 点转为倍率`,body:'先自己出一手；出牌前弃牌要用 2 次。',fact}
+   :{step:'skill-practice',cue:'刘娥技能生效了',body:`${fact.skillContribution} 点转为倍率。${s.phase==='await-input'?'再自己打一手。':'下场自己打一手。'}`,fact};
+ }
  if(facts.event){
   const elsewhere=s.phase!=='await-input'&&s.phase!=='pending-refill';
   return {step:'skill',cue:`${cardDisplayName(facts.purchase!.definitionId)}：${fact.briefContribution}`,body:elsewhere?'进入下一场，再试刘娥技能。':'选一对，再试刘娥技能。',recommendedCardIds:elsewhere?[]:pairIds(s),fact};
@@ -275,14 +281,19 @@ export function liveNoviceGuide(hint:NoviceGuideHint,selectedIds:readonly string
  const selected=new Set(selectedIds),recommended=hint.recommendedCardIds??[];
  if(hint.step==='pair'&&recommended.length===2){
   const chosen=recommended.filter(id=>selected.has(id)).length,extra=selected.size-chosen;
-  if(extra>0)return {...hint,cue:'再找一对',body:'取消多选的牌，再选高亮的两张。'};
+  if(extra>0)return {...hint,cue:'再找一对',body:'先取消这张牌。',recommendedCardIds:[...selected].filter(id=>!recommended.includes(id)).slice(0,1)};
   if(chosen===2)return {...hint,cue:'对子选好了',body:'点「出牌」，看看得分。',recommendedCardIds:[],focus:'play'};
-  if(chosen===1)return {...hint,cue:'再选另一张',body:'两张点数相同，就是对子。'};
+  if(chosen===1)return {...hint,cue:'再选另一张',body:'点数相同，就是对子。',recommendedCardIds:recommended.filter(id=>!selected.has(id))};
  }
  if(hint.step==='discard'&&selected.size)return {...hint,cue:'准备换牌',body:'点「弃牌」，换入新牌。',focus:'discard'};
  if((hint.step==='independent'||hint.step==='skill-practice')&&selected.size)return {...hint,body:'点「出牌」，看看结果。',focus:'play'};
  if(hint.step==='payoff'&&recommended.length===2&&selected.size===2&&recommended.every(id=>selected.has(id)))
   return {...hint,cue:'牌选好了',body:'点「出牌」，看看这张牌的作用。',recommendedCardIds:[],focus:'play'};
+ if((hint.step==='payoff'||hint.step==='skill')&&recommended.length===2&&!skill.available){
+  const extra=[...selected].filter(id=>!recommended.includes(id));
+  if(extra.length)return {...hint,body:'先取消这张牌。',recommendedCardIds:extra.slice(0,1)};
+  if(selected.size===1)return {...hint,body:'再选另一张同点数的牌。',recommendedCardIds:recommended.filter(id=>!selected.has(id))};
+ }
  if(hint.step==='skill'){
   if(!skill.enabled)return {...hint,body:'本场技能不可用，下一场再试。',recommendedCardIds:[]};
   if(skill.chosen)return {...hint,cue:'技能已选',body:'点「确认出牌」发动技能。',recommendedCardIds:[],focus:'play'};

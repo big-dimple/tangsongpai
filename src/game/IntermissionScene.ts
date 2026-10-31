@@ -14,6 +14,7 @@ import {jokerArtPreviewUrl} from './jokerArt';
 import {paperSceneStart,qiyuSceneStart} from './PaperFlow';
 import {bindNoviceGuide} from './NoviceGuideBinding';
 import {noviceGuide} from './NoviceGuide';
+import {needsGuidedPractice} from './GuidedTutorial';
 import {noviceGuideCanvasBox} from './NoviceGuideView';
 import {requestTutorialReplay} from './TutorialEntry';
 import {skipTutorialToNormal} from './RunMenu';
@@ -154,6 +155,7 @@ export class IntermissionScene extends Phaser.Scene {
     const pc=pcResultViewport(l.width,l.height);
     let p=resultLayout(l.width,l.height,0,preferred,pc);
     const nextStage=this.result.cleared&&run.phase==='stage-cleared'?nextStagePreview(run):undefined,skipped=run.phase==='run-lost'?null:run.stage?.skipResult,won=run.phase==='run-won',capped=this.result.cleared&&run.phase==='stage-cleared'&&!nextStage,lost=!this.result.cleared&&!skipped&&!won;
+    const owner=runController(this)!,guidedPractice=!!nextStage&&needsGuidedPractice(owner);
     const animateIn=this.firstRender&&!gameSession().reducedMotion&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.releaseViewport?.();this.releaseViewport=undefined;this.stopCelebration();v.clear();this.paintSourceArt=undefined;this.sourceArtLayer=undefined;v.paperBackground();if(pc)drawPcSettlementArt(this,v);const backgroundCount=v.root.length;
     const content=this.resultContent=this.add.container(0,0).setName('result/content');
@@ -178,6 +180,8 @@ export class IntermissionScene extends Phaser.Scene {
     if(skipped){
       const reward=skipped.kind==='coupon'?'下次买牌减2金券':skipped.kind==='gold'?'库存已满，+1金币':SKIP_ITEM_LABELS[skipped.definitionId];
       heading='跳场所得';body=reward+'。没有过关奖金或利息。'+(nextStage?'\n下一场：'+nextStage.name+' · 目标 '+heatText(nextStage.targetHeat):'');
+    }else if(nextStage&&guidedPractice){
+      heading='继续练习';body='进入下一手，自己选牌出牌。';
     }else if(nextStage){
       const nextIdentity=stageIdentity(nextStage.index,nextStage.index%3===2?run.boss:null,run.tourMode,run.difficulty,{contentVersion:run.contentVersion,contentHash:run.contentHash})!;
       heading=nextIdentity.isBoss?'下一场压轴 · '+nextIdentity.title:'准备下一场';const hero=heroStageContinuity(run);
@@ -205,7 +209,7 @@ export class IntermissionScene extends Phaser.Scene {
       const bodyY=nextHeading.y+nextHeading.height+3;
       const nextBody=v.text(n.x,bodyY,body,p.pc?18:14,PAPER_CSS.jade,n.width).setLineSpacing(1).setName('result/next-body');nextBottom=nextBody.y+nextBody.height;
       if(mobile&&nextBottom>n.y+n.height){
-        nextBody.setText(nextStage?`${nextStage.name} · 目标 ${heatText(nextStage.targetHeat)}`:body.split('\n')[0]);nextBottom=nextBody.y+nextBody.height;
+        nextBody.setText(nextStage&&!guidedPractice?`${nextStage.name} · 目标 ${heatText(nextStage.targetHeat)}`:body.split('\n')[0]);nextBottom=nextBody.y+nextBody.height;
         nextHeading.setText(heading+' ›');const hit=v.rect({...n,height:Math.max(44,nextBottom-n.y)}).setFillStyle(0,0).setStrokeStyle();v.target(hit,'action/result-next-details',{tap:()=>this.dialog.open(heading,body,[],{closeLabel:'返回结算'})});
       }
     }
@@ -214,7 +218,7 @@ export class IntermissionScene extends Phaser.Scene {
     if(!p.pc&&(p.portrait||p.wide||p.short)){const shift=nextBottom+(p.wide?20:8)-p.primary.y;p.primary.y+=shift;p.left.y+=shift;p.right.y+=shift;p.noticeY+=shift;}
     if(nextStage){
       this.auxiliary(p.left,'本场详情','action/result-details',()=>this.inspectResult());
-      v.button(p.primary,'前往筹备商店','action/continue-stage',()=>void this.next(),this.ready,true);
+      v.button(p.primary,guidedPractice?'继续练习':'前往筹备商店','action/continue-stage',()=>void this.next(),this.ready,true);
     }else if(won){
       this.auxiliary(p.left,'返回选角','action/return-select',()=>this.returnToSelect(),!this.busy);
       if(run.mode==='standard'&&run.normalCompletion)v.button(p.primary,'继续无尽','action/continue-endless',()=>this.confirmEndless(),this.ready,true);
@@ -376,7 +380,7 @@ export class IntermissionScene extends Phaser.Scene {
     try {
       if(this.result.cleared&&run.phase==='stage-cleared'&&nextStagePreview(run)){
         const result=await dispatchRun(this,{type:'OpenShop'},run.commandSeq);if(lifecycle!==this.lifecycle||!this.scene.isActive())return;
-        if(result.ok){const o=result.state.pokerEncounter?.opportunities.at(-1),row=result.state.dynamicEndless?.records.at(-1),data={...(o?.status==='offered'?{pokerEncounterEntryId:o.id}:{}),...(row&&row.lock.commandId===result.receipt.commandId?{targetLockCommandId:result.receipt.commandId}:{})};this.exitResult('shop',Object.keys(data).length?data:undefined);return;}
+        if(result.ok){const o=result.state.pokerEncounter?.opportunities.at(-1),row=result.state.dynamicEndless?.records.at(-1),data={...(!needsGuidedPractice(runController(this)!)&&o?.status==='offered'?{pokerEncounterEntryId:o.id}:{}),...(row&&row.lock.commandId===result.receipt.commandId?{targetLockCommandId:result.receipt.commandId}:{})};this.exitResult('shop',Object.keys(data).length?data:undefined);return;}
         this.notice='商店尚未保存，请在菜单重试保存。';this.audio.invalid();
       }else {this.exitResult('character-select',{freshSeed:true});return;}
     }finally {if(lifecycle===this.lifecycle&&this.scene.isActive()){this.busy=false;this.render();}}

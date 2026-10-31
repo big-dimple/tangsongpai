@@ -62,7 +62,9 @@ import {drawStageTableArt,playedCaptionBox} from './StageTableArt';
 import {paperSceneStart} from './PaperFlow';
 import {bindNoviceGuide} from './NoviceGuideBinding';
 import {liveNoviceGuide,noviceGuide,noviceGuideEnrolled} from './NoviceGuide';
+import {needsGuidedPractice} from './GuidedTutorial';
 import {noviceGuideCanvasBox} from './NoviceGuideView';
+import {HERO_SOURCE_CURRENT_MS} from './HeroCardAttachmentAtmosphere';
 import {requestTutorialReplay} from './TutorialEntry';
 import {skipTutorialToNormal} from './RunMenu';
 import {enhanceBlindSelectEntrance,mountHeroEntranceBurst} from './QiyuAnimationPresentation';
@@ -586,8 +588,9 @@ export class GameScene extends Phaser.Scene {
         const l=this.view.layout,canvas=this.game.canvas.getBoundingClientRect();
         const map=(box:import('./layout').Box)=>noviceGuideCanvasBox(box,canvas,l);
         const hero=heroActionShortcut(l.tableActions.discard,l.heroAction);
-        const focus=hint.focus==='play'?l.tableActions.play:hint.focus==='discard'?hero.discard:hint.focus==='hero'?hero.shortcut:undefined;
-        const highlights=focus?[map(focus)]:(hint.recommendedCardIds??[]).flatMap(id=>{
+        const targetText=this.view.root.getByName('hud/target') as Phaser.GameObjects.Text|undefined;
+        const focus=hint.focus==='play'?l.tableActions.play:hint.focus==='discard'?hero.discard:hint.focus==='hero'?hero.shortcut:hint.focus==='score'?this.heatText.getBounds():hint.focus==='goal'?(targetText?.getBounds()??this.heatText.getBounds()):undefined;
+        let highlights=focus?[map(focus)]:(hint.recommendedCardIds??[]).slice(0,1).flatMap(id=>{
           const index=this.hand.findIndex(card=>card.id===id),seat=l.cards[index],card=this.cardViews[index];
           if(!seat?.visible||!card?.container.active||!card.container.visible)return [];
           const width=Number(card.container.getData('width')),height=Number(card.container.getData('height'));
@@ -595,6 +598,7 @@ export class GameScene extends Phaser.Scene {
           // Follow the painted card, but only ring its exposed phone hit column.
           return [map({x:topLeft.x,y:topLeft.y,width:Math.min(bottomRight.x-topLeft.x,seat.hit.width),height:bottomRight.y-topLeft.y})];
         });
+        if(!highlights.length&&!hint.focus&&hint.step==='discard')highlights=[map(l.hand)];
         // The hint must not intercept the optional skill or utility buttons:
         // tapping through to the skip control would unexpectedly leave the run.
         const controls=[l.hud,l.scoreBoard,l.playedArea,l.hand,l.actions,l.heroAction,l.inventoryEntry,l.helpEntry,...this.run.jokers.map((_,index)=>l.slots[index])];
@@ -610,7 +614,8 @@ export class GameScene extends Phaser.Scene {
     this.events.once('shutdown',unsubscribeInventory);
     if(enteredStage)this.revealDrawnCards([]);
     const notice=stageNotice(this.run);
-    const introduceBoss=!!this.run.stage.boss&&!bossRulesSeen(this.run)&&!document.querySelector('dialog[open]');
+    const guidedB01=needsGuidedPractice(controller)&&noviceGuide(this.run,controller.journal)?.step==='skill-practice'&&this.run.stage.boss?.definitionId==='B01';
+    const introduceBoss=!!this.run.stage.boss&&!guidedB01&&!bossRulesSeen(this.run)&&!document.querySelector('dialog[open]');
     if(introduceBoss&&this.run.stage.boss?.definitionId==='B05')inspectOpponent();
     else if((introduceBoss||enteredStage&&!this.run.stage.boss)&&notice?.warning){
       const identity=stageIdentity(this.run.stage.index,this.run.stage.boss,this.run.tourMode,this.run.difficulty)!;
@@ -619,7 +624,7 @@ export class GameScene extends Phaser.Scene {
       dialog.dataset.stageKind=identity.isBoss?'boss':'normal';
     }
     if(introduceBoss&&this.dialog.current){const modal=this.dialog.current,stop=trackBossRulesVisible(this.run,modal,()=>this.lifecycle===lifecycle&&this.scene.isActive()&&controller.state===this.run&&this.dialog.active(modal));this.events.once('shutdown',stop);}
-    if(enteredStage&&this.run.stage.boss){
+    if(enteredStage&&this.run.stage.boss&&!guidedB01){
       const stageIndex=this.run.stage.index,announce=()=>{if(this.lifecycle===lifecycle&&this.scene.isActive()&&this.run.stage?.index===stageIndex&&this.run.phase==='await-input'&&!this.playing&&!this.presentation&&!document.querySelector('dialog[open]'))this.presentBossRuleCue();};
       const modal=this.dialog.current;if(modal)modal.addEventListener('close',()=>queueMicrotask(announce),{once:true});else announce();
     }
@@ -641,7 +646,7 @@ export class GameScene extends Phaser.Scene {
         void (async()=>{
           let stopDirectoryEntrance:(()=>void)|undefined;
           try {
-            const skipDirectory=!directory&&bossRulesSeen(controller.state);
+            const skipDirectory=!directory&&(needsGuidedPractice(controller)||bossRulesSeen(controller.state));
             const directoryPromise=skipDirectory?Promise.resolve(true):presentOpponentEntrance(this.dialog,controller.state,this,()=>this.openStagePrograms?.());
             if(!skipDirectory&&this.dialog.current?.classList.contains('blind-select-dialog')){
               stopDirectoryEntrance=enhanceBlindSelectEntrance(this.dialog.current,controller.state.characterId,controller.state.stageIndex,this.reducedMotion,()=>{this.stageEntranceShown=true;});
@@ -673,13 +678,22 @@ export class GameScene extends Phaser.Scene {
       };
       const autoEnter=()=>this.enterPreparedStage?.();
       this.renderStageReady();
-      if(bossRulesSeen(controller.state)){if(enterPreparedBoss){if(this.scene.isActive())autoEnter();else this.events.once('create',autoEnter);}}
+      if(needsGuidedPractice(controller)){if(this.scene.isActive())autoEnter();else this.events.once('create',autoEnter);}
+      else if(bossRulesSeen(controller.state)){if(enterPreparedBoss){if(this.scene.isActive())autoEnter();else this.events.once('create',autoEnter);}}
       else this.reopenStageDirectory();
     });
   }
   private renderStageReady():void {
     this.run=runController(this)?.state??this.run;
     const v=this.view,l=v.layout,w=Math.min(560,l.width-32),x=(l.width-w)/2,y=Math.max(32,(l.height-310)/2),known=bossRulesSeen(this.run);
+    const controller=runController(this);
+    if(controller&&needsGuidedPractice(controller)){
+      v.clear();v.text(x,y,'继续练习',24,C.ink,w).setName('stage-ready/title');
+      v.text(x,y+48,'下一手准备好了。',16,C.jade,w);
+      v.button({x,y:y+100,width:w,height:52},'继续练习','action/start-stage',()=>this.enterPreparedStage?.(),this.ready,true);
+      if(this.statusMessage)v.text(x,y+170,this.statusMessage,14,C.red,w);
+      return;
+    }
     v.clear();v.text(x,y,getCharacter(this.run.characterId).name+' · 本章待开战',24,C.ink,w).setName('stage-ready/title');
     v.text(x,y+48,known?'本场规则已看过，准备好即可入场。':'本局进度已保留，可先选节目单，再查看对手入场。',16,C.jade,w);
     v.button({x,y:y+100,width:w,height:48},programEntryLabel(this.run),'action/stage-program',()=>this.openStagePrograms?.(),this.ready);
@@ -1774,7 +1788,7 @@ export class GameScene extends Phaser.Scene {
       const choices=actions.slice(0,choice.candidates.length).map(action=>({label:action.label,disabled:action.disabled,run:action.run}));
       const cancel=actions.find(action=>action.label==='取消本手选牌');if(cancel)choices.push({label:'取消技能',disabled:false,run:cancel.run});
       const dialog=this.dialog.open('刘娥技能','',[],{effectBody:'同点牌的点数从筹码改加倍率，可能降低得分。选一张牌试试。',choices,closeLabel:'返回选牌'});
-      dialog.classList.add('novice-hero-dialog');return;
+      dialog.classList.add('novice-hero-dialog');dialog.querySelector<HTMLButtonElement>('.dialog-choice-actions button:not(:disabled)')?.classList.add('novice-focus-action');return;
     }
     const dialog=this.dialog.open(characterForRun(this.run).name+' · '+characterForRun(this.run).passiveName,characterForRun(this.run).passiveDescription,[],{guideSteps:heroOperationSteps(this.run,guide,!!this.erxiangTargetId),summaryBody:guide.step,effectBody:choice.sentence,collapseRules:true,rulesLabel:'计分牌转换细则',closeLabel:'返回选牌',choices:actions.filter(a=>a.label!=='上一手详情'),secondaryActions:actions.filter(a=>a.label==='上一手详情')});mountHeroSkillGuide(dialog,this.run);
   }
@@ -2746,7 +2760,7 @@ export class GameScene extends Phaser.Scene {
       if(openingAura)this.showHighMultiplierAura(openingAura,context);
       const attachment=replay||score.amoExile?.use?undefined:savedHeroAttachment(score,this.run.characterId);
       if(!replay&&score.amoExile?.use)this.targetAttachment?.beginSushiDiscard(score,context);
-      else if(attachment){if(attachment.targetIds)this.targetAttachment?.retainTargets(attachment.targetIds);this.targetAttachment?.commit(attachment.event.eventId,context,attachment.targetIds??[]);}else if(!presentation.retainedIds.length)this.targetAttachment?.clear();
+      else if(attachment){if(attachment.targetIds)this.targetAttachment?.retainTargets(attachment.targetIds);if(attachment.event.reasonKey!=='erxiang.handoff')this.targetAttachment?.commit(attachment.event.eventId,context,attachment.targetIds??[]);}else if(!presentation.retainedIds.length)this.targetAttachment?.clear();
       this.scoreHaptic?.scope.cancel();this.scoreHaptic=replay?undefined:{generation:context.generation,scope:Haptics.shared.createScope(context.signal)};
       if(!replay)this.audio.playHand();
       await Promise.all([...(score.xiemuBurn?.cost&&!replay?[this.rollGold(score.xiemuBurn.goldBefore,score.xiemuBurn.goldAfter,Math.max(140,65*gameSession().speed),context,false)]:[]),...(beforeHands!==undefined&&!replay?[this.pulseResource('play',beforeHands,context,beforeHands-1)]:[]),...landing.map(async({view,box},i)=>{
@@ -2765,7 +2779,15 @@ export class GameScene extends Phaser.Scene {
         view.container.setScale(sx*1.07,sy*.9).setAngle(0);
         await this.animate({targets:view.container,scaleX:sx,scaleY:sy,duration:110,ease:'Back.easeOut'},context);
       })]);
-      if(context.signal.aborted)return;if(attachment)this.targetAttachment?.landed(context);this.setAccumulator(base.after);this.breakdownText.setText('牌型 '+HAND_LABELS[score.handType]+' · ★ '+score.sets.activeScoringIds.length+' 张计分');
+      if(context.signal.aborted)return;
+      if(attachment){
+        // The real beneficiary has landed: start one connected fuse towards
+        // its final position, instead of teleporting the front as cards fly.
+        if(attachment.event.reasonKey==='erxiang.handoff')this.targetAttachment?.commit(attachment.event.eventId,context,attachment.targetIds??[]);
+        this.targetAttachment?.landed(context);
+        if(attachment.event.reasonKey==='erxiang.handoff'&&!this.reducedMotion)await this.wait(HERO_SOURCE_CURRENT_MS/Math.max(1,gameSession().speed),context);
+      }
+      if(context.signal.aborted)return;this.setAccumulator(base.after);this.breakdownText.setText('牌型 '+HAND_LABELS[score.handType]+' · ★ '+score.sets.activeScoringIds.length+' 张计分');
       // Base landing and the quiet lead-in belong to this same queue, once.
       const baseEffects:Promise<void>[]=[];
       if(baseCue){this.scoreTotal.setData('eventId',base.eventId).setData('eventPhase','base-impact');baseEffects.push(this.pulseAccumulator(base,180,context),this.impactAccumulator(base,180,context));}

@@ -6,6 +6,7 @@ import type {Checkpoint} from '../src/application/checkpoint';
 import {createRun,type Action} from '../src/domain/run';
 import {guidedTutorialRunId,newRunIdentity} from '../src/game/RunLaunch';
 import {dismissNoviceGuide,enrollNoviceGuide,liveNoviceGuide,markNoviceStart,noviceGuide,restoreNoviceGuide,stopNoviceGuide} from '../src/game/NoviceGuide';
+import {needsGuidedPractice} from '../src/game/GuidedTutorial';
 import type {NoviceGuideHandle,NoviceGuideOptions,NoviceGuideStep} from '../src/game/NoviceGuideView';
 
 vi.mock('../src/game/session',()=>({gameSession:()=>session}));
@@ -157,8 +158,8 @@ describe('novice guide scene binding',()=>{
   let now=0,x=0;const clock=vi.spyOn(performance,'now').mockImplementation(()=>now),getGeometry=vi.fn(()=>({highlights:[{x,y:0,width:50,height:50}]}));
   const unmount=bindNoviceGuide(owner.value,{kind:'game',getGeometry,onReplay:()=>true,onSkip:()=>true,onComplete:()=>true});
   const active=latest()!;expect(getGeometry).toHaveBeenCalledTimes(1);
-  x=10;now=20;owner.events.emit('postupdate');expect(getGeometry).toHaveBeenCalledTimes(1);expect(active.refreshes).toBe(0);
-  now=40;owner.events.emit('postupdate');expect(active.refreshes).toBe(1);expect(active.options.getGeometry().highlights?.[0].x).toBe(10);
+  x=10;now=8;owner.events.emit('postupdate');expect(getGeometry).toHaveBeenCalledTimes(1);expect(active.refreshes).toBe(0);
+  now=17;owner.events.emit('postupdate');expect(active.refreshes).toBe(1);expect(active.options.getGeometry().highlights?.[0].x).toBe(10);
   x=20;unmount.refresh();expect(active.updates).toBe(0);expect(active.options.getGeometry().highlights?.[0].x).toBe(20);
   unmount();clock.mockRestore();
  });
@@ -182,8 +183,11 @@ describe('novice guide scene binding',()=>{
   await send(run,{type:'PlayHand',selectedIds:['hearts-5','clubs-5']});
   await send(run,{type:'DiscardHand',selectedIds:['clubs-4','diamonds-4','spades-14','clubs-7','spades-11']});
   await send(run,{type:'PlayHand',selectedIds:run.state.handOrder.filter(id=>id.startsWith('hearts-')).slice(0,5)});
+  expect(needsGuidedPractice(run)).toBe(false); // The first real shop must remain visible.
   await send(run,{type:'OpenShop'});const offer=run.state.shop!.offers.find(o=>o.definitionId==='b02')!;
-  await send(run,{type:'BuyOffer',offerId:offer.offerId});await send(run,{type:'LeaveShop'});await send(run,{type:'EnterStage'});
+  await send(run,{type:'BuyOffer',offerId:offer.offerId});expect(needsGuidedPractice(run)).toBe(true);
+  expect(needsGuidedPractice({state:run.state,journal:run.journal,guidedOpeningSuppressed:true})).toBe(false);
+  await send(run,{type:'LeaveShop'});expect(needsGuidedPractice(run)).toBe(true);await send(run,{type:'EnterStage'});
   expect(latest()?.step.id).toBe('payoff');scoreActive=true;
   await send(run,{type:'PlayHand',selectedIds:['clubs-6','spades-6']});
   expect(noviceGuide(run.state,run.journal)?.step).toBe('skill');expect(latest()).toBeUndefined();
@@ -192,7 +196,7 @@ describe('novice guide scene binding',()=>{
   expect(noviceGuide(run.state,run.journal)?.step).toBe('skill-practice');
   if(run.state.phase==='stage-cleared'){await send(run,{type:'OpenShop'});await send(run,{type:'LeaveShop'});await send(run,{type:'EnterStage'});}
   await send(run,{type:'PlayHand',selectedIds:[run.state.handOrder[0]]});
-  expect(noviceGuide(run.state,run.journal)?.step).toBe('complete');expect(latest()?.step.id).toBe('complete');
+  expect(noviceGuide(run.state,run.journal)?.step).toBe('complete');expect(needsGuidedPractice(run)).toBe(false);expect(latest()?.step.id).toBe('complete');
   latest()!.step.action!.run();expect(onComplete).toHaveBeenCalledOnce();await Promise.resolve();expect(latest()?.step.body).toContain('操作尚未完成');
   latest()!.step.action!.run();expect(onComplete).toHaveBeenCalledTimes(2);expect(onSkip).not.toHaveBeenCalled();expect(noviceGuide(run.state,run.journal)?.step).toBe('complete');
   unmount();
