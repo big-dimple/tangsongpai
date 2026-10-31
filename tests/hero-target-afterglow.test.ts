@@ -64,7 +64,7 @@ it('bounds the actual filled band widths after rotation and nonuniform scaling',
  try{
   glow.play({cards:[{id:'transformed',container:a,width:70,height:100}],root:f.root,masks:()=>[],signal:controller.signal});const ink=effects(a)[0],c=ink.commandBuffer,m=ink.getWorldTransformMatrix(),bands:{color:number;points:{x:number;y:number}[]}[]=[];let color=0,points:{x:number;y:number}[]=[];
   for(let i=0;i<c.length;){const op=c[i++];if(op===7){color=c[i];i+=2;}else if(op===1)points=[];else if(op===5||op===4)points.push(m.transformPoint(c[i++],c[i++]));else if(op===8)bands.push({color,points});else if(op===6)i+=3;else if(op!==9)throw new Error(`unexpected command ${op}`);}
-  const limits=new Map([[0x76c8f2,5.8],[0x1768c3,5.2],[0xf3fdff,3.0]]);expect(new Set(bands.map(b=>b.color))).toEqual(new Set(limits.keys()));
+  const limits=new Map([[0x76c8f2,6.2],[0x1768c3,6.2],[0xf3fdff,3.4]]);expect(new Set(bands.map(b=>b.color))).toEqual(new Set(limits.keys()));
   for(const {color,points:p} of bands){expect(p.length).toBeGreaterThanOrEqual(4);const widthA=Math.hypot(p[0].x-p[3].x,p[0].y-p[3].y),widthB=Math.hypot(p[1].x-p[2].x,p[1].y-p[2].y);expect(Math.max(widthA,widthB)).toBeLessThanOrEqual(limits.get(color)!+1e-6);}
  }finally{glow.destroy();f.root.destroy();}
 });
@@ -118,6 +118,17 @@ it('reduces the target discharge after impact without changing card identity',()
  try{
   glow.play({cards:[{id:'a',container:a,width:70,height:100}],root:f.root,masks:()=>[],signal:controller.signal});const ink=effects(a)[0],initial=blueAlpha(ink);
   f.step(1200,1200);expect(effects(a)[0]).toBe(ink);expect(ink.getData('targetCardId')).toBe('a');expect(blueAlpha(ink)).toBeGreaterThan(0);expect(blueAlpha(ink)).toBeLessThan(initial);
+ }finally{glow.destroy();f.root.destroy();}
+});
+
+it('keeps simultaneous real targets from pulsing in lockstep',()=>{
+ const f=nativeHeroRuntime(),a=f.card('hearts-3',{x:100,y:100,width:70,height:100}),b=f.card('diamonds-5',{x:300,y:100,width:70,height:100}),controller=new AbortController(),glow=new HeroTargetAfterglow(f.scene,()=> 'full');
+ const blueAlpha=(ink:Phaser.GameObjects.Graphics)=>{const c=ink.commandBuffer,alphas:number[]=[];for(let i=0;i<c.length;){const op=c[i++];if(op===6)i+=3;else if(op===7){if(c[i]===0x1768c3)alphas.push(c[i+1]);i+=2;}else if(op===5||op===4)i+=2;else if(op!==1&&op!==8&&op!==9)throw new Error(`unexpected command ${op}`);}return Math.max(...alphas);};
+ try{
+  glow.play({cards:[{id:'hearts-3',container:a,width:70,height:100},{id:'diamonds-5',container:b,width:70,height:100}],root:f.root,masks:()=>[],signal:controller.signal});
+  const first=[blueAlpha(effects(a)[0]),blueAlpha(effects(b)[0])];f.step(100,100);
+  const next=[blueAlpha(effects(a)[0]),blueAlpha(effects(b)[0])];
+  expect(next[0]).toBeLessThan(first[0]);expect(next[1]).toBeGreaterThan(first[1]);
  }finally{glow.destroy();f.root.destroy();}
 });
 

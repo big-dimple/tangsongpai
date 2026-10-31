@@ -91,14 +91,14 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
   ])('keeps all flame contours whole and moving on a %sx%s phone in renderer %s',(width,height,renderer)=>{
     const f=fixture({width,height,density:1,renderer}),board=f.table.scoreBoard;
     f.play();
-    // Sample counts describe the ten complete source silhouettes, including
+    // Sample counts describe the complete source silhouettes, including
     // their curved tips. A viewport or drawing-region cut adds/removes vertices
     // even though all resulting pixels would still lie inside the screen.
-    const complete=[45,26,50,38,14,14,32,50,33,26];
+    const complete=[45,26,50,38,14,14,32,50,33,26,45,45];
     const sample=(delta:number)=>{
       f.step(delta);const paths=painted(f.ink()!),bodies=paths.filter(path=>path.color===0x7952d7);
       expect(bodies.map(path=>path.points.length)).toEqual(complete);
-      expect(paths.filter(path=>path.color===0xf5e7ff)).toHaveLength(6);
+      expect(paths.filter(path=>path.color===0xf5e7ff)).toHaveLength(8);
       for(const path of paths){
         expect(within(path.points,{x:6.5,y:6.5,width:width-13,height:height-13})).toBe(true);
         expect(path.points.every(p=>p.y<=board.y-2.5+1e-6)).toBe(true);
@@ -115,6 +115,7 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
     // The phone arrangement keeps the original curved contours but avoids
     // two long horizontal bars and a pair of equal-height corner flames.
     expect(extent(before[3],'x')).toBeLessThan(32);expect(extent(before[6],'x')).toBeLessThan(32);
+    expect(extent(before[10],'y')).toBeGreaterThan(16);expect(extent(before[11],'y')).toBeGreaterThan(14);
     expect(extent(before[2],'y')).toBeGreaterThan(extent(before[7],'y')*1.15);
     expect(before[2].alpha).toBeGreaterThan(.6);expect(before[7].alpha).toBeGreaterThan(.6);
     expect(painted(f.ink()!).filter(path=>path.color===0xf5e7ff).every(path=>path.alpha>.7)).toBe(true);
@@ -127,6 +128,9 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
     const left=tipChange(0),right=tipChange(8);
     expect(Math.hypot(left.x,left.y)).toBeGreaterThan(1);expect(Math.hypot(right.x,right.y)).toBeGreaterThan(1);
     expect(Math.hypot(left.x-right.x,left.y-right.y)).toBeGreaterThan(1);
+    const leftBridge=tipChange(10),rightBridge=tipChange(11);
+    expect(Math.hypot(leftBridge.x,leftBridge.y)).toBeGreaterThan(.5);
+    expect(Math.hypot(leftBridge.x-rightBridge.x,leftBridge.y-rightBridge.y)).toBeGreaterThan(.5);
   });
 
   it.each([[-10,1],[-10,2],[10,1],[10,2]])('preserves complete phone contours at %s degrees in renderer %s',(angle,renderer)=>{
@@ -136,7 +140,7 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
     f.play();
     for(const delta of [600,400,400]){
       f.step(delta);const m=f.root.getWorldTransformMatrix(),paths=painted(f.ink()!),bodies=paths.filter(p=>p.color===0x7952d7);
-      const remaining=[45,26,50,38,14,14,32,50,33,26];
+      const remaining=[45,26,50,38,14,14,32,50,33,26,45,45];
       expect(bodies.length).toBeGreaterThanOrEqual(6);
       for(const body of bodies){const i=remaining.indexOf(body.points.length);expect(i).toBeGreaterThanOrEqual(0);remaining.splice(i,1);}
       for(const path of paths){
@@ -152,7 +156,7 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
     const bodies=()=>painted(f.ink()!).filter(p=>p.color===0x7952d7),before=bodies();
     const far=before.find(path=>path.points.every(p=>p.x>80&&p.x<110));expect(far).toBeDefined();
     f.setGuards([guard]);f.step(0);const all=painted(f.ink()!),after=bodies();
-    const remaining=[45,26,50,38,14,14,32,50,33,26];
+    const remaining=[45,26,50,38,14,14,32,50,33,26,45,45];
     expect(after.length).toBeGreaterThanOrEqual(6);
     for(const body of after){const i=remaining.indexOf(body.points.length);expect(i).toBeGreaterThanOrEqual(0);remaining.splice(i,1);}
     expect(after.some(path=>JSON.stringify(path.points)===JSON.stringify(far!.points))).toBe(true);
