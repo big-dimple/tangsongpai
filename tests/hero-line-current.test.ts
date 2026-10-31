@@ -2,35 +2,80 @@ import {expect,it} from 'vitest';
 import type Phaser from 'phaser';
 import {drawHeroLineCurrent} from '../src/game/HeroLineCurrent';
 import {drawHeroOriginStream,heroAtmosphereStyle} from '../src/game/HeroCardAttachmentAtmosphere';
+import {drawElectricFork,electricFork} from '../src/game/HeroElectricGeometry';
+import {heroStageCurrentExclusions} from '../src/game/HeroSkillStage';
+import {inkSegmentCrosses} from '../src/game/AssistInkGeometry';
 
 function graphics(){
- const paths:{x:number;y:number}[][]=[],styles:{width:number;color:number}[]=[];let path:{x:number;y:number}[]=[];
- const g={lineStyle(width:number,color:number){styles.push({width,color});return this;},beginPath(){path=[];return this;},moveTo(x:number,y:number){path.push({x,y});return this;},lineTo(x:number,y:number){path.push({x,y});return this;},lineBetween(){return this;},strokePath(){paths.push(path);return this;},clear(){return this;},fillStyle(){return this;},fillCircle(){return this;},fillEllipse(){return this;},fillPoints(){return this;}};
- return {g:g as unknown as Phaser.GameObjects.Graphics,paths,styles};
+ const paths:{x:number;y:number}[][]=[],strokes:{x:number;y:number}[][]=[],styles:{width:number;color:number}[]=[],fills:{color:number;points:{x:number;y:number}[]}[]=[];let path:{x:number;y:number}[]=[],color=0;
+ const g={lineStyle(width:number,color:number){styles.push({width,color});return this;},beginPath(){path=[];return this;},moveTo(x:number,y:number){path.push({x,y});return this;},lineTo(x:number,y:number){path.push({x,y});return this;},lineBetween(){return this;},strokePath(){paths.push(path);strokes.push(path);return this;},clear(){return this;},fillStyle(value:number){color=value;return this;},fillCircle(){return this;},fillEllipse(){return this;},fillPoints(points:{x:number;y:number}[]){fills.push({color,points});paths.push(points);return this;}};
+ return {g:g as unknown as Phaser.GameObjects.Graphics,paths,strokes,styles,fills};
 }
+it('keeps unequal branches attached to a moving trunk and keeps card sparks outside the face',()=>{
+ const origin={x:0,y:0},tangent={x:1,y:0},normal={x:0,y:1};
+ const [trunk,first,second]=electricFork(origin,tangent,normal,36,3,.4,1,'line');
+ const next=electricFork(origin,tangent,normal,36,3,1.4,1,'line');
+ expect(trunk.some(p=>p.y>0)).toBe(true);expect(trunk.some(p=>p.y<0)).toBe(true);
+ expect(first[0]).toEqual(trunk[2]);expect(second[0]).toEqual(trunk[4]);
+ expect(Math.hypot(first.at(-1)!.x-first[0].x,first.at(-1)!.y-first[0].y))
+  .toBeGreaterThan(Math.hypot(second.at(-1)!.x-second[0].x,second.at(-1)!.y-second[0].y));
+ expect(next).not.toEqual([trunk,first,second]);
+ const frames=Array.from({length:8},(_,i)=>electricFork(origin,tangent,normal,36,3,i,1,'line')[0]);
+ const movements=frames.slice(1).flatMap((frame,j)=>frame.map((p,i)=>Math.hypot(p.x-frames[j][i].x,p.y-frames[j][i].y)));
+ expect(Math.max(...movements)).toBeGreaterThan(2);
+ const branchLengths=Array.from({length:10},(_,i)=>{const branch=electricFork(origin,tangent,normal,36,3,i,1,'line')[2];return Math.hypot(branch.at(-1)!.x-branch[0].x,branch.at(-1)!.y-branch[0].y);});
+ expect(Math.max(...branchLengths)-Math.min(...branchLengths)).toBeGreaterThan(2);
+ expect(electricFork(origin,tangent,normal,28,21,.4,.78,'edge').flat().every(p=>p.y>=0)).toBe(true);
+});
 it('moves along the original curve and excludes protected print with stroke clearance',()=>{
  const curve=(t:number)=>({x:100*t,y:20*t*t}),box={x:45,y:-10,width:10,height:40},a=graphics(),b=graphics();
  const first=drawHeroLineCurrent(a.g,curve,0,1,.12,[box],0xffaa44,1),next=drawHeroLineCurrent(b.g,curve,0,1,.19,[box],0xffaa44,1);
  expect(first.segments).toBeGreaterThan(0);expect(next.heads).not.toEqual(first.heads);
- for(const path of [...a.paths,...b.paths])for(const p of path){expect(Math.abs(p.y-20*(p.x/100)**2)).toBeLessThan(14);expect(p.x<42||p.x>58).toBe(true);}
- // Fine blue-white current stays close to the original curve; no dark outline.
- expect(a.styles.slice(0,3).map(s=>s.color)).toEqual([0x48b6e7,0x168ed0,0xdafaff]);
- expect(a.styles.every(s=>[0x48b6e7,0x168ed0,0xdafaff].includes(s.color))).toBe(true);
- expect(a.styles.every(s=>s.width<=3.5)).toBe(true);
- expect(a.paths.flat().every(p=>Math.abs(p.y-20*(p.x/100)**2)<6.5)).toBe(true);
+ const variant=graphics(),other=drawHeroLineCurrent(variant.g,curve,0,1,.12,[box],0xffaa44,1,1);expect(other.heads).not.toEqual(first.heads);
+ for(const path of [...a.paths,...b.paths])for(const p of path){expect(Math.abs(p.y-20*(p.x/100)**2)).toBeLessThan(23);expect(p.x<44.5||p.x>55.5).toBe(true);}
+ // A blue tapered body carries a visible white core; neither may cover print.
+ expect(new Set(a.fills.map(f=>f.color))).toEqual(new Set([0x76c8f2,0x1768c3,0xf3fdff]));
+ expect(a.fills.every(f=>f.points.length===4)).toBe(true);
+ const widths=(color:number)=>a.fills.filter(f=>f.color===color).flatMap(({points:p})=>[Math.hypot(p[0].x-p[3].x,p[0].y-p[3].y),Math.hypot(p[1].x-p[2].x,p[1].y-p[2].y)]);
+ expect(Math.max(...widths(0x1768c3))).toBeGreaterThan(3);expect(Math.min(...widths(0x1768c3))).toBeLessThan(1.5);expect(Math.max(...widths(0xf3fdff))).toBeGreaterThan(2.2);
+ expect(a.strokes).toHaveLength(0);
  expect(drawHeroLineCurrent(a.g,curve,0,1,.2,[{x:-5,y:-5,width:110,height:40}],0xffaa44,1)).toEqual({segments:0,heads:[]});
 });
-it('stops the whole source stream before a board rather than reappearing beyond it',()=>{
- const style=heroAtmosphereStyle({key:'k',targetId:'c',releaseReason:'azao.multiply-multiplier'}),board={x:80,y:-100,width:40,height:200},base=graphics(),current=graphics();
- drawHeroOriginStream(base.g,{x:0,y:0},[{x:180,y:0,width:40,height:40}],style,.85,[board],1,current.g,[board]);
- expect(base.paths.length).toBeGreaterThan(0);expect(current.paths.length).toBeGreaterThan(0);
- expect([...base.paths,...current.paths].flat().every(p=>p.x<board.x-6)).toBe(true);
+it('follows a tightly curved stage guide instead of extending its initial tangent',()=>{
+ const curve=(t:number)=>{const a=-.95+t*1.9;return{x:120+54*Math.cos(a),y:90+25*Math.sin(a)};},paint=graphics();
+ expect(drawHeroLineCurrent(paint.g,curve,0,1,.45,[],0xffaa44,1).segments).toBeGreaterThan(0);
+ const guide=Array.from({length:501},(_,i)=>curve(i/500));
+ for(const p of paint.paths.flat())expect(Math.min(...guide.map(q=>Math.hypot(p.x-q.x,p.y-q.y)))).toBeLessThan(23);
 });
-it.each([0,200])('keeps both source streams on their original side of the board from x=%s',x=>{
- const style=heroAtmosphereStyle({key:'k',targetId:'c',releaseReason:'azao.multiply-multiplier'}),board={x:80,y:-100,width:40,height:200},base=graphics(),current=graphics(),targetX=x?0:180;
- drawHeroOriginStream(base.g,{x,y:0},[{x:targetX,y:-10,width:20,height:40},{x:targetX,y:20,width:20,height:40}],style,.65,[board],1,current.g,[board]);
+it('keeps every filled strip out of a small guard beside a sharp bend',()=>{
+ const paint=graphics(),guard={x:75.6607,y:69.683,width:1,height:1};
+ const paths=electricFork({x:50,y:50},{x:1,y:0},{x:0,y:1},35,122,2,.85,'edge');
+ expect(drawElectricFork(paint.g,paths,[guard],1,1).segments).toBeGreaterThan(0);expect(paint.strokes).toHaveLength(0);
+ const corners=[{x:guard.x,y:guard.y},{x:guard.x+guard.width,y:guard.y},{x:guard.x,y:guard.y+guard.height},{x:guard.x+guard.width,y:guard.y+guard.height}];
+ const contains=(poly:{x:number;y:number}[],p:{x:number;y:number})=>{let inside=false;for(let i=0,j=poly.length-1;i<poly.length;j=i++)if((poly[i].y>p.y)!==(poly[j].y>p.y)&&p.x<(poly[j].x-poly[i].x)*(p.y-poly[i].y)/(poly[j].y-poly[i].y)+poly[i].x)inside=!inside;return inside;};
+ for(const {points} of paint.fills){expect(points.some(p=>p.x>=guard.x&&p.x<=guard.x+guard.width&&p.y>=guard.y&&p.y<=guard.y+guard.height)).toBe(false);expect(corners.some(p=>contains(points,p))).toBe(false);expect(points.some((p,i)=>inkSegmentCrosses(p,points[(i+1)%points.length],guard,0))).toBe(false);}
+});
+it('leaves rasterization room around a guard next to a horizontal discharge',()=>{
+ const paint=graphics(),guard={x:25,y:53.49,width:10,height:4},rasterGuard={x:24.5,y:52.99,width:11,height:5};
+ const path=[{x:10,y:50.29},{x:20,y:50.29},{x:30,y:50.29},{x:40,y:50.29},{x:50,y:50.29}];
+ expect(drawElectricFork(paint.g,[path],[guard],1,1).segments).toBeGreaterThan(0);
+ for(const {points} of paint.fills){expect(points.some(p=>p.x>=rasterGuard.x&&p.x<=rasterGuard.x+rasterGuard.width&&p.y>=rasterGuard.y&&p.y<=rasterGuard.y+rasterGuard.height)).toBe(false);expect(points.some((p,i)=>inkSegmentCrosses(p,points[(i+1)%points.length],rasterGuard,0))).toBe(false);}
+});
+it('keeps the skill-stage discharge and stroke clearance inside its pocket',()=>{
+ const w=300,h=84,t=.4,strike=(t-.36)/.22,len=(w*.14+6)*(1-strike*.3),z={x:w/2-6,y:h/2-12},q={x:z.x-len,y:h/2-9},paint=graphics();
+ const result=drawHeroLineCurrent(paint.g,u=>({x:q.x+(z.x-q.x)*u,y:q.y+(z.y-q.y)*u}),0,1,t,heroStageCurrentExclusions(w,h),0xffaa44,1);
+ expect(result.segments).toBeGreaterThan(0);expect(paint.paths.flat().every(p=>p.x>=-w/2+.2&&p.x<=w/2-.2&&p.y>=-h/2+.2&&p.y<=h/2-.2)).toBe(true);
+ expect(paint.strokes.flat().every(p=>p.x>=-w/2+3.1&&p.x<=w/2-3.1&&p.y>=-h/2+3.1&&p.y<=h/2-3.1)).toBe(true);
+});
+it('keeps the source stream connected above a blank board while protecting text',()=>{
+ const style=heroAtmosphereStyle({key:'k',targetId:'c',releaseReason:'azao.multiply-multiplier'}),board={x:80,y:-100,width:40,height:200},base=graphics(),current=graphics();
+ drawHeroOriginStream(base.g,{x:0,y:0},[{x:180,y:0,width:40,height:40}],style,.85,[],1,current.g);
  expect(base.paths.length).toBeGreaterThan(0);expect(current.paths.length).toBeGreaterThan(0);
- expect([...base.paths,...current.paths].flat().every(p=>x?p.x>board.x+board.width+6:p.x<board.x-6)).toBe(true);
+ expect(base.paths.some(path=>path.some(p=>p.x<board.x)&&path.some(p=>p.x>board.x+board.width))).toBe(true);
+ const protectedText={x:96,y:-100,width:8,height:200},masked=graphics();
+ drawHeroOriginStream(masked.g,{x:0,y:0},[{x:180,y:0,width:40,height:40}],style,.85,[protectedText],1);
+ expect(masked.paths.flat().every(p=>p.x<protectedText.x-1||p.x>protectedText.x+protectedText.width+1)).toBe(true);
+ expect(masked.paths.flat().some(p=>p.x>board.x+board.width)).toBe(true);
 });
 it.each(['amo.exile','erxiang.handoff','azao.multiply-multiplier','xiemu.multiply-multiplier','touye.won','laohuan.refill'])('%s keeps moving current on the existing source stream',reason=>{
  const style=heroAtmosphereStyle({key:'k',targetId:'c',releaseReason:reason}),target=[{x:220,y:80,width:50,height:80}],source={x:0,y:0},a=graphics(),b=graphics();

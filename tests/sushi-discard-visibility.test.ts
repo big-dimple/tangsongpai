@@ -16,18 +16,23 @@ class Node extends EventEmitter {
 }
 class Emitter extends Node {death:any;addDeathZone(z:unknown){this.death=z;return this;}addEmitZone(){return this;}start(){return this;}stop(){return this;}setParticleLifespan(){return this;}setParticleSpeed(){return this;}explode(){return this;}}
 afterEach(()=>vi.unstubAllGlobals());
-function setup(){
+function setup(exclusions:()=>readonly {x:number;y:number;width:number;height:number}[]=()=>[]){
  vi.stubGlobal('document',{hidden:false});
  const graphics=()=>{const g=new Proxy(Object.assign(new Node(),{type:'Graphics'}),{get:(target,key):any=>key in target?Reflect.get(target,key):()=>g});return g;};
  const fixture=heroAttachmentIntensityFixture('amo'),trace=energySend(fixture.state,fixture.action).lastTrace!,ids=trace.amoExile!.discardedIds,root=new Node(),sources=new Map<string,Node>(),emitters:Emitter[]=[],scene={game:{renderer:{type:2}},scale:{width:780,height:1688,zoom:.5},textures:{exists:()=>true},add:{container:()=>new Node(),graphics,particles:()=>{const e=new Emitter();emitters.push(e);return e;}}};
  for(const [i,id]of ids.entries()){const c=new Node().setPosition(i?300+(i-1)*85:80,600).setData('cardFace',true).setData('cardId',id).setData('width',60).setData('height',100),text=Object.assign(new Node(),{type:'Text',name:'rank/K'});text.setPosition(-20,-35);c.add(text);root.add(c);sources.set(id,c);}
- const ordinary=new Node().setPosition(190,600).setData('cardFace',true).setData('width',60).setData('height',100);root.add(ordinary);const scoreText=Object.assign(new Node().setPosition(160,300),{type:'Text',name:'score/total'});root.add(scoreText);const board={x:100,y:260,width:180,height:80},layer=new SushiDiscardCardPresentation(scene as unknown as Phaser.Scene,()=>root as unknown as Phaser.GameObjects.Container,id=>{const container=sources.get(id);return container?{id,container:container as unknown as Phaser.GameObjects.Container,width:60,height:100}:undefined;},()=>false,()=>({x:30,y:40}),undefined,()=>[],()=>[board]),abort=new AbortController();return{layer,trace,ids,root,sources,ordinary,emitters,abort,board,scoreText,context:{generation:1,signal:abort.signal}};
+ const ordinary=new Node().setPosition(190,600).setData('cardFace',true).setData('width',60).setData('height',100);root.add(ordinary);const scoreText=Object.assign(new Node().setPosition(160,300),{type:'Text',name:'score/total'});root.add(scoreText);const board={x:100,y:260,width:180,height:80},layer=new SushiDiscardCardPresentation(scene as unknown as Phaser.Scene,()=>root as unknown as Phaser.GameObjects.Container,id=>{const container=sources.get(id);return container?{id,container:container as unknown as Phaser.GameObjects.Container,width:60,height:100}:undefined;},()=>false,()=>({x:30,y:40}),undefined,exclusions),abort=new AbortController();return{layer,trace,ids,root,sources,ordinary,emitters,abort,board,scoreText,context:{generation:1,signal:abort.signal}};
 }
-it('clips saved source ink and its current against the score board and non-card text',()=>{
+it('lets saved source ink cross the board while still protecting score text',()=>{
  const f=setup();expect(f.layer.bindSaved(f.trace,f.context)).toBe(true);f.layer.step(50,true);
  const current=f.root.list.find(n=>n.name==='hero/sushi-discard-current')!,boxes=current.data.protectedBoxes as {x:number;y:number;width:number;height:number}[];
- expect(boxes).toContainEqual(f.board);const text=f.scoreText.getBounds();expect(boxes.some(b=>b.x===text.x&&b.y===text.y&&b.width===text.width&&b.height===text.height)).toBe(true);
+ expect(boxes).not.toContainEqual(f.board);const text=f.scoreText.getBounds();expect(boxes.some(b=>b.x===text.x&&b.y===text.y&&b.width===text.width&&b.height===text.height)).toBe(true);
  f.abort.abort();expect(current.active).toBe(false);
+});
+it('protects moving occupied joker art from the saved discard source',()=>{
+ let art={x:110,y:120,width:50,height:80};const f=setup(()=>[art]);expect(f.layer.bindSaved(f.trace,f.context)).toBe(true);f.layer.step(50,true);
+ let current=f.root.list.find(n=>n.name==='hero/sushi-discard-current')!;expect(current.data.protectedBoxes).toContainEqual(expect.objectContaining(art));
+ art={x:190,y:200,width:50,height:80};f.layer.step(50,true);current=f.root.list.find(n=>n.name==='hero/sushi-discard-current')!;expect(current.data.protectedBoxes).toContainEqual(expect.objectContaining(art));expect(current.data.protectedBoxes).not.toContainEqual(expect.objectContaining({x:110,y:120,width:50,height:80}));f.abort.abort();
 });
 it('keeps exact saved discarded-K proxies above reordered faces with local material and print/non-target protection',()=>{
  const f=setup();expect(f.layer.bindSaved(f.trace,f.context)).toBe(true);for(const source of f.sources.values())f.root.bringToTop(source);f.layer.step(50,true);const holders=f.root.list.filter(n=>n.name.startsWith('hero/sushi-discard/'));expect(holders).toHaveLength(f.ids.length);expect(holders.every(h=>f.root.list.indexOf(h)>f.root.list.indexOf(f.ordinary)&&[...f.sources.values()].every(s=>f.root.list.indexOf(h)>f.root.list.indexOf(s)))).toBe(true);
