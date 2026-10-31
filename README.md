@@ -8,7 +8,7 @@
 
 建议使用 Node.js 22 和 npm：
 
-以下命令供开发机使用；由 Dot 或其他可用开发电脑完成 CI 和生产构建，新加坡服务器接收并发布产物，不依赖 GitHub Actions。Release 产物交接详见 [ENGINEERING](ENGINEERING.md#开发电脑交付-release-给服务器)。
+以下命令供开发机使用；main 的 GitHub Actions 负责独立 CI 和 Release 产物，服务器接收并发布产物。实际工作流和部署状态须单独核实，详见 [ENGINEERING](ENGINEERING.md)。
 
 ```bash
 npm ci
@@ -21,6 +21,8 @@ npm run dev
 npm run build
 npm run preview
 ```
+
+正式运行资源保存在 `public/assets/`。原始素材已完整备份至私有仓库 [tangsongpai-assets](https://github.com/big-dimple/tangsongpai-assets)，来源清单与校验方法见 [ENGINEERING](ENGINEERING.md)。
 
 ## 文档
 
