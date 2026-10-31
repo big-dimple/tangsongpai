@@ -60,7 +60,7 @@ export async function playLiueListeningStage(scene:Phaser.Scene,root:Phaser.Game
    const base=earHeight*.38,gap=(radius-base-24)/3,r=base+i*gap+(still?0:(1-charge)*gap*1.6+release*gap*2),rx=Math.min(radius-24,r),ry=Math.min(slot.height*.43,earHeight*(.22+i*.14));
    const points=Array.from({length:25},(_,j)=>{const a=-.95+j/24*1.9;return{x:cx+side*(20+Math.cos(a)*rx),y:cy+Math.sin(a)*ry};});
    aura.lineStyle(7, PAPER,.9*opacity).strokePoints(points,false).lineStyle(i===0?3.5:2.5,i===1?GOLD:JADE,(.92-i*.12)*opacity).strokePoints(points,false);
-   if(!still&&i===1){const arc=(u:number)=>{const a=-.95+u*1.9;return{x:cx+side*(20+Math.cos(a)*rx),y:cy+Math.sin(a)*ry};},current=drawHeroLineCurrent(currentInk,arc,0,1,charge+release,[],GOLD,opacity);electricSegments+=current.segments;electricHeads.push(...current.heads);}
+   if(!still&&i===1){const arc=(u:number)=>{const a=-.95+u*1.9;return{x:cx+side*(20+Math.cos(a)*rx),y:cy+Math.sin(a)*ry};},current=drawHeroLineCurrent(currentInk,arc,0,1,charge+release,[],GOLD,opacity,side<0?1:2);electricSegments+=current.segments;electricHeads.push(...current.heads);}
   }
   currentInk.setData('electricSegments',electricSegments).setData('electricHeads',electricHeads);
   aura.lineStyle(2,GOLD,.6*opacity).strokeEllipse(cx,cy,earHeight*.77,earHeight+6);

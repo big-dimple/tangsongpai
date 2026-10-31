@@ -1,6 +1,6 @@
 import type Phaser from 'phaser';
 import type {AttachmentDraft} from './HeroTargetAttachmentState';
-import {clearInkRuns,exteriorOrbitPoint,inkSegmentCrosses,type InkBox,type InkPoint} from './AssistInkGeometry';
+import {clearInkRuns,exteriorOrbitPoint,type InkBox,type InkPoint} from './AssistInkGeometry';
 import {drawHeroLineCurrent} from './HeroLineCurrent';
 
 export const HERO_SOURCE_CURRENT_MS=900;
@@ -69,18 +69,15 @@ export function drawHeroAtmosphere(g:Phaser.GameObjects.Graphics,frame:Atmospher
   return {particles,segments,markers,costParticles,targets:Math.min(frame.targets.length,HERO_ATMOSPHERE_BUDGET.targets),style:style.key,full};
 }
 /** A visible portrait-origin brush/comet travels to real target tops, including during scoring. */
-export function drawHeroOriginStream(g:Phaser.GameObjects.Graphics,source:InkPoint,targets:readonly InkBox[],style:AtmosphereStyle,progress:number,boxes:readonly InkBox[],alpha:number,currentInk:Phaser.GameObjects.Graphics=g,barriers:readonly InkBox[]=[]){
+export function drawHeroOriginStream(g:Phaser.GameObjects.Graphics,source:InkPoint,targets:readonly InkBox[],style:AtmosphereStyle,progress:number,boxes:readonly InkBox[],alpha:number,currentInk:Phaser.GameObjects.Graphics=g){
   g.clear();if(currentInk!==g)currentInk.clear();let segments=0,heads=0,electricSegments=0;const electricHeads:InkPoint[]=[];const selected=targets.length>1?[targets[0],targets[targets.length-1]]:[...targets];
-  for(const box of selected.slice(0,HERO_ATMOSPHERE_BUDGET.sourceHeads)){
-    const end={x:box.x+box.width/2,y:box.y-6},mid={x:(source.x+end.x)/2,y:(source.y+end.y)/2-Math.min(35,Math.abs(end.y-source.y)*.12+12)},original=(t:number)=>({x:(1-t)**2*source.x+2*(1-t)*t*mid.x+t*t*end.x,y:(1-t)**2*source.y+2*(1-t)*t*mid.y+t*t*end.y});
-    // A score board separates source and target: keep only the source-side
-    // portion, instead of dropping its middle and exposing disconnected ends.
-    let limit=1,previous=original(0);for(let i=1;i<=64&&barriers.length;i++){const point=original(i/64);if(barriers.some(b=>inkSegmentCrosses(previous,point,b,7))){limit=(i-1)/64;break;}previous=point;}
-    if(limit<=0)continue;
-    const curve=(t:number)=>original(t*limit);
+  for(const [streamIndex,box] of selected.slice(0,HERO_ATMOSPHERE_BUDGET.sourceHeads).entries()){
+    const end={x:box.x+box.width/2,y:box.y-6},mid={x:(source.x+end.x)/2,y:(source.y+end.y)/2-Math.min(35,Math.abs(end.y-source.y)*.12+12)},curve=(t:number)=>({x:(1-t)**2*source.x+2*(1-t)*t*mid.x+t*t*end.x,y:(1-t)**2*source.y+2*(1-t)*t*mid.y+t*t*end.y});
+    // Panels are surfaces, not occluders: the original curve runs above them.
+    // Actual text, controls and other card faces remain protected by boxes.
     const base=Array.from({length:25},(_,i)=>curve(i/24)),trail=Array.from({length:17},(_,i)=>curve(Math.max(0,progress-.3)+Math.min(progress,.3)*i/16));
     segments+=stroke(g,base,boxes,2.3,style.glow,.21*alpha);segments+=stroke(g,trail,boxes,11,style.ink,.2*alpha);segments+=stroke(g,trail,boxes,4.2,style.glow,.8*alpha);segments+=stroke(g,trail,boxes,1.7,style.spark,alpha);
-    const current=drawHeroLineCurrent(currentInk,curve,Math.max(0,progress-.3),progress,progress,boxes,style.spark,alpha);electricSegments+=current.segments;electricHeads.push(...current.heads);
+    const current=drawHeroLineCurrent(currentInk,curve,Math.max(0,progress-.3),progress,progress,boxes,style.spark,alpha,streamIndex);electricSegments+=current.segments;electricHeads.push(...current.heads);
     const p=curve(progress);if(mote(g,{...p,nx:0,ny:-1},3.3,style,alpha,boxes))heads++;
   }return {segments,heads,electricSegments,electricHeads};
 }
