@@ -1,0 +1,11 @@
+{
+  "name": "Ambiance_Campfire_Loop_Stereo",
+  "author": "Nox_Sound",
+  "source": "https://freesound.org/people/Nox_Sound/sounds/558967/",
+  "license": "CC0-1.0",
+  "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "mirror": "https://github.com/consint/Tumult/blob/723c05ffbb55323f3ee2fb7a75228fac7c776ef2/Samples/world/fire1_ambiance_campfire_loop_stereo.wav",
+  "runtimePath": "assets/audio/high-multiplier-fire/campfire-558967.mp3",
+  "processing": "Converted from the stereo 48 kHz WAV to 160 kbps MP3 without mixing or synthesis.",
+  "auditionStatus": "candidate; human listening and mobile speaker assessment pending"
+}

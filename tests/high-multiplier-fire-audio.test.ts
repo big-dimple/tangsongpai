@@ -1,42 +1,45 @@
 import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import {AudioEngine,type HighMultiplierFireOptions} from '../src/audio/AudioEngine';
-import {createHighMultiplierFire,HIGH_MULTIPLIER_FIRE_SECONDS} from '../src/audio/HighMultiplierFire';
+import {HIGH_MULTIPLIER_FIRE_SAMPLE} from '../src/audio/HighMultiplierFire';
 import {FOLEY_SAMPLES} from '../src/audio/foley';
 import {EFFECT_VOICE_BUDGET} from '../src/audio/mixPolicy';
 
 function fixture(){
-  const sources:any[]=[],buffers:any[]=[];
+  const sources:any[]=[];
   const param=()=>({value:0,setValueAtTime:vi.fn(),setTargetAtTime:vi.fn(),linearRampToValueAtTime:vi.fn(),cancelScheduledValues:vi.fn()});
   const gain=()=>({gain:param(),connect:vi.fn(),disconnect:vi.fn()});
   const context:any={currentTime:1,state:'running',sampleRate:8000,createGain:gain,
-    createBuffer:(_channels:number,length:number,rate:number)=>{const data=new Float32Array(length),buffer={duration:length/rate,getChannelData:()=>data};buffers.push(buffer);return buffer;},
     createBufferSource:()=>{const source:any={buffer:null,playbackRate:{value:1},start:vi.fn(),stop:vi.fn(),connect:vi.fn(),disconnect:vi.fn(),onended:null};sources.push(source);return source;},
     createBiquadFilter:()=>({type:'',Q:{value:0},frequency:param(),connect:vi.fn(),disconnect:vi.fn()}),
     suspend:vi.fn(async()=>{}),resume:vi.fn(async()=>{})};
   const engine=new AudioEngine(),inside=engine as any,gains={master:gain(),music:gain(),sfx:gain(),ui:gain()};
   Object.assign(inside,{context,gains,unlocked:true});
   for(const {name} of FOLEY_SAMPLES)inside.scoreSamples.set(name,{name,duration:1});
+  const recording={name:HIGH_MULTIPLIER_FIRE_SAMPLE.name,duration:12.7};
+  inside.scoreSamples.set(HIGH_MULTIPLIER_FIRE_SAMPLE.name,recording);
   const controller=new AbortController();
   const options:HighMultiplierFireOptions={signal:controller.signal,speed:1,reducedMotion:false,replay:false};
-  return {engine,inside,context,gains,sources,buffers,controller,options};
+  return {engine,inside,context,gains,sources,recording,controller,options};
 }
 
 beforeEach(()=>{vi.stubGlobal('document',{hidden:false});vi.stubGlobal('window',{});});
 afterEach(()=>vi.unstubAllGlobals());
 
 describe('high multiplier flame audio',()=>{
-  it('synthesizes a deterministic, finite, bounded and non-silent buffer without recorded assets',()=>{
-    const {context}=fixture(),a=createHighMultiplierFire(context),b=createHighMultiplierFire(context);
-    expect(a.duration).toBe(HIGH_MULTIPLIER_FIRE_SECONDS);
-    const samples=a.getChannelData(0),copy=b.getChannelData(0);
-    expect(samples).toEqual(copy);
-    expect(samples.every(Number.isFinite)).toBe(true);
-    expect(Math.max(...samples.map(Math.abs))).toBeLessThan(1);
-    expect(Math.sqrt(samples.reduce((sum:number,n:number)=>sum+n*n,0)/samples.length)).toBeGreaterThan(.05);
-    const energy=samples.reduce((sum:number,n:number)=>sum+n*n,0);
-    const change=samples.reduce((sum:number,n:number,i:number)=>i?sum+(n-samples[i-1])**2:sum,0);
-    expect(change/energy).toBeLessThan(.8); // Bounds sharp sample-to-sample energy at this fixture's 8 kHz.
-    expect(samples.at(-1)).toBeCloseTo(samples[0],7); // The sustained loop has no boundary click.
+  it('plays the actual preloaded recording without synthesizing a replacement',()=>{
+    const {engine,sources,recording,options}=fixture();
+    engine.playHighMultiplierFire(options);
+    expect(sources).toHaveLength(1);
+    expect(sources[0].buffer).toBe(recording);
+  });
+
+  it('does not queue or synthesize a fire if the recording is unavailable',()=>{
+    const {engine,inside,sources,recording,options}=fixture();
+    inside.scoreSamples.delete(HIGH_MULTIPLIER_FIRE_SAMPLE.name);
+    const handle=engine.playHighMultiplierFire(options);
+    inside.scoreSamples.set(HIGH_MULTIPLIER_FIRE_SAMPLE.name,recording);
+    expect(sources).toHaveLength(0);
+    expect(()=>{handle.fadeOut(100);handle.stop();}).not.toThrow();
   });
 
   it.each([1,2,4] as const)('sustains at %ix until the owner requests a fade without changing pitch',speed=>{
@@ -70,15 +73,15 @@ describe('high multiplier flame audio',()=>{
     expect(fire.gain.gain.cancelScheduledValues).not.toHaveBeenCalled();
   });
 
-  it('keeps a single fire, reuses the generated buffer, and makes stale disposers harmless',()=>{
-    const {engine,inside,context,sources,buffers,options}=fixture();
+  it('keeps a single fire, reuses the recording, and makes stale disposers harmless',()=>{
+    const {engine,inside,context,sources,recording,options}=fixture();
     const first=engine.playHighMultiplierFire(options);
     for(let i=0;i<40;i++)engine.playHighMultiplierFire(options);
     expect(sources).toHaveLength(1);expect(inside.voices.size).toBe(1);
     first.stop();first.stop();expect(inside.voices.size).toBe(0);
     context.currentTime+=.1;
     const second=engine.playHighMultiplierFire(options);first.stop();
-    expect(sources).toHaveLength(2);expect(buffers).toHaveLength(1);expect(inside.voices.size).toBe(1);
+    expect(sources).toHaveLength(2);expect(sources.every(source=>source.buffer===recording)).toBe(true);expect(inside.voices.size).toBe(1);
     second.stop();expect(inside.voices.size).toBe(0);
   });
 
