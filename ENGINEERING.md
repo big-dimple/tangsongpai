@@ -8,7 +8,7 @@
 - 建议使用 Node.js 22，依赖使用 `npm ci` 和锁文件安装。
 - 游戏是纯静态 H5；核心运行不需要后端、Blender 或素材生成工具。
 
-开发侧默认在推送 main 前，在 Dot 远端开发电脑或本机完成完整 CI 与唯一生产构建，按改动补跑专项；所有模型使用同一要求，用户明确指示例外时如实报告。没有 Dot 的 AI 须在可用的本地开发电脑执行相同 CI 与构建并按同一契约交付；没有可用环境时报告阻塞，不能省略检查或让新加坡生产机代跑。提交和推送以当前任务授权为准。目标分工是开发侧交付已校验的生产产物，新加坡服务器仅取件、校验并发布；新交接与部署脚本尚待接入，旧脚本仍会在服务器构建。GitHub Actions 不参与发布。提交、产物交付与部署是不同状态。
+开发侧默认在推送 main 前，在 Dot 远端开发电脑或本机完成完整 CI 与唯一生产构建，按改动补跑专项；所有模型使用同一要求，用户明确指示例外时如实报告。没有 Dot 的 AI 须在可用的本地开发电脑执行相同 CI 与构建并按同一契约交付；没有可用环境时报告阻塞，不能省略检查或让新加坡生产机代跑。提交和推送以当前任务授权为准。开发侧交付已校验的生产产物，新加坡服务器仅取件、校验并发布。GitHub Actions 不参与发布。提交、产物交付与部署是不同状态。
 
 ```bash
 npm run dev             # 开发服务器
@@ -183,14 +183,45 @@ npm run verify:ci -- --scope=all
 
 牌面遮挡检查测量包含父容器变换的实际四边形相交面积；旋转后的外接矩形包含牌外空白，不能代替真实遮挡。
 
-产物交接契约（**待接入，不是当前自动功能**）：
+### 开发电脑：交付 Release 给服务器
 
-1. 开发侧对准备推送的干净提交完成上述 CI，核对 `dist/index.html` 和 `dist/build-info.json` 中的完整 commit SHA、`sourceStatus: clean`、`modified: false`，把这份生产 `dist/` 打成压缩归档并计算 SHA256。归档解开后根目录应包含这两个文件；不把 `dist/` 提交到 main。
-2. 推荐由后续改造接入 GitHub Release 资产：以完整 commit SHA 对应的版本或标签定位该提交，提供 `dist.tar.gz`、其 SHA256 校验文件与 manifest。manifest 至少记录完整源码 SHA、归档名和 SHA256、生产构建的版本信息以及该 SHA 的 CI 结果。使用已授权且可验证来源的渠道；校验和只验证一致性，不能单独证明来源可信。所有资产上传并核对成功后才发布完成标记（如发布完整 Release）；缺件、上传失败或未完成发布时，不能视为产物已交付。仓库当前没有 Release，尚未验证上传权限或自动取件能力；这一方案须由后续改造实现，不依赖 GitHub Actions artifact。
-3. 新加坡部署程序应只获取已完整发布且与目标 main 提交对应的产物，核验来源、manifest、SHA256、归档内 build-info 的 SHA 与 clean 状态，并安全解压至独立版本目录；拒绝不安全路径或不完整内容。验证通过后原子切换，执行健康检查；失败时保留或恢复上一可用版本。不得因 main 提前更新就部署缺失或未完成交付的包，也不得无意回退到较旧版本。服务器不执行 `npm ci`、构建或测试。
-4. 分别记录并报告代码推送 SHA、CI 状态、产物交付状态和实际部署 SHA；只有产物成功上传并发布才算交付，main push 本身不是可部署产物。具体存储访问与部署系统的原子切换、健康检查和回滚由新加坡侧实现并验证，不在本文假称已具备。
+服务器当前每分钟检查 GitHub `big-dimple/tangsongpai` 的 main，**只接收与 main 的完整提交 SHA 完全一致的已发布 Release**。它不读取入库的 `dist/`，也不会在服务器上安装依赖、构建或测试。当前服务器的取件脚本已安装；仓库中旧的自动部署脚本尚未同步，不能以它判断服务器实际行为。没有匹配的 Release 时，服务器保留线上旧版本并继续等待。
 
-现状：仓库中的 `scripts/tangsongpai-autodeploy.sh` 仍在服务器执行 `npm ci` 和 `npx vite build`，也尚未实现上述产物接收契约；仓库脚本变更不会自动更新服务器 `/usr/local/bin/tangsongpai-autodeploy.sh`。在用户的另一侧完成改造和安装之前，不能把目标流程描述为已生效。旧日志 `/var/log/tangsongpai-autodeploy.log` 和 `/var/lib/tangsongpai-deploy/reports/latest/` 不代表新流程或当前 CI 已通过。
+此前 `dist/` 被误提交进 main：先在开发电脑核对 `git status` 和最新 main，保留他人改动。根据本次用户要求，在开发侧将 `dist/` 恢复为忽略项并从 Git **索引**移除（例如添加 `.gitignore` 的 `dist/` 后执行 `git rm -r --cached -- dist`，不删除本地构建目录），提交该清理；不要改写、重置或强推历史。此后提交源码、不提交 `dist/`。当前误入库产物的 `build-info.json` 对应其前一个源码提交，不能把它标成清理提交或最新 main 的构建；必须针对最终提交重新执行 CI 和唯一生产构建。
+
+按以下顺序在远端开发电脑操作，推送和创建 Release 按用户授权执行：
+
+1. 在干净工作区提交准备发布的最终源码及上述清理，确认 `git status --short` 没有修改。执行上面的 `npm ci`、`npm run verify:ci -- --scope=all`，以及本次改动需要的专项。失败立即停止；不能补写或伪造 CI 结果，也不能在服务器代跑。
+2. 核对 `shots/ci/all.json`：`scope` 为 `all`，`status` 为 `PASS`，`exitCode` 为 `0`，`testedCommit` 为当前完整 `git rev-parse HEAD`；`before` 与 `after` 完全一致且 `head` 是该 SHA；`test`、`verify:content`、`build`、`verify:smoke` 四个步骤都 `PASS` 且 `childExitCode` 为 `0`。`dist/build-info.json` 的 `revision` 必须等于同一 SHA，`sourceStatus` 是 `clean`、`modified` 是 `false`。`dist/index.html` 必须存在。
+3. 在同一个未修改的检出目录运行 `python3 scripts/prepare-release-artifact.py`（Windows 可用 `python`）。它复核上述报告、当前源码快照和构建身份，不重跑构建；输出 `shots/deploy/<完整 SHA>/` 内的三个文件。若拒绝，修复原因并按需重跑 CI，不要手改报告或构建信息。`shots/` 和 `dist/` 不提交到 main。
+4. 推送通过 CI 的提交到 main；推送前确认远端 main 没有新增工作，禁止强推。若 main 已变化，保留他人修改，基于最新 main 合并后重新执行 CI、构建和打包。服务器要求 Release 标签、构建 SHA 与 main **完全一致**，祖先提交不够。
+5. 建立以完整 SHA 为标签的草稿 Release，上传以下三个文件，核对内容后再发布。标签必须指向该提交，不能是分支名或缩写。服务器只处理已发布的正式 Release，草稿、预发布、缺件、错误标签或校验失败都会等待或拒绝。
+
+服务器要求文件名和内容如下：
+
+- `dist.tar.gz`：生产构建归档，解开根目录直接包含 `index.html`、`build-info.json` 与素材目录；不能包含符号链接、不安全路径或特殊文件。
+- `dist.tar.gz.sha256`：单行 `<64位小写SHA256>  dist.tar.gz`，校验值必须匹配归档。
+- `manifest.json`：`schemaVersion: 1`、`sourceRevision: "<完整 SHA>"`、`artifact: {"name":"dist.tar.gz","sha256":"<归档 SHA256>"}`，以及 `buildInfo`（与归档内 `build-info.json` 完全相同）和 `ci`（原样复制已通过的 `shots/ci/all.json`）。以上打包脚本生成该格式。
+
+Bash 示例（先完成并核对上述 CI，仓库和 GitHub CLI 已登录）：
+
+```bash
+python3 scripts/prepare-release-artifact.py
+revision=$(git rev-parse HEAD)
+artifact_dir="shots/deploy/$revision"
+gh release create "$revision" --repo big-dimple/tangsongpai --target "$revision" --draft --title "$revision" --notes "CI-verified production artifact" "$artifact_dir/dist.tar.gz" "$artifact_dir/dist.tar.gz.sha256" "$artifact_dir/manifest.json"
+verify_dir=$(mktemp -d)
+gh release download "$revision" --repo big-dimple/tangsongpai --dir "$verify_dir" --pattern 'dist.tar.gz' --pattern 'dist.tar.gz.sha256' --pattern 'manifest.json'
+cmp "$artifact_dir/dist.tar.gz" "$verify_dir/dist.tar.gz"
+cmp "$artifact_dir/dist.tar.gz.sha256" "$verify_dir/dist.tar.gz.sha256"
+cmp "$artifact_dir/manifest.json" "$verify_dir/manifest.json"
+(cd "$verify_dir" && sha256sum -c dist.tar.gz.sha256)
+gh release edit "$revision" --repo big-dimple/tangsongpai --draft=false
+```
+
+Windows PowerShell 使用 `python scripts/prepare-release-artifact.py`、`$revision = (git rev-parse HEAD).Trim()`、`$artifactDir = "shots/deploy/$revision"`，其余 `gh release create/download/edit` 参数相同；用 `Get-FileHash -Algorithm SHA256` 和文件内容核对下载资产。发布后确认三个资产均已上传、Release 不再是草稿、标签指向该 SHA，且远端 main 仍是该 SHA。认证应使用有仓库访问权限的账号；SHA256 只证明文件一致，不单独证明来源。
+
+分别报告推送 SHA、CI 状态、Release 交付和公网 `https://pai.hp666.cc/build-info.json` 的实际 revision；Release 发布后服务器通常在下一分钟开始处理，上传与域名传播还需要时间，不保证固定上线时刻。服务器只获取、校验、上传和确认；没有匹配包或验证失败时不会把旧版本称为新版本。历史本机 CI 报告不代表当前提交通过 CI。
 
 GitHub 仓库为 `big-dimple/tangsongpai`，Cloudflare Pages 项目为 `dachoupai`。三个 GitHub 工作流已禁用，不是本机发布门禁；自动检查不代表真人、美术、设备或平衡验收。检查失败时查看日志并修复，不通过放宽检查或伪造结果交付。
 
