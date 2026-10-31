@@ -31,6 +31,10 @@ import {inventoryFeedback} from './InventoryFeedback';
 import {showSavedToolResult} from './SavedToolResult';
 import {transactionGrowthChange} from './SavedGrowthChange';
 import {paperSceneStart} from './PaperFlow';
+import {bindNoviceGuide} from './NoviceGuideBinding';
+import {noviceGuideCanvasBox} from './NoviceGuideView';
+import {requestTutorialReplay} from './TutorialEntry';
+import {skipTutorialToNormal} from './RunMenu';
 import {drawShopArt,drawShopBackdrop,shopSheet} from './ShopArt';
 import {r2BasicToolShelfStatus} from '../domain/r2Shop';
 import {starterShopCue} from './RouteStarter';
@@ -255,6 +259,24 @@ export class ShopScene extends Phaser.Scene {
     this.ownedInput=new OwnedJokerInput(this,{ready:()=>this.ready,inspectable:()=>!this.busy&&this.run?.phase==='shop',cards:()=>{const p=this.geometry();return p.inventoryCollapsed?[]:this.run.jokers.map((j,i)=>({...p.slots[i],id:j.instanceId}));},cancelCanvas:()=>this.view.cancelInteraction(),tap:id=>this.inspectJoker(id),lift:(id,x,y)=>this.liftOwned(id,x,y),move:(x,y)=>this.previewOwned(x,y),drop:(id,x,y)=>this.moveJoker(id,x,y),cancel:()=>this.cancelOwned()});
     this.events.once('shutdown',()=>{this.ownedInput?.destroy();this.ownedInput=undefined;if(this.ownedDrag?.saving)this.input.enabled=true;this.ownedDrag?.destroy();this.ownedDrag=undefined;});
     warmTableImages(this,this.run.characterId);this.render();this.pendingDynamicTarget=undefined;this.prepareBossEntrance(owner,run,this.lifecycle);
+    const unmountNoviceGuide=bindNoviceGuide(this,{
+      kind:'shop',
+      getGeometry:hint=>{
+        const l=this.view.layout,p=this.geometry(),canvas=this.game.canvas.getBoundingClientRect();
+        const map=(box:import('./layout').Box)=>noviceGuideCanvasBox(box,canvas,l);
+        const highlights=(hint.offerIds??[]).slice(0,1).flatMap(id=>{
+          const index=this.visibleOffers().findIndex(offer=>offer.offerId===id);
+          const box=p.portrait?this.mobileOfferBox(id):p.pc?this.pcOfferBoxes.get(id):index>=0?p.shelf[index]:undefined;
+          return box?[map(box)]:[];
+        });
+        return {highlights,avoid:[p.play,p.tabs].map(map)};
+      },
+      visible:()=>!this.busy&&!document.querySelector('dialog[open]'),
+      onReplay:()=>requestTutorialReplay(),
+      onSkip:()=>skipTutorialToNormal(this.game),
+      onComplete:()=>skipTutorialToNormal(this.game,'complete'),
+    });
+    this.events.once('shutdown',unmountNoviceGuide);
     if(!freshTarget&&!gameSession().reducedMotion&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
       this.view.root.setAlpha(.35);this.tweens.add({targets:this.view.root,alpha:1,duration:220,ease:'Cubic.easeOut'});
       if(!this.dialog.current){

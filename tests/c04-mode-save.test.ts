@@ -14,6 +14,9 @@ import {IndexedDbSave} from '../src/platform/IndexedDbSave';
 import {GameSession} from '../src/game/session';
 import type {R2ModeSelection} from '../src/content/r2Modes';
 import * as RunProgress from '../src/platform/RunProgress';
+import {startGuidedTutorial,resumeGuidedTutorialOpening} from '../src/game/GuidedTutorial';
+import {guidedTutorialRunId,isGuidedTutorialRunId} from '../src/game/RunLaunch';
+import {clearPendingNoviceStart,enrollNoviceGuide,markNoviceStart,mayResumeNoviceOpening,noviceGuide,NOVICE_GUIDE_KEY,NOVICE_GUIDE_PENDING_PREFIX,restoreNoviceGuide} from '../src/game/NoviceGuide';
 
 vi.mock('../src/platform/WriteLease',()=>({WriteLease:class {writable=true;onChange=()=>{};async claim(){return true;}}}));
 
@@ -88,7 +91,7 @@ beforeEach(()=>{
   database=new MemoryDatabase();preferenceValues=new Map();
   vi.stubGlobal('indexedDB',{open:()=>{const request=new Request<MemoryDatabase>();queueMicrotask(()=>{request.result=database;request.onsuccess?.();});return request;}});
   vi.stubGlobal('document',{hidden:false,addEventListener:()=>{}});
-  vi.stubGlobal('localStorage',{getItem:(key:string)=>preferenceValues.get(key)??null,setItem:vi.fn((key:string,value:string)=>{preferenceValues.set(key,value);})});
+  vi.stubGlobal('localStorage',{getItem:(key:string)=>preferenceValues.get(key)??null,setItem:vi.fn((key:string,value:string)=>{preferenceValues.set(key,value);}),removeItem:(key:string)=>preferenceValues.delete(key)});
   vi.stubGlobal('window',{dispatchEvent:()=>true});
 });
 afterEach(()=>{vi.restoreAllMocks();vi.unstubAllGlobals();});
@@ -499,5 +502,156 @@ describe('explicit Amo prototype shares discovery while preserving published par
     database.records.set(key,{current:damaged,previous:prototype});expect(restoreSlots(await storage.readPartition(STANDARD)).status).toBe('backup');
     database.records.set(key,{current:damaged,previous:{...prototype,checksum:'also-broken'}});expect(restoreSlots(await storage.readPartition(STANDARD)).status).toBe('invalid');
     await expect(storage.readPartition({...prototype.state,contentHash:current.state.contentHash})).rejects.toThrow('incompatible-version');
+  });
+});
+
+describe('guided first-run creation and real transactions',()=>{
+  it('checks all raw storage before first-run creation and prevents a later writer from winning over an earlier one',async()=>{
+    const storage=new IndexedDbSave(),empty=await storage.readEmptyHistory();expect(empty).toEqual({revision:0,current:null,previous:null});
+    for(const record of ['retained:unknown','r2:damaged','meta']){
+      database.records.set(record,{unreadable:true});await expect(storage.readEmptyHistory()).rejects.toThrow('history-not-empty');database.records.clear();
+    }
+    const old=roundTrip(start()),candidate=roundTrip(start(TUTORIAL));
+    await storage.commit(0,old,null);
+    await expect(storage.commit(empty.revision,candidate,null)).rejects.toThrow('write-conflict');
+    expect((await storage.read()).current).toEqual(old);
+  });
+  it('refuses a concurrent first-run write without replacing or leaving a pending candidate',async()=>{
+    const session=new GameSession();await session.initialize();const old=roundTrip(start()),other=new IndexedDbSave();
+    const read=session.storage.readEmptyHistory.bind(session.storage);
+    vi.spyOn(session.storage,'readEmptyHistory').mockImplementation(async()=>{const snapshot=await read();await other.commit(0,old,null);return snapshot;});
+    expect(await startGuidedTutorial(session,{requireEmptyHistory:true})).toBeUndefined();
+    expect(session.pendingRun).toBeUndefined();expect(session.run).toBeUndefined();expect(session.notice).toContain('其他页面');
+    expect((await other.read()).current).toEqual(old);expect(localStorage.getItem(NOVICE_GUIDE_KEY)).toBeNull();
+  });
+  it('keeps the winner pending when a second tab writes and clears its own nonce immediately before enrollment',async()=>{
+    const session=new GameSession();await session.initialize();const start=session.start.bind(session);let interleaved=false;
+    vi.spyOn(session,'start').mockImplementation(async(...args)=>{
+      const result=await start(...args);if(!result)throw Error('start failed');
+      const other=guidedTutorialRunId('00000000-0000-4000-8000-000000000005');
+      vi.spyOn(localStorage,'setItem').mockImplementation((key,value)=>{
+        preferenceValues.set(key,value);
+        if(key===NOVICE_GUIDE_PENDING_PREFIX+result.state.runId&&!interleaved){interleaved=true;markNoviceStart(other);clearPendingNoviceStart(other);}
+      });
+      return result;
+    });
+    const run=await startGuidedTutorial(session,{requireEmptyHistory:true});
+    expect(interleaved).toBe(true);
+    expect(run?.state).toMatchObject({phase:'await-input',commandSeq:3});if(!run)throw Error('guided start failed');
+    expect(noviceGuide(run.state,run.journal)?.step).toBe('pair');
+  });
+  it('persists the fixed hand, scores an actual pair, buys the real shelf offer and records its next-stage effect',async()=>{
+    const session=new GameSession();await session.initialize();const run=await startGuidedTutorial(session,{requireEmptyHistory:true});
+    expect(run).toBeDefined();if(!run)throw Error('guided start failed');
+    expect(isGuidedTutorialRunId(run.state.runId)).toBe(true);
+    expect(run.state).toMatchObject({mode:'tutorial',phase:'await-input',stageIndex:0,commandSeq:3,gold:6});
+    expect(run.state.handOrder).toEqual(['clubs-4','hearts-5','clubs-5','spades-14','diamonds-4','clubs-7','spades-11','hearts-10']);
+    expect(run.state.stage).toMatchObject({targetHeat:'400',handsLeft:4,discardsLeft:3});
+    expect(noviceGuide(run.state,run.journal)?.step).toBe('pair');
+    const stored=()=>expect(readCheckpoint(JSON.parse(run.exportJSON())).ok).toBe(true);
+    const pair={runId:run.state.runId,commandId:`${run.state.runId}/command/4`,expectedSeq:3,action:{type:'PlayHand' as const,selectedIds:['hearts-5','clubs-5']}};
+    expect((await run.submit(pair)).ok).toBe(true);expect(run.state.lastTrace).toMatchObject({handType:'pair',finalScore:'90'});expect(run.state.stage?.heat).toBe('90');stored();
+    const afterPair=run.exportJSON(),duplicate=await run.submit(pair);expect(duplicate.ok&&duplicate.duplicate).toBe(true);expect(run.exportJSON()).toBe(afterPair);
+    const beforeBad=run.exportJSON(),bad=await run.dispatch({type:'DiscardHand',selectedIds:['missing']});expect(bad.ok).toBe(false);expect(run.exportJSON()).toBe(beforeBad);
+    expect((await run.dispatch({type:'DiscardHand',selectedIds:['clubs-4','diamonds-4','spades-14','clubs-7','spades-11']})).ok).toBe(true);
+    expect(run.state.stage?.discardsLeft).toBe(2);expect(run.state.handOrder).toContain('hearts-11');stored();
+    expect((await run.dispatch({type:'PlayHand',selectedIds:['hearts-10','hearts-3','hearts-6','hearts-11','hearts-7']})).ok).toBe(true);
+    expect(run.state).toMatchObject({phase:'stage-cleared',gold:13});expect(run.state.lastTrace).toMatchObject({handType:'flush',finalScore:'704'});stored();
+    expect((await run.dispatch({type:'OpenShop'})).ok).toBe(true);const offer=run.state.shop?.offers.find(o=>o.definitionId==='b02');
+    expect(offer).toMatchObject({price:4,edition:'none',consumed:false});if(!offer)throw Error('missing teaching offer');
+    const unchanged=run.exportJSON();expect(await resumeGuidedTutorialOpening(run)).toBe(false);expect(run.exportJSON()).toBe(unchanged);
+    const buy={runId:run.state.runId,commandId:`${run.state.runId}/command/${run.state.commandSeq+1}`,expectedSeq:run.state.commandSeq,action:{type:'BuyOffer' as const,offerId:offer.offerId}};
+    expect((await run.submit(buy)).ok).toBe(true);expect(run.state.gold).toBe(9);const instance=run.state.jokers.find(j=>j.definitionId==='b02');expect(instance).toBeDefined();
+    const afterBuy=run.exportJSON(),duplicateBuy=await run.submit(buy);expect(duplicateBuy.ok&&duplicateBuy.duplicate).toBe(true);expect(run.exportJSON()).toBe(afterBuy);stored();
+    expect((await run.dispatch({type:'LeaveShop'})).ok).toBe(true);expect((await run.dispatch({type:'EnterStage'})).ok).toBe(true);
+    expect(run.state.handOrder).toContain('clubs-6');expect(run.state.handOrder).toContain('spades-6');
+    expect((await run.dispatch({type:'PlayHand',selectedIds:['clubs-6','spades-6']})).ok).toBe(true);
+    const events=run.state.lastTrace?.events.filter(e=>e.sourceInstanceId===instance?.instanceId&&e.operation==='add-multiplier');
+    expect(events?.map(e=>[e.targetCardId,e.value])).toEqual([['clubs-6',{n:'1',d:'4'}],['spades-6',{n:'1',d:'4'}]]);
+    expect(run.state.lastTrace?.finalScore).toBe('117');expect(noviceGuide(run.state,run.journal)?.step).toBe('complete');stored();
+  });
+  it.each([1,2,3])('keeps the exact candidate when tutorial save %s fails, then resumes it',async failedWrite=>{
+    const session=new GameSession();await session.initialize();const commit=session.storage.commit.bind(session.storage);let writes=0;
+    vi.spyOn(session.storage,'commit').mockImplementation(async(...args)=>{if(++writes===failedWrite)throw Error('disk-error');return commit(...args);});
+    expect(await startGuidedTutorial(session)).toBeUndefined();
+    const pending=session.pendingRun??session.run;expect(pending?.status).toBe('paused');if(!pending)throw Error('missing pending candidate');
+    expect(session.notice).toContain('保存');const exact=pending.exportJSON();expect(readCheckpoint(JSON.parse(exact)).ok).toBe(true);
+    expect(JSON.parse(exact).state.commandSeq).toBe(failedWrite);expect(await session.retry()).toBe(true);
+    expect(session.run?.exportJSON()).toBe(exact);if(!session.run)throw Error('missing restored run');
+    expect(await resumeGuidedTutorialOpening(session.run)).toBe(true);
+    expect(session.run.state).toMatchObject({phase:'await-input',commandSeq:3,stageIndex:0});
+    expect(noviceGuide(session.run.state,session.run.journal)?.step).toBe('pair');
+  });
+  it('keeps unique guided identities without changing the fixed seed, ordinary launch, or retry identities',async()=>{
+    const session=new GameSession();await session.initialize();const first=await startGuidedTutorial(session);expect(first).toBeDefined();
+    const second=await startGuidedTutorial(session);expect(second).toBeDefined();if(!first||!second)throw Error('guided start failed');
+    expect(second.state.runId).not.toBe(first.state.runId);expect(second.state.handOrder).toEqual(first.state.handOrder);
+    expect(second.state.rng).toEqual(first.state.rng);expect(second.state.contentHash).toBe(first.state.contentHash);
+    const old=await session.start('ordinary','amo');expect(old?.state.runId).toBe('run/ordinary/amo');
+    if(!old)throw Error('normal start failed');const retry=await session.start(old.state.seed,old.state.characterId,undefined,{kind:'retry',run:old.state});
+    expect(retry?.state.runId).toBe('run/ordinary/amo');
+  });
+  it('does not advance unrelated or explicitly imported tutorial openings',async()=>{
+    const session=new GameSession();await session.initialize();const nonce='00000000-0000-4000-8000-000000000001';
+    const unmarked=await session.start('r2/tutorial/core-v1','erxiang',TUTORIAL,{kind:'new',guidedTutorialNonce:nonce});
+    if(!unmarked)throw Error('tutorial start failed');const untouched=unmarked.exportJSON();
+    expect(mayResumeNoviceOpening(unmarked.state)).toBe(false);expect(await resumeGuidedTutorialOpening(unmarked)).toBe(false);expect(unmarked.exportJSON()).toBe(untouched);
+    markNoviceStart(guidedTutorialRunId(nonce));expect(mayResumeNoviceOpening(unmarked.state)).toBe(true);
+    database.failWrites=true;expect(await session.importJSON(untouched)).toBe(false);expect(session.cancelPending()).toBe(true);
+    expect(mayResumeNoviceOpening(unmarked.state)).toBe(true);enrollNoviceGuide(unmarked.state);
+    expect(await session.importJSON(untouched)).toBe(false);expect(mayResumeNoviceOpening(unmarked.state)).toBe(true);
+    database.failWrites=false;expect(await session.retry()).toBe(true);const imported=session.run;if(!imported)throw Error('missing imported run');
+    expect(imported.guidedOpeningSuppressed).toBe(true);expect(mayResumeNoviceOpening(imported.state)).toBe(false);expect(await resumeGuidedTutorialOpening(imported)).toBe(false);expect(imported.exportJSON()).toBe(untouched);
+  });
+  it('atomically preserves import provenance across retry, readonly preferences, reload, ordinary commands, and mode resume',async()=>{
+    const session=new GameSession();await session.initialize();const nonce='00000000-0000-4000-8000-000000000002';
+    const original=await session.start('r2/tutorial/core-v1','erxiang',TUTORIAL,{kind:'new',guidedTutorialNonce:nonce});
+    if(!original)throw Error('tutorial start failed');markNoviceStart(original.state.runId);enrollNoviceGuide(original.state);
+    const saved=original.exportJSON(),oldSlots=await session.storage.read(),oldPreference=preferenceValues.get(NOVICE_GUIDE_KEY);
+    expect(mayResumeNoviceOpening(original.state)).toBe(true);
+    let readOnlyPreferences=true;
+    vi.stubGlobal('localStorage',{getItem:(key:string)=>preferenceValues.get(key)??null,setItem:(key:string,value:string)=>{if(readOnlyPreferences)throw Error('read-only');preferenceValues.set(key,value);},removeItem:(key:string)=>{if(readOnlyPreferences)throw Error('read-only');preferenceValues.delete(key);}});
+    database.failWrites=true;expect(await session.importJSON(saved)).toBe(false);
+    expect(await session.storage.read()).toEqual(oldSlots);expect(session.run).toBe(original);expect(mayResumeNoviceOpening(original.state)).toBe(true);
+    database.failWrites=false;expect(await session.retry()).toBe(true);expect(session.run?.guidedOpeningSuppressed).toBe(true);
+    expect(preferenceValues.get(NOVICE_GUIDE_KEY)).toBe(oldPreference);
+    const slots=await session.storage.read();expect(slots.guidedOpeningSuppressedRunIds).toContain(original.state.runId);
+    const restored=SavedRun.restore(session.storage,slots);expect(restored.guidedOpeningSuppressed).toBe(true);
+    // Load a fresh preference module to model a page refresh, including its stale stored marker.
+    vi.resetModules();const freshPreferences=await import('../src/game/NoviceGuide');const freshHelper=await import('../src/game/GuidedTutorial');
+    expect(freshPreferences.mayResumeNoviceOpening(restored.state)).toBe(true);
+    expect(await freshHelper.resumeGuidedTutorialOpening(restored)).toBe(false);expect(restored.exportJSON()).toBe(saved);
+    expect((await restored.dispatch({type:'LeaveShop'})).ok).toBe(true);
+    expect((await session.storage.read()).guidedOpeningSuppressedRunIds).toContain(original.state.runId);
+    const nextSession=new GameSession();await nextSession.initialize();expect(nextSession.run?.guidedOpeningSuppressed).toBe(true);
+    expect(await nextSession.resumeMode(TUTORIAL)).toBe(true);expect(nextSession.run?.guidedOpeningSuppressed).toBe(true);
+    const replay=await startGuidedTutorial(nextSession);expect(replay).toBeDefined();expect(replay?.guidedOpeningSuppressed).toBe(false);
+    readOnlyPreferences=false;restoreNoviceGuide();
+  });
+  it('retains the previous imported run suppression if the new current checkpoint is damaged',async()=>{
+    const session=new GameSession();await session.initialize();const firstNonce='00000000-0000-4000-8000-000000000003',secondNonce='00000000-0000-4000-8000-000000000004';
+    const first=await session.start('r2/tutorial/core-v1','erxiang',TUTORIAL,{kind:'new',guidedTutorialNonce:firstNonce});if(!first)throw Error('first start failed');
+    expect(await session.importJSON(first.exportJSON())).toBe(true);expect(session.run?.guidedOpeningSuppressed).toBe(true);
+    const second=await session.start('r2/tutorial/core-v1','erxiang',TUTORIAL,{kind:'new',guidedTutorialNonce:secondNonce});
+    expect(second?.guidedOpeningSuppressed).toBe(false);if(!second)throw Error('second start failed');
+    const key=r2ModeStorageKey(second.state,second.state.contentHash),raw=structuredClone(database.records.get(key)) as {current:Checkpoint;previous:Checkpoint;guidedOpeningSuppressedRunIds?:string[]};
+    expect(raw.guidedOpeningSuppressedRunIds).toContain(first.state.runId);raw.current.checksum='damaged';database.records.set(key,raw);
+    const backup=SavedRun.restore(session.storage,await session.storage.read());
+    expect(backup.state.runId).toBe(first.state.runId);expect(backup.guidedOpeningSuppressed).toBe(true);
+  });
+  it('cleans a cancelled first-start candidate and rejects invalid guided identity without replacing the current run',async()=>{
+    const session=new GameSession();await session.initialize();database.failWrites=true;
+    expect(await startGuidedTutorial(session)).toBeUndefined();expect(session.pendingRun).toBeDefined();expect(session.cancelPending()).toBe(true);
+    expect(localStorage.getItem(NOVICE_GUIDE_KEY)).toBeNull();database.failWrites=false;
+    const old=await session.start('ordinary-safe','amo');if(!old)throw Error('normal start failed');const before=old.exportJSON();
+    expect(await session.start('ordinary-safe','amo',undefined,{kind:'new',guidedTutorialNonce:'00000000-0000-4000-8000-000000000001'})).toBeUndefined();
+    expect(await session.start('r2/tutorial/core-v1','erxiang',TUTORIAL,{kind:'new',guidedTutorialNonce:'bad'})).toBeUndefined();
+    expect(session.run).toBe(old);expect(old.exportJSON()).toBe(before);
+  });
+  it('falls back to secure random bytes or explains why the tutorial could not start',async()=>{
+    const session=new GameSession();await session.initialize();
+    vi.stubGlobal('crypto',{getRandomValues:(bytes:Uint8Array)=>{bytes.fill(1);return bytes;}});
+    const run=await startGuidedTutorial(session);expect(run).toBeDefined();expect(isGuidedTutorialRunId(run!.state.runId)).toBe(true);
+    vi.stubGlobal('crypto',undefined);expect(await startGuidedTutorial(session)).toBeUndefined();expect(session.notice).toContain('安全随机数');
   });
 });

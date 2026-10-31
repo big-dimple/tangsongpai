@@ -77,7 +77,12 @@ export async function tapMenuAction(page,label,touch=false){
 /** Open the real title control when present; never bypass the production opening scene. */
 export async function openSelector(page,touch=false){
   await page.waitForFunction(()=>window.__harness?.game.scene.isActive('title')||window.__harness?.game.scene.isActive('character-select'));
-  if(await page.evaluate(()=>window.__harness.game.scene.isActive('title')))await tapUI(page,'title','action/title-start',touch);
+  if(await page.evaluate(()=>window.__harness.game.scene.isActive('title'))){
+    // The normal-game harness explicitly uses the player's skip entry when a
+    // fresh profile would otherwise start the guided tutorial.
+    const skip=page.locator('[data-ui="title/action/skip-tutorial"]');
+    await tapUI(page,'title',await skip.isVisible()?'action/skip-tutorial':'action/title-start',touch);
+  }
   await waitScene(page,'character-select');
 }
 /** Follow the production hero → route → joint confirmation, including old-save prompts. */

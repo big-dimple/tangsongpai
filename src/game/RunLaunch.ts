@@ -7,7 +7,18 @@ import type {R2RunState} from '../domain/r2Run';
 import {r2RulesetFor} from '../domain/r2Run';
 import {type R2OpeningRoute} from '../domain/r2GroupUpgrade';
 
-export type RunLaunchIntent={kind:'new';openingRoute?:R2OpeningRoute}|{kind:'retry';run:R2RunState};
+export type RunLaunchIntent={kind:'new';openingRoute?:R2OpeningRoute;guidedTutorialNonce?:string;requireEmptyHistory?:boolean}|{kind:'retry';run:R2RunState};
+export const GUIDED_TUTORIAL_SEED='r2/tutorial/core-v1';
+const GUIDED_TUTORIAL_RUN_PREFIX=`run/${GUIDED_TUTORIAL_SEED}/erxiang/guided/`;
+const GUIDED_TUTORIAL_NONCE=/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+/** The nonce identifies this visit only; the fixed seed remains the RNG input. */
+export function guidedTutorialRunId(nonce:string):string {
+  if(typeof nonce!=='string'||!GUIDED_TUTORIAL_NONCE.test(nonce))throw Error('invalid-guided-tutorial-nonce');
+  return GUIDED_TUTORIAL_RUN_PREFIX+nonce;
+}
+export function isGuidedTutorialRunId(runId:string):boolean {
+  return typeof runId==='string'&&runId.startsWith(GUIDED_TUTORIAL_RUN_PREFIX)&&GUIDED_TUTORIAL_NONCE.test(runId.slice(GUIDED_TUTORIAL_RUN_PREFIX.length));
+}
 /** Only the normal new-game route follows this policy. Saved runs carry their own identity. */
 function originalNewRunIdentity(_characterId:CharacterId,_route?:R2OpeningRoute){
   if(_characterId==='erxiang'||_characterId==='laohuan')return r2WithHouseJoker({contentVersion:R2_HERO_FREQUENCY_VERSION,contentHash:R2_HERO_FREQUENCY_HASH});

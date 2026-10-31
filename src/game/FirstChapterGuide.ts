@@ -20,6 +20,9 @@ export function enrollFirstChapterGuide(state:R2RunState):void {
  write({...p,enrolled:guideRunKey(state),skipped:[]});
 }
 export function stopFirstChapterGuide():void {const p=read();if(p.enrolled)write({...p,enrolled:undefined,skipped:[]});}
+export function firstChapterGuideDisabled():boolean {return read().disabled;}
+/** Restore the optional ordinary-run hints after the player chose never to show them. */
+export function restoreFirstChapterGuide():void {const p=read();write({...p,disabled:false});}
 /** Other opening decisions follow enrollment, not whether one inline hint is visible. */
 export function firstChapterGuideEnrolled(state:R2RunState):boolean {const p=read();return !p.disabled&&p.enrolled===guideRunKey(state);}
 export function firstChapterGuide(state:R2RunState){

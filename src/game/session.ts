@@ -1,6 +1,6 @@
 import {stopFirstChapterGuide} from './FirstChapterGuide';
-import {launchIdentity,type RunLaunchIntent} from './RunLaunch';
-import {SavedRun,type SaveSlots,type SaveStore} from '../application/SavedRun';
+import {GUIDED_TUTORIAL_SEED,guidedTutorialRunId,isGuidedTutorialRunId,launchIdentity,type RunLaunchIntent} from './RunLaunch';
+import {SavedRun,type SaveCommitOptions,type SaveSlots,type SaveStore} from '../application/SavedRun';
 import {MAX_IMPORT_BYTES,readCheckpoint,restoreSlots} from '../application/checkpoint';
 import {createRun,type R2RunState} from '../domain/run';
 import type {CharacterId} from '../domain/characters';
@@ -8,14 +8,18 @@ import {IndexedDbSave} from '../platform/IndexedDbSave';
 import {WriteLease} from '../platform/WriteLease';
 import {r2RunModeConfig,r2ModeStorageKey,type R2ModeSelection} from '../content/r2Modes';
 import {recordSavedRunProgress} from '../platform/RunProgress';
+import {clearPendingNoviceStart,suppressImportedNovice} from './NoviceGuide';
 
 class VolatileSaveStore implements SaveStore {
   private slots:SaveSlots={revision:0,current:null,previous:null};
   async read():Promise<SaveSlots>{return structuredClone(this.slots);}
   async readPartition():Promise<SaveSlots>{return this.read();}
-  async commit(expectedRevision:number,current:Parameters<SaveStore['commit']>[1],previous:Parameters<SaveStore['commit']>[2]):Promise<number>{
+  async commit(expectedRevision:number,current:Parameters<SaveStore['commit']>[1],previous:Parameters<SaveStore['commit']>[2],options:SaveCommitOptions={}):Promise<number>{
     if(expectedRevision!==this.slots.revision)throw Error('write-conflict');
-    this.slots={revision:expectedRevision+1,current:structuredClone(current),previous:previous?structuredClone(previous):null};
+    const retained=[current.state.runId,...(previous?[previous.state.runId]:[])];
+    const suppressed=new Set((this.slots.guidedOpeningSuppressedRunIds??[]).filter(id=>retained.includes(id)));
+    if(options.suppressGuidedOpening)suppressed.add(current.state.runId);
+    this.slots={revision:expectedRevision+1,current:structuredClone(current),previous:previous?structuredClone(previous):null,...(suppressed.size?{guidedOpeningSuppressedRunIds:[...suppressed]}:{})};
     return this.slots.revision;
   }
 }
@@ -25,6 +29,7 @@ export class GameSession {
   readonly lease=new WriteLease();
   run?:SavedRun;
   private replacement?:SavedRun;
+  private replacementKind?:'start'|'import'|'resume';
   notice='';
   loaded=false;
   storageUnavailable=false;
@@ -50,6 +55,7 @@ export class GameSession {
   }
   get pendingRun():SavedRun|undefined {return this.replacement;}
   subscribe(listener:()=>void):()=>void {this.listeners.add(listener);return ()=>this.listeners.delete(listener);}
+  reportNotice(notice:string):void {this.notice=notice;this.changed();}
   private changed():void {
     if(this.saveStore!==this.storage&&!this.notice.includes('暂存于内存'))this.notice+=' 本页新局暂存于内存，本局暂未保存，刷新会丢失；旧存档保留。';
     this.listeners.forEach(listener=>listener());
@@ -125,12 +131,16 @@ export class GameSession {
   private attach(run:SavedRun):void {
     this.run=run;run.onChange=()=>{this.recordProgress(run);this.changed();};if(!this.lease.writable)run.setReadOnly();this.recordProgress(run);this.changed();
   }
-  private async publishReplacement(run:SavedRun):Promise<boolean> {
-    if(await run.flush()){stopFirstChapterGuide();this.attach(run);return true;}
-    this.replacement=run;run.onChange=()=>this.changed();if(!this.lease.writable)run.setReadOnly();
+  private async publishReplacement(run:SavedRun,kind:'start'|'import'|'resume'='start'):Promise<boolean> {
+    if(await run.flush()){stopFirstChapterGuide();if(kind==='import')suppressImportedNovice(run.state);this.attach(run);return true;}
+    this.replacement=run;this.replacementKind=kind;run.onChange=()=>this.changed();if(!this.lease.writable)run.setReadOnly();
     this.notice=this.pendingNotice();this.changed();return false;
   }
   async start(seed:string,characterId:CharacterId,modeConfig?:R2ModeSelection,intent:RunLaunchIntent={kind:'new'}):Promise<SavedRun|undefined> {
+    const requireEmpty=intent.kind==='new'&&intent.requireEmptyHistory===true;
+    if(requireEmpty&&(this.saveStore!==this.storage||!this.persistentReady||this.run||this.replacement)){
+      this.notice='无法确认没有旧进度；请手动选择如何开始。';this.changed();return;
+    }
     // Explicit new play supersedes only boot recovery, never an active save.
     if(intent.kind==='new'&&!this.run&&!this.replacement&&(this.restoreInFlight||(!this.working&&this.storageUnavailable)))this.enableVolatileStartup(false);
     if(this.working||this.blockPending())return;
@@ -148,12 +158,23 @@ export class GameSession {
       if(intent.kind==='retry'&&(intent.run!==this.run?.state||seed!==intent.run.seed||r2ModeStorageKey(r2RunModeConfig(modeConfig??{mode:'standard',difficulty:0,challengeId:null,programsEnabled:true}),intent.run.contentHash)!==r2ModeStorageKey(intent.run,intent.run.contentHash)))throw Error('stale-retry-run');
       const r2Identity=launchIdentity(characterId,intent);
       const openingRoute=intent.kind==='new'?(intent.openingRoute??'group'):intent.run.openingRoute;
-      const state=createRun({r2Identity,...(openingRoute===undefined?{}:{openingRoute}),seed,characterId,runId:`run/${seed}/${characterId}`,rulesVersion:'r2',...(modeConfig===undefined?{}:{modeConfig})});
-      const slots=await this.readPartition(state).catch((error:unknown)=>{this.storageUnavailable=true;throw error;});
+      const nonce=intent.kind==='new'?intent.guidedTutorialNonce:undefined;
+      if(nonce!==undefined&&(seed!==GUIDED_TUTORIAL_SEED||characterId!=='erxiang'||!modeConfig||modeConfig.mode!=='tutorial'||r2RunModeConfig(modeConfig).mode!=='tutorial'))throw Error('invalid-guided-tutorial-start');
+      if(requireEmpty&&nonce===undefined)throw Error('invalid-guided-tutorial-start');
+      const runId=nonce===undefined?`run/${seed}/${characterId}`:guidedTutorialRunId(nonce);
+      const state=createRun({r2Identity,...(openingRoute===undefined?{}:{openingRoute}),seed,characterId,runId,rulesVersion:'r2',...(modeConfig===undefined?{}:{modeConfig})});
+      const slots=requireEmpty?await this.storage.readEmptyHistory():await this.readPartition(state).catch((error:unknown)=>{this.storageUnavailable=true;throw error;});
       const run=await SavedRun.start(this.saveStore,state,slots);
-      if(!await this.publishReplacement(run))return;
+      if(!await this.publishReplacement(run)){
+        // An automatic start that lost the global CAS race must not leave a
+        // pending replacement obscuring the other page's newly saved game.
+        if(requireEmpty&&run.lastError==='write-conflict'){
+          run.onChange=()=>{};this.replacement=undefined;this.replacementKind=undefined;this.notice='检测到其他页面的进度，未开始教程。';this.changed();
+        }
+        return;
+      }
       return run;
-    }catch{this.notice='暂时无法开始新局，请重试。';}
+    }catch(error){this.notice=error instanceof Error&&error.message==='history-not-empty'?'发现已有进度，未自动开始教程。':'暂时无法开始新局，请重试。';}
     finally {this.working=false;this.changed();}
   }
   async takeOver():Promise<boolean> {
@@ -171,9 +192,10 @@ export class GameSession {
       if(new TextEncoder().encode(text).length>MAX_IMPORT_BYTES)throw Error('导入文件过大');
       const checked=readCheckpoint(JSON.parse(text));if(!checked.ok)throw Error(checked.code);
       if(this.run&&!await this.run.flush())throw Error('本局尚未保存，请先重试或导出');
-      const run=await SavedRun.import(this.saveStore,checked.checkpoint,await this.readPartition(checked.checkpoint.state));
+      const imported=checked.checkpoint.state,options=imported.mode==='tutorial'&&isGuidedTutorialRunId(imported.runId)?{suppressGuidedOpening:true}:{};
+      const run=await SavedRun.import(this.saveStore,checked.checkpoint,await this.readPartition(imported),options);
       this.notice='导入成功，已保存完整进度。';
-      if(!await this.publishReplacement(run))return false;
+      if(!await this.publishReplacement(run,'import'))return false;
       this.changed();return true;
     }catch(error){this.notice='导入失败：'+(error instanceof Error?error.message:'非法文件')+'。原进度未修改。';this.changed();return false;}
     finally {this.working=false;this.changed();}
@@ -193,7 +215,7 @@ export class GameSession {
     try {
       const result=await run.retry();
       if(!result.ok){this.notice=this.replacement?this.pendingNotice():previousNotice;return false;}
-      if(this.replacement===run){stopFirstChapterGuide();this.replacement=undefined;this.notice='候选已保存，现已切换到该进度。';this.attach(run);}
+      if(this.replacement===run){stopFirstChapterGuide();this.replacement=undefined;if(this.replacementKind==='import')suppressImportedNovice(run.state);this.replacementKind=undefined;this.notice='候选已保存，现已切换到该进度。';this.attach(run);}
       else if(!this.notice)this.notice='本局已保存。';
       return true;
     }finally {this.working=false;this.changed();}
@@ -212,14 +234,15 @@ export class GameSession {
       // Import only persists the existing checkpoint and meta pointer; it never applies StartRun or re-locks a chapter.
       const run=await SavedRun.import(this.saveStore,restored.checkpoint,slots);
       this.notice=restored.status==='backup'?'所选模式已从有效备份恢复；原数据仍保留，可导出。':'已恢复所选模式的完整进度。';
-      if(!await this.publishReplacement(run))return false;
+      if(!await this.publishReplacement(run,'resume'))return false;
       return true;
     }catch(error){this.notice='无法切换进度：'+(error instanceof Error?error.message:'存储错误')+'。原进度未修改。';return false;}
     finally {this.working=false;this.changed();}
   }
   cancelPending():boolean {
     if(!this.replacement||this.working||this.replacement.status==='saving')return false;
-    this.replacement.onChange=()=>{};this.replacement.setReadOnly();this.replacement=undefined;
+    if(this.replacementKind==='start')clearPendingNoviceStart(this.replacement.state.runId);
+    this.replacement.onChange=()=>{};this.replacement.setReadOnly();this.replacement=undefined;this.replacementKind=undefined;
     this.notice='已取消未保存候选；原进度仍保留。';this.changed();return true;
   }
   state():R2RunState|undefined {return this.run?.state;}

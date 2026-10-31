@@ -60,6 +60,11 @@ import type {HeroAttachmentPhaseEvent} from './HeroAttachmentPhases';
 import {savedHeroAttachment,retainedRefillImpact} from './HeroAttachmentFacts';
 import {drawStageTableArt,playedCaptionBox} from './StageTableArt';
 import {paperSceneStart} from './PaperFlow';
+import {bindNoviceGuide} from './NoviceGuideBinding';
+import {noviceGuideEnrolled} from './NoviceGuide';
+import {noviceGuideCanvasBox} from './NoviceGuideView';
+import {requestTutorialReplay} from './TutorialEntry';
+import {skipTutorialToNormal} from './RunMenu';
 import {enhanceBlindSelectEntrance,mountHeroEntranceBurst} from './QiyuAnimationPresentation';
 import './PokerEncounterDialog.css';
 import {usesTouyeWager,usesTouyeNewCore,type TouyeBet,type TouyeTarget} from '../domain/r2TouyeWager';
@@ -561,6 +566,25 @@ export class GameScene extends Phaser.Scene {
     window.addEventListener('pointerdown',this.pointerFocus,true);document.addEventListener('focusin',this.focusFeedback);document.addEventListener('focusout',this.focusFeedback);window.addEventListener('blur',this.stopHandHint);document.addEventListener('visibilitychange',this.hintVisibility);
     if(this.run.stage.boss?.definitionId==='B05')this.statusMessage=opponentSavedStatus(this.run.lastTrace);
     this.render();
+    const unmountNoviceGuide=bindNoviceGuide(this,{
+      kind:'game',
+      getGeometry:hint=>{
+        const l=this.view.layout,canvas=this.game.canvas.getBoundingClientRect();
+        const map=(box:import('./layout').Box)=>noviceGuideCanvasBox(box,canvas,l);
+        const highlights=(hint.recommendedCardIds??[]).flatMap(id=>{
+          const index=this.hand.findIndex(card=>card.id===id),seat=l.cards[index];
+          // Overlapping phone cards expose only their own hit column.  Ringing
+          // the full painted card would falsely highlight its neighbours.
+          return seat?.visible?[map({...seat.visual,width:Math.min(seat.visual.width,seat.hit.width)})]:[];
+        });
+        return {highlights,avoid:[l.hud,l.scoreBoard,l.hand,l.actions].map(map)};
+      },
+      visible:()=>!this.presentation&&!this.playing&&!document.querySelector('dialog[open]'),
+      onReplay:()=>requestTutorialReplay(),
+      onSkip:()=>skipTutorialToNormal(this.game),
+      onComplete:()=>skipTutorialToNormal(this.game,'complete'),
+    });
+    this.events.once('shutdown',unmountNoviceGuide);
     const unsubscribeInventory=gameSession().subscribe(()=>{this.updateInventoryControl();if(this.controlsLive)this.updateHeroControl();});
     this.events.once('shutdown',unsubscribeInventory);
     if(enteredStage)this.revealDrawnCards([]);
@@ -2089,7 +2113,10 @@ export class GameScene extends Phaser.Scene {
     if(!this.ready||this.presentation||this.dialog.current||this.selectedIds.size===0||this.handsLeft<=0)return;
     const facts=this.selectionPreview(),ids=[...this.selectedIds],draft={laohuanFindRank:this.laohuanFindRank,erxiangTargetId:this.erxiangTargetId,xiemuBurn:this.xiemuBurn,azaoRelease:this.azaoRelease,amoExile:this.amoExile,assistCount:this.assistIds.length};
     const assistAvailable=this.assistProfile&&assistCandidates(this.assistInput(),r2AssistAvailability(this.run).available).length>0;
-    if(!confirmedUnusedSkill&&unusedHeroAbility(this.run,facts,ids,assistAvailable,draft)&&heroPlayReminders.enabled()){
+    // The guided first two stages teach card choices before optional hero skills.
+    // This affects only the reminder: a player's chosen skill still resolves normally.
+    const guidedFirstStages=noviceGuideEnrolled(this.run)&&this.run.stageIndex<=1;
+    if(!guidedFirstStages&&!confirmedUnusedSkill&&unusedHeroAbility(this.run,facts,ids,assistAvailable,draft)&&heroPlayReminders.enabled()){
       const state=this.run,lifecycle=this.lifecycle,selection=JSON.stringify(ids),chosen=JSON.stringify(draft);
       showHeroPlayReminder(this.dialog,this.run,facts!,ids,assistAvailable,{
         valid:()=>this.lifecycle===lifecycle&&this.run===state&&this.ready&&!this.presentation&&JSON.stringify([...this.selectedIds])===selection&&JSON.stringify({laohuanFindRank:this.laohuanFindRank,erxiangTargetId:this.erxiangTargetId,xiemuBurn:this.xiemuBurn,azaoRelease:this.azaoRelease,amoExile:this.amoExile,assistCount:this.assistIds.length})===chosen&&unusedHeroAbility(this.run,this.selectionPreview(),[...this.selectedIds],this.assistProfile&&assistCandidates(this.assistInput(),r2AssistAvailability(this.run).available).length>0,draft),

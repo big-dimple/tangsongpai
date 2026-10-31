@@ -12,6 +12,10 @@ import {goodsArtKey} from './GoodsArtLoading';
 import {loadResultSourceArt} from './ResultStageArt';
 import {jokerArtPreviewUrl} from './jokerArt';
 import {paperSceneStart,qiyuSceneStart} from './PaperFlow';
+import {bindNoviceGuide} from './NoviceGuideBinding';
+import {noviceGuide} from './NoviceGuide';
+import {requestTutorialReplay} from './TutorialEntry';
+import {skipTutorialToNormal} from './RunMenu';
 import {savedTouyeWager} from './TouyeWagerCopy';
 import {savedBossImpact} from './SavedBossImpact';
 import {stageIdentity} from './StageIdentity';
@@ -126,6 +130,15 @@ export class IntermissionScene extends Phaser.Scene {
       }
     }
     this.view=new SceneView(this,()=>this.render());this.render();this.requestSourceArt();
+    const unmountNoviceGuide=bindNoviceGuide(this,{
+      kind:'intermission',
+      getGeometry:()=>({avoid:[{x:0,y:Math.max(0,window.innerHeight-160),width:window.innerWidth,height:160}]}),
+      visible:()=>!this.busy&&!document.querySelector('dialog[open]'),
+      onReplay:()=>requestTutorialReplay(),
+      onSkip:()=>skipTutorialToNormal(this.game),
+      onComplete:()=>skipTutorialToNormal(this.game,'complete'),
+    });
+    this.events.once('shutdown',unmountNoviceGuide);
   }
   private render():void {
     if(this.busy)this.stopSourceArt();
@@ -336,8 +349,16 @@ export class IntermissionScene extends Phaser.Scene {
     ],{closeLabel:'取消'});
   }
   private async retrySeed():Promise<void> {
-    if(!this.ready)return;const run=runController(this)!.state,lifecycle=this.lifecycle;this.busy=true;this.notice='';this.render();
+    if(!this.ready)return;const owner=runController(this)!,run=owner.state,lifecycle=this.lifecycle;this.busy=true;this.notice='';this.render();
     try {
+      // A guided retry must create a fresh, enrolled visit instead of silently
+      // falling back to the legacy tutorial run identity and its opening shop.
+      if(!owner.guidedOpeningSuppressed&&noviceGuide(run,owner.journal)){
+        if(!await requestTutorialReplay()&&lifecycle===this.lifecycle&&this.scene.isActive()){
+          this.notice=gameSession().notice||'重练尚未开始，请检查保存状态。';this.audio.invalid();
+        }
+        return;
+      }
       const controller=await startRun(this,run.seed,run.characterId,{mode:run.mode,difficulty:run.difficulty,challengeId:run.challengeId,programsEnabled:run.programsEnabled},{kind:'retry',run});if(lifecycle!==this.lifecycle||!this.scene.isActive())return;
       if(controller?.status==='idle'){this.exitResult('shop');return;}
       this.notice=run.phase==='run-lost'?(gameSession().pendingRun?'新局未保存；菜单重试，原局保留。':'未开新局；请看菜单，原局保留。'):gameSession().notice||'新局未保存，请在菜单重试保存。';this.audio.invalid();

@@ -10,19 +10,51 @@ import {Haptics} from '../haptics/Haptics';
 import {installHapticSetting} from '../haptics/HapticSetting';
 import {installFullscreen} from '../platform/Fullscreen';
 import {canvasSizeFactor,selectedCanvasSize,setCanvasSize,viewportSafeInsets} from '../platform/Viewport';
+import {startGuidedTutorial,resumeGuidedTutorialOpening} from './GuidedTutorial';
+import {isGuidedTutorialRunId} from './RunLaunch';
+import {dismissNoviceGuide,mayResumeNoviceOpening,noviceGuideDisabled,restoreNoviceGuide} from './NoviceGuide';
+import {firstChapterGuideDisabled,restoreFirstChapterGuide} from './FirstChapterGuide';
+import {installTutorialReplayHandler,requestTitleNewGame} from './TutorialEntry';
+import type {SavedRun} from '../application/SavedRun';
 
 export interface RunMenuActions {
   viewDeck?:()=>void;
   viewRules?:()=>void;
   viewLastHand?:()=>void;
 }
-export function routeSavedRun(game:Phaser.Game):void {
-  const session=gameSession(),run=session.run;if(!run||session.pendingRun||session.working)return;
+const needsGuidedOpening=(run:SavedRun):boolean=>{
+  const state=run.state;
+  if(run.guidedOpeningSuppressed||state.mode!=='tutorial'||!isGuidedTutorialRunId(state.runId)||state.stageIndex!==0||!mayResumeNoviceOpening(state))return false;
+  return state.stage===null&&((state.phase==='shop'&&state.commandSeq===1)||(state.phase==='stage-ready'&&state.commandSeq===2))||
+    state.phase==='await-input'&&state.stage?.index===0&&state.commandSeq===3;
+};
+/** Finish only the interrupted guided opening; ordinary and legacy saves are untouched. */
+export async function prepareSavedTutorial(run:SavedRun):Promise<boolean> {
+  if(!needsGuidedOpening(run))return true;
+  return resumeGuidedTutorialOpening(run);
+}
+export async function routeSavedRun(game:Phaser.Game):Promise<boolean> {
+  const session=gameSession(),run=session.run;if(!run||session.pendingRun||session.working)return false;
+  if(needsGuidedOpening(run)&&!await prepareSavedTutorial(run))return false;
+  if(session.run!==run||session.pendingRun||session.working)return false;
   game.registry.set('runController',run);game.registry.set('runState',run.state);game.registry.set('characterId',run.state.characterId);game.registry.set('seed',run.state.seed);
   const state=run.state;
   const target=state.phase==='shop'?'shop':['stage-ready','await-input','pending-refill'].includes(state.phase)?'game':state.stage?'intermission':'character-select';
   for(const key of ['title','character-select','shop','game','intermission'])game.scene.stop(key);
   void prepareDestination(game,target).then(prepared=>{if(!prepared)return;game.scene.start(target,target==='intermission'?{cleared:state.phase==='stage-cleared'||state.phase==='run-won',stageIndex:state.stage!.index,stageHeat:state.stage!.heat,handsLeft:state.stage!.handsLeft,goldEarned:state.stage!.goldEarned}:undefined);});
+  return true;
+}
+
+/** Leave tutorial mode without deleting its checkpoint or replacing ordinary progress. */
+export async function skipTutorialToNormal(game:Phaser.Game,reason:'skip'|'complete'='skip'):Promise<boolean> {
+  const session=gameSession(),run=session.run;
+  if(!run||run.state.mode!=='tutorial')return false;
+  if(session.working||session.pendingRun||!await run.flush()||session.run!==run||session.working||session.pendingRun){
+    session.reportNotice('当前进度尚未保存，请先在菜单中重试保存，再前往普通游戏。');return false;
+  }
+  if(reason==='skip')dismissNoviceGuide(run.state,'run',run.journal);
+  for(const key of ['title','character-select','shop','game','intermission'])game.scene.stop(key);
+  game.scene.start('character-select');return true;
 }
 
 /** Progress and presentation preferences survive scene changes. */
@@ -111,7 +143,7 @@ export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|un
     const run=session.run;if(!run){close();return;}
     const target=run.state.phase==='shop'?'shop':['stage-ready','await-input','pending-refill'].includes(run.state.phase)?'game':run.state.stage?'intermission':'character-select';
     // Closing a menu on the current scene preserves the player's unsubmitted card selection.
-    if(game.registry.get('runController')!==run||!game.scene.isActive(target))routeSavedRun(game);close(true);
+    if(game.registry.get('runController')!==run||!game.scene.isActive(target)){if(!await routeSavedRun(game))return;}close(true);
   },primary);resume.className='run-menu-resume';
   const more=document.createElement('details'),moreLabel=document.createElement('summary');more.className='run-menu-more';moreLabel.textContent='更多';more.append(moreLabel);
   const catalogDialog=new DetailDialog();
@@ -126,19 +158,33 @@ export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|un
   });
   const screenTools=document.createElement('div');screenTools.className='run-menu-screen';screenTools.append(fullButton,fullscreenInfo);more.append(screenTools);
   const recovery=document.createElement('div');recovery.className='run-menu-recovery';panel.append(recovery);
-  const retry=button('重试保存',async()=>{if(await session.retry()){routeSavedRun(game);close(true);}},recovery);
+  const retry=button('重试保存',async()=>{if(await session.retry()&&await routeSavedRun(game))close(true);},recovery);
   const cancelCandidate=button('取消这次操作',()=>{if(session.cancelPending())refreshState();},recovery);
   const reload=button('重试读取',()=>session.initialize(),recovery);
   const takeover=button('在这里继续',async()=>{
     if(!await session.takeOver())return;
-    if(session.run)routeSavedRun(game);close(true);
+    if(session.run&&!await routeSavedRun(game))return;close(true);
   },recovery);
   const settingsTools=document.createElement('div');settingsTools.className='run-menu-settings-tools';
   const settings=document.createElement('fieldset'),legend=document.createElement('legend');legend.textContent='声音与画面';settings.className='run-menu-settings';settings.append(legend);settingsTools.append(settings);panel.append(settingsTools);
   const start=button('开始新局',async()=>{
+    if(!session.run&&game.scene.isActive('title')&&requestTitleNewGame()){close(true);return;}
     if(session.run&&!await session.run.flush())return;
     for(const key of ['title','shop','game','intermission'])game.scene.stop(key);game.scene.start('character-select');close(true);
   },primary);primary.prepend(start);
+  const replayTutorial=async()=>{
+    if(session.working||session.pendingRun||!session.loaded||session.storageUnavailable||session.run&&!session.lease.writable){
+      session.reportNotice('暂时无法重玩教程，请先完成保存或在这里继续游戏。');return false;
+    }
+    if(session.run&&!await session.run.flush()){session.reportNotice('当前进度尚未保存，请先在菜单中重试保存。');return false;}
+    restoreNoviceGuide();
+    const run=await startGuidedTutorial(session);
+    if(!run||run!==session.run||run.status!=='idle')return false;
+    return routeSavedRun(game);
+  };
+  const removeTutorialReplay=installTutorialReplayHandler(replayTutorial);
+  const replay=button('重玩新手教程',async()=>{if(await replayTutorial())close(true);else status.textContent=session.notice||'教程尚未开始，请检查保存状态后重试。';},more);replay.dataset.menuAction='replay-tutorial';
+  const skip=button('跳过教程，开始普通游戏',async()=>{if(await skipTutorialToNormal(game))close(true);else status.textContent=session.notice||'请先完成或重试保存，再跳过教程。';},primary);skip.dataset.menuAction='skip-tutorial';
   const speedLabel=document.createElement('label'),speed=document.createElement('select');speedLabel.textContent='演出速度 ';
   for(const value of [1,2,4]){const option=document.createElement('option');option.value=String(value);option.textContent=`${value}×`;speed.append(option);}speed.value=String(session.speed);speedLabel.append(speed);settings.append(speedLabel);
   const sizeLabel=document.createElement('label'),size=document.createElement('select');sizeLabel.textContent='画面大小 ';
@@ -148,6 +194,8 @@ export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|un
   const refreshSizeHint=()=>{const bounds=game.canvas.getBoundingClientRect(),factor=canvasSizeFactor(bounds.width,bounds.height,selectedCanvasSize(),viewportSafeInsets());sizeHint.textContent=`当前画布 ${Math.round(factor*100)}%。跟随模式在浏览器默认字号达到20px时放大画布文字和按钮，部分页面会重新排布；小窗口和安全区会限制放大。`;};
   size.onchange=()=>{setCanvasSize(size.value==='large'?'large':size.value==='standard'?'standard':'auto');refreshSizeHint();};refreshSizeHint();globalThis.addEventListener?.('resize',refreshSizeHint);globalThis.addEventListener?.('focus',refreshSizeHint);
   const reduced=document.createElement('input'),reducedLabel=document.createElement('label');reduced.type='checkbox';reduced.checked=session.reducedMotion;reducedLabel.append(reduced,document.createTextNode(' 减少动态'));settings.append(reducedLabel);
+  const enableGuide=button('重新开启新手引导',()=>{restoreNoviceGuide();restoreFirstChapterGuide();refreshActions();},settings);enableGuide.dataset.menuAction='enable-tutorial-guide';
+  const disableGuide=button('不再显示新手引导',()=>{const run=session.run;if(run)dismissNoviceGuide(run.state,'forever',run.journal);refreshActions();},settings);disableGuide.dataset.menuAction='disable-tutorial-guide';
   const presentation=()=>session.preferences(Number(speed.value) as 1|2|4,reduced.checked);
   speed.onchange=presentation;reduced.onchange=presentation;
   const removeHapticSetting=installHapticSetting(settings,haptics);
@@ -163,6 +211,8 @@ export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|un
   saveAudio();
   function refreshActions():void {
     catalogButton.disabled=session.working||!session.loaded;
+    enableGuide.hidden=!noviceGuideDisabled()&&!firstChapterGuideDisabled();
+    disableGuide.hidden=noviceGuideDisabled()||session.run?.state.mode!=='tutorial';
     const actions=getActions();for(const entry of inspectButtons)entry.button.hidden=typeof actions?.[entry.key]!=='function';
     inspect.hidden=inspectButtons.every(entry=>entry.button.hidden);
   }
@@ -178,6 +228,8 @@ export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|un
     reload.hidden=session.persistentReady||!!run||!!pending||!session.notice;reload.disabled=session.working||!!pending||!session.notice;
     takeover.hidden=!!run||!session.loaded||!session.lease.elsewhere;takeover.disabled=session.working||!!pending;
     start.disabled=session.working||!!pending||!session.loaded||session.storageUnavailable||!!run&&!session.lease.writable||run?.status==='saving'||run?.status==='paused';
+    replay.disabled=start.disabled;skip.hidden=run?.state.mode!=='tutorial';skip.disabled=start.disabled;
+    enableGuide.hidden=!noviceGuideDisabled()&&!firstChapterGuideDisabled();
     start.className='run-menu-new dialog-primary';
     recovery.hidden=[retry,reload,cancelCandidate,takeover].every(b=>b.hidden);
     refreshActions();
@@ -197,5 +249,5 @@ export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|un
   const refreshLiveActions=()=>{const scene=sceneKey();if(scene!==lastScene){lastScene=scene;close(interaction.state().open);}if(modal.open){refreshActions();interaction.refresh();}};game.events.on('poststep',refreshLiveActions);
   const refreshMenuActions=(_parent:unknown,key:string)=>{if(key==='runMenuActions')refreshActions();};
   for(const event of ['setdata','changedata','removedata'])game.registry.events.on(event,refreshMenuActions);
-  game.events.once('destroy',()=>{game.events.off('poststep',refreshLiveActions);globalThis.removeEventListener?.('resize',refreshSizeHint);globalThis.removeEventListener?.('focus',refreshSizeHint);removeInteraction();catalogDialog.close();unsubscribe();unsubscribeFullscreen();for(const event of ['setdata','changedata','removedata'])game.registry.events.off(event,refreshMenuActions);fullscreen.dispose();removeHapticSetting();haptics.dispose();if(modal.open)modal.close();host.remove();});
+  game.events.once('destroy',()=>{game.events.off('poststep',refreshLiveActions);globalThis.removeEventListener?.('resize',refreshSizeHint);globalThis.removeEventListener?.('focus',refreshSizeHint);removeInteraction();removeTutorialReplay();catalogDialog.close();unsubscribe();unsubscribeFullscreen();for(const event of ['setdata','changedata','removedata'])game.registry.events.off(event,refreshMenuActions);fullscreen.dispose();removeHapticSetting();haptics.dispose();if(modal.open)modal.close();host.remove();});
 }
