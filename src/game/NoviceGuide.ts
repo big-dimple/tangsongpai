@@ -231,13 +231,13 @@ function deriveHint(s:R2RunState,journal?:readonly Command[]):NoviceGuideHint {
   const last=s.lastTrace?`上一手是${s.lastTrace.handType==='pair'?'对子':'其他牌型'}，得 ${s.lastTrace.finalScore} 分。`:'';
   if(!rank&&s.phase==='await-input'&&s.stage&&(s.drawPile.length===0||s.stage.discardsLeft===0&&s.stage.handsLeft<=1))return {step:'replay',cue:'可以重练找对子',body:'手中没有对子，也无法再换来牌。可以继续出牌，或重新练习。',fact};
   const next=rank?`点选两张 ${rankLabel(rank)}，再点「出牌」。`:s.stage&&s.stage.discardsLeft===0?'先出牌，补牌后再找同点数。':'可以先弃牌换牌，再找同点数。';
-  return {step:'pair',cue:'认识牌面，自己选一对',body:`本局默认刘娥、同点方向。牌上的数字或字母叫点数，图案叫花色。两张牌点数相同就是对子，花色可以不同。${last}${next}`,recommendedCardIds:ids,fact};
+  return {step:'pair',cue:'认识牌面，自己选一对',body:`${last}${next}数字或字母是点数，图案是花色。同点就是对子，花色可不同。本局默认刘娥、同点方向。`,recommendedCardIds:ids,fact};
  }
  if(!facts.discarded){
   if(s.stage?.index===0&&(s.stage.discardsLeft<=0||s.drawPile.length===0))return {step:'replay',cue:'这场暂时不能换牌',body:'本场弃牌次数或可抽的牌已用完。可以继续出牌，或重练换牌。',fact};
   const stage=s.stage;
   const replacement=stage&&s.handOrder.length===stage.handLimit&&s.drawPile.length>=5?'换等量新牌':'从牌堆补牌，牌不足会少补';
-  return {step:'discard',cue:'看看目标，再试试弃牌',body:`热度 ${fact.pairHeat} × 倍率 ${fact.pairMultiplier} = ${fact.pairScore} 分，累计 ${stage?.heat??'见牌桌'} / 目标 ${stage?.targetHeat??'见牌桌'}。出牌剩 ${stage?.handsLeft??'见牌桌'} 次，弃牌剩 ${stage?.discardsLeft??'见牌桌'} 次。选1–5张想换的牌，点「弃牌」：花${r2DiscardCost(s)}次弃牌${replacement}，不消耗出牌次数。`,fact};
+  return {step:'discard',cue:'看看目标，再试试弃牌',body:`选1–5张想换的牌，点「弃牌」。花${r2DiscardCost(s)}次弃牌${replacement}，不消耗出牌次数。热度 ${fact.pairHeat} × 倍率 ${fact.pairMultiplier} = ${fact.pairScore} 分，累计 ${stage?.heat??'见牌桌'} / 目标 ${stage?.targetHeat??'见牌桌'}。出牌剩 ${stage?.handsLeft??'见牌桌'} 次，弃牌剩 ${stage?.discardsLeft??'见牌桌'} 次。`,fact};
  }
  if(!facts.independent)return {step:'independent',cue:'现在自己决定出什么',body:'已换入新牌。自己选1–5张，再点「出牌」。两张同点数是对子；5张同花色是同花，不必连号。想看牌型可点「条件帮助」。',fact};
  if(!facts.cleared)return {step:'independent',cue:'继续向目标出牌',body:'你已经独立出过一手。继续选牌，达到本场目标；次数用完也可以重练。',fact};

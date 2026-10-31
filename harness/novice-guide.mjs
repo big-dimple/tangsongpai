@@ -510,11 +510,22 @@ async function defeatAndRetry(test,purchased){
 
 async function shortFirstHand(test){
   const {page,touch}=test;
+  const leadIsVisible=async()=>{
+    const result=await page.evaluate(()=>{
+      const panel=document.querySelector('[data-novice-guide-panel]'),body=panel?.querySelector('.novice-guide-body'),text=body?.firstChild;
+      if(!panel||!text)return {visible:false};
+      const end=text.textContent.indexOf('。')+1;if(!end)return {visible:false};
+      const range=document.createRange();range.setStart(text,0);range.setEnd(text,end);
+      const box=panel.getBoundingClientRect(),bottom=box.bottom-(panel.classList.contains('is-constrained')?20:0);
+      return {visible:[...range.getClientRects()].every(rect=>rect.top>=box.top&&rect.bottom<=bottom+1),lead:text.textContent.slice(0,end)};
+    });
+    assert.equal(result.visible,true,'the next action is visible without scrolling: '+result.lead);
+  };
   await tapUI(page,'title','action/title-start',touch);await waitScene(page,'game');await settleGame(page);
-  await guideStep(test,'pair');await capture(test,'short-first-hand');await pairHighlightColumns(test);
+  await guideStep(test,'pair');await leadIsVisible();await capture(test,'short-first-hand');await pairHighlightColumns(test);
   const pair=await play(test,['hearts-5','clubs-5'],90);
   assert.equal(pair.after.state.lastTrace.handType,'pair');
-  await settleGame(page);await guideStep(test,'discard');await capture(test,'short-first-score');
+  await settleGame(page);await guideStep(test,'discard');await leadIsVisible();await capture(test,'short-first-score');
   assert.deepEqual(test.record.errors,[]);
   test.record.shortFirstHand='PASS';
 }
