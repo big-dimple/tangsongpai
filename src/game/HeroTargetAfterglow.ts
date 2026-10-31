@@ -1,6 +1,6 @@
 import type Phaser from 'phaser';
 import {type InkBox,type InkPoint} from './AssistInkGeometry';
-import {drawElectricFork,electricFork,electricSeed,electricVariation,ELECTRIC_CLEARANCE_PX,ELECTRIC_OUTER_RADIUS_PX} from './HeroElectricGeometry';
+import {drawElectricFork,electricBranches,electricFork,electricSeed,electricVariation,ELECTRIC_CLEARANCE_PX,ELECTRIC_OUTER_RADIUS_PX} from './HeroElectricGeometry';
 import {cardVisualRoot} from './CardVisualRoot';
 import {cssViewport} from '../platform/Viewport';
 import type {HeroInkBox} from './HeroVisibleSurface';
@@ -98,12 +98,14 @@ export class HeroTargetAfterglow {
    // Try a side only when both broad edges are fully hidden or off-screen.
    if(lane===2&&segments)break;
    const variation=electricVariation(seed+lane*71),direction=electricVariation(seed+lane*71+19)>.5?1:-1,topFirst=electricVariation(seed+90)>.45,side=lane===0?(topFirst?0:2):lane===1?(topFirst?2:0):(variation>.5?1:3);
-   const travel=.5+.5*Math.sin(glow.elapsed/(320+variation*180)+variation*6.28),u=direction>0?.10+.24*travel:.90-.24*travel,p=edgeAnchor(card.width,card.height,pad,side,u),tangent={x:-p.ny*direction,y:p.nx*direction},outward={x:p.nx,y:p.ny};
+   // Each actual target gets its own short-lived channel: anchors and bends
+   // hold, then jump to a new deterministic configuration instead of sliding.
+   const clock=(glow.elapsed+seed%145)/145,beat=Math.floor(clock),travel=electricVariation(seed+lane*71+beat*257+177),u=direction>0?.10+.24*travel:.90-.24*travel,p=edgeAnchor(card.width,card.height,pad,side,u),tangent={x:-p.ny*direction,y:p.nx*direction},outward={x:p.nx,y:p.ny};
    const sideLength=side%2?card.height:card.width,available=(direction>0?1-u:u)*sideLength-clearance;
-   const length=Math.min(((lane===0?48:lane===1?21:15)+variation*4)*(1-.30*age)/scale,sideLength*.70,available);if(length<4/scale)continue;
-   // Offset the pulse per real card so a group does not flicker in unison.
-   const pulse=.82+.18*(.5+.5*Math.sin(glow.elapsed/185+variation*6.28));
-   const result=drawElectricFork(glow.ink,electricFork(p,tangent,outward,length,seed+lane*31,(glow.elapsed+(seed%370))/85,.85),boxes,scale,alpha*pulse*(lane===0?1:lane===1?.68:.50),visible,clearance);
+   const decay=Math.floor(glow.elapsed/200)*200/HERO_TARGET_AFTERGLOW_MS;
+   const length=Math.min(((lane===0?48:lane===1?21:15)+variation*4)*(1-.30*decay)/scale,sideLength*.70,available);if(length<4/scale)continue;
+   const channelSeed=seed+lane*31,pulse=.88+.12*electricVariation(channelSeed+beat*89);
+   const result=drawElectricFork(glow.ink,electricFork(p,tangent,outward,length,channelSeed,clock,.85),boxes,scale,alpha*pulse*(lane===0?1:lane===1?.68:.50),visible,clearance,electricBranches(channelSeed,clock));
    segments+=result.segments;heads.push(...result.heads);
    if(result.segments&&!attached){
     // The blue-white contact touches only the outer border. Card print, art,

@@ -1,7 +1,7 @@
 import type Phaser from 'phaser';
 import type {AttachmentDraft} from './HeroTargetAttachmentState';
 import {clearInkRuns,exteriorOrbitPoint,type InkBox,type InkPoint} from './AssistInkGeometry';
-import {drawHeroLineCurrent} from './HeroLineCurrent';
+import {drawHeroLineCurrent,type SourceElectricCue,type SourceElectricDecision} from './HeroLineCurrent';
 
 export const HERO_SOURCE_CURRENT_MS=900;
 export const HERO_ATMOSPHERE_BUDGET={targets:5,particlesPerTarget:6,particles:30,sourceHeads:2,portraitHz:20,desktopHz:30} as const;
@@ -69,15 +69,18 @@ export function drawHeroAtmosphere(g:Phaser.GameObjects.Graphics,frame:Atmospher
   return {particles,segments,markers,costParticles,targets:Math.min(frame.targets.length,HERO_ATMOSPHERE_BUDGET.targets),style:style.key,full};
 }
 /** A visible portrait-origin brush/comet travels to real target tops, including during scoring. */
-export function drawHeroOriginStream(g:Phaser.GameObjects.Graphics,source:InkPoint,targets:readonly InkBox[],style:AtmosphereStyle,progress:number,boxes:readonly InkBox[],alpha:number,currentInk:Phaser.GameObjects.Graphics=g){
+export function drawHeroOriginStream(g:Phaser.GameObjects.Graphics,source:InkPoint,targets:readonly InkBox[],style:AtmosphereStyle,progress:number,boxes:readonly InkBox[],alpha:number,currentInk:Phaser.GameObjects.Graphics=g,fallbackBoard?:InkBox,decision?:SourceElectricDecision){
   g.clear();if(currentInk!==g)currentInk.clear();let segments=0,heads=0,electricSegments=0;const electricHeads:InkPoint[]=[];const selected=targets.length>1?[targets[0],targets[targets.length-1]]:[...targets];
+  const cue:SourceElectricCue={burstSegments:0,fallbackSegments:0};
   for(const [streamIndex,box] of selected.slice(0,HERO_ATMOSPHERE_BUDGET.sourceHeads).entries()){
     const end={x:box.x+box.width/2,y:box.y-6},mid={x:(source.x+end.x)/2,y:(source.y+end.y)/2-Math.min(35,Math.abs(end.y-source.y)*.12+12)},curve=(t:number)=>({x:(1-t)**2*source.x+2*(1-t)*t*mid.x+t*t*end.x,y:(1-t)**2*source.y+2*(1-t)*t*mid.y+t*t*end.y});
     // Panels are surfaces, not occluders: the original curve runs above them.
     // Actual text, controls and other card faces remain protected by boxes.
     const base=Array.from({length:25},(_,i)=>curve(i/24)),trail=Array.from({length:17},(_,i)=>curve(Math.max(0,progress-.3)+Math.min(progress,.3)*i/16));
     segments+=stroke(g,base,boxes,2.3,style.glow,.21*alpha);segments+=stroke(g,trail,boxes,11,style.ink,.2*alpha);segments+=stroke(g,trail,boxes,4.2,style.glow,.8*alpha);segments+=stroke(g,trail,boxes,1.7,style.spark,alpha);
-    const current=drawHeroLineCurrent(currentInk,curve,Math.max(0,progress-.3),progress,progress,boxes,style.spark,alpha,streamIndex);electricSegments+=current.segments;electricHeads.push(...current.heads);
+    // The source discharge, unlike a deliberate card-face highlight, must not
+    // cover even blank paper on an actual target close to the portrait.
+    const current=drawHeroLineCurrent(currentInk,curve,Math.max(0,progress-.3),progress,progress,[...boxes,...targets],style.spark,alpha,streamIndex,fallbackBoard,cue,decision);electricSegments+=current.segments;electricHeads.push(...current.heads);
     const p=curve(progress);if(mote(g,{...p,nx:0,ny:-1},3.3,style,alpha,boxes))heads++;
-  }return {segments,heads,electricSegments,electricHeads};
+  }return {segments,heads,electricSegments,electricHeads,sourceBurstSegments:cue.burstSegments,scoreFallbackSegments:cue.fallbackSegments};
 }

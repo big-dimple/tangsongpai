@@ -411,7 +411,10 @@ export class GameScene extends Phaser.Scene {
     this.liueSkillPayoff?.dispose();this.liueSkillPayoff=undefined;
     const lifecycle=++this.lifecycle;this.intent++;
     this.shownOpponentKinds.clear();this.shownPayoffs.clear();this.appliedRefill=undefined;this.refillHidden=false;this.effects.clear();this.laohuanFindRank=null;this.erxiangTargetId=null;this.azaoRelease=false;this.xiemuBurn=0;this.amoExile=false;this.jokerViews.clear();this.cardViews=[];this.selectedIds.clear();this.assistIds=[];this.assistPage=0;this.assistGestureStart=undefined;this.hoveredCardId=undefined;this.hoveredJokerId=undefined;this.jokerHoverPreview=undefined;this.playing=false;this.presentation=undefined;this.toolHand=undefined;this.statusMessage='';this.focusIndex=0;this.keyboardFocus=false;this.handStart=0;this.handNavigationButtons=[];
+    let appliedPresentationSpeed=gameSession().speed;
     const settings=()=>{
+      // A speed change cannot leave a fire tail running against a new clock.
+      if(appliedPresentationSpeed!==gameSession().speed){this.highMultiplierAuraDispose?.();this.highMultiplierAuraDispose=undefined;appliedPresentationSpeed=gameSession().speed;}
       const hintVisible=!!this.handHint;this.stopHandHint();if(hintVisible&&this.reducedMotion)this.showHandHint(false);
       this.tweens.timeScale=gameSession().speed;this.time.timeScale=gameSession().speed;
       if(this.reducedMotion){
@@ -2157,8 +2160,14 @@ export class GameScene extends Phaser.Scene {
     const presentation=this.presentation,root=this.view?.root;
     if(!presentation||presentation.replay||presentation.auraPlayed||presentation.auraEventId!==event.eventId||context.signal.aborted||!root?.active)return;
     presentation.auraPlayed=true;this.highMultiplierAuraDispose?.();
+    let stopFire=()=>{};
     this.highMultiplierAuraDispose=mountHighMultiplierAura(this,{root,eventId:event.eventId,signal:context.signal,reduced:()=>this.reducedMotion,
       getBoard:()=>this.view.layout.scoreBoard,getViewport:()=>({x:0,y:0,...cssViewport(this)}),getGuards:()=>this.highMultiplierAuraGuards(),
+      speed:()=>gameSession().speed,
+      onVisibleOnce:()=>{
+        if(context.signal.aborted||this.reducedMotion||this.presentation!==presentation||this.view.root!==root)return;
+        stopFire=this.audio.playHighMultiplierFire({signal:context.signal,speed:gameSession().speed,reducedMotion:this.reducedMotion,replay:presentation.replay});
+      },onDispose:()=>stopFire(),
       isCurrent:()=>this.presentation===presentation&&this.view.root===root&&this.scene.isActive()});
   }
 
