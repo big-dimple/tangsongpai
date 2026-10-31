@@ -7,6 +7,7 @@ import {
 } from './NoviceGuide';
 import {mountNoviceGuideView, type NoviceGuideGeometry, type NoviceGuideHandle, type NoviceGuideStep} from './NoviceGuideView';
 import {gameSession} from './session';
+import {isGuidedTutorialRunId} from './RunLaunch';
 
 export type NoviceGuideSceneKind='game'|'shop'|'intermission';
 export interface NoviceGuideBindingOptions {
@@ -60,6 +61,12 @@ function belongs(kind:NoviceGuideSceneKind,state:R2RunState,hint:NoviceGuideHint
 
 /** Bind only the published SavedRun; a pending candidate is never tutorial progress. */
 export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOptions):NoviceGuideUnmount {
+  // Ordinary and imported runs never need a tutorial listener. Starting or
+  // resuming another run remounts its scene through the normal router.
+  const owner=scene.registry.get('runController') as SavedRun|undefined;
+  if(!owner||owner.state.mode!=='tutorial'||!isGuidedTutorialRunId(owner.state.runId)||owner.guidedOpeningSuppressed){
+    const noop=(()=>{}) as NoviceGuideUnmount;noop.refresh=()=>{};return noop;
+  }
   const session=gameSession();
   let stopped=false,suspended=false,actionPending=false,view:NoviceGuideHandle|undefined;
   let sourceRun:SavedRun|undefined,sourceState:R2RunState|undefined,sourceJournal:SavedRun['journal']|undefined;

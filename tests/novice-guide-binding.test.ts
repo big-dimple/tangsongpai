@@ -57,6 +57,15 @@ beforeEach(()=>{
 afterEach(()=>vi.unstubAllGlobals());
 
 describe('novice guide scene binding',()=>{
+ it('does not attach tutorial listeners to ordinary runs',async()=>{
+  const store=new Store(),state=createRun({seed:'ordinary',runId:'run/ordinary/erxiang',
+   characterId:'erxiang',rulesVersion:'r2',r2Identity:newRunIdentity('erxiang'),openingRoute:'group'});
+  const run=await SavedRun.start(store,state,await store.read());session.run=run;
+  const owner=scene(run),subscribe=vi.spyOn(session,'subscribe');
+  const unmount=bindNoviceGuide(owner.value,{kind:'intermission',getGeometry:geometry,onReplay:()=>true,onSkip:()=>true,onComplete:()=>true});
+  expect(subscribe).not.toHaveBeenCalled();expect(views).toHaveLength(0);
+  unmount.refresh();unmount();expect(session.listeners.size).toBe(0);
+ });
  it('requires explicit enrollment and advances only after a successful save or retry',async()=>{
   const {run,store}=await start('committed',false);session.run=run;const owner=scene(run);
   const unmount=bindNoviceGuide(owner.value,{kind:'game',getGeometry:geometry,onReplay:()=>true,onSkip:()=>true,onComplete:()=>true});
