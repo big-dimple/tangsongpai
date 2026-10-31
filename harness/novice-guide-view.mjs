@@ -24,12 +24,12 @@ function resize(){
 }
 const geometry=()=>({highlights:[table.cards[1].visual,table.cards[2].visual],avoid:[table.hud,table.scoreBoard,table.hand,table.actions,...extra]});
 resize();
-guide=mountNoviceGuideView({step:{id:'select-pair',title:'认识牌面，自己选一对',body:'数字和 JQKA 是点数；♠黑桃、♥红桃、♣梅花、♦方片是花色。同点就是对子。试着选两张 5 再出牌。'},getGeometry:geometry,onClose:()=>counts.close++,onReopen:()=>counts.reopen++,onSkip:()=>counts.skip++,reducedMotion:true});
+guide=mountNoviceGuideView({step:{id:'select-pair',title:'先找一对',body:'点两张 5；花色可以不同。'},getGeometry:geometry,onClose:()=>counts.close++,onReopen:()=>counts.reopen++,onSkip:()=>counts.skip++,reducedMotion:true});
 window.addEventListener('resize',resize);
 window.addEventListener('keydown',event=>{if(event.key==='ArrowRight')counts.gameKeys++;});
-window.fixture={counts,read:()=>({table,geometry:geometry()}),update:()=>guide.update({id:'play',title:'打出这一对',body:'点击出牌，看看真实得分。'}),updateAction:()=>guide.update({id:'confirm',title:'继续',body:'查看下一步。',action:{label:'知道了',run:()=>counts.action++}}),updateDiscard:()=>guide.update({id:'discard',title:'看看目标，再试试弃牌',body:'对子得 90 分（热度 30 × 倍率 3）。目标 400，现有 90；余出牌 3 次、弃牌 3 次。选1–5张不要的牌，花1次弃牌换等量新牌；抽牌不保证凑齐。'}),updateComplete:()=>guide.update({id:'complete',title:'这张牌真的发挥了作用',body:'练习中「对上眼」增加倍率；那手共 120 分。此局使用刘娥，不计普通通关；普通局可换英雄和路线。',details:'那手对子没有选择使用刘娥技能。'+String.fromCharCode(10)+'刘娥：选择同点牌时，可以主动选择技能。'+String.fromCharCode(10)+'路线：选择路线来培养牌型，路线可调整，不限制出牌。',action:{label:'开始普通游戏',run:()=>counts.action++}}),refresh:()=>guide.refresh(),unmount:()=>guide.unmount(),constrain:()=>{extra=[{x:0,y:0,width:innerWidth,height:260},{x:0,y:330,width:innerWidth,height:innerHeight-330}];guide.refresh();}};
+window.fixture={counts,read:()=>({table,geometry:geometry()}),update:()=>guide.update({id:'play',title:'打出这一对',body:'点击出牌，看看真实得分。'}),updateAction:()=>guide.update({id:'confirm',title:'继续',body:'查看下一步。',action:{label:'知道了',run:()=>counts.action++}}),updateDiscard:()=>guide.update({id:'discard',title:'45 筹码 × 2 倍率 = 90 分',body:'选不要的牌，点「弃牌」换新牌。'}),updateComplete:()=>guide.update({id:'complete',title:'练习完成',body:'你已学会出牌、换牌和技能。',details:'刘娥：选择同点牌时，可以主动选择技能。'+String.fromCharCode(10)+'路线：选择路线来培养牌型，路线可调整，不限制出牌。',action:{label:'开始普通游戏',run:()=>counts.action++}}),refresh:()=>guide.refresh(),unmount:()=>guide.unmount(),constrain:()=>{extra=[{x:0,y:0,width:innerWidth,height:260},{x:0,y:330,width:innerWidth,height:innerHeight-330}];guide.refresh();}};
 </script></body></html>`;
-const server=await createServer({configFile:false,server:{host:'127.0.0.1',port:0},plugins:[{name:'novice-guide-fixture',configureServer(vite){vite.middlewares.use('/__novice-guide-view',(_request,response)=>{response.statusCode=200;response.setHeader('content-type','text/html');response.end(html);});}}]});
+const server=await createServer({configFile:false,optimizeDeps:{noDiscovery:true},logLevel:'error',server:{host:'127.0.0.1',port:0},plugins:[{name:'novice-guide-fixture',configureServer(vite){vite.middlewares.use('/__novice-guide-view',(_request,response)=>{response.statusCode=200;response.setHeader('content-type','text/html');response.end(html);});}}]});
 await server.listen();
 let browser;
 try {
@@ -38,11 +38,11 @@ try {
   for(const viewport of [{width:320,height:568},{width:390,height:844},{width:1280,height:720}]){
     const context=await browser.newContext({viewport,hasTouch:true,reducedMotion:'reduce'}),page=await context.newPage();
     await page.goto(url);await page.locator('[data-novice-guide-step="select-pair"]').waitFor();
-    assert.equal(await page.locator('.novice-guide-title').innerText(),'认识牌面，自己选一对');
-    assert.equal(await page.locator('.novice-guide-body').innerText(),'数字和 JQKA 是点数；♠黑桃、♥红桃、♣梅花、♦方片是花色。同点就是对子。试着选两张 5 再出牌。');
+    assert.equal(await page.locator('.novice-guide-title').innerText(),'先找一对');
+    assert.equal(await page.locator('.novice-guide-body').innerText(),'点两张 5；花色可以不同。');
     assert.equal(await page.locator('[data-novice-guide-highlight]').count(),2);
     assert.equal(await page.locator('[data-novice-guide-panel]').getAttribute('aria-label'),'新手引导');
-    assert.match(await page.locator('[data-novice-guide-skip]').innerText(),/跳过教学.*普通游戏/);
+    assert.match(await page.locator('[data-novice-guide-skip]').getAttribute('aria-label'),/跳过教学.*普通游戏/);
     const check=async()=>{
       const current=page.viewportSize();
       const result=await page.evaluate(()=>{
@@ -65,8 +65,8 @@ try {
     }
     await page.evaluate(()=>window.fixture.updateDiscard());await check();
     const panel=page.locator('[data-novice-guide-panel]');
-    await panel.evaluate(element=>{element.scrollTop=element.scrollHeight;});
-    assert.equal(await page.locator('.novice-guide-body').evaluate(element=>element.textContent.includes('抽牌不保证凑齐')),true);
+    assert.equal(await panel.evaluate(element=>element.scrollHeight<=element.clientHeight+1),true);
+    assert.equal(await page.locator('.novice-guide-body').evaluate(element=>element.textContent.includes('换新牌')),true);
     assert.equal(await panel.evaluate(element=>{const body=element.querySelector('.novice-guide-body').getBoundingClientRect(),outer=element.getBoundingClientRect();return body.bottom<=outer.bottom+.5;}),true);
     await page.locator('[data-novice-guide-skip]').focus();await page.evaluate(()=>window.fixture.updateComplete());await check();
     const detailsToggle=page.locator('[data-novice-guide-details-toggle]'),details=page.locator('[data-novice-guide-details]');

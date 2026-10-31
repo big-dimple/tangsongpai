@@ -20,6 +20,9 @@ export interface NoviceGuideBindingOptions {
   onComplete:()=>boolean|Promise<boolean>;
   /** For example, hold a new result until the score presentation has finished. */
   visible?:(hint:NoviceGuideHint)=>boolean;
+  /** Local selections can update the prompt without becoming saved progress. */
+  presentHint?:(hint:NoviceGuideHint)=>NoviceGuideHint;
+  getInlineHost?:()=>HTMLElement|undefined;
 }
 export interface NoviceGuideUnmount {
   ():void;
@@ -45,6 +48,9 @@ function belongs(kind:NoviceGuideSceneKind,state:R2RunState,hint:NoviceGuideHint
   switch(hint.step){
     case 'pair':case 'discard':case 'independent':
       return kind==='game'&&(phase==='await-input'||phase==='pending-refill');
+    case 'skill':case 'skill-practice':
+      return kind==='shop'&&phase==='shop'||kind==='game'&&['stage-ready','await-input','pending-refill'].includes(phase)||
+        kind==='intermission'&&phase==='stage-cleared';
     case 'shop':
       return kind==='shop'&&phase==='shop'||kind==='intermission'&&phase==='stage-cleared';
     case 'payoff':
@@ -70,11 +76,12 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
   const session=gameSession();
   let stopped=false,suspended=false,actionPending=false,view:NoviceGuideHandle|undefined;
   let sourceRun:SavedRun|undefined,sourceState:R2RunState|undefined,sourceJournal:SavedRun['journal']|undefined;
-  let hint:NoviceGuideHint|undefined,shownHint:NoviceGuideHint|undefined,shownMotion:boolean|undefined;
+  let hint:NoviceGuideHint|undefined,shownHint:NoviceGuideHint|undefined,shownHintKey='',shownMotion:boolean|undefined;
   let actionError='',shownError='';
   let geometry:NoviceGuideGeometry={},geometryKey='',lastMeasurement=-Infinity;
+  let inlineHost:HTMLElement|undefined;
 
-  const removeView=()=>{view?.unmount();view=undefined;shownHint=undefined;shownMotion=undefined;shownError='';geometryKey='';};
+  const removeView=()=>{view?.unmount();view=undefined;shownHint=undefined;shownHintKey='';shownMotion=undefined;shownError='';geometryKey='';inlineHost=undefined;};
   const activeRun=()=>{
     const run=session.run;
     return run&&!run.guidedOpeningSuppressed&&scene.registry.get('runController')===run?run:undefined;
@@ -85,7 +92,7 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
   ]);
   const measure=(current:NoviceGuideHint,force:boolean)=>{
     const now=performance.now();
-    if(!force&&now-lastMeasurement<250)return false;
+    if(!force&&now-lastMeasurement<32)return false;
     lastMeasurement=now;
     const next=options.getGeometry(current),key=makeGeometryKey(next),changed=key!==geometryKey;
     geometry=next;geometryKey=key;return changed;
@@ -119,15 +126,18 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
     if(stopped)return;
     const run=activeRun();
     if(!run){removeView();return;}
-    const prefs=presentation(run),current=hint;
+    const prefs=presentation(run),current=hint?(options.presentHint?.(hint)??hint):undefined;
     if(!current||!canShow(run,current)){removeView();return;}
-    const geometryChanged=measure(current,forceGeometry||!view||shownHint!==current),motion=session.reducedMotion;
+    const currentKey=JSON.stringify([current.step,current.cue,current.body,current.details,current.recommendedCardIds,current.offerIds,current.focus]);
+    const hintChanged=shownHintKey!==currentKey;
+    const nextInlineHost=options.getInlineHost?.(),hostChanged=nextInlineHost!==inlineHost;inlineHost=nextInlineHost;
+    const geometryChanged=measure(current,forceGeometry||!view||hintChanged),motion=session.reducedMotion;
     if(view&&shownMotion!==motion)removeView();
     if(!view){
       // removeView clears the geometry key but the measured value remains valid.
       geometryKey=makeGeometryKey(geometry);
       view=mountNoviceGuideView({
-        step:makeStep(run,current),getGeometry:()=>geometry,reducedMotion:motion,
+        step:makeStep(run,current),getGeometry:()=>geometry,getInlineHost:options.getInlineHost,reducedMotion:motion,
         onClose:()=>{presentation(run).closed=true;},
         onReopen:()=>{if(!stopped&&activeRun()===run)presentation(run).closed=false;},
         onSkip:()=>{
@@ -136,10 +146,10 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
           presentation(run).closed=true;invoke(run,options.onSkip);
         },
       });
-      shownHint=current;shownMotion=motion;shownError=actionError;
+      shownHint=current;shownHintKey=currentKey;shownMotion=motion;shownError=actionError;
       if(prefs.closed)view.close();
-    } else if(shownHint!==current||shownError!==actionError){shownHint=current;shownError=actionError;view.update(makeStep(run,current));}
-    else if(geometryChanged)view.refresh();
+    } else if(hintChanged||shownError!==actionError){shownHint=current;shownHintKey=currentKey;shownError=actionError;view.update(makeStep(run,current));}
+    else if(geometryChanged||hostChanged)view.refresh();
   };
   const refreshSource=(force=false)=>{
     if(stopped)return;

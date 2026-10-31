@@ -15,6 +15,7 @@ export function playerText(copy:string):string {
   .replaceAll('本场热度已达目标','本场得分已达目标')
   .replaceAll('目标热度','目标分数')
   .replaceAll('热度','筹码')
+  .replaceAll('加热','加筹')
   .replaceAll('热+','筹+')
   .replaceAll('读热','读筹')
   .replaceAll('蓄热','蓄筹')

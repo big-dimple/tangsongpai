@@ -4,7 +4,7 @@ import type {Checkpoint} from '../src/application/checkpoint';
 import {createRun,type Action} from '../src/domain/run';
 import {guidedTutorialRunId,newRunIdentity} from '../src/game/RunLaunch';
 import {cardDisplayName} from '../src/game/tangsongCardNames';
-import {clearPendingNoviceStart,dismissNoviceGuide,enrollNoviceGuide,markNoviceStart,mayResumeNoviceOpening,noviceGuide,noviceGuideDisabled,noviceGuideEnrolled,NOVICE_GUIDE_KEY,NOVICE_GUIDE_PENDING_PREFIX,restoreNoviceGuide,stopNoviceGuide,suppressImportedNovice} from '../src/game/NoviceGuide';
+import {clearPendingNoviceStart,dismissNoviceGuide,enrollNoviceGuide,liveNoviceGuide,markNoviceStart,mayResumeNoviceOpening,noviceGuide,noviceGuideDisabled,noviceGuideEnrolled,novicePairResultCue,NOVICE_GUIDE_KEY,NOVICE_GUIDE_PENDING_PREFIX,restoreNoviceGuide,stopNoviceGuide,suppressImportedNovice} from '../src/game/NoviceGuide';
 
 class Store implements SaveStore {
  slots:SaveSlots={revision:0,current:null,previous:null};fail=false;
@@ -41,19 +41,33 @@ async function clearFirst(run:SavedRun){
  await send(run,{type:'PlayHand',selectedIds:hearts.slice(0,5)});
  expect(run.state.phase).toBe('stage-cleared');
 }
+async function findPairWithRealDiscards(run:SavedRun):Promise<string[]> {
+ for(let attempt=0;attempt<4;attempt++){
+  const groups=new Map<number,string[]>();
+  for(const id of run.state.handOrder){const rank=run.state.deckInstances.find(c=>c.id===id)!.rank;groups.set(rank,[...(groups.get(rank)??[]),id]);}
+  const pair=[...groups.values()].find(ids=>ids.length>=2);if(pair)return pair.slice(0,2);
+  expect(run.state.stage!.discardsLeft).toBeGreaterThan(0);
+  await send(run,{type:'DiscardHand',selectedIds:run.state.handOrder.slice(0,5)});
+ }
+ throw Error('controlled tutorial did not produce a pair after actual discards');
+}
 
 describe('guided first match from saved commands',()=>{
+ it('never prints an untrue equality when the committed score was rounded down',()=>{
+  const accumulator={H:{n:'5',d:'2'},M:{n:'1',d:'1'}};
+  expect(novicePairResultCue({accumulator,finalScore:'2'})).toBe('对子得 2 分');
+  expect(novicePairResultCue({accumulator:{...accumulator,M:{n:'2',d:'1'}},finalScore:'5'})).toBe('5/2 筹码 × 2 倍率 = 5 分');
+ });
  it('follows a real pair, replacement, independent play, purchase and positive contribution, surviving restoration',async()=>{
   const {run,store}=await start();await enter(run);
   expect(guide(run)).toMatchObject({step:'pair',recommendedCardIds:['clubs-5','hearts-5']});
   expect(guide(run)!.body).toContain('花色');
   await send(run,{type:'PlayHand',selectedIds:['hearts-5','clubs-5']});
   expect(guide(run)).toMatchObject({step:'discard',fact:{pairScore:'90'}});
-  expect(guide(run)!.body).toContain('目标');expect(guide(run)!.body).toContain('倍率');
-  expect(guide(run)!.body).toContain('花1次弃牌换等量新牌');expect(guide(run)!.body).toContain('不消耗出牌次数');
+  expect(guide(run)!.cue).toBe('45 筹码 × 2 倍率 = 90 分');expect(guide(run)!.body).toContain('弃牌');
   await send(run,{type:'DiscardHand',selectedIds:['clubs-4','diamonds-4','spades-14','clubs-7','spades-11']});
   expect(guide(run)?.step).toBe('independent');
-  expect(guide(run)!.body).toContain('5张同花色是同花');expect(guide(run)!.body).toContain('不必连号');
+  expect(guide(run)!.cue).toContain('400');expect(guide(run)!.body).toContain('自己选牌');
   const restored=SavedRun.restore(store,await store.read());expect(guide(restored)?.step).toBe('independent');
   await send(restored,{type:'PlayHand',selectedIds:restored.state.handOrder.filter(id=>id.startsWith('hearts-')).slice(0,5)});
   expect(restored.state.phase).toBe('stage-cleared');expect(guide(restored)?.step).toBe('shop');
@@ -69,29 +83,26 @@ describe('guided first match from saved commands',()=>{
   expect(restored.state.handOrder).toEqual(expect.arrayContaining(['clubs-6','spades-6']));
   await send(restored,{type:'PlayHand',selectedIds:['clubs-6','spades-6']});
   const event=restored.state.lastTrace!.events.find(e=>e.sourceType==='joker'&&e.sourceInstanceId===bought.instanceId&&e.operation==='add-multiplier')!;
-  expect(event).toBeDefined();expect(guide(restored)).toMatchObject({step:'complete',fact:{eventId:event.eventId,purchaseInstanceId:bought.instanceId}});
-  expect(guide(restored)!.body).toContain('不计普通通关');
+  expect(event).toBeDefined();expect(guide(restored)).toMatchObject({step:'skill',fact:{eventId:event.eventId,purchaseInstanceId:bought.instanceId}});
   expect(guide(restored)!.fact?.contribution).toBe('让2张计分牌各加 0.25 倍率');
-  expect(guide(restored)!.body).toContain('那手共');
-  expect(guide(restored)!.details).toContain('那手对子没有选择使用刘娥技能');
-  expect(guide(restored)!.details).toContain('同点成组');expect(guide(restored)!.details).toContain('每场2次');
-  const again=SavedRun.restore(store,await store.read());expect(guide(again)).toMatchObject({step:'complete',fact:{eventId:event.eventId}});
-  expect(again.state.phase).toBe('await-input');
-  await send(again,{type:'PlayHand',selectedIds:[again.state.handOrder[0]]});
-  expect(again.state.lastTrace!.rootId).not.toBe(restored.state.lastTrace!.rootId);
-  expect(guide(again)).toMatchObject({step:'complete',fact:{eventId:event.eventId,contribution:'让2张计分牌各加 0.25 倍率'}});
-  while(again.state.phase==='await-input'){
-   const selectedId=again.state.handOrder.reduce((lowest,id)=>again.state.deckInstances.find(c=>c.id===id)!.rank<again.state.deckInstances.find(c=>c.id===lowest)!.rank?id:lowest);
-   await send(again,{type:'PlayHand',selectedIds:[selectedId]});
-  }
-  expect(again.state.phase).toBe('run-lost');expect(guide(again)).toMatchObject({step:'complete',fact:{eventId:event.eventId}});
+  expect(guide(restored)!.cue).toContain('倍率 +0.5');
+  const again=SavedRun.restore(store,await store.read());expect(guide(again)).toMatchObject({step:'skill',fact:{eventId:event.eventId}});
+  const pair=await findPairWithRealDiscards(again);
+  const invalid=await again.dispatch({type:'PlayHand',selectedIds:pair,erxiangTargetId:'not-in-hand'});expect(invalid.ok).toBe(false);expect(guide(again)?.step).toBe('skill');
+  await send(again,{type:'PlayHand',selectedIds:pair,erxiangTargetId:pair[0]});
+  const skill=again.state.lastTrace!.events.find(e=>e.reasonKey==='erxiang.handoff');expect(skill).toBeDefined();
+  expect(guide(again)).toMatchObject({step:'skill-practice',fact:{eventId:event.eventId,skillEventId:skill!.eventId}});
+  const restoredSkill=SavedRun.restore(store,await store.read());expect(guide(restoredSkill)?.step).toBe('skill-practice');
+  if(restoredSkill.state.phase==='stage-cleared'){await send(restoredSkill,{type:'OpenShop'});await send(restoredSkill,{type:'LeaveShop'});await send(restoredSkill,{type:'EnterStage'});}
+  await send(restoredSkill,{type:'PlayHand',selectedIds:[restoredSkill.state.handOrder[0]]});
+  expect(guide(restoredSkill)).toMatchObject({step:'complete',fact:{eventId:event.eventId,skillEventId:skill!.eventId}});
  });
 
  it('keeps errors and a duplicate from becoming successful lessons',async()=>{
   const {run}=await start();await enter(run);
   const bad=await run.dispatch({type:'PlayHand',selectedIds:[]});expect(bad.ok).toBe(false);expect(guide(run)?.step).toBe('pair');
   await send(run,{type:'PlayHand',selectedIds:['clubs-7']});expect(guide(run)?.step).toBe('pair');
-  expect(guide(run)?.body).toContain('上一手是其他牌型');
+  expect(guide(run)?.cue).toBe('再找一对');
   const command=run.journal.at(-1)!;const repeat=await run.submit(command);
   expect(repeat).toMatchObject({ok:true,duplicate:true});expect(guide(run)?.step).toBe('pair');
   await send(run,{type:'PlayHand',selectedIds:['hearts-5','clubs-5']});expect(guide(run)?.step).toBe('discard');
@@ -107,7 +118,22 @@ describe('guided first match from saved commands',()=>{
   expect(run.state.lastTrace!.events.some(e=>e.sourceType==='joker'&&e.sourceInstanceId===bought.instanceId)).toBe(false);
   expect(guide(run)?.step).toBe('payoff');
   await send(run,{type:'PlayHand',selectedIds:['clubs-6','spades-6']});
-  expect(guide(run)?.step).toBe('complete');
+  expect(guide(run)?.step).toBe('skill');
+ });
+
+ it('updates prompts from live selections without treating them as saved progress',async()=>{
+  const {run}=await start('live');await enter(run);const hint=guide(run)!;
+  const skill={available:false,chosen:false,enabled:true,canDiscard:true};
+  expect(liveNoviceGuide(hint,[],skill).cue).toBe('先找一对');
+  expect(liveNoviceGuide(hint,['clubs-5'],skill).cue).toBe('再选另一张');
+  expect(liveNoviceGuide(hint,['clubs-5','hearts-5'],skill)).toMatchObject({cue:'对子选好了',focus:'play'});
+  expect(liveNoviceGuide(hint,['clubs-5','clubs-4'],skill).cue).toBe('再找一对');
+  expect(guide(run)?.step).toBe('pair');expect(run.state.stage!.playIndex).toBe(0);
+  const skillHint={step:'skill' as const,cue:'练习技能',body:'选对子',recommendedCardIds:['a','b']};
+  expect(liveNoviceGuide(skillHint,['a','b'],{...skill,available:true}).focus).toBe('hero');
+  expect(liveNoviceGuide(skillHint,['a','b'],{...skill,available:true,chosen:true}).focus).toBe('play');
+  expect(liveNoviceGuide({...skillHint,recommendedCardIds:[]},['a'],skill).focus).toBe('discard');
+  expect(liveNoviceGuide(skillHint,[],{...skill,enabled:false}).body).toContain('技能不可用');
  });
 
  it.each([false,true])('offers a replay after losing the second stage with purchase=%s and no contribution',async purchase=>{

@@ -24,6 +24,8 @@ export interface NoviceGuideOptions {
   onSkip?:()=>void;
   reducedMotion?:boolean;
   host?:HTMLElement;
+  /** A mobile list can reserve natural space for the guide instead of covering items. */
+  getInlineHost?:()=>HTMLElement|undefined;
 }
 export interface NoviceGuideHandle {
   update(step:NoviceGuideStep):void;
@@ -103,13 +105,14 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
   header.className='novice-guide-header';heading.className='novice-guide-heading';heading.setAttribute('role','status');heading.setAttribute('aria-live','polite');heading.setAttribute('aria-atomic','true');
   progress.className='novice-guide-progress';title.className='novice-guide-title';body.className='novice-guide-body';heading.append(progress,title,body);
   closeButton.type='button';closeButton.className='novice-guide-close';closeButton.textContent='×';closeButton.setAttribute('aria-label','收起引导');closeButton.title='收起引导';closeButton.dataset.noviceGuideClose='';
-  header.append(heading,closeButton);footer.className='novice-guide-actions';
-  skipButton.type='button';skipButton.className='novice-guide-skip';skipButton.textContent='跳过教学，开始普通游戏';skipButton.setAttribute('aria-label','跳过教学并开始普通游戏，之后可在菜单重看');skipButton.title='跳过教学并开始普通游戏，之后可在菜单重看';skipButton.dataset.noviceGuideSkip='';skipButton.hidden=!options.onSkip;
+  footer.className='novice-guide-actions';
+  skipButton.type='button';skipButton.className='novice-guide-skip';skipButton.textContent='跳过';skipButton.setAttribute('aria-label','跳过教学并开始普通游戏，之后可在菜单重看');skipButton.title='跳过教学并开始普通游戏，之后可在菜单重看';skipButton.dataset.noviceGuideSkip='';skipButton.hidden=!options.onSkip;
   const detailsId='novice-guide-details-'+(++detailsSequence);
   detailsButton.type='button';detailsButton.className='novice-guide-details-toggle';detailsButton.textContent='技能与路线';detailsButton.dataset.noviceGuideDetailsToggle='';detailsButton.id=detailsId+'-toggle';detailsButton.setAttribute('aria-controls',detailsId);
   detailsBody.className='novice-guide-details';detailsBody.id=detailsId;detailsBody.dataset.noviceGuideDetails='';detailsBody.setAttribute('role','region');detailsBody.setAttribute('aria-labelledby',detailsButton.id);
   actionButton.type='button';actionButton.className='novice-guide-action';actionButton.dataset.noviceGuideAction='';
-  footer.append(skipButton,detailsButton,actionButton);panel.append(header,footer,detailsBody);
+  header.append(heading,skipButton,actionButton,closeButton);
+  footer.append(detailsButton);panel.append(header,body,footer,detailsBody);
   reopenButton.type='button';reopenButton.className='novice-guide-reopen';reopenButton.textContent='查看引导';reopenButton.setAttribute('aria-label','查看新手引导');reopenButton.dataset.noviceGuideReopen='';reopenButton.hidden=true;
   root.append(rings,panel,reopenButton);(options.host??document.body).append(root);
   let step=options.step,closed=false,disposed=false,frame=0,detailsExpanded=false;
@@ -127,12 +130,19 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
   const position=()=>{
     if(disposed)return;
     const {highlights=[],avoid=[]}=options.getGeometry(),bounds=safeViewport(),visibleHighlights=highlights.filter(valid);
+    const inline=options.getInlineHost?.();
+    if(inline?.isConnected){if(root.parentElement!==inline)inline.prepend(root);root.classList.add('is-inline');}
+    else {const host=options.host??document.body;if(root.parentElement!==host)host.append(root);root.classList.remove('is-inline');}
     rings.replaceChildren();
     if(!closed)for(const b of visibleHighlights){
       const ring=document.createElement('div');ring.className='novice-guide-ring';ring.dataset.noviceGuideHighlight='';
       Object.assign(ring.style,{left:b.x+'px',top:b.y+'px',width:b.width+'px',height:b.height+'px'});rings.append(ring);
     }
     const protectedAreas=[...avoid,...visibleHighlights],element=closed?reopenButton:panel;
+    if(inline?.isConnected&&!closed){
+      Object.assign(panel.style,{left:'',top:'',width:'',maxHeight:'',visibility:'visible'});
+      panel.classList.remove('is-constrained');panel.setAttribute('aria-label','新手引导');panel.removeAttribute('tabindex');return;
+    }
     // Read the natural height at the likely width, then remeasure once if a narrow free region wraps the text.
     element.style.maxHeight='none';element.style.width=closed?'auto':Math.min(320,bounds.width)+'px';
     let rect=element.getBoundingClientRect();

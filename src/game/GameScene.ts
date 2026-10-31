@@ -61,7 +61,7 @@ import {savedHeroAttachment,retainedRefillImpact} from './HeroAttachmentFacts';
 import {drawStageTableArt,playedCaptionBox} from './StageTableArt';
 import {paperSceneStart} from './PaperFlow';
 import {bindNoviceGuide} from './NoviceGuideBinding';
-import {noviceGuideEnrolled} from './NoviceGuide';
+import {liveNoviceGuide,noviceGuide,noviceGuideEnrolled} from './NoviceGuide';
 import {noviceGuideCanvasBox} from './NoviceGuideView';
 import {requestTutorialReplay} from './TutorialEntry';
 import {skipTutorialToNormal} from './RunMenu';
@@ -569,20 +569,35 @@ export class GameScene extends Phaser.Scene {
     window.addEventListener('pointerdown',this.pointerFocus,true);document.addEventListener('focusin',this.focusFeedback);document.addEventListener('focusout',this.focusFeedback);window.addEventListener('blur',this.stopHandHint);document.addEventListener('visibilitychange',this.hintVisibility);
     if(this.run.stage.boss?.definitionId==='B05')this.statusMessage=opponentSavedStatus(this.run.lastTrace);
     this.render();
+    let guideChoiceKey='',guideChoice:ReturnType<typeof erxiangChoice>|undefined;
     const unmountNoviceGuide=bindNoviceGuide(this,{
       kind:'game',
+      presentHint:hint=>{
+        const selected=[...this.selectedIds];
+        if(hint.step==='skill'){
+          const key=JSON.stringify([this.run.runId,this.run.commandSeq,selected,this.erxiangTargetId]);
+          if(key!==guideChoiceKey){guideChoiceKey=key;guideChoice=erxiangChoice(this.run,this.selectionPreview(),this.erxiangTargetId);}
+        }
+        const choice=hint.step==='skill'?guideChoice:undefined;
+        return liveNoviceGuide(hint,selected,{available:!!choice?.candidates.length,chosen:!!choice?.selected,
+          enabled:!!choice?.enabled&&!choice?.used&&this.run.phase==='await-input',canDiscard:!!this.run.stage?.discardsLeft&&this.run.drawPile.length>0});
+      },
       getGeometry:hint=>{
         const l=this.view.layout,canvas=this.game.canvas.getBoundingClientRect();
         const map=(box:import('./layout').Box)=>noviceGuideCanvasBox(box,canvas,l);
-        const highlights=(hint.recommendedCardIds??[]).flatMap(id=>{
-          const index=this.hand.findIndex(card=>card.id===id),seat=l.cards[index];
-          // Overlapping phone cards expose only their own hit column.  Ringing
-          // the full painted card would falsely highlight its neighbours.
-          return seat?.visible?[map({...seat.visual,width:Math.min(seat.visual.width,seat.hit.width)})]:[];
+        const hero=heroActionShortcut(l.tableActions.discard,l.heroAction);
+        const focus=hint.focus==='play'?l.tableActions.play:hint.focus==='discard'?hero.discard:hint.focus==='hero'?hero.shortcut:undefined;
+        const highlights=focus?[map(focus)]:(hint.recommendedCardIds??[]).flatMap(id=>{
+          const index=this.hand.findIndex(card=>card.id===id),seat=l.cards[index],card=this.cardViews[index];
+          if(!seat?.visible||!card?.container.active||!card.container.visible)return [];
+          const width=Number(card.container.getData('width')),height=Number(card.container.getData('height'));
+          const matrix=card.container.getWorldTransformMatrix(),topLeft=matrix.transformPoint(-width/2,-height/2),bottomRight=matrix.transformPoint(width/2,height/2);
+          // Follow the painted card, but only ring its exposed phone hit column.
+          return [map({x:topLeft.x,y:topLeft.y,width:Math.min(bottomRight.x-topLeft.x,seat.hit.width),height:bottomRight.y-topLeft.y})];
         });
         // The hint must not intercept the optional skill or utility buttons:
         // tapping through to the skip control would unexpectedly leave the run.
-        const controls=[l.hud,l.scoreBoard,l.hand,l.actions,l.heroAction,l.inventoryEntry,l.helpEntry];
+        const controls=[l.hud,l.scoreBoard,l.playedArea,l.hand,l.actions,l.heroAction,l.inventoryEntry,l.helpEntry,...this.run.jokers.map((_,index)=>l.slots[index])];
         return {highlights,avoid:controls.filter((box):box is import('./layout').Box=>!!box).map(map)};
       },
       visible:()=>!this.presentation&&!this.playing&&!document.querySelector('dialog[open]'),
@@ -1754,6 +1769,13 @@ export class GameScene extends Phaser.Scene {
       ...(this.erxiangTargetId?[{label:'取消本手选牌',run:()=>{this.erxiangTargetId=null;this.dialog.close();this.refreshSelection();}}]:[]),
       {label:'上一手详情',disabled:!this.run.lastTrace,run:()=>this.inspectLastTrace()},
     ];
+    const owner=runController(this);
+    if(owner&&noviceGuide(this.run,owner.journal)?.step==='skill'&&choice.candidates.length){
+      const choices=actions.slice(0,choice.candidates.length).map(action=>({label:action.label,disabled:action.disabled,run:action.run}));
+      const cancel=actions.find(action=>action.label==='取消本手选牌');if(cancel)choices.push({label:'取消技能',disabled:false,run:cancel.run});
+      const dialog=this.dialog.open('刘娥技能','',[],{effectBody:'同点牌的点数从筹码改加倍率，可能降低得分。选一张牌试试。',choices,closeLabel:'返回选牌'});
+      dialog.classList.add('novice-hero-dialog');return;
+    }
     const dialog=this.dialog.open(characterForRun(this.run).name+' · '+characterForRun(this.run).passiveName,characterForRun(this.run).passiveDescription,[],{guideSteps:heroOperationSteps(this.run,guide,!!this.erxiangTargetId),summaryBody:guide.step,effectBody:choice.sentence,collapseRules:true,rulesLabel:'计分牌转换细则',closeLabel:'返回选牌',choices:actions.filter(a=>a.label!=='上一手详情'),secondaryActions:actions.filter(a=>a.label==='上一手详情')});mountHeroSkillGuide(dialog,this.run);
   }
   private inspectHeroExplanation():void {

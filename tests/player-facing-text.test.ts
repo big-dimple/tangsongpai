@@ -8,6 +8,7 @@ it('distinguishes base chips from accumulated and target scores without changing
  expect(playerText('已过关场次累计热度、已入账累计热度、出牌前已经累计的热度')).toBe('已过关场次累计得分、已入账累计得分、出牌前已经累计的得分');
  expect(playerText('金币 / stage.heat / targetHeat / 热度纸')).toBe('金币 / stage.heat / targetHeat / 筹码纸');
  expect(playerText('热+20 · 读热10 · 蓄热 · 每张+8热')).toBe('筹+20 · 读筹10 · 蓄筹 · 每张+8筹');
+ expect(playerText('逐牌加热')).toBe('逐牌加筹');
 });
 
 it('normalizes display strings and arrays without changing technical IDs or the source array',()=>{

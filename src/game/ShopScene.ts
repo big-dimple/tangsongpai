@@ -261,13 +261,18 @@ export class ShopScene extends Phaser.Scene {
     warmTableImages(this,this.run.characterId);this.render();this.pendingDynamicTarget=undefined;this.prepareBossEntrance(owner,run,this.lifecycle);
     const unmountNoviceGuide=bindNoviceGuide(this,{
       kind:'shop',
+      getInlineHost:()=>this.geometry().portrait?this.mobileOffers?.host:undefined,
       getGeometry:hint=>{
         const l=this.view.layout,p=this.geometry(),canvas=this.game.canvas.getBoundingClientRect();
         const map=(box:import('./layout').Box)=>noviceGuideCanvasBox(box,canvas,l);
         const highlights=(hint.offerIds??[]).slice(0,1).flatMap(id=>{
           const index=this.visibleOffers().findIndex(offer=>offer.offerId===id);
           const box=p.portrait?this.mobileOfferBox(id):p.pc?this.pcOfferBoxes.get(id):index>=0?p.shelf[index]:undefined;
-          return box?[map(box)]:[];
+          if(!box)return [];
+          const placed=map(box),host=p.portrait?this.mobileOffers?.host.getBoundingClientRect():undefined;
+          if(!host)return [placed];
+          const x=Math.max(placed.x,host.left),y=Math.max(placed.y,host.top),right=Math.min(placed.x+placed.width,host.right),bottom=Math.min(placed.y+placed.height,host.bottom);
+          return right>x&&bottom>y?[{x,y,width:right-x,height:bottom-y}]:[];
         });
         return {highlights,avoid:[p.play,p.tabs].map(map)};
       },

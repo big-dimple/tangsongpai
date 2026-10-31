@@ -5,7 +5,7 @@ import {SavedRun,type SaveSlots,type SaveStore} from '../src/application/SavedRu
 import type {Checkpoint} from '../src/application/checkpoint';
 import {createRun,type Action} from '../src/domain/run';
 import {guidedTutorialRunId,newRunIdentity} from '../src/game/RunLaunch';
-import {dismissNoviceGuide,enrollNoviceGuide,markNoviceStart,noviceGuide,restoreNoviceGuide,stopNoviceGuide} from '../src/game/NoviceGuide';
+import {dismissNoviceGuide,enrollNoviceGuide,liveNoviceGuide,markNoviceStart,noviceGuide,restoreNoviceGuide,stopNoviceGuide} from '../src/game/NoviceGuide';
 import type {NoviceGuideHandle,NoviceGuideOptions,NoviceGuideStep} from '../src/game/NoviceGuideView';
 
 vi.mock('../src/game/session',()=>({gameSession:()=>session}));
@@ -47,6 +47,14 @@ async function start(_id:string,enroll=true){
 }
 async function send(run:SavedRun,action:Action){const result=await run.dispatch(action);if(!result.ok)throw Error(result.code);}
 async function enter(run:SavedRun){await send(run,{type:'LeaveShop'});await send(run,{type:'EnterStage'});}
+async function findPair(run:SavedRun){
+ for(let attempt=0;attempt<4;attempt++){
+  const groups=new Map<number,string[]>();for(const id of run.state.handOrder){const rank=run.state.deckInstances.find(c=>c.id===id)!.rank;groups.set(rank,[...(groups.get(rank)??[]),id]);}
+  const pair=[...groups.values()].find(ids=>ids.length>=2);if(pair)return pair.slice(0,2);
+  expect(run.state.stage!.discardsLeft).toBeGreaterThan(0);await send(run,{type:'DiscardHand',selectedIds:run.state.handOrder.slice(0,5)});
+ }
+ throw Error('controlled tutorial did not produce a pair');
+}
 const geometry=()=>({highlights:[],avoid:[]});
 beforeEach(()=>{
  views=[];values=new Map();
@@ -149,17 +157,28 @@ describe('novice guide scene binding',()=>{
   let now=0,x=0;const clock=vi.spyOn(performance,'now').mockImplementation(()=>now),getGeometry=vi.fn(()=>({highlights:[{x,y:0,width:50,height:50}]}));
   const unmount=bindNoviceGuide(owner.value,{kind:'game',getGeometry,onReplay:()=>true,onSkip:()=>true,onComplete:()=>true});
   const active=latest()!;expect(getGeometry).toHaveBeenCalledTimes(1);
-  x=10;now=100;owner.events.emit('postupdate');expect(getGeometry).toHaveBeenCalledTimes(1);expect(active.refreshes).toBe(0);
-  now=250;owner.events.emit('postupdate');expect(active.refreshes).toBe(1);expect(active.options.getGeometry().highlights?.[0].x).toBe(10);
-  x=20;unmount.refresh();expect(active.updates).toBe(1);expect(active.options.getGeometry().highlights?.[0].x).toBe(20);
+  x=10;now=20;owner.events.emit('postupdate');expect(getGeometry).toHaveBeenCalledTimes(1);expect(active.refreshes).toBe(0);
+  now=40;owner.events.emit('postupdate');expect(active.refreshes).toBe(1);expect(active.options.getGeometry().highlights?.[0].x).toBe(10);
+  x=20;unmount.refresh();expect(active.updates).toBe(0);expect(active.options.getGeometry().highlights?.[0].x).toBe(20);
   unmount();clock.mockRestore();
+ });
+
+ it('updates a prompt when the unsaved card selection changes',async()=>{
+  const {run}=await start('live');session.run=run;await enter(run);const owner=scene(run);let selected:string[]=[];
+  const unmount=bindNoviceGuide(owner.value,{kind:'game',getGeometry:geometry,onReplay:()=>true,onSkip:()=>true,onComplete:()=>true,
+   presentHint:hint=>liveNoviceGuide(hint,selected,{available:false,chosen:false,enabled:true,canDiscard:true})});
+  const before=JSON.stringify(run.state);expect(latest()?.step.title).toBe('先找一对');
+  selected=['clubs-5'];owner.events.emit('postupdate');expect(latest()?.step.title).toBe('再选另一张');
+  selected=['clubs-5','hearts-5'];owner.events.emit('postupdate');expect(latest()?.step.title).toBe('对子选好了');
+  selected=['clubs-5'];owner.events.emit('postupdate');expect(latest()?.step.title).toBe('再选另一张');
+  expect(JSON.stringify(run.state)).toBe(before);unmount();
  });
 
  it('waits for the real score presentation and finishes without recording a skip',async()=>{
   const {run}=await start('complete');session.run=run;await enter(run);const owner=scene(run);
   let scoreActive=false;const onSkip=vi.fn(()=>true),onComplete=vi.fn(()=>true).mockReturnValueOnce(false);
   const unmount=bindNoviceGuide(owner.value,{kind:'game',getGeometry:geometry,onReplay:()=>true,onSkip,onComplete,
-   visible:hint=>hint.step!=='complete'||!scoreActive});
+   visible:()=>!scoreActive});
   await send(run,{type:'PlayHand',selectedIds:['hearts-5','clubs-5']});
   await send(run,{type:'DiscardHand',selectedIds:['clubs-4','diamonds-4','spades-14','clubs-7','spades-11']});
   await send(run,{type:'PlayHand',selectedIds:run.state.handOrder.filter(id=>id.startsWith('hearts-')).slice(0,5)});
@@ -167,9 +186,13 @@ describe('novice guide scene binding',()=>{
   await send(run,{type:'BuyOffer',offerId:offer.offerId});await send(run,{type:'LeaveShop'});await send(run,{type:'EnterStage'});
   expect(latest()?.step.id).toBe('payoff');scoreActive=true;
   await send(run,{type:'PlayHand',selectedIds:['clubs-6','spades-6']});
-  expect(noviceGuide(run.state,run.journal)?.step).toBe('complete');expect(latest()).toBeUndefined();
-  scoreActive=false;owner.events.emit('postupdate');expect(latest()?.step.id).toBe('complete');
-  expect(latest()?.step.details).toContain('刘娥');expect(latest()?.step.details).toContain('路线');
+  expect(noviceGuide(run.state,run.journal)?.step).toBe('skill');expect(latest()).toBeUndefined();
+  scoreActive=false;owner.events.emit('postupdate');expect(latest()?.step.id).toBe('skill');
+  const pair=await findPair(run);await send(run,{type:'PlayHand',selectedIds:pair,erxiangTargetId:pair[0]});
+  expect(noviceGuide(run.state,run.journal)?.step).toBe('skill-practice');
+  if(run.state.phase==='stage-cleared'){await send(run,{type:'OpenShop'});await send(run,{type:'LeaveShop'});await send(run,{type:'EnterStage'});}
+  await send(run,{type:'PlayHand',selectedIds:[run.state.handOrder[0]]});
+  expect(noviceGuide(run.state,run.journal)?.step).toBe('complete');expect(latest()?.step.id).toBe('complete');
   latest()!.step.action!.run();expect(onComplete).toHaveBeenCalledOnce();await Promise.resolve();expect(latest()?.step.body).toContain('操作尚未完成');
   latest()!.step.action!.run();expect(onComplete).toHaveBeenCalledTimes(2);expect(onSkip).not.toHaveBeenCalled();expect(noviceGuide(run.state,run.journal)?.step).toBe('complete');
   unmount();

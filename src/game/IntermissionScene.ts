@@ -14,6 +14,7 @@ import {jokerArtPreviewUrl} from './jokerArt';
 import {paperSceneStart,qiyuSceneStart} from './PaperFlow';
 import {bindNoviceGuide} from './NoviceGuideBinding';
 import {noviceGuide} from './NoviceGuide';
+import {noviceGuideCanvasBox} from './NoviceGuideView';
 import {requestTutorialReplay} from './TutorialEntry';
 import {skipTutorialToNormal} from './RunMenu';
 import {savedTouyeWager} from './TouyeWagerCopy';
@@ -132,7 +133,12 @@ export class IntermissionScene extends Phaser.Scene {
     this.view=new SceneView(this,()=>this.render());this.render();this.requestSourceArt();
     const unmountNoviceGuide=bindNoviceGuide(this,{
       kind:'intermission',
-      getGeometry:()=>({avoid:[{x:0,y:Math.max(0,window.innerHeight-160),width:window.innerWidth,height:160}]}),
+      getGeometry:hint=>{
+        const l=this.view.layout,canvas=this.game.canvas.getBoundingClientRect(),viewport=this.resultContent?.getData('viewport') as {top:number}|undefined;
+        const reserve=hint.step==='complete'||hint.step==='replay'?128:86,top=viewport?.top??0;
+        const map=(box:import('./layout').Box)=>noviceGuideCanvasBox(box,canvas,l);
+        return {avoid:top>reserve?[map({x:0,y:0,width:l.width,height:top-reserve}),map({x:0,y:top,width:l.width,height:l.height-top})]:[]};
+      },
       visible:()=>!this.busy&&!document.querySelector('dialog[open]'),
       onReplay:()=>requestTutorialReplay(),
       onSkip:()=>skipTutorialToNormal(this.game),
@@ -225,7 +231,8 @@ export class IntermissionScene extends Phaser.Scene {
     v.text(p.short||p.wide?p.next.x:p.x,p.noticeY,this.busy?'正在保存…':this.notice||(!this.ready?'当前进度未保存或只读，请查看菜单。':capped?'已达数值上限，进度已保存':won?run.mode==='standard'?'八章通关已保存，继续无尽由你决定。':'本模式结果已保存，可重试或返回选角。':nextStage?gift?'':discovery?.full||'':lost?'重试从开局开始，金币与构筑不继承。':''),14,this.notice?'#ffd0b1':'#3F606B',p.short||p.wide?p.next.width:p.w).setName(discovery&&!gift&&nextStage?'growth/discovery':'result/notice');
     content.add(v.root.list.slice(backgroundCount));v.add(content);
     const safeTop=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-top'))||0;
-    this.releaseViewport=mountResultViewport(this,v,content,Math.max(l.hud.y,safeTop+60),l.height-bottom-16,this.resultScroll,offset=>{this.resultScroll=offset;});
+    const hint=noviceGuide(run,runController(this)!.journal),reserve=hint?(hint.step==='complete'||hint.step==='replay'?128:86):0;
+    this.releaseViewport=mountResultViewport(this,v,content,Math.max(l.hud.y,safeTop+60)+reserve,l.height-bottom-16,this.resultScroll,offset=>{this.resultScroll=offset;});
     this.firstRender=false;if(pc||mobile)this.requestSourceArt();
   }
   private auxiliary(b:Box,label:string,name:string,action:()=>void,enabled=true):void {
