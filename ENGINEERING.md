@@ -8,7 +8,7 @@
 - 建议使用 Node.js 22，依赖使用 `npm ci` 和锁文件安装。
 - 游戏是纯静态 H5；核心运行不需要后端、Blender 或素材生成工具。
 
-开发侧默认在推送 main 前，在 Dot 远端开发电脑或本机完成完整 CI 与唯一生产构建，按改动补跑专项；所有模型使用同一要求，用户明确指示例外时如实报告。没有 Dot 的 AI 须在可用的本地开发电脑执行相同 CI 与构建并按同一契约交付；没有可用环境时报告阻塞，不能省略检查或让新加坡生产机代跑。提交和推送以当前任务授权为准。开发侧交付已校验的生产产物，新加坡服务器仅取件、校验并发布。GitHub Actions 不参与发布。提交、产物交付与部署是不同状态。
+开发侧默认在推送 main 前，在 Dot 远端开发电脑或本机完成完整 CI 与生产构建，按改动补跑专项；用户明确指示例外时如实报告。main 的 GitHub Actions 再对该提交独立执行门禁、构建和 Release 发布；是否启用及成功以实际运行结果为准。提交和推送以当前任务授权为准；新加坡服务器仅取件、校验并发布，不代跑测试或构建。提交、产物交付与部署是不同状态。
 
 ```bash
 npm run dev             # 开发服务器
@@ -163,7 +163,7 @@ tools/          离线素材工具
 - `domain`：`npm test` 与 `npm run verify:content`。
 - `browser`：`npm run build` 与 `npm run verify:smoke`。
 
-`release-candidate.yml` 为 main 推送或手动运行准备候选包：在同一检出运行完整 `verify:ci`，调用 `prepare-release-artifact.py` 打包，并在上传到 GitHub Actions artifact 前后执行 `verify-release-artifact.py`。候选包含完整的 `dist.tar.gz`、SHA256 和 manifest；它只需 `contents: read`，不会创建或发布 GitHub Release，不能触发服务器部署。工作流在 GitHub 的启用状态和实际运行结果需分别核实。
+`release-candidate.yml` 在 main 推送或手动运行时，在只读 job 中针对同一检出运行完整 `verify:ci`、生成并验证单一归档、SHA256 和 manifest。仅 main 的独立发布 job 使用内置 `GITHUB_TOKEN` 的 `contents: write`：先创建或检查草稿，下载并逐字节核对完整资产，再核对标签及 main 并发布为 latest；失败时不发布不完整包。重复运行只可继续完整且字节相同的草稿，不覆盖现有正式 Release。校验与发布不是 GitHub 的原子事务，main 可能在最后检查后变化；部署侧仍须按 `sourceRevision` 和当前 main 精确匹配，实际安装的服务器行为需单独核实。工作流的启用状态和实际运行结果需分别核实。
 
 推送 main 前，在 Dot 远端开发电脑或开发者本机执行完整 CI。`npm ci` 按锁文件安装依赖；`verify:ci` 顺序运行完整单元测试、内容校验、类型检查与唯一生产构建、Chromium 桌面和手机冒烟。冒烟脚本另建供测试使用的 e2e 预览，不是交付的生产包；生产产物为 `dist/`。优先使用已安装的系统 Chrome／Chromium，通过项目支持的路径配置；以下分别为 Bash 和 PowerShell 示例，路径按实际机器调整：
 
