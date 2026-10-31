@@ -568,7 +568,31 @@ describe('guided first-run creation and real transactions',()=>{
     expect((await run.dispatch({type:'PlayHand',selectedIds:['clubs-6','spades-6']})).ok).toBe(true);
     const events=run.state.lastTrace?.events.filter(e=>e.sourceInstanceId===instance?.instanceId&&e.operation==='add-multiplier');
     expect(events?.map(e=>[e.targetCardId,e.value])).toEqual([['clubs-6',{n:'1',d:'4'}],['spades-6',{n:'1',d:'4'}]]);
-    expect(run.state.lastTrace?.finalScore).toBe('117');expect(noviceGuide(run.state,run.journal)?.step).toBe('complete');stored();
+    expect(run.state.lastTrace?.finalScore).toBe('117');expect(noviceGuide(run.state,run.journal)?.step).toBe('skill');stored();
+    let skillPair:string[]|undefined;
+    for(let attempt=0;attempt<4&&!skillPair;attempt++){
+      const groups=new Map<number,string[]>();
+      for(const id of run.state.handOrder){
+        const rank=run.state.deckInstances.find(card=>card.id===id)!.rank;
+        groups.set(rank,[...(groups.get(rank)??[]),id]);
+      }
+      skillPair=[...groups.values()].find(ids=>ids.length>=2)?.slice(0,2);
+      if(!skillPair){
+        expect(run.state.stage!.discardsLeft).toBeGreaterThan(0);
+        expect((await run.dispatch({type:'DiscardHand',selectedIds:run.state.handOrder.slice(0,5)})).ok).toBe(true);
+      }
+    }
+    expect(skillPair).toBeDefined();if(!skillPair)throw Error('no pair for the real hero skill');
+    expect((await run.dispatch({type:'PlayHand',selectedIds:skillPair,erxiangTargetId:skillPair[0]})).ok).toBe(true);
+    expect(run.state.lastTrace?.events.some(event=>event.reasonKey==='erxiang.handoff')).toBe(true);
+    expect(noviceGuide(run.state,run.journal)?.step).toBe('skill-practice');stored();
+    if(run.state.phase==='stage-cleared'){
+      expect((await run.dispatch({type:'OpenShop'})).ok).toBe(true);
+      expect((await run.dispatch({type:'LeaveShop'})).ok).toBe(true);
+      expect((await run.dispatch({type:'EnterStage'})).ok).toBe(true);
+    }
+    expect((await run.dispatch({type:'PlayHand',selectedIds:[run.state.handOrder[0]]})).ok).toBe(true);
+    expect(noviceGuide(run.state,run.journal)?.step).toBe('complete');stored();
   });
   it.each([1,2,3])('keeps the exact candidate when tutorial save %s fails, then resumes it',async failedWrite=>{
     const session=new GameSession();await session.initialize();const commit=session.storage.commit.bind(session.storage);let writes=0;

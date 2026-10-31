@@ -24,7 +24,7 @@ it('current a03 shelf/detail main agrees with its first active card rule and ret
  expect(p.line).toBe('除高牌/对子外的首张有效计分牌 → 热度+15');
  expect(p.tile).toBe('非高牌/对子\n首计分牌\n热度+15');
  expect(p.essential).toContain('合法重触发时可再次获得');
- expect(p.details).toContain('首张有效计分牌的热度 +15');
+ expect(p.details).toContain('首张有效计分牌的筹码 +15');
  expect(p.line).not.toMatch(/每张|每手一次/);
 });
 

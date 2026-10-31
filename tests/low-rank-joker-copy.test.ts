@@ -19,8 +19,8 @@ const score=(hand:PlayingCard[],ids:string[],jokers:string[],disabledIds:string[
 it('keeps the formal card names and states rank choices, source area, per-card gain and held cap in actual visible copy',()=>{
  expect(cardDefinitionName(definition('d02'))).toBe('奇兵突起');expect(cardDefinitionName(definition('a08'))).toBe('野火春风');
  const a=copy('a08'),d=copy('d02');
- expect(a.plain?.line).toBe(a.condition);expect(a.condition).toContain('每张打出的计分牌');expect(a.condition).toContain('点数是 2、3、4、5 中任一种');expect(a.condition).toContain('20 热度');expect(a.value).toContain('没参与计分');
- expect(d.plain?.line).toBe(d.condition);expect(d.condition).toContain('每次出牌，手里没打出的牌中');expect(d.condition).toContain('点数是 2、3、4、5 中任一种');expect(d.condition).toContain('每张加 6 热度，最多 4 张');expect(d.rules).toContain('同点牌也分别算');expect(d.rules).not.toContain('留在手里的扑克不触发额外加成');expect(d.rules).toContain('不加这些留手牌的普通点数');
+ expect(a.plain?.line).toBe(a.condition);expect(a.condition).toContain('每张打出的计分牌');expect(a.condition).toContain('点数是 2、3、4、5 中任一种');expect(a.condition).toContain('20 筹码');expect(a.value).toContain('没参与计分');
+ expect(d.plain?.line).toBe(d.condition);expect(d.condition).toContain('每次出牌，手里没打出的牌中');expect(d.condition).toContain('点数是 2、3、4、5 中任一种');expect(d.condition).toContain('每张加 6 筹码，最多 4 张');expect(d.rules).toContain('同点牌也分别算');expect(d.rules).not.toContain('留在手里的扑克不触发额外加成');expect(d.rules).toContain('不加这些留手牌的普通点数');
 });
 it('the two hooks agree across current new-run identities and the published version without modifying definitions',()=>{
  const characters=['amo','erxiang','laohuan','azao','touye','xiemu'] as const;
@@ -48,7 +48,7 @@ it('surprise troops takes the first four qualifying held cards, skips disabled c
 it('the visible amount, ranks and held limit remain bound to authoritative definitions',()=>{
  const d=structuredClone(definition('d02')),a=structuredClone(definition('a08'));
  const h=d.hooks[0];if(h.condition.kind!=='held-rank-first'||h.operations[0].kind!=='add-heat')throw Error('wrong d02 contract');h.condition.limit=2;h.operations[0].value={n:'7',d:'2'};
- const dc=jokerMemoryAbility(d,undefined,context);expect(dc.plain?.line).toContain('3.5 热度，最多 2 张');expect(dc.plain?.tile).toContain('最多2张');
+ const dc=jokerMemoryAbility(d,undefined,context);expect(dc.plain?.line).toContain('3.5 筹码，最多 2 张');expect(dc.plain?.tile).toContain('最多2张');
  const ah=a.hooks[0];if(ah.condition.kind!=='rank-in'||ah.operations[0].kind!=='add-heat')throw Error('wrong a08 contract');ah.condition.values=[14];ah.operations[0].value={n:'9',d:'2'};
  const ac=jokerMemoryAbility(a,undefined,context);expect(ac.plain?.line).toContain('点数是 A 中任一种');expect(ac.plain?.tile).toContain('每张+4.5热');
 });
