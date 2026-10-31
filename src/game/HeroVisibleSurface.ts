@@ -4,7 +4,7 @@ import {cardFaceOwner,cardVisualRoot} from './CardVisualRoot';
 import type {HeroParticleCard} from './HeroSkillParticles';
 
 /** View-only masks. Positions remain root-local; IDs are the semantic outer card IDs. */
-export interface HeroInkBox extends InkBox {ownerId?:string;inkKind?:'face'|'art'|'print';order?:readonly number[]}
+export interface HeroInkBox extends InkBox {ownerId?:string;inkKind?:'face'|'paper'|'art'|'print';order?:readonly number[]}
 function drawOrder(object:Phaser.GameObjects.Container,root:Phaser.GameObjects.Container):number[]|undefined {
  const path:number[]=[];let node:Phaser.GameObjects.Container|null=object;
  while(node&&node!==root){const parent:Phaser.GameObjects.Container|null=node.parentContainer;if(!parent)return;const index=parent.list.indexOf(node);if(index<0)return;path.push(index);node=parent;}
