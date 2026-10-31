@@ -93,6 +93,16 @@ it('shares one mask traversal across targets and redraws at most 30Hz without de
  }finally{glow.destroy();f.root.destroy();}
 });
 
+it('gives only the real beneficiary a brief clipped edge response before fading',()=>{
+ const f=nativeHeroRuntime(),a=f.card('beneficiary',{x:100,y:100,width:70,height:100}),b=f.card('other',{x:250,y:100,width:70,height:100}),controller=new AbortController(),glow=new HeroTargetAfterglow(f.scene,()=> 'full');
+ try{
+  glow.play({cards:[{id:'beneficiary',container:a,width:70,height:100}],root:f.root,masks:()=>[bounds(a),bounds(b)],signal:controller.signal});
+  const ink=effects(a)[0];expect(ink.getData('impactOutlineSegments')).toBeGreaterThan(0);expect(effects(b)).toHaveLength(0);
+  f.step(560,560);expect(ink.getData('impactOutlineSegments')).toBe(0);expect(effects(a)).toHaveLength(1);
+  controller.abort();expect(effects(a)).toHaveLength(0);
+ }finally{glow.destroy();f.root.destroy();}
+});
+
 it('keeps the protection masks of separately retained impact requests',()=>{
  const f=nativeHeroRuntime(),a=f.card('a',{x:100,y:100,width:70,height:100}),b=f.card('b',{x:300,y:100,width:70,height:100}),controller=new AbortController(),glow=new HeroTargetAfterglow(f.scene,()=> 'full');
  try{

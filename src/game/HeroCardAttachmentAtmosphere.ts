@@ -2,7 +2,7 @@ import type Phaser from 'phaser';
 import type {AttachmentDraft} from './HeroTargetAttachmentState';
 import {clearInkRuns,exteriorOrbitPoint,type InkBox,type InkPoint} from './AssistInkGeometry';
 import type {SourceElectricDecision} from './HeroLineCurrent';
-import {drawHeroFuse,fuseRouteSafe,routeHeroFuse} from './HeroFuse';
+import {drawHeroIgnition,fuseRouteSafe,routeHeroFuse} from './HeroFuse';
 
 export const HERO_SOURCE_CURRENT_MS=900;
 export const HERO_ATMOSPHERE_BUDGET={targets:5,particlesPerTarget:6,particles:30,sourceHeads:1,portraitHz:20,desktopHz:30} as const;
@@ -89,6 +89,6 @@ export function drawHeroOriginStream(g:Phaser.GameObjects.Graphics,source:InkPoi
     route=routeHeroFuse(source,end,guards,bounds);if(decision){decision.route=route;decision.lastAttempt=progress;}
   }
   if(!route)return {segments:0,heads:0,electricSegments:0,electricHeads:[],sourceBurstSegments:0,scoreFallbackSegments:0};
-  const result=drawHeroFuse(currentInk,route,progress,guards,alpha);
-  return {segments:result.segments,heads:result.heads.length,electricSegments:result.segments,electricHeads:result.heads,sourceBurstSegments:result.segments,scoreFallbackSegments:0,route:route.points,front:result.front};
+  const result=drawHeroIgnition(currentInk,route,progress,guards,alpha);
+  return {segments:result.segments,heads:result.heads.length,electricSegments:result.segments,electricHeads:result.heads,sourceBurstSegments:result.segments,scoreFallbackSegments:0,route:route.points,front:result.front,coreRadius:result.coreRadius,sparks:result.sparks,release:result.release};
 }

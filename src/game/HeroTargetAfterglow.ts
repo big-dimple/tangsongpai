@@ -1,5 +1,5 @@
 import type Phaser from 'phaser';
-import {type InkBox,type InkPoint} from './AssistInkGeometry';
+import {clearInkRuns,type InkBox,type InkPoint} from './AssistInkGeometry';
 import {drawElectricFork,electricBranches,electricFork,electricSeed,electricVariation,ELECTRIC_CLEARANCE_PX,ELECTRIC_OUTER_RADIUS_PX} from './HeroElectricGeometry';
 import {cardVisualRoot} from './CardVisualRoot';
 import {cssViewport} from '../platform/Viewport';
@@ -92,6 +92,28 @@ export class HeroTargetAfterglow {
   const alpha=Math.max(0,Math.min(1,(HERO_TARGET_AFTERGLOW_MS-glow.elapsed)/600))*(1-.25*age);
   let segments=0,attached=false;const heads:InkPoint[]=[];
   const seed=electricSeed(card.id);
+  // A brief edge response belongs to this actual beneficiary. Keep its light
+  // outside the face and clip against neighboring cards, print and viewport.
+  const impact=Math.max(0,1-glow.elapsed/520),edgePad=3.5/minimum,inset=Math.min(card.width*.12,card.height*.12,5/minimum);
+  let outlineSegments=0;
+  if(impact>0){
+   const edges=[
+    [{x:-card.width/2+inset,y:-card.height/2-edgePad},{x:card.width/2-inset,y:-card.height/2-edgePad}],
+    [{x:card.width/2+edgePad,y:-card.height/2+inset},{x:card.width/2+edgePad,y:card.height/2-inset}],
+    [{x:card.width/2-inset,y:card.height/2+edgePad},{x:-card.width/2+inset,y:card.height/2+edgePad}],
+    [{x:-card.width/2-edgePad,y:card.height/2-inset},{x:-card.width/2-edgePad,y:-card.height/2+inset}],
+   ];
+   for(const [a,b] of edges){
+    const points=Array.from({length:17},(_,i)=>({x:a.x+(b.x-a.x)*i/16,y:a.y+(b.y-a.y)*i/16}));
+    for(const run of clearInkRuns(points,boxes,edgePad-.2/minimum)){
+     let visibleRun:InkPoint[]=[];
+     const paint=()=>{if(visibleRun.length<2)return;for(const [width,color,opacity] of [[4.4,0x52b2e3,.27],[2.4,0x1b70be,.83],[1,0xe5fbff,.9]]){
+      glow.ink.lineStyle(width/scale,color,opacity*impact).beginPath();visibleRun.forEach((p,i)=>i?glow.ink.lineTo(p.x,p.y):glow.ink.moveTo(p.x,p.y));glow.ink.strokePath();
+     }outlineSegments+=visibleRun.length-1;};
+     for(const p of run){if(visible(p))visibleRun.push(p);else{paint();visibleRun=[];}}paint();
+    }
+   }
+  }
   // Top and bottom remain usable when neighboring cards leave no side gap.
   // The short second discharge is deliberately different from the main one.
   for(let lane=0;lane<3;lane++){
@@ -102,7 +124,7 @@ export class HeroTargetAfterglow {
    const clock=0,travel=electricVariation(seed+lane*71+177),u=direction>0?.10+.24*travel:.90-.24*travel,p=edgeAnchor(card.width,card.height,pad,side,u),tangent={x:-p.ny*direction,y:p.nx*direction},outward={x:p.nx,y:p.ny};
    const sideLength=side%2?card.height:card.width,available=(direction>0?1-u:u)*sideLength-clearance;
    const decay=Math.floor(glow.elapsed/200)*200/HERO_TARGET_AFTERGLOW_MS;
-   const length=Math.min(((lane===0?48:lane===1?21:15)+variation*4)*(1-.30*decay)/scale,sideLength*.70,available);if(length<4/scale)continue;
+   const length=Math.min(((lane===0?16:lane===1?12:10)+variation*2)*(1-.30*decay)/scale,sideLength*.70,available);if(length<4/scale)continue;
    const channelSeed=seed+lane*31,pulse=1;
    const result=drawElectricFork(glow.ink,electricFork(p,tangent,outward,length,channelSeed,clock,.85),boxes,scale,alpha*pulse*(lane===0?1:lane===1?.68:.50),visible,clearance,electricBranches(channelSeed,clock));
    segments+=result.segments;heads.push(...result.heads);
@@ -115,7 +137,7 @@ export class HeroTargetAfterglow {
     segments+=linked.segments;heads.push(...linked.heads);attached=linked.segments>0;
    }
   }
-  glow.ink.setData('electricSegments',segments).setData('electricHeads',heads);
+  glow.ink.setData('electricSegments',segments+outlineSegments).setData('electricHeads',heads).setData('impactOutlineSegments',outlineSegments);
  }
  private update(delta:number):void {
   const dt=Math.max(0,Number.isFinite(delta)?delta:0);this.drawElapsed+=dt;
