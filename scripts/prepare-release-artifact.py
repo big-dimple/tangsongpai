@@ -94,7 +94,7 @@ def prepare():
                 'source or index changed while packaging')
         temp.rename(output)
     print('Prepared:', output)
-    print('After checking the artifact and obtaining authorization, publish the three files as a complete GitHub Release tagged', revision)
+    print('After checking the artifact and obtaining authorization, publish the three files as a complete GitHub Release tagged', 'v' + revision)
 
 
 if __name__ == '__main__':

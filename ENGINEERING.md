@@ -185,7 +185,7 @@ npm run verify:ci -- --scope=all
 
 ### 开发电脑：交付 Release 给服务器
 
-服务器当前每分钟检查 GitHub `big-dimple/tangsongpai` 的 main，**只接收与 main 的完整提交 SHA 完全一致的已发布 Release**。它不读取入库的 `dist/`，也不会在服务器上安装依赖、构建或测试。当前服务器的取件脚本已安装；仓库中旧的自动部署脚本尚未同步，不能以它判断服务器实际行为。没有匹配的 Release 时，服务器保留线上旧版本并继续等待。
+服务器当前每分钟检查 GitHub `big-dimple/tangsongpai` 的 main，**只接收与 main 的完整提交 SHA 完全一致的已发布 Release，匹配依据是 Release 资产 `manifest.json` 的 `sourceRevision`，不是 Release 标签名**。它不读取入库的 `dist/`，也不会在服务器上安装依赖、构建或测试。当前服务器的取件脚本已安装；仓库中旧的自动部署脚本尚未同步，不能以它判断服务器实际行为。没有匹配的 Release 时，服务器保留线上旧版本并继续等待。
 
 此前 `dist/` 被误提交进 main：先在开发电脑核对 `git status` 和最新 main，保留他人改动。根据本次用户要求，在开发侧将 `dist/` 恢复为忽略项并从 Git **索引**移除（例如添加 `.gitignore` 的 `dist/` 后执行 `git rm -r --cached -- dist`，不删除本地构建目录），提交该清理；不要改写、重置或强推历史。此后提交源码、不提交 `dist/`。当前误入库产物的 `build-info.json` 对应其前一个源码提交，不能把它标成清理提交或最新 main 的构建；必须针对最终提交重新执行 CI 和唯一生产构建。
 
@@ -194,8 +194,8 @@ npm run verify:ci -- --scope=all
 1. 在干净工作区提交准备发布的最终源码及上述清理，确认 `git status --short` 没有修改。执行上面的 `npm ci`、`npm run verify:ci -- --scope=all`，以及本次改动需要的专项。失败立即停止；不能补写或伪造 CI 结果，也不能在服务器代跑。
 2. 核对 `shots/ci/all.json`：`scope` 为 `all`，`status` 为 `PASS`，`exitCode` 为 `0`，`testedCommit` 为当前完整 `git rev-parse HEAD`；`before` 与 `after` 完全一致且 `head` 是该 SHA；`test`、`verify:content`、`build`、`verify:smoke` 四个步骤都 `PASS` 且 `childExitCode` 为 `0`。`dist/build-info.json` 的 `revision` 必须等于同一 SHA，`sourceStatus` 是 `clean`、`modified` 是 `false`。`dist/index.html` 必须存在。
 3. 在同一个未修改的检出目录运行 `python3 scripts/prepare-release-artifact.py`（Windows 可用 `python`）。它复核上述报告、当前源码快照和构建身份，不重跑构建；输出 `shots/deploy/<完整 SHA>/` 内的三个文件。若拒绝，修复原因并按需重跑 CI，不要手改报告或构建信息。`shots/` 和 `dist/` 不提交到 main。
-4. 推送通过 CI 的提交到 main；推送前确认远端 main 没有新增工作，禁止强推。若 main 已变化，保留他人修改，基于最新 main 合并后重新执行 CI、构建和打包。服务器要求 Release 标签、构建 SHA 与 main **完全一致**，祖先提交不够。
-5. 建立以完整 SHA 为标签的草稿 Release，上传以下三个文件，核对内容后再发布。标签必须指向该提交，不能是分支名或缩写。服务器只处理已发布的正式 Release，草稿、预发布、缺件、错误标签或校验失败都会等待或拒绝。
+4. 推送通过 CI 的提交到 main；推送前确认远端 main 没有新增工作，禁止强推。若 main 已变化，保留他人修改，基于最新 main 合并后重新执行 CI、构建和打包。服务器要求 Release 的 `manifest.json` `sourceRevision`、归档内 `build-info.json` 的 `revision` 与 main **完全一致**，祖先提交不够。
+5. 建立草稿 Release，上传以下三个文件，核对内容后再发布。**GitHub 禁止创建 40 或 64 位纯十六进制字符的分支或标签名（pre-receive 拒绝），因此 Release 标签统一为 `v` + 完整 SHA**（例如 `v3499dae8…`），标签必须指向该提交，不能是分支名或缩写；服务器一律以 `manifest.json` 的 `sourceRevision` 匹配 main，标签名只用于人读定位。服务器只处理已发布的正式 Release，草稿、预发布、缺件、sourceRevision 不匹配或校验失败都会等待或拒绝。
 
 服务器要求文件名和内容如下：
 
@@ -209,14 +209,14 @@ Bash 示例（先完成并核对上述 CI，仓库和 GitHub CLI 已登录）：
 python3 scripts/prepare-release-artifact.py
 revision=$(git rev-parse HEAD)
 artifact_dir="shots/deploy/$revision"
-gh release create "$revision" --repo big-dimple/tangsongpai --target "$revision" --draft --title "$revision" --notes "CI-verified production artifact" "$artifact_dir/dist.tar.gz" "$artifact_dir/dist.tar.gz.sha256" "$artifact_dir/manifest.json"
+gh release create "v$revision" --repo big-dimple/tangsongpai --target "$revision" --draft --title "$revision" --notes "CI-verified production artifact" "$artifact_dir/dist.tar.gz" "$artifact_dir/dist.tar.gz.sha256" "$artifact_dir/manifest.json"
 verify_dir=$(mktemp -d)
-gh release download "$revision" --repo big-dimple/tangsongpai --dir "$verify_dir" --pattern 'dist.tar.gz' --pattern 'dist.tar.gz.sha256' --pattern 'manifest.json'
+gh release download "v$revision" --repo big-dimple/tangsongpai --dir "$verify_dir" --pattern 'dist.tar.gz' --pattern 'dist.tar.gz.sha256' --pattern 'manifest.json'
 cmp "$artifact_dir/dist.tar.gz" "$verify_dir/dist.tar.gz"
 cmp "$artifact_dir/dist.tar.gz.sha256" "$verify_dir/dist.tar.gz.sha256"
 cmp "$artifact_dir/manifest.json" "$verify_dir/manifest.json"
 (cd "$verify_dir" && sha256sum -c dist.tar.gz.sha256)
-gh release edit "$revision" --repo big-dimple/tangsongpai --draft=false
+gh release edit "v$revision" --repo big-dimple/tangsongpai --draft=false
 ```
 
 Windows PowerShell 使用 `python scripts/prepare-release-artifact.py`、`$revision = (git rev-parse HEAD).Trim()`、`$artifactDir = "shots/deploy/$revision"`，其余 `gh release create/download/edit` 参数相同；用 `Get-FileHash -Algorithm SHA256` 和文件内容核对下载资产。发布后确认三个资产均已上传、Release 不再是草稿、标签指向该 SHA，且远端 main 仍是该 SHA。认证应使用有仓库访问权限的账号；SHA256 只证明文件一致，不单独证明来源。
