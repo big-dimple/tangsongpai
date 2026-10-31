@@ -1506,7 +1506,7 @@ export class GameScene extends Phaser.Scene {
   private updateHeroControl():void {
     if(!this.roleFrame?.active)return;
     // The saved outcome is authoritative, but this UI follows the visible score lifecycle.
-    const heroCue=this.presentation?{...heroSkillButton(this.characterId,{available:false,activity:'settling'},'本手正在计分；演出结束后更新技能状态。'),available:false,opportunity:false}:heroAbilityCue(this.run,this.selectionPreview(),[...this.selectedIds],this.assistProfile&&assistCandidates(this.assistInput(),r2AssistAvailability(this.run).available).length>0,{laohuanFindRank:this.laohuanFindRank,erxiangTargetId:this.erxiangTargetId,xiemuBurn:this.xiemuBurn,azaoRelease:this.azaoRelease,amoExile:this.amoExile,assistCount:this.assistIds.length,touyePhase:this.touyeSkillPhase});
+    const heroCue=this.presentation?{...heroSkillButton(this.characterId,{available:false,activity:'settling'},'本手正在计分；计分结束后更新技能状态。'),available:false,opportunity:false}:heroAbilityCue(this.run,this.selectionPreview(),[...this.selectedIds],this.assistProfile&&assistCandidates(this.assistInput(),r2AssistAvailability(this.run).available).length>0,{laohuanFindRank:this.laohuanFindRank,erxiangTargetId:this.erxiangTargetId,xiemuBurn:this.xiemuBurn,azaoRelease:this.azaoRelease,amoExile:this.amoExile,assistCount:this.assistIds.length,touyePhase:this.touyeSkillPhase});
     if(heroCue&&(this.presentation||['stage-cleared','run-won','run-lost'].includes(this.run.phase)))this.roleText.setText(heroCue.label+' · '+heroCue.status);
     const heroChosen=!!(this.laohuanFindRank!=null||this.amoExile||this.erxiangTargetId||this.azaoRelease||this.xiemuBurn||this.assistIds.length);
     if(this.assistProfile&&heroChosen&&!this.presentation&&!this.playing)this.roleText.setText(heroText('阿默·已选助攻×')+(this.assistIds.length===3?4:2));
@@ -1857,7 +1857,7 @@ export class GameScene extends Phaser.Scene {
           if(beforeDiscards!==undefined&&this.run.stage?.discardsLeft!==beforeDiscards)effects.push(this.pulseResource('discard',beforeDiscards,context,this.run.stage?.discardsLeft));
           await Promise.all(effects);
         });
-        try{await this.effects.drain();}catch{this.statusMessage='效果已保存，演出已停止。';}
+        try{await this.effects.drain();}catch{this.statusMessage='效果已保存，效果动画已停止。';}
         if(this.alive(lifecycle,intent)){this.toolHand=undefined;this.render();if(action.type==='UseConsumable'&&!result.duplicate&&toolOwner&&this.dialog.active(toolOwner))showSavedToolResult(this.dialog,beforeTool,this.run,action,this.reducedMotion);}
       }
       return true;
@@ -2806,7 +2806,7 @@ export class GameScene extends Phaser.Scene {
     for(const cue of opponentCues.filter(cue=>cue.phase==='outcome'))queueOpponent(cue);
     let failed=false;
     try {await this.effects.drain();}
-    catch {failed=true;if(this.alive(lifecycle,intent))this.resultText.setText('演出已停止，确定结果已保存。');}
+    catch {failed=true;if(this.alive(lifecycle,intent))this.resultText.setText('计分动画已停止，结果已保存。');}
     if(this.alive(lifecycle,intent)&&this.presentation===presentation&&(failed||this.effects.isCurrent(generation)))this.completePresentation(presentation);
   }
 

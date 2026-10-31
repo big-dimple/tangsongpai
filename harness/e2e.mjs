@@ -38,7 +38,7 @@ const read=page=>page.evaluate(()=>{const c=window.__harness?.game.registry.get(
 const dom=async(page,name,touch)=>{const button=page.getByRole('button',{name,exact:true});if(touch)await button.tap();else await button.click();};
 const advance=(page,seq)=>page.waitForFunction(seq=>window.__harness.game.registry.get('runController')?.state.commandSeq>seq,seq);
 async function settings(page,touch,speed='4'){
-  const before=await read(page);await openMenuSection(page,'settings',touch);await page.getByLabel('演出速度').selectOption(speed);await page.getByLabel('背景音量',{exact:true}).press('Home');await page.getByLabel('音效音量',{exact:true}).press('Home');await page.locator('.run-menu-toggle')[touch?'tap':'click']();
+  const before=await read(page);await openMenuSection(page,'settings',touch);await page.getByLabel('计分速度').selectOption(speed);await page.getByLabel('背景音量',{exact:true}).press('Home');await page.getByLabel('音效音量',{exact:true}).press('Home');await page.locator('.run-menu-toggle')[touch?'tap':'click']();
   assert.deepEqual(await read(page),before,'presentation settings do not consume commands or RNG');
 }
 async function idle(page){await page.waitForFunction(()=>{const g=window.__harness.game,s=g.scene.getScene('game');return g.scene.isActive('intermission')||(g.scene.isActive('game')&&!s.playing&&s.cardViews.length>0);});}
@@ -84,7 +84,7 @@ async function perform(page,touch,action,{double=false,interrupt=false,rotate=fa
   }else throw Error('unsupported UI action '+action.type);
   return read(page);
 }
-async function restart(page,touch){const before=await read(page);await page.reload();await openSelector(page);assert.deepEqual(await read(page),before,'reload restores full state and journal');await menu(page,touch);assert.equal(await page.getByLabel('演出速度').inputValue(),'4');assert.equal(await page.getByLabel('背景音量',{exact:true}).inputValue(),'0');assert.equal(await page.getByLabel('音效音量',{exact:true}).inputValue(),'0');await dom(page,'继续游戏',touch);await waitScene(page,before.state.phase==='shop'?'shop':'game');}
+async function restart(page,touch){const before=await read(page);await page.reload();await openSelector(page);assert.deepEqual(await read(page),before,'reload restores full state and journal');await menu(page,touch);assert.equal(await page.getByLabel('计分速度').inputValue(),'4');assert.equal(await page.getByLabel('背景音量',{exact:true}).inputValue(),'0');assert.equal(await page.getByLabel('音效音量',{exact:true}).inputValue(),'0');await dom(page,'继续游戏',touch);await waitScene(page,before.state.phase==='shop'?'shop':'game');}
 async function scenario(browser,engine,name,callback,{touch=false,fault=null,prefix='/'}={}){
   const context=await browser.newContext({viewport:touch?{width:390,height:844}:{width:1280,height:800},hasTouch:touch,deviceScaleFactor:touch?2:1}),page=await context.newPage();page.setDefaultTimeout(12000);
   const record={engine,name,input:touch?'touchscreen.tap + native DOM tap':'mouse.click + native DOM click',prefix,status:'IN_PROGRESS',errors:[],assetResponses:[],failedRequests:[]};active={context,page,record};

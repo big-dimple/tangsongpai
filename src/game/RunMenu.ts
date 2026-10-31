@@ -185,7 +185,7 @@ export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|un
   const removeTutorialReplay=installTutorialReplayHandler(replayTutorial);
   const replay=button('重玩新手教程',async()=>{if(await replayTutorial())close(true);else status.textContent=session.notice||'教程尚未开始，请检查保存状态后重试。';},more);replay.dataset.menuAction='replay-tutorial';
   const skip=button('跳过教程，开始普通游戏',async()=>{if(await skipTutorialToNormal(game))close(true);else status.textContent=session.notice||'请先完成或重试保存，再跳过教程。';},primary);skip.dataset.menuAction='skip-tutorial';
-  const speedLabel=document.createElement('label'),speed=document.createElement('select');speedLabel.textContent='演出速度 ';
+  const speedLabel=document.createElement('label'),speed=document.createElement('select');speedLabel.textContent='计分速度 ';
   for(const value of [1,2,4]){const option=document.createElement('option');option.value=String(value);option.textContent=`${value}×`;speed.append(option);}speed.value=String(session.speed);speedLabel.append(speed);settings.append(speedLabel);
   const sizeLabel=document.createElement('label'),size=document.createElement('select');sizeLabel.textContent='画面大小 ';
   for(const [value,label] of [['auto','跟随浏览器字号'],['standard','标准'],['large','较大（最多1.2倍）']] as const){const option=document.createElement('option');option.value=value;option.textContent=label;size.append(option);}

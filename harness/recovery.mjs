@@ -69,12 +69,12 @@ async function speeds(){
   for(const mode of ['1','2','4','fast-forward','audio-denied']){
     const test=await start(`playback-${mode}`,{amo:true,audioFailure:mode==='audio-denied'}),{page}=test;
     try {
-      await enter(page);if(['2','4'].includes(mode)){await openMenuSection(page,'settings');await page.getByLabel('演出速度').selectOption(mode);await page.locator('.run-menu-toggle').click();}
+      await enter(page);if(['2','4'].includes(mode)){await openMenuSection(page,'settings');await page.getByLabel('计分速度').selectOption(mode);await page.locator('.run-menu-toggle').click();}
       const before=await read(page);await play(page,[before.state.handOrder[0]]);
       if(mode==='fast-forward'){await tapMenuAction(page,'快进当前手');}
       await page.waitForFunction(()=>!window.__harness.game.scene.getScene('game').playing);
       const after=await read(page);if(!expected)expected=after.state;else assert.deepEqual(after.state,expected);
-      if(mode==='4'){await page.reload();await openSelector(page);await menu(page);assert.equal(await page.getByLabel('演出速度').inputValue(),'4');}
+      if(mode==='4'){await page.reload();await openSelector(page);await menu(page);assert.equal(await page.getByLabel('计分速度').inputValue(),'4');}
       mark({name:`playback/${mode}`,status:'PASS',stateHash:domain.stateHash(after.state)});
     }finally{await close(test);}
   }

@@ -18,7 +18,7 @@ try{
  for(const route of ['win','loss']){
   const context=await browser.newContext({viewport:report.viewport,hasTouch:true,deviceScaleFactor:1,reducedMotion:'reduce'}),p=await context.newPage();p.on('pageerror',e=>report.errors.push(String(e)));
   await p.goto('http://127.0.0.1:5273/?harness=1&seed='+(route==='win'?'d43-fire-1':'p08-low-singles'));await chooseCharacter(p,'laohuan',true);await tapUI(p,'shop','action/start-stage',true);await waitScene(p,'game');await ready(p);
-  await openMenuSection(p,'settings',true);await p.getByLabel('演出速度').selectOption('4');await p.locator('.run-menu-toggle').tap();
+  await openMenuSection(p,'settings',true);await p.getByLabel('计分速度').selectOption('4');await p.locator('.run-menu-toggle').tap();
   if(route==='win'){for(const id of ['diamonds-7','diamonds-9','diamonds-4','diamonds-12','diamonds-10'])await tapUI(p,'game','card/'+id,true);await tapUI(p,'game','action/play',true);}
   else for(let i=0;i<8;i++){if(await p.evaluate(()=>window.__harness.game.scene.isActive('intermission')))break;await ready(p);const id=await p.evaluate(()=>window.__harness.game.scene.getScene('game').hand.slice().sort((a,b)=>a.rank-b.rank)[0].id);await tapUI(p,'game','card/'+id,true);await tapUI(p,'game','action/play',true);await p.waitForFunction(()=>{const g=window.__harness.game,s=g.scene.getScene('game');return g.scene.isActive('intermission')||s.ready&&!s.playing;});}
   await waitScene(p,'intermission');const state=await save(p);assert.equal(state.phase,route==='win'?'stage-cleared':'run-lost');assert.equal(state.lastTrace.finalScore,route==='win'?'1200':state.lastTrace.finalScore);
