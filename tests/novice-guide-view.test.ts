@@ -5,13 +5,13 @@ import {noviceGuideCanvasBox,placeNoviceGuide} from '../src/game/NoviceGuideView
 const inside=(outer:Box,inner:Box)=>inner.x>=outer.x-.001&&inner.y>=outer.y-.001&&inner.x+inner.width<=outer.x+outer.width+.001&&inner.y+inner.height<=outer.y+outer.height+.001;
 
 describe('novice guide placement',()=>{
-  it('keeps the hint and reopen target out of real hand and action bounds at phone and PC sizes',()=>{
+  it('keeps the hint and reopen target out of hand, skill and utility controls at phone and PC sizes',()=>{
     for(const [width,height] of [[320,568],[320,640],[390,740],[390,844],[1280,720],[1920,1080]]){
       for(const safe of [{top:0,right:0,bottom:0,left:0},{top:12,right:8,bottom:24,left:8}]){
         const table=layout({width,height},safe,undefined,{count:8},{pc:width>=700});
         const bounds={x:safe.left+8,y:safe.top+8,width:width-safe.left-safe.right-16,height:height-safe.top-safe.bottom-16};
         const highlights=[table.cards[1].visual,table.cards[2].visual];
-        const protectedAreas=[table.hud,table.scoreBoard,table.hand,table.actions,...highlights];
+        const protectedAreas=[table.hud,table.scoreBoard,table.hand,table.actions,table.heroAction,table.inventoryEntry,table.helpEntry,...highlights].filter((box):box is Box=>!!box);
         for(const desired of [{width:Math.min(320,bounds.width),height:132},{width:88,height:44}]){
           const placed=placeNoviceGuide(bounds,protectedAreas,desired,highlights[0]);
           expect(placed,`${width}x${height}`).toBeDefined();

@@ -4,6 +4,7 @@ import type {EffectContext} from '../core/EffectQueue';
 import {HeroTargetAttachmentState,ATTACHMENT_RELEASE_MS,type AttachmentDraft,type AttachmentMotion} from './HeroTargetAttachmentState';
 import type {InkBox,InkPoint} from './AssistInkGeometry';
 import {drawHeroAtmosphere,drawHeroOriginStream,heroAtmosphereStyle,HERO_SOURCE_CURRENT_MS,HERO_ATMOSPHERE_BUDGET} from './HeroCardAttachmentAtmosphere';
+import type {SourceElectricDecision} from './HeroLineCurrent';
 import {textDensity} from './TextRaster';
 import {UI_FONT} from './theme';
 import type {ScoreTrace} from '../domain/scoreR2';
@@ -45,6 +46,7 @@ export class HeroTargetAttachment {
  private cadence=0;
  private pulseAfter=0;
  private sourceElapsed=0;
+ private sourceDecision:SourceElectricDecision={};
  private staticKey='';
  private blurred=false;
  private destroyed=false;
@@ -93,7 +95,7 @@ export class HeroTargetAttachment {
   const style=heroAtmosphereStyle({key:eventId,targetId:id,releaseReason:'laohuan.refill'}),layout=this.layout(root,new Set([card.container]));this.refillPhases.bind({owner:'retained-impact',activationId:eventId,eventId,reasonKey:'laohuan.refill',targetIds:[id],sourceTargetIds:[],motion:'full',context});this.refillPhases.publish('impact');if(this.destroyed||context.signal.aborted||!this.refillPhases.isCurrent(eventId))return;const done=()=>{this.refillPhases.publish('settled');this.refillPhases.end();};if(!this.refillSmoke.playImpact(eventId,{id,...card},style,root,layout.masks,context,done,()=>this.layout(root,new Set([card.container])).masks)){done();return;}
   const cancel=()=>{this.refillSmoke.clear();this.refillPhases.end('aborted');};context.signal.addEventListener('abort',cancel,{once:true});this.burstAbort=()=>{context.signal.removeEventListener('abort',cancel);cancel();};
  }
- private activateSource(key:string):void {this.pulseAfter=this.sourceKeys.has(key)||this.options.motion()!=='full'?Infinity:0;this.sourceElapsed=0;this.sourceKeys.add(key);}
+ private activateSource(key:string):void {this.pulseAfter=this.sourceKeys.has(key)||this.options.motion()!=='full'?Infinity:0;this.sourceElapsed=0;this.sourceDecision={};this.sourceKeys.add(key);}
  consume(targetId:string,eventId:string,context:EffectContext,confirmedTargets:readonly string[]=[]):void {if(this.destroyed)return;const previous=this.state.value?.eventId;if(this.state.consume(targetId,eventId,context)){this.phaseContext=context;if(!previous){this.confirmedGlowTargets=[...confirmedTargets];this.glowImpacts.clear();this.activateSource(this.state.value!.key);}}this.update(0);}
  commit(eventId:string,context:EffectContext,confirmedTargets:readonly string[]=[]):void {const id=this.state.value?.targetId;if(id)this.consume(id,eventId,context,confirmedTargets);}
  retainTargets(ids:readonly string[]):void {this.state.retainTargets(ids);this.update(0);}
@@ -210,7 +212,7 @@ export class HeroTargetAttachment {
   if(full&&this.state.accepted&&!state.suppressSource&&!releasing&&!state.failed&&source&&progress>=0&&progress<1){
    this.phases.publish('source');
    if(this.destroyed||this.state.value!==state||this.phaseContext?.signal.aborted)return;
-   if(!this.flight?.active){this.flight=this.scene.add.graphics().setName('hero/target-travel');root.add(this.flight);}if(!this.flightCurrent?.active){this.flightCurrent=this.scene.add.graphics().setName('hero/target-current');root.add(this.flightCurrent);}const protectedBoxes=layout.protectedBoxes,stats=drawHeroOriginStream(this.flight,source.point,sourceBoxes,style,progress,protectedBoxes,1-release,this.flightCurrent);this.flight.setData('stats',stats).setData('progress',progress).setData('sourceKind',source.kind).setData('source',source.point).setData('targetIds',sourceMembers.map(t=>t.id));this.flightCurrent.setData('stats',stats).setData('progress',progress).setData('protectedBoxes',protectedBoxes);
+   if(!this.flight?.active){this.flight=this.scene.add.graphics().setName('hero/target-travel');root.add(this.flight);}if(!this.flightCurrent?.active){this.flightCurrent=this.scene.add.graphics().setName('hero/target-current');root.add(this.flightCurrent);}const protectedBoxes=layout.protectedBoxes,scoreWorld=this.options.sourceExclusions?.()[0],fallbackBoard=scoreWorld?this.localBounds(root,scoreWorld):undefined,stats=drawHeroOriginStream(this.flight,source.point,sourceBoxes,style,progress,protectedBoxes,1-release,this.flightCurrent,fallbackBoard,this.sourceDecision);this.flight.setData('stats',stats).setData('progress',progress).setData('sourceKind',source.kind).setData('source',source.point).setData('targetIds',sourceMembers.map(t=>t.id));this.flightCurrent.setData('stats',stats).setData('progress',progress).setData('protectedBoxes',protectedBoxes).setData('eventId',state.eventId).setData('fallbackBoard',fallbackBoard);
   }else{this.flight?.destroy();this.flight=undefined;this.flightCurrent?.destroy();this.flightCurrent=undefined;}
   if(this.state.accepted)this.phases.publish('attached');
  }

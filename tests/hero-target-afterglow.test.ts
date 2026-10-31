@@ -121,14 +121,14 @@ it('reduces the target discharge after impact without changing card identity',()
  }finally{glow.destroy();f.root.destroy();}
 });
 
-it('keeps simultaneous real targets from pulsing in lockstep',()=>{
- const f=nativeHeroRuntime(),a=f.card('hearts-3',{x:100,y:100,width:70,height:100}),b=f.card('diamonds-5',{x:300,y:100,width:70,height:100}),controller=new AbortController(),glow=new HeroTargetAfterglow(f.scene,()=> 'full');
- const blueAlpha=(ink:Phaser.GameObjects.Graphics)=>{const c=ink.commandBuffer,alphas:number[]=[];for(let i=0;i<c.length;){const op=c[i++];if(op===6)i+=3;else if(op===7){if(c[i]===0x1768c3)alphas.push(c[i+1]);i+=2;}else if(op===5||op===4)i+=2;else if(op!==1&&op!==8&&op!==9)throw new Error(`unexpected command ${op}`);}return Math.max(...alphas);};
+it('reconstructs simultaneous real targets at independent moments instead of sliding',()=>{
+ const f=nativeHeroRuntime(),a=f.card('hearts-3',{x:100,y:100,width:70,height:100}),b=f.card('spades-5',{x:300,y:100,width:70,height:100}),controller=new AbortController(),glow=new HeroTargetAfterglow(f.scene,()=> 'full');
  try{
-  glow.play({cards:[{id:'hearts-3',container:a,width:70,height:100},{id:'diamonds-5',container:b,width:70,height:100}],root:f.root,masks:()=>[],signal:controller.signal});
-  const first=[blueAlpha(effects(a)[0]),blueAlpha(effects(b)[0])];f.step(100,100);
-  const next=[blueAlpha(effects(a)[0]),blueAlpha(effects(b)[0])];
-  expect(next[0]).toBeLessThan(first[0]);expect(next[1]).toBeGreaterThan(first[1]);
+  glow.play({cards:[{id:'hearts-3',container:a,width:70,height:100},{id:'spades-5',container:b,width:70,height:100}],root:f.root,masks:()=>[],signal:controller.signal});
+  const heads=()=>[effects(a)[0].getData('electricHeads'),effects(b)[0].getData('electricHeads')];
+  const first=heads();expect(first[0].length).toBeGreaterThan(0);expect(first[1].length).toBeGreaterThan(0);
+  f.step(40,40);const next=heads();expect(next[0]).not.toEqual(first[0]);expect(next[1]).toEqual(first[1]);
+  f.step(120,80);const later=heads();expect(later[0]).toEqual(next[0]);expect(later[1]).not.toEqual(next[1]);
  }finally{glow.destroy();f.root.destroy();}
 });
 

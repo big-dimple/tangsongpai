@@ -416,7 +416,10 @@ export class GameScene extends Phaser.Scene {
     this.liueSkillPayoff?.dispose();this.liueSkillPayoff=undefined;
     const lifecycle=++this.lifecycle;this.intent++;
     this.shownOpponentKinds.clear();this.shownPayoffs.clear();this.appliedRefill=undefined;this.refillHidden=false;this.effects.clear();this.laohuanFindRank=null;this.erxiangTargetId=null;this.azaoRelease=false;this.xiemuBurn=0;this.amoExile=false;this.jokerViews.clear();this.cardViews=[];this.selectedIds.clear();this.assistIds=[];this.assistPage=0;this.assistGestureStart=undefined;this.hoveredCardId=undefined;this.hoveredJokerId=undefined;this.jokerHoverPreview=undefined;this.playing=false;this.presentation=undefined;this.toolHand=undefined;this.statusMessage='';this.focusIndex=0;this.keyboardFocus=false;this.handStart=0;this.handNavigationButtons=[];
+    let appliedPresentationSpeed=gameSession().speed;
     const settings=()=>{
+      // A speed change cannot leave an old visual running against a new clock.
+      if(appliedPresentationSpeed!==gameSession().speed){this.highMultiplierAuraDispose?.();this.highMultiplierAuraDispose=undefined;appliedPresentationSpeed=gameSession().speed;}
       const hintVisible=!!this.handHint;this.stopHandHint();if(hintVisible&&this.reducedMotion)this.showHandHint(false);
       this.tweens.timeScale=gameSession().speed;this.time.timeScale=gameSession().speed;
       if(this.reducedMotion){
@@ -577,7 +580,10 @@ export class GameScene extends Phaser.Scene {
           // the full painted card would falsely highlight its neighbours.
           return seat?.visible?[map({...seat.visual,width:Math.min(seat.visual.width,seat.hit.width)})]:[];
         });
-        return {highlights,avoid:[l.hud,l.scoreBoard,l.hand,l.actions].map(map)};
+        // The hint must not intercept the optional skill or utility buttons:
+        // tapping through to the skip control would unexpectedly leave the run.
+        const controls=[l.hud,l.scoreBoard,l.hand,l.actions,l.heroAction,l.inventoryEntry,l.helpEntry];
+        return {highlights,avoid:controls.filter((box):box is import('./layout').Box=>!!box).map(map)};
       },
       visible:()=>!this.presentation&&!this.playing&&!document.querySelector('dialog[open]'),
       onReplay:()=>requestTutorialReplay(),
@@ -2186,6 +2192,7 @@ export class GameScene extends Phaser.Scene {
     presentation.auraPlayed=true;this.highMultiplierAuraDispose?.();
     this.highMultiplierAuraDispose=mountHighMultiplierAura(this,{root,eventId:event.eventId,signal:context.signal,reduced:()=>this.reducedMotion,
       getBoard:()=>this.view.layout.scoreBoard,getViewport:()=>({x:0,y:0,...cssViewport(this)}),getGuards:()=>this.highMultiplierAuraGuards(),
+      speed:()=>gameSession().speed,
       isCurrent:()=>this.presentation===presentation&&this.view.root===root&&this.scene.isActive()});
   }
 

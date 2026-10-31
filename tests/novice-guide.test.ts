@@ -50,10 +50,10 @@ describe('guided first match from saved commands',()=>{
   await send(run,{type:'PlayHand',selectedIds:['hearts-5','clubs-5']});
   expect(guide(run)).toMatchObject({step:'discard',fact:{pairScore:'90'}});
   expect(guide(run)!.body).toContain('目标');expect(guide(run)!.body).toContain('倍率');
-  expect(guide(run)!.body).toContain('花1次弃牌换等量新牌');expect(guide(run)!.body).toContain('不保证凑齐');
+  expect(guide(run)!.body).toContain('花1次弃牌换等量新牌');expect(guide(run)!.body).toContain('不消耗出牌次数');
   await send(run,{type:'DiscardHand',selectedIds:['clubs-4','diamonds-4','spades-14','clubs-7','spades-11']});
   expect(guide(run)?.step).toBe('independent');
-  expect(guide(run)!.body).toContain('同花是5张相同花色');expect(guide(run)!.body).toContain('3、4、5');
+  expect(guide(run)!.body).toContain('5张同花色是同花');expect(guide(run)!.body).toContain('不必连号');
   const restored=SavedRun.restore(store,await store.read());expect(guide(restored)?.step).toBe('independent');
   await send(restored,{type:'PlayHand',selectedIds:restored.state.handOrder.filter(id=>id.startsWith('hearts-')).slice(0,5)});
   expect(restored.state.phase).toBe('stage-cleared');expect(guide(restored)?.step).toBe('shop');
@@ -147,6 +147,14 @@ describe('guided first match from saved commands',()=>{
   await send(run,{type:'PlayHand',selectedIds:run.state.handOrder.slice(0,5)});
   while(run.state.phase==='await-input')await send(run,{type:'PlayHand',selectedIds:run.state.handOrder.slice(0,5)});
   expect(['stage-cleared','run-lost']).toContain(run.state.phase);expect(guide(run)?.step).toBe('replay');
+ });
+
+ it('offers a retry immediately when the optional hero skill clears the first hand',async()=>{
+  const {run,store}=await start('hero-early-clear');await enter(run);
+  await send(run,{type:'PlayHand',selectedIds:['hearts-5','clubs-5'],erxiangTargetId:'hearts-5'});
+  expect(run.state.lastTrace?.finalScore).toBe('420');expect(run.state.phase).toBe('stage-cleared');
+  expect(guide(run)?.step).toBe('replay');
+  const restored=SavedRun.restore(store,await store.read());expect(guide(restored)?.step).toBe('replay');
  });
 
  it('does not infer completed lessons from missing, truncated or tampered journal data',async()=>{

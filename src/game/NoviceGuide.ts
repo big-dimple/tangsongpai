@@ -221,29 +221,31 @@ function deriveHint(s:R2RunState,journal?:readonly Command[]):NoviceGuideHint {
   const heroEvent=facts.pair!.events.some(e=>e.sourceType==='character'&&e.sourceDefinitionId===s.characterId);
   const heroResult=heroEvent?'那手对子有刘娥的实际计分事件。':facts.pair!.erxiangHandoff?'那手对子没有选择使用刘娥技能。':'那手对子没有刘娥的计分事件。';
   const route=s.openingRoute&&OPENING_ROUTES[s.openingRoute];
-  return {step:'complete',cue:'这张牌真的发挥了作用',body:`练习中「${cardDisplayName(facts.purchase!.definitionId)}」${fact.contribution}；那手共 ${facts.payoff!.finalScore} 分。此局使用刘娥，不计普通通关；普通局可换英雄和路线。`,
+  return {step:'complete',cue:'这张牌真的发挥了作用',body:`「${cardDisplayName(facts.purchase!.definitionId)}」${fact.contribution}，那手共 ${facts.payoff!.finalScore} 分。唐宋牌满足条件就会参与计分。练习局不计普通通关；可继续体验或开始普通游戏。`,
    details:`${heroResult}\n刘娥：${characterForRun(s).passiveDescription}\n路线：${route?`${route.title}侧重${route.play}`:'路线是重点培养牌型的参考。'}路线可调整，不限制出牌。`,fact};
  }
  if(s.phase==='run-lost')return {step:'replay',cue:'可以再练一次',body:'本局已结束，练习尚未完成。可以重新练习，或开始普通局。',fact};
- if(s.stageIndex>0&&(!facts.pair||!facts.discarded||!facts.independent))return {step:'replay',cue:'可以再练一次',body:'本场已结束，练习尚未完成。可以继续游戏，或重新开始练习。',fact};
+ if((s.phase==='stage-cleared'||s.stageIndex>0)&&(!facts.pair||!facts.discarded||!facts.independent))return {step:'replay',cue:'可以再练一次',body:'本场已结束，练习尚未完成。可以继续游戏，或重新开始练习。',fact};
  if(!facts.pair){
   const ids=pairIds(s),rank=ids.length?s.deckInstances.find(c=>c.id===ids[0])?.rank:undefined;
   const last=s.lastTrace?`上一手是${s.lastTrace.handType==='pair'?'对子':'其他牌型'}，得 ${s.lastTrace.finalScore} 分。`:'';
   if(!rank&&s.phase==='await-input'&&s.stage&&(s.drawPile.length===0||s.stage.discardsLeft===0&&s.stage.handsLeft<=1))return {step:'replay',cue:'可以重练找对子',body:'手中没有对子，也无法再换来牌。可以继续出牌，或重新练习。',fact};
-  const next=rank?`试着选两张 ${rankLabel(rank)} 再出牌。`:s.stage&&s.stage.discardsLeft===0?'先出牌，补牌后再找同点数。':'可以先弃牌换牌，再找同点数。';
-  return {step:'pair',cue:'认识牌面，自己选一对',body:`开局默认刘娥、同点方向，普通局可换。数字和 JQKA 是点数；♠黑桃、♥红桃、♣梅花、♦方片是花色。同点就是对子。${last}${next}`,recommendedCardIds:ids,fact};
+  const next=rank?`点选两张 ${rankLabel(rank)}，再点「出牌」。`:s.stage&&s.stage.discardsLeft===0?'先出牌，补牌后再找同点数。':'可以先弃牌换牌，再找同点数。';
+  return {step:'pair',cue:'认识牌面，自己选一对',body:`本局默认刘娥、同点方向。牌上的数字或字母叫点数，图案叫花色。两张牌点数相同就是对子，花色可以不同。${last}${next}`,recommendedCardIds:ids,fact};
  }
  if(!facts.discarded){
   if(s.stage?.index===0&&(s.stage.discardsLeft<=0||s.drawPile.length===0))return {step:'replay',cue:'这场暂时不能换牌',body:'本场弃牌次数或可抽的牌已用完。可以继续出牌，或重练换牌。',fact};
   const stage=s.stage;
   const replacement=stage&&s.handOrder.length===stage.handLimit&&s.drawPile.length>=5?'换等量新牌':'从牌堆补牌，牌不足会少补';
-  return {step:'discard',cue:'看看目标，再试试弃牌',body:`对子得 ${fact.pairScore} 分（热度 ${fact.pairHeat} × 倍率 ${fact.pairMultiplier}）。目标 ${stage?.targetHeat??'见牌桌'}，现有 ${stage?.heat??'见牌桌'}；余出牌 ${stage?.handsLeft??'见牌桌'} 次、弃牌 ${stage?.discardsLeft??'见牌桌'} 次。选1–5张不要的牌，花${r2DiscardCost(s)}次弃牌${replacement}；抽牌不保证凑齐。`,fact};
+  return {step:'discard',cue:'看看目标，再试试弃牌',body:`热度 ${fact.pairHeat} × 倍率 ${fact.pairMultiplier} = ${fact.pairScore} 分，累计 ${stage?.heat??'见牌桌'} / 目标 ${stage?.targetHeat??'见牌桌'}。出牌剩 ${stage?.handsLeft??'见牌桌'} 次，弃牌剩 ${stage?.discardsLeft??'见牌桌'} 次。选1–5张想换的牌，点「弃牌」：花${r2DiscardCost(s)}次弃牌${replacement}，不消耗出牌次数。`,fact};
  }
- if(!facts.independent)return {step:'independent',cue:'现在自己决定出什么',body:'已换入新牌。同花是5张相同花色；顺子是5张连续点数，如3、4、5接下去。现在自己选牌出手。',fact};
+ if(!facts.independent)return {step:'independent',cue:'现在自己决定出什么',body:'已换入新牌。自己选1–5张，再点「出牌」。两张同点数是对子；5张同花色是同花，不必连号。想看牌型可点「条件帮助」。',fact};
  if(!facts.cleared)return {step:'independent',cue:'继续向目标出牌',body:'你已经独立出过一手。继续选牌，达到本场目标；次数用完也可以重练。',fact};
- if(!facts.purchase)return {step:'shop',cue:'过关后看看商店',body:`首战过关！看看「${cardDisplayName('b02')}」：同点计分牌加倍率。看清价格后自行决定；没货也可选别的或留钱。`,offerIds:offers(s),fact};
+ if(!facts.purchase)return {step:'shop',cue:'过关后看看商店',body:`首战过关！「${cardDisplayName('b02')}」会让同点数的计分牌增加倍率。点牌看详情和价格，再决定是否购买；也可以留钱。`,offerIds:offers(s),fact};
  const owned=s.jokers.some(j=>j.instanceId===facts.purchase!.instanceId);
- return {step:'payoff',cue:'下一场试出这张牌的效果',body:owned?'查看新牌条件，自己选牌。触发时，计分明细才会显示它的真实贡献。':'之前买的牌已不在持牌中。可在商店选另一张，或重新练习。',recommendedCardIds:facts.purchase.definitionId==='b02'?pairIds(s):[],fact};
+ const when=s.phase==='shop'?'下一场':'这场';
+ const payoff=facts.purchase.definitionId==='b02'?`${when}试着选两张同点数的牌出手。每张符合条件的计分牌会加 0.25 倍率，计分时可以看到。`:`${when}按这张牌的条件自己选牌，计分时可以看到它的贡献。`;
+ return {step:'payoff',cue:`${when}试出这张牌的效果`,body:owned?payoff:'之前买的牌已不在持牌中。可在商店选另一张，或重新练习。',recommendedCardIds:facts.purchase.definitionId==='b02'?pairIds(s):[],fact};
 }
 /** Pass the SavedRun's published state and journal; no unsaved candidate or local preference proves progress. */
 export function noviceGuide(s:R2RunState,journal?:readonly Command[]):NoviceGuideHint|undefined {

@@ -371,6 +371,61 @@ async function guidedMatch(test){
   test.record.recoveryAndReplay='PASS';
 }
 
+// An optional skill can win the tutorial's opening hand immediately. Exercise
+// the real high-multiplier presentation and then resume the unfinished lesson.
+async function heroEarlyClear(test){
+  const {page,touch}=test;
+  await tapUI(page,'title','action/title-start',touch);await waitScene(page,'game');await settleGame(page);
+  await guideStep(test,'pair');const before=await readRun(page);
+  await selectCards(test,['hearts-5','clubs-5']);
+  await tapUI(page,'game','hero/action-shortcut',touch);
+  const index=before.state.handOrder.indexOf('hearts-5')+1;
+  await click(test,page.getByRole('button',{name:new RegExp('^第'+index+'张 · ')}));
+  await page.evaluate(()=>{
+    const game=window.__harness.game,scene=game.scene.getScene('game');
+    const observation=window.__noviceHero={frames:0,guideDuringPresentation:0,shot:null};
+    const walk=list=>list.flatMap(item=>[item,...(item.list?walk(item.list):[])]);
+    observation.tick=()=>{
+      if(!scene.scene.isActive()||!scene.presentation)return;
+      if(document.querySelector('[data-novice-guide-panel]'))observation.guideDuringPresentation++;
+      const aura=walk(scene.view.root?.list??[]).find(item=>item.name==='score/high-multiplier-aura'&&item.active&&item.visible&&(item.getData('visibleSegments')??0)>0);
+      if(aura){
+        observation.frames++;
+        if(!observation.shot)observation.shot=game.canvas.toDataURL('image/png').split('base64,')[1];
+      }
+    };
+    game.events.on('postrender',observation.tick);
+  });
+  await tapUI(page,'game','action/play',touch);
+  const after=await committed(test,before,{type:'PlayHand',selectedIds:['hearts-5','clubs-5'],erxiangTargetId:'hearts-5'});
+  assert.equal(after.state.lastTrace.finalScore,'420');assert.equal(after.state.phase,'stage-cleared');
+  assert.ok(after.state.lastTrace.events.some(event=>event.reasonKey==='erxiang.handoff'&&
+    BigInt(event.before.M.n)<10n*BigInt(event.before.M.d)&&BigInt(event.after.M.n)>=10n*BigInt(event.after.M.d)));
+  await waitScene(page,'intermission');await guideStep(test,'replay');
+  const observed=await page.evaluate(()=>{
+    const game=window.__harness.game,scene=game.scene.getScene('game'),o=window.__noviceHero;
+    game.events.off('postrender',o.tick);
+    return {frames:o.frames,guideDuringPresentation:o.guideDuringPresentation,shot:o.shot};
+  });
+  assert.ok(observed.frames>0,'the real tutorial skill event shows the high-multiplier flame');
+  assert.equal(observed.guideDuringPresentation,0,'the guide does not obstruct the scoring presentation');
+  if(observed.shot)await writeFile(path.join(test.dir,'hero-flame.png'),Buffer.from(observed.shot,'base64'));
+  await capture(test,'early-win-offers-retry');
+  await page.reload();await waitScene(page,'title');
+  await page.waitForFunction(()=>window.__harness.game.registry.get('runController')?.status==='idle');
+  assert.deepEqual(await readRun(page),after,'the early victory and its journal survive reload');
+  await tapUI(page,'title','action/title-continue',touch);await waitScene(page,'intermission');await guideStep(test,'replay');
+  await click(test,page.getByRole('button',{name:'重新练习',exact:true}));
+  await page.waitForFunction(id=>{
+    const state=window.__harness.game.registry.get('runController')?.state;
+    return state?.runId!==id&&state?.phase==='await-input';
+  },after.state.runId,{timeout:30000});
+  await waitScene(page,'game');await settleGame(page);await guideStep(test,'pair');
+  const retry=await readRun(page);assert.equal(retry.state.stage.playIndex,0);assert.equal(retry.state.stage.heat,'0');
+  await capture(test,'hero-win-retried-first-hand');assert.deepEqual(test.record.errors,[]);
+  test.record.heroEarlyClear={status:'PASS',score:after.state.lastTrace.finalScore,frames:observed.frames};
+}
+
 async function mistakesAndSkip(test){
   const {page,touch}=test;
   await tapUI(page,'title','action/title-start',touch);await waitScene(page,'game');await settleGame(page);
@@ -575,6 +630,7 @@ try{
   for(const spec of cases){
     const scenarios=(preflight?[{name:'preflight',run:async()=>{}}]:spec.short?[{name:'short-hand',run:shortFirstHand}]:[
       {name:'journey',run:guidedMatch},
+      {name:'hero-early-clear',run:heroEarlyClear},
       {name:'mistake-and-skip',run:mistakesAndSkip},
       {name:'save-failure',run:failedSaveAndRetry},
       {name:'existing-save',run:test=>existingSave(test,origin)},
@@ -598,7 +654,7 @@ try{
   }
   if(!preflight){
     assert.ok(report.cases.length,'NOVICE_SCENARIO must name a known scenario');
-    const success=report.cases.every(row=>row.status==='PASS'),expected=cases.reduce((count,spec)=>count+(spec.short?1:6),0);
+    const success=report.cases.every(row=>row.status==='PASS'),expected=cases.reduce((count,spec)=>count+(spec.short?1:7),0);
     report.acceptance=success&&!process.env.NOVICE_SCENARIO&&!process.env.NOVICE_CASE&&report.cases.length===expected?'PASS':success?'INCOMPLETE':'FAIL';
     if(report.acceptance!=='PASS')process.exitCode=1;
   }
