@@ -163,6 +163,8 @@ tools/          离线素材工具
 - `domain`：`npm test` 与 `npm run verify:content`。
 - `browser`：`npm run build` 与 `npm run verify:smoke`。
 
+`release-candidate.yml` 为 main 推送或手动运行准备候选包：在同一检出运行完整 `verify:ci`，调用 `prepare-release-artifact.py` 打包，并在上传到 GitHub Actions artifact 前后执行 `verify-release-artifact.py`。候选包含完整的 `dist.tar.gz`、SHA256 和 manifest；它只需 `contents: read`，不会创建或发布 GitHub Release，不能触发服务器部署。工作流在 GitHub 的启用状态和实际运行结果需分别核实。
+
 推送 main 前，在 Dot 远端开发电脑或开发者本机执行完整 CI。`npm ci` 按锁文件安装依赖；`verify:ci` 顺序运行完整单元测试、内容校验、类型检查与唯一生产构建、Chromium 桌面和手机冒烟。冒烟脚本另建供测试使用的 e2e 预览，不是交付的生产包；生产产物为 `dist/`。优先使用已安装的系统 Chrome／Chromium，通过项目支持的路径配置；以下分别为 Bash 和 PowerShell 示例，路径按实际机器调整：
 
 ```bash
@@ -223,7 +225,7 @@ Windows PowerShell 使用 `python scripts/prepare-release-artifact.py`、`$revis
 
 分别报告推送 SHA、CI 状态、Release 交付和公网 `https://pai.hp666.cc/build-info.json` 的实际 revision；Release 发布后服务器通常在下一分钟开始处理，上传与域名传播还需要时间，不保证固定上线时刻。服务器只获取、校验、上传和确认；没有匹配包或验证失败时不会把旧版本称为新版本。历史本机 CI 报告不代表当前提交通过 CI。
 
-GitHub 仓库为 `big-dimple/tangsongpai`，Cloudflare Pages 项目为 `dachoupai`。三个 GitHub 工作流已禁用，不是本机发布门禁；自动检查不代表真人、美术、设备或平衡验收。检查失败时查看日志并修复，不通过放宽检查或伪造结果交付。
+GitHub 仓库为 `big-dimple/tangsongpai`，Cloudflare Pages 项目为 `dachoupai`。GitHub 工作流是否启用及运行成功以实际 Actions 状态为准；自动检查不代表真人、美术、设备或平衡验收。检查失败时查看日志并修复，不通过放宽检查或伪造结果交付。
 
 ## 9. 文档维护
 
