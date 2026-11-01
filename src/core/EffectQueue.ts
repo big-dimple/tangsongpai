@@ -9,6 +9,8 @@ export class EffectQueue {
   }
 
   get generation():number {return this.current.id;}
+  /** The current owner can start an immediate visual under the same cancellation scope. */
+  get context():EffectContext {return {generation:this.current.id,signal:this.current.abort.signal};}
   isCurrent(generation:number):boolean {return generation===this.current.id&&!this.current.abort.signal.aborted;}
 
   enqueue(effect: Effect): void {

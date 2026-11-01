@@ -2732,6 +2732,8 @@ export class GameScene extends Phaser.Scene {
     const retainedIds=replay?[]:[...new Set([...(this.appliedRefill?.ids??[]),...(score.laohuanFind?.batchIds??[])])],orderedEvents=remainingScoreEvents(score).filter(event=>!isNeutralScoreReceipt(event)),phrase=scorePhrase(orderedEvents,this.stage.targetHeat,gameSession().speed,score,retainedIds);
     const auraEventId=firstScoreHighMultiplierCue({...score,events:orderedEvents.filter(event=>!gifts.some(gift=>gift.eventId===event.eventId))},replay)?.eventId;
     const hand=score.cards,presentation={generation,lifecycle,intent,state,score,phrase,hand,retainedIds,displayHeat:beforeHeat,originHeat,replay,previousTrace,credited:replay,resourcePlayLeft:!replay&&beforeHands!==undefined?beforeHands-1:undefined,resourceGold:!replay?beforeGold:undefined,resourceTools:!replay?gifts[0]?.inventoryBefore:undefined,gifts:replay?[]:gifts,auraEventId,auraPlayed:false,auraEnding:false};this.presentation=presentation;
+    // This trace has already been committed by the play command.
+    const openingAura=orderedEvents.find(event=>event.eventId===auraEventId);
     if(replay){
       this.handStart=0;
       this.cardViews.forEach(view=>{view.hit?.destroy();view.sheenTween?.remove();this.tweens.killTweensOf(view.container);view.container.destroy();});
@@ -2754,10 +2756,6 @@ export class GameScene extends Phaser.Scene {
     const base=score.events[0],baseProduct=Rational.fromJSON(base.after.H).multiply(Rational.fromJSON(base.after.M)).floor().toString();
     const baseCue=!replay&&BigInt(baseProduct)>0n&&scoreFireLevel(originHeat,baseProduct,this.stage.targetHeat)>0;
     this.effects.enqueue(async context=>{
-      // The trace was already committed by the real command. A future eligible
-      // impact can therefore start the presentation without previewing RNG.
-      const openingAura=orderedEvents.find(event=>event.eventId===presentation.auraEventId);
-      if(openingAura)this.showHighMultiplierAura(openingAura,context);
       const attachment=replay||score.amoExile?.use?undefined:savedHeroAttachment(score,this.run.characterId);
       if(!replay&&score.amoExile?.use)this.targetAttachment?.beginSushiDiscard(score,context);
       else if(attachment){if(attachment.targetIds)this.targetAttachment?.retainTargets(attachment.targetIds);if(attachment.event.reasonKey!=='erxiang.handoff')this.targetAttachment?.commit(attachment.event.eventId,context,attachment.targetIds??[]);}else if(!presentation.retainedIds.length)this.targetAttachment?.clear();
@@ -2827,8 +2825,12 @@ export class GameScene extends Phaser.Scene {
     // Outcome follows every score/resource event, including post-result settlements.
     for(const cue of opponentCues.filter(cue=>cue.phase==='outcome'))queueOpponent(cue);
     let failed=false;
-    try {await this.effects.drain();}
-    catch {failed=true;if(this.alive(lifecycle,intent))this.resultText.setText('计分动画已停止，结果已保存。');}
+    try {
+      // Mount under the queue's cancellation scope before its first card
+      // animation; never consult a preview or compute the score again.
+      if(openingAura)this.showHighMultiplierAura(openingAura,this.effects.context);
+      await this.effects.drain();
+    } catch {failed=true;this.effects.clear();if(this.alive(lifecycle,intent))this.resultText.setText('计分动画已停止，结果已保存。');}
     if(this.alive(lifecycle,intent)&&this.presentation===presentation&&(failed||this.effects.isCurrent(generation)))this.completePresentation(presentation);
   }
 
