@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import sharp from 'sharp';
+import {originalPath} from './source-originals.mjs';
 
 const check = process.argv.includes('--check');
 const sourceDir = 'art/sources/handdrawn-runtime-tools-20261017';
@@ -22,7 +23,7 @@ const obsolete = new Set();
 const ids = new Set();
 const catalog = JSON.parse(fs.readFileSync('src/content/r2-tools.json', 'utf8'));
 const definitions = [...catalog.tools, ...catalog.longTermItems];
-assert.deepEqual(fs.readdirSync(sourceDir).filter(f => /\.png$/i.test(f)).sort(), batch.assets.map(a => a.sourceFilename).sort());
+assert.deepEqual(fs.readdirSync(originalPath(sourceDir)).filter(f => /\.png$/i.test(f)).sort(), batch.assets.map(a => a.sourceFilename).sort());
 
 for (const asset of batch.assets) {
   assert.ok(!ids.has(asset.domainId), 'duplicate mapping: ' + asset.domainId);
@@ -34,7 +35,7 @@ for (const asset of batch.assets) {
   assert.equal(asset.category, target.category);
   assert.equal(asset.sourceFilename, asset.domainId + ' ' + definition.name + '.png');
   assert.ok(asset.pixelObservation, 'pixel review required');
-  const bytes = fs.readFileSync(path.join(sourceDir, asset.sourceFilename));
+  const bytes = fs.readFileSync(originalPath(sourceDir + '/' + asset.sourceFilename));
   const meta = await sharp(bytes).metadata();
   assert.equal(sha256(bytes), asset.sourceSHA256, 'source bytes changed: ' + asset.domainId);
   assert.equal(bytes.length, asset.sourceBytes);

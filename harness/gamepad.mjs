@@ -44,7 +44,9 @@ try{
     },compactLarge);
     await page.goto('http://127.0.0.1:5218/?harness=1&seed=gamepad-ui');await page.bringToFront();
     await page.waitForFunction(()=>window.__harness?.game.scene.isActive('title'));await frames(page);
-    await press(page,'left');await navigate(page,target=>target.id==='title/action/title-start');await press(page,'confirm',600);
+    // A new player now starts the tutorial; explicitly skip it when exercising
+    // the ordinary hero/shop flow, without manufacturing a returning save.
+    await press(page,'left');await navigate(page,target=>target.id==='title/action/skip-tutorial');await press(page,'confirm',600);
     await page.waitForFunction(()=>window.__harness.game.scene.isActive('character-select'));
     assert.equal(await page.evaluate(()=>window.__harness.game.scene.getScene('character-select').selectedId),undefined,'held title confirmation cannot also choose a hero');
     await navigate(page,target=>target.id==='character/amo');await press(page,'confirm');
@@ -87,6 +89,36 @@ try{
     await page.evaluate(()=>window.__testPad.buttons[2]={pressed:false,value:0});await frames(page);
     await page.screenshot({path:`${output}/${viewport.width}.png`});assert.deepEqual(errors,[]);report.checks.push({viewport,status:'PASS'});await context.close();
   }
+  // Start the tutorial with the real controller entry and finish its first
+  // pair, including the controller's fast-forward path during real scoring.
+  const tutorialContext=await browser.newContext({viewport:{width:390,height:844}}),tutorial=await tutorialContext.newPage(),tutorialErrors=[];
+  activePage=tutorial;tutorial.on('pageerror',error=>tutorialErrors.push(String(error)));
+  await tutorial.addInitScript(()=>{
+    window.__testPad={index:0,id:'Xbox tutorial controller',connected:true,mapping:'standard',axes:[0,0,0,0],buttons:Array.from({length:17},()=>({pressed:false,value:0}))};
+    Object.defineProperty(navigator,'getGamepads',{value:()=>[window.__testPad]});
+  });
+  await tutorial.goto('http://127.0.0.1:5218/?harness=1');await tutorial.bringToFront();
+  await tutorial.waitForFunction(()=>window.__harness?.game.scene.isActive('title'));await frames(tutorial);
+  await press(tutorial,'left');await navigate(tutorial,target=>target.id==='title/action/title-start');await press(tutorial,'confirm');
+  await tutorial.waitForFunction(()=>{
+    const s=window.__harness.game.scene.getScene('game');
+    return s.scene.isActive()&&s.ready&&!s.playing&&document.querySelector('[data-novice-guide-step="pair"]');
+  });
+  const beforeTutorial=await read(tutorial);
+  await navigate(tutorial,target=>target.id==='card/hearts-5');await press(tutorial,'confirm');
+  await navigate(tutorial,target=>target.id==='card/clubs-5');await press(tutorial,'confirm');
+  assert.deepEqual(new Set(await tutorial.evaluate(()=>[...window.__harness.game.scene.getScene('game').selectedIds])),new Set(['hearts-5','clubs-5']));
+  await press(tutorial,'play');
+  await tutorial.waitForFunction(seq=>window.__harness.game.registry.get('runController').state.commandSeq===seq+1,beforeTutorial.commandSeq);
+  await tutorial.waitForFunction(()=>!!window.__harness.game.scene.getScene('game').presentation);
+  await press(tutorial,'confirm');
+  await tutorial.waitForFunction(()=>{
+    const s=window.__harness.game.scene.getScene('game');
+    return !s.playing&&!s.presentation&&document.querySelector('[data-novice-guide-step="discard"]');
+  });
+  const afterTutorial=await read(tutorial);assert.equal(afterTutorial.lastTrace.finalScore,'90');assert.equal(afterTutorial.stage.handsLeft,beforeTutorial.stage.handsLeft-1);
+  await tutorial.screenshot({path:`${output}/tutorial.png`});assert.deepEqual(tutorialErrors,[]);
+  report.checks.push({scenario:'guided-pair-fast-forward',status:'PASS'});await tutorialContext.close();
   // Exercise real text/padding clicks through the same native dialog used by game choices.
   const page=await browser.newPage();activePage=page;await page.goto('http://127.0.0.1:5218/?harness=1');await page.waitForFunction(()=>window.__harness?.game.scene.isActive('title'));
   await page.evaluate(async()=>{const {DetailDialog}=await import('/src/game/DetailDialog.ts');window.__tileClicks=0;new DetailDialog().open('点击范围检查','',[],{choices:[{label:'打开选择',detail:'说明文字也可以点击',run:()=>{window.__tileClicks++;}}]});});

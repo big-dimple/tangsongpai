@@ -13,7 +13,7 @@ export function failureSummary(run:Pick<R2RunState,'stage'|'outcome'|'lastTrace'
   const trace=stage?stageOutcome(stage,run.lastTrace).last:null;
   return {
     reason,
-    lastHand:trace?'最后一手：'+HAND_LABELS[trace.handType]+' · '+heatText(trace.finalScore)+' 热度':'最后一手记录不可用',
+    lastHand:trace?'最后一手：'+HAND_LABELS[trace.handType]+' · '+heatText(trace.finalScore)+' 分':'最后一手记录不可用',
     resources:stage?'剩余出牌 '+stage.handsLeft+' 次 · 弃牌 '+stage.discardsLeft+' 次':'本场资源记录不可用',
   };
 }
@@ -39,14 +39,14 @@ export function failureGuidance(run:R2RunState){
   const summary=failureSummary(run),stage=run.stage,reason=run.outcome?.reason;
   const last=stage&&run.outcome?.stageIndex===stage.index?stageOutcome(stage,run.lastTrace).last:null;
   const remaining=stage?BigInt(stage.targetHeat)-BigInt(stage.heat):null;
-  const gap=reason==='abandoned'&&stage?.skipResult?'最近一场已跳过，没有计分结果':reason==='abandoned'&&stage&&run.outcome?.stageIndex!==stage.index?'最近一场已结束；本局主动结束':remaining===null?'本场差额记录不可用':remaining>0n?'本场还差 '+heatText(remaining.toString())+' 热度':'本场热度已达目标';
+  const gap=reason==='abandoned'&&stage?.skipResult?'最近一场已跳过，没有计分结果':reason==='abandoned'&&stage&&run.outcome?.stageIndex!==stage.index?'最近一场已结束；本局主动结束':remaining===null?'本场差额记录不可用':remaining>0n?'本场还差 '+heatText(remaining.toString())+' 分':'本场得分已达目标';
   const title=reason==='hands-exhausted'?'出牌用尽，准备再战':reason==='no-legal-cards'?'已无可出牌，准备再战':reason==='abandoned'?'已结束本局，重新选择':'本局已结束，准备再战';
   const advice:FailureAdvice[]=[];
   if(reason==='abandoned')advice.push({title:'先决定这次想怎么打',body:'这是主动结束本局，不据此判定构筑强弱。可回看已保存的末手，再返回选角换英雄或开局方向。'});
   else if(reason==='no-legal-cards')advice.push({title:'先保住可出的牌',body:`${summary.resources}，但本局已无可出牌。下一局用删牌、破碎或改牌工具前，先查看牌组与工具代价，再确认目标；留钱也可以。`});
   else if(last){
     const route=last.handType==='straight'||last.handType==='straight-flush'?'straight':last.handType==='flush'?'flush':run.openingRoute??'group';
-    advice.push({title:'先把一手凑完整',body:`末手是${HAND_LABELS[last.handType]}，保存热度${heatText(last.finalScore)}；这是记录，不代表它一定是失败原因。\n`+routeSteps[route]});
+    advice.push({title:'先把一手凑完整',body:`末手是${HAND_LABELS[last.handType]}，记录得分 ${heatText(last.finalScore)}；这是记录，不代表它一定是失败原因。\n`+routeSteps[route]});
   }else advice.push({title:'先看实际手牌再决定',body:'末手记录不可用，不推断是哪张牌或哪项能力导致结束。下一局先用“怎么凑牌”查看实际候选，再决定留牌、弃牌或出牌。'});
   const impact=last?savedBossImpact(run,last):'';
   if(impact){

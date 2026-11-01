@@ -5,6 +5,12 @@ const deferred=()=>{let resolve!:()=>void;const promise=new Promise<void>(r=>res
 const deadline=(promise:Promise<void>)=>Promise.race([promise.then(()=>true),new Promise<boolean>(r=>setTimeout(()=>r(false),80))]);
 
 describe('source EffectQueue generation contract',()=>{
+  it('shares the current cancellation scope with an immediately mounted visual',async()=>{
+    const queue=new EffectQueue(),immediate=queue.context;let queued:typeof immediate|undefined;
+    queue.enqueue(context=>{queued=context;});await queue.drain();
+    expect(queued?.generation).toBe(immediate.generation);expect(queued?.signal).toBe(immediate.signal);
+    queue.clear();expect(immediate.signal.aborted).toBe(true);expect(queue.context.signal.aborted).toBe(false);
+  });
   it('drains later work after an initially empty drain has settled',async()=>{
     const queue=new EffectQueue(),seen:string[]=[];await queue.drain();queue.enqueue(()=>{seen.push('later');});await queue.drain();expect(seen).toEqual(['later']);
   });

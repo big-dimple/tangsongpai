@@ -6,6 +6,7 @@ import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import sharp from 'sharp';
+import {originalPath,sourceInventory} from './source-originals.mjs';
 
 export const HASH_POLICY = 'UTF-8 JSON.stringify(parsed, null, 2) plus LF';
 export const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
@@ -52,6 +53,7 @@ export async function verifyProvenance(manifest, {root = process.cwd(), gitHisto
   assert.equal(manifest.originalArtworkCount, manifest.assets.length);
   assert.equal(new Set(manifest.assets.map(a => a.id)).size, manifest.assets.length, 'duplicate asset ID');
   const receipts = new Map(), originals = new Set(), runtimeFiles = new Set(), derivativeOnlyIds = [];
+  const inventory=sourceInventory(root), verifySourceBytes=!!process.env.TANGSONGPAI_ASSETS_ROOT;
   const readReceipt = ref => {
     assert.match(ref.receiptCommit, /^[a-f0-9]{40}$/, 'missing receipt commit');
     const cacheKey = ref.sourceManifestPath + ':' + ref.receiptCommit;
@@ -85,10 +87,16 @@ export async function verifyProvenance(manifest, {root = process.cwd(), gitHisto
       for (const item of records) {
         const relative = path.posix.dirname(ref.sourceManifestPath) + '/' + (item.sourceFile ?? item.sourceFilename);
         if (originals.has(relative)) continue;
-        const bytes = fs.readFileSync(localPath(root, relative));
-        verifyOriginal(item, bytes);
-        const meta = await sharp(bytes).metadata();
-        assert.deepEqual([meta.width, meta.height], [item.sourceWidth, item.sourceHeight], item.id + ': original dimensions');
+        const archived=inventory.get(relative);
+        assert.ok(archived, relative + ': missing source inventory');
+        assert.equal(archived.bytes,item.sourceBytes,item.id+': source inventory bytes');
+        assert.equal(archived.sha256,item.sourceSHA256,item.id+': source inventory SHA256');
+        if(verifySourceBytes){
+          const bytes = fs.readFileSync(originalPath(relative));
+          verifyOriginal(item, bytes);
+          const meta = await sharp(bytes).metadata();
+          assert.deepEqual([meta.width, meta.height], [item.sourceWidth, item.sourceHeight], item.id + ': original dimensions');
+        }
         if (gitHistory) assert.equal(sha256(execFileSync('git', ['show', ref.receiptCommit + ':' + relative], {cwd: root, maxBuffer: 16 * 1024 * 1024})), item.sourceSHA256, item.id + ': committed original');
         originals.add(relative);
       }
@@ -123,7 +131,7 @@ export async function verifyProvenance(manifest, {root = process.cwd(), gitHisto
   }
   assert.equal(runtimeFiles.size, manifest.runtimeFileCount, 'runtime file count');
   assert.equal(total, manifest.runtimeBytes, 'runtime byte total');
-  return {sourceVerified, originalsVerified: originals.size, derivativeOnlyIds, runtimeFiles: runtimeFiles.size, runtimeBytes: total, receiptsVerified: receipts.size, gitHistory, historicalGitOutputsVerified, historicalGitOutputsPending};
+  return {sourceReceiptsVerified:sourceVerified, originalsRecorded:originals.size, originalsVerified:verifySourceBytes?originals.size:0, sourceBytesStatus:verifySourceBytes?'VERIFIED':'NOT_CHECKED', derivativeOnlyIds, runtimeFiles: runtimeFiles.size, runtimeBytes: total, receiptsVerified: receipts.size, gitHistory, historicalGitOutputsVerified, historicalGitOutputsPending};
 }
 
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

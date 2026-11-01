@@ -8,7 +8,7 @@
 - 建议使用 Node.js 22，依赖使用 `npm ci` 和锁文件安装。
 - 游戏是纯静态 H5；核心运行不需要后端、Blender 或素材生成工具。
 
-开发侧默认在推送 main 前，在 Dot 远端开发电脑或本机完成完整 CI 与唯一生产构建，按改动补跑专项；所有模型使用同一要求，用户明确指示例外时如实报告。没有 Dot 的 AI 须在可用的本地开发电脑执行相同 CI 与构建并按同一契约交付；没有可用环境时报告阻塞，不能省略检查或让新加坡生产机代跑。提交和推送以当前任务授权为准。开发侧交付已校验的生产产物，新加坡服务器仅取件、校验并发布。GitHub Actions 不参与发布。提交、产物交付与部署是不同状态。
+开发侧默认在推送 main 前，在 Dot 远端开发电脑或本机完成完整 CI 与生产构建，按改动补跑专项；用户明确指示例外时如实报告。main 的 GitHub Actions 再对该提交独立执行门禁、构建和 Release 发布；是否启用及成功以实际运行结果为准。提交和推送以当前任务授权为准；新加坡服务器仅取件、校验并发布，不代跑测试或构建。提交、产物交付与部署是不同状态。
 
 ```bash
 npm run dev             # 开发服务器
@@ -44,7 +44,7 @@ scripts/        内容、构建、CI 与发布检查
 tests/          单元测试及测试数据
 harness/        浏览器和布局专项验证
 analysis/       可复算分析工具
-art/            素材源文件与来源信息
+art/            保留的素材来源信息和尚未迁出的素材
 docs/assets/    当前素材清单和必要记录
 docs/production/  保留的历史测试数据，仍被 tests／harness 读取
 tools/          离线素材工具
@@ -66,7 +66,7 @@ tools/          离线素材工具
 - 默认手牌上限 8，每次出牌或弃牌选择 1–5 张；每场默认 4 次出牌、3 次弃牌。
 - 牌型包含高牌、对子、两对、三条、顺子、同花、葫芦、四条、同花顺、五条、同花葫芦和同花五条。
 - 普通点数为 2–10 按面值，J/Q/K 为 10，A 为 11。
-- 计分使用牌型热度与倍率，通常在最终得分时向下取整；苏轼「贬谪」先取普通整数得分，再乘该存档身份的倍率。大数使用有理数和十进制字符串序列化，不以浮点近似代替。
+- 玩家界面使用“筹码 × 倍率 = 得分”，累计得分达到目标分数过关；金币是商店货币。内部 `H`／`heat` 沿用历史字段名，场次 `heat`／`targetHeat` 和 `totalHeat` 分别记录累计得分、目标分数和已过关场次累计得分；不得为了改文案迁移存档或更改内容身份。通常在最终得分时向下取整；苏轼「贬谪」先取普通整数得分，再乘该存档身份的倍率。大数使用有理数和十进制字符串序列化，不以浮点近似代替。
 
 一手计分的关键顺序：
 
@@ -87,6 +87,7 @@ tools/          离线素材工具
 - 新局 `purchase-value-v1` 在上述身份基础上独立调整：无中生有基础热度 +24（空槽另每格 +12、最多四格），炉火纯青基础热度 +40（成组结算后成长 +10），莫逆之交基础倍率 +1.5（成组结算后成长 +0.25）；价格、增长时机和上限不变。`targeted-value-v1` 及更早存档继续使用原定义和哈希，重试不迁移。受控同一手两对、第五槽比较和多彩成本由 `tests/purchase-value-sample.test.ts` 验证；单个样本不代表自然触发率或购买收益。
 - 新局 `voice-choice-v1` 身份可在自选做牌以原价4金购买留个声（T13），与升级、改牌和染色共用每店一次；随机现货仍独立，旧身份保留原获取路径和哈希。购买后选择1–2张，覆盖增强须确认，Q10 禁止增强。留声纸每张有效留牌 +1 倍率；余音绕梁按手牌顺序在前两张有效留声纸各自加1后分别 ×1.2，未调整数值。
 - `src/content/r2Modes.ts` 定义普通、教程、挑战模式，D0–D3 难度、12 个固定条件挑战和 4 种节目单。
+- 全新玩家可进入固定示例牌局：通过真实出牌、弃牌、购买及唐宋牌计分逐步教学，再用实际刘娥技能事件解释效果，最后独立出牌；教程不计普通进度。提示随本地选牌和真实对象位置更新，教学进度只认已保存命令；可跳过、续玩和从菜单重玩，旧存档和显式导入不自动进入教学。`GuidedTutorial` 使用正常保存命令开场，`NoviceGuide` 从已保存命令与计分事件还原进度；提示偏好不是游戏进度。
 - 模式、难度、挑战和节目单开关进入对局身份及存储分区，不得在恢复时静默改成默认配置。
 - 扑克奇遇在符合身份的标准局、普通八章内，按独立随机流每 7–9 次有效过场触发。玩家可支付 18 金，为一张仍存活、无版次的持久扑克赋予多彩；与本店培养／改牌共用一次机会，扣款、赋予、机会消耗和回执必须同事务保存。
 - 内容新增或修改必须通过 schema 与内容校验；未实现的能力不能进入获取池。
@@ -128,7 +129,9 @@ tools/          离线素材工具
 
 - 动画消费已经确定的 ScoreTrace／事件，不反向计算分数。
 - 每代演出拥有独立取消信号；场景关闭时清理 tween、timer、监听和视图引用，旧回调不得操作新对局。
-- 英雄技能保留既有来源线和舞台线的样式，在线条外沿叠加小段移动的蓝白电弧；来源线并行绘制窗口为 900ms，不增加技能队列等待。来源轨迹遇计分板、唐宋牌区域或出牌区域时只保留来源一侧，避免穿板后露出断段；其他受保护内容仍需避让。已保存的技能目标牌在飞行与命中时以牌体为锚显示细蓝白余电，单次最长 1000ms 并随牌面、其他牌和控件裁剪，不延长计分或输入等待。减少动态时不显示电流，提前释放或跳过可截断，电流层随演出清理。
+- 英雄技能来源电流以单个蓝白亮核沿真实来源至受益牌的线路传播，基准窗口为 900ms，随计分速度推进；短尾迹与火花依附线路，到达后实际受益牌边缘短暂亮起。线路和光效避开牌面、文字、控件及视口边缘，空间不足时安全裁剪或省略；余电最多 1500ms。减少动态时不显示，跳过、切场或取消时清理，表现不改变计分。
+- 一手已提交的计分事件首次跨过 ×10，或在已达到 ×10 后通过乘法至少翻倍且确实提高得分时，紫焰在结果保存并建立展示后立即从计分板底边燃起，伴随逐项计分并在结束后淡出；每手至多一次，回看和减少动态时不播放。火根与火舌逐帧避让文字、牌面和控件；首次可见时经 SFX 总线播放现有自合成火声（指定实录尚未接入），随火焰淡出。静音、速度变更、跳过、切场和取消时释放，不等待演出决定得分。
+- `node harness/hero-high-aura-fullrack.mjs` 用经过校验的五张唐宋牌受控存档，通过真实技能与出牌输入观察五张出牌时的紫焰；可用 `FULLRACK_VIEWPORTS`、`FULLRACK_MODES` 限定尺寸与 `muted,reduced,skip,speed2,speed4,speedchange` 场景，`FULLRACK_LEGACY_REF` 可用指定旧提交生成存档。输出放在被忽略的 `shots/`，Chromium 模拟不能代替实体设备体验。
 - 多彩扑克牌采用独立光谱彩缘：牌桌与奇遇预览保留流光，商店工具小牌为静态内缘；减少动态时静止，牌面、选中与停用标识保持可见。唐宋牌与其他版次使用原有表现。
 - 牌桌提示文字按画布密度生成纹理；开场动画若已实际出现且场内有安全空间，可继续显示不阻挡输入的短文字，切场、弹窗或出牌时取消。
 - 跳过、快进、静音、减少动态、后台切换和 resize 不改变规则结果，也不重复奖励。
@@ -152,78 +155,24 @@ tools/          离线素材工具
 - 音频统一走应用级总线，处理解锁、后台 suspend、音量偏好和实例清理。
 - 资源使用注册表与 `BASE_URL`；源素材、运行时变体和预览文件分开，首屏只加载必要资源。`BootScene` 先关闭静态首屏并进入标题，旧局 IndexedDB 恢复与 opening 图片恢复由 `prepareDestinationBackground` 后台运行；缺图保留 `ResourceRecovery` 重试，不得阻塞新局入口。
 - 当前素材清单为 `docs/assets/inventory.json`，素材检查工具位于 `tools/blender/`。
+- 原始素材的完整副本保存在私有仓库 `big-dimple/tangsongpai-assets`，正式运行图、音频和模型仍由 `public/assets/` 管理。`docs/assets/source-archive.json` 固定已验证的资产提交和清单摘要，`docs/assets/source-inventory.jsonl` 按原路径记录 542 个文件的字节数及 SHA256。获取对应提交后，设置 `TANGSONGPAI_ASSETS_ROOT` 为资产仓库检出目录并运行 `npm run test:source-archive`，逐文件校验 SHA256 并执行原图检查；需要读取原图的素材重建脚本也使用此变量。公开 CI 只能核对来源清单与运行资源，不能把未读取的原图称为已验证；B05 严格原图解码测试在没有私有素材时跳过。
 - 英雄文案数据为 `src/content/hero-text-spec.json`；清理文档不改其内容，也不将文案技能说明当成所有旧存档共用的规则。
 
 本轮三条视觉重做线的实现入口已经合并：`PcTableLayout`/`StageTableArt` 负责牌桌，`ShopLayout`/`ShopScene`/`ShopArt`/`ShopMobileOffers` 负责商店，`IntermissionLayout`/`PcSettlementPresentation`/`MobileSettlementPresentation` 负责结算。后续只处理用户试玩后可复现的工程问题，不把检查数量写成审美结论。
 
-## 8. 测试、CI 与发布
+## 8. CI、Release 与服务器部署
 
-现有检查可分为两类：
+开发侧按改动执行检查；完整门禁为 `npm ci` 后运行 `npm run verify:ci -- --scope=all`，包含单元测试、内容校验、类型检查、生产构建及 Chromium 桌面／手机冒烟。手柄相关改动另运行 `npm run test:gamepad:browser`。自动检查不等于人工美术、听感或实体设备验收。
 
-- `domain`：`npm test` 与 `npm run verify:content`。
-- `browser`：`npm run build` 与 `npm run verify:smoke`。
+`.github/workflows/release-candidate.yml`（GitHub Actions 名称 **CI and release**）在 main push 时触发，也支持手动运行。只读的 candidate job 执行上述门禁并生成生产包；通过后，只有 main 的 publish job 使用内置 `GITHUB_TOKEN` 的 `contents: write` 创建并验证 Release。工作流和账号是否可运行，以实际 Actions 结果为准。
 
-推送 main 前，在 Dot 远端开发电脑或开发者本机执行完整 CI。`npm ci` 按锁文件安装依赖；`verify:ci` 顺序运行完整单元测试、内容校验、类型检查与唯一生产构建、Chromium 桌面和手机冒烟。冒烟脚本另建供测试使用的 e2e 预览，不是交付的生产包；生产产物为 `dist/`。优先使用已安装的系统 Chrome／Chromium，通过项目支持的路径配置；以下分别为 Bash 和 PowerShell 示例，路径按实际机器调整：
+正式 Release 使用 `v<完整提交SHA>` 标签，标签指向该提交；完整资产只有 `dist.tar.gz`、`dist.tar.gz.sha256`、`manifest.json`。manifest 的 `sourceRevision`、归档内 `build-info.json` 的 `revision` 和标签提交必须相同，`dist.tar.gz.sha256` 与 manifest 中的摘要必须对应归档；manifest 还包含构建信息及同一提交通过的 CI 报告。完整草稿验证通过且 main 仍匹配时才发布并设为 latest；已有正式 Release 不覆盖。
 
-```bash
-npm ci
-SMOKE_BROWSERS=chromium SMOKE_CHROMIUM_EXECUTABLE_PATH=/usr/bin/chromium npm run verify:ci -- --scope=all
-```
+### 新加坡服务器消费契约
 
-```powershell
-npm ci
-$env:SMOKE_BROWSERS = 'chromium'
-$env:SMOKE_CHROMIUM_EXECUTABLE_PATH = 'C:\Program Files\Google\Chrome\Application\chrome.exe'
-npm run verify:ci -- --scope=all
-```
-
-`npm run verify:ci -- --scope=domain|browser|all` 也可执行对应组合；`all` 默认只选 Chromium，上述配置明确指定系统浏览器。也可使用已安装的 Playwright Chromium。专项恢复、布局、故障和素材检查按相关改动另跑。检查全部通过后核对 `shots/ci/all.json` 中的提交 SHA、各步骤状态和退出码，以及前后源码、索引和 HEAD 一致；确认检查覆盖即将推送的提交，才推送 main。检查未运行或失败时明确报告，不以发布成功代替 CI 结果。测试使用的 JSON／压缩夹具属于代码输入，不为追求目录整洁而删除。
-
-手柄、场景输入、选择卡片或对应 harness 发生变更时，按适用范围另跑 `test:gamepad:browser`；该脚本的系统浏览器路径变量为 `CHROMIUM_PATH`，与冒烟脚本的 `SMOKE_CHROMIUM_EXECUTABLE_PATH` 不同。专项结果与失败截图保存在 `shots/gamepad/` 中，同样核对提交 SHA、结果和退出码。
-
-牌面遮挡检查测量包含父容器变换的实际四边形相交面积；旋转后的外接矩形包含牌外空白，不能代替真实遮挡。
-
-### 开发电脑：交付 Release 给服务器
-
-服务器当前每分钟检查 GitHub `big-dimple/tangsongpai` 的 main，**只接收与 main 的完整提交 SHA 完全一致的已发布 Release，匹配依据是 Release 资产 `manifest.json` 的 `sourceRevision`，不是 Release 标签名**。它不读取入库的 `dist/`，也不会在服务器上安装依赖、构建或测试。当前服务器的取件脚本已安装；仓库中旧的自动部署脚本尚未同步，不能以它判断服务器实际行为。没有匹配的 Release 时，服务器保留线上旧版本并继续等待。
-
-此前 `dist/` 被误提交进 main：先在开发电脑核对 `git status` 和最新 main，保留他人改动。根据本次用户要求，在开发侧将 `dist/` 恢复为忽略项并从 Git **索引**移除（例如添加 `.gitignore` 的 `dist/` 后执行 `git rm -r --cached -- dist`，不删除本地构建目录），提交该清理；不要改写、重置或强推历史。此后提交源码、不提交 `dist/`。当前误入库产物的 `build-info.json` 对应其前一个源码提交，不能把它标成清理提交或最新 main 的构建；必须针对最终提交重新执行 CI 和唯一生产构建。
-
-按以下顺序在远端开发电脑操作，推送和创建 Release 按用户授权执行：
-
-1. 在干净工作区提交准备发布的最终源码及上述清理，确认 `git status --short` 没有修改。执行上面的 `npm ci`、`npm run verify:ci -- --scope=all`，以及本次改动需要的专项。失败立即停止；不能补写或伪造 CI 结果，也不能在服务器代跑。
-2. 核对 `shots/ci/all.json`：`scope` 为 `all`，`status` 为 `PASS`，`exitCode` 为 `0`，`testedCommit` 为当前完整 `git rev-parse HEAD`；`before` 与 `after` 完全一致且 `head` 是该 SHA；`test`、`verify:content`、`build`、`verify:smoke` 四个步骤都 `PASS` 且 `childExitCode` 为 `0`。`dist/build-info.json` 的 `revision` 必须等于同一 SHA，`sourceStatus` 是 `clean`、`modified` 是 `false`。`dist/index.html` 必须存在。
-3. 在同一个未修改的检出目录运行 `python3 scripts/prepare-release-artifact.py`（Windows 可用 `python`）。它复核上述报告、当前源码快照和构建身份，不重跑构建；输出 `shots/deploy/<完整 SHA>/` 内的三个文件。若拒绝，修复原因并按需重跑 CI，不要手改报告或构建信息。`shots/` 和 `dist/` 不提交到 main。
-4. 推送通过 CI 的提交到 main；推送前确认远端 main 没有新增工作，禁止强推。若 main 已变化，保留他人修改，基于最新 main 合并后重新执行 CI、构建和打包。服务器要求 Release 的 `manifest.json` `sourceRevision`、归档内 `build-info.json` 的 `revision` 与 main **完全一致**，祖先提交不够。
-5. 建立草稿 Release，上传以下三个文件，核对内容后再发布。**GitHub 禁止创建 40 或 64 位纯十六进制字符的分支或标签名（pre-receive 拒绝），因此 Release 标签统一为 `v` + 完整 SHA**（例如 `v3499dae8…`），标签必须指向该提交，不能是分支名或缩写；服务器一律以 `manifest.json` 的 `sourceRevision` 匹配 main，标签名只用于人读定位。服务器只处理已发布的正式 Release，草稿、预发布、缺件、sourceRevision 不匹配或校验失败都会等待或拒绝。
-
-服务器要求文件名和内容如下：
-
-- `dist.tar.gz`：生产构建归档，解开根目录直接包含 `index.html`、`build-info.json` 与素材目录；不能包含符号链接、不安全路径或特殊文件。
-- `dist.tar.gz.sha256`：单行 `<64位小写SHA256>  dist.tar.gz`，校验值必须匹配归档。
-- `manifest.json`：`schemaVersion: 1`、`sourceRevision: "<完整 SHA>"`、`artifact: {"name":"dist.tar.gz","sha256":"<归档 SHA256>"}`，以及 `buildInfo`（与归档内 `build-info.json` 完全相同）和 `ci`（原样复制已通过的 `shots/ci/all.json`）。以上打包脚本生成该格式。
-
-Bash 示例（先完成并核对上述 CI，仓库和 GitHub CLI 已登录）：
-
-```bash
-python3 scripts/prepare-release-artifact.py
-revision=$(git rev-parse HEAD)
-artifact_dir="shots/deploy/$revision"
-gh release create "v$revision" --repo big-dimple/tangsongpai --target "$revision" --draft --title "$revision" --notes "CI-verified production artifact" "$artifact_dir/dist.tar.gz" "$artifact_dir/dist.tar.gz.sha256" "$artifact_dir/manifest.json"
-verify_dir=$(mktemp -d)
-gh release download "v$revision" --repo big-dimple/tangsongpai --dir "$verify_dir" --pattern 'dist.tar.gz' --pattern 'dist.tar.gz.sha256' --pattern 'manifest.json'
-cmp "$artifact_dir/dist.tar.gz" "$verify_dir/dist.tar.gz"
-cmp "$artifact_dir/dist.tar.gz.sha256" "$verify_dir/dist.tar.gz.sha256"
-cmp "$artifact_dir/manifest.json" "$verify_dir/manifest.json"
-(cd "$verify_dir" && sha256sum -c dist.tar.gz.sha256)
-gh release edit "v$revision" --repo big-dimple/tangsongpai --draft=false
-```
-
-Windows PowerShell 使用 `python scripts/prepare-release-artifact.py`、`$revision = (git rev-parse HEAD).Trim()`、`$artifactDir = "shots/deploy/$revision"`，其余 `gh release create/download/edit` 参数相同；用 `Get-FileHash -Algorithm SHA256` 和文件内容核对下载资产。发布后确认三个资产均已上传、Release 不再是草稿、标签指向该 SHA，且远端 main 仍是该 SHA。认证应使用有仓库访问权限的账号；SHA256 只证明文件一致，不单独证明来源。
-
-分别报告推送 SHA、CI 状态、Release 交付和公网 `https://pai.hp666.cc/build-info.json` 的实际 revision；Release 发布后服务器通常在下一分钟开始处理，上传与域名传播还需要时间，不保证固定上线时刻。服务器只获取、校验、上传和确认；没有匹配包或验证失败时不会把旧版本称为新版本。历史本机 CI 报告不代表当前提交通过 CI。
-
-GitHub 仓库为 `big-dimple/tangsongpai`，Cloudflare Pages 项目为 `dachoupai`。三个 GitHub 工作流已禁用，不是本机发布门禁；自动检查不代表真人、美术、设备或平衡验收。检查失败时查看日志并修复，不通过放宽检查或伪造结果交付。
+1. 读取远端 main 的完整 SHA，查找已发布、非预发布且 `manifest.json` 的 `sourceRevision` 和标签提交均等于该 SHA 的 Release。main 更新到新 Release 完成之间有时间差；无匹配包、缺件或校验失败时保留旧版本并稍后重试，不能把旧 latest 当成新版本。
+2. 下载上述三个文件，核对摘要及归档内 `build-info.json`，安全解压后使用现有部署工具发布；服务器不运行 `npm ci`、测试或构建。部署后以公网 `https://pai.hp666.cc/build-info.json` 的 revision 确认实际版本。提交、CI、Release 和公网部署分别报告。
+3. **先核对实际安装**：仓库当前的 `scripts/tangsongpai-autodeploy.sh` 是会在服务器执行 `npm ci` 和 Vite 构建的旧脚本，不代表上述接收契约。`fix/tangsongpai-release-20261031083117` 分支另有按 manifest 匹配提交的接收器实现；服务器 AI 应检查实际 cron 入口和已安装脚本，判断是否满足本契约，若不满足再按授权处理。不得假定服务器已经兼容，也不因本次发布擅自修改服务器。
 
 ## 9. 文档维护
 

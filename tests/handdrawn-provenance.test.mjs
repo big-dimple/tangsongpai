@@ -1,6 +1,7 @@
 import {it, expect} from 'vitest';
 import fs from 'node:fs';
 import {readJSON, receiptHash, receiptOutputs, receiptRecord, runtimeManifestPath, sha256, verifyOriginal, verifyProvenance} from '../scripts/handdrawn-provenance.mjs';
+import {originalPath,sourceInventory} from '../scripts/source-originals.mjs';
 
 const manifest = readJSON(runtimeManifestPath);
 const half1 = 'art/sources/handdrawn-runtime-20261017-half1/manifest.json';
@@ -15,8 +16,9 @@ const currentReceipts = [
   [b05, '70340cc590a22882948490e6276808b9d12cca70', '76459e0c50e2ba0763b7b5bdf81b71e00ca8de2c382406a28879983aed8d9e18', 1],
 ];
 
-it('verifies all active sources and 147 outputs, reporting four Git-only historical outputs as pending', async () => {
-  expect(await verifyProvenance(manifest)).toEqual({sourceVerified:72, originalsVerified:74,
+it('verifies receipts and 147 outputs, reporting whether original bytes were checked', async () => {
+  const strict=!!process.env.TANGSONGPAI_ASSETS_ROOT;
+  expect(await verifyProvenance(manifest)).toEqual({sourceReceiptsVerified:72, originalsRecorded:74, originalsVerified:strict?74:0, sourceBytesStatus:strict?'VERIFIED':'NOT_CHECKED',
     derivativeOnlyIds:['j','q','k'],
     runtimeFiles:147, runtimeBytes:9701766, receiptsVerified:16, gitHistory:false,
     historicalGitOutputsVerified:0,historicalGitOutputsPending:4});
@@ -36,9 +38,9 @@ it('distinguishes A11 v3 and the C06 override from their archived sources', () =
   for (const output of a11.outputs) expect(output.path).toBe('cards/a11-v3-' + output.sha256.slice(0,12) + '.' + output.purpose + '.webp');
   expect(blue.currentSource.sourceManifestPath).toBe(c06);
   expect(blue.historicalSources.map(s => s.sourceManifestPath)).toEqual(['art/sources/handdrawn-runtime-20261004-b9/manifest.json', half1]);
-  const replacement = readJSON(c06), original = fs.readFileSync('art/sources/qingchuyulan-art-20261017/' + replacement.sourceFilename);
-  expect(sha256(original)).toBe('7b530adb5ede95719ad37f4813e90f0ad42faa657763b7f5c60152a3f3b963e9');
-  expect(original.length).toBe(3937366);
+  const replacement = readJSON(c06), source='art/sources/qingchuyulan-art-20261017/' + replacement.sourceFilename;
+  expect(sourceInventory().get(source)).toMatchObject({sha256:'7b530adb5ede95719ad37f4813e90f0ad42faa657763b7f5c60152a3f3b963e9',bytes:3937366});
+  if(process.env.TANGSONGPAI_ASSETS_ROOT){const original=fs.readFileSync(originalPath(source));expect(sha256(original)).toBe(replacement.sourceSHA256);expect(original.length).toBe(replacement.sourceBytes);}
   expect(replacement.previous.outputs).toEqual(receiptOutputs(receiptRecord(readJSON(half1), 'c06')));
 });
 
@@ -96,7 +98,7 @@ it('rejects forged receipt hashes, hidden legacy fields and missing functional s
 });
 
 it('rejects an original-byte substitution of identical length', () => {
-  const record = readJSON(half1).assets[0], bytes = fs.readFileSync('art/sources/handdrawn-runtime-20261017-half1/' + record.sourceFile);
+  const bytes=Buffer.from('synthetic original'),record={id:'fixture',sourceBytes:bytes.length,sourceSHA256:sha256(bytes)};
   const changed = Buffer.from(bytes); changed[changed.length-1] ^= 1;
   expect(() => verifyOriginal(record, changed)).toThrow('original SHA256');
 });

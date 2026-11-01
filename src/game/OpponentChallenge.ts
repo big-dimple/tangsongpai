@@ -16,9 +16,9 @@ export function opponentChallenge(run:R2RunState,selected?:R2HandType){
  const badge=kind==='opening'?'首手不减半':kind==='repeat'?'同型 · 基础½':kind==='change'?'换型 · 基础正常':'再出'+HAND_LABELS[previous!]+' · 基础½';
  const quote=kind==='opening'?'来，让我记住你的第一招。':kind==='repeat'?'这一招，我已经记住了。':kind==='change'?'换招？好，我接着。':'上一招，我记下了。';
  return {kind,previous,selected,badge,quote,target:stage.targetHeat,heat:stage.heat,handsLeft:stage.handsLeft,
-  pressure:heatText(stage.heat)+' / '+heatText(stage.targetHeat)+' 热度 · 余'+stage.handsLeft+'手',
+  pressure:heatText(stage.heat)+' / '+heatText(stage.targetHeat)+' 分 · 余'+stage.handsLeft+'手',
   remembered:previous?'已认招 · '+HAND_LABELS[previous]:'尚未出招 · 首手基础正常',
-  rule:'连出同型，仅牌型基础½',other:'牌点数、增强、助演热度照常',selection:selected?HAND_LABELS[selected]+' · '+(kind==='opening'?'首手正常':kind==='repeat'?'同型基础½':'换型基础正常'):undefined};
+  rule:'连出同型，仅牌型基础½',other:'牌点数、增强、唐宋牌筹码照常',selection:selected?HAND_LABELS[selected]+' · '+(kind==='opening'?'首手正常':kind==='repeat'?'同型基础½':'换型基础正常'):undefined};
 }
 
 /** Owns only the existing empty played-card workplane; no timers, state or extra modal. */

@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
 import {readJSON, receiptHash, receiptOutputs, runtimeManifestPath, verifyOriginal, verifyProvenance, sha256} from './handdrawn-provenance.mjs';
+import {originalPath} from './source-originals.mjs';
 
 export async function buildHanddrawnBatch(batch) {
   const args = process.argv.slice(2);
@@ -23,7 +24,7 @@ export async function buildHanddrawnBatch(batch) {
     }
     assert.equal(asset.currentSource.sourceManifestSHA256, receiptHash(receipt));
     if (!write) continue;
-    const source = fs.readFileSync(path.posix.dirname(sourceManifestPath) + '/' + item.sourceFile);
+    const source = fs.readFileSync(originalPath(path.posix.dirname(sourceManifestPath) + '/' + item.sourceFile));
     verifyOriginal(item, source);
     for (const output of receiptOutputs(item)) {
       const bytes = await sharp(source, {failOn: 'none'})

@@ -180,7 +180,7 @@ async function run(viewport,spec,mode='natural'){
       r.savedBeforeInterrupt=await state(p);r.speedSwitches=[];
       await openMenuSection(p,'settings',true);
       for(const speed of [2,4,1]){
-        await p.getByLabel('演出速度').selectOption(String(speed));
+        await p.getByLabel('计分速度').selectOption(String(speed));
         const observed=await p.evaluate(()=>{const s=window.__harness.game.scene.getScene('game');return {frame:s.game.loop.frame,at:performance.now(),active:!!s.presentation,tweenSpeed:s.tweens.timeScale,clockSpeed:s.time.timeScale,impactCount:s.scoreFlame?.graphic.getData('impactCount')??0};});
         assert.equal(observed.active,true,'speed changed during this actual presentation');assert.equal(observed.tweenSpeed,speed);assert.equal(observed.clockSpeed,speed);assert.deepEqual(await state(p),r.savedBeforeInterrupt);r.speedSwitches.push({speed,...observed});
       }

@@ -1,5 +1,6 @@
 import sharp from 'sharp';
 import {readFile,mkdir,writeFile} from 'node:fs/promises';
+import {originalPath} from './source-originals.mjs';
 import {createHash} from 'node:crypto';
 import assert from 'node:assert/strict';
 const sourceDir='art/sources/tangsong-portraits-20261015',outDir='public/assets/tangsong-portraits';
@@ -11,7 +12,7 @@ const hash=b=>createHash('sha256').update(b).digest('hex');
 const manifest={schemaVersion:1,sourceCommit:'e6922f8d56cf42b9dedd4eab00d772591a7b79ad',sourceDirectory:sourceDir,scope:'Six user-approved originals. Focus is a reviewed head crop from the portrait, not separate eye artwork. No source upscaling.',sourceRevisions:source.revisions??[],assets:[]};
 await mkdir(outDir,{recursive:true});
 for(const hero of source.entries){
- const bytes=await readFile(sourceDir+'/'+hero.file);assert.equal(hash(bytes),hero.sha256);const m=await sharp(bytes).metadata();assert.equal(m.width,1122);assert.equal(m.height,1402);await sharp(bytes).raw().toBuffer();
+ const bytes=await readFile(originalPath(sourceDir+'/'+hero.file));assert.equal(hash(bytes),hero.sha256);const m=await sharp(bytes).metadata();assert.equal(m.width,1122);assert.equal(m.height,1402);await sharp(bytes).raw().toBuffer();
  for(const purpose of ['avatar','selection','portrait','focus']){
   const crop=['avatar','focus'].includes(purpose)?crops[hero.heroId]:{left:0,top:0,width:m.width,height:m.height};
   const size={avatar:[256,256],selection:[256,320],portrait:[615,768],focus:[600,600]}[purpose];

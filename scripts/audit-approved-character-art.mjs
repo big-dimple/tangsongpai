@@ -1,11 +1,12 @@
 import sharp from 'sharp';
 import assert from 'node:assert/strict';
 import {readFile,writeFile} from 'node:fs/promises';
+import {originalPath} from './source-originals.mjs';
 import {createHash} from 'node:crypto';
 import {createServer} from 'vite';
 const sourceDir='art/sources/tangsong-portraits-20261015',sources=JSON.parse(await readFile(sourceDir+'/manifest.json','utf8')),runtime=JSON.parse(await readFile('public/assets/tangsong-portraits/manifest.json','utf8'));
 const hash=b=>createHash('sha256').update(b).digest('hex'),files=[];
-for(const s of sources.entries){const b=await readFile(sourceDir+'/'+s.file),m=await sharp(b).metadata();assert.equal(b.length,s.bytes);assert.equal(hash(b),s.sha256);assert.equal(m.width,1122);assert.equal(m.height,1402);await sharp(b).raw().toBuffer();
+for(const s of sources.entries){const b=await readFile(originalPath(sourceDir+'/'+s.file)),m=await sharp(b).metadata();assert.equal(b.length,s.bytes);assert.equal(hash(b),s.sha256);assert.equal(m.width,1122);assert.equal(m.height,1402);await sharp(b).raw().toBuffer();
  const outputs=runtime.assets.filter(a=>a.id===s.heroId);assert.deepEqual(outputs.map(a=>a.purpose),['avatar','selection','portrait','focus']);
  for(const a of outputs){const d=await readFile('public/'+a.path),m=await sharp(d).metadata();await sharp(d).raw().toBuffer();assert.equal(hash(d),a.sha256);assert.equal(d.length,a.bytes);assert.equal(m.width,a.width);assert.equal(m.height,a.height);assert.equal(a.sourceSHA256,s.sha256);assert.ok(d.length<=128*1024);assert.ok(m.width*m.height<=600000);assert.ok(m.width<=a.cropPixels.width&&m.height<=a.cropPixels.height);assert.ok(a.cropPixels.x>=0&&a.cropPixels.y>=0&&a.cropPixels.x+a.cropPixels.width<=s.width&&a.cropPixels.y+a.cropPixels.height<=s.height);}
  files.push({id:s.heroId,sourceSHA256:s.sha256,sourceBytes:s.bytes,sourceDimensions:[s.width,s.height],outputs});}

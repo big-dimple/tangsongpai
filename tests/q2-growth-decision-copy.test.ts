@@ -6,6 +6,7 @@ import {r2CreateJoker} from '../src/domain/r2Run';
 import {jokerGrowthDecisionCopy} from '../src/game/JokerGrowthDecisionCopy';
 import {jokerAbilityCopyForRun,publicJokerMemoryContext} from '../src/game/JokerMemory';
 import {shopDecisionCopy} from '../src/game/ShopDecisionCopy';
+import {playerText} from '../src/game/Brand';
 import {R2_TOOLS} from '../src/content/r2Tools';
 const state=()=>createRun({seed:'policy-valid-groups',runId:'growth-copy',characterId:'erxiang',rulesVersion:'r2',r2Identity:newRunIdentity('erxiang','straight'),openingRoute:'straight'});
 describe('Q2 first-layer growth purchase decision, only four supported cards',()=>{
@@ -15,7 +16,8 @@ describe('Q2 first-layer growth purchase decision, only four supported cards',()
  });
  it('front-layer offer copy keeps the c04 immediate conditional +50 and the same Tips instead of rewriting it to growth jargon',()=>{
   const s=state(),o=s.shop!.offers.find(o=>o.definitionId==='c04')!,d=r2JokerDefinitionFor(s,'c04'),expected=jokerGrowthDecisionCopy(d,undefined)!,before=JSON.stringify(s),copy=shopDecisionCopy(s,o);
-  expect(copy.now).toBe(expected.effect);expect(copy.purchaseAbility?.plain?.effectLine).toBe(expected.effect);expect(copy.purchaseAbility?.plain?.essential).toBe(expected.tip);expect(copy.now).not.toContain('成长+10顶100');expect(JSON.stringify(s)).toBe(before);
+  expect(copy.now).toBe(playerText(expected.effect));expect(copy.now).toContain('筹码+50');expect(copy.now).toContain('攒+10筹码');
+  expect(copy.purchaseAbility?.plain?.effectLine).toBe(playerText(expected.effect));expect(copy.purchaseAbility?.plain?.essential).toBe(expected.tip);expect(copy.now).not.toContain('成长+10顶100');expect(JSON.stringify(s)).toBe(before);
  });
  it('headroom, current saved value and cap stay real; the default layer has no fabricated past read',()=>{
   const s=state(),d=r2JokerDefinitionFor(s,'c04'),j=r2CreateJoker('c04','held',4,undefined,s),ctx=publicJokerMemoryContext(s,{hand:[],scoringLimited:false,deckSize:52,jokerSlots:5,jokerCount:1});

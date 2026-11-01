@@ -1,4 +1,4 @@
-import type {SaveSlots,SaveStore} from '../application/SavedRun';
+import type {SaveCommitOptions,SaveSlots,SaveStore} from '../application/SavedRun';
 import {readCheckpoint,type Checkpoint} from '../application/checkpoint';
 import {r2ModeStorageKey,type R2ModeSelection} from '../content/r2Modes';
 import {R2_RULESETS,r2RulesetFor} from '../domain/r2Run';
@@ -6,7 +6,7 @@ import {R2_RULESETS,r2RulesetFor} from '../domain/r2Run';
 const DB_NAME='tangsongpai-checkpoints';
 const STORE='saves';
 interface Meta {revision:number;slotKey:string}
-interface Slots {current:unknown|null;previous:unknown|null}
+interface Slots {current:unknown|null;previous:unknown|null;guidedOpeningSuppressedRunIds?:readonly string[]}
 
 /** A complete state and its receipts/journal, plus the previous valid state, in one transaction. */
 export class IndexedDbSave implements SaveStore {
@@ -27,6 +27,18 @@ export class IndexedDbSave implements SaveStore {
   }
   async read():Promise<SaveSlots> {
     return this.readSlots();
+  }
+  /** First-run auto-start must not replace any active, retained or unreadable record.
+   * The following commit compares revision zero atomically with concurrent writers. */
+  async readEmptyHistory():Promise<SaveSlots> {
+    const db=await this.db();
+    return new Promise((resolve,reject)=>{
+      const tx=db.transaction(STORE,'readonly'),request=tx.objectStore(STORE).openCursor();
+      let occupied=false;
+      request.onsuccess=()=>{occupied=request.result!==null;};
+      tx.oncomplete=()=>occupied?reject(Error('history-not-empty')):resolve({revision:0,current:null,previous:null});
+      tx.onabort=tx.onerror=()=>reject(tx.error??Error('storage-read-failed'));
+    });
   }
   /** Reading a selection does not change the globally published mode or its compare-and-swap revision. */
   async readPartition(selection:R2ModeSelection&{contentVersion?:unknown;contentHash?:unknown}):Promise<SaveSlots> {
@@ -50,7 +62,10 @@ export class IndexedDbSave implements SaveStore {
           const key=keys.shift();if(!key)return;
           const saved=store.get(key);saved.onsuccess=()=>{
             const found=saved.result as Slots|undefined;
-            if(found&&(found.current!==null||found.previous!==null)){slots.current=found.current??null;slots.previous=found.previous??null;}
+            if(found&&(found.current!==null||found.previous!==null)){
+              slots.current=found.current??null;slots.previous=found.previous??null;
+              if(Array.isArray(found.guidedOpeningSuppressedRunIds))slots.guidedOpeningSuppressedRunIds=found.guidedOpeningSuppressedRunIds.filter((id):id is string=>typeof id==='string').slice(0,2);
+            }
             else next();
           };
         };next();
@@ -58,7 +73,7 @@ export class IndexedDbSave implements SaveStore {
       tx.oncomplete=()=>resolve(slots);tx.onabort=tx.onerror=()=>reject(tx.error??Error('storage-read-failed'));
     });
   }
-  async commit(expectedRevision:number,current:Checkpoint,previous:Checkpoint|null):Promise<number> {
+  async commit(expectedRevision:number,current:Checkpoint,previous:Checkpoint|null,options:SaveCommitOptions={}):Promise<number> {
     if(!this.canWrite())throw Error('read-only');
     const checked=readCheckpoint(current);if(!checked.ok)throw Error(checked.code);
     const candidate=checked.checkpoint,slotKey=r2ModeStorageKey(candidate.state,candidate.state.contentHash);
@@ -82,7 +97,10 @@ export class IndexedDbSave implements SaveStore {
               if(!oldRead.ok||r2ModeStorageKey(oldRead.checkpoint.state,oldRead.checkpoint.state.contentHash)!==slotKey)
                 store.put(old,`retained:${slotKey}:${expectedRevision}`);
             }
-            store.put({current:candidate,previous:backup},slotKey);
+            const retainedIds=[candidate.state.runId,...(backup?[backup.state.runId]:[])];
+            const suppressed=new Set(Array.isArray(old?.guidedOpeningSuppressedRunIds)?old.guidedOpeningSuppressedRunIds.filter(id=>typeof id==='string'&&retainedIds.includes(id)):[]);
+            if(options.suppressGuidedOpening)suppressed.add(candidate.state.runId);
+            store.put({current:candidate,previous:backup,...(suppressed.size?{guidedOpeningSuppressedRunIds:[...suppressed]}:{})},slotKey);
             store.put({revision:expectedRevision+1,slotKey},'meta');
           } catch(error){abort(error);}
         };

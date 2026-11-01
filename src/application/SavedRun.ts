@@ -3,10 +3,11 @@ import {applyCommand,type Action,type Command,type CommandResult,type R2RunState
 import {freezeCheckpoint} from './RunController';
 import {makeCheckpoint,restoreSlots,type Checkpoint} from './checkpoint';
 
-export interface SaveSlots {revision:number;current:unknown|null;previous:unknown|null}
+export interface SaveSlots {revision:number;current:unknown|null;previous:unknown|null;guidedOpeningSuppressedRunIds?:readonly string[]}
+export interface SaveCommitOptions {suppressGuidedOpening?:boolean}
 export interface SaveStore {
   read():Promise<SaveSlots>;
-  commit(expectedRevision:number,current:Checkpoint,previous:Checkpoint|null):Promise<number>;
+  commit(expectedRevision:number,current:Checkpoint,previous:Checkpoint|null,options?:SaveCommitOptions):Promise<number>;
 }
 type Success=Extract<CommandResult<R2RunState>,{ok:true}>;
 export type SaveStatus='idle'|'saving'|'paused'|'readonly';
@@ -15,30 +16,33 @@ export type SaveStatus='idle'|'saving'|'paused'|'readonly';
 export class SavedRun {
   private checkpoint:Checkpoint;
   private revision:number;
-  private pending?:{checkpoint:Checkpoint;result:Success;backup:Checkpoint|null};
+  private pending?:{checkpoint:Checkpoint;result:Success;backup:Checkpoint|null;suppressGuidedOpening?:boolean};
   private active?:Promise<CommandResult<R2RunState>>;
+  private readonly suppressedOpenings:Set<string>;
   status:SaveStatus='idle';
   lastError='';
   onChange:()=>void=()=>{};
 
-  private constructor(private readonly store:SaveStore,checkpoint:Checkpoint,revision:number){
-    this.checkpoint=freezeCheckpoint(checkpoint);this.revision=revision;
+  private constructor(private readonly store:SaveStore,checkpoint:Checkpoint,revision:number,suppressedOpenings:readonly string[]=[]){
+    this.checkpoint=freezeCheckpoint(checkpoint);this.revision=revision;this.suppressedOpenings=new Set(suppressedOpenings);
   }
   get state():R2RunState {return this.checkpoint.state;}
   get journal():readonly Command[] {return this.checkpoint.journal;}
+  /** Slot metadata, never part of the game rules or a substitute for its receipts. */
+  get guidedOpeningSuppressed():boolean {return this.suppressedOpenings.has(this.state.runId);}
   exportJSON():string {return JSON.stringify(this.pending?.checkpoint??this.checkpoint,null,2);}
 
   static async start(store:SaveStore,state:R2RunState,slots:SaveSlots):Promise<SavedRun> {
     return SavedRun.import(store,makeCheckpoint(state,[]),slots);
   }
-  static async import(store:SaveStore,checkpoint:Checkpoint,slots:SaveSlots):Promise<SavedRun> {
-    const run=new SavedRun(store,checkpoint,slots.revision),state=checkpoint.state,receipt=state.receipts.at(-1)!;
-    run.pending={checkpoint,result:{ok:true,state,events:[],receipt,duplicate:false},backup:restoreSlots(slots).checkpoint??null};
+  static async import(store:SaveStore,checkpoint:Checkpoint,slots:SaveSlots,options:SaveCommitOptions={}):Promise<SavedRun> {
+    const run=new SavedRun(store,checkpoint,slots.revision,slots.guidedOpeningSuppressedRunIds),state=checkpoint.state,receipt=state.receipts.at(-1)!;
+    run.pending={checkpoint,result:{ok:true,state,events:[],receipt,duplicate:false},backup:restoreSlots(slots).checkpoint??null,...(options.suppressGuidedOpening?{suppressGuidedOpening:true}:{})};
     await run.persist();return run;
   }
   static restore(store:SaveStore,slots:SaveSlots):SavedRun {
     const restored=restoreSlots(slots);if(!restored.checkpoint)throw Error(restored.code??'invalid-save');
-    return new SavedRun(store,restored.checkpoint,slots.revision);
+    return new SavedRun(store,restored.checkpoint,slots.revision,slots.guidedOpeningSuppressedRunIds);
   }
   dispatch(action:Action,expectedSeq=this.state.commandSeq):Promise<CommandResult<R2RunState>> {
     return this.submit({runId:this.state.runId,commandId:`${this.state.runId}/command/${this.state.commandSeq+1}`,expectedSeq,action:prepareBossSuitRescueAction(this.state,action)});
@@ -63,7 +67,10 @@ export class SavedRun {
   private async performPersist():Promise<CommandResult<R2RunState>> {
     const pending=this.pending!;this.status='saving';this.onChange();
     try {
-      this.revision=await this.store.commit(this.revision,pending.checkpoint,pending.backup);
+      this.revision=pending.suppressGuidedOpening?
+        await this.store.commit(this.revision,pending.checkpoint,pending.backup,{suppressGuidedOpening:true}):
+        await this.store.commit(this.revision,pending.checkpoint,pending.backup);
+      if(pending.suppressGuidedOpening)this.suppressedOpenings.add(pending.checkpoint.state.runId);
       this.checkpoint=freezeCheckpoint(pending.checkpoint);this.pending=undefined;if(!this.isReadOnly())this.status='idle';this.lastError='';
       return {...pending.result,state:this.state};
     } catch(error) {

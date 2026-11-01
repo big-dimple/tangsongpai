@@ -1,4 +1,5 @@
 import type {Box} from './layout';
+import {playerText} from './Brand';
 import {JOKER_RARITY,type JokerRarity} from './JokerRarity';
 import type {Edition} from '../cards/types';
 
@@ -12,7 +13,9 @@ export interface ShopOfferGeometry {art:Box;title:Box;summary:Box;price:Box;reas
 
 /** A repeated category is not a second effect; full rules remain in details. */
 export function shopOfferSynopsis(now:string,later:string):string {
-  const first=now.trim().replace(/^每次出牌，/,'每次出牌 '),second=later.trim();
+  // Normalize before measuring or inserting line breaks: a split legacy word
+  // cannot be repaired reliably by the canvas text setter afterwards.
+  const first=playerText(now).trim().replace(/^每次出牌，/,'每次出牌 '),second=playerText(later).trim();
   return !second||first===second||first.startsWith(second+' · ')?first:first+'\n'+second;
 }
 

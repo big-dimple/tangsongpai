@@ -12,6 +12,12 @@ import {goodsArtKey} from './GoodsArtLoading';
 import {loadResultSourceArt} from './ResultStageArt';
 import {jokerArtPreviewUrl} from './jokerArt';
 import {paperSceneStart,qiyuSceneStart} from './PaperFlow';
+import {bindNoviceGuide} from './NoviceGuideBinding';
+import {noviceGuide} from './NoviceGuide';
+import {needsGuidedPractice} from './GuidedTutorial';
+import {noviceGuideCanvasBox} from './NoviceGuideView';
+import {requestTutorialReplay} from './TutorialEntry';
+import {skipTutorialToNormal} from './RunMenu';
 import {savedTouyeWager} from './TouyeWagerCopy';
 import {savedBossImpact} from './SavedBossImpact';
 import {stageIdentity} from './StageIdentity';
@@ -126,6 +132,20 @@ export class IntermissionScene extends Phaser.Scene {
       }
     }
     this.view=new SceneView(this,()=>this.render());this.render();this.requestSourceArt();
+    const unmountNoviceGuide=bindNoviceGuide(this,{
+      kind:'intermission',
+      getGeometry:hint=>{
+        const l=this.view.layout,canvas=this.game.canvas.getBoundingClientRect(),viewport=this.resultContent?.getData('viewport') as {top:number}|undefined;
+        const reserve=hint.step==='complete'||hint.step==='replay'?128:86,top=viewport?.top??0;
+        const map=(box:import('./layout').Box)=>noviceGuideCanvasBox(box,canvas,l);
+        return {avoid:top>reserve?[map({x:0,y:0,width:l.width,height:top-reserve}),map({x:0,y:top,width:l.width,height:l.height-top})]:[]};
+      },
+      visible:()=>!this.busy&&!document.querySelector('dialog[open]'),
+      onReplay:()=>requestTutorialReplay(),
+      onSkip:()=>skipTutorialToNormal(this.game),
+      onComplete:()=>skipTutorialToNormal(this.game,'complete'),
+    });
+    this.events.once('shutdown',unmountNoviceGuide);
   }
   private render():void {
     if(this.busy)this.stopSourceArt();
@@ -135,6 +155,7 @@ export class IntermissionScene extends Phaser.Scene {
     const pc=pcResultViewport(l.width,l.height);
     let p=resultLayout(l.width,l.height,0,preferred,pc);
     const nextStage=this.result.cleared&&run.phase==='stage-cleared'?nextStagePreview(run):undefined,skipped=run.phase==='run-lost'?null:run.stage?.skipResult,won=run.phase==='run-won',capped=this.result.cleared&&run.phase==='stage-cleared'&&!nextStage,lost=!this.result.cleared&&!skipped&&!won;
+    const owner=runController(this)!,guidedPractice=!!nextStage&&needsGuidedPractice(owner);
     const animateIn=this.firstRender&&!gameSession().reducedMotion&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.releaseViewport?.();this.releaseViewport=undefined;this.stopCelebration();v.clear();this.paintSourceArt=undefined;this.sourceArtLayer=undefined;v.paperBackground();if(pc)drawPcSettlementArt(this,v);const backgroundCount=v.root.length;
     const content=this.resultContent=this.add.container(0,0).setName('result/content');
@@ -159,6 +180,8 @@ export class IntermissionScene extends Phaser.Scene {
     if(skipped){
       const reward=skipped.kind==='coupon'?'下次买牌减2金券':skipped.kind==='gold'?'库存已满，+1金币':SKIP_ITEM_LABELS[skipped.definitionId];
       heading='跳场所得';body=reward+'。没有过关奖金或利息。'+(nextStage?'\n下一场：'+nextStage.name+' · 目标 '+heatText(nextStage.targetHeat):'');
+    }else if(nextStage&&guidedPractice){
+      heading='继续练习';body='进入下一手，自己选牌出牌。';
     }else if(nextStage){
       const nextIdentity=stageIdentity(nextStage.index,nextStage.index%3===2?run.boss:null,run.tourMode,run.difficulty,{contentVersion:run.contentVersion,contentHash:run.contentHash})!;
       heading=nextIdentity.isBoss?'下一场压轴 · '+nextIdentity.title:'准备下一场';const hero=heroStageContinuity(run);
@@ -166,13 +189,13 @@ export class IntermissionScene extends Phaser.Scene {
     }else if(won){
       const progress=readRunProgress(),qualified=run.mode==='standard'&&!!run.normalCompletion;
       heading=run.mode==='challenge'?R2_MODE_CATALOG.challenges.find(row=>row.id===run.challengeId)!.name+' · 通关':run.mode==='tutorial'?'教学对局通关':'八章通关';
-      body=`${character.name} · 已过关场次累计热度 ${heatText(run.totalHeat)}\n`+(qualified?'构筑与金币已保留，可自愿继续无尽对局。':'本模式结果已保存，可同种子再试或选择下一次对局。');
+      body=`${character.name} · 已过关场次累计得分 ${heatText(run.totalHeat)}\n`+(qualified?'构筑与金币已保留，可自愿继续无尽对局。':'本模式结果已保存，可同种子再试或选择下一次对局。');
       if(qualified&&progress.ok&&progress.progress.standardWins[run.difficulty])body+='\n'+(run.difficulty<3?`D${run.difficulty+1} 与挑战已解锁。`:'四档难度已达最高档；挑战已解锁。');
     }else if(capped){
       heading='已达数值上限';body='进度已保存。可查看本场、在菜单导出，或返回选角。';
     }else if(lost){
       heading='再来一局';
-      body=p.tight?'同局重试从开局，构筑不继承。':`${failureSummary(run).resources}\n已过关场次累计热度 ${heatText(run.totalHeat)} · 余额 ${run.gold} 金\n同局重试从开局重新开始，构筑不继承。`;
+      body=p.tight?'同局重试从开局，构筑不继承。':`${failureSummary(run).resources}\n已过关场次累计得分 ${heatText(run.totalHeat)} · 余额 ${run.gold} 金\n同局重试从开局重新开始，构筑不继承。`;
     }
     const touye=savedTouyeWager(trace,run);if(touye&&!nextStage&&!p.short)body=touye+'\n'+body;
     if(p.short)body=body.replace(/。(?=\n|$)/g,'');
@@ -186,7 +209,7 @@ export class IntermissionScene extends Phaser.Scene {
       const bodyY=nextHeading.y+nextHeading.height+3;
       const nextBody=v.text(n.x,bodyY,body,p.pc?18:14,PAPER_CSS.jade,n.width).setLineSpacing(1).setName('result/next-body');nextBottom=nextBody.y+nextBody.height;
       if(mobile&&nextBottom>n.y+n.height){
-        nextBody.setText(nextStage?`${nextStage.name} · 目标 ${heatText(nextStage.targetHeat)}`:body.split('\n')[0]);nextBottom=nextBody.y+nextBody.height;
+        nextBody.setText(nextStage&&!guidedPractice?`${nextStage.name} · 目标 ${heatText(nextStage.targetHeat)}`:body.split('\n')[0]);nextBottom=nextBody.y+nextBody.height;
         nextHeading.setText(heading+' ›');const hit=v.rect({...n,height:Math.max(44,nextBottom-n.y)}).setFillStyle(0,0).setStrokeStyle();v.target(hit,'action/result-next-details',{tap:()=>this.dialog.open(heading,body,[],{closeLabel:'返回结算'})});
       }
     }
@@ -195,7 +218,7 @@ export class IntermissionScene extends Phaser.Scene {
     if(!p.pc&&(p.portrait||p.wide||p.short)){const shift=nextBottom+(p.wide?20:8)-p.primary.y;p.primary.y+=shift;p.left.y+=shift;p.right.y+=shift;p.noticeY+=shift;}
     if(nextStage){
       this.auxiliary(p.left,'本场详情','action/result-details',()=>this.inspectResult());
-      v.button(p.primary,'前往筹备商店','action/continue-stage',()=>void this.next(),this.ready,true);
+      v.button(p.primary,guidedPractice?'继续练习':'前往筹备商店','action/continue-stage',()=>void this.next(),this.ready,true);
     }else if(won){
       this.auxiliary(p.left,'返回选角','action/return-select',()=>this.returnToSelect(),!this.busy);
       if(run.mode==='standard'&&run.normalCompletion)v.button(p.primary,'继续无尽','action/continue-endless',()=>this.confirmEndless(),this.ready,true);
@@ -212,7 +235,8 @@ export class IntermissionScene extends Phaser.Scene {
     v.text(p.short||p.wide?p.next.x:p.x,p.noticeY,this.busy?'正在保存…':this.notice||(!this.ready?'当前进度未保存或只读，请查看菜单。':capped?'已达数值上限，进度已保存':won?run.mode==='standard'?'八章通关已保存，继续无尽由你决定。':'本模式结果已保存，可重试或返回选角。':nextStage?gift?'':discovery?.full||'':lost?'重试从开局开始，金币与构筑不继承。':''),14,this.notice?'#ffd0b1':'#3F606B',p.short||p.wide?p.next.width:p.w).setName(discovery&&!gift&&nextStage?'growth/discovery':'result/notice');
     content.add(v.root.list.slice(backgroundCount));v.add(content);
     const safeTop=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-top'))||0;
-    this.releaseViewport=mountResultViewport(this,v,content,Math.max(l.hud.y,safeTop+60),l.height-bottom-16,this.resultScroll,offset=>{this.resultScroll=offset;});
+    const hint=noviceGuide(run,runController(this)!.journal),reserve=hint?(hint.step==='complete'||hint.step==='replay'?128:86):0;
+    this.releaseViewport=mountResultViewport(this,v,content,Math.max(l.hud.y,safeTop+60)+reserve,l.height-bottom-16,this.resultScroll,offset=>{this.resultScroll=offset;});
     this.firstRender=false;if(pc||mobile)this.requestSourceArt();
   }
   private auxiliary(b:Box,label:string,name:string,action:()=>void,enabled=true):void {
@@ -293,7 +317,7 @@ export class IntermissionScene extends Phaser.Scene {
   private inspectResult():void {
     const run=runController(this)!.state,stage={...getR2Stage(this.result.stageIndex,run.tourMode,run.difficulty,run)!,targetHeat:run.stage!.targetHeat};
     const last=stageOutcome(run.stage!,run.lastTrace).last,impact=last?savedBossImpact(run,last):'';
-    this.dialog.open('本场详情',`${run.tourMode==='endless'?'无尽 · ':''}${stage.name}\n热度 ${heatText(this.result.stageHeat)} / ${heatText(stage.targetHeat)}\n${this.result.cleared?'过关收益':'本场收益'} ${this.result.goldEarned} 金 · 余额 ${run.gold} 金\n剩余出牌 ${this.result.handsLeft} · 剩余弃牌 ${run.stage?.discardsLeft??0}\n\n当前构筑：`+(run.jokers.map(j=>cardDefinitionName(this.jokerDefinition(j.definitionId))).join('、')||'空')+'\n\n'+(run.stage?.boss?'本场压轴：'+heroText(r2BossText(run.stage.boss)):'本场为普通场。')+(impact?'\n\n'+impact:''),[...(last?[{label:'回看最后一手',run:()=>this.inspectLastHand()}]:[]),...(run.phase==='run-lost'?[{label:'再战建议',run:()=>this.inspectFailure()}]:[])]);
+    this.dialog.open('本场详情',`${run.tourMode==='endless'?'无尽 · ':''}${stage.name}\n累计得分 ${heatText(this.result.stageHeat)} / 目标分数 ${heatText(stage.targetHeat)}\n${this.result.cleared?'过关收益':'本场收益'} ${this.result.goldEarned} 金 · 余额 ${run.gold} 金\n剩余出牌 ${this.result.handsLeft} · 剩余弃牌 ${run.stage?.discardsLeft??0}\n\n当前构筑：`+(run.jokers.map(j=>cardDefinitionName(this.jokerDefinition(j.definitionId))).join('、')||'空')+'\n\n'+(run.stage?.boss?'本场压轴：'+heroText(r2BossText(run.stage.boss)):'本场为普通场。')+(impact?'\n\n'+impact:''),[...(last?[{label:'回看最后一手',run:()=>this.inspectLastHand()}]:[]),...(run.phase==='run-lost'?[{label:'再战建议',run:()=>this.inspectFailure()}]:[])]);
   }
   private inspectLastHand():void {
     const run=runController(this)!.state,trace=stageOutcome(run.stage!,run.lastTrace).last;if(!trace)return;
@@ -336,8 +360,16 @@ export class IntermissionScene extends Phaser.Scene {
     ],{closeLabel:'取消'});
   }
   private async retrySeed():Promise<void> {
-    if(!this.ready)return;const run=runController(this)!.state,lifecycle=this.lifecycle;this.busy=true;this.notice='';this.render();
+    if(!this.ready)return;const owner=runController(this)!,run=owner.state,lifecycle=this.lifecycle;this.busy=true;this.notice='';this.render();
     try {
+      // A guided retry must create a fresh, enrolled visit instead of silently
+      // falling back to the legacy tutorial run identity and its opening shop.
+      if(!owner.guidedOpeningSuppressed&&noviceGuide(run,owner.journal)){
+        if(!await requestTutorialReplay()&&lifecycle===this.lifecycle&&this.scene.isActive()){
+          this.notice=gameSession().notice||'重练尚未开始，请检查保存状态。';this.audio.invalid();
+        }
+        return;
+      }
       const controller=await startRun(this,run.seed,run.characterId,{mode:run.mode,difficulty:run.difficulty,challengeId:run.challengeId,programsEnabled:run.programsEnabled},{kind:'retry',run});if(lifecycle!==this.lifecycle||!this.scene.isActive())return;
       if(controller?.status==='idle'){this.exitResult('shop');return;}
       this.notice=run.phase==='run-lost'?(gameSession().pendingRun?'新局未保存；菜单重试，原局保留。':'未开新局；请看菜单，原局保留。'):gameSession().notice||'新局未保存，请在菜单重试保存。';this.audio.invalid();
@@ -348,7 +380,7 @@ export class IntermissionScene extends Phaser.Scene {
     try {
       if(this.result.cleared&&run.phase==='stage-cleared'&&nextStagePreview(run)){
         const result=await dispatchRun(this,{type:'OpenShop'},run.commandSeq);if(lifecycle!==this.lifecycle||!this.scene.isActive())return;
-        if(result.ok){const o=result.state.pokerEncounter?.opportunities.at(-1),row=result.state.dynamicEndless?.records.at(-1),data={...(o?.status==='offered'?{pokerEncounterEntryId:o.id}:{}),...(row&&row.lock.commandId===result.receipt.commandId?{targetLockCommandId:result.receipt.commandId}:{})};this.exitResult('shop',Object.keys(data).length?data:undefined);return;}
+        if(result.ok){const o=result.state.pokerEncounter?.opportunities.at(-1),row=result.state.dynamicEndless?.records.at(-1),data={...(!needsGuidedPractice(runController(this)!)&&o?.status==='offered'?{pokerEncounterEntryId:o.id}:{}),...(row&&row.lock.commandId===result.receipt.commandId?{targetLockCommandId:result.receipt.commandId}:{})};this.exitResult('shop',Object.keys(data).length?data:undefined);return;}
         this.notice='商店尚未保存，请在菜单重试保存。';this.audio.invalid();
       }else {this.exitResult('character-select',{freshSeed:true});return;}
     }finally {if(lifecycle===this.lifecycle&&this.scene.isActive()){this.busy=false;this.render();}}

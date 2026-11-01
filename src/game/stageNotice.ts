@@ -91,7 +91,7 @@ function enteredNotice(run:StageNoticeInput,selectedIds:readonly string[]=[]):St
     case 'B14': {
       const amount=((BigInt(stage.initialTargetHeat)+19n)/20n).toString(),label=heatText(amount);
       return {...notice,title:'催场 · 弃牌目标+'+label,description:'每次成功弃牌固定+'+label+'目标；返还额度也算一次，不复利。',
-        details:'本场每次增加'+label+'热度，按初始目标'+heatText(stage.initialTargetHeat)+'计算。\n'+notice.details,targetIncreasePerDiscard:amount,symbol:'+5%'};
+        details:'本场每次增加目标分数 '+label+'，按初始目标分数 '+heatText(stage.initialTargetHeat)+'计算。\n'+notice.details,targetIncreasePerDiscard:amount,symbol:'+5%'};
     }
     case 'B15':
       return {...notice,title:'逐个谢幕 · 已封禁'+notice.disabledJokerIds.length+'张',description:'每手后封最左未封禁实例；调序只改变下一位，静态与经济仍有效。',

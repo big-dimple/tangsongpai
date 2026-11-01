@@ -26,7 +26,7 @@ export function shopDecisionCopy(run:R2RunState,offer:R2Offer,sold?:R2JokerInsta
  const read=d.hooks.flatMap(h=>h.operations).find(o=>o.kind==='read-growth');
  const growth=d.hooks.find(h=>h.operations.some(o=>o.kind==='add-growth'));
  const gain=growth?.operations.find(o=>o.kind==='add-growth');
- if(ability.minimal){const [now,later]=ability.condition.split('\n');return {now,later,kind:'条件收益',connection:'',transaction:offer.consumed?'已收入':'',purchaseAbility:ability,full:ability.condition};}
+ if(ability.minimal){const full=playerText(ability.condition),[now,later]=full.split('\n');return {now,later,kind:'条件收益',connection:'',transaction:offer.consumed?'已收入':'',purchaseAbility:ability,full};}
  let now=plain?.effectLine??plain?.tile.split('\n').slice(0,2).join(' · ')??playerText(playerJokerDescription(d));
  let later=plain?.timingLine?.split('；')[0]??plain?.tile.split('\n')[0]??'';
  let kind=plain?.growthDecision?'培养':'条件收益',purchaseAbility:CardAbilityCopy|undefined=plain?.growthDecision?ability:undefined;
@@ -50,5 +50,11 @@ export function shopDecisionCopy(run:R2RunState,offer:R2Offer,sold?:R2JokerInsta
  const losses=shopPurchaseConditionLosses(run,offer,sold);
  const connection=synergy.tradeoff??losses[0]??(synergy.matches.length?'已持'+synergy.matches.map(m=>'「'+m.name+'」'+m.shortReason).join('；'):source.jokers.length?'尚未确认与已持牌配合':'尚无持牌，先看单卡条件');
  const transaction=offer.consumed?'已收入':cash.status==='assessed'?cash.goldAfterPurchase<0?'还差'+(-cash.goldAfterPurchase)+'金':'购后'+cash.goldAfterPurchase+'金':'先选替换对象，再核余额';
- return {now,later,kind,connection,transaction,purchaseAbility,full:[now,later,connection,transaction].filter(Boolean).join('\n')};
+ // The same public decision feeds canvas, mobile DOM, accessibility and
+ // hover previews. Normalize once before any consumer wraps or caches it.
+ const visibleNow=playerText(now),visibleLater=playerText(later),visibleConnection=playerText(connection),visibleTransaction=playerText(transaction);
+ const visibleAbility=purchaseAbility?.plain?{...purchaseAbility,plain:{...purchaseAbility.plain,
+  ...(purchaseAbility.plain.effectLine?{effectLine:playerText(purchaseAbility.plain.effectLine)}:{}),
+  ...(purchaseAbility.plain.timingLine?{timingLine:playerText(purchaseAbility.plain.timingLine)}:{})}}:purchaseAbility;
+ return {now:visibleNow,later:visibleLater,kind,connection:visibleConnection,transaction:visibleTransaction,purchaseAbility:visibleAbility,full:[visibleNow,visibleLater,visibleConnection,visibleTransaction].filter(Boolean).join('\n')};
 }

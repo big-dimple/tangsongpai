@@ -3,6 +3,7 @@ import {DetailDialog,modalBlocksCanvas} from '../src/game/DetailDialog';
 import {cardAbilityCopy} from '../src/game/CardCopy';
 import {JOKER_ART,jokerArtUrl,jokerArtPreviewUrl} from '../src/game/jokerArt';
 import {cardDisplayName} from '../src/game/tangsongCardNames';
+import {playerText} from '../src/game/Brand';
 import {GOODS_ART} from '../src/game/GoodsArt';
 import {toolInfo,itemInfo,goodsArtPortrait} from '../src/game/r2ToolInfo';
 
@@ -194,9 +195,9 @@ describe('detail art recovery and stable rarity',()=>{
     const dialog=owner.open(id,operations,[],{portrait,rarity:'common',ability,editionBody,summaryBody:'实付 4 金 · 余额 7 → 3 金'});
     const layout=find(dialog,'.dialog-content'),intro=find(layout,'.dialog-intro'),main=find(intro,'.card-ability'),edition=find(intro,'.dialog-edition-summary'),frame=find(dialog,'.dialog-card-art'),rules=find(dialog,'.card-rules');
     expect(find(main,'span').textContent).toBe(ability.condition);expect(find(main,'strong').textContent).toBe(ability.value);expect(find(main,'small').textContent).toBe(ability.state);
-    expect(edition.textContent).toBe(editionBody);expect(main.contains(edition)).toBe(false);expect(layout.children.indexOf(intro)).toBeLessThan(layout.children.indexOf(frame));
+    expect(edition.textContent).toBe('版次：闪箔（筹码+25） · 独立于本体条件');expect(main.contains(edition)).toBe(false);expect(layout.children.indexOf(intro)).toBeLessThan(layout.children.indexOf(frame));
     expect(node(dialog).querySelectorAll('.card-flavor')).toHaveLength(1);expect(node(dialog).textContent.split(ability.flavor)).toHaveLength(2);
-    expect(rules.getAttribute('open')).toBeNull();expect(find(rules,'p').textContent).toBe(ability.rules+'\n\n'+operations);
+    expect(rules.getAttribute('open')).toBeNull();expect(find(rules,'p').textContent).toBe(playerText(ability.rules+'\n\n'+operations));
     expect(find(frame,'.joker-rarity-badge').dataset.rarity).toBe('common');expect(node(dialog).querySelectorAll('.dialog-card-art')).toHaveLength(1);
   });
   it('omits only an art caption that repeats the heading, keeping accessible art and informative captions',()=>{
