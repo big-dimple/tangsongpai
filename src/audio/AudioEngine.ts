@@ -4,7 +4,7 @@ import {FOLEY,FOLEY_SAMPLES,type FoleyKind,type Layer} from './foley';
 import {sampleBody,type SampleBody} from './sampleBody';
 import {musicSourcePath} from './MusicSourceFormats';
 import {performanceAudioFacts,type PerformanceAudioCue} from './PerformanceAudio';
-import {createHighMultiplierFire,HIGH_MULTIPLIER_FIRE_SECONDS} from './HighMultiplierFire';
+import {HIGH_MULTIPLIER_FIRE_SAMPLE} from './HighMultiplierFire';
 import {awardForScore,chainRate,scoreStrikeRate,scoreStrikeStep,scoreStrikeOrdinal,scoreReboundInterval,scoreArrivalKind,MAX_RECORDED_RATE,EFFECT_VOICE_BUDGET,SCORE_VOICE_BUDGET,SCORE_GAIN_BUDGET,ACCENT_TAIL_FLOOR} from './mixPolicy';
 
 export type AudioBus = 'master' | 'music' | 'sfx' | 'ui';
@@ -50,6 +50,7 @@ const SAMPLE_MAX_ATTEMPTS = 3; // Session budget; repeated gestures cannot resta
 const MUSIC_START_TIMEOUT_MS = 8000;
 const MUSIC_CROSSFADE_SECONDS = .25;
 const MUSIC_REPEAT_GAP_MS=3000;
+const FIRE_VOICE_LOOKAHEAD_SECONDS=8;
 
 /** One application context. The app owns gesture/visibility listeners and persistence. */
 export class AudioEngine {
@@ -57,7 +58,6 @@ export class AudioEngine {
   private context?: AudioContext;
   private gains?: Record<AudioBus, GainNode>;
   private scoreSamples=new Map<string,AudioBuffer>();
-  private highMultiplierFireBuffer?:AudioBuffer;
   private sampleBodies=new Map<string,SampleBody>();
   private scoreSampleTask?:Promise<void>;
   private readonly sampleAttempts = new Map<string, number>();
@@ -336,7 +336,7 @@ export class AudioEngine {
   private loadScoreSamples():Promise<void> {
     if(this.scoreSampleTask)return this.scoreSampleTask;
     const context=this.context;if(!context || context.state === 'closed')return Promise.resolve();
-    const queue = [...FOLEY_SAMPLES,{name:'cloth2',runtimePath:'assets/audio/score-impact/cloth2.ogg'}]
+    const queue = [HIGH_MULTIPLIER_FIRE_SAMPLE,...FOLEY_SAMPLES,{name:'cloth2',runtimePath:'assets/audio/score-impact/cloth2.ogg'}]
       .filter(({name}) => !this.scoreSamples.has(name) && (this.sampleAttempts.get(name) ?? 0) < SAMPLE_MAX_ATTEMPTS);
     if (!queue.length) return Promise.resolve();
     const worker = async () => {
@@ -501,17 +501,18 @@ export class AudioEngine {
     const noop={stop:()=>{},fadeOut:()=>{}};
     if(options.signal.aborted||options.reducedMotion||options.replay||!this.canPlay('sfx')||this.context!.state!=='running')return noop;
     const context=this.context!,now=context.currentTime;
+    // Never substitute synthesis or start a late cue after the visual has gone.
+    const buffer=this.scoreSamples.get(HIGH_MULTIPLIER_FIRE_SAMPLE.name);
+    if(!buffer||!Number.isFinite(buffer.duration)||buffer.duration<=0)return noop;
     for(const voice of this.voices)if(voice.highMultiplierFire){
       if((voice.endsAt??Infinity)>now)return noop;
       this.release(voice);
     }
     const speed=options.speed===2||options.speed===4?options.speed:1,peak=.06;
     // Include scheduled tails, and leave room for score impacts rather than evict them.
-    if([...this.voices].filter(v=>v.bus!=='music'&&(v.startsAt??0)<now+HIGH_MULTIPLIER_FIRE_SECONDS&&(v.endsAt??Infinity)>now).length>=EFFECT_VOICE_BUDGET)return noop;
+    if([...this.voices].filter(v=>v.bus!=='music'&&(v.startsAt??0)<now+FIRE_VOICE_LOOKAHEAD_SECONDS&&(v.endsAt??Infinity)>now).length>=EFFECT_VOICE_BUDGET)return noop;
     let voice:Voice|undefined;
     try {
-      const buffer=this.highMultiplierFireBuffer??createHighMultiplierFire(context);
-      this.highMultiplierFireBuffer=buffer;
       const source=context.createBufferSource(),gain=context.createGain();
       source.buffer=buffer;source.loop=true;
       gain.gain.setValueAtTime(0,now);

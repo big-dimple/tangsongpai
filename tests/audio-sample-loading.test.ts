@@ -1,8 +1,9 @@
 import {afterEach, beforeEach, expect, it, vi} from 'vitest';
 import {AudioEngine} from '../src/audio/AudioEngine';
 import {FOLEY_SAMPLES} from '../src/audio/foley';
+import {HIGH_MULTIPLIER_FIRE_SAMPLE} from '../src/audio/HighMultiplierFire';
 
-const samples = [...FOLEY_SAMPLES, {name: 'cloth2', runtimePath: 'assets/audio/score-impact/cloth2.ogg'}];
+const samples = [HIGH_MULTIPLIER_FIRE_SAMPLE, ...FOLEY_SAMPLES, {name: 'cloth2', runtimePath: 'assets/audio/score-impact/cloth2.ogg'}];
 const deferred = <T>() => {
   let resolve!: (value: T) => void;
   let reject!: (error: Error) => void;
