@@ -2,7 +2,7 @@ import type Phaser from 'phaser';
 import {cardVisualRoot} from './CardVisualRoot';
 import type {EffectContext} from '../core/EffectQueue';
 import {HeroTargetAttachmentState,ATTACHMENT_RELEASE_MS,type AttachmentDraft,type AttachmentMotion} from './HeroTargetAttachmentState';
-import type {InkBox,InkPoint} from './AssistInkGeometry';
+import {exteriorOrbitPoint,type InkBox,InkPoint} from './AssistInkGeometry';
 import {drawHeroAtmosphere,drawHeroOriginStream,heroAtmosphereStyle,HERO_SOURCE_CURRENT_MS,HERO_ATMOSPHERE_BUDGET} from './HeroCardAttachmentAtmosphere';
 import type {SourceElectricDecision} from './HeroLineCurrent';
 import {textDensity} from './TextRaster';
@@ -30,16 +30,25 @@ export interface HeroTargetAttachmentOptions {
  onPhase?:HeroAttachmentPhaseObserver;
 }
 type Mark={container:Phaser.GameObjects.Container;edge:Phaser.GameObjects.Graphics;label?:Phaser.GameObjects.Text;ear?:Phaser.GameObjects.Graphics;earWorld?:InkBox};
+type VisualCircuit={container:Phaser.GameObjects.Container;ink:Phaser.GameObjects.Graphics};
 function cardBox(root:Phaser.GameObjects.Container,card:AttachmentCard):InkBox {
  const parent=root.getWorldTransformMatrix(),matrix=cardVisualRoot(card).getWorldTransformMatrix(),points=[[-card.width/2,-card.height/2],[card.width/2,-card.height/2],[-card.width/2,card.height/2],[card.width/2,card.height/2]].map(([x,y])=>{const w=matrix.transformPoint(x,y);return parent.applyInverse(w.x,w.y);}),x=Math.min(...points.map(p=>p.x)),y=Math.min(...points.map(p=>p.y));
  return{x,y,width:Math.max(...points.map(p=>p.x))-x,height:Math.max(...points.map(p=>p.y))-y};
 }
 function union(boxes:readonly InkBox[]):InkBox {const x=Math.min(...boxes.map(b=>b.x)),y=Math.min(...boxes.map(b=>b.y));return{x,y,width:Math.max(...boxes.map(b=>b.x+b.width))-x,height:Math.max(...boxes.map(b=>b.y+b.height))-y};}
+function drawVisualCircuit(g:Phaser.GameObjects.Graphics,width:number,height:number,style:ReturnType<typeof heroAtmosphereStyle>,alpha:number):void {
+ const box={x:-width/2,y:-height/2,width,height},points=Array.from({length:65},(_,i)=>exteriorOrbitPoint(box,i/64,4.5)),ink=style.key==='handoff'?0x1768c3:style.ink,glow=style.key==='handoff'?0x35bdf6:style.glow,spark=style.key==='handoff'?0xe9fbff:style.spark;
+ g.clear().lineStyle(8.2,ink,.18*alpha).beginPath();points.forEach((p,i)=>i?g.lineTo(p.x,p.y):g.moveTo(p.x,p.y));g.strokePath();
+ g.lineStyle(4.2,glow,.68*alpha).beginPath();points.forEach((p,i)=>i?g.lineTo(p.x,p.y):g.moveTo(p.x,p.y));g.strokePath();
+ g.lineStyle(1.7,spark,.96*alpha).beginPath();points.forEach((p,i)=>i?g.lineTo(p.x,p.y):g.moveTo(p.x,p.y));g.strokePath();
+ g.setData('semantic','可视化电路').setData('stable',true).setData('phase',0);
+}
 
 /** Existing exact-instance ownership with two bounded visual layers; never owns a card pose or score clock. */
 export class HeroTargetAttachment {
  private readonly state=new HeroTargetAttachmentState();
  private readonly marks=new Map<string,Mark>();
+ private readonly circuits=new Map<string,VisualCircuit>();
  private atmosphere?:Phaser.GameObjects.Graphics;
  private flight?:Phaser.GameObjects.Graphics;
  private flightCurrent?:Phaser.GameObjects.Graphics;
@@ -123,7 +132,11 @@ export class HeroTargetAttachment {
  clear(cause='cleared'):void {this.confirmedGlowTargets=[];this.glowImpacts.clear();this.afterglow.clear();this.burstAbort?.();this.burstAbort=undefined;this.refillSmoke.clear();this.refillPhases.end(cause);this.phases.end(cause);this.phaseContext=undefined;this.pendingLanding=undefined;this.phaseReason=undefined;this.sushi.clear(cause);this.state.clear();this.disposeVisuals();}
  private hide():void {this.pendingLanding=undefined;this.afterglow.clear();this.burstAbort?.();this.burstAbort=undefined;this.sushi.suspend();this.phases.suspend('hidden');this.state.suspend();if(!this.state.value)this.phases.end('hidden');this.pulseAfter=Infinity;this.disposeVisuals();}
  private removeMark(id:string):void {const mark=this.marks.get(id);mark?.edge.destroy();mark?.label?.destroy();mark?.ear?.destroy();this.marks.delete(id);}
- private disposeVisuals():void {this.particles.clear();this.liveSmoke.clear();this.sourceEcho.clear();for(const id of [...this.marks.keys()])this.removeMark(id);this.atmosphere?.destroy();this.atmosphere=undefined;this.flight?.destroy();this.flight=undefined;this.flightCurrent?.destroy();this.flightCurrent=undefined;this.staticKey='';}
+ private syncVisualCircuits(members:readonly {id:string;card:AttachmentCard}[],style:ReturnType<typeof heroAtmosphereStyle>,alpha:number):void {
+  const visible=new Set(members.map(m=>m.id));for(const [id,circuit] of this.circuits)if(!visible.has(id)||!circuit.container.active){circuit.ink.destroy();this.circuits.delete(id);}
+  for(const {id,card} of members){const body=cardVisualRoot(card),existing=this.circuits.get(id);if(!existing||existing.container!==body){existing?.ink.destroy();const ink=this.scene.add.graphics().setName('hero/visual-circuit').setData('targetCardId',id);body.add(ink);this.circuits.set(id,{container:body,ink});}const circuit=this.circuits.get(id)!;drawVisualCircuit(circuit.ink,card.width,card.height,style,alpha);circuit.ink.setVisible(body.active&&body.visible&&body.alpha>0);}
+ }
+ private disposeVisuals():void {this.particles.clear();this.liveSmoke.clear();this.sourceEcho.clear();for(const id of [...this.marks.keys()])this.removeMark(id);for(const circuit of this.circuits.values())circuit.ink.destroy();this.circuits.clear();this.atmosphere?.destroy();this.atmosphere=undefined;this.flight?.destroy();this.flight=undefined;this.flightCurrent?.destroy();this.flightCurrent=undefined;this.staticKey='';}
  private localBounds(root:Phaser.GameObjects.Container,b:InkBox):InkBox {const m=root.getWorldTransformMatrix(),points=[[b.x,b.y],[b.x+b.width,b.y],[b.x,b.y+b.height],[b.x+b.width,b.y+b.height]].map(([x,y])=>m.applyInverse(x,y)),x=Math.min(...points.map(p=>p.x)),y=Math.min(...points.map(p=>p.y));return{x,y,width:Math.max(...points.map(p=>p.x))-x,height:Math.max(...points.map(p=>p.y))-y};}
  /** Exact Graphics ink bounds in world coordinates feed the existing scene exclusions. */
  handoffEarExclusions():InkBox[] {
@@ -196,7 +209,7 @@ export class HeroTargetAttachment {
    edge.setData('phase',state.phase).setData('eventId',state.eventId).setData('generation',state.generation).setData('flowPhase',full?state.clock%1600/1600:0).setData('memberIds',ids).setData('width',width).setData('height',height).setData('labelText',label?.text);
   }
   const sourceMembers=members.filter(t=>state.sourceTargetIds===undefined||state.sourceTargetIds.includes(t.id)),sourceBoxes=sourceMembers.map(t=>cardBox(root,t.card));
-  const style=heroAtmosphereStyle(state);this.syncHandoffEars(members,root,style.key==='handoff',1-release);
+  const style=heroAtmosphereStyle(state);this.syncHandoffEars(members,root,style.key==='handoff',1-release);this.syncVisualCircuits(members,style,1-release);
   const layout=this.layout(root,new Set(members.map(t=>t.card.container))),source=sourceBoxes.length?this.source(root,layout.portrait,sourceBoxes):undefined;if(source?.kind==='portrait')source.kind=layout.sourceKind;
   const energy:XinEnergyAppearance|undefined=state.kind==='candidate'&&style.key==='retain'?{phase:state.label==='候选'?'candidate':'retained',igniteIds:state.label==='候选'?ids:state.sourceTargetIds??[],selectedIds:state.selectedIds}:undefined;
   if(this.state.accepted&&this.options.onPhase){this.phases.bind({owner:'card',activationId:state.key,eventId:state.eventId,reasonKey:this.phaseReason??state.releaseReason??'erxiang.handoff',targetIds:members.map(t=>t.id),sourceTargetIds:state.suppressSource?[]:sourceMembers.map(t=>t.id),motion:this.options.motion(),context:this.phaseContext});if(state.eventId)this.phases.publish('committed');if(full)this.phases.resume();else this.phases.suspend('motion');}

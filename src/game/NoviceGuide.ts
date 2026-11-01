@@ -265,7 +265,11 @@ function deriveHint(s:R2RunState,journal?:readonly Command[]):NoviceGuideHint {
  }
  if(!facts.discarded){
   if(s.stage?.index===0&&(s.stage.discardsLeft<=0||s.drawPile.length===0))return {step:'replay',cue:'这场暂时不能换牌',body:'本场弃牌次数或可抽的牌已用完。可以继续出牌，或重练换牌。',fact};
-  return {step:'discard',cue:novicePairResultCue(facts.pair!),body:'选不要的牌，点「弃牌」换新牌。',fact};
+  // Keep every currently held card in the saved hint so the scene can walk
+  // the player through the real discard targets one at a time.  This is only
+  // presentation metadata; the command still validates the actual selection
+  // and never auto-discards a card.
+  return {step:'discard',cue:novicePairResultCue(facts.pair!),body:'逐张看看手牌，选不要的牌，再点「弃牌」换新牌。',recommendedCardIds:[...s.handOrder],fact};
  }
  if(!facts.independent)return {step:'independent',cue:`累计 ${s.stage?.targetHeat??'目标'} 分过关`,body:'自己选牌，再点「出牌」。',fact};
  if(!facts.cleared)return {step:'independent',cue:'继续向目标出牌',body:'自己选牌，累计达到目标分数。',fact};

@@ -6,7 +6,7 @@ import {nativeHeroRuntime} from './fixtures/native-hero-runtime';
 
 type Point={x:number;y:number};
 type Painted={color:number;alpha:number;points:Point[]};
-const whole=(path:Painted)=>path.points.length===35||([0x7135ad,0xc28ae9].includes(path.color)&&[5,8].includes(path.points.length));
+const whole=(path:Painted)=>path.points.length===35||([0x2b6567,0x85a99b].includes(path.color)&&[5,8].includes(path.points.length));
 
 /** Read the real Phaser Graphics command buffer, not a mock drawing recipe. */
 function painted(ink:Phaser.GameObjects.Graphics):Painted[]{
@@ -53,9 +53,9 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
     f.step(120);const early=painted(ink),earlyCount=ink.getData('visibleSegments'),earlyBuffer=[...ink.commandBuffer];
     f.step(280);const peak=painted(ink),peakCount=ink.getData('visibleSegments'),peakBuffer=[...ink.commandBuffer];
     expect(ink.getData('elapsed')).toBe(400);expect(earlyCount).toBeGreaterThan(0);expect(peakCount).toBeGreaterThan(earlyCount);
-    expect(peakBuffer).not.toEqual(earlyBuffer);expect(peak.map(p=>p.color)).toContain(0x793bc9);
-    expect(peak.map(p=>p.color)).toContain(0x7943c9);expect(peak.map(p=>p.color)).toContain(0xffeaff);
-    expect(new Set(peak.filter(p=>p.color===0x7943c9).map(p=>p.alpha.toFixed(3))).size).toBeGreaterThan(3);
+    expect(peakBuffer).not.toEqual(earlyBuffer);expect(peak.map(p=>p.color)).toContain(0x2b6567);
+    expect(peak.map(p=>p.color)).toContain(0x4d8f86);expect(peak.map(p=>p.color)).toContain(0xfff3d1);
+    expect(new Set(peak.filter(p=>p.color===0x4d8f86).map(p=>p.alpha.toFixed(3))).size).toBeGreaterThan(3);
     expect(peak.some(p=>p.points.length>20)).toBe(true);expect(early.every(p=>p.alpha>=0&&p.alpha<=1)).toBe(true);
     f.step(4000);expect(f.ink()).toBe(ink);expect(ink.getData('visibleSegments')).toBeGreaterThan(0);
     f.setEnding(true);f.step(0);f.step(350);const fading=painted(ink);expect(Math.max(...fading.map(p=>p.alpha))).toBeLessThan(Math.max(...peak.map(p=>p.alpha)));
@@ -66,7 +66,7 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
 
   it('curls individual flame tips over time, beyond opacity or common movement',()=>{
     const f=fixture();f.play();
-    const bodies=()=>painted(f.ink()!).filter(path=>path.color===0x7943c9);
+    const bodies=()=>painted(f.ink()!).filter(path=>path.color===0x4d8f86);
     f.step(600);const before=bodies();f.step(400);const after=bodies();f.step(200);const later=bodies();
     expect(before).toHaveLength(8);expect(after).toHaveLength(8);expect(later).toHaveLength(8);
     const change=(first:Painted[],second:Painted[],index:number)=>{
@@ -81,7 +81,7 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
 
   it.each([[320,568],[390,844],[1280,720]])('starts across the bottom of the %sx%s score board', (width,height)=>{
     const f=fixture({width,height,density:1,renderer:2}),board=f.table.scoreBoard;f.play();f.step(600);
-    const bodies=painted(f.ink()!).filter(path=>path.color===0x7943c9);
+    const bodies=painted(f.ink()!).filter(path=>path.color===0x4d8f86);
     expect(bodies).toHaveLength(8);
     for(const body of bodies){
       expect(Math.max(...body.points.map(point=>point.y))).toBeGreaterThan(board.y+board.height-10);
@@ -95,7 +95,7 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
 
   it.each([[320,568],[390,844],[1280,720]])('joins the fire along the bottom of the %sx%s board', (width,height)=>{
     const f=fixture({width,height,density:1,renderer:2}),board=f.table.scoreBoard;f.play();f.step(600);
-    const roots=painted(f.ink()!).filter(path=>path.color===0x7135ad).map(path=>({left:Math.min(...path.points.map(p=>p.x)),right:Math.max(...path.points.map(p=>p.x))})).sort((a,b)=>a.left-b.left);
+    const roots=painted(f.ink()!).filter(path=>path.color===0x2b6567).map(path=>({left:Math.min(...path.points.map(p=>p.x)),right:Math.max(...path.points.map(p=>p.x))})).sort((a,b)=>a.left-b.left);
     expect(roots.length).toBeGreaterThan(10);
     expect(roots.at(-1)!.right-roots[0].left).toBeGreaterThan(board.width*.8);
     for(let i=1;i<roots.length;i++)expect(roots[i].left-roots[i-1].right).toBeLessThan(.02);
@@ -106,8 +106,8 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
   ])('keeps layered, complete flames inside the score panel and viewport on a %sx%s phone, renderer %s',(width,height,renderer)=>{
     const f=fixture({width,height,density:1,renderer}),board=f.table.scoreBoard;f.play();
     const sample=(delta:number)=>{
-      f.step(delta);const paths=painted(f.ink()!),bodies=paths.filter(path=>path.color===0x7943c9);
-      expect(bodies).toHaveLength(8);expect(paths.filter(path=>path.color===0xffeaff)).toHaveLength(8);
+      f.step(delta);const paths=painted(f.ink()!),bodies=paths.filter(path=>path.color===0x4d8f86);
+      expect(bodies).toHaveLength(8);expect(paths.filter(path=>path.color===0xfff3d1)).toHaveLength(8);
       expect(paths.every(whole)).toBe(true);
       for(const path of paths){
         expect(within(path.points,{x:6.5,y:6.5,width:width-13,height:height-13})).toBe(true);
@@ -127,7 +127,7 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
     const cx=board.x+board.width/2,cy=board.y+board.height/2,r=angle*Math.PI/180,c=Math.cos(r),s=Math.sin(r);
     f.root.setPosition(cx-(c*cx-s*cy),cy-(s*cx+c*cy)).setRotation(r);f.play();
     for(const delta of [600,400,400]){
-      f.step(delta);const m=f.root.getWorldTransformMatrix(),paths=painted(f.ink()!),bodies=paths.filter(p=>p.color===0x7943c9);
+      f.step(delta);const m=f.root.getWorldTransformMatrix(),paths=painted(f.ink()!),bodies=paths.filter(p=>p.color===0x4d8f86);
       expect(bodies.length).toBeGreaterThanOrEqual(4);expect(paths.every(whole)).toBe(true);
       for(const path of paths){
         expect(path.points.every(p=>p.y>=board.y+2.5-1e-6&&p.y<=board.y+board.height-2.5+1e-6)).toBe(true);
@@ -138,7 +138,7 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
 
   it('moves or omits whole flames at a tip guard without splitting unrelated contours',()=>{
     const f=fixture({width:320,height:568,density:1,renderer:2});f.play();f.step(600);
-    const bodies=()=>painted(f.ink()!).filter(p=>p.color===0x7943c9),before=bodies();
+    const bodies=()=>painted(f.ink()!).filter(p=>p.color===0x4d8f86),before=bodies();
     const tip=before[0].points.reduce((a,p)=>p.y<a.y?p:a),guard={x:tip.x-3,y:tip.y-3,width:6,height:6};
     const far=before.at(-1)!;f.setGuards([guard]);f.step(0);const all=painted(f.ink()!),after=bodies();
     expect(after.length).toBeGreaterThanOrEqual(2);expect(all.every(whole)).toBe(true);

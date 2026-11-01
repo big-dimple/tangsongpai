@@ -97,6 +97,16 @@ export class HeroTargetAfterglow {
   const impact=Math.max(0,1-glow.elapsed/520),edgePad=3.5/minimum,inset=Math.min(card.width*.12,card.height*.12,5/minimum);
   let outlineSegments=0;
   if(impact>0){
+   // The arriving hero wave lands as one restrained, filled bulge at the
+   // target edge. It expands and settles once; no loose particle cloud is
+   // emitted, so the impact reads as a physical electric packet hitting paper.
+   const bulge=edgeAnchor(card.width,card.height,pad,0,.5),radius=(5+8*impact)/scale,ring=Array.from({length:17},(_,i)=>{const a=i/16*Math.PI*2;return{x:bulge.x+Math.cos(a)*radius,y:bulge.y+Math.sin(a)*radius*.68};});
+   const hidden=boxes.some(b=>bulge.x>=b.x-radius&&bulge.x<=b.x+b.width+radius&&bulge.y>=b.y-radius&&bulge.y<=b.y+b.height+radius);
+   if(!hidden&&ring.every(visible)){
+    glow.ink.lineStyle(5/scale,0x35bdf6,.24*impact).beginPath();ring.forEach((p,i)=>i?glow.ink.lineTo(p.x,p.y):glow.ink.moveTo(p.x,p.y));glow.ink.strokePath();
+    glow.ink.lineStyle(1.8/scale,0xe9fbff,.82*impact).beginPath();ring.forEach((p,i)=>i?glow.ink.lineTo(p.x,p.y):glow.ink.moveTo(p.x,p.y));glow.ink.strokePath();
+   }
+   glow.ink.setData('impactBulge',radius);
    const edges=[
     [{x:-card.width/2+inset,y:-card.height/2-edgePad},{x:card.width/2-inset,y:-card.height/2-edgePad}],
     [{x:card.width/2+edgePad,y:-card.height/2+inset},{x:card.width/2+edgePad,y:card.height/2-inset}],

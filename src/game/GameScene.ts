@@ -590,15 +590,24 @@ export class GameScene extends Phaser.Scene {
         const hero=heroActionShortcut(l.tableActions.discard,l.heroAction);
         const targetText=this.view.root.getByName('hud/target') as Phaser.GameObjects.Text|undefined;
         const focus=hint.focus==='play'?l.tableActions.play:hint.focus==='discard'?hero.discard:hint.focus==='hero'?hero.shortcut:hint.focus==='score'?this.heatText.getBounds():hint.focus==='goal'?(targetText?.getBounds()??this.heatText.getBounds()):undefined;
-        let highlights=focus?[map(focus)]:(hint.recommendedCardIds??[]).slice(0,1).flatMap(id=>{
+        const cardBox=(id:string)=>{
           const index=this.hand.findIndex(card=>card.id===id),seat=l.cards[index],card=this.cardViews[index];
           if(!seat?.visible||!card?.container.active||!card.container.visible)return [];
           const width=Number(card.container.getData('width')),height=Number(card.container.getData('height'));
           const matrix=card.container.getWorldTransformMatrix(),topLeft=matrix.transformPoint(-width/2,-height/2),bottomRight=matrix.transformPoint(width/2,height/2);
           // Follow the painted card, but only ring its exposed phone hit column.
           return [map({x:topLeft.x,y:topLeft.y,width:Math.min(bottomRight.x-topLeft.x,seat.hit.width),height:bottomRight.y-topLeft.y})];
-        });
-        if(!highlights.length&&!hint.focus&&hint.step==='discard')highlights=[map(l.hand)];
+        };
+        let highlights=focus?[map(focus)]:(hint.recommendedCardIds??[]).slice(0,1).flatMap(cardBox);
+        // After the fixed pair lesson, guide the actual discard operation:
+        // keep the discard action ringed while walking one real card at a time
+        // instead of drawing a vague ring over the entire hand.
+        if(hint.step==='discard'){
+          const ids=hint.recommendedCardIds?.length?hint.recommendedCardIds:this.hand.map(card=>card.id),visible=ids.filter(id=>cardBox(id).length);
+          const index=visible.length?Math.floor(performance.now()/900)%visible.length:0;
+          const card=visible[index];
+          highlights=[...(card?cardBox(card):[]),map(hero.discard??l.tableActions.discard)];
+        }
         // The hint must not intercept the optional skill or utility buttons:
         // tapping through to the skip control would unexpectedly leave the run.
         const controls=[l.hud,l.scoreBoard,l.playedArea,l.hand,l.actions,l.heroAction,l.inventoryEntry,l.helpEntry,...this.run.jokers.map((_,index)=>l.slots[index])];
@@ -1454,8 +1463,13 @@ export class GameScene extends Phaser.Scene {
     const notice=stageNotice(this.run),discardGoldCost=notice?.discardGoldCost??0;
     (this.playButton.getData('label') as Phaser.GameObjects.Text).setText('出牌');
     (this.discardButton.getData('label') as Phaser.GameObjects.Text).setText(discardGoldCost?'弃 -1金':r2DiscardCost(this.run)===2?'弃 ×2':'弃牌');
+    const guidedStep=noviceGuide(this.run,runController(this)?.journal)?.step;
+    const guidedDiscard=guidedStep==='discard';
     this.view.setEnabled(this.discardButton,this.ready&&!this.pendingTouye&&this.selectedIds.size>0&&this.run.stage!.discardsLeft>=r2DiscardCost(this.run)&&this.run.gold>=discardGoldCost);
-    this.view.setEnabled(this.playButton,this.ready&&this.selectedIds.size>0&&this.handsLeft>0);
+    // The first tutorial must finish the real discard before it can move on;
+    // do not let a selected card accidentally skip to the independent-play
+    // lesson through the play button or a controller activation.
+    this.view.setEnabled(this.playButton,!guidedDiscard&&this.ready&&this.selectedIds.size>0&&this.handsLeft>0);
     if(usesErxiangHandoff(this.run)){const choice=erxiangChoice(this.run,this.selectionPreview(),this.erxiangTargetId);if(this.ready&&!this.playing&&!this.presentation&&this.erxiangTargetId&&!choice.selected)this.erxiangTargetId=null;this.roleText.setText(choice.compact);(this.playButton.getData('label') as Phaser.GameObjects.Text).setText(choice.selected?'确认出牌':'出牌');}
     const xiemu=usesXiemuBurn(this.run)?xiemuChoice(this.run,this.selectionPreview()?.type,this.xiemuBurn):undefined;
     const azao=usesAzaoCharge(this.run)?azaoChoice(this.run,this.selectionPreview()?.type):undefined;
@@ -2153,6 +2167,13 @@ export class GameScene extends Phaser.Scene {
   private async playSelected(confirmedUnusedSkill=false):Promise<void> {
     if(this.pendingRefill){await this.chooseRefill();return;}
     if(!this.ready||this.presentation||this.dialog.current||this.selectedIds.size===0||this.handsLeft<=0)return;
+    // The opening lesson intentionally requires the player to complete the
+    // real discard action after the pair-of-fives score.  Keep this guard at
+    // the command boundary as well as on the button so keyboard/gamepad input
+    // cannot skip the lesson's next step.
+    if(noviceGuide(this.run,runController(this)?.journal)?.step==='discard'){
+      this.statusMessage='先选要弃的牌，再点「弃牌」换新牌';this.updateControls();return;
+    }
     const facts=this.selectionPreview(),ids=[...this.selectedIds],draft={laohuanFindRank:this.laohuanFindRank,erxiangTargetId:this.erxiangTargetId,xiemuBurn:this.xiemuBurn,azaoRelease:this.azaoRelease,amoExile:this.amoExile,assistCount:this.assistIds.length};
     const assistAvailable=this.assistProfile&&assistCandidates(this.assistInput(),r2AssistAvailability(this.run).available).length>0;
     // The guided first two stages teach card choices before optional hero skills.

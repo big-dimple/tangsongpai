@@ -199,12 +199,12 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
       const x0=rootLeft+(rootRight-rootLeft)*i/rootPieces,x1=rootLeft+(rootRight-rootLeft)*(i+1)/rootPieces;
       const safe=(points:Point[])=>{const box=bbox(points.map(world));return box.x>=fit.x&&box.y>=fit.y&&box.x+box.width<=fit.x+fit.width&&box.y+box.height<=fit.y+fit.height&&!protectedGuards.some(guard=>overlaps(pad(box,.02),guard));};
       const bed=[{x:x0,y:rootBottom-1.8*size},{x:x1,y:rootBottom-1.8*size},{x:x1,y:rootBottom},{x:x0,y:rootBottom}];
-      let painted=false;if(safe(bed)){ink.fillStyle(0x7135ad,.52*rootAlpha).fillPoints(bed,true);painted=true;}
+      let painted=false;if(safe(bed)){ink.fillStyle(0x2b6567,.46*rootAlpha).fillPoints(bed,true);painted=true;}
       const points=[...Array.from({length:5},(_,j)=>{const x=x0+(x1-x0)*j/4;return{x,y:rootTop(x)};}),{x:x1,y:rootBottom},{x:x0,y:rootBottom}];
       if(safe(points)){
-        ink.fillStyle(0x7135ad,.54*rootAlpha).fillPoints(points,true);
+        ink.fillStyle(0x2b6567,.48*rootAlpha).fillPoints(points,true);
         const inner=points.map(p=>({x:p.x,y:p.y+(rootBottom-p.y)*.42}));
-        ink.fillStyle(0xc28ae9,.50*rootAlpha).fillPoints(inner,true);painted=true;
+        ink.fillStyle(0x85a99b,.42*rootAlpha).fillPoints(inner,true);painted=true;
       }
       if(painted)rootVisible++;
     }
@@ -238,7 +238,9 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
       const origin=world({x:0,y:0}),shift=chosen.x||chosen.y?local({x:origin.x+chosen.x,y:origin.y+chosen.y}):{x:0,y:0};
       // Keep each flame rooted at the bottom instead of sliding it up beside a number.
       if(Math.abs(shift.y)>3*size)continue;
-      const colors=[0x793bc9,0x7943c9,0xb583ec,0xffeaff],opacities=[.24,.78,.82,.95];
+      // Restrained jade/ivory energy sheets replace the old purple fire. They
+      // stay as one contained layer above the score panel, never loose motes.
+      const colors=[0x2b6567,0x4d8f86,0x9dc8b2,0xfff3d1],opacities=[.2,.64,.72,.88];
       for(let i=0;i<sheets.length;i++)ink.fillStyle(colors[i],alpha*opacities[i]*pulse).fillPoints(sheets[i].map(p=>({x:p.x+shift.x,y:p.y+shift.y})),true);
       visible++;
     }

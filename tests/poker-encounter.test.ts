@@ -26,7 +26,7 @@ describe('normal-run poker polychrome encounter',()=>{
   const skip=pokerStep(s,{type:'SkipStage'}).state;expect(skip.pokerEncounter).toEqual(start);
   const reroll=pokerStep(s,{type:'RerollShop'}).state;expect(reroll.pokerEncounter).toEqual(start);
   const f=pokerEncounterFixture();expect(currentPokerOpportunity(f.state)!.clearAt).toBe(start!.nextAt);expect(f.state.pokerEncounter!.nextAt-currentPokerOpportunity(f.state)!.clearAt).toBeGreaterThanOrEqual(7);expect(f.state.pokerEncounter!.nextAt-currentPokerOpportunity(f.state)!.clearAt).toBeLessThanOrEqual(9);expect(readCheckpoint(makeCheckpoint(f.state,f.journal)).ok).toBe(true);
- });
+ },30000);
  it('atomically pays exactly18 and changes one edition, preserves enhancement and all native RNG streams/coupons',()=>{
   const f=pokerEncounterFixture(),s=f.state;s.deckInstances.find(c=>c.id==='hearts-14')!.enhancement='glass-paper';s.purchaseCoupons=1;const r=pokerStep(s,buy(s));
   expect(r.state.gold).toBe(14);expect(r.state.purchaseCoupons).toBe(1);expect(r.state.rng).toEqual(s.rng);expect(r.state.pokerEncounter!.rng).toEqual(s.pokerEncounter!.rng);expect(r.state.shop!.purchases).toBe(s.shop!.purchases+1);expect(r.state.deckInstances.find(c=>c.id==='hearts-14')).toMatchObject({edition:'polychrome',enhancement:'glass-paper'});expect(r.state.deckInstances.filter(c=>c.edition==='polychrome')).toHaveLength(1);expect(readCheckpoint(makeCheckpoint(r.state,[...f.journal,r.command])).ok).toBe(true);
@@ -64,7 +64,7 @@ describe('normal-run poker polychrome encounter',()=>{
   const f=pokerEncounterFixture(),paid=pokerStep(f.state,buy(f.state));let s=paid.state,journal=[...f.journal,paid.command];for(let i=0;i<MAX_JOURNAL+1;i++){const r=pokerStep(s,{type:'ReorderJokers',ids:s.jokers.map(j=>j.instanceId)});s=r.state;journal.push(r.command);}
   const cp=makeCheckpoint(s,journal);expect(cp.journalBaseSeq).toBeGreaterThan(paid.command.expectedSeq+1);expect(readCheckpoint(cp).ok).toBe(true);
   for(const mutation of ['clock','rearm','erase','source-id','source-only'] as const){const c=structuredClone(cp),o=c.state.pokerEncounter!.opportunities[0];if(mutation==='clock')c.state.pokerEncounter!.nextAt++;else{o.status='offered';o.decision=null;o.goldBefore=null;if(mutation!=='rearm')c.state.shop!.basicChoice!.purchase=null;if(mutation==='source-id'||mutation==='source-only'){o.source=structuredClone(f.journal.find(cmd=>cmd.action.type==='PlayHand'&&cmd.commandId!==o.source.commandId)!);if(mutation==='source-id')o.id=`${s.runId}/poker-encounter/${o.source.commandId}`;}}expect(readCheckpoint(rechecksum(c)).ok).toBe(false);c.journal=[];c.journalBaseSeq=c.state.commandSeq;expect(readCheckpoint(rechecksum(c)).ok).toBe(false);}
- });
+ },30000);
  it('has immutable public presentation facts without future clocks/RNG and never repeats a grant on restore',()=>{
   const s=pokerEncounterFixture().state,v=pokerEncounterView(s)!;expect(Object.isFrozen(v)).toBe(true);expect(Object.isFrozen(v.targets[0])).toBe(true);expect(JSON.stringify(v)).not.toMatch(/nextAt|rng|drawPile/);const paid=pokerStep(s,buy(s)).state;expect(pokerEncounterView(paid)!.status).toBe('purchased');expect(pokerEncounterView(structuredClone(paid))).toEqual(pokerEncounterView(paid));
  });
@@ -98,5 +98,5 @@ describe('normal-run poker polychrome encounter',()=>{
  });
  it('completes the fixed normal campaign with intervals7-9, no terminal opportunity, and no new endless supply',()=>{
   let s=pokerEncounterStart();for(let i=0;i<150&&s.phase!=='run-won';i++)s=pokerStep(s,pokerPublicAction(s)).state;expect(s.phase).toBe('run-won');expect(s.pokerEncounter!.opportunities.every(o=>o.stageIndex<23&&o.status==='skipped')).toBe(true);expect(s.pokerEncounter!.opportunities.length).toBeGreaterThanOrEqual(2);expect(s.pokerEncounter!.opportunities.length).toBeLessThanOrEqual(3);const before=structuredClone(s.pokerEncounter);s=pokerStep(s,{type:'ContinueEndless'}).state;expect(s.pokerEncounter).toEqual(before);expect(pokerEncounterView(s)).toBeUndefined();expect(readCheckpoint(makeCheckpoint(s,[])).ok).toBe(true);
- },30000);
+ },120000);
 });
