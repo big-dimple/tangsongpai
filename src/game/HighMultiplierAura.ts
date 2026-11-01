@@ -35,12 +35,14 @@ export const HIGH_MULTIPLIER_FADE_MS=450;
 const EDGE=2.5,VIEWPORT_GAP=4,REACH=80,MAX_SHIFT=16;
 const MAX_GUARDS=256,MAX_AREAS=128;
 const FLAMES:readonly Flame[]=[
-  {position:.07,width:17,height:25,delay:45,phase:.2,lean:-3,baseOffset:-2},
-  {position:.33,width:18,height:33,delay:0,phase:1.5,lean:3,baseOffset:0},
-  {position:.40,width:13,height:23,delay:148,phase:3.1,lean:4,baseOffset:-1},
-  {position:.60,width:13,height:24,delay:65,phase:2.3,lean:-4,baseOffset:-1},
-  {position:.67,width:18,height:31,delay:112,phase:4.0,lean:-3,baseOffset:0},
-  {position:.93,width:17,height:23,delay:25,phase:5.6,lean:3,baseOffset:-2}
+  {position:.07,width:18,height:27,delay:45,phase:.2,lean:-3,baseOffset:-2},
+  {position:.20,width:15,height:26,delay:86,phase:1.0,lean:2,baseOffset:-1},
+  {position:.33,width:19,height:34,delay:0,phase:1.5,lean:3,baseOffset:0},
+  {position:.40,width:14,height:27,delay:148,phase:3.1,lean:4,baseOffset:-1},
+  {position:.60,width:14,height:28,delay:65,phase:2.3,lean:-4,baseOffset:-1},
+  {position:.67,width:19,height:33,delay:112,phase:4.0,lean:-3,baseOffset:0},
+  {position:.80,width:15,height:26,delay:75,phase:4.8,lean:-2,baseOffset:-1},
+  {position:.93,width:18,height:25,delay:25,phase:5.6,lean:3,baseOffset:-2}
 ];
 const noop=()=>{};
 const clamp=(value:number)=>Math.max(0,Math.min(1,value));
@@ -149,7 +151,7 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
     }
     const fade=endingAt===undefined?1:smooth(1-(elapsed-endingAt)/HIGH_MULTIPLIER_FADE_MS);
     if(fade<=0){dispose();return;}
-    ink.clear().setData('elapsed',elapsed).setData('visibleSegments',0);
+    ink.clear().setData('elapsed',elapsed).setData('visibleSegments',0).setData('rootSegments',0);
     let board:Box|undefined,viewport:Box|undefined,guards:readonly Box[]|undefined;
     try{board=options.getBoard();viewport=options.getViewport();guards=options.getGuards();}catch{return;}
     if(!valid(board)||!valid(viewport)||!guards||!Array.isArray(guards)||guards.length>MAX_GUARDS||guards.some(b=>!b||!Number.isFinite(b.x+b.y+b.width+b.height)||b.width<0||b.height<0))return;
@@ -175,6 +177,37 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
     const minY=board.y+EDGE/minimum,maxY=board.y+board.height-EDGE/minimum;
     const size=Math.min(1,board.width/300,board.height/95),base=board.y+board.height-5*size;
     const available=intersect(fit,region);if(!available)return;
+    // A low, continuous bed joins the tongues. Draw only whole short sections
+    // whose world bounds clear every guard; the flame never paints over text.
+    const rootLeft=board.x+4*size,rootRight=board.x+board.width-4*size;
+    const rootBottom=board.y+board.height-Math.max(EDGE/minimum,3.5*size);
+    const rootPieces=Math.min(80,Math.max(1,Math.ceil((rootRight-rootLeft)/Math.max(1,18*size))));
+    const rootPeaks=FLAMES.flatMap((flame,i)=>{
+      const drift=.003*Math.sin(elapsed/930+flame.phase),height=5+flame.height*.19+1.1*Math.sin(elapsed/710+flame.phase);
+      const peak={center:flame.position+drift,left:.022+(i%2)*.005,right:.032-(i%3)*.003,height};
+      if(i===FLAMES.length-1)return [peak];
+      const next=FLAMES[i+1],between={center:(flame.position+next.position)/2-drift*.6,left:.019,right:.025,height:3+(i%3)*1.5+.6*Math.sin(elapsed/870+flame.phase)};
+      return [peak,between];
+    });
+    const rootTop=(x:number)=>{
+      const u=(x-board.x)/board.width;let lift=3.2+.35*Math.sin(u*Math.PI*5+elapsed/1100);
+      for(const peak of rootPeaks){const d=(u-peak.center)/(u<peak.center?peak.left:peak.right),shape=Math.max(0,1-Math.abs(d));lift=Math.max(lift,3.2+peak.height*shape**1.6);}
+      return rootBottom-lift*size;
+    };
+    const rootAlpha=smooth(elapsed/150)*fade;let rootVisible=0;
+    for(let i=0;i<rootPieces&&rootAlpha>.005;i++){
+      const x0=rootLeft+(rootRight-rootLeft)*i/rootPieces,x1=rootLeft+(rootRight-rootLeft)*(i+1)/rootPieces;
+      const safe=(points:Point[])=>{const box=bbox(points.map(world));return box.x>=fit.x&&box.y>=fit.y&&box.x+box.width<=fit.x+fit.width&&box.y+box.height<=fit.y+fit.height&&!protectedGuards.some(guard=>overlaps(pad(box,.02),guard));};
+      const bed=[{x:x0,y:rootBottom-1.8*size},{x:x1,y:rootBottom-1.8*size},{x:x1,y:rootBottom},{x:x0,y:rootBottom}];
+      let painted=false;if(safe(bed)){ink.fillStyle(0x7135ad,.52*rootAlpha).fillPoints(bed,true);painted=true;}
+      const points=[...Array.from({length:5},(_,j)=>{const x=x0+(x1-x0)*j/4;return{x,y:rootTop(x)};}),{x:x1,y:rootBottom},{x:x0,y:rootBottom}];
+      if(safe(points)){
+        ink.fillStyle(0x7135ad,.54*rootAlpha).fillPoints(points,true);
+        const inner=points.map(p=>({x:p.x,y:p.y+(rootBottom-p.y)*.42}));
+        ink.fillStyle(0xc28ae9,.50*rootAlpha).fillPoints(inner,true);painted=true;
+      }
+      if(painted)rootVisible++;
+    }
     let visible=0;
     for(const flame of FLAMES){
       const age=elapsed-flame.delay;if(age<=0)continue;
@@ -209,8 +242,8 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
       for(let i=0;i<sheets.length;i++)ink.fillStyle(colors[i],alpha*opacities[i]*pulse).fillPoints(sheets[i].map(p=>({x:p.x+shift.x,y:p.y+shift.y})),true);
       visible++;
     }
-    ink.setData('visibleSegments',visible);
-    if(visible>0&&!notifiedVisible&&endingAt===undefined){notifiedVisible=true;options.onVisibleOnce?.();}
+    ink.setData('visibleSegments',visible).setData('rootSegments',rootVisible);
+    if((visible>0||rootVisible>0)&&!notifiedVisible&&endingAt===undefined){notifiedVisible=true;options.onVisibleOnce?.();}
   };
   scene.events.on('postupdate',tick);scene.events.once('shutdown',dispose);scene.events.once('destroy',dispose);
   scene.events.once('sleep',dispose);scene.events.once('pause',dispose);root.once('destroy',dispose);ink.once('destroy',inkDestroyed);signal.addEventListener('abort',dispose,{once:true});
