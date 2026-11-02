@@ -11,17 +11,18 @@ import type {NoviceGuideHandle,NoviceGuideOptions,NoviceGuideStep} from '../src/
 
 vi.mock('../src/game/session',()=>({gameSession:()=>session}));
 vi.mock('../src/game/NoviceGuideView',()=>({mountNoviceGuideView:(options:NoviceGuideOptions)=>{
- const item:FakeView={options,step:options.step,closed:false,removed:false,refreshes:0,updates:0,
+ const item:FakeView={options,step:options.step,closed:false,removed:false,hiddenByLayout:false,refreshes:0,updates:0,
   update(step){item.step=step;item.updates++;},refresh(){item.refreshes++;},
   close(){if(!item.closed){item.closed=true;options.onClose?.();}},
   reopen(){if(item.closed){item.closed=false;options.onReopen?.();}},
+  isVisible(){return !item.closed&&!item.removed&&!item.hiddenByLayout;},
   unmount(){item.removed=true;},
  };
  views.push(item);return item;
 }}));
 import {bindNoviceGuide} from '../src/game/NoviceGuideBinding';
 
-interface FakeView extends NoviceGuideHandle {options:NoviceGuideOptions;step:NoviceGuideStep;closed:boolean;removed:boolean;refreshes:number;updates:number}
+interface FakeView extends NoviceGuideHandle {options:NoviceGuideOptions;step:NoviceGuideStep;closed:boolean;removed:boolean;hiddenByLayout:boolean;refreshes:number;updates:number}
 interface FakeSession {run?:SavedRun;reducedMotion:boolean;listeners:Set<()=>void>;subscribe:(listener:()=>void)=>()=>void;emit:()=>void}
 let session:FakeSession,views:FakeView[],values:Map<string,string>,nonce=0;
 class Store implements SaveStore {
@@ -173,6 +174,26 @@ describe('novice guide scene binding',()=>{
   selected=['clubs-5','hearts-5'];owner.events.emit('postupdate');expect(latest()?.step.title).toBe('对子选好了');
   selected=['clubs-5'];owner.events.emit('postupdate');expect(latest()?.step.title).toBe('再选另一张');
   expect(JSON.stringify(run.state)).toBe(before);unmount();
+ });
+
+ it('reports only a visible final hint and clears gestures on close, layout hiding, mode changes and pause',async()=>{
+  const {run}=await start('presented');session.run=run;await enter(run);const owner=scene(run);
+  let gesture:'sweep'|'hold-drag'|undefined='sweep',shown=true,x=0;
+  const onPresented=vi.fn(),unmount=bindNoviceGuide(owner.value,{kind:'game',getGeometry:()=>({highlights:[{x,y:0,width:20,height:20}]}),
+   onReplay:()=>true,onSkip:()=>true,onComplete:()=>true,visible:()=>shown,presentHint:hint=>({...hint,gesture}),onPresented});
+  expect(onPresented.mock.lastCall?.[0]).toMatchObject({step:'pair',gesture:'sweep'});
+  const active=latest()!;active.close();expect(onPresented.mock.lastCall?.[0]).toBeUndefined();
+  active.reopen();expect(onPresented.mock.lastCall?.[0]).toMatchObject({gesture:'sweep'});
+  active.hiddenByLayout=true;owner.events.emit('postupdate');expect(onPresented.mock.lastCall?.[0]).toBeUndefined();
+  active.hiddenByLayout=false;owner.events.emit('postupdate');expect(onPresented.mock.lastCall?.[0]).toMatchObject({gesture:'sweep'});
+  onPresented.mockClear();gesture='hold-drag';owner.events.emit('postupdate');
+  expect(onPresented.mock.calls.map(row=>row[0]?.gesture)).toEqual([undefined,'hold-drag']);
+  onPresented.mockClear();x=20;unmount.refresh();expect(onPresented.mock.lastCall?.[0]).toMatchObject({gesture:'hold-drag'});
+  shown=false;owner.events.emit('postupdate');expect(onPresented.mock.lastCall?.[0]).toBeUndefined();
+  shown=true;owner.events.emit('postupdate');expect(onPresented.mock.lastCall?.[0]).toMatchObject({gesture:'hold-drag'});
+  owner.events.emit('pause');expect(onPresented.mock.lastCall?.[0]).toBeUndefined();
+  owner.events.emit('resume');expect(onPresented.mock.lastCall?.[0]).toMatchObject({gesture:'hold-drag'});
+  owner.events.emit('shutdown');expect(onPresented.mock.lastCall?.[0]).toBeUndefined();unmount();
  });
 
  it('waits for the real score presentation and finishes without recording a skip',async()=>{

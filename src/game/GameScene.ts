@@ -63,6 +63,8 @@ import {paperSceneStart} from './PaperFlow';
 import {bindNoviceGuide} from './NoviceGuideBinding';
 import {liveNoviceGuide,noviceGuide,noviceGuideEnrolled,validNoviceDiscardSelection} from './NoviceGuide';
 import {firstStageOptions,type FirstStageOption} from './NoviceFirstStage';
+import {consecutiveSuitCards,NoviceHandLesson} from './NoviceHandLesson';
+import {mountNoviceGestureDemo,type NoviceGestureDemoHandle} from './NoviceGestureDemo';
 import {needsGuidedPractice} from './GuidedTutorial';
 import {noviceGuideCanvasBox} from './NoviceGuideView';
 import {requestTutorialReplay} from './TutorialEntry';
@@ -297,6 +299,8 @@ export class GameScene extends Phaser.Scene {
 
   private view!:SceneView;
   private handInput?:HandSelectionInput;
+  private noviceHandLesson?:NoviceHandLesson;
+  private noviceHandStart?:string[];
   private readonly dialog=new DetailDialog();
   private focusIndex=0;
   private keyboardFocus=false;
@@ -395,6 +399,7 @@ export class GameScene extends Phaser.Scene {
   private carriedTool?:ToolCarryIntent;
   async create(data?:{carriedTool?:ToolCarryIntent;preparedBossOwner?:object}): Promise<void> {
     this.noviceGuideCollapsed=false;
+    this.noviceHandLesson=undefined;this.noviceHandStart=undefined;
     // The controller hint can occupy the top rail only while this PC table is active.
     // Read the outer viewport so connecting a controller cannot itself push the
     // canvas below the PC threshold before this class is established.
@@ -498,7 +503,7 @@ export class GameScene extends Phaser.Scene {
       cancelCanvas:()=>this.view.cancelInteraction(),
       pointerCard:id=>{const index=this.hand.findIndex(card=>card.id===id);if(index>=0)this.focusIndex=index;},
       ready:()=>this.ready&&!this.refillHidden,selectionLimit:()=>this.selectionLimit,cards:()=>this.hand.map((card,i)=>({id:card.id,...this.view.layout.cards[i].hit,visible:this.view.layout.cards[i].visible})),selected:()=>this.selectedIds,
-      update:update=>this.applyHandSelection(update),detail:id=>this.inspectCard(id),hover:id=>{
+      update:update=>{this.observeNoviceHandGesture(update);this.applyHandSelection(update);},detail:id=>this.inspectCard(id),hover:id=>{
         if(this.hoveredCardId===id)return;
         const previous=this.hoveredCardId;if(previous)this.hoverCard(previous,false);if(id)this.hoverCard(id,true);
       },
@@ -575,6 +580,9 @@ export class GameScene extends Phaser.Scene {
     this.render();
     let guideChoiceKey='',guideChoice:ReturnType<typeof erxiangChoice>|undefined;
     let firstStage:{key:string;optionKey?:string;options:FirstStageOption[];target?:FirstStageOption}|undefined;
+    let swipeDemo:NoviceGestureDemoHandle|undefined,swipeDemoKey='',dismissedSwipeKey='';
+    const clearSwipeDemo=()=>{swipeDemo?.destroy();swipeDemo=undefined;swipeDemoKey='';};
+    this.events.once('shutdown',clearSwipeDemo);
     const firstStageKey=()=>JSON.stringify([this.run.runId,this.run.stageIndex,this.run.stage?.playIndex,
       [...this.run.handOrder].sort(),this.chosenHeroDraft(),this.assistIds]);
     const unmountNoviceGuide=bindNoviceGuide(this,{
@@ -583,6 +591,14 @@ export class GameScene extends Phaser.Scene {
       presentHint:hint=>{
         const selected=[...this.selectedIds];
         if(hint.step==='independent'&&this.run.stage){
+          const owner=runController(this),lesson=this.activeNoviceHandLesson();
+          if(owner&&lesson&&this.run.stage.index===0&&!lesson.swept(owner.journal)){
+            if(!lesson.sorted(owner.journal))return {...hint,cue:'先理牌',body:selected.length?'理牌会清空已选；点「花色」整理。':'点「花色」，把同花色的牌排在一起。',focus:'sort-suit'};
+            const targets=this.noviceHandTargets();
+            if(targets.length<2)return {...hint,cue:'试试滑动选牌',body:'切换手牌页，找到相邻的同花色牌。'};
+            if(selected.length&&!this.handInput?.active)return {...hint,cue:'再试一次',body:'先取消已选牌，再从亮牌滑动。',recommendedCardIds:selected};
+            return {...hint,cue:'试试滑动选牌',body:window.matchMedia('(pointer: coarse)').matches?'按下左侧亮牌，立即滑到右侧再松手。':'按住鼠标左键，立即从左侧亮牌拖到右侧再松开。',recommendedCardIds:[targets[0],targets[targets.length-1]],gesture:'sweep'};
+          }
           const key=firstStageKey();
           if(firstStage?.key!==key)firstStage={key,options:[]};
           const input=this.aiInput(),result=this.aiCandidates.result;
@@ -599,7 +615,7 @@ export class GameScene extends Phaser.Scene {
           if(!choices.length)return {...hint,cue,body:result?.status==='unsupported'?'暂不能列牌型，可自己选牌出牌。':'正在整理当前手牌，请稍候。',choices};
           if(!target){
             const short=stage.handsLeft===1&&!firstStage.options.some(option=>option.canClear);
-            return {...hint,cue,body:short?(stage.discardsLeft?'暂无可过关的牌，可先弃牌。':'这手不足目标，请继续出牌。'):'选一种牌型，再选亮起的牌。',choices};
+            return {...hint,cue,body:short?(stage.discardsLeft?'暂无可过关的牌，可先弃牌。':'这手不足目标，请继续出牌。'):selected.length?'从已选牌滑过可取消；或选一种牌型。':'选一种牌型，再选亮起的牌。',choices};
           }
           const extra=selected.filter(id=>!target.cardIds.includes(id)),remaining=target.cardIds.filter(id=>!this.selectedIds.has(id));
           if(extra.length)return {...hint,cue,body:'先点亮起的已选牌取消。',recommendedCardIds:extra,choices};
@@ -621,12 +637,47 @@ export class GameScene extends Phaser.Scene {
         const choice=firstStage.options.find(row=>row.id===id);if(!choice)return;
         firstStage.target=choice;unmountNoviceGuide.refresh();
       },
+      onPresented:hint=>{
+        if(hint?.gesture!=='sweep'){
+          clearSwipeDemo();
+          if(!this.handInput?.active)dismissedSwipeKey='';
+          return;
+        }
+        const ids=this.noviceHandTargets(),key=JSON.stringify([this.run.runId,ids]);
+        if(ids.length<2){clearSwipeDemo();return;}
+        if(swipeDemo&&swipeDemoKey!==key)clearSwipeDemo();
+        if(swipeDemo||dismissedSwipeKey===key||this.handInput?.active)return;
+        swipeDemoKey=key;
+        swipeDemo=mountNoviceGestureDemo({
+          mode:'sweep',
+          points:()=>{
+            const layout=this.view.layout,canvas=this.game.canvas.getBoundingClientRect();
+            const current=this.noviceHandTargets();
+            if(JSON.stringify(current)!==JSON.stringify(ids))return;
+            const points=current.map(id=>{
+              const index=this.hand.findIndex(card=>card.id===id),seat=layout.cards[index],card=this.cardViews[index];
+              if(!seat?.visible||!card?.container.active||!card.container.visible)return undefined;
+              // During the sorting slide the painted card and its input column differ.
+              // Wait until they meet before showing a gesture the player can copy.
+              if(Math.abs(card.container.x-(seat.visual.x+seat.visual.width/2))>1)return undefined;
+              const width=Number(card.container.getData('width')),height=Number(card.container.getData('height'));
+              const matrix=card.container.getWorldTransformMatrix(),top=matrix.transformPoint(-width/2,-height/2),bottom=matrix.transformPoint(width/2,height/2);
+              const box=noviceGuideCanvasBox({x:top.x,y:top.y,width:Math.min(bottom.x-top.x,seat.hit.width),height:bottom.y-top.y},canvas,layout);
+              return {x:box.x+box.width/2,y:box.y+box.height*.55};
+            });
+            return points.every((point):point is {x:number;y:number}=>!!point)?points:undefined;
+          },
+          reducedMotion:()=>gameSession().reducedMotion,
+          sweepThresholdPx:()=>10*this.game.canvas.getBoundingClientRect().width/(this.scale.width*this.scale.zoom),
+          onDismiss:()=>{swipeDemo=undefined;swipeDemoKey='';dismissedSwipeKey=key;},
+        });
+      },
       getGeometry:hint=>{
         const l=this.view.layout,canvas=this.game.canvas.getBoundingClientRect();
         const map=(box:import('./layout').Box)=>noviceGuideCanvasBox(box,canvas,l);
         const hero=heroActionShortcut(l.tableActions.discard,l.heroAction);
         const targetText=this.view.root.getByName('hud/target') as Phaser.GameObjects.Text|undefined;
-        const focus=hint.focus==='play'?l.tableActions.play:hint.focus==='discard'?hero.discard:hint.focus==='hero'?hero.shortcut:hint.focus==='score'?this.heatText.getBounds():hint.focus==='goal'?(targetText?.getBounds()??this.heatText.getBounds()):undefined;
+        const focus=hint.focus==='play'?l.tableActions.play:hint.focus==='discard'?hero.discard:hint.focus==='hero'?hero.shortcut:hint.focus==='sort-suit'?l.buttons.suit:hint.focus==='score'?this.heatText.getBounds():hint.focus==='goal'?(targetText?.getBounds()??this.heatText.getBounds()):undefined;
         const cardBox=(id:string)=>{
           const index=this.hand.findIndex(card=>card.id===id),seat=l.cards[index],card=this.cardViews[index];
           if(!seat?.visible||!card?.container.active||!card.container.visible)return [];
@@ -639,7 +690,7 @@ export class GameScene extends Phaser.Scene {
         const highlights=[...(focus?[map(focus)]:[]),...(hint.step==='discard'||hint.step==='independent'?cards:focus?[]:cards.slice(0,1)).flatMap(cardBox)];
         // The hint must not intercept the optional skill or utility buttons:
         // tapping through to the skip control would unexpectedly leave the run.
-        const controls=[l.hud,l.scoreBoard,l.playedArea,l.hand,l.actions,l.heroAction,l.inventoryEntry,l.helpEntry,...this.run.jokers.map((_,index)=>l.slots[index])];
+        const controls=[l.hud,l.scoreBoard,l.playedArea,l.hand,l.actions,...Object.values(l.buttons),l.heroAction,l.inventoryEntry,l.helpEntry,...this.run.jokers.map((_,index)=>l.slots[index])];
         return {highlights,avoid:controls.filter((box):box is import('./layout').Box=>!!box).map(map)};
       },
       visible:()=>!this.presentation&&!this.playing&&!document.querySelector('dialog[open]'),
@@ -842,7 +893,7 @@ export class GameScene extends Phaser.Scene {
     this.pileText=v.text(l.piles.x+l.piles.width,l.piles.y,'',14,'#c8d4c7').setOrigin(1,0).setVisible(!portrait&&l.labelHeight>0);
     renderHandSortGroup(this,v,l.tools,!!l.pc);
     this.rankButton=v.button(l.buttons.rank,'点数','action/sort-rank',()=>void this.sortHand('rank'),this.ready,false,'sort');
-    this.suitButton=v.button(l.buttons.suit,'花色','action/sort-suit',()=>void this.sortHand('suit'),this.ready,false,'sort');
+    this.suitButton=v.button(l.buttons.suit,'花色','action/sort-suit',()=>void this.sortSuitWithLesson(),this.ready,false,'sort');
     this.aiButton=v.button(l.buttons.ai,handAiButtonLabel('ready'),'selection/switch-type',()=>this.switchHandType(),false,false,'sort');
     for(const button of [this.rankButton,this.suitButton,this.aiButton])(button.getData('label') as Phaser.GameObjects.Text).setFontSize(14);
     const heroEntry=heroAbilityCue(this.run),heroActions=heroEntry?heroActionShortcut(l.tableActions.discard,l.heroAction):undefined,discardBox=heroActions?.discard??l.tableActions.discard;
@@ -1941,6 +1992,42 @@ export class GameScene extends Phaser.Scene {
   }
   private handPositions():Map<string,{x:number;y:number}> {
     return new Map(this.cardViews.map(view=>[view.card.id,{x:view.container.x,y:view.container.y}]));
+  }
+  private activeNoviceHandLesson():NoviceHandLesson|undefined {
+    const owner=runController(this);
+    if(!owner||owner.guidedOpeningSuppressed||owner.state.runId!==this.run.runId||!noviceGuideEnrolled(this.run))return;
+    if(this.noviceHandLesson?.runId!==this.run.runId)this.noviceHandLesson=new NoviceHandLesson(this.run.runId);
+    return this.noviceHandLesson;
+  }
+  /** Pick one actually visible row; never ask the player to sweep across a hidden page. */
+  private noviceHandTargets():string[] {
+    const seats=this.view.layout.cards,rows:PlayingCard[][]=[];let row:PlayingCard[]=[],lastY:number|undefined;
+    this.hand.forEach((card,index)=>{
+      const seat=seats[index];
+      if(!seat?.visible){if(row.length)rows.push(row);row=[];lastY=undefined;return;}
+      if(lastY!==undefined&&Math.abs(seat.hit.y-lastY)>2){if(row.length)rows.push(row);row=[];}
+      row.push(card);lastY=seat.hit.y;
+    });
+    if(row.length)rows.push(row);
+    return rows.map(consecutiveSuitCards).sort((a,b)=>b.length-a.length)[0]??[];
+  }
+  private observeNoviceHandGesture(update:HandSelectionUpdate):void {
+    if(update.phase==='pending')this.noviceHandStart=[...this.selectedIds];
+    if(update.phase==='committed'){
+      const owner=runController(this),lesson=this.activeNoviceHandLesson();
+      if(owner&&lesson&&this.run.stage?.index===0&&noviceGuide(this.run,owner.journal)?.step==='independent'&&
+        lesson.sorted(owner.journal)&&!lesson.swept(owner.journal)&&this.noviceHandStart)
+        lesson.recordSweep(update,this.noviceHandTargets(),this.noviceHandStart);
+    }
+    if(['committed','interrupted','cancelled'].includes(update.phase))this.noviceHandStart=undefined;
+  }
+  private async sortSuitWithLesson():Promise<void> {
+    const owner=runController(this),lifecycle=this.lifecycle,runId=this.run.runId,seq=this.run.commandSeq;
+    const expected=[...this.hand].sort((a,b)=>SUITS.indexOf(a.suit)-SUITS.indexOf(b.suit)||b.rank-a.rank).map(card=>card.id);
+    await this.sortHand('suit');
+    if(!owner||owner!==runController(this)||lifecycle!==this.lifecycle||!this.scene.isActive()||this.run.runId!==runId)return;
+    const lesson=this.activeNoviceHandLesson(),command=owner.journal.find(c=>c.runId===runId&&c.expectedSeq===seq&&c.action.type==='ReorderHand'&&JSON.stringify(c.action.ids)===JSON.stringify(expected));
+    if(lesson&&command&&this.run.stage?.index===0&&noviceGuide(this.run,owner.journal)?.step==='independent'&&!lesson.swept(owner.journal))lesson.recordSort(command);
   }
   private async sortHand(mode:'rank'|'suit'):Promise<void> {
     if(!this.ready||this.presentation||this.run.phase!=='await-input')return;

@@ -6,6 +6,7 @@ import {previewR2Hand} from '../src/domain/scoreR2';
 import {guidedTutorialRunId,newRunIdentity} from '../src/game/RunLaunch';
 import {aiHandScoreInput,aiScoreContext,rankAiHandCandidates,type AiHandInput} from '../src/game/AiHandCandidates';
 import {firstStageOptions} from '../src/game/NoviceFirstStage';
+import {SUITS} from '../src/cards/types';
 
 function send(state:R2RunState,action:Action):R2RunState {
  const result=applyCommand(state,{runId:state.runId,commandId:`${state.runId}/command/${state.commandSeq+1}`,
@@ -41,8 +42,13 @@ describe('first-stage choice feedback',()=>{
   {name:'one club',discard:['clubs-4']},
   {name:'one diamond',discard:['diamonds-4']},
   {name:'both fours',discard:['clubs-4','diamonds-4']},
- ])('keeps all displayed choices on a path to 400 after $name',({discard})=>{
-  const replaced=send(afterPair(),{type:'DiscardHand',selectedIds:discard});
+ ].flatMap(row=>[{...row,sort:false},{...row,name:row.name+' after suit sort',sort:true}]))('keeps all displayed choices on a path to 400 after $name',({discard,sort})=>{
+  let replaced=send(afterPair(),{type:'DiscardHand',selectedIds:discard});
+  if(sort){
+   const cards=replaced.handOrder.map(id=>replaced.deckInstances.find(card=>card.id===id)!);
+   const ids=[...cards].sort((a,b)=>SUITS.indexOf(a.suit)-SUITS.indexOf(b.suit)||b.rank-a.rank).map(card=>card.id);
+   replaced=send(replaced,{type:'ReorderHand',ids});
+  }
   let leaves=0;
   const walk=(state:R2RunState,depth:number)=>{
    if(state.phase==='stage-cleared'){

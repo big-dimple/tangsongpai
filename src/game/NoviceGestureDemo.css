@@ -1,0 +1,18 @@
+.novice-gesture-demo { position:fixed;inset:0;z-index:69;pointer-events:none; }
+.novice-gesture-demo *, .novice-gesture-demo svg { pointer-events:none; }
+.novice-gesture-demo[hidden] { display:none; }
+.novice-gesture-route { position:fixed;inset:0;width:100%;height:100%;overflow:visible;display:none; }
+.novice-gesture-route polyline,.novice-gesture-route path { fill:none;stroke:#a43b28;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;opacity:.8; }
+.novice-gesture-route polyline { stroke-dasharray:4 4; }
+.novice-gesture-demo[data-reduced="true"] .novice-gesture-route { display:block; }
+.novice-gesture-hand,.novice-gesture-contact { position:fixed;left:0;top:0;display:block;will-change:transform; }
+.novice-gesture-hand { width:24px;height:30px;filter:drop-shadow(0 1px 2px #2b261fa0); }
+.novice-gesture-hand svg { display:block;width:100%;height:100%;overflow:visible;transform-origin:44% 6%;transition:transform 90ms ease-out; }
+.novice-gesture-hand path { fill:#ffe4b8;stroke:#633e2e;stroke-width:2.4;stroke-linejoin:round; }
+.novice-gesture-demo[data-phase="press"] .novice-gesture-hand svg,.novice-gesture-demo[data-phase="hold"] .novice-gesture-hand svg { transform:scale(.92); }
+.novice-gesture-demo[data-phase="release"] .novice-gesture-hand svg { transform:translateY(-5px); }
+.novice-gesture-demo[data-reduced="true"] .novice-gesture-hand svg { transition:none; }
+.novice-gesture-contact { width:9px;height:9px;box-sizing:border-box;border:2px solid #a53726;border-radius:50%;background:#fff8e9d9; }
+.novice-gesture-demo[data-phase="hold"] .novice-gesture-contact,.novice-gesture-demo[data-phase="move"] .novice-gesture-contact { background:#b83b26; }
+.novice-gesture-demo[data-phase="release"] .novice-gesture-contact { width:15px;height:15px;background:transparent; }
+.novice-gesture-demo[data-phase="rest"] .novice-gesture-hand,.novice-gesture-demo[data-phase="rest"] .novice-gesture-contact { opacity:0; }

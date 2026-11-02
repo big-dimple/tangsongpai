@@ -45,15 +45,15 @@ export class LoadingScreen {
   if(!host){host=document.createElement('dialog');host.id='resource-preparation';host.setAttribute('aria-label','场景资源准备');host.innerHTML='<h2 data-load-title></h2><div class="preparation-progress-line"><span data-load-caption aria-live="polite"></span><span data-load-counter></span></div><progress aria-label="资源准备进度"></progress><div class="preparation-actions"><button data-load-next type="button">暂停加载</button></div>';document.body.append(host);}
   this.host=host;this.progress=host.querySelector('progress')!;this.caption=host.querySelector('[data-load-caption]')!;this.counter=host.querySelector('[data-load-counter]')!;this.next=host.querySelector('[data-load-next]')!;
   host.querySelector('[data-load-title]')!.textContent=title;this.next.hidden=true;
-  this.exit=host.querySelector<HTMLButtonElement>('[data-load-exit]')??document.createElement('button');this.exit.type='button';this.exit.dataset.loadExit='';this.exit.textContent='返回上一页';this.exit.hidden=history.length<=1;this.exit.onclick=()=>{this.pauseAction?.();history.back();};this.next.parentElement!.append(this.exit);
+  this.exit=host.querySelector<HTMLButtonElement>('[data-load-exit]')??document.createElement('button');this.exit.type='button';this.exit.dataset.loadExit='';this.exit.textContent='返回上一页';this.exit.hidden=opening||history.length<=1;this.exit.onclick=()=>{this.pauseAction?.();history.back();};this.next.parentElement!.append(this.exit);
   this.syncMotion();this.motion.addEventListener('change',this.syncMotion);document.addEventListener('visibilitychange',this.syncMotion);
   if(host.open)host.close();host.showModal();host.addEventListener('cancel',this.cancelEvent);this.progress.max=1;this.progress.value=0;this.frame=requestAnimationFrame(this.animate);
   this.particles=mountLoadingEntryParticles(host);
  }
- update(p:PreparationProgress,label='准备常用牌面',base=false){
+ update(p:PreparationProgress,label='准备常用牌面'){
   this.caption.textContent=label;this.counter.textContent=`${p.loaded} / ${p.total}`;this.host.dataset.loaded=String(p.loaded);this.host.dataset.total=String(p.total);
   // Both decorative beats and progress follow decoded counts; only recovery opens the gate.
-  const ratio=(p.total?Math.min(1,p.loaded/p.total):0)*(base ? .08 : 1),beat=this.ready?3:ratio>=.5?2:ratio>0?1:0;this.actualRatio=ratio;
+  const ratio=p.total?Math.min(1,p.loaded/p.total):0,beat=this.ready?3:ratio>=.5?2:ratio>0?1:0;this.actualRatio=ratio;
   if(p.total!==this.lastTotal){this.lastBeat=0;this.lastTotal=p.total;this.cancelFlourishes();}
   const cards=this.host.querySelectorAll<HTMLElement>('.load-card-seat');
   this.host.querySelectorAll('.load-chapters span').forEach((e,i)=>e.classList.toggle('is-inked',i<beat));
@@ -69,7 +69,11 @@ export class LoadingScreen {
   }
   this.lastBeat=beat;
  }
- base(loaded:number,total:number,failed=0){this.update({loaded,total,failed,pending:total-loaded-failed,states:[]},'铺好纸面与纹样',true);}
+ initial(loaded:number,total:number,failed:number,complete:boolean,label:string){
+  this.ready=complete&&failed===0&&loaded===total;
+  this.update({loaded,total,failed,pending:Math.max(0,total-loaded-failed),states:[]},label);
+  if(this.ready)this.progress.value=this.visual.complete();
+ }
  controls(pause:()=>void,resume:()=>void){this.pauseAction=pause;this.resumeAction=resume;this.next.hidden=false;this.next.textContent='暂停加载';this.next.onclick=pause;}
  recovery(p:RecoveryProgress){
   const label=p.status==='offline'?'网络已断开，连接后自动继续':p.status==='paused'?'已暂停，已准备的牌面会保留':p.status==='retrying'?'正在自动重试，已准备的牌面会保留':p.status==='waiting'?'牌面暂未就绪，正在自动恢复':p.status==='ready'?'牌面已就绪':'准备常用牌面';

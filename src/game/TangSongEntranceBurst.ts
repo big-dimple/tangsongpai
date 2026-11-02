@@ -690,6 +690,33 @@ function drawMedallion(
 
 const ENSEMBLE_IDS: readonly CharacterId[] = ['amo', 'laohuan', 'erxiang', 'azao', 'xiemu', 'touye'];
 
+export type EnsemblePreparation={loaded:number;total:number;failed:number;status:'loading'|'ready'|'degraded'};
+/** The visible six-person opening uses these small avatars, not the full portraits.
+ * A finite deadline permits the existing drawn fallback on a slow/broken connection. */
+export function prepareTitleEnsembleImages(changed:(progress:EnsemblePreparation)=>void):Promise<EnsemblePreparation> {
+  let loaded=0,failed=0,done=false;
+  const total=ENSEMBLE_IDS.length;
+  return new Promise(resolve=>{
+    const snapshot=(status:EnsemblePreparation['status'])=>({loaded,total,failed,status});
+    const finish=(status:EnsemblePreparation['status'])=>{if(done)return;done=true;clearTimeout(timer);const value=snapshot(status);changed(value);resolve(value);};
+    const timer=setTimeout(()=>finish('degraded'),2500);
+    changed(snapshot('loading'));
+    for(const id of ENSEMBLE_IDS){
+      const url=characterArt(id,'avatar')?.url,img=cachedImage(url);
+      void Promise.resolve().then(()=>{
+        if(!img)throw Error('avatar-unavailable');
+        return img.decode();
+      }).then(()=>{
+        if(!ready(img))throw Error('avatar-decode');
+        if(!done){loaded++;changed(snapshot('loading'));}
+      }).catch(()=>{
+        if(url&&imageCache.get(url)===img)imageCache.delete(url);
+        if(!done){failed++;changed(snapshot('loading'));}
+      }).finally(()=>{if(!done&&loaded+failed===total)finish(failed?'degraded':'ready');});
+    }
+  });
+}
+
 let titleEnsemblePlayed = false;
 
 /**
@@ -740,11 +767,11 @@ export function mountTangSongEnsembleBurst(
     glow: 'rgba(184, 71, 58, 0.22)',
   };
 
-  const heroes = ENSEMBLE_IDS.map(id => ({
-    id,
-    profile: qiyuHeroProfile(id),
-    avatar: cachedImage(characterArt(id, 'avatar')?.url),
-  }));
+  const heroes = ENSEMBLE_IDS.map(id => {
+    const avatar=cachedImage(characterArt(id,'avatar')?.url);
+    // A slow image cannot replace the fallback halfway through the same reveal.
+    return {id,profile:qiyuHeroProfile(id),avatar:ready(avatar)?avatar:undefined};
+  });
 
   const particles = buildParticles(64, [() => INK, () => VERMILION, () => GOLD_DEEP, () => TEAL]);
 

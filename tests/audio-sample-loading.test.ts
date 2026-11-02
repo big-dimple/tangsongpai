@@ -1,5 +1,5 @@
 import {afterEach, beforeEach, expect, it, vi} from 'vitest';
-import {AudioEngine} from '../src/audio/AudioEngine';
+import {AudioEngine,OPENING_SOUND_NAMES} from '../src/audio/AudioEngine';
 import {FOLEY_SAMPLES} from '../src/audio/foley';
 import {HIGH_MULTIPLIER_FIRE_SAMPLE} from '../src/audio/HighMultiplierFire';
 
@@ -283,4 +283,57 @@ it('mute/background and unavailable clips consume cues, without playback on load
   expect(sources).toHaveLength(2);
   engine.setSuspended(true);
   expect(inside.voices.size).toBe(0);
+});
+
+it('decodes the first interaction families while suspended, then plays only after a real unlock',async()=>{
+  const {engine,inside,context,sources}=fixture();context.state='suspended';
+  const initial=new Set<string>(OPENING_SOUND_NAMES);
+  vi.stubGlobal('fetch',vi.fn((url:URL)=>{
+    const name=url.pathname.split('/').pop()!.replace(/\.(ogg|mp3)$/,'');
+    return initial.has(name)?Promise.resolve(response()):never();
+  }));
+  const progress:any[]=[],opening=engine.prepareOpeningSounds(p=>progress.push(p));
+  await flush();const result=await opening;
+  expect(result).toEqual({loaded:initial.size,total:initial.size,status:'ready'});
+  expect(context.resume).not.toHaveBeenCalled();expect(sources).toHaveLength(0);
+  expect(progress.at(-1).status).toBe('ready');
+  const initialRequests=vi.mocked(fetch).mock.calls.map(([url])=>url as URL).filter(url=>initial.has(url.pathname.split('/').pop()!.replace(/\.(ogg|mp3)$/,'')));
+  expect(initialRequests).toHaveLength(initial.size);expect(initialRequests.every(url=>url.searchParams.get('v')?.length===12)).toBe(true);
+  context.resume.mockImplementation(async()=>{context.state='running';});
+  await engine.unlock();engine.select();expect(sources.length).toBeGreaterThan(0);
+  await vi.advanceTimersByTimeAsync(200000);await inside.scoreSampleTask;
+});
+
+it('skips startup sample downloads when effects are muted',async()=>{
+  const {engine,context}=fixture();engine.setVolume('sfx',0);
+  const progress=vi.fn();expect(await engine.prepareOpeningSounds(progress)).toEqual({loaded:0,total:0,status:'skipped'});
+  await engine.unlock();expect(fetch).not.toHaveBeenCalled();expect(context.resume).not.toHaveBeenCalled();
+  engine.setVolume('sfx',.8);await flush();expect(fetch).toHaveBeenCalled();
+});
+
+it('opens on the bounded deadline without replaying a late sound',async()=>{
+  const {engine,inside,sources}=fixture();const late=deferred<any>();
+  vi.stubGlobal('fetch',vi.fn(()=>late.promise));
+  const progress=vi.fn(),opening=engine.prepareOpeningSounds(progress);
+  await vi.advanceTimersByTimeAsync(2501);
+  const result=await opening;expect(result.status).toBe('degraded');expect(result.loaded).toBe(0);
+  expect(sources).toHaveLength(0);
+  late.resolve(response());await flush();expect(sources).toHaveLength(0);
+  await vi.advanceTimersByTimeAsync(200000);await inside.scoreSampleTask;
+});
+
+it('retries missing samples once after reconnect, without duplicating requests or playing expired cues',async()=>{
+  const {engine,inside,sources,load}=fixture();vi.stubGlobal('fetch',vi.fn(async()=>({ok:false})));
+  await load();expect(fetch).toHaveBeenCalledTimes(samples.length*3);expect(inside.scoreSamples.size).toBe(0);
+  vi.stubGlobal('fetch',vi.fn(async()=>response()));
+  engine.retrySamplesAfterReconnect();engine.retrySamplesAfterReconnect();await inside.reconnectSampleTask;
+  expect(fetch).toHaveBeenCalledTimes(samples.length);expect(inside.scoreSamples.size).toBe(samples.length);expect(sources).toHaveLength(0);
+  engine.retrySamplesAfterReconnect();await inside.reconnectSampleTask;expect(fetch).toHaveBeenCalledTimes(samples.length);
+});
+
+it('does not download on reconnect while muted, but allows a later unmute to retry',async()=>{
+  const {engine,inside,load}=fixture();vi.stubGlobal('fetch',vi.fn(async()=>({ok:false})));await load();
+  engine.setVolume('sfx',0);vi.stubGlobal('fetch',vi.fn(async()=>response()));
+  engine.retrySamplesAfterReconnect();await inside.reconnectSampleTask;expect(fetch).not.toHaveBeenCalled();
+  await engine.unlock();engine.setVolume('sfx',.8);await inside.scoreSampleTask;expect(inside.scoreSamples.size).toBe(samples.length);
 });
