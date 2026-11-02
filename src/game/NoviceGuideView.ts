@@ -15,6 +15,7 @@ export interface NoviceGuideStep {
   /** Optional explanation, initially collapsed and opened by the player. */
   details?:string;
   action?:{label:string;run:()=>void};
+  choices?:{id:string;label:string;cardIds:string[];selected?:boolean;run:()=>void}[];
 }
 export interface NoviceGuideOptions {
   step:NoviceGuideStep;
@@ -98,13 +99,14 @@ let detailsSequence=0;
 export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHandle {
   const root=document.createElement('div'),rings=document.createElement('div'),panel=document.createElement('section');
   const header=document.createElement('div'),heading=document.createElement('div'),progress=document.createElement('span'),title=document.createElement('strong'),closeButton=document.createElement('button');
-  const body=document.createElement('p'),footer=document.createElement('div'),skipButton=document.createElement('button'),detailsButton=document.createElement('button'),detailsBody=document.createElement('div'),actionButton=document.createElement('button'),reopenButton=document.createElement('button');
+  const body=document.createElement('p'),choiceRow=document.createElement('div'),choices=document.createElement('div'),footer=document.createElement('div'),skipButton=document.createElement('button'),detailsButton=document.createElement('button'),detailsBody=document.createElement('div'),actionButton=document.createElement('button'),reopenButton=document.createElement('button');
   root.className='novice-guide';root.dataset.noviceGuide='';root.dataset.reducedMotion=String(!!options.reducedMotion);
   rings.className='novice-guide-rings';rings.setAttribute('aria-hidden','true');
   panel.className='novice-guide-panel';panel.setAttribute('aria-label','新手引导');panel.dataset.noviceGuidePanel='';
   header.className='novice-guide-header';heading.className='novice-guide-heading';heading.setAttribute('role','status');heading.setAttribute('aria-live','polite');heading.setAttribute('aria-atomic','true');
   progress.className='novice-guide-progress';title.className='novice-guide-title';body.className='novice-guide-body';heading.append(progress,title,body);
   closeButton.type='button';closeButton.className='novice-guide-close';closeButton.textContent='×';closeButton.setAttribute('aria-label','收起引导');closeButton.title='收起引导';closeButton.dataset.noviceGuideClose='';
+  choiceRow.className='novice-guide-choice-row';choices.className='novice-guide-choices';choices.setAttribute('aria-label','选择要尝试的牌型');choiceRow.append(choices);
   footer.className='novice-guide-actions';
   skipButton.type='button';skipButton.className='novice-guide-skip';skipButton.textContent='跳过';skipButton.setAttribute('aria-label','跳过教学并开始普通游戏，之后可在菜单重看');skipButton.title='跳过教学并开始普通游戏，之后可在菜单重看';skipButton.dataset.noviceGuideSkip='';skipButton.hidden=!options.onSkip;
   const detailsId='novice-guide-details-'+(++detailsSequence);
@@ -112,14 +114,29 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
   detailsBody.className='novice-guide-details';detailsBody.id=detailsId;detailsBody.dataset.noviceGuideDetails='';detailsBody.setAttribute('role','region');detailsBody.setAttribute('aria-labelledby',detailsButton.id);
   actionButton.type='button';actionButton.className='novice-guide-action';actionButton.dataset.noviceGuideAction='';
   header.append(heading,skipButton,actionButton,closeButton);
-  footer.append(detailsButton);panel.append(header,body,footer,detailsBody);
+  footer.append(detailsButton);panel.append(header,choiceRow,footer,detailsBody);
   reopenButton.type='button';reopenButton.className='novice-guide-reopen';reopenButton.textContent='查看引导';reopenButton.setAttribute('aria-label','查看新手引导');reopenButton.dataset.noviceGuideReopen='';reopenButton.hidden=true;
   root.append(rings,panel,reopenButton);(options.host??document.body).append(root);
-  let step=options.step,closed=false,disposed=false,frame=0,detailsExpanded=false;
+  let step=options.step,closed=false,disposed=false,frame=0,detailsExpanded=false,choiceIds='';
   const renderStep=()=>{
     root.dataset.noviceGuideStep=step.id;progress.textContent=step.progress??'';progress.hidden=!step.progress;title.textContent=step.title;body.textContent=step.body;
     if(!step.action&&document.activeElement===actionButton)closeButton.focus({preventScroll:true});
     actionButton.hidden=!step.action;actionButton.textContent=step.action?.label??'';
+    const rows=step.choices??[],ids=JSON.stringify(rows.map(choice=>choice.id));
+    if(ids!==choiceIds){
+      choiceIds=ids;choices.replaceChildren(...rows.map(choice=>{
+        const button=document.createElement('button');button.type='button';button.dataset.noviceGuideChoice=choice.id;
+        button.onclick=()=>step.choices?.find(row=>row.id===choice.id)?.run();return button;
+      }));
+    }
+    const hasChoices=rows.length>0;panel.classList.toggle('has-choices',hasChoices);choiceRow.hidden=!hasChoices;
+    if(hasChoices&&skipButton.parentElement!==choiceRow)choiceRow.append(skipButton,closeButton);
+    else if(!hasChoices&&skipButton.parentElement!==header){header.insertBefore(skipButton,actionButton);header.append(closeButton);}
+    rows.forEach((choice,index)=>{
+      const button=choices.children[index] as HTMLButtonElement;
+      button.textContent=choice.label;button.dataset.cardIds=JSON.stringify(choice.cardIds);
+      button.setAttribute('aria-pressed',String(!!choice.selected));
+    });
     const skipFocused=document.activeElement===skipButton;
     skipButton.hidden=!options.onSkip||step.id==='complete';
     if(skipButton.hidden&&skipFocused)(step.action?actionButton:closeButton).focus({preventScroll:true});

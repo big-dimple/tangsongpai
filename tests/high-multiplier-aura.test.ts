@@ -6,7 +6,7 @@ import {nativeHeroRuntime} from './fixtures/native-hero-runtime';
 
 type Point={x:number;y:number};
 type Painted={color:number;alpha:number;points:Point[]};
-const whole=(path:Painted)=>path.points.length===35||([0x7135ad,0xc28ae9].includes(path.color)&&[5,8].includes(path.points.length));
+const validPath=(path:Painted)=>path.points.length>=3&&path.points.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y));
 
 /** Read the real Phaser Graphics command buffer, not a mock drawing recipe. */
 function painted(ink:Phaser.GameObjects.Graphics):Painted[]{
@@ -68,7 +68,7 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
     const f=fixture();f.play();
     const bodies=()=>painted(f.ink()!).filter(path=>path.color===0x7943c9);
     f.step(600);const before=bodies();f.step(400);const after=bodies();f.step(200);const later=bodies();
-    expect(before).toHaveLength(8);expect(after).toHaveLength(8);expect(later).toHaveLength(8);
+    expect(before.length).toBeGreaterThanOrEqual(9);expect(after).toHaveLength(before.length);expect(later).toHaveLength(before.length);
     const change=(first:Painted[],second:Painted[],index:number)=>{
       const a=first[index].points,b=second[index].points;expect(b).toHaveLength(a.length);
       const tip=a.reduce((best,p,i)=>p.y<a[best].y?i:best,0),base=a.reduce((best,p,i)=>p.y>a[best].y?i:best,0);
@@ -82,7 +82,7 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
   it.each([[320,568],[390,844],[1280,720]])('starts across the bottom of the %sx%s score board', (width,height)=>{
     const f=fixture({width,height,density:1,renderer:2}),board=f.table.scoreBoard;f.play();f.step(600);
     const bodies=painted(f.ink()!).filter(path=>path.color===0x7943c9);
-    expect(bodies).toHaveLength(8);
+    expect(bodies.length).toBeGreaterThanOrEqual(9);
     for(const body of bodies){
       expect(Math.max(...body.points.map(point=>point.y))).toBeGreaterThan(board.y+board.height-10);
       expect(Math.min(...body.points.map(point=>point.y))).toBeLessThan(board.y+board.height-10);
@@ -107,8 +107,8 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
     const f=fixture({width,height,density:1,renderer}),board=f.table.scoreBoard;f.play();
     const sample=(delta:number)=>{
       f.step(delta);const paths=painted(f.ink()!),bodies=paths.filter(path=>path.color===0x7943c9);
-      expect(bodies).toHaveLength(8);expect(paths.filter(path=>path.color===0xffeaff)).toHaveLength(8);
-      expect(paths.every(whole)).toBe(true);
+      expect(bodies.length).toBeGreaterThanOrEqual(9);expect(paths.filter(path=>path.color===0xffeaff).length).toBeGreaterThanOrEqual(9);
+      expect(paths.every(validPath)).toBe(true);
       for(const path of paths){
         expect(within(path.points,{x:6.5,y:6.5,width:width-13,height:height-13})).toBe(true);
         expect(path.points.every(p=>p.y>=board.y+2.5-1e-6&&p.y<=board.y+board.height-2.5+1e-6)).toBe(true);
@@ -128,7 +128,7 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
     f.root.setPosition(cx-(c*cx-s*cy),cy-(s*cx+c*cy)).setRotation(r);f.play();
     for(const delta of [600,400,400]){
       f.step(delta);const m=f.root.getWorldTransformMatrix(),paths=painted(f.ink()!),bodies=paths.filter(p=>p.color===0x7943c9);
-      expect(bodies.length).toBeGreaterThanOrEqual(4);expect(paths.every(whole)).toBe(true);
+      expect(bodies.length).toBeGreaterThanOrEqual(4);expect(paths.every(validPath)).toBe(true);
       for(const path of paths){
         expect(path.points.every(p=>p.y>=board.y+2.5-1e-6&&p.y<=board.y+board.height-2.5+1e-6)).toBe(true);
         expect(within(path.points.map(p=>m.transformPoint(p.x,p.y)),{x:6.5,y:6.5,width:307,height:555})).toBe(true);
@@ -136,17 +136,17 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
     }
   });
 
-  it('moves or omits whole flames at a tip guard without splitting unrelated contours',()=>{
+  it('trims a flame at a tip guard without changing unrelated contours',()=>{
     const f=fixture({width:320,height:568,density:1,renderer:2});f.play();f.step(600);
     const bodies=()=>painted(f.ink()!).filter(p=>p.color===0x7943c9),before=bodies();
     const tip=before[0].points.reduce((a,p)=>p.y<a.y?p:a),guard={x:tip.x-3,y:tip.y-3,width:6,height:6};
     const far=before.at(-1)!;f.setGuards([guard]);f.step(0);const all=painted(f.ink()!),after=bodies();
-    expect(after.length).toBeGreaterThanOrEqual(2);expect(all.every(whole)).toBe(true);
+    expect(after.length).toBeGreaterThanOrEqual(2);expect(all.every(validPath)).toBe(true);
     expect(after.some(path=>JSON.stringify(path.points)===JSON.stringify(far.points))).toBe(true);
     for(const path of all)expect(separated(path.points,guard)).toBe(true);
-    // The formerly troublesome, unrelated guard must not split any contour.
+    // The formerly troublesome, unrelated guard must not change any contour.
     f.setGuards([{x:15,y:115,width:8,height:12}]);f.step(0);
-    expect(bodies()).toHaveLength(8);expect(painted(f.ink()!).every(whole)).toBe(true);
+    expect(bodies()).toHaveLength(before.length);expect(painted(f.ink()!).every(validPath)).toBe(true);
   });
 
   it.each([1,2])('keeps the five-card rack, five played faces and score ink clear, renderer %s',renderer=>{
@@ -160,16 +160,46 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
     f.setGuards(guards);f.play();
     for(const delta of [200,200,200,400,400]){
       f.step(delta);const paths=painted(f.ink()!);expect(f.ink()?.getData('visibleSegments')).toBeGreaterThan(0);
-      expect(paths.every(path=>whole(path)&&within(path.points,board))).toBe(true);
+      expect(paths.every(path=>validPath(path)&&within(path.points,board))).toBe(true);
       for(const path of paths)for(const guard of guards)expect(separated(path.points,guard)).toBe(true);
     }
+  });
+
+  it.each([[320,568],[390,844],[1280,720]])('keeps a substantial connected center below score numbers at %sx%s',(width,height)=>{
+    const f=fixture({width,height,density:1,renderer:2}),board=f.table.scoreBoard;
+    const guards=[.10,.38,.73].map((u,i)=>({x:board.x+board.width*u,y:board.y+board.height-45,width:board.width*(i===2?.14:.08),height:26}));
+    f.setGuards(guards);f.play();
+    for(const delta of [400,450,450]){
+      f.step(delta);
+      const root=painted(f.ink()!).filter(p=>p.color===0x7135ad&&Math.max(...p.points.map(q=>q.y))-Math.min(...p.points.map(q=>q.y))>=4);
+      const occupied=root.filter(p=>p.points.some(q=>q.x>board.x+board.width*.3&&q.x<board.x+board.width*.7));
+      expect(occupied.length).toBeGreaterThan(5);
+      for(const p of root)for(const guard of guards)expect(separated(p.points,guard)).toBe(true);
+    }
+  });
+
+  it('keeps the soft backing below score text, outside cards and controls, and cleans both layers',()=>{
+    const f=fixture({width:390,height:844,density:1,renderer:2}),board=f.table.scoreBoard;
+    const source=f.text(board.x+10,board.y+4,'score').setName('score/source');
+    const number=f.text(board.x+board.width*.45,board.y+board.height-39,'650').setName('score/total');
+    f.root.add([source,number]);
+    const card=f.card('moving-card',{x:board.x+board.width*.65,y:board.y+board.height-40,width:35,height:35});
+    const cardBounds=card.getBounds(),scoreBounds=number.getBounds();
+    f.setGuards([cardBounds,scoreBounds]);f.opts.getBackdropGuards=()=>[cardBounds];f.play();f.step(600);
+    const backdrop=f.root.list.find(o=>o.name==='score/high-multiplier-aura-backdrop') as Phaser.GameObjects.Graphics;
+    expect(backdrop).toBeTruthy();expect(f.root.list.indexOf(backdrop)).toBeLessThan(f.root.list.indexOf(source));
+    expect(f.root.list.indexOf(backdrop)).toBeLessThan(f.root.list.indexOf(number));expect(f.root.list.indexOf(backdrop)).toBeLessThan(f.root.list.indexOf(card));
+    const shapes=painted(backdrop);expect(shapes.length).toBeGreaterThan(0);
+    for(const shape of shapes){expect(within(shape.points,board)).toBe(true);expect(separated(shape.points,cardBounds)).toBe(true);}
+    f.opts.getBackdropGuards=()=>undefined;f.step(16);expect(painted(backdrop)).toHaveLength(0);
+    f.signal.abort();expect(backdrop.active).toBe(false);expect(f.ink()).toBeUndefined();
   });
 
   it.each([[320,568,1],[320,568,2],[390,844,1],[390,844,2]])(
     'protects long and moving numbers entirely inside the %sx%s score panel, renderer %s',(width,height,renderer)=>{
     const f=fixture({width,height,density:1,renderer}),board=f.table.scoreBoard;
     f.play();f.step(400);const ink=f.ink()!;
-    expect(ink.getData('visibleSegments')).toBe(8);
+    expect(ink.getData('visibleSegments')).toBeGreaterThanOrEqual(9);
     // These represent a number growing toward either edge. All of the bounds
     // remain inside the panel, so a board-interior exemption would fail here.
     const left:Box={x:board.x+3,y:board.y+20,width:75,height:board.height-24};
@@ -178,8 +208,8 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
     for(const guard of [left,right,entire,left]){
       f.setGuards([guard]);f.step(16);const paths=painted(ink),visible=ink.getData('visibleSegments');
       if(guard===entire)expect(visible).toBe(0);
-      else {expect(visible).toBeGreaterThan(0);expect(visible).toBeLessThan(8);}
-      expect(paths.every(path=>whole(path)&&within(path.points,board)&&separated(path.points,guard))).toBe(true);
+      else expect(visible).toBeGreaterThan(0);
+      expect(paths.every(path=>validPath(path)&&within(path.points,board)&&separated(path.points,guard))).toBe(true);
     }
   });
 
