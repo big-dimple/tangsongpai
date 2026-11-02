@@ -2830,6 +2830,7 @@ export class GameScene extends Phaser.Scene {
         if(!view.container.active||context.signal.aborted)return;
         if(!replay)this.audio.cardLand();
         view.container.setScale(sx*1.07,sy*.9).setAngle(0);
+        this.targetAttachment?.refreshLandingGeometry();
         await this.animate({targets:view.container,scaleX:sx,scaleY:sy,duration:110,ease:'Back.easeOut'},context);
       })]);
       if(context.signal.aborted)return;

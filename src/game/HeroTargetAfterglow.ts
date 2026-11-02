@@ -18,8 +18,6 @@ export interface AfterglowRequest {
  isCurrent?:(card:AfterglowCard)=>boolean;
  /** A later impact may refresh its own card without extinguishing its peers. */
  retainOthers?:boolean;
- /** While cards fly, refresh their moving protection bounds every rendered frame. */
- trackFlight?:boolean;
 }
 interface Glow {request:AfterglowRequest;card:AfterglowCard;body:Phaser.GameObjects.Container;ink:Phaser.GameObjects.Graphics;elapsed:number;lastTime?:number;cancel:()=>void}
 
@@ -59,6 +57,8 @@ export class HeroTargetAfterglow {
   }
   if(this.glows.size)this.drawAll();
  }
+ /** Refresh after a synchronous pose change outside the scene update. */
+ refreshGeometry():void {if(!this.destroyed&&this.glows.size)this.drawAll();}
  private drawAll():void {
   // Retained impacts can come from different requests. Share a traversal only
   // when they explicitly use the same dynamic mask supplier.
@@ -146,7 +146,9 @@ export class HeroTargetAfterglow {
    const elapsed=glow.lastTime===undefined?dt:Math.max(0,time-glow.lastTime);glow.lastTime=time;
    glow.elapsed+=Number.isFinite(elapsed)?elapsed:0;if(glow.elapsed>=HERO_TARGET_AFTERGLOW_MS)this.remove(id);
   }
-  const trackingFlight=[...this.glows.values()].some(glow=>glow.request.trackFlight&&glow.elapsed<500);
+  // Landing can still squash or bounce after the center reaches its slot.
+  // Refresh all masks every frame during that transient, including re-impacts.
+  const trackingFlight=[...this.glows.values()].some(glow=>glow.elapsed<500);
   if(!this.glows.size||!trackingFlight&&this.drawElapsed<1000/30)return;
   this.drawElapsed%=1000/30;
   this.drawAll();

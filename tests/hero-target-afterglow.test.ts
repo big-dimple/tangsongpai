@@ -84,12 +84,13 @@ it('caps simultaneous targets at five and does not create effects for an aborted
  try{glow.play({cards,root:f.root,masks:()=>[],signal:controller.signal});expect(cards.flatMap(c=>effects(c.container))).toHaveLength(5);glow.play({cards:cards.slice(5),root:f.root,masks:()=>[],signal:controller.signal,retainOthers:true});expect(cards.flatMap(c=>effects(c.container))).toHaveLength(5);controller.abort();expect(cards.flatMap(c=>effects(c.container))).toHaveLength(0);glow.play({cards,root:f.root,masks:()=>[],signal:controller.signal});expect(cards.flatMap(c=>effects(c.container))).toHaveLength(0);}finally{glow.destroy();f.root.destroy();}
 });
 
-it('shares one mask traversal across targets and redraws at most 30Hz without delaying cleanup',()=>{
+it('shares one mask traversal across targets and caps settled redraws without delaying cleanup',()=>{
  const f=nativeHeroRuntime(),cards=Array.from({length:5},(_,i)=>{const container=f.card(String(i),{x:30+i*120,y:100,width:70,height:100});return{id:String(i),container,width:70,height:100};}),masks=vi.fn(()=>[]),controller=new AbortController(),glow=new HeroTargetAfterglow(f.scene,()=> 'full');
  try{
   glow.play({cards,root:f.root,masks,signal:controller.signal});expect(masks).toHaveBeenCalledTimes(1);
-  f.step(10,10);f.step(20,10);f.step(30,10);expect(masks).toHaveBeenCalledTimes(1);f.step(40,10);expect(masks).toHaveBeenCalledTimes(2);
-  f.step(HERO_TARGET_AFTERGLOW_MS,HERO_TARGET_AFTERGLOW_MS-40);expect(masks).toHaveBeenCalledTimes(2);expect(cards.flatMap(c=>effects(c.container))).toHaveLength(0);
+  f.step(10,10);f.step(20,10);f.step(30,10);expect(masks).toHaveBeenCalledTimes(4);
+  f.step(510,480);expect(masks).toHaveBeenCalledTimes(5);f.step(520,10);f.step(530,10);expect(masks).toHaveBeenCalledTimes(5);f.step(540,10);expect(masks).toHaveBeenCalledTimes(6);
+  f.step(HERO_TARGET_AFTERGLOW_MS,HERO_TARGET_AFTERGLOW_MS-540);expect(masks).toHaveBeenCalledTimes(6);expect(cards.flatMap(c=>effects(c.container))).toHaveLength(0);
  }finally{glow.destroy();f.root.destroy();}
 });
 
@@ -159,11 +160,12 @@ it('expires on wall-frame time even when the renderer smooths long frame deltas'
  }finally{glow.destroy();f.root.destroy();}
 });
 
-it('refreshes protective masks every frame while a beneficiary is in flight',()=>{
+it('refreshes protective masks every frame through flight and landing rebounds',()=>{
  const f=nativeHeroRuntime(),container=f.card('flight',{x:100,y:100,width:70,height:100}),controller=new AbortController(),masks=vi.fn(()=>[]),glow=new HeroTargetAfterglow(f.scene,()=> 'full');
  try{
-  glow.play({cards:[{id:'flight',container,width:70,height:100}],root:f.root,masks,signal:controller.signal,trackFlight:true});expect(masks).toHaveBeenCalledTimes(1);
+  glow.play({cards:[{id:'flight',container,width:70,height:100}],root:f.root,masks,signal:controller.signal});expect(masks).toHaveBeenCalledTimes(1);
   container.setPosition(200,120);f.step(10,10);expect(masks).toHaveBeenCalledTimes(2);container.setPosition(260,160);f.step(20,10);expect(masks).toHaveBeenCalledTimes(3);
+  container.setScale(1.07,.9);glow.refreshGeometry();expect(masks).toHaveBeenCalledTimes(4);
   f.step(510,490);const afterFlight=masks.mock.calls.length;f.step(520,10);expect(masks).toHaveBeenCalledTimes(afterFlight);
  }finally{glow.destroy();f.root.destroy();}
 });
