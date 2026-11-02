@@ -53,7 +53,7 @@ const sameBox=(a,b)=>Math.abs(a.x-b.x)<2&&Math.abs(a.y-b.y)<2&&Math.abs(a.width-
 try {for(const spec of cases){
   const dir=join(out,spec.name);await mkdir(dir,{recursive:true});
   const context=await browser.newContext({viewport:{width:spec.width,height:spec.height},hasTouch:spec.touch,recordVideo:{dir,size:{width:spec.width,height:spec.height}}});
-  const page=await context.newPage(),row={...spec,steps:[],errors:[]};report.cases.push(row);
+  const page=await context.newPage(),cdp=spec.touch?await context.newCDPSession(page):undefined,row={...spec,steps:[],errors:[]};report.cases.push(row);
   page.setDefaultTimeout(30000);page.on('pageerror',error=>row.errors.push(String(error)));
   const state=()=>page.evaluate(()=>window.__harness.game.registry.get('runController')?.state);
   const journal=()=>page.evaluate(()=>window.__harness.game.registry.get('runController')?.journal);
@@ -74,7 +74,7 @@ try {for(const spec of cases){
       const view=scene.cardViews[i],seat=layout.cards[i];if(!view?.container.active||!view.container.visible||!seat?.visible)return [];
       const width=Number(view.container.getData('width')),height=Number(view.container.getData('height')),matrix=view.container.getWorldTransformMatrix();
       const a=matrix.transformPoint(-width/2,-height/2),b=matrix.transformPoint(width/2,height/2);
-      return [{id:card.id,...map({x:a.x,y:a.y,width:Math.min(b.x-a.x,seat.hit.width),height:b.y-a.y})}];
+      return [{id:card.id,suit:card.suit,...map({x:a.x,y:a.y,width:Math.min(b.x-a.x,seat.hit.width),height:b.y-a.y})}];
     }):[];
     const rings=[...document.querySelectorAll('[data-novice-guide-highlight]')].map(el=>{const b=el.getBoundingClientRect();return{x:b.x,y:b.y,width:b.width,height:b.height};});
     const choices=[...panel.querySelectorAll('[data-novice-guide-choice]')].map(el=>{
@@ -182,6 +182,36 @@ try {for(const spec of cases){
     row.discarded=discarded;row.replacement=current.handOrder.filter(id=>!before.handOrder.includes(id));
     assert.equal(row.replacement.length,discarded.length);
 
+    await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='先理牌');
+    await capture('12a-sort-instruction');
+    before=await state();await tapUI(page,'game','action/sort-suit',spec.touch);await waitReady();
+    await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='试试滑动选牌');
+    current=await state();assert.ok(current.commandSeq>before.commandSeq,'suit sorting saves a command');
+    assert.equal((await journal()).at(-1).action.type,'ReorderHand');
+    const sweepGuide=await capture('12b-swipe-instruction');
+    const endpoints=sweepGuide.cards.filter(card=>sweepGuide.rings.some(ring=>sameBox(ring,card)));
+    assert.ok(endpoints.length>=2,`the swipe endpoints are highlighted: ${JSON.stringify(sweepGuide)}`);
+    const positions=endpoints.map(card=>current.handOrder.indexOf(card.id)).sort((a,b)=>a-b);
+    const swept=current.handOrder.slice(positions[0],positions.at(-1)+1);
+    assert.ok(swept.length>=2&&swept.length<=5,`the highlighted span contains 2–5 cards: ${JSON.stringify({endpoints,swept})}`);
+    const sweepCards=swept.map(id=>sweepGuide.cards.find(card=>card.id===id));
+    assert.ok(sweepCards.every(card=>card&&card.suit===sweepCards[0].suit),'the whole visible span has one suit');
+    assert.deepEqual(await selection(),[],'the sort leaves no selected cards');
+    const start=await point(page,'game','card/'+swept[0]),end=await point(page,'game','card/'+swept.at(-1));
+    if(spec.touch){
+      const touch=(type,points)=>cdp.send('Input.dispatchTouchEvent',{type,touchPoints:points.map(({x,y})=>({x,y,id:1,radiusX:2,radiusY:2,force:1}))});
+      await touch('touchStart',[start]);await touch('touchMove',[end]);
+      assert.equal((await measure()).title,'试试滑动选牌','the lesson waits for release');await touch('touchEnd',[]);
+    }else{
+      await page.mouse.move(start.x,start.y);await page.mouse.down();await page.mouse.move(end.x,end.y);
+      assert.equal((await measure()).title,'试试滑动选牌','the lesson waits for release');await page.mouse.up();
+    }
+    await waitReady();await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent!=='试试滑动选牌');
+    await waitSelection(swept);await capture('12c-swipe-complete');
+    for(const id of swept)await select(id);
+    await waitSelection([]);await waitReady();current=await state();
+    row.sweep=swept;
+
     const waitChoices=async()=>{
       await page.locator('[data-novice-guide-choice]').first().waitFor({state:'visible',timeout:30000});
       await page.waitForFunction(()=>{
@@ -242,7 +272,7 @@ try {for(const spec of cases){
   } catch(error){
     row.status='FAIL';row.error=String(error.stack??error);console.error(spec.name,row.error);await page.screenshot({path:join(dir,'failure.png')}).catch(()=>{});
   } finally {
-    const video=page.video();await context.close();if(video){const source=await video.path(),target=join(dir,'session.webm');await video.saveAs(target);if(source!==target)await unlink(source);}
+    await cdp?.detach();const video=page.video();await context.close();if(video){const source=await video.path(),target=join(dir,'session.webm');await video.saveAs(target);if(source!==target)await unlink(source);}
     await writeFile(join(out,'report.json'),JSON.stringify(report,null,2)+'\n');
   }
 }} finally {

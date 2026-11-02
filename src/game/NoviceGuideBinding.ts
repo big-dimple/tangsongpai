@@ -22,6 +22,8 @@ export interface NoviceGuideBindingOptions {
   visible?:(hint:NoviceGuideHint)=>boolean;
   /** Local selections can update the prompt without becoming saved progress. */
   presentHint?:(hint:NoviceGuideHint)=>NoviceGuideHint;
+  /** Final hint only while its actual panel is visible; undefined when hidden or removed. */
+  onPresented?:(hint:NoviceGuideHint|undefined)=>void;
   onChoice?:(id:string)=>void;
   onVisibilityChange?:(closed:boolean)=>void;
   getInlineHost?:()=>HTMLElement|undefined;
@@ -82,8 +84,18 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
   let actionError='',shownError='',sawPair=false,scoreFeedbackStart:number|undefined;
   let geometry:NoviceGuideGeometry={},geometryKey='',lastMeasurement=-Infinity;
   let inlineHost:HTMLElement|undefined;
+  let presentedKey:string|undefined;
 
-  const removeView=()=>{view?.unmount();view=undefined;shownHint=undefined;shownHintKey='';shownMotion=undefined;shownError='';geometryKey='';inlineHost=undefined;};
+  const reportPresented=(force=false)=>{
+    if(!options.onPresented)return;
+    const current=!stopped&&view?.isVisible()?shownHint:undefined;
+    const key=current?JSON.stringify([shownHintKey,geometryKey]):'';
+    if(force||presentedKey!==key){presentedKey=key;options.onPresented(current);}
+  };
+  const clearPresented=()=>{
+    if(presentedKey){presentedKey='';options.onPresented?.(undefined);}
+  };
+  const removeView=()=>{view?.unmount();view=undefined;shownHint=undefined;shownHintKey='';shownMotion=undefined;shownError='';geometryKey='';inlineHost=undefined;reportPresented();};
   const activeRun=()=>{
     const run=session.run;
     return run&&!run.guidedOpeningSuppressed&&scene.registry.get('runController')===run?run:undefined;
@@ -101,7 +113,7 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
     const next=options.getGeometry(current),key=makeGeometryKey(next),changed=key!==geometryKey;
     geometry=next;geometryKey=key;return changed;
   };
-  const canShow=(run:SavedRun,current:NoviceGuideHint)=>!suspended&&belongs(options.kind,run.state,current)&&(options.visible?.(current)??true);
+  const canShow=(run:SavedRun,current:NoviceGuideHint)=>!suspended&&(typeof document==='undefined'||!document.hidden)&&belongs(options.kind,run.state,current)&&(options.visible?.(current)??true);
   const stillCurrent=(run:SavedRun,current:NoviceGuideHint)=>{
     if(stopped||activeRun()!==run||!canShow(run,current))return false;
     return noviceGuide(run.state,run.journal)?.step===current.step;
@@ -140,8 +152,10 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
       if(elapsed<1300)current={...current,focus:'score',body:`这一手得 ${current.fact?.pairScore??'0'} 分。`};
       else if(elapsed<2600&&stage)current={...current,focus:'goal',body:`累计 ${stage.heat} / ${stage.targetHeat} 分。`};
     }
-    const currentKey=JSON.stringify([current.step,current.cue,current.body,current.details,current.recommendedCardIds,current.offerIds,current.focus,current.choices]);
+    if(current.focus==='score'||current.focus==='goal')current={...current,gesture:undefined};
+    const currentKey=JSON.stringify([current.step,current.cue,current.body,current.details,current.recommendedCardIds,current.offerIds,current.focus,current.choices,current.gesture]);
     const hintChanged=shownHintKey!==currentKey;
+    if(shownHint&&(shownHint.step!==current.step||shownHint.gesture!==current.gesture))clearPresented();
     const nextInlineHost=options.getInlineHost?.(),hostChanged=nextInlineHost!==inlineHost;inlineHost=nextInlineHost;
     const geometryChanged=measure(current,forceGeometry||!view||hintChanged),motion=session.reducedMotion;
     if(view&&shownMotion!==motion)removeView();
@@ -150,9 +164,10 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
       geometryKey=makeGeometryKey(geometry);
       view=mountNoviceGuideView({
         step:makeStep(run,current),getGeometry:()=>geometry,getInlineHost:options.getInlineHost,reducedMotion:motion,
-        onClose:()=>{presentation(run).closed=true;options.onVisibilityChange?.(true);},
-        onReopen:()=>{if(!stopped&&activeRun()===run){presentation(run).closed=false;options.onVisibilityChange?.(false);}},
+        onClose:()=>{presentation(run).closed=true;options.onVisibilityChange?.(true);reportPresented();},
+        onReopen:()=>{if(!stopped&&activeRun()===run){presentation(run).closed=false;options.onVisibilityChange?.(false);reportPresented(true);}},
         onSkip:()=>{
+          reportPresented();
           const activeHint=shownHint;
           if(actionPending||!activeHint||!stillCurrent(run,activeHint)){view?.reopen();return;}
           presentation(run).closed=true;invoke(run,options.onSkip);
@@ -162,6 +177,7 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
       if(prefs.closed)view.close();
     } else if(hintChanged||shownError!==actionError){shownHint=current;shownHintKey=currentKey;shownError=actionError;view.update(makeStep(run,current));}
     else if(geometryChanged||hostChanged)view.refresh();
+    reportPresented();
   };
   const refreshSource=(force=false)=>{
     if(stopped)return;
@@ -184,6 +200,7 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
   };
   const onSuspend=()=>{suspended=true;removeView();};
   const onResume=()=>{suspended=false;refreshSource(true);};
+  const onDocumentVisibility=()=>{if(typeof document!=='undefined'&&document.hidden)removeView();else refreshSource(true);};
   // The hint is re-derived only when the saved snapshot or preferences change;
   // this light check also follows scene animation/layout changes between saves.
   const onPostUpdate=()=>{
@@ -198,6 +215,7 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
   scene.events.on('pause',onSuspend);scene.events.on('sleep',onSuspend);
   scene.events.on('resume',onResume);scene.events.on('wake',onResume);scene.events.on('postupdate',onPostUpdate);
   if(typeof window!=='undefined')window.addEventListener(NOVICE_GUIDE_PREFERENCES_EVENT,onPreferences);
+  if(typeof document!=='undefined')document.addEventListener('visibilitychange',onDocumentVisibility);
   const unmount=(()=>{
     if(stopped)return;stopped=true;unsubscribe();removeView();
     scene.registry.events.off('setdata',onRegistry);scene.registry.events.off('changedata',onRegistry);scene.registry.events.off('removedata',onRegistry);
@@ -205,6 +223,7 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
     scene.events.off('resume',onResume);scene.events.off('wake',onResume);scene.events.off('postupdate',onPostUpdate);
     scene.events.off('shutdown',unmount);scene.events.off('destroy',unmount);
     if(typeof window!=='undefined')window.removeEventListener(NOVICE_GUIDE_PREFERENCES_EVENT,onPreferences);
+    if(typeof document!=='undefined')document.removeEventListener('visibilitychange',onDocumentVisibility);
   }) as NoviceGuideUnmount;
   unmount.refresh=()=>refreshSource(true);
   scene.events.once('shutdown',unmount);scene.events.once('destroy',unmount);
