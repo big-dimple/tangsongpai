@@ -34,6 +34,8 @@ export interface NoviceGuideHandle {
   refresh():void;
   close():void;
   reopen():void;
+  /** Whether the open panel is actually inside the visible viewport and scroll ancestors. */
+  isVisible():boolean;
   unmount():void;
 }
 
@@ -208,6 +210,20 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
     refresh(){if(!disposed)position();},
     close(){setClosed(true,true);},
     reopen(){setClosed(false,true);},
+    isVisible(){
+      if(disposed||closed||panel.hidden||document.hidden||!panel.isConnected)return false;
+      const r=panel.getBoundingClientRect(),visual=window.visualViewport;
+      if(r.width<=0||r.height<=0)return false;
+      let left=visual?.offsetLeft??0,top=visual?.offsetTop??0,right=left+(visual?.width??innerWidth),bottom=top+(visual?.height??innerHeight);
+      for(let node:HTMLElement|null=panel;node;node=node.parentElement){
+        const style=getComputedStyle(node);if(style.display==='none'||style.visibility==='hidden'||style.visibility==='collapse')return false;
+        if(node===panel)continue;
+        const b=node.getBoundingClientRect();
+        if(/auto|scroll|hidden|clip/.test(style.overflowX)){left=Math.max(left,b.left);right=Math.min(right,b.right);}
+        if(/auto|scroll|hidden|clip/.test(style.overflowY)){top=Math.max(top,b.top);bottom=Math.min(bottom,b.bottom);}
+      }
+      return r.left>=left-.5&&r.top>=top-.5&&r.right<=right+.5&&r.bottom<=bottom+.5;
+    },
     unmount(){
       if(disposed)return;disposed=true;if(frame)cancelAnimationFrame(frame);observer?.disconnect();
       window.removeEventListener('resize',schedule);window.visualViewport?.removeEventListener('resize',schedule);window.visualViewport?.removeEventListener('scroll',schedule);

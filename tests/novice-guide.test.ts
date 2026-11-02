@@ -85,7 +85,7 @@ describe('guided first match from saved commands',()=>{
   const event=restored.state.lastTrace!.events.find(e=>e.sourceType==='joker'&&e.sourceInstanceId===bought.instanceId&&e.operation==='add-multiplier')!;
   expect(event).toBeDefined();expect(guide(restored)).toMatchObject({step:'skill',fact:{eventId:event.eventId,purchaseInstanceId:bought.instanceId}});
   expect(guide(restored)!.fact?.contribution).toBe('让2张计分牌各加 0.25 倍率');
-  expect(guide(restored)!.cue).toContain('倍率 +0.5');
+  expect(guide(restored)!.cue).toMatch(/倍率\s*\+0\.5/);
   const again=SavedRun.restore(store,await store.read());expect(guide(again)).toMatchObject({step:'skill',fact:{eventId:event.eventId}});
   const pair=await findPairWithRealDiscards(again);
   const invalid=await again.dispatch({type:'PlayHand',selectedIds:pair,erxiangTargetId:'not-in-hand'});expect(invalid.ok).toBe(false);expect(guide(again)?.step).toBe('skill');
