@@ -35,6 +35,7 @@ export interface NoviceGuideHint {
  body:string;
  details?:string;
  recommendedCardIds?:string[];
+ choices?:{id:string;label:string;cardIds:string[];selected?:boolean}[];
  offerIds?:string[];
  focus?:'play'|'discard'|'hero'|'score'|'goal';
  fact?:NoviceGuideFact;
@@ -256,7 +257,7 @@ function deriveHint(s:R2RunState,journal?:readonly Command[]):NoviceGuideHint {
   const elsewhere=s.phase!=='await-input'&&s.phase!=='pending-refill';
   return {step:'skill',cue:`${cardDisplayName(facts.purchase!.definitionId)}：${fact.briefContribution}`,body:elsewhere?'进入下一场，再试刘娥技能。':'选一对，再试刘娥技能。',recommendedCardIds:elsewhere?[]:pairIds(s),fact};
  }
- if((s.phase==='stage-cleared'||s.stageIndex>0)&&(!facts.pair||!facts.discarded||!facts.independent))return {step:'replay',cue:'可以再练一次',body:'本场已结束，练习尚未完成。可以继续游戏，或重新开始练习。',fact};
+ if((s.phase==='stage-cleared'||s.stageIndex>0)&&(!facts.pair||!facts.discarded||!facts.independent))return {step:'replay',cue:'已达到目标，过关了',body:'可以继续游戏，或重新练习换牌。',fact};
  if(!facts.pair){
   const ids=pairIds(s),rank=ids.length?s.deckInstances.find(c=>c.id===ids[0])?.rank:undefined;
   if(!rank&&s.phase==='await-input'&&s.stage&&(s.drawPile.length===0||s.stage.discardsLeft===0&&s.stage.handsLeft<=1))return {step:'replay',cue:'可以重练找对子',body:'手中没有对子，也无法再换来牌。可以继续出牌，或重新练习。',fact};
@@ -265,19 +266,25 @@ function deriveHint(s:R2RunState,journal?:readonly Command[]):NoviceGuideHint {
  }
  if(!facts.discarded){
   if(s.stage?.index===0&&(s.stage.discardsLeft<=0||s.drawPile.length===0))return {step:'replay',cue:'这场暂时不能换牌',body:'本场弃牌次数或可抽的牌已用完。可以继续出牌，或重练换牌。',fact};
-  // Keep every currently held card in the saved hint so the scene can walk
-  // the player through the real discard targets one at a time.  This is only
-  // presentation metadata; the command still validates the actual selection
-  // and never auto-discards a card.
-  return {step:'discard',cue:novicePairResultCue(facts.pair!),body:'逐张看看手牌，选不要的牌，再点「弃牌」换新牌。',recommendedCardIds:[...s.handOrder],fact};
+  const available=s.handOrder.filter(id=>!s.stage?.disabledIds.includes(id));
+  const fours=['clubs-4','diamonds-4'];
+  const recommended=fours.every(id=>available.includes(id))?fours:[...available].sort((a,b)=>
+   (s.deckInstances.find(c=>c.id===a)?.rank??99)-(s.deckInstances.find(c=>c.id===b)?.rank??99)).slice(0,2);
+  const reason=fours.every(id=>recommended.includes(id))?'留红桃试同花；':'先换低点牌；';
+  return {step:'discard',cue:novicePairResultCue(facts.pair!),body:reason+'任选下方亮牌1–2张，点「弃牌」换新牌。',recommendedCardIds:recommended,fact};
  }
- if(!facts.independent)return {step:'independent',cue:`累计 ${s.stage?.targetHeat??'目标'} 分过关`,body:'自己选牌，再点「出牌」。',fact};
- if(!facts.cleared)return {step:'independent',cue:'继续向目标出牌',body:'自己选牌，累计达到目标分数。',fact};
+ if(!facts.independent||!facts.cleared)return {step:'independent',cue:`累计 ${s.stage?.heat??'0'} / ${s.stage?.targetHeat??'目标'} 分`,body:'看看当前手牌能组成什么，选一种再出牌。',fact};
  if(!facts.purchase)return {step:'shop',cue:'过关了',body:s.phase==='shop'?`点「${cardDisplayName('b02')}」看效果和价格。`:'去商店看看唐宋牌。',offerIds:offers(s),fact};
  const owned=s.jokers.some(j=>j.instanceId===facts.purchase!.instanceId);
  const when=s.phase==='shop'?'下一场':'这场';
  const payoff=s.phase==='shop'?'进入下一场，试试这张牌。':facts.purchase.definitionId==='b02'?'选两张同点数的牌，打出看看。':'按这张牌的条件选牌并打出。';
  return {step:'payoff',cue:`${when}试出这张牌的效果`,body:owned?payoff:'之前买的牌已不在持牌中。可在商店选另一张，或重新练习。',recommendedCardIds:facts.purchase.definitionId==='b02'?pairIds(s):[],fact};
+}
+
+/** The opening lesson recommends one or two of the visibly marked cards. */
+export function validNoviceDiscardSelection(hint:NoviceGuideHint,selectedIds:readonly string[]):boolean {
+ const allowed=hint.recommendedCardIds??[];
+ return selectedIds.length>=1&&selectedIds.length<=2&&new Set(selectedIds).size===selectedIds.length&&selectedIds.every(id=>allowed.includes(id));
 }
 
 /** Unsaved selection affects only the next prompt, never saved tutorial progress. */
@@ -289,7 +296,12 @@ export function liveNoviceGuide(hint:NoviceGuideHint,selectedIds:readonly string
   if(chosen===2)return {...hint,cue:'对子选好了',body:'点「出牌」，看看得分。',recommendedCardIds:[],focus:'play'};
   if(chosen===1)return {...hint,cue:'再选另一张',body:'点数相同，就是对子。',recommendedCardIds:recommended.filter(id=>!selected.has(id))};
  }
- if(hint.step==='discard'&&selected.size)return {...hint,cue:'准备换牌',body:'点「弃牌」，换入新牌。',focus:'discard'};
+ if(hint.step==='discard'&&selected.size){
+  const extra=[...selected].filter(id=>!recommended.includes(id));
+  if(extra.length)return {...hint,cue:'先取消这张牌',body:'这张不在建议范围，点亮牌取消。',recommendedCardIds:extra};
+  if(selected.size>2)return {...hint,cue:'选得太多了',body:'点已选牌取消，保留1–2张再弃牌。',recommendedCardIds:[...selected]};
+  return {...hint,cue:'已选好',body:selected.size===1?'可再选1张，或点「弃牌」换新牌。':'点「弃牌」，换来新牌。',recommendedCardIds:recommended.filter(id=>!selected.has(id)),focus:'discard'};
+ }
  if((hint.step==='independent'||hint.step==='skill-practice')&&selected.size)return {...hint,body:'点「出牌」，看看结果。',focus:'play'};
  if(hint.step==='payoff'&&recommended.length===2&&selected.size===2&&recommended.every(id=>selected.has(id)))
   return {...hint,cue:'牌选好了',body:'点「出牌」，看看这张牌的作用。',recommendedCardIds:[],focus:'play'};

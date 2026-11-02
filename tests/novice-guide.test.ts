@@ -4,7 +4,7 @@ import type {Checkpoint} from '../src/application/checkpoint';
 import {createRun,type Action} from '../src/domain/run';
 import {guidedTutorialRunId,newRunIdentity} from '../src/game/RunLaunch';
 import {cardDisplayName} from '../src/game/tangsongCardNames';
-import {clearPendingNoviceStart,dismissNoviceGuide,enrollNoviceGuide,liveNoviceGuide,markNoviceStart,mayResumeNoviceOpening,noviceGuide,noviceGuideDisabled,noviceGuideEnrolled,novicePairResultCue,NOVICE_GUIDE_KEY,NOVICE_GUIDE_PENDING_PREFIX,restoreNoviceGuide,stopNoviceGuide,suppressImportedNovice} from '../src/game/NoviceGuide';
+import {clearPendingNoviceStart,dismissNoviceGuide,enrollNoviceGuide,liveNoviceGuide,markNoviceStart,mayResumeNoviceOpening,noviceGuide,noviceGuideDisabled,noviceGuideEnrolled,novicePairResultCue,NOVICE_GUIDE_KEY,NOVICE_GUIDE_PENDING_PREFIX,restoreNoviceGuide,stopNoviceGuide,suppressImportedNovice,validNoviceDiscardSelection} from '../src/game/NoviceGuide';
 
 class Store implements SaveStore {
  slots:SaveSlots={revision:0,current:null,previous:null};fail=false;
@@ -67,7 +67,7 @@ describe('guided first match from saved commands',()=>{
   expect(guide(run)!.cue).toBe('45 筹码 × 2 倍率 = 90 分');expect(guide(run)!.body).toContain('弃牌');
   await send(run,{type:'DiscardHand',selectedIds:['clubs-4','diamonds-4','spades-14','clubs-7','spades-11']});
   expect(guide(run)?.step).toBe('independent');
-  expect(guide(run)!.cue).toContain('400');expect(guide(run)!.body).toContain('自己选牌');
+  expect(guide(run)!.cue).toContain('400');expect(guide(run)!.body).toContain('选一种');
   const restored=SavedRun.restore(store,await store.read());expect(guide(restored)?.step).toBe('independent');
   await send(restored,{type:'PlayHand',selectedIds:restored.state.handOrder.filter(id=>id.startsWith('hearts-')).slice(0,5)});
   expect(restored.state.phase).toBe('stage-cleared');expect(guide(restored)?.step).toBe('shop');
@@ -136,6 +136,42 @@ describe('guided first match from saved commands',()=>{
   expect(liveNoviceGuide(skillHint,[],{...skill,enabled:false}).body).toContain('技能不可用');
  });
 
+ it('explains and checks one or two highlighted discards without advancing before a saved discard',async()=>{
+  const {run}=await start('discard-choice');await enter(run);
+  await send(run,{type:'PlayHand',selectedIds:['hearts-5','clubs-5']});
+  const hint=guide(run)!;
+  expect(hint.step).toBe('discard');
+  expect(hint.recommendedCardIds).toHaveLength(2);
+  expect(hint.recommendedCardIds).toEqual(expect.arrayContaining(['clubs-4','diamonds-4']));
+  const skill={available:false,chosen:false,enabled:true,canDiscard:true};
+  const none=liveNoviceGuide(hint,[],skill);
+  expect(none.body).toContain('弃牌');
+  expect(none.body).toContain('亮');expect(none.body).toContain('红桃');
+  expect(none.body).toMatch(/(?:1\s*[–—~～-]\s*2|1\s*或\s*2|一两|一至两|一到两|一或两)/);
+  expect(none.focus).not.toBe('discard');
+  expect(validNoviceDiscardSelection(hint,[])).toBe(false);
+  expect(validNoviceDiscardSelection(hint,['clubs-4'])).toBe(true);
+  expect(validNoviceDiscardSelection(hint,['diamonds-4'])).toBe(true);
+  expect(validNoviceDiscardSelection(hint,['clubs-4','diamonds-4'])).toBe(true);
+  expect(validNoviceDiscardSelection(hint,['spades-14'])).toBe(false);
+  expect(validNoviceDiscardSelection(hint,['clubs-4','spades-14'])).toBe(false);
+  expect(validNoviceDiscardSelection(hint,['clubs-4','diamonds-4','spades-14'])).toBe(false);
+  expect(validNoviceDiscardSelection(hint,['clubs-4','clubs-4'])).toBe(false);
+  expect(liveNoviceGuide(hint,['clubs-4'],skill).focus).toBe('discard');
+  expect(liveNoviceGuide(hint,['clubs-4','diamonds-4'],skill).focus).toBe('discard');
+  for(const ids of [['spades-14'],['clubs-4','spades-14'],['clubs-4','diamonds-4','spades-14']]){
+   const wrong=liveNoviceGuide(hint,ids,skill);
+   expect(wrong.focus).not.toBe('discard');expect(wrong.body).toContain('取消');
+   expect(wrong.recommendedCardIds).toContain('spades-14');
+  }
+  // Cancel is another live selection, not a saved step transition.
+  expect(liveNoviceGuide(hint,[],skill)).toEqual(none);
+  expect(guide(run)?.step).toBe('discard');
+  await send(run,{type:'DiscardHand',selectedIds:['clubs-4']});
+  const after=guide(run)!;expect(after.step).toBe('independent');
+  expect(after.cue+after.body).toContain('90');expect(after.cue+after.body).toContain('400');
+ });
+
  it.each([false,true])('offers a replay after losing the second stage with purchase=%s and no contribution',async purchase=>{
   const {run,store}=await start();await enter(run);await clearFirst(run);await send(run,{type:'OpenShop'});
   let instanceId:string|undefined;
@@ -180,6 +216,7 @@ describe('guided first match from saved commands',()=>{
   await send(run,{type:'PlayHand',selectedIds:['hearts-5','clubs-5'],erxiangTargetId:'hearts-5'});
   expect(run.state.lastTrace?.finalScore).toBe('420');expect(run.state.phase).toBe('stage-cleared');
   expect(guide(run)?.step).toBe('replay');
+  expect(guide(run)?.cue).toContain('过关');
   const restored=SavedRun.restore(store,await store.read());expect(guide(restored)?.step).toBe('replay');
  });
 
