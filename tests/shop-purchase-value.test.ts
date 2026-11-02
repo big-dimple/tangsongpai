@@ -11,6 +11,8 @@ import {resourceLossFixture} from '../harness/fixtures/recommendation-resource-l
 
 it('keeps every calibrated offer readable after a sale when f11 is retained',()=>{
  const full=held(fixture('group'),['d07','e06','e11','b09','f11']);stock(full,'f06');
+ const untouched=structuredClone(full),comparison=shopPurchaseValue(full,full.shop!.offers[0],'group',full.jokers[0]);
+ expect(comparison?.status).toBe('assessed');expect(full).toEqual(untouched);
  const sold=send(full,{type:'SellJoker',instanceId:full.jokers[0].instanceId});
  expect(sold.jokers.map(j=>j.definitionId)).toEqual(['e06','e11','b09','f11']);
  for(const id of ['b03','c04','c06','e08','f06','b10']){
