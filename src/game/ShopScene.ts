@@ -1209,7 +1209,18 @@ export class ShopScene extends Phaser.Scene {
       ...(causality?[{label:'加成从哪来',run:()=>{const saved=groupGrowthCausality(this.run,j);if(saved)this.dialog.open(saved.title,saved.body);}}]:[]),
       {label:'左移',disabled:!this.ready||index===0,run:async()=>{if(await this.reorder(index,index-1,seq)&&this.dialog.active(dialog))this.inspectJoker(id,offerId);}},
       {label:'右移',disabled:!this.ready||index===this.run.jokers.length-1,run:async()=>{if(await this.reorder(index,index+1,seq)&&this.dialog.active(dialog))this.inspectJoker(id,offerId);}},
-      {label:'出售',disabled:!this.ready,run:()=>{const confirmation=this.dialog.open('出售确认',`出售第 ${index+1} 槽的「${d.name}」基础卖价 ${salePrice(j.paidPrice)} 金币。\n当前余额 ${this.run.gold} 金；出售后再按新余额购买。\n\n该牌成长将丢失，当前成长：${growth}。`+(saleEffects.length?'\n\n成功出售后保留牌的确定影响：\n'+saleEffects.join('\n'):''),[{label:'确认出售',primary:true,run:async()=>{if(await this.send({type:'SellJoker',instanceId:id},seq)&&this.dialog.active(confirmation)){this.dialog.close(confirmation);if(offerId)this.inspectOffer(offerId);}}}],{shopContext:'sale',closeLabel:'取消',portrait:this.jokerPortrait(d.id),rarity:d.rarity,summaryBody:`出售「${d.name}」 · 基础返还 ${salePrice(j.paidPrice)} 金\n失去当前成长：${growth}`});if(offerId){confirmation.querySelector<HTMLButtonElement>('.dialog-close')!.onclick=()=>this.inspectJoker(id,offerId);confirmation.addEventListener('cancel',()=>this.inspectJoker(id,offerId));}}},
+      {label:'出售',disabled:!this.ready,run:()=>{const confirmation=this.dialog.open('出售确认',`出售第 ${index+1} 槽的「${d.name}」基础卖价 ${salePrice(j.paidPrice)} 金币。\n当前余额 ${this.run.gold} 金；出售后再按新余额购买。\n\n该牌成长将丢失，当前成长：${growth}。`+(saleEffects.length?'\n\n成功出售后保留牌的确定影响：\n'+saleEffects.join('\n'):''),[{label:'确认出售',primary:true,run:async()=>{
+        // Keep the disabled confirmation over the table for the remainder of a
+        // double tap. Otherwise a fast save closes it before the second tap and
+        // that tap can open an unrelated offer underneath.
+        const minimum=performance.now()+400;
+        const sold=await this.send({type:'SellJoker',instanceId:id},seq);
+        if(!sold||!this.dialog.active(confirmation))return;
+        const status=confirmation.querySelector<HTMLElement>('.dialog-status');
+        if(status){status.textContent='出售已保存';status.hidden=false;}
+        const remaining=minimum-performance.now();if(remaining>0)await new Promise<void>(resolve=>setTimeout(resolve,remaining));
+        if(this.dialog.active(confirmation)){this.dialog.close(confirmation);if(offerId)this.inspectOffer(offerId);}
+      }}],{shopContext:'sale',closeLabel:'取消',portrait:this.jokerPortrait(d.id),rarity:d.rarity,summaryBody:`出售「${d.name}」 · 基础返还 ${salePrice(j.paidPrice)} 金\n失去当前成长：${growth}`});if(offerId){confirmation.querySelector<HTMLButtonElement>('.dialog-close')!.onclick=()=>this.inspectJoker(id,offerId);confirmation.addEventListener('cancel',()=>this.inspectJoker(id,offerId));}}},
     ],{artBackground:{},shopContext:'held',summaryBody:(ability?.minimal?'':relation.label+' · ')+'卖价 '+salePrice(j.paidPrice)+' 金',portrait:this.jokerPortrait(d.id),rarity:d.rarity,artLoad:this.jokerArtStatus(d.id),editionBody:ability?this.jokerEditionSummary(j.edition,d.id):undefined,ability,collapseRules:!!ability});
     dialog.classList.add('shop-joker-held');dialog.querySelector('.dialog-header')?.append(createShopIdentityTags(d.rarity,j.edition));
     const candidate=offerId?this.findOffer(offerId)?.offer:undefined;
