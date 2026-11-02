@@ -89,7 +89,7 @@ it('refreshes saved targets after landing without reviving a stale or aborted pr
   layer.preview({key:'release',targetId:'a',targetIds:['a'],kind:'group',releaseReason:'azao.multiply-multiplier'});layer.commit('event',context,['a']);
   layer.landed({generation:2,signal:other.signal});for(let time=50;time<=200;time+=50)f.step(time,50);expect(lit()).toHaveLength(0);
   for(let time=250;time<=450;time+=50)f.step(time,50);expect(lit()).toHaveLength(1);
-  const ink=lit()[0],before=ink.getWorldTransformMatrix().transformPoint(0,0);card.setPosition(200,180);f.step(500,50);expect(ink.getWorldTransformMatrix().transformPoint(0,0)).not.toEqual(before);
+  const ink=lit()[0] as Phaser.GameObjects.Graphics,before=ink.getWorldTransformMatrix().transformPoint(0,0);card.setPosition(200,180);f.step(500,50);expect(ink.getWorldTransformMatrix().transformPoint(0,0)).not.toEqual(before);
   layer.landed(context);expect(lit()).toHaveLength(1);abort.abort();expect(lit()).toHaveLength(0);layer.landed(context);expect(lit()).toHaveLength(0);
  }finally{layer.destroy();f.root.destroy();}
 });
