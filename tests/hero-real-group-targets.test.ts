@@ -38,8 +38,8 @@ it('uses saved target IDs and lights each Liu E target at its own actual impact'
  try{
   layer.preview({key:'saved/handoff',targetId:'a',targetIds:['a','b'],kind:'group',releaseReason:'erxiang.handoff'});
   layer.commit('first',context,['a','b']);expect(lit()).toEqual([]);layer.landed(context);
-  for(let time=50;time<900;time+=50)f.step(time,50);
-  expect(lit()).toEqual([]);f.step(900,50);expect(lit().sort()).toEqual(['a','b']);
+  for(let time=50;time<=200;time+=50)f.step(time,50);
+  expect(lit()).toEqual([]);for(let time=250;time<=450;time+=50)f.step(time,50);expect(lit().sort()).toEqual(['a','b']);
   const first={eventId:'first',reasonKey:'erxiang.handoff',targetCardId:'a'};layer.release(first,context);layer.impactConfirmedTarget(first,context);expect(lit().sort()).toEqual(['a','b']);
   const second={eventId:'second',reasonKey:'erxiang.handoff',targetCardId:'b'};layer.impactConfirmedTarget(second,context);expect(lit().sort()).toEqual(['a','b']);
   layer.impactConfirmedTarget({eventId:'other',reasonKey:'erxiang.handoff',targetCardId:'not-confirmed'},context);expect(lit().sort()).toEqual(['a','b']);
@@ -53,8 +53,8 @@ it.each([1,2,4])('scales the source and landing handoff with %ix presentation sp
  const lit=()=>descendants(f.root.list).filter(o=>o.name==='hero/target-afterglow').map(o=>o.getData('targetCardId'));
  try{
   layer.preview({key:'speed/'+speed,targetId:'a',targetIds:['a','b'],kind:'group',releaseReason:'erxiang.handoff'});layer.commit('first',context,['a','b']);layer.landed(context);
-  const deadline=900/speed;for(let time=25;time<deadline;time+=25)f.step(time,25);
-  expect(lit()).toEqual([]);f.step(deadline,25);expect(lit().sort()).toEqual(['a','b']);
+  const before=200/speed;for(let time=25;time<=before;time+=25)f.step(time,25);
+  expect(lit()).toEqual([]);for(let time=before+25;time<=475/speed+25;time+=25)f.step(time,25);expect(lit().sort()).toEqual(['a','b']);
   abort.abort();expect(lit()).toEqual([]);
  }finally{layer.destroy();f.root.destroy();}
 });
@@ -87,9 +87,10 @@ it('refreshes saved targets after landing without reviving a stale or aborted pr
  const lit=()=>descendants(f.root.list).filter(o=>o.name==='hero/target-afterglow');
  try{
   layer.preview({key:'release',targetId:'a',targetIds:['a'],kind:'group',releaseReason:'azao.multiply-multiplier'});layer.commit('event',context,['a']);
-  layer.landed({generation:2,signal:other.signal});for(let time=50;time<=900;time+=50)f.step(time,50);expect(lit()).toHaveLength(0);
-  layer.landed(context);expect(lit()).toHaveLength(1);f.step(1900,1000);expect(lit()).toHaveLength(1);
-  abort.abort();expect(lit()).toHaveLength(0);layer.landed(context);expect(lit()).toHaveLength(0);
+  layer.landed({generation:2,signal:other.signal});for(let time=50;time<=200;time+=50)f.step(time,50);expect(lit()).toHaveLength(0);
+  for(let time=250;time<=450;time+=50)f.step(time,50);expect(lit()).toHaveLength(1);
+  const ink=lit()[0],before=ink.getWorldTransformMatrix().transformPoint(0,0);card.setPosition(200,180);f.step(500,50);expect(ink.getWorldTransformMatrix().transformPoint(0,0)).not.toEqual(before);
+  layer.landed(context);expect(lit()).toHaveLength(1);abort.abort();expect(lit()).toHaveLength(0);layer.landed(context);expect(lit()).toHaveLength(0);
  }finally{layer.destroy();f.root.destroy();}
 });
 
@@ -101,4 +102,27 @@ it('never lights pending wager cards as positive targets when the saved wager fa
   layer.commit('lost',context,[]);layer.release({eventId:'lost',reasonKey:'touye.lost.hand'},context);
   expect(descendants(f.root.list).filter(o=>o.name==='hero/target-afterglow')).toHaveLength(0);
  }finally{abort.abort();layer.destroy();f.root.destroy();}
+});
+
+it('lets target arcs pass over the mobile backdrop but still protects foreground art',()=>{
+ const f=nativeHeroRuntime({width:390,height:844,density:1,renderer:2}),backdrop=f.scene.add.image(160,180,'paper').setDisplaySize(240,240).setName('table-art/mobile-hero');f.root.add(backdrop);
+ const card=f.card('a',{x:125,y:130,width:70,height:100}),abort=new AbortController(),context={generation:1,signal:abort.signal};
+ const layer=new HeroTargetAttachment(f.scene,{root:()=>f.root,target:id=>id==='a'?{container:card,width:70,height:100}:undefined,source:()=>({x:20,y:20}),motion:()=> 'full',blocked:()=>false});
+ try{
+  layer.preview({key:'backdrop',targetId:'a',targetIds:['a'],kind:'group',releaseReason:'azao.multiply-multiplier'});layer.commit('saved',context,['a']);layer.landed(context);
+  for(let time=50;time<=800;time+=50)f.step(time,50);
+  const ink=descendants(f.root.list).find(o=>o.name==='hero/target-afterglow')!;expect(ink.getData('perimeterSides').every((n:number)=>n>0)).toBe(true);
+  const foreground=f.scene.add.image(160,180,'paper').setDisplaySize(240,240).setName('foreground-art');f.root.add(foreground);f.step(850,50);expect(ink.getData('electricSegments')).toBe(0);
+ }finally{abort.abort();layer.destroy();f.root.destroy();}
+});
+
+it('advances the saved source with moving cards after a slow frame and still shows an arrival',()=>{
+ const f=nativeHeroRuntime(),card=f.card('slow',{x:160,y:250,width:70,height:100}),abort=new AbortController(),context={generation:1,signal:abort.signal};
+ const layer=new HeroTargetAttachment(f.scene,{root:()=>f.root,target:id=>id==='slow'?{container:card,width:70,height:100}:undefined,source:()=>({x:30,y:40}),motion:()=> 'full',blocked:()=>false});
+ try{
+  layer.preview({key:'slow-frame',targetId:'slow',targetIds:['slow'],kind:'group',releaseReason:'azao.multiply-multiplier'});layer.commit('event',context,['slow']);
+  f.step(50,20);f.step(300,20);const current=descendants(f.root.list).find(o=>o.name==='hero/target-current')!;expect(current.getData('progress')).toBeGreaterThan(.7);
+  f.step(550,20);expect(descendants(f.root.list).some(o=>o.name==='hero/target-afterglow')).toBe(true);
+  abort.abort();expect(descendants(f.root.list).some(o=>o.name==='hero/target-afterglow')).toBe(false);
+ }finally{layer.destroy();f.root.destroy();}
 });

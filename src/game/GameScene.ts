@@ -64,7 +64,6 @@ import {bindNoviceGuide} from './NoviceGuideBinding';
 import {liveNoviceGuide,noviceGuide,noviceGuideEnrolled} from './NoviceGuide';
 import {needsGuidedPractice} from './GuidedTutorial';
 import {noviceGuideCanvasBox} from './NoviceGuideView';
-import {HERO_SOURCE_CURRENT_MS} from './HeroCardAttachmentAtmosphere';
 import {requestTutorialReplay} from './TutorialEntry';
 import {skipTutorialToNormal} from './RunMenu';
 import {enhanceBlindSelectEntrance,mountHeroEntranceBurst} from './QiyuAnimationPresentation';
@@ -1358,7 +1357,10 @@ export class GameScene extends Phaser.Scene {
     this.syncHeroTargetAttachment();
   }
   private landingBoxes(count:number,reserved=0):Box[] {
-    const area=this.presentation?toolInventoryPlayedArea(this.view.layout):idlePlayedArea(this.view.layout),p={...area,y:area.y+reserved,height:area.height-reserved},bottomNote=0,h=Math.max(24,p.height-bottomNote-14),gap=8;
+    const area=this.presentation?toolInventoryPlayedArea(this.view.layout):idlePlayedArea(this.view.layout),p={...area,y:area.y+reserved,height:area.height-reserved},bottomNote=0,h=Math.max(24,p.height-bottomNote-14);
+    // Saved hero beneficiaries need room for their individual exterior arcs.
+    // On narrow phones spend only the space available beside readable faces.
+    const heroTargets=this.presentation&&savedHeroAttachment(this.presentation.score,this.run.characterId)?.targetIds, gap=heroTargets?.length&&count<=5?Math.min(16,Math.max(12,(p.width-240)/8)):8;
     const width=Math.min(this.view.layout.mode==='portrait'?64:96,h/1.4,(p.width-24-gap*(count-1))/Math.max(count,1)),height=width*1.4,total=count*width+(count-1)*gap;
     return Array.from({length:count},(_,i)=>({x:p.x+(p.width-total)/2+i*(width+gap),y:p.y+(p.height-bottomNote-height)/2,width,height}));
   }
@@ -2779,7 +2781,7 @@ export class GameScene extends Phaser.Scene {
     this.effects.enqueue(async context=>{
       const attachment=replay||score.amoExile?.use?undefined:savedHeroAttachment(score,this.run.characterId);
       if(!replay&&score.amoExile?.use)this.targetAttachment?.beginSushiDiscard(score,context);
-      else if(attachment){if(attachment.targetIds)this.targetAttachment?.retainTargets(attachment.targetIds);if(attachment.event.reasonKey!=='erxiang.handoff')this.targetAttachment?.commit(attachment.event.eventId,context,attachment.targetIds??[]);}else if(!presentation.retainedIds.length)this.targetAttachment?.clear();
+      else if(attachment){if(attachment.targetIds)this.targetAttachment?.retainTargets(attachment.targetIds);this.targetAttachment?.commit(attachment.event.eventId,context,attachment.targetIds??[]);}else if(!presentation.retainedIds.length)this.targetAttachment?.clear();
       this.scoreHaptic?.scope.cancel();this.scoreHaptic=replay?undefined:{generation:context.generation,scope:Haptics.shared.createScope(context.signal)};
       if(!replay)this.audio.playHand();
       await Promise.all([...(score.xiemuBurn?.cost&&!replay?[this.rollGold(score.xiemuBurn.goldBefore,score.xiemuBurn.goldAfter,Math.max(140,65*gameSession().speed),context,false)]:[]),...(beforeHands!==undefined&&!replay?[this.pulseResource('play',beforeHands,context,beforeHands-1)]:[]),...landing.map(async({view,box},i)=>{
@@ -2800,11 +2802,9 @@ export class GameScene extends Phaser.Scene {
       })]);
       if(context.signal.aborted)return;
       if(attachment){
-        // The real beneficiary has landed: start one connected fuse towards
-        // its final position, instead of teleporting the front as cards fly.
-        if(attachment.event.reasonKey==='erxiang.handoff')this.targetAttachment?.commit(attachment.event.eventId,context,attachment.targetIds??[]);
+        // Source and target effects already follow the real moving cards.
         this.targetAttachment?.landed(context);
-        if(attachment.event.reasonKey==='erxiang.handoff'&&!this.reducedMotion)await this.wait(HERO_SOURCE_CURRENT_MS/Math.max(1,gameSession().speed),context);
+        if(attachment.event.reasonKey==='erxiang.handoff'&&!this.reducedMotion)await this.wait(this.targetAttachment?.sourceRemaining()??0,context);
       }
       if(context.signal.aborted)return;this.setAccumulator(base.after);this.breakdownText.setText('牌型 '+HAND_LABELS[score.handType]+' · ★ '+score.sets.activeScoringIds.length+' 张计分');
       // Base landing and the quiet lead-in belong to this same queue, once.

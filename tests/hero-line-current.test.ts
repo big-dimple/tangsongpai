@@ -49,6 +49,12 @@ it('advances one bright front with a short-lived wake and a single release on th
  expect(samples[5].heads[0]).toEqual(points.at(-1));expect(samples[6].release).toBeGreaterThan(samples[5].release);expect(samples[7].release).toBeLessThan(samples[6].release);
  const speeds=samples.slice(1,5).map((sample,i)=>sample.front-samples[i].front);expect(Math.max(...speeds)-Math.min(...speeds)).toBeGreaterThan(.005);
 });
+it('keeps the source as a short irregular connected channel rather than a screen-spanning wire',()=>{
+ const points=[{x:30,y:150},{x:350,y:150}],route={points,source:points[0],target:points[1],bounds},paint=graphics();
+ const result=drawHeroIgnition(paint.g,route,.48,[],1),length=(path:InkPoint[])=>path.slice(1).reduce((n,p,i)=>n+Math.hypot(p.x-path[i].x,p.y-path[i].y),0);
+ expect(result.heads).toHaveLength(1);expect(paint.strokes.some(path=>path.length>3&&Math.max(...path.map(p=>p.y))-Math.min(...path.map(p=>p.y))>3)).toBe(true);
+ expect(Math.max(...paint.strokes.map(length))).toBeLessThan(100);
+});
 it('keeps every ignition glow inside a 390px viewport and outside a full rack',()=>{
  const guard={x:12,y:68,width:68,height:96},points=[{x:5.6,y:72},{x:5.6,y:160}],route={points,source:points[0],target:points[1],bounds},paint=graphics();
  const result=drawHeroIgnition(paint.g,route,.4,[guard],1);expect(result.heads).toHaveLength(1);expect(result.coreRadius).toBeGreaterThan(2);
