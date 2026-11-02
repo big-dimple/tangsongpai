@@ -1,8 +1,9 @@
 import {afterEach, beforeEach, expect, it, vi} from 'vitest';
 import {AudioEngine} from '../src/audio/AudioEngine';
 import {FOLEY_SAMPLES} from '../src/audio/foley';
+import {HIGH_MULTIPLIER_FIRE_SAMPLE} from '../src/audio/HighMultiplierFire';
 
-const samples = [...FOLEY_SAMPLES, {name: 'cloth2', runtimePath: 'assets/audio/score-impact/cloth2.ogg'}];
+const samples = [HIGH_MULTIPLIER_FIRE_SAMPLE,...FOLEY_SAMPLES, {name: 'cloth2', runtimePath: 'assets/audio/score-impact/cloth2.ogg'}];
 const deferred = <T>() => {
   let resolve!: (value: T) => void;
   let reject!: (error: Error) => void;
@@ -39,6 +40,26 @@ beforeEach(() => {
   vi.stubGlobal('fetch', vi.fn(async () => response()));
 });
 afterEach(() => { vi.useRealTimers(); vi.unstubAllGlobals(); });
+
+it('prioritizes the local fire and lets scoring start as soon as it decodes', async () => {
+  const {engine,inside}=fixture();inside.unlocked=true;
+  vi.stubGlobal('fetch',vi.fn((url:URL)=>url.pathname.endsWith(HIGH_MULTIPLIER_FIRE_SAMPLE.runtimePath)?Promise.resolve(response()):never()));
+  const controller=new AbortController(),ready=engine.prepareHighMultiplierFire(controller.signal);
+  await flush();await ready;
+  expect(inside.scoreSamples.has(HIGH_MULTIPLIER_FIRE_SAMPLE.name)).toBe(true);
+  expect(String(vi.mocked(fetch).mock.calls[0][0])).toContain(HIGH_MULTIPLIER_FIRE_SAMPLE.runtimePath);
+  expect(inside.highMultiplierFireWaiters.size).toBe(0);
+  await vi.advanceTimersByTimeAsync(200000);await inside.scoreSampleTask;
+});
+
+it.each(['abort','timeout'] as const)('bounds a missing fire load on %s and never starts a late voice', async boundary => {
+  const {engine,inside,sources}=fixture();inside.unlocked=true;vi.stubGlobal('fetch',vi.fn(never));
+  const controller=new AbortController(),ready=engine.prepareHighMultiplierFire(controller.signal);
+  if(boundary==='abort')controller.abort();else await vi.advanceTimersByTimeAsync(801);
+  await ready;expect(inside.highMultiplierFireWaiters.size).toBe(0);expect(sources).toHaveLength(0);
+  await vi.advanceTimersByTimeAsync(200000);await inside.scoreSampleTask;
+  expect(sources).toHaveLength(0);
+});
 
 it('bounds the initial request burst and shares an in-flight load', async () => {
   vi.stubGlobal('fetch', vi.fn(never));

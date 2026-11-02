@@ -49,9 +49,9 @@ const browser=await chromium.launch({executablePath:process.env.SMOKE_CHROMIUM_E
 const report={scope:'Validated controlled five-joker inventory and public hand; actual GameScene, native skill/play input, saved score events and post-mix browser audio. Chromium software emulation; not natural acquisition, live site, physical hardware, human listening or aesthetic acceptance.',legacyCommit:legacyCommit??null,cases:[]};
 try {
  for(const spec of all.filter(x=>names.includes(x.name)))for(const mode of modes){
-  const row={...spec,mode,errors:[]};report.cases.push(row);
+  const row={...spec,mode,errors:[],assetResponses:[]};report.cases.push(row);
   const context=await browser.newContext({viewport:{width:spec.width,height:spec.height},deviceScaleFactor:1,hasTouch:spec.phone,reducedMotion:mode==='reduced'?'reduce':'no-preference'}),page=await context.newPage();
-  page.setDefaultTimeout(30000);page.on('pageerror',error=>row.errors.push(String(error)));
+  page.setDefaultTimeout(30000);page.on('pageerror',error=>row.errors.push(String(error)));page.on('response',response=>{if(response.url().endsWith('/assets/audio/high-multiplier/low-fire.mp3'))row.assetResponses.push(response.status());});
   try {
    await page.addInitScript(mode=>{
     const speed=mode==='speed2'?2:mode==='speed4'?4:1;
@@ -82,7 +82,7 @@ try {
     const originalAward=s.award;s.award=async function(...args){p.awardAt=performance.now();try{return await originalAward.apply(this,args);}finally{p.awardEnd=performance.now();}};
     const originalHand=engine.playHand;engine.playHand=function(...args){p.handAt=performance.now();return originalHand.apply(this,args);};
     const originalEvent=s.showScoreEvent;s.showScoreEvent=function(event,...args){p.events.push({at:performance.now(),eventId:event.eventId});return originalEvent.call(this,event,...args);};
-    const originalFire=engine.playHighMultiplierFire;engine.playHighMultiplierFire=function(options){const result=originalFire.call(this,options);p.fires.push({at:performance.now(),active:[...this.voices].some(v=>v.highMultiplierFire)});return result;};
+    const originalFire=engine.playHighMultiplierFire;engine.playHighMultiplierFire=function(options){const result=originalFire.call(this,options),voice=[...this.voices].find(v=>v.highMultiplierFire),asset=this.scoreSamples.get('high-multiplier-low-fire');p.fires.push({at:performance.now(),active:!!voice,usesLocalAsset:!!voice&&!!asset&&voice.source.buffer===asset,duration:asset?.duration,rate:voice?.source.playbackRate.value});return result;};
     const walk=list=>list.flatMap(o=>[o,...(o.list?walk(o.list):[])]);
     p.tick=()=>{if(!s.scene.isActive())return;const objects=walk(s.view.root?.list??[]),current=objects.find(o=>o.name==='hero/target-current'&&o.active&&o.visible&&(o.getData('stats')?.electricSegments??0)>0);if(current){const stats=current.getData('stats');const progress=current.getData('progress');if(!p.guards)p.guards=current.getData('protectedBoxes');p.sources.push({at:performance.now(),eventId:current.getData('eventId'),progress,front:stats.front,head:stats.electricHeads?.[0],route:stats.route,coreRadius:stats.coreRadius,sparks:stats.sparks,release:stats.release,burstSegments:stats.sourceBurstSegments??0,fallbackSegments:stats.scoreFallbackSegments??0});if(!p.shots.current)p.shots.current=g.canvas.toDataURL('image/png').split('base64,')[1];for(const [label,threshold] of [['ignite',.08],['advance',.35],['approach',.63],['arrival',.83]])if(progress>=threshold&&!p.shots[label])p.shots[label]=g.canvas.toDataURL('image/png').split('base64,')[1];if(stats.scoreFallbackSegments>0&&!p.shots.fallback)p.shots.fallback=g.canvas.toDataURL('image/png').split('base64,')[1];}for(const glow of objects.filter(o=>o.name==='hero/target-afterglow'&&o.active&&o.visible&&(o.getData('impactOutlineSegments')??0)>0)){p.targets.push({at:performance.now(),id:glow.getData('targetCardId'),segments:glow.getData('impactOutlineSegments')});if(!p.shots.target)p.shots.target=g.canvas.toDataURL('image/png').split('base64,')[1];}const a=objects.find(o=>o.name==='score/high-multiplier-aura'&&o.active&&o.visible);if(!a)return;const count=a.getData('visibleSegments')??0;p.frames.push({at:performance.now(),elapsed:a.getData('elapsed'),segments:count,rootSegments:a.getData('rootSegments')??0,eventId:a.getData('eventId'),eventCount:p.events.length,fireVoices:[...engine.voices].filter(v=>v.highMultiplierFire).length});if(count>0&&!p.shots.first)p.shots.first=g.canvas.toDataURL('image/png').split('base64,')[1];if(count>0&&a.getData('elapsed')>=600&&!p.shots.peak)p.shots.peak=g.canvas.toDataURL('image/png').split('base64,')[1];if(count>0&&p.events.length>=2&&!p.shots.scoring)p.shots.scoring=g.canvas.toDataURL('image/png').split('base64,')[1];};g.events.on('postrender',p.tick);
     p.guardProbe=()=>{if(!p.auraGuards&&s.view.root?.getByName('score/high-multiplier-aura')){p.auraGuards=s.highMultiplierAuraGuards();p.auraBoard={...s.view.layout.scoreBoard};}};g.events.on('postrender',p.guardProbe);
@@ -122,7 +122,7 @@ try {
     assert.ok(visible[0].at<result.events[0].at,'flames start before the first actual scoring event');
     assert.ok(visible.at(-1).at>=result.events.at(-1).at,'flames persist through the last scoring event');
     assert.ok(result.awardEnd&&visible.at(-1).at>=result.awardEnd,'flames persist through the final score landing');
-    assert.ok(result.fires.some(f=>f.active),'the fire audio voice actually started');
+    assert.ok(result.fires.some(f=>f.active&&f.usesLocalAsset&&f.duration>23&&f.rate===1),'the local decoded fire file is the active, unpitched voice');assert.ok(row.assetResponses.includes(200),'the game fetched the local fire file successfully');
     assert.ok(visible.filter(f=>f.at>=result.fires[0].at&&f.at<=result.events.at(-1).at).every(f=>f.fireVoices===1),'the fire stays active through the scoring events');
    }
    assert.ok(result.frames.every(f=>f.fireVoices<=1),'the fire audio must not stack');

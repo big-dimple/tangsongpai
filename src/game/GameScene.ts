@@ -2849,7 +2849,12 @@ export class GameScene extends Phaser.Scene {
     try {
       // Mount under the queue's cancellation scope before its first card
       // animation; never consult a preview or compute the score again.
-      if(openingAura)this.showHighMultiplierAura(openingAura,this.effects.context);
+      if(openingAura){
+        const context=this.effects.context;
+        if(!this.reducedMotion)await this.audio.prepareHighMultiplierFire(context.signal);
+        if(!this.effects.isCurrent(generation)||context.signal.aborted||this.presentation!==presentation)return;
+        this.showHighMultiplierAura(openingAura,context);
+      }
       await this.effects.drain();
     } catch {failed=true;this.effects.clear();if(this.alive(lifecycle,intent))this.resultText.setText('计分动画已停止，结果已保存。');}
     if(this.alive(lifecycle,intent)&&this.presentation===presentation&&(failed||this.effects.isCurrent(generation)))this.completePresentation(presentation);
