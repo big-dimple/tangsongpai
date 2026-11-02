@@ -126,13 +126,23 @@ export function drawHeroIgnition(g:Phaser.GameObjects.Graphics,route:FuseRoute,p
  const start=Math.min(1,.25+p/.06),opacity=alpha*fade*start,guide=route.points,total=guide.slice(1).reduce((n,q,i)=>n+Math.hypot(q.x-guide[i].x,q.y-guide[i].y),0);
  const at=(fraction:number)=>atDistance(guide,total*Math.max(0,Math.min(1,fraction)));
  const head=at(front),back=at(Math.max(0,front-.012)),ahead=at(Math.min(1,front+.012)),dx=ahead.x-back.x,dy=ahead.y-back.y,d=Math.hypot(dx,dy)||1,tangent={x:dx/d,y:dy/d},normal={x:-dy/d,y:dx/d};
- // The faint conductor only explains direction. A short luminous wake, not
- // an always-bright second line, follows the same advancing burn front.
- let segments=stroke(g,guide,boxes,1.15,0x286b9e,.30*opacity);
- if(front>0){const trail=portion(guide,Math.max(0,front-Math.min(32,total*.12)/Math.max(1,total)),front);
-  segments+=stroke(g,trail,boxes,5.8,0x2777bd,.26*opacity);
-  segments+=stroke(g,trail,boxes,3.2,0x146ab4,.78*opacity);
-  segments+=stroke(g,trail,boxes,1.4,0xd2f5ff,.94*opacity);
+ // A compact, irregular hot channel follows the actual advancing front.
+ // There is no straight, permanent wire spanning the screen. Each bend is
+ // bounded to the viewport and clipped before it can cross protected content.
+ const length=Math.min(64,total*.24,front*total),steps=Math.max(2,Math.ceil(length/8)),step=Math.floor(p*900/110),trail:InkPoint[]=[];
+ for(let i=0;i<=steps;i++){
+  const fraction=(front*total-length+length*i/steps)/Math.max(1,total),q=at(fraction),a=at(fraction-.004),b=at(fraction+.004),dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1;
+  const raw=Math.sin((i+1)*91.71+step*47.13)*43758.5453,noise=(raw-Math.floor(raw))*2-1,offset=i===0||i===steps?0:noise*4.2;
+  const x=q.x-dy/d*offset,y=q.y+dx/d*offset;
+  trail.push(route.bounds.width>0&&route.bounds.height>0?{x:Math.max(route.bounds.x+4,Math.min(route.bounds.x+route.bounds.width-4,x)),y:Math.max(route.bounds.y+4,Math.min(route.bounds.y+route.bounds.height-4,y))}:{x,y});
+ }
+ trail[trail.length-1]=head;
+ const connected=clearInkRuns(trail,boxes,4.3).find(run=>run[run.length-1]===head)??[];
+ let segments=0;
+ if(connected.length>1){
+  segments+=stroke(g,connected,boxes,7.2,0x2777bd,.24*opacity);
+  segments+=stroke(g,connected,boxes,4.0,0x146ab4,.88*opacity);
+  segments+=stroke(g,connected,boxes,1.65,0xe5faff,.98*opacity);
  }
  const pulse=.9+.1*Math.sin(p*Math.PI*4),spread=8+4*release,angle=Math.atan2(tangent.y,tangent.x)+.12*Math.sin(p*Math.PI*3);
  // If the wire is beside a card, keep the flame connected but bias its core
@@ -148,15 +158,16 @@ export function drawHeroIgnition(g:Phaser.GameObjects.Graphics,route:FuseRoute,p
   safeFlare(g,q,spread*size,0x187bc4,weight*opacity*pulse,boxes,route.bounds,angle+away*.08);
  }
 
- safeFlare(g,core,8.4+2.3*release,0x07569f,.68*opacity,boxes,route.bounds,angle);
- safeFlare(g,core,6.1+1.5*release,0x65d8ff,.95*opacity,boxes,route.bounds,angle+.18);
+ safeFlare(g,core,6.4+1.8*release,0x07569f,.68*opacity,boxes,route.bounds,angle);
+ safeFlare(g,core,4.8+1.3*release,0x65d8ff,.95*opacity,boxes,route.bounds,angle+.18);
  const hot={x:core.x-tangent.x*.65,y:core.y-tangent.y*.65};
- const coreRadius=safeFlare(g,hot,3.2+1.1*release,0xf4fdff,opacity,boxes,route.bounds,angle-.1);
+ const coreRadius=safeFlare(g,hot,2.9+1.1*release,0xf4fdff,opacity,boxes,route.bounds,angle-.1);
  // Three short offshoots remain anchored within 16px of the hot front. Their
  // unequal lifetimes make a compact burning edge, never free-roaming motes.
  let sparkSegments=0,sparks=0;const time=p*900;
  for(const [index,offset,period,preferred] of [[0,2,137,-1],[1,8,173,1],[2,15,197,-1]] as const){
-  if(front*total<offset)continue;const distance=front*total-offset,fraction=distance/Math.max(1,total),anchor=at(fraction),before=at(fraction-.012),after=at(fraction+.012),vx=after.x-before.x,vy=after.y-before.y,length=Math.hypot(vx,vy)||1,nx=-vy/length,ny=vx/length;
+  if(connected.length<3||front*total<offset)continue;
+  const indexOnTrail=Math.max(1,Math.min(connected.length-2,connected.length-1-Math.ceil(offset/8))),anchor=connected[indexOnTrail],before=connected[indexOnTrail-1],after=connected[indexOnTrail+1],vx=after.x-before.x,vy=after.y-before.y,length=Math.hypot(vx,vy)||1,nx=-vy/length,ny=vx/length;
   const probe=(side:number)=>safeDiscRadius({x:anchor.x+nx*side*4,y:anchor.y+ny*side*4},1.2,boxes,route.bounds);
   const side=probe(preferred)<.9&&probe(-preferred)>probe(preferred)?-preferred:preferred;
   const life=((time+index*53)%period)/period,grow=Math.sin(Math.PI*life),reach=(5+index*2)*grow;

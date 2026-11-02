@@ -49,6 +49,12 @@ it('advances one bright front with a short-lived wake and a single release on th
  expect(samples[5].heads[0]).toEqual(points.at(-1));expect(samples[6].release).toBeGreaterThan(samples[5].release);expect(samples[7].release).toBeLessThan(samples[6].release);
  const speeds=samples.slice(1,5).map((sample,i)=>sample.front-samples[i].front);expect(Math.max(...speeds)-Math.min(...speeds)).toBeGreaterThan(.005);
 });
+it('keeps the source as a short irregular connected channel rather than a screen-spanning wire',()=>{
+ const points=[{x:30,y:150},{x:350,y:150}],route={points,source:points[0],target:points[1],bounds},paint=graphics();
+ const result=drawHeroIgnition(paint.g,route,.48,[],1),length=(path:InkPoint[])=>path.slice(1).reduce((n,p,i)=>n+Math.hypot(p.x-path[i].x,p.y-path[i].y),0);
+ expect(result.heads).toHaveLength(1);expect(paint.strokes.some(path=>path.length>3&&Math.max(...path.map(p=>p.y))-Math.min(...path.map(p=>p.y))>3)).toBe(true);
+ expect(Math.max(...paint.strokes.map(length))).toBeLessThan(100);
+});
 it('keeps every ignition glow inside a 390px viewport and outside a full rack',()=>{
  const guard={x:12,y:68,width:68,height:96},points=[{x:5.6,y:72},{x:5.6,y:160}],route={points,source:points[0],target:points[1],bounds},paint=graphics();
  const result=drawHeroIgnition(paint.g,route,.4,[guard],1);expect(result.heads).toHaveLength(1);expect(result.coreRadius).toBeGreaterThan(2);
@@ -65,6 +71,12 @@ it('uses the actual first beneficiary for the source stream, never a separate sc
  const targets=[{x:220,y:130,width:45,height:80},{x:290,y:130,width:45,height:80}],source={x:40,y:30};
  const result=drawHeroOriginStream(paint.g,source,targets,style,.5,[],1,current.g,undefined,decision,bounds);
  expect(result.electricHeads).toHaveLength(1);expect(result.scoreFallbackSegments).toBe(0);expect(result.route?.at(-1)!.x).toBeLessThan(targets[1].x);
+});
+it('retries an occluded source promptly near its destination',()=>{
+ const style=heroAtmosphereStyle({key:'retry',targetId:'c',releaseReason:'erxiang.handoff'}),paint=graphics(),current=graphics(),decision={lastAttempt:.72};
+ const targets=[{x:65,y:50,width:10,height:10}],source={x:10,y:10},bounds={x:0,y:0,width:80,height:80},guard={x:0,y:0,width:80,height:80};
+ drawHeroOriginStream(paint.g,source,targets,style,.74,[guard],1,current.g,undefined,decision,bounds);expect(decision.lastAttempt).toBe(.72);
+ drawHeroOriginStream(paint.g,source,targets,style,.76,[guard],1,current.g,undefined,decision,bounds);expect(decision.lastAttempt).toBe(.76);
 });
 it('keeps stage effects connected to their guide and never resumes beyond a guarded region',()=>{
  const curve=(t:number)=>({x:100*t,y:20*t*t}),guard={x:45,y:-10,width:10,height:40},paint=graphics();
