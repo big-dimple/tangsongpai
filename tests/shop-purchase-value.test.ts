@@ -5,8 +5,30 @@ import {shopRecommendation} from '../src/game/ShopRecommendation';
 import {toolPermanentValue} from '../src/game/ToolPermanentValue';
 import {r2CreateJoker} from '../src/domain/r2Run';
 import {r2Price} from '../src/domain/r2Shop';
+import {createRun} from '../src/domain/run';
 import {recommendationFiveStarFixture} from '../harness/fixtures/recommendation-evidence';
 import {resourceLossFixture} from '../harness/fixtures/recommendation-resource-loss';
+
+it('keeps every calibrated offer readable after a sale when f11 is retained',()=>{
+ const full=held(fixture('group'),['d07','e06','e11','b09','f11']);stock(full,'f06');
+ const sold=send(full,{type:'SellJoker',instanceId:full.jokers[0].instanceId});
+ expect(sold.jokers.map(j=>j.definitionId)).toEqual(['e06','e11','b09','f11']);
+ for(const id of ['b03','c04','c06','e08','f06','b10']){
+  const s=structuredClone(sold),offer=stock(s,id),before=structuredClone(s),value=shopPurchaseValue(s,offer,'group');
+  expect(value?.status).toBe('assessed');if(value?.status!=='assessed')throw Error('preview unavailable');
+  expect(value.rows).toHaveLength(2);expect(s).toEqual(before);
+ }
+});
+it('uses zero heat and the next target for legacy f10 first-hand comparisons',()=>{
+ const keep=createRun({seed:'old-target',runId:'old-target',characterId:'erxiang',rulesVersion:'r2'});
+ keep.jokers=[r2CreateJoker('f10','old/f10',8,'none',keep)];const without=structuredClone(keep);without.jokers=[];
+ const before=structuredClone(keep),rows=purchaseValueWindow(keep,without,'group');
+ expect(rows[0]).toMatchObject({keep:{minimum:'33',maximum:'33'},change:{minimum:'22',maximum:'22'}});expect(keep).toEqual(before);
+});
+it('omits score comparisons when the next target is unavailable',()=>{
+ const s=fixture();s.stageIndex=24;const after=structuredClone(s);
+ expect(purchaseValueWindow(s,after,'group')).toEqual([]);
+});
 
 it.each([1,3,8])('chapter %i does not give a new zero-growth body mature or future value',chapter=>{
  for(const [id,route] of [['b03','group'],['c06','flush']] as const){const s=fixture(route,chapter,true),o=stock(s,id),before=structuredClone(s),v=shopPurchaseValue(s,o,route)!;

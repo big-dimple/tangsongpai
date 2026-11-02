@@ -4,7 +4,7 @@ import type {R2Offer} from '../domain/r2Shop';
 import {r2PurchasePrice} from '../domain/r2Shop';
 import {readR2Modifiers,type R2JokerInstance,type R2JokerDefinition} from '../content/r2Schema';
 import {r2JokerDefinitionsFor,r2JokerDefinitionFor} from '../domain/r2ContentProfiles';
-import {r2ScoreContext,r2CreateJoker} from '../domain/r2Run';
+import {getR2Stage,r2ScoreContext,r2CreateJoker} from '../domain/r2Run';
 import {Rational} from '../domain/rational';
 import {r2HandLimit,r2HandsBudget,r2JokerCapacity,r2InterestCap} from '../domain/r2Resources';
 import {r2DisabledCards} from '../domain/r2Chapter';
@@ -69,10 +69,14 @@ export function purchaseValueWindow(before:R2RunState,after:R2RunState,focus?:Bu
   const sample=(s:R2RunState)=>{
    const hand=row.ids.map(id=>s.deckInstances.find(c=>c.id===id&&!s.destroyedIds.includes(id)));
    if(!hand.every((c):c is PlayingCard=>!!c)||hand.length>r2HandLimit(s))return;
+   // This is the next stage's first hand, not the completed stage retained in
+   // the shop save. Some owned Jokers require the stage target even in preview.
+   const target=getR2Stage(s.stageIndex,s.tourMode,s.difficulty,s)?.targetHeat;if(!target)return;
    const projected={...s,stage:null},boss=s.stageIndex%3===2?s.boss:null;
    return previewR2Hand({rulesVersion:'r2',runId:s.runId,rootId:'purchase-value/conditional',hand,selectedIds:row.ids,
     disabledIds:boss?r2DisabledCards(boss,s.stageIndex,hand):[],jokers:s.jokers,definitions:r2JokerDefinitionsFor(s),handLevels:s.handLevels,
     playIndex:1,handsBeforePlay:r2HandsBudget(s),previousHandType:null,wager:false,...r2ScoreContext(projected,hand,row.ids),
+    stageHeatBefore:'0',stageTargetHeat:target,
     boss,sealedJokerIds:[],challengeDisabledJokerId:s.chapterDisabledJokerId}).scoreRange;
   };
   const keep=sample(before),change=sample(after);if(!keep||!change)return [];
