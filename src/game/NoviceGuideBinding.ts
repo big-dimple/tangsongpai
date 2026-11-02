@@ -22,6 +22,8 @@ export interface NoviceGuideBindingOptions {
   visible?:(hint:NoviceGuideHint)=>boolean;
   /** Local selections can update the prompt without becoming saved progress. */
   presentHint?:(hint:NoviceGuideHint)=>NoviceGuideHint;
+  onChoice?:(id:string)=>void;
+  onVisibilityChange?:(closed:boolean)=>void;
   getInlineHost?:()=>HTMLElement|undefined;
 }
 export interface NoviceGuideUnmount {
@@ -120,6 +122,7 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
   const makeStep=(run:SavedRun,current:NoviceGuideHint):NoviceGuideStep=>({
     id:current.step,title:current.cue,body:current.body+(actionError?'\n'+actionError:''),
     ...(current.details?{details:current.details}:{}),
+    ...(current.choices?{choices:current.choices.map(choice=>({...choice,run:()=>{if(stillCurrent(run,current))options.onChoice?.(choice.id);}}))}:{}),
     ...(current.step==='replay'?{action:{label:'重新练习',run:()=>{if(stillCurrent(run,current))invoke(run,options.onReplay);}}}:{}),
     ...(current.step==='complete'?{action:{label:'开始普通游戏',run:()=>{if(stillCurrent(run,current))invoke(run,options.onComplete);}}}:{}),
   });
@@ -137,7 +140,7 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
       if(elapsed<1300)current={...current,focus:'score',body:`这一手得 ${current.fact?.pairScore??'0'} 分。`};
       else if(elapsed<2600&&stage)current={...current,focus:'goal',body:`累计 ${stage.heat} / ${stage.targetHeat} 分。`};
     }
-    const currentKey=JSON.stringify([current.step,current.cue,current.body,current.details,current.recommendedCardIds,current.offerIds,current.focus]);
+    const currentKey=JSON.stringify([current.step,current.cue,current.body,current.details,current.recommendedCardIds,current.offerIds,current.focus,current.choices]);
     const hintChanged=shownHintKey!==currentKey;
     const nextInlineHost=options.getInlineHost?.(),hostChanged=nextInlineHost!==inlineHost;inlineHost=nextInlineHost;
     const geometryChanged=measure(current,forceGeometry||!view||hintChanged),motion=session.reducedMotion;
@@ -147,8 +150,8 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
       geometryKey=makeGeometryKey(geometry);
       view=mountNoviceGuideView({
         step:makeStep(run,current),getGeometry:()=>geometry,getInlineHost:options.getInlineHost,reducedMotion:motion,
-        onClose:()=>{presentation(run).closed=true;},
-        onReopen:()=>{if(!stopped&&activeRun()===run)presentation(run).closed=false;},
+        onClose:()=>{presentation(run).closed=true;options.onVisibilityChange?.(true);},
+        onReopen:()=>{if(!stopped&&activeRun()===run){presentation(run).closed=false;options.onVisibilityChange?.(false);}},
         onSkip:()=>{
           const activeHint=shownHint;
           if(actionPending||!activeHint||!stillCurrent(run,activeHint)){view?.reopen();return;}
