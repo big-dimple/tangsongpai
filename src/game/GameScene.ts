@@ -1389,8 +1389,7 @@ export class GameScene extends Phaser.Scene {
   private landingBoxes(count:number,reserved=0):Box[] {
     const area=this.presentation?toolInventoryPlayedArea(this.view.layout):idlePlayedArea(this.view.layout),p={...area,y:area.y+reserved,height:area.height-reserved},bottomNote=0,h=Math.max(24,p.height-bottomNote-14);
     // Saved hero beneficiaries need room for their individual exterior arcs.
-    // On narrow phones spend only the space available beside readable faces.
-    const heroTargets=this.presentation&&savedHeroAttachment(this.presentation.score,this.run.characterId)?.targetIds, gap=heroTargets?.length&&count<=5?Math.min(16,Math.max(12,(p.width-240)/8)):8;
+    const heroTargets=this.presentation&&savedHeroAttachment(this.presentation.score,this.run.characterId)?.targetIds, gap=heroTargets?.length&&count<=5?16:8;
     const width=Math.min(this.view.layout.mode==='portrait'?64:96,h/1.4,(p.width-24-gap*(count-1))/Math.max(count,1)),height=width*1.4,total=count*width+(count-1)*gap;
     return Array.from({length:count},(_,i)=>({x:p.x+(p.width-total)/2+i*(width+gap),y:p.y+(p.height-bottomNote-height)/2,width,height}));
   }

@@ -116,14 +116,14 @@ export class HeroTargetAttachment {
  commit(eventId:string,context:EffectContext,confirmedTargets:readonly string[]=[]):void {const id=this.state.value?.targetId;if(id)this.consume(id,eventId,context,confirmedTargets);}
  retainTargets(ids:readonly string[]):void {this.state.retainTargets(ids);this.update(0);}
  resolveSaved(draft:AttachmentDraft,eventId:string,context:EffectContext):void {if(context.signal.aborted)return;this.preview(draft);this.commit(eventId,context);this.release({eventId,reasonKey:draft.releaseReason},context);}
- private startAfterglow(context:EffectContext,ids:readonly string[],retainOthers=false):void {
+ private startAfterglow(context:EffectContext,ids:readonly string[],retainOthers=false,trackFlight=false):void {
   const root=this.options.root();if(!root?.active||context.signal.aborted||!ids.length)return;
   const members=ids.map(id=>({id,card:this.options.target(id)})).filter((v):v is {id:string;card:AttachmentCard}=>!!v.card?.container.active&&v.card.container.visible);if(!members.length)return;
   // layout's masks include all cards regardless of its target set. The known
   // mobile backdrop is behind them; foreground art and controls remain guards.
   // Reuse the supplier so impacts share one traversal per redraw.
   if(this.glowMaskRoot!==root||!this.glowMaskSupplier){this.glowMaskRoot=root;this.glowMaskSupplier=()=>[...this.layout(root,new Set()).masks.filter(b=>!('underCards' in b&&b.underCards===true)),...(this.options.sourceExclusions?.()??[]).slice(0,-1).map(b=>({...this.localBounds(root,b),inkKind:'art' as const}))];}
-  this.afterglow.play({root,cards:members.map(({id,card})=>({id,...card})),masks:this.glowMaskSupplier,signal:context.signal,isCurrent:card=>this.options.target(card.id)?.container===card.container,retainOthers});
+  this.afterglow.play({root,cards:members.map(({id,card})=>({id,...card})),masks:this.glowMaskSupplier,signal:context.signal,isCurrent:card=>this.options.target(card.id)?.container===card.container,retainOthers,trackFlight});
  }
  /** Wait for both actual landing and the source current, without delaying the score queue. */
  landed(context:EffectContext):void {if(!this.destroyed&&this.phaseContext?.signal===context.signal&&this.state.value?.eventId){this.pendingLanding=context;this.settleLanding();}}
@@ -253,7 +253,7 @@ export class HeroTargetAttachment {
    if(!this.flight?.active){this.flight=this.scene.add.graphics().setName('hero/target-travel');root.add(this.flight);}if(!this.flightCurrent?.active){this.flightCurrent=this.scene.add.graphics().setName('hero/target-current');root.add(this.flightCurrent);}const protectedBoxes=layout.protectedBoxes,scoreWorld=this.options.sourceExclusions?.()[0],fallbackBoard=scoreWorld?this.localBounds(root,scoreWorld):undefined,stats=drawHeroOriginStream(this.flight,source.point,sourceBoxes,style,progress,protectedBoxes,1-release,this.flightCurrent,fallbackBoard,this.sourceDecision,this.localBounds(root,{x:0,y:0,width:viewport.width,height:viewport.height}));this.flight.setData('stats',stats).setData('progress',progress).setData('sourceKind',source.kind).setData('source',source.point).setData('targetIds',sourceMembers.map(t=>t.id));this.flightCurrent.setData('stats',stats).setData('progress',progress).setData('protectedBoxes',protectedBoxes).setData('eventId',state.eventId).setData('fallbackBoard',fallbackBoard);if(!force&&state.eventId&&stats.electricSegments>0)this.sourceVisibleFrames++;
    // Only the saved beneficiaries react, once the visible source has reached
    // the moving card. The ink is a child of that exact card and follows it.
-   if(state.eventId&&this.phaseContext&&!this.phaseContext.signal.aborted&&this.sourceImpactEventId!==state.eventId&&(stats.front??0)>=.98&&stats.electricSegments>0){this.sourceImpactEventId=state.eventId;this.startAfterglow(this.phaseContext,this.confirmedGlowTargets);}
+   if(state.eventId&&this.phaseContext&&!this.phaseContext.signal.aborted&&this.sourceImpactEventId!==state.eventId&&(stats.front??0)>=.98&&stats.electricSegments>0){this.sourceImpactEventId=state.eventId;this.startAfterglow(this.phaseContext,this.confirmedGlowTargets,false,true);}
 
   }else{this.flight?.destroy();this.flight=undefined;this.flightCurrent?.destroy();this.flightCurrent=undefined;}
   if(this.state.accepted)this.phases.publish('attached');

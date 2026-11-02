@@ -83,9 +83,11 @@ export function drawHeroOriginStream(g:Phaser.GameObjects.Graphics,source:InkPoi
     const moved={...route,points:[...route.points.slice(0,-1),last],target:end};route=fuseRouteSafe(moved,guards)?moved:undefined;if(decision)decision.route=route;
   }
   if(route&&!fuseRouteSafe(route,guards))route=undefined;
-  // A moving hand may briefly cover a route. Limit recomputation so an
-  // occluded screen cannot stall scoring while each frame searches again.
-  if(!route&&(!decision||decision.lastAttempt===undefined||progress-decision.lastAttempt>=.2)){
+  // A moving hand may briefly cover a route. Keep searches bounded, but
+  // retry sooner near arrival: the long fade tail advances progress slowly,
+  // and a coarse retry there can leave the source dark until after landing.
+  const retryStep=progress>=.7 ? .035 : .2;
+  if(!route&&(!decision||decision.lastAttempt===undefined||progress-decision.lastAttempt>=retryStep)){
     route=routeHeroFuse(source,end,guards,bounds);if(decision){decision.route=route;decision.lastAttempt=progress;}
   }
   if(!route)return {segments:0,heads:0,electricSegments:0,electricHeads:[],sourceBurstSegments:0,scoreFallbackSegments:0};

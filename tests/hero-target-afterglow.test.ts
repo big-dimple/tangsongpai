@@ -75,7 +75,7 @@ it('cleans on abort, destroyed or hidden targets, identity replacement, motion c
  try{
   play();a.setVisible(false);f.step(10);expect(effects(a)).toHaveLength(0);expect(effects(b)).toHaveLength(1);a.setVisible(true);play();current=false;f.step(20);expect(effects(a)).toHaveLength(0);expect(effects(b)).toHaveLength(0);current=true;
   play();motion='reduced';f.step(30);expect(effects(a)).toHaveLength(0);expect(effects(b)).toHaveLength(0);play();expect(effects(a)).toHaveLength(0);motion='full';play();a.destroy();expect(effects(b)).toHaveLength(1);controller.abort();expect(effects(b)).toHaveLength(0);
-  glow.play({cards:[card(b)],root:f.root,masks:()=>[],signal:new AbortController().signal});expect(effects(b)).toHaveLength(1);f.scene.events.emit('shutdown');expect(effects(b)).toHaveLength(0);expect(f.scene.events.listenerCount('update')).toBe(0);
+  glow.play({cards:[card(b)],root:f.root,masks:()=>[],signal:new AbortController().signal});expect(effects(b)).toHaveLength(1);f.scene.events.emit('shutdown');expect(effects(b)).toHaveLength(0);expect(f.scene.events.listenerCount('update')).toBe(0);expect(f.scene.events.listenerCount('postupdate')).toBe(0);
  }finally{glow.destroy();f.root.destroy();}
 });
 
@@ -156,5 +156,14 @@ it('expires on wall-frame time even when the renderer smooths long frame deltas'
  try{
   glow.play({cards:[{id:'slow',container:card,width:70,height:100}],root:f.root,masks:()=>[],signal:controller.signal});f.step(100,16);f.step(1100,16);expect(effects(card)).toHaveLength(1);
   f.step(2100,16);expect(effects(card)).toHaveLength(0);
+ }finally{glow.destroy();f.root.destroy();}
+});
+
+it('refreshes protective masks every frame while a beneficiary is in flight',()=>{
+ const f=nativeHeroRuntime(),container=f.card('flight',{x:100,y:100,width:70,height:100}),controller=new AbortController(),masks=vi.fn(()=>[]),glow=new HeroTargetAfterglow(f.scene,()=> 'full');
+ try{
+  glow.play({cards:[{id:'flight',container,width:70,height:100}],root:f.root,masks,signal:controller.signal,trackFlight:true});expect(masks).toHaveBeenCalledTimes(1);
+  container.setPosition(200,120);f.step(10,10);expect(masks).toHaveBeenCalledTimes(2);container.setPosition(260,160);f.step(20,10);expect(masks).toHaveBeenCalledTimes(3);
+  f.step(510,490);const afterFlight=masks.mock.calls.length;f.step(520,10);expect(masks).toHaveBeenCalledTimes(afterFlight);
  }finally{glow.destroy();f.root.destroy();}
 });

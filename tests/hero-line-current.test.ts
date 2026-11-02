@@ -72,6 +72,12 @@ it('uses the actual first beneficiary for the source stream, never a separate sc
  const result=drawHeroOriginStream(paint.g,source,targets,style,.5,[],1,current.g,undefined,decision,bounds);
  expect(result.electricHeads).toHaveLength(1);expect(result.scoreFallbackSegments).toBe(0);expect(result.route?.at(-1)!.x).toBeLessThan(targets[1].x);
 });
+it('retries an occluded source promptly near its destination',()=>{
+ const style=heroAtmosphereStyle({key:'retry',targetId:'c',releaseReason:'erxiang.handoff'}),paint=graphics(),current=graphics(),decision={lastAttempt:.72};
+ const targets=[{x:65,y:50,width:10,height:10}],source={x:10,y:10},bounds={x:0,y:0,width:80,height:80},guard={x:0,y:0,width:80,height:80};
+ drawHeroOriginStream(paint.g,source,targets,style,.74,[guard],1,current.g,undefined,decision,bounds);expect(decision.lastAttempt).toBe(.72);
+ drawHeroOriginStream(paint.g,source,targets,style,.76,[guard],1,current.g,undefined,decision,bounds);expect(decision.lastAttempt).toBe(.76);
+});
 it('keeps stage effects connected to their guide and never resumes beyond a guarded region',()=>{
  const curve=(t:number)=>({x:100*t,y:20*t*t}),guard={x:45,y:-10,width:10,height:40},paint=graphics();
  const result=drawHeroLineCurrent(paint.g,curve,0,1,.4,[guard],0,1);expect(result.heads).toHaveLength(1);

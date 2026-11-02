@@ -18,6 +18,8 @@ export interface AfterglowRequest {
  isCurrent?:(card:AfterglowCard)=>boolean;
  /** A later impact may refresh its own card without extinguishing its peers. */
  retainOthers?:boolean;
+ /** While cards fly, refresh their moving protection bounds every rendered frame. */
+ trackFlight?:boolean;
 }
 interface Glow {request:AfterglowRequest;card:AfterglowCard;body:Phaser.GameObjects.Container;ink:Phaser.GameObjects.Graphics;elapsed:number;lastTime?:number;cancel:()=>void}
 
@@ -39,7 +41,7 @@ export class HeroTargetAfterglow {
  private readonly hide=()=>this.clear();
  private readonly visibility=()=>{if(document.hidden)this.clear();};
  constructor(private readonly scene:Phaser.Scene,private readonly motion:()=>AttachmentMotion){
-  scene.events.on('update',this.tick);scene.events.once('shutdown',this.destroy);scene.events.once('destroy',this.destroy);
+  scene.events.on('postupdate',this.tick);scene.events.once('shutdown',this.destroy);scene.events.once('destroy',this.destroy);
   window.addEventListener('blur',this.hide);document.addEventListener('visibilitychange',this.visibility);
  }
  play(request:AfterglowRequest):void {
@@ -73,7 +75,7 @@ export class HeroTargetAfterglow {
   // Keep all ink outside the face even when the card is scaled or rotated.
   // Stroke widths stay bounded in screen space; the conservative minimum scale
   // also protects paper and controls under a nonuniform card transform.
-  const clearance=3.2/minimum,pad=3.7/minimum;
+  const clearance=5.3/minimum,pad=5.8/minimum;
   const boxes:InkBox[]=[{x:-card.width/2,y:-card.height/2,width:card.width,height:card.height},...masks.filter(b=>!(b.ownerId===card.id&&(b.inkKind==='face'||b.inkKind==='paper'))).map(b=>({...b,...localBox(b,root,glow.body)}))];
   glow.ink.setData('protectedBoxes',boxes);
   const viewport=cssViewport(this.scene),safeX=4+clearance*Math.hypot(m.a,m.c),safeY=4+clearance*Math.hypot(m.b,m.d);
@@ -144,11 +146,12 @@ export class HeroTargetAfterglow {
    const elapsed=glow.lastTime===undefined?dt:Math.max(0,time-glow.lastTime);glow.lastTime=time;
    glow.elapsed+=Number.isFinite(elapsed)?elapsed:0;if(glow.elapsed>=HERO_TARGET_AFTERGLOW_MS)this.remove(id);
   }
-  if(this.drawElapsed<1000/30||!this.glows.size)return;
+  const trackingFlight=[...this.glows.values()].some(glow=>glow.request.trackFlight&&glow.elapsed<500);
+  if(!this.glows.size||!trackingFlight&&this.drawElapsed<1000/30)return;
   this.drawElapsed%=1000/30;
   this.drawAll();
  }
  private remove(id:string):void {const glow=this.glows.get(id);if(!glow)return;this.glows.delete(id);const {signal}=glow.request,card=glow.card;signal.removeEventListener('abort',glow.cancel);glow.body.off('destroy',glow.cancel);if(glow.body!==card.container)card.container.off('destroy',glow.cancel);if(glow.ink.active)glow.ink.destroy();}
  clear():void {for(const id of [...this.glows.keys()])this.remove(id);}
- readonly destroy=():void=>{if(this.destroyed)return;this.destroyed=true;this.clear();this.scene.events.off('update',this.tick);this.scene.events.off('shutdown',this.destroy);this.scene.events.off('destroy',this.destroy);window.removeEventListener('blur',this.hide);document.removeEventListener('visibilitychange',this.visibility);};
+ readonly destroy=():void=>{if(this.destroyed)return;this.destroyed=true;this.clear();this.scene.events.off('postupdate',this.tick);this.scene.events.off('shutdown',this.destroy);this.scene.events.off('destroy',this.destroy);window.removeEventListener('blur',this.hide);document.removeEventListener('visibilitychange',this.visibility);};
 }
