@@ -1,4 +1,5 @@
 import bgmManifest from '../../public/assets/audio/bgm/manifest.json';
+import scoreSources from '../../public/assets/audio/score-impact/sources.json';
 import {DEFAULT_AUDIO} from './preferences';
 import {FOLEY,FOLEY_SAMPLES,type FoleyKind,type Layer} from './foley';
 import {sampleBody,type SampleBody} from './sampleBody';
@@ -11,7 +12,7 @@ export type AudioBus = 'master' | 'music' | 'sfx' | 'ui';
 export type AudioScene = 'menu' | 'shop' | 'table' | 'boss' | 'success' | 'failure';
 export type FailureCue = { runId: string; commandSeq: number };
 type VoiceBus = Exclude<AudioBus, 'master'>;
-type MusicTrack = { title: string; runtimePath: string;fallbackRuntimePath?:string };
+type MusicTrack = { title: string; runtimePath: string;fallbackRuntimePath?:string;sha256?:string;fallbackSha256?:string };
 type MusicSlot = { element: HTMLAudioElement; node?: MediaElementAudioSourceNode; gain?: GainNode;
   track?: MusicTrack; path?:string;resumeAt?:{path:string;track:string;position:number};warming?:boolean; cancelAttempt?: () => void };
 type Voice = { source: AudioScheduledSourceNode; secondarySources?:AudioScheduledSourceNode[]; gain: GainNode; filter?: BiquadFilterNode; bus: VoiceBus; scoreAccent?: boolean; highMultiplierFire?:boolean; roll?: ScoreRollKind; semantic?: FoleyKind; startsAt?:number; endsAt?:number; priority?:number; peak?:number; nominalGain?:number; cleanup?:()=>void };
@@ -50,6 +51,16 @@ const SAMPLE_MAX_ATTEMPTS = 3; // Session budget; repeated gestures cannot resta
 const MUSIC_START_TIMEOUT_MS = 8000;
 const MUSIC_CROSSFADE_SECONDS = .25;
 const MUSIC_REPEAT_GAP_MS=3000;
+// One decoded recording per family used by the first menu and tutorial actions.
+// Sibling variants and later scoring/shop effects are warmed by the same workers.
+export const OPENING_SOUND_NAMES = ['card-slide-1','chip-lay-1','impactWood_light_000',
+  'impactBell_heavy_003','cloth2','card-place-1','card-fan-1','impactWood_heavy_000',
+  'card-shove-1','chips-stack-1'] as const;
+const OPENING_SOUND_TIMEOUT_MS=2500;
+const SCORE_SAMPLES=[HIGH_MULTIPLIER_FIRE_SAMPLE,...FOLEY_SAMPLES,
+  {name:'cloth2',runtimePath:'assets/audio/score-impact/cloth2.ogg',sha256:scoreSources['cloth2.ogg'].sha256}];
+export type OpeningSoundProgress={loaded:number;total:number;status:'loading'|'ready'|'degraded'|'skipped'};
+const versionedAsset=(path:string,hash?:string)=>`${import.meta.env.BASE_URL}${path}${hash?`?v=${hash.slice(0,12)}`:''}`;
 
 /** One application context. The app owns gesture/visibility listeners and persistence. */
 export class AudioEngine {
@@ -60,6 +71,8 @@ export class AudioEngine {
   private readonly highMultiplierFireWaiters=new Set<()=>void>();
   private sampleBodies=new Map<string,SampleBody>();
   private scoreSampleTask?:Promise<void>;
+  private reconnectSampleTask?:Promise<void>;
+  private readonly sampleListeners=new Set<()=>void>();
   private readonly sampleAttempts = new Map<string, number>();
   private readonly scoreCues=new WeakMap<object,Set<string>>();
   private scoreRebounds=new WeakMap<object,Map<string,{rate:number;weight:number;pulse:number;voices:Voice[];signal?:AbortSignal}>>();
@@ -149,6 +162,8 @@ export class AudioEngine {
       }
     } else if (bus === 'music' || bus === 'master') {
       if (this.unlocked) void this.unlock();
+    } else if(bus==='sfx'&&this.unlocked&&!this.masterMuted&&!this.suspended&&!this.hidden()) {
+      if(this.context&&this.context.state!=='closed')void this.loadScoreSamples();else void this.unlock();
     }
     this.musicStateChanged();
   }
@@ -161,7 +176,8 @@ export class AudioEngine {
     this.unlocked = true;
     // A muted first click can itself unmute in the same event. Do not retain an
     // already-resolved no-op task that would swallow that synchronous second call.
-    if (this.masterMuted || this.suspended || this.hidden()) return Promise.resolve();
+    if (this.masterMuted || this.suspended || this.hidden() || this.volumes.master<=0 ||
+      (this.volumes.sfx<=0&&(this.musicIsMuted||this.volumes.music<=0))) return Promise.resolve();
     if (this.unlockTask&&this.context?.state==='running'&&!this.musicGestureRequired) return this.unlockTask;
     if(this.musicGestureRequired||this.context?.state!=='running'){this.musicGestureRequired=false;this.cancelMusicTransition();}
     // A denial/network fault is scoped to this request, never to the application.
@@ -209,10 +225,9 @@ export class AudioEngine {
   }
 
   private hidden(): boolean { return typeof document !== 'undefined' && document.hidden; }
-  private async enableAudio(): Promise<void> {
-    if (typeof window === 'undefined' || this.suspended || this.hidden() || this.masterMuted) return;
-    const generation=++this.enableGeneration;
-    try {
+  /** Constructing/decoding is separate from resuming: only a gesture unlocks sound. */
+  private ensureContext():AudioContext|undefined {
+    if(typeof window==='undefined')return;
       if (!this.context || !this.gains) {
         const audioWindow = window as typeof window & { webkitAudioContext?: typeof AudioContext };
         const Context = audioWindow.AudioContext ?? audioWindow.webkitAudioContext;
@@ -246,11 +261,17 @@ export class AudioEngine {
         ceiling.connect(context.destination);
         this.gains = gains;
         for (const bus of Object.keys(gains) as AudioBus[]) this.applyVolume(bus);
-
       }
-      const context = this.context;
+      return this.context;
+  }
+
+  private async enableAudio(): Promise<void> {
+    if (typeof window === 'undefined' || this.suspended || this.hidden() || this.masterMuted) return;
+    const generation=++this.enableGeneration;
+    try {
+      const context = this.ensureContext();
       if (!context) return;
-      if (context.state !== 'closed'&&this.unlocked) void this.loadScoreSamples();
+      if (context.state !== 'closed'&&this.unlocked&&this.volumes.sfx>0&&this.volumes.master>0) void this.loadScoreSamples();
       // Resume even when running: it also follows a pending background suspend safely.
       if (context.state !== 'closed') {
         const resumed=context.resume();
@@ -333,11 +354,52 @@ export class AudioEngine {
     this.scoreImpact(presentation,eventId,'key',intensity);
   }
 
-  private loadScoreSamples():Promise<void> {
+  /** Prepare only the first interaction's sound families as a bounded startup gate.
+   * AudioContext may remain suspended until a real gesture; decoding never plays a cue. */
+  prepareOpeningSounds(changed:(progress:OpeningSoundProgress)=>void):Promise<OpeningSoundProgress> {
+    const skipped:OpeningSoundProgress={loaded:0,total:0,status:'skipped'};
+    if(this.masterMuted||this.volumes.master<=0||this.volumes.sfx<=0){changed(skipped);return Promise.resolve(skipped);}
+    try {if(!this.ensureContext()||this.context?.state==='closed'){changed(skipped);return Promise.resolve(skipped);}}
+    catch {changed(skipped);return Promise.resolve(skipped);}
+    const snapshot=(status:OpeningSoundProgress['status']):OpeningSoundProgress=>({loaded:OPENING_SOUND_NAMES.filter(name=>this.scoreSamples.has(name)).length,total:OPENING_SOUND_NAMES.length,status});
+    return new Promise(resolve=>{
+      let done=false;let timer:ReturnType<typeof setTimeout>;
+      const finish=(status:OpeningSoundProgress['status'])=>{if(done)return;done=true;clearTimeout(timer);this.sampleListeners.delete(refresh);const value=snapshot(status);changed(value);resolve(value);};
+      const refresh=()=>{const value=snapshot('loading');changed(value);if(value.loaded===value.total)finish('ready');};
+      this.sampleListeners.add(refresh);timer=setTimeout(()=>finish('degraded'),OPENING_SOUND_TIMEOUT_MS);
+      refresh();
+      if(done)return;
+      void this.loadScoreSamples(true).then(()=>finish(OPENING_SOUND_NAMES.every(name=>this.scoreSamples.has(name))?'ready':'degraded'));
+    });
+  }
+
+  /** A real offline -> online transition grants one new finite retry budget.
+   * Reuse the current worker wave first; never emit cues for its late results. */
+  retrySamplesAfterReconnect():void {
+    const context=this.context;if(!context||context.state==='closed'||this.reconnectSampleTask)return;
+    const pending=this.scoreSampleTask??Promise.resolve();
+    const retry=pending.then(()=>{
+      if(this.context!==context||context.state==='closed')return;
+      for(const name of this.sampleAttempts.keys())if(!this.scoreSamples.has(name))this.sampleAttempts.delete(name);
+      if(this.masterMuted||this.volumes.master<=0||this.volumes.sfx<=0)return;
+      return this.loadScoreSamples(true);
+    });
+    this.reconnectSampleTask=retry;
+    void retry.then(()=>{if(this.reconnectSampleTask===retry)this.reconnectSampleTask=undefined;},()=>{if(this.reconnectSampleTask===retry)this.reconnectSampleTask=undefined;});
+  }
+
+  private loadScoreSamples(opening=false):Promise<void> {
     if(this.scoreSampleTask)return this.scoreSampleTask;
     const context=this.context;if(!context || context.state === 'closed')return Promise.resolve();
-    const queue = [HIGH_MULTIPLIER_FIRE_SAMPLE,...FOLEY_SAMPLES,{name:'cloth2',runtimePath:'assets/audio/score-impact/cloth2.ogg'}]
+    const queue = [...SCORE_SAMPLES]
       .filter(({name}) => !this.scoreSamples.has(name) && (this.sampleAttempts.get(name) ?? 0) < SAMPLE_MAX_ATTEMPTS);
+    if(opening){
+      // Keep the fire sample's existing early preparation while the first menu
+      // families share the remaining workers. It does not gate entry.
+      const priority=new Map<string,number>(OPENING_SOUND_NAMES.map((name,index)=>[name,index<2?index:index+1]));
+      priority.set(HIGH_MULTIPLIER_FIRE_SAMPLE.name,2);
+      queue.sort((a,b)=>(priority.get(a.name)??OPENING_SOUND_NAMES.length+1)-(priority.get(b.name)??OPENING_SOUND_NAMES.length+1));
+    }
     if (!queue.length) return Promise.resolve();
     const worker = async () => {
       while (this.context === context && context.state !== 'closed') {
@@ -345,7 +407,7 @@ export class AudioEngine {
         if (!sample) return;
         const attempts = (this.sampleAttempts.get(sample.name) ?? 0) + 1;
         this.sampleAttempts.set(sample.name, attempts);
-        const loaded = await this.loadScoreSample(context, sample.name, sample.runtimePath);
+        const loaded = await this.loadScoreSample(context, sample.name, sample.runtimePath,'sha256' in sample?sample.sha256:undefined);
         // Failed clips go behind untried clips, so a stuck wave cannot monopolise slots.
         if (!loaded && attempts < SAMPLE_MAX_ATTEMPTS) queue.push(sample);
       }
@@ -371,7 +433,7 @@ export class AudioEngine {
     });
   }
 
-  private async loadScoreSample(context: AudioContext, name: string, runtimePath: string): Promise<boolean> {
+  private async loadScoreSample(context: AudioContext, name: string, runtimePath: string,hash?:string): Promise<boolean> {
     const controller = new AbortController();
     let active = true;
     let timer: ReturnType<typeof setTimeout> | undefined;
@@ -380,7 +442,8 @@ export class AudioEngine {
       timer = setTimeout(() => { active = false; controller.abort(); resolve(undefined); }, SAMPLE_TIMEOUT_MS);
     });
     const work = async () => {
-      const response = await fetch(new URL(runtimePath, document.baseURI), {signal: controller.signal});
+      const url=new URL(runtimePath,document.baseURI);if(hash)url.searchParams.set('v',hash.slice(0,12));
+      const response = await fetch(url, {signal: controller.signal});
       if (!response.ok || !current()) return;
       const bytes = await response.arrayBuffer();
       if (!current()) return;
@@ -395,6 +458,7 @@ export class AudioEngine {
       if (!result || !current()) return false;
       this.scoreSamples.set(name, result.buffer);
       this.sampleBodies.set(name, result.body);
+      for(const listener of this.sampleListeners)listener();
       if(name===HIGH_MULTIPLIER_FIRE_SAMPLE.name)for(const finish of this.highMultiplierFireWaiters)finish();
       return true;
     } finally {
@@ -563,7 +627,7 @@ export class AudioEngine {
     if (!list.length) return { title: TRANSITION_MUSIC, runtimePath: RECORDING_PATH };
     const index = this.sceneTrackIndices.get(scene) ?? 0;
     const track = list[index % list.length];
-    return { title: track.title, runtimePath: track.runtimePath,fallbackRuntimePath:track.fallbackRuntimePath };
+    return { title: track.title, runtimePath: track.runtimePath,fallbackRuntimePath:track.fallbackRuntimePath,sha256:track.sha256,fallbackSha256:track.fallbackSha256 };
   }
   /** Results inherit the actual battle; dialogs never select a new music scene. */
   private musicScene(scene:AudioScene):AudioScene {return scene==='success'||scene==='failure'?this.lastBattleScene:scene;}
@@ -584,7 +648,7 @@ export class AudioEngine {
     const slot:MusicSlot={element};
     element.addEventListener?.('loadedmetadata',()=>{
       const resume=slot.resumeAt;if(!resume||slot.path!==resume.path||slot.track?.runtimePath!==resume.track)return;
-      if(element.currentSrc&&!element.currentSrc.endsWith(resume.path))return;
+      if(element.currentSrc&&!element.currentSrc.split('?')[0].endsWith(resume.path))return;
       slot.resumeAt=undefined;if(!this.canPlay('music'))return;
       try{element.currentTime=Math.min(resume.position,Number.isFinite(element.duration)?Math.max(0,element.duration-.01):resume.position);}catch{/* A failed seek cannot block the same-song fallback. */}
     });
@@ -603,7 +667,7 @@ export class AudioEngine {
       this.retireMusic(slot);slot.resumeAt=undefined;slot.track=track;slot.warming=true;const target=slot;
       target.element.onerror=()=>{if(target.element.error&&target.warming&&target.track===track){if(this.fallbackMusicSource(target,track))return;this.musicWarmFailures.add(track.runtimePath);this.releaseWarmSlot(target);}};
       target.path=musicSourcePath(track,target.element,this.musicFormatFailures);
-      target.element.preload='auto';target.element.src=`${import.meta.env.BASE_URL}${target.path}`;target.element.load();
+      target.element.preload='auto';target.element.src=versionedAsset(target.path,target.path===track.runtimePath?track.sha256:track.fallbackSha256);target.element.load();
     }catch{this.musicWarmFailures.add(track.runtimePath);this.musicWarmHint=undefined;if(slot)this.releaseWarmSlot(slot);}
   }
   private releaseWarmSlot(slot:MusicSlot):void {
@@ -650,7 +714,7 @@ export class AudioEngine {
       if (target.track?.runtimePath !== track.runtimePath || element.error) {
         if(target.track?.runtimePath!==track.runtimePath)target.resumeAt=undefined;
         target.path=musicSourcePath(track,element,this.musicFormatFailures);
-        element.src = `${import.meta.env.BASE_URL}${target.path}`;
+        element.src = versionedAsset(target.path,target.path===track.runtimePath?track.sha256:track.fallbackSha256);
       } else if (element.ended) element.currentTime = 0;
       target.track = track; this.pendingMusic = target; this.configureMusicLoop(target);
       let waiting = true;
@@ -715,7 +779,7 @@ export class AudioEngine {
     if(Number.isFinite(position)&&position>0&&!slot.element.ended)slot.resumeAt={path:track.fallbackRuntimePath,track:track.runtimePath,position};
     this.musicFormatFailures.add(track.runtimePath);slot.path=track.fallbackRuntimePath;
     // Same recording, same element/context. A second failure takes the finite failure path.
-    try{slot.element.pause();slot.element.src=`${import.meta.env.BASE_URL}${slot.path}`;slot.element.load();return true;}catch{return false;}
+    try{slot.element.pause();slot.element.src=versionedAsset(slot.path,track.fallbackSha256);slot.element.load();return true;}catch{return false;}
   }
   private restMusic(slot:MusicSlot,track:MusicTrack):void {
     if(this.musicRest)return;

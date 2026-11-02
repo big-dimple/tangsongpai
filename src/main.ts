@@ -45,8 +45,10 @@ installGamepadNavigation(game);
 const audio=AudioEngine.shared;
 const stopOpeningAudio=installOpeningAudio(audio);
 const suspendAudio=()=>audio.setSuspended(document.hidden);
+const reconnectAudio=()=>audio.retrySamplesAfterReconnect();
 document.addEventListener('visibilitychange',suspendAudio);
-game.events.once('destroy',()=>{stopOpeningAudio();audio.setSuspended(true);document.removeEventListener('visibilitychange',suspendAudio);});
+window.addEventListener('online',reconnectAudio);
+game.events.once('destroy',()=>{stopOpeningAudio();audio.setSuspended(true);document.removeEventListener('visibilitychange',suspendAudio);window.removeEventListener('online',reconnectAudio);});
 
 // Read-only browser observers are available only in the explicit E2E build mode.
 if (import.meta.env.MODE === 'e2e' && new URLSearchParams(window.location.search).get('harness') === '1') {
