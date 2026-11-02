@@ -61,7 +61,8 @@ import {savedHeroAttachment,retainedRefillImpact} from './HeroAttachmentFacts';
 import {drawStageTableArt,playedCaptionBox} from './StageTableArt';
 import {paperSceneStart} from './PaperFlow';
 import {bindNoviceGuide} from './NoviceGuideBinding';
-import {liveNoviceGuide,noviceGuide,noviceGuideEnrolled} from './NoviceGuide';
+import {liveNoviceGuide,noviceGuide,noviceGuideEnrolled,validNoviceDiscardSelection} from './NoviceGuide';
+import {firstStageOptions,type FirstStageOption} from './NoviceFirstStage';
 import {needsGuidedPractice} from './GuidedTutorial';
 import {noviceGuideCanvasBox} from './NoviceGuideView';
 import {HERO_SOURCE_CURRENT_MS} from './HeroCardAttachmentAtmosphere';
@@ -319,6 +320,7 @@ export class GameScene extends Phaser.Scene {
   private mobileHeroName?:Phaser.GameObjects.Text;
   private playButton!: Phaser.GameObjects.Rectangle;
   private discardButton!: Phaser.GameObjects.Rectangle;
+  private noviceGuideCollapsed=false;
   private pcKeyboardActions?:ReturnType<typeof mountPcActionKeyboard>;
   private bossSuitRescuePreview?:Phaser.GameObjects.Text;
   private bossSuitRescueButton?:Phaser.GameObjects.Rectangle;
@@ -393,6 +395,7 @@ export class GameScene extends Phaser.Scene {
 
   private carriedTool?:ToolCarryIntent;
   async create(data?:{carriedTool?:ToolCarryIntent;preparedBossOwner?:object}): Promise<void> {
+    this.noviceGuideCollapsed=false;
     // The controller hint can occupy the top rail only while this PC table is active.
     // Read the outer viewport so connecting a controller cannot itself push the
     // canvas below the PC threshold before this class is established.
@@ -572,10 +575,40 @@ export class GameScene extends Phaser.Scene {
     if(this.run.stage.boss?.definitionId==='B05')this.statusMessage=opponentSavedStatus(this.run.lastTrace);
     this.render();
     let guideChoiceKey='',guideChoice:ReturnType<typeof erxiangChoice>|undefined;
+    let firstStage:{key:string;optionKey?:string;options:FirstStageOption[];target?:FirstStageOption}|undefined;
+    const firstStageKey=()=>JSON.stringify([this.run.runId,this.run.stageIndex,this.run.stage?.playIndex,
+      [...this.run.handOrder].sort(),this.chosenHeroDraft(),this.assistIds]);
     const unmountNoviceGuide=bindNoviceGuide(this,{
       kind:'game',
+      onVisibilityChange:closed=>{this.noviceGuideCollapsed=closed;this.updateControls();},
       presentHint:hint=>{
         const selected=[...this.selectedIds];
+        if(hint.step==='independent'&&this.run.stage){
+          const key=firstStageKey();
+          if(firstStage?.key!==key)firstStage={key,options:[]};
+          const input=this.aiInput(),result=this.aiCandidates.result;
+          if(result?.status==='ready'&&result.key===aiHandKey(input)&&firstStage.optionKey!==result.key){
+            const options=firstStageOptions(input,result);
+            // A reorder can choose another equally scored example. Keep the
+            // player's chosen instance IDs until the hand itself changes.
+            if(firstStage.target){const index=options.findIndex(row=>row.id===firstStage!.target!.id);if(index>=0)options[index]=firstStage.target;else if(options.length)options[0]=firstStage.target;}
+            firstStage.options=options;firstStage.optionKey=result.key;
+          }
+          const stage=this.run.stage,target=firstStage.target;
+          const choices=firstStage.options.map(row=>({id:row.id,label:row.label,cardIds:row.cardIds,selected:target?.id===row.id}));
+          const cue=`累计 ${stage.heat}/${stage.targetHeat} · 剩${stage.handsLeft}次出牌`;
+          if(!choices.length)return {...hint,cue,body:result?.status==='unsupported'?'暂不能列牌型，可自己选牌出牌。':'正在整理当前手牌，请稍候。',choices};
+          if(!target){
+            const short=stage.handsLeft===1&&!firstStage.options.some(option=>option.canClear);
+            return {...hint,cue,body:short?(stage.discardsLeft?'暂无可过关的牌，可先弃牌。':'这手不足目标，请继续出牌。'):'选一种牌型，再选亮起的牌。',choices};
+          }
+          const extra=selected.filter(id=>!target.cardIds.includes(id)),remaining=target.cardIds.filter(id=>!this.selectedIds.has(id));
+          if(extra.length)return {...hint,cue,body:'先点亮起的已选牌取消。',recommendedCardIds:extra,choices};
+          if(!remaining.length)return {...hint,cue,body:stage.handsLeft===1&&!target.canClear?'这手不足目标，可弃牌或出牌。':'牌选好了，点「出牌」。',recommendedCardIds:[],focus:'play',choices};
+          const explain:Record<string,string>={'high-card':'高牌：选点数最高的亮牌。','pair':'对子：两张同点，点亮牌。','two-pair':'两对：两组同点，点亮牌。','three-kind':'三条：三张同点，点亮牌。','straight':'顺子：五张连续，点亮牌。','flush':'同花：5张同色，点亮牌。'};
+          return {...hint,cue,body:selected.length?`再选亮起的${remaining.length}张牌。`:(explain[target.id]??'选亮起的牌。'),recommendedCardIds:remaining,choices};
+        }
+        firstStage=undefined;
         if(hint.step==='skill'){
           const key=JSON.stringify([this.run.runId,this.run.commandSeq,selected,this.erxiangTargetId]);
           if(key!==guideChoiceKey){guideChoiceKey=key;guideChoice=erxiangChoice(this.run,this.selectionPreview(),this.erxiangTargetId);}
@@ -583,6 +616,11 @@ export class GameScene extends Phaser.Scene {
         const choice=hint.step==='skill'?guideChoice:undefined;
         return liveNoviceGuide(hint,selected,{available:!!choice?.candidates.length,chosen:!!choice?.selected,
           enabled:!!choice?.enabled&&!choice?.used&&this.run.phase==='await-input',canDiscard:!!this.run.stage?.discardsLeft&&this.run.drawPile.length>0});
+      },
+      onChoice:id=>{
+        if(firstStage?.key!==firstStageKey())return;
+        const choice=firstStage.options.find(row=>row.id===id);if(!choice)return;
+        firstStage.target=choice;unmountNoviceGuide.refresh();
       },
       getGeometry:hint=>{
         const l=this.view.layout,canvas=this.game.canvas.getBoundingClientRect();
@@ -598,16 +636,8 @@ export class GameScene extends Phaser.Scene {
           // Follow the painted card, but only ring its exposed phone hit column.
           return [map({x:topLeft.x,y:topLeft.y,width:Math.min(bottomRight.x-topLeft.x,seat.hit.width),height:bottomRight.y-topLeft.y})];
         };
-        let highlights=focus?[map(focus)]:(hint.recommendedCardIds??[]).slice(0,1).flatMap(cardBox);
-        // After the fixed pair lesson, guide the actual discard operation:
-        // keep the discard action ringed while walking one real card at a time
-        // instead of drawing a vague ring over the entire hand.
-        if(hint.step==='discard'){
-          const ids=hint.recommendedCardIds?.length?hint.recommendedCardIds:this.hand.map(card=>card.id),visible=ids.filter(id=>cardBox(id).length);
-          const index=visible.length?Math.floor(performance.now()/900)%visible.length:0;
-          const card=visible[index];
-          highlights=[...(card?cardBox(card):[]),map(hero.discard??l.tableActions.discard)];
-        }
+        const cards=hint.focus==='score'||hint.focus==='goal'?[]:hint.recommendedCardIds??[];
+        const highlights=[...(focus?[map(focus)]:[]),...(hint.step==='discard'||hint.step==='independent'?cards:focus?[]:cards.slice(0,1)).flatMap(cardBox)];
         // The hint must not intercept the optional skill or utility buttons:
         // tapping through to the skip control would unexpectedly leave the run.
         const controls=[l.hud,l.scoreBoard,l.playedArea,l.hand,l.actions,l.heroAction,l.inventoryEntry,l.helpEntry,...this.run.jokers.map((_,index)=>l.slots[index])];
@@ -1463,9 +1493,9 @@ export class GameScene extends Phaser.Scene {
     const notice=stageNotice(this.run),discardGoldCost=notice?.discardGoldCost??0;
     (this.playButton.getData('label') as Phaser.GameObjects.Text).setText('出牌');
     (this.discardButton.getData('label') as Phaser.GameObjects.Text).setText(discardGoldCost?'弃 -1金':r2DiscardCost(this.run)===2?'弃 ×2':'弃牌');
-    const guidedStep=noviceGuide(this.run,runController(this)?.journal)?.step;
-    const guidedDiscard=guidedStep==='discard';
-    this.view.setEnabled(this.discardButton,this.ready&&!this.pendingTouye&&this.selectedIds.size>0&&this.run.stage!.discardsLeft>=r2DiscardCost(this.run)&&this.run.gold>=discardGoldCost);
+    const guidedHint=noviceGuide(this.run,runController(this)?.journal),guidedStep=guidedHint?.step;
+    const guidedDiscard=guidedStep==='discard'&&!this.noviceGuideCollapsed;
+    this.view.setEnabled(this.discardButton,this.ready&&!this.pendingTouye&&this.selectedIds.size>0&&(!guidedDiscard||validNoviceDiscardSelection(guidedHint!,[...this.selectedIds]))&&this.run.stage!.discardsLeft>=r2DiscardCost(this.run)&&this.run.gold>=discardGoldCost);
     // The first tutorial must finish the real discard before it can move on;
     // do not let a selected card accidentally skip to the independent-play
     // lesson through the play button or a controller activation.
@@ -2122,6 +2152,8 @@ export class GameScene extends Phaser.Scene {
   private async discardSelected(trick=false,bet?:TouyeBet,seq?:number,committedIds?:string[]):Promise<void> {
     if(this.pendingTouye)return;
     if(this.pendingRefill){if(!this.ready)return;this.refillHidden=!this.refillHidden;this.selectedIds.clear();this.statusMessage='';this.render();return;}
+    const guidedHint=noviceGuide(this.run,runController(this)?.journal);
+    if(guidedHint?.step==='discard'&&!this.noviceGuideCollapsed&&!validNoviceDiscardSelection(guidedHint,committedIds??[...this.selectedIds]))return;
     if(!this.ready||!(committedIds??[...this.selectedIds]).length||this.run.stage!.discardsLeft<r2DiscardCost(this.run))return;this.clearHover();this.cancelAiCandidates();this.touyeSkillPhase=bet?'drawing':undefined;this.playing=true;this.statusMessage='';this.updateControls();const lifecycle=this.lifecycle,intent=++this.intent,previousRun=this.run,selectedIds=committedIds??[...this.selectedIds],previousIds=[...this.run.handOrder],beforeDiscards=this.run.stage!.discardsLeft,spentDiscards=beforeDiscards-r2DiscardCost(this.run);
     try {
       const result=await dispatchRun(this,{type:'DiscardHand',selectedIds,...(trick?{laohuanTrick:true}:{}),...(bet?{touyeBet:bet}:{})},seq);
@@ -2171,7 +2203,7 @@ export class GameScene extends Phaser.Scene {
     // real discard action after the pair-of-fives score.  Keep this guard at
     // the command boundary as well as on the button so keyboard/gamepad input
     // cannot skip the lesson's next step.
-    if(noviceGuide(this.run,runController(this)?.journal)?.step==='discard'){
+    if(!this.noviceGuideCollapsed&&noviceGuide(this.run,runController(this)?.journal)?.step==='discard'){
       this.statusMessage='先选要弃的牌，再点「弃牌」换新牌';this.updateControls();return;
     }
     const facts=this.selectionPreview(),ids=[...this.selectedIds],draft={laohuanFindRank:this.laohuanFindRank,erxiangTargetId:this.erxiangTargetId,xiemuBurn:this.xiemuBurn,azaoRelease:this.azaoRelease,amoExile:this.amoExile,assistCount:this.assistIds.length};
