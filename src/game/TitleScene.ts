@@ -26,15 +26,21 @@ export class TitleScene extends Phaser.Scene {
   private launchingTutorial=false;
   private entryGeneration=0;
   private entryMessage='';
+  private openingReady?:()=>void;
   private readonly audio=AudioEngine.shared;
   constructor(){super('title');}
-  init(data?:{seed?:string}):void {this.seed=data?.seed??new URLSearchParams(location.search).get('seed')??undefined;}
+  init(data?:{seed?:string;onReady?:()=>void}):void {this.seed=data?.seed??new URLSearchParams(location.search).get('seed')??undefined;this.openingReady=data?.onReady;}
   create():void {
     this.leaving=false;this.entering=false;this.launchingTutorial=false;this.firstPlayer='unknown';this.checkingFirstPlayer=false;this.checkedFirstPlayer=false;this.entryMessage='';this.entryGeneration++;this.audio.setScene('menu');this.cameras.main.setBackgroundColor('#F3EADB');
     this.home?.destroy();this.home=new HomePage({start:()=>void this.enterNew(),resume:()=>void this.continueRun(),skipTutorial:()=>this.skipTutorial()});
     const removeTitleNewGame=installTitleNewGameHandler(()=>void this.enterNew());this.render();warmOpeningImages(this);
     this.entranceDispose?.();
     this.entranceDispose=mountTangSongEnsembleBurst(document.body,{reducedMotion:this.reducedMotion()});
+    const dismissEntrance=()=>{this.entranceDispose?.();this.entranceDispose=undefined;};
+    const interaction=(event:Event)=>{if(event.isTrusted)dismissEntrance();};
+    const visibility=()=>{if(document.hidden)dismissEntrance();};
+    window.addEventListener('pointerdown',interaction,{capture:true});window.addEventListener('keydown',interaction,{capture:true});document.addEventListener('visibilitychange',visibility);
+    this.openingReady?.();this.openingReady=undefined;
     this.game.canvas.setAttribute('aria-label',GAME_NAME+' · 首页');this.game.canvas.setAttribute('aria-hidden','true');
     const keyboardOpen=(event:KeyboardEvent)=>{
       const element=document.activeElement;
@@ -50,6 +56,7 @@ export class TitleScene extends Phaser.Scene {
     this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>{
       this.leaving=true;this.entryGeneration++;unsubscribe();removeTitleNewGame();this.input.keyboard?.off('keydown-ENTER',keyboardOpen);this.input.keyboard?.off('keydown-SPACE',keyboardOpen);
       this.entranceDispose?.();this.entranceDispose=undefined;
+      window.removeEventListener('pointerdown',interaction,{capture:true});window.removeEventListener('keydown',interaction,{capture:true});document.removeEventListener('visibilitychange',visibility);
       this.confirmation?.remove();this.confirmation=undefined;this.home?.destroy();this.home=undefined;this.game.canvas.removeAttribute('aria-hidden');
       siblings.forEach(scene=>scene.events.off(Phaser.Scenes.Events.START,stopTitle));
     });

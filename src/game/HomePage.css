@@ -2,6 +2,9 @@
 .home-sheet{width:min(100%,1120px);min-height:100%;margin:auto;display:flex;flex-direction:column;justify-content:center;box-sizing:border-box}
 .title-home .home-masthead{padding-right:72px;flex-shrink:0}
 .title-home .home-hero{width:100%;height:clamp(310px,47dvh,460px);min-height:310px;max-height:none;margin:16px 0 0;flex-shrink:0;container-type:inline-size}
+/* The same paper art has already entered on the loading page. Keep only its
+   ambient motion here, so it does not re-deal behind the ensemble scroll. */
+.title-home :is(.load-seal,.load-sun,.load-sun-ring,.load-hill-far,.load-hill-near,.load-river,.load-brand h1 span,.load-brand p,.load-card-seat){animation:none}
 .title-home .load-brand{margin-top:-34px}
 .title-home .load-brand h1{font-size:clamp(38px,22cqw,104px);letter-spacing:.05em}
 .title-home .load-brand p{font-size:14px;letter-spacing:.22em;color:#3f606b}
