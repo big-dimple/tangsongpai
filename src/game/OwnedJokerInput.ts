@@ -19,6 +19,7 @@ export class OwnedJokerInput {
   private owner?:{pointerId:number;id:string;x:number;y:number;touch:boolean;lifted:boolean;canceled:boolean;width:number;height:number;canDrag:boolean;at:number;downTime:number;press:ModalCanvasPress};
   private contacts=new Map<number,string>();
   private timer?:ReturnType<typeof setTimeout>;
+  private clearReleasedClick?:()=>void;
   private hapticScope?:HapticScope;
   private savedInput=true;
   private bounds?:Box;
@@ -90,8 +91,21 @@ export class OwnedJokerInput {
     const {x,y}=this.coordinates(e),kind=this.intent.up(e.pointerId,x,y,pointerReleaseTime(o.at,o.downTime,e.timeStamp,performance.now())),valid=!o.canceled&&!this.blocked(e);
     this.finish();e.preventDefault();e.stopPropagation();
     if(valid&&o.canDrag&&this.options.ready()&&o.lifted&&kind==='drag')this.options.drop(o.id,x,y);
-    else {this.options.cancel();if(valid&&(kind==='tap'||!o.canDrag&&kind==='none'))this.options.tap(o.id);}
+    else {this.options.cancel();if(valid&&(kind==='tap'||!o.canDrag&&kind==='none')){this.guardReleasedClick(e.clientX,e.clientY);this.options.tap(o.id);}}
   };
+  /** The release opens a modal. Its compatibility click still belongs to the
+   * card press and must not activate a button that appeared underneath it. */
+  private guardReleasedClick(x:number,y:number):void {
+    this.clearReleasedClick?.();
+    let timer:ReturnType<typeof setTimeout>;
+    const clear=()=>{document.removeEventListener('click',click,true);document.removeEventListener('pointerdown',freshPress,true);clearTimeout(timer);if(this.clearReleasedClick===clear)this.clearReleasedClick=undefined;};
+    const freshPress=()=>clear();
+    const click=(event:MouseEvent)=>{
+      if(event.isTrusted&&event.detail>0&&Math.hypot(event.clientX-x,event.clientY-y)<24&&event.target instanceof Element&&event.target.closest('dialog[open]')){event.preventDefault();event.stopImmediatePropagation();}
+      clear();
+    };
+    this.clearReleasedClick=clear;document.addEventListener('click',click,true);document.addEventListener('pointerdown',freshPress,true);timer=setTimeout(clear,800);
+  }
   private readonly interrupt=(e:PointerEvent)=>{this.contacts.delete(e.pointerId);if(this.owner?.pointerId===e.pointerId){this.cancel();this.finish();}};
   private readonly lost=(e:PointerEvent)=>{if(this.owner?.pointerId===e.pointerId){this.cancel();this.finish();}};
   private readonly out=(e:PointerEvent)=>{if(!e.relatedTarget&&this.owner?.pointerId===e.pointerId)this.cancel();};
@@ -111,5 +125,5 @@ export class OwnedJokerInput {
     const r=this.scene.game.canvas.getBoundingClientRect(),sx=r.width/(this.scene.scale.width*this.scene.scale.zoom),sy=r.height/(this.scene.scale.height*this.scene.scale.zoom);
     Object.assign(this.surface.style,{left:r.left+b.x*sx+'px',top:r.top+b.y*sy+'px',width:b.width*sx+'px',height:b.height*sy+'px'});
   }
-  destroy(){if(this.destroyed)return;this.destroyed=true;this.canvasResize?.disconnect();this.cancel();this.finish();this.surface.remove();window.removeEventListener('pointerdown',this.contact,true);window.removeEventListener('pointermove',this.move,true);window.removeEventListener('pointerup',this.up,true);window.removeEventListener('pointercancel',this.interrupt,true);window.removeEventListener('pointerout',this.out,true);window.removeEventListener('blur',this.blur);window.removeEventListener('resize',this.resize);window.removeEventListener('keydown',this.key);document.removeEventListener('visibilitychange',this.visibility);document.removeEventListener('focusin',this.focus);}
+  destroy(){if(this.destroyed)return;this.destroyed=true;this.clearReleasedClick?.();this.canvasResize?.disconnect();this.cancel();this.finish();this.surface.remove();window.removeEventListener('pointerdown',this.contact,true);window.removeEventListener('pointermove',this.move,true);window.removeEventListener('pointerup',this.up,true);window.removeEventListener('pointercancel',this.interrupt,true);window.removeEventListener('pointerout',this.out,true);window.removeEventListener('blur',this.blur);window.removeEventListener('resize',this.resize);window.removeEventListener('keydown',this.key);document.removeEventListener('visibilitychange',this.visibility);document.removeEventListener('focusin',this.focus);}
 }
