@@ -1,5 +1,7 @@
-/** Original synthetic low fire and slowly varying air, with no crackle samples
- * or gameplay RNG. The loop is cached per audio context. */
+/** Deterministic low-fire bed for the multiplier climax.
+ * This deliberately avoids broadband rain/noise: the body is a warm low rumble,
+ * with sparse soft puffs that read as a deep fireplace rather than a hiss.
+ * No approved external fire recording is present in the repository at this time. */
 export const HIGH_MULTIPLIER_FIRE_SECONDS = 8;
 
 export function createHighMultiplierFire(context: BaseAudioContext): AudioBuffer {
@@ -11,17 +13,31 @@ export function createHighMultiplierFire(context: BaseAudioContext): AudioBuffer
     seed ^= seed << 13; seed ^= seed >>> 17; seed ^= seed << 5;
     return (seed >>> 0) / 0x100000000;
   };
-  const lowStep = 1 - Math.exp(-2 * Math.PI * 125 / rate);
-  const airStep = 1 - Math.exp(-2 * Math.PI * 650 / rate);
-  const swayStep = 1 - Math.exp(-1 / (rate * .22));
-  let low = 0, air = 0, sway = .8, target = .8, nextSway = 0;
+  const lowStep = 1 - Math.exp(-2 * Math.PI * 58 / rate);
+  const emberStep = 1 - Math.exp(-2 * Math.PI * 155 / rate);
+  const warmthStep = 1 - Math.exp(-2 * Math.PI * 310 / rate);
+  const flameStep = 1 - Math.exp(-1 / (rate * .32));
+  const puffDecay = Math.exp(-1 / (rate * .095));
+  let low = 0, ember = 0, warmth = 0, flame = .72, targetFlame = .72;
+  let puff = 0, nextPuff = 0;
   for (let i = 0; i < data.length; i++) {
     const noise = random() * 2 - 1;
     low += lowStep * (noise - low);
-    air += airStep * (noise - air);
-    if (--nextSway <= 0) { target = .48 + random() * .64; nextSway = rate * (.35 + random() * .55); }
-    sway += swayStep * (target - sway);
-    data[i] = Math.tanh((low * 3.2 + (air - low) * 1.4) * sway);
+    ember += emberStep * (noise - ember);
+    warmth += warmthStep * (noise - warmth);
+    if (i >= nextPuff) {
+      puff = .72 + random() * .38;
+      nextPuff = i + rate * (.24 + random() * .34);
+    } else {
+      puff *= puffDecay;
+    }
+    if (i % Math.max(1, Math.floor(rate * .18)) === 0) targetFlame = .54 + random() * .58;
+    flame += flameStep * (targetFlame - flame);
+    // The puffs are low-frequency energy, not a layer of bright white noise.
+    const body = low * 3.7 + (ember - low) * 1.35 + (warmth - ember) * .55;
+    const thump = puff * (low * 2.2 + ember * .75);
+    const softCrackle = random() < .012 ? (random() * 2 - 1) * .07 : 0;
+    data[i] = .72 * Math.tanh((body + thump + softCrackle) * (.72 + flame * .55));
   }
   // Return to the first sample smoothly so a long scoring sequence can loop
   // without a discontinuity or a sharp transient at the boundary.
