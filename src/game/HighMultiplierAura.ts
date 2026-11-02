@@ -12,6 +12,8 @@ export interface HighMultiplierAuraOptions {
   getViewport:()=>Box|undefined;
   /** Current world bounds of card faces, their print, buttons, and other protected content. */
   getGuards:()=>readonly Box[]|undefined;
+  /** Guards for a faint layer below the score's own foreground text. */
+  getBackdropGuards?:()=>readonly Box[]|undefined;
   signal:AbortSignal;
   /** A live setting: turning reduced motion on also removes an existing cue. */
   reduced:()=>boolean;
@@ -32,17 +34,18 @@ export interface HighMultiplierAuraOptions {
 type Point={x:number;y:number};
 interface Flame {position:number;width:number;height:number;delay:number;phase:number;lean:number;baseOffset:number}
 export const HIGH_MULTIPLIER_FADE_MS=450;
-const EDGE=2.5,VIEWPORT_GAP=4,REACH=80,MAX_SHIFT=16;
+const EDGE=2.5,VIEWPORT_GAP=4,REACH=80;
 const MAX_GUARDS=256,MAX_AREAS=128;
 const FLAMES:readonly Flame[]=[
-  {position:.07,width:18,height:27,delay:45,phase:.2,lean:-3,baseOffset:-2},
-  {position:.20,width:15,height:26,delay:86,phase:1.0,lean:2,baseOffset:-1},
-  {position:.33,width:19,height:34,delay:0,phase:1.5,lean:3,baseOffset:0},
-  {position:.40,width:14,height:27,delay:148,phase:3.1,lean:4,baseOffset:-1},
-  {position:.60,width:14,height:28,delay:65,phase:2.3,lean:-4,baseOffset:-1},
-  {position:.67,width:19,height:33,delay:112,phase:4.0,lean:-3,baseOffset:0},
-  {position:.80,width:15,height:26,delay:75,phase:4.8,lean:-2,baseOffset:-1},
-  {position:.93,width:18,height:25,delay:25,phase:5.6,lean:3,baseOffset:-2}
+  {position:.055,width:20,height:42,delay:45,phase:.2,lean:-3,baseOffset:-1},
+  {position:.16,width:17,height:31,delay:145,phase:2.5,lean:2,baseOffset:0},
+  {position:.23,width:21,height:50,delay:86,phase:1.0,lean:3,baseOffset:-1},
+  {position:.325,width:18,height:38,delay:0,phase:1.5,lean:3,baseOffset:0},
+  {position:.49,width:20,height:47,delay:55,phase:5.1,lean:-2,baseOffset:0},
+  {position:.60,width:17,height:32,delay:65,phase:2.3,lean:-4,baseOffset:-1},
+  {position:.68,width:22,height:46,delay:112,phase:4.0,lean:-3,baseOffset:0},
+  {position:.85,width:21,height:49,delay:75,phase:4.8,lean:-2,baseOffset:-1},
+  {position:.95,width:19,height:39,delay:25,phase:5.6,lean:3,baseOffset:-1}
 ];
 const noop=()=>{};
 const clamp=(value:number)=>Math.max(0,Math.min(1,value));
@@ -71,6 +74,21 @@ function bbox(points:readonly Point[]):Box {
 }
 function corners(b:Box):Point[]{return [{x:b.x,y:b.y},{x:b.x+b.width,y:b.y},{x:b.x+b.width,y:b.y+b.height},{x:b.x,y:b.y+b.height}];}
 
+/** Clip a sheet to a guard-free world-space rectangle, preserving its visible part. */
+function clipSheet(points:readonly Point[],area:Box):Point[] {
+  let output=[...points];
+  const edges:readonly [keyof Point,number,number][]=[['x',area.x,1],['x',area.x+area.width,-1],['y',area.y,1],['y',area.y+area.height,-1]];
+  for(const [axis,edge,sign] of edges){
+    const input=output;output=[];if(!input.length)break;
+    for(let i=0;i<input.length;i++){
+      const p=input[i],q=input[(i+1)%input.length],a=(p[axis]-edge)*sign,b=(q[axis]-edge)*sign;
+      if(a>=0)output.push(p);
+      if((a>=0)!==(b>=0)){const t=a/(a-b);output.push({x:p.x+(q.x-p.x)*t,y:p.y+(q.y-p.y)*t});}
+    }
+  }
+  return output;
+}
+
 /** Smooth tapered sheets curl independently; inner sheets share their parent's flow. */
 function flameSheet(x:number,base:number,width:number,height:number,phase:number,lean:number,seed:number):Point[] {
   const left:Point[]=[],right:Point[]=[];
@@ -85,38 +103,6 @@ function flameSheet(x:number,base:number,width:number,height:number,phase:number
   return [...left,...right.reverse()];
 }
 
-/** Find the smallest world-space translation keeping a whole flame in its safe band. */
-function fittingShift(worldBox:Box,localBox:Box,area:Box,localBounds:Box,minY:number,maxY:number,m:{a:number;b:number;c:number;d:number},minimum:number):Point|undefined {
-  const inset=.02,epsilon=inset/minimum;
-  const left=area.x+inset-worldBox.x,right=area.x+area.width-inset-worldBox.x-worldBox.width;
-  const top=area.y+inset-worldBox.y,bottom=area.y+area.height-inset-worldBox.y-worldBox.height;
-  if(left>right||top>bottom)return;
-  const det=m.a*m.d-m.b*m.c,ix=m.d/det,iy=-m.c/det,jx=-m.b/det,jy=m.a/det;
-  const limits:readonly [number,number,number][]=[
-    [ix,iy,localBounds.x+localBounds.width-localBox.x-localBox.width-epsilon],
-    [-ix,-iy,localBox.x-localBounds.x-epsilon],
-    [jx,jy,maxY-localBox.y-localBox.height-epsilon],
-    [-jx,-jy,localBox.y-minY-epsilon]
-  ];
-  if(left<=0&&right>=0&&top<=0&&bottom>=0&&limits.every(([, ,limit])=>limit>=0))return {x:0,y:0};
-  let polygon:Point[]=[{x:left,y:top},{x:right,y:top},{x:right,y:bottom},{x:left,y:bottom}];
-  for(const [a,b,limit] of limits){
-    const input=polygon;polygon=[];
-    for(let i=0;i<input.length;i++){
-      const p=input[i],q=input[(i+1)%input.length],dp=a*p.x+b*p.y-limit,dq=a*q.x+b*q.y-limit,pin=dp<=0,qin=dq<=0;
-      if(pin)polygon.push(p);
-      if(pin!==qin){const t=dp/(dp-dq);polygon.push({x:p.x+(q.x-p.x)*t,y:p.y+(q.y-p.y)*t});}
-    }
-    if(!polygon.length)return;
-  }
-  let best:Point|undefined,distance=Infinity;
-  for(let i=0;i<polygon.length;i++){
-    const p=polygon[i],q=polygon[(i+1)%polygon.length],dx=q.x-p.x,dy=q.y-p.y,d=dx*dx+dy*dy;
-    const t=d?clamp(-(p.x*dx+p.y*dy)/d):0,candidate={x:p.x+t*dx,y:p.y+t*dy},length=candidate.x**2+candidate.y**2;
-    if(length<distance){best=candidate;distance=length;}
-  }
-  return best;
-}
 function shown(root:Phaser.GameObjects.Container):boolean {
   for(let n:Phaser.GameObjects.Container|null=root;n;n=n.parentContainer)if(!n.active||!n.visible||n.alpha<=0)return false;
   return true;
@@ -128,6 +114,9 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
   if(signal.aborted||options.reduced()||!shown(root)||(typeof document!=='undefined'&&document.hidden)||options.isCurrent?.()===false)return noop;
   const ink=scene.add.graphics().setName('score/high-multiplier-aura').setData('eventId',options.eventId).setData('elapsed',0).setData('visibleSegments',0);
   root.add(ink);
+  const anchor=root.list.find(object=>object.name==='score/source'||object.name.startsWith('score/formula-')||['score/heat','score/multiplier','score/total'].includes(object.name));
+  const backdrop=anchor&&options.getBackdropGuards?scene.add.graphics().setName('score/high-multiplier-aura-backdrop'):undefined;
+  if(backdrop&&anchor){root.add(backdrop);root.moveBelow(backdrop,anchor);}
   let elapsed=0,disposed=false,destroyingInk=false,notifiedVisible=false,endingAt:number|undefined;
   const dispose=()=>{
     if(disposed)return;disposed=true;
@@ -136,6 +125,7 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
     if(typeof document!=='undefined')document.removeEventListener('visibilitychange',hidden);
     if(typeof window!=='undefined')window.removeEventListener('blur',dispose);
     if(!destroyingInk&&ink.active)ink.destroy();
+    if(backdrop?.active)backdrop.destroy();
     options.onDispose?.();
   };
   const inkDestroyed=()=>{destroyingInk=true;dispose();};
@@ -151,7 +141,7 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
     }
     const fade=endingAt===undefined?1:smooth(1-(elapsed-endingAt)/HIGH_MULTIPLIER_FADE_MS);
     if(fade<=0){dispose();return;}
-    ink.clear().setData('elapsed',elapsed).setData('visibleSegments',0).setData('rootSegments',0);
+    ink.clear().setData('elapsed',elapsed).setData('visibleSegments',0).setData('rootSegments',0);backdrop?.clear();
     let board:Box|undefined,viewport:Box|undefined,guards:readonly Box[]|undefined;
     try{board=options.getBoard();viewport=options.getViewport();guards=options.getGuards();}catch{return;}
     if(!valid(board)||!valid(viewport)||!guards||!Array.isArray(guards)||guards.length>MAX_GUARDS||guards.some(b=>!b||!Number.isFinite(b.x+b.y+b.width+b.height)||b.width<0||b.height<0))return;
@@ -164,51 +154,112 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
     const fit:Box={x:inner.x+VIEWPORT_GAP,y:inner.y+VIEWPORT_GAP,width:inner.width-2*VIEWPORT_GAP,height:inner.height-2*VIEWPORT_GAP};
     if(!valid(inner)||!valid(fit))return;
     const bounds=pad(board,REACH),region=intersect(inner,bbox(corners(bounds).map(world)));if(!region)return;
-    let areas:Box[]=[region];const protectedGuards:Box[]=[];
-    for(const guard of guards){
-      if(guard.width===0||guard.height===0)continue;
-      const protectedGuard=pad(guard,EDGE);if(!overlaps(protectedGuard,region))continue;
-      protectedGuards.push(protectedGuard);
-      const next:Box[]=[];for(const area of areas){next.push(...subtract(area,protectedGuard));if(next.length>MAX_AREAS)return;}
-      areas=next;if(!areas.length)return;
-    }
-    // The flames rise from the score panel's bottom edge. The live guard
-    // bounds protect numbers, cards and controls; unsafe tongues are omitted.
-    const minY=board.y+EDGE/minimum,maxY=board.y+board.height-EDGE/minimum;
+    const partition=(items:readonly Box[]|undefined):{areas:Box[];protectedGuards:Box[]}|undefined=>{
+      if(!items||!Array.isArray(items)||items.length>MAX_GUARDS||items.some(b=>!b||!Number.isFinite(b.x+b.y+b.width+b.height)||b.width<0||b.height<0))return;
+      let areas:Box[]=[region];const protectedGuards:Box[]=[];
+      for(const guard of items){
+        if(guard.width===0||guard.height===0)continue;
+        const protectedGuard=pad(guard,EDGE);if(!overlaps(protectedGuard,region))continue;
+        protectedGuards.push(protectedGuard);
+        const next:Box[]=[];for(const area of areas){next.push(...subtract(area,protectedGuard));if(next.length>MAX_AREAS)return;}
+        areas=next;if(!areas.length)break;
+      }
+      return {areas,protectedGuards};
+    };
+    const protectedAreas=partition(guards);if(!protectedAreas?.areas.length)return;
+    const {areas,protectedGuards}=protectedAreas;
+    // The flames rise from the score panel's bottom edge. Live bounds protect
+    // numbers, cards and controls, including while they move during scoring.
+    const inset=EDGE/minimum,boardSafe={x:board.x+inset,y:board.y+inset,width:board.width-2*inset,height:board.height-2*inset};
+    if(!valid(boardSafe))return;
     const size=Math.min(1,board.width/300,board.height/95),base=board.y+board.height-5*size;
     const available=intersect(fit,region);if(!available)return;
-    // A low, continuous bed joins the tongues. Draw only whole short sections
-    // whose world bounds clear every guard; the flame never paints over text.
+    const paintSafe=(points:Point[],color:number,alpha:number,anchor:number):boolean=>{
+      const bounded=clipSheet(points,boardSafe);if(bounded.length<3)return false;
+      const worldPoints=bounded.map(world),box=bbox(worldPoints);
+      if(box.x>=fit.x&&box.y>=fit.y&&box.x+box.width<=fit.x+fit.width&&box.y+box.height<=fit.y+fit.height&&
+        !protectedGuards.some(guard=>overlaps(pad(box,.02),guard))){ink.fillStyle(color,alpha).fillPoints(bounded,true);return true;}
+      let painted=false;
+      for(const area of areas){
+        const open=intersect(fit,area);if(!open||!overlaps(box,open))continue;
+        // A tiny inset keeps rounding at the guard edge from touching text.
+        const safe={x:open.x+.02,y:open.y+.02,width:open.width-.04,height:open.height-.04};if(!valid(safe))continue;
+        const clipped=clipSheet(worldPoints,safe).map(local);
+        // Never leave a disconnected fleck floating above a protected number.
+        if(clipped.length<3||Math.max(...clipped.map(p=>p.y))<anchor)continue;
+        ink.fillStyle(color,alpha).fillPoints(clipped,true);painted=true;
+      }
+      return painted;
+    };
+    // A connected, uneven bed gives the flame body between the taller tongues.
+    // Short sections let the bed flow around a changing number without cutting
+    // a hole in the whole row.
     const rootLeft=board.x+4*size,rootRight=board.x+board.width-4*size;
     const rootBottom=board.y+board.height-Math.max(EDGE/minimum,3.5*size);
-    const rootPieces=Math.min(80,Math.max(1,Math.ceil((rootRight-rootLeft)/Math.max(1,18*size))));
+    let backdropVisible=false;
+    if(backdrop?.active){
+      let behind:ReturnType<typeof partition>;
+      try{behind=partition(options.getBackdropGuards?.());}catch{behind=undefined;}
+      if(behind?.areas.length){
+        const baseAlpha=smooth(elapsed/180)*fade;
+        const contour=Array.from({length:81},(_,i)=>{
+          const u=i/80,x=rootLeft+(rootRight-rootLeft)*u;
+          let lift=12+1.4*Math.sin(u*19+elapsed/1000);
+          for(let j=0;j<9;j++){
+            const center=(j+.42+(j%3)*.06)/9+.008*Math.sin(elapsed/1200+j*1.7);
+            const width=u<center?.047+(j%2)*.012:.032+(j%3)*.008;
+            const tip=Math.pow(Math.max(0,1-Math.abs(u-center)/width),.8);
+            lift=Math.max(lift,10+(17+(j%4)*4+2*Math.sin(elapsed/850+j))*tip);
+          }
+          return {x,y:rootBottom-lift*size};
+        });
+        const layer=[...contour,{x:rootRight,y:rootBottom},{x:rootLeft,y:rootBottom}];
+        const inner=layer.map(p=>({x:p.x,y:p.y+(rootBottom-p.y)*.5}));
+        for(const [points,color,alpha] of [[layer,0x8549bc,.17],[inner,0xc392e5,.12]] as const){
+          const bounded=clipSheet(points,boardSafe),wp=bounded.map(world),box=bbox(wp);
+          for(const area of behind.areas){
+            const open=intersect(fit,area);if(!open||!overlaps(box,open))continue;
+            const safe={x:open.x+.02,y:open.y+.02,width:open.width-.04,height:open.height-.04};if(!valid(safe))continue;
+            const clipped=clipSheet(wp,safe).map(local);if(clipped.length<3)continue;
+            backdrop.fillStyle(color,alpha*baseAlpha).fillPoints(clipped,true);backdropVisible=true;
+          }
+        }
+      }
+    }
+    const rootPieces=Math.min(80,Math.max(1,Math.ceil((rootRight-rootLeft)/Math.max(1,11*size))));
+    const localGuards=protectedGuards.map(guard=>bbox(corners(guard).map(local)));
     const rootPeaks=FLAMES.flatMap((flame,i)=>{
-      const drift=.003*Math.sin(elapsed/930+flame.phase),height=5+flame.height*.19+1.1*Math.sin(elapsed/710+flame.phase);
-      const peak={center:flame.position+drift,left:.022+(i%2)*.005,right:.032-(i%3)*.003,height};
+      const drift=.004*Math.sin(elapsed/930+flame.phase),height=6+flame.height*.25+1.4*Math.sin(elapsed/710+flame.phase);
+      const peak={center:flame.position+drift,left:.034+(i%2)*.005,right:.042-(i%3)*.003,height};
       if(i===FLAMES.length-1)return [peak];
-      const next=FLAMES[i+1],between={center:(flame.position+next.position)/2-drift*.6,left:.019,right:.025,height:3+(i%3)*1.5+.6*Math.sin(elapsed/870+flame.phase)};
+      const next=FLAMES[i+1],between={center:(flame.position+next.position)/2-drift*.6,left:.025,right:.03,height:4+(i%3)*1.2+.7*Math.sin(elapsed/870+flame.phase)};
       return [peak,between];
     });
     const rootTop=(x:number)=>{
-      const u=(x-board.x)/board.width;let lift=3.2+.35*Math.sin(u*Math.PI*5+elapsed/1100);
-      for(const peak of rootPeaks){const d=(u-peak.center)/(u<peak.center?peak.left:peak.right),shape=Math.max(0,1-Math.abs(d));lift=Math.max(lift,3.2+peak.height*shape**1.6);}
+      const u=(x-board.x)/board.width;let lift=7+1.1*Math.sin(u*Math.PI*8+elapsed/1100);
+      for(const peak of rootPeaks){const d=(u-peak.center)/(u<peak.center?peak.left:peak.right),shape=smooth(1-Math.abs(d));lift=Math.max(lift,5+peak.height*shape);}
+      // Ease the crest down before a text boundary instead of chopping it flat.
+      for(const guard of localGuards){
+        if(guard.y>=rootBottom||guard.y+guard.height<=rootBottom-lift*size)continue;
+        const distance=x<guard.x?guard.x-x:x>guard.x+guard.width?x-guard.x-guard.width:0;
+        const influence=1-smooth(distance/(7*size));if(influence<=0)continue;
+        const clearance=Math.max(1.8,(rootBottom-(guard.y+guard.height+.4))/size);
+        lift=Math.min(lift,clearance+(lift-clearance)*(1-influence));
+      }
       return rootBottom-lift*size;
     };
     const rootAlpha=smooth(elapsed/150)*fade;let rootVisible=0;
     for(let i=0;i<rootPieces&&rootAlpha>.005;i++){
       const x0=rootLeft+(rootRight-rootLeft)*i/rootPieces,x1=rootLeft+(rootRight-rootLeft)*(i+1)/rootPieces;
-      const safe=(points:Point[])=>{const box=bbox(points.map(world));return box.x>=fit.x&&box.y>=fit.y&&box.x+box.width<=fit.x+fit.width&&box.y+box.height<=fit.y+fit.height&&!protectedGuards.some(guard=>overlaps(pad(box,.02),guard));};
       const bed=[{x:x0,y:rootBottom-1.8*size},{x:x1,y:rootBottom-1.8*size},{x:x1,y:rootBottom},{x:x0,y:rootBottom}];
-      let painted=false;if(safe(bed)){ink.fillStyle(0x7135ad,.52*rootAlpha).fillPoints(bed,true);painted=true;}
+      let painted=paintSafe(bed,0x7135ad,.28*rootAlpha,rootBottom-2*size);
       const points=[...Array.from({length:5},(_,j)=>{const x=x0+(x1-x0)*j/4;return{x,y:rootTop(x)};}),{x:x1,y:rootBottom},{x:x0,y:rootBottom}];
-      if(safe(points)){
-        ink.fillStyle(0x7135ad,.54*rootAlpha).fillPoints(points,true);
-        const inner=points.map(p=>({x:p.x,y:p.y+(rootBottom-p.y)*.42}));
-        ink.fillStyle(0xc28ae9,.50*rootAlpha).fillPoints(inner,true);painted=true;
-      }
+      painted=paintSafe(points,0x7135ad,.48*rootAlpha,rootBottom-2*size)||painted;
+      const inner=points.map(p=>({x:p.x,y:p.y+(rootBottom-p.y)*.50}));
+      painted=paintSafe(inner,0xc28ae9,.38*rootAlpha,rootBottom-2*size)||painted;
       if(painted)rootVisible++;
     }
-    let visible=0;
+    let visible=0;const placed:number[]=[];
     for(const flame of FLAMES){
       const age=elapsed-flame.delay;if(age<=0)continue;
       const alpha=smooth(age/180)*fade;if(alpha<=.005)continue;
@@ -216,34 +267,35 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
       const x=board.x+board.width*flame.position,foot=base+flame.baseOffset*size;
       const h=flame.height*size*grow*(.92+.08*Math.sin(phase*.8+flame.phase));
       const w=flame.width*size,pulse=.86+.14*(.5+.5*Math.sin(phase+flame.phase));
-      const sheets=[
-        flameSheet(x,foot,w*1.25,h*1.04,phase,flame.lean*size,flame.phase),
-        flameSheet(x,foot-.3*size,w,h,phase,flame.lean*size,flame.phase),
-        flameSheet(x,foot-.5*size,w*.67,h*.76,phase,flame.lean*size*.8,flame.phase),
-        flameSheet(x,foot-.8*size,w*.30,h*.48,phase,flame.lean*size*.55,flame.phase)
-      ];
-      const geometry=sheets.flat(),localBox=bbox(geometry),worldBox=bbox(geometry.map(world));
-      if(worldBox.width>fit.width||worldBox.height>fit.height)continue;
-      let chosen=fittingShift(worldBox,localBox,available,bounds,minY,maxY,matrix,minimum);
-      const hitsGuard=(shift:Point)=>protectedGuards.some(guard=>overlaps(pad({...worldBox,x:worldBox.x+shift.x,y:worldBox.y+shift.y},.02),guard));
-      if(!chosen||hitsGuard(chosen)){
-        chosen=undefined;let distance=Infinity;
-        for(const area of areas){
-          const open=intersect(fit,area);if(!open)continue;
-          const candidate=fittingShift(worldBox,localBox,open,bounds,minY,maxY,matrix,minimum);if(!candidate)continue;
-          const d=candidate.x**2+candidate.y**2;if(d<distance){chosen=candidate;distance=d;}
+      let sheets:Point[][]|undefined,shift=0;
+      // Fit a whole tongue in the gaps around live text. The roots already
+      // cover the row, so a blocked tongue can simply yield to its neighbours.
+      for(const narrow of [1,.8,.65]){
+        const candidate=[
+          flameSheet(x,foot,w*1.25*narrow,h*1.04,phase,flame.lean*size,flame.phase),
+          flameSheet(x,foot-.3*size,w*narrow,h,phase,flame.lean*size,flame.phase),
+          flameSheet(x,foot-.5*size,w*.67*narrow,h*.76,phase,flame.lean*size*.8,flame.phase),
+          flameSheet(x,foot-.8*size,w*.30*narrow,h*.48,phase,flame.lean*size*.55,flame.phase)
+        ];
+        const geometry=candidate.flat(),localBox=bbox(geometry),worldBox=bbox(geometry.map(world));
+        for(const offset of [0,-4,4,-8,8,-12,12,-16,16,-20,20]){
+          const dx=offset*size,cx=x+dx;if(placed.some(other=>Math.abs(other-cx)<19*size))continue;
+          const moved={...worldBox,x:worldBox.x+matrix.a*dx,y:worldBox.y+matrix.b*dx};
+          if(localBox.x+dx<boardSafe.x||localBox.x+localBox.width+dx>boardSafe.x+boardSafe.width||
+            localBox.y<boardSafe.y||localBox.y+localBox.height>boardSafe.y+boardSafe.height||
+            moved.x<fit.x||moved.y<fit.y||moved.x+moved.width>fit.x+fit.width||moved.y+moved.height>fit.y+fit.height||
+            protectedGuards.some(guard=>overlaps(pad(moved,.02),guard)))continue;
+          sheets=candidate;shift=dx;break;
         }
+        if(sheets)break;
       }
-      if(!chosen||Math.hypot(chosen.x,chosen.y)>MAX_SHIFT)continue;
-      const origin=world({x:0,y:0}),shift=chosen.x||chosen.y?local({x:origin.x+chosen.x,y:origin.y+chosen.y}):{x:0,y:0};
-      // Keep each flame rooted at the bottom instead of sliding it up beside a number.
-      if(Math.abs(shift.y)>3*size)continue;
+      if(!sheets)continue;
       const colors=[0x793bc9,0x7943c9,0xb583ec,0xffeaff],opacities=[.24,.78,.82,.95];
-      for(let i=0;i<sheets.length;i++)ink.fillStyle(colors[i],alpha*opacities[i]*pulse).fillPoints(sheets[i].map(p=>({x:p.x+shift.x,y:p.y+shift.y})),true);
-      visible++;
+      for(let i=0;i<sheets.length;i++)ink.fillStyle(colors[i],alpha*opacities[i]*pulse).fillPoints(sheets[i].map(p=>({x:p.x+shift,y:p.y})),true);
+      placed.push(x+shift);visible++;
     }
     ink.setData('visibleSegments',visible).setData('rootSegments',rootVisible);
-    if((visible>0||rootVisible>0)&&!notifiedVisible&&endingAt===undefined){notifiedVisible=true;options.onVisibleOnce?.();}
+    if((visible>0||rootVisible>0||backdropVisible)&&!notifiedVisible&&endingAt===undefined){notifiedVisible=true;options.onVisibleOnce?.();}
   };
   scene.events.on('postupdate',tick);scene.events.once('shutdown',dispose);scene.events.once('destroy',dispose);
   scene.events.once('sleep',dispose);scene.events.once('pause',dispose);root.once('destroy',dispose);ink.once('destroy',inkDestroyed);signal.addEventListener('abort',dispose,{once:true});
