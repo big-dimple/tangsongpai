@@ -2265,10 +2265,11 @@ export class GameScene extends Phaser.Scene {
   private stopScoreFire():void {this.audio.stopScoreFire();}
 
   /** Current visible ink and controls; aura polygons are clipped in world space. */
-  private highMultiplierAuraGuards():Box[] {
+  private highMultiplierAuraGuards(belowScoreText=false):Box[] {
     const boxes:Box[]=[];
+    const scoreText=new Set<Phaser.GameObjects.GameObject>([this.resultText,...this.scoreLabels,this.scoreHeat,this.scoreMult,this.scoreTotal,this.breakdownText]);
     const add=(object:Phaser.GameObjects.GameObject|undefined)=>{const o=object as (Phaser.GameObjects.GameObject&{visible?:boolean;alpha?:number;getBounds?:()=>Phaser.Geom.Rectangle})|undefined;if(!o?.active||o.visible===false||(o.alpha??1)<=.01||!o.getBounds)return;const b=o.getBounds();if(b.width>0&&b.height>0)boxes.push({x:b.x,y:b.y,width:b.width,height:b.height});};
-    const walk=(list:Phaser.GameObjects.GameObject[])=>{for(const object of list){const o=object as Phaser.GameObjects.Container;if(!o.active||!o.visible||o.alpha<=.01||o.name==='score/high-multiplier-aura')continue;if(o.getData('cardFace')){add(o);continue;}if(o.type==='Text')add(o);if(o.list)walk(o.list);}};
+    const walk=(list:Phaser.GameObjects.GameObject[])=>{for(const object of list){const o=object as Phaser.GameObjects.Container;if(!o.active||!o.visible||o.alpha<=.01||o.name.startsWith('score/high-multiplier-aura'))continue;if(o.getData('cardFace')){add(o);continue;}if(o.type==='Text'&&!(belowScoreText&&(scoreText.has(o)||o.name.startsWith('score/formula-'))))add(o);if(o.list)walk(o.list);}};
     walk(this.view.root.list);
     for(const marker of this.jokerViews.values())add(marker.getData('frame') as Phaser.GameObjects.Rectangle|undefined);
     for(const control of [this.heroActionButton,this.passiveHeroSkill?.anchor,this.inventoryButton,this.playButton,this.discardButton,this.rankButton,this.suitButton,this.aiButton,this.roleFrame,this.heroPortrait])add(control);
@@ -2281,7 +2282,7 @@ export class GameScene extends Phaser.Scene {
     presentation.auraPlayed=true;this.highMultiplierAuraDispose?.();
     let fire={stop:()=>{},fadeOut:(_durationMs:number)=>{}};
     this.highMultiplierAuraDispose=mountHighMultiplierAura(this,{root,eventId:event.eventId,signal:context.signal,reduced:()=>this.reducedMotion,
-      getBoard:()=>this.view.layout.scoreBoard,getViewport:()=>({x:0,y:0,...cssViewport(this)}),getGuards:()=>this.highMultiplierAuraGuards(),
+      getBoard:()=>this.view.layout.scoreBoard,getViewport:()=>({x:0,y:0,...cssViewport(this)}),getGuards:()=>this.highMultiplierAuraGuards(),getBackdropGuards:()=>this.highMultiplierAuraGuards(true),
       speed:()=>gameSession().speed,
       ending:()=>presentation.auraEnding,
       onVisibleOnce:()=>{
