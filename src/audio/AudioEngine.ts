@@ -58,6 +58,7 @@ export class AudioEngine {
   private gains?: Record<AudioBus, GainNode>;
   private scoreSamples=new Map<string,AudioBuffer>();
   private readonly highMultiplierFireWaiters=new Set<()=>void>();
+  private pendingHighMultiplierFire?:()=>void;
   private sampleBodies=new Map<string,SampleBody>();
   private scoreSampleTask?:Promise<void>;
   private readonly sampleAttempts = new Map<string, number>();
@@ -298,7 +299,7 @@ export class AudioEngine {
   private retain(voice: Voice): void {
     // Fast-forwarded/long traces cannot create an unbounded wall of simultaneous sound.
     if (this.voices.size >= 32) {
-      const oldest = this.voices.values().next().value;
+      const oldest = [...this.voices].find(existing=>!existing.highMultiplierFire) ?? this.voices.values().next().value;
       if (oldest) this.release(oldest);
     }
     this.voices.add(voice);
@@ -479,7 +480,7 @@ export class AudioEngine {
   private synthScoreFallback(kind:'add'|'key'|'multiply'|'award',pulse:number,timing:ScoreImpactTiming,weight:number):Voice[]{
     if(!this.canPlay('sfx')||timing.signal?.aborted)return [];
     const now=this.context!.currentTime,nominal=.014*bounded(weight,1);
-    const active=[...this.voices].filter(v=>v.bus!=='music'&&(v.endsAt??Infinity)>now);
+    const active=[...this.voices].filter(v=>v.bus!=='music'&&!v.highMultiplierFire&&(v.endsAt??Infinity)>now);
     if(!nominal||active.length>=EFFECT_VOICE_BUDGET||active.filter(v=>v.scoreAccent).length>=SCORE_VOICE_BUDGET||active.filter(v=>v.scoreAccent).reduce((sum,v)=>sum+(v.nominalGain??0),nominal)>SCORE_GAIN_BUDGET)return [];
     let voice:Voice|undefined;
     try{
@@ -512,19 +513,38 @@ export class AudioEngine {
     }
   }
 
-  /** One sustained fire layer, owned by the committed visual and never queued. */
+  /** One sustained fire layer, owned by the currently visible committed visual. */
   playHighMultiplierFire(options:HighMultiplierFireOptions):HighMultiplierFireHandle {
     const noop={stop:()=>{},fadeOut:()=>{}};
     if(options.signal.aborted||options.reducedMotion||options.replay||!this.canPlay('sfx')||this.context!.state!=='running')return noop;
     const context=this.context!,now=context.currentTime;
+    if(this.pendingHighMultiplierFire)return noop;
     for(const voice of this.voices)if(voice.highMultiplierFire){
       if((voice.endsAt??Infinity)>now)return noop;
       this.release(voice);
     }
-    const buffer=this.scoreSamples.get(HIGH_MULTIPLIER_FIRE_SAMPLE.name);if(!buffer)return noop;
-    const speed=options.speed===2||options.speed===4?options.speed:1,peak=.06;
-    // Include scheduled tails, and leave room for score impacts rather than evict them.
-    if([...this.voices].filter(v=>v.bus!=='music'&&(v.startsAt??0)<now+Math.min(buffer.duration,8)&&(v.endsAt??Infinity)>now).length>=EFFECT_VOICE_BUDGET)return noop;
+    const buffer=this.scoreSamples.get(HIGH_MULTIPLIER_FIRE_SAMPLE.name);
+    if(!buffer){
+      // If decode crosses the 800ms presentation gate, start only while this
+      // same flame is still active; never play after fade, mute or cancellation.
+      let cancelled=false,started:HighMultiplierFireHandle|undefined;
+      const clear=()=>{this.highMultiplierFireWaiters.delete(ready);options.signal.removeEventListener('abort',cancel);if(this.pendingHighMultiplierFire===cancel)this.pendingHighMultiplierFire=undefined;};
+      const cancel=()=>{if(cancelled)return;cancelled=true;clear();started?.stop();};
+      const ready=()=>{
+        if(cancelled||!this.scoreSamples.has(HIGH_MULTIPLIER_FIRE_SAMPLE.name))return;
+        clear();
+        started=this.playHighMultiplierFire(options);
+      };
+      this.pendingHighMultiplierFire=cancel;
+      this.highMultiplierFireWaiters.add(ready);
+      options.signal.addEventListener('abort',cancel,{once:true});
+      void this.loadScoreSamples().then(()=>{if(!started)cancel();},cancel);
+      if(options.signal.aborted)cancel();else ready();
+      return {stop:cancel,fadeOut:(durationMs:number)=>{if(started)started.fadeOut(durationMs);else cancel();}};
+    }
+    const speed=options.speed===2||options.speed===4?options.speed:1,peak=.08;
+    // The single sustained fire owns one extra slot outside the ordinary
+    // effects budget; the 32-voice global retention backstop still applies.
     let voice:Voice|undefined;
     try {
       const source=context.createBufferSource(),gain=context.createGain();
@@ -554,6 +574,7 @@ export class AudioEngine {
   /** Release score accents and the separately owned high-multiplier fire. */
   stopScoreFire(): void {
     this.scoreRebounds=new WeakMap();
+    this.pendingHighMultiplierFire?.();
     for(const voice of this.voices)if(voice.scoreAccent||voice.highMultiplierFire)this.release(voice);
   }
 
@@ -844,7 +865,7 @@ export class AudioEngine {
     }
     // Admission is atomic per available recipe. Texture cannot evict a stronger
     // beat; key/ending recipes may reclaim the lowest-priority/oldest tail.
-    let active=[...this.voices].filter(v=>overlaps(v)&&!reclaimed.includes(v));
+    let active=[...this.voices].filter(v=>overlaps(v)&&!v.highMultiplierFire&&!reclaimed.includes(v));
     const victims=active.filter(v=>(v.priority??1)<recipe.priority)
       .sort((a,b)=>(a.priority??1)-(b.priority??1)||(a.startsAt??0)-(b.startsAt??0));
     while(active.length+layers.length>EFFECT_VOICE_BUDGET&&victims.length){

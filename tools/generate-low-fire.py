@@ -33,6 +33,7 @@ bed = band(36, 105) * drift(.10, .30) + band(90, 230) * drift(.025, .09)
 bed += band(200, 500) * drift(.04, .10)
 # Infrequent softened breath-like puffs. Each is a low-mid filtered body with
 # a long rounded envelope and independent duration, strength and spacing.
+puffs = []
 pos = .8
 while pos < (SECONDS + OVERLAP) - 1.2:
     duration = rng.uniform(.38, 1.05)
@@ -42,7 +43,24 @@ while pos < (SECONDS + OVERLAP) - 1.2:
     puff = .65 * band(48, 150, count) + .35 * band(150, 350, count)
     start = int(pos * RATE)
     bed[start:start+count] += puff * envelope * rng.uniform(.12, .25)
+    puffs.append((start, count))
     pos += rng.uniform(1.05, 2.65)
+
+# A restrained, rounded midrange body is intended to improve presence on
+# speakers that cannot reproduce the fundamental.  It follows the slow puffs
+# rather than adding bright crackles or a continuous high-frequency hiss.
+# A separate seed keeps the original low-frequency bed reproducible.
+presence_rng = np.random.default_rng(0x6612026)
+presence_raw = signal.sosfilt(
+    signal.butter(4, [320, 1000], btype='bandpass', fs=RATE, output='sos'),
+    presence_rng.standard_normal(length),
+)
+presence_raw /= max(np.std(presence_raw), 1e-9)
+presence_envelope = np.full(length, .035)
+for start, count in puffs:
+    t = np.linspace(0, 1, count, endpoint=False)
+    presence_envelope[start:start+count] += .20 * np.sin(np.pi * t) ** 2
+bed += presence_raw * presence_envelope
 # Keep the level bounded and close the seam with a two-second equal-power
 # overlap; normalize after the seam is assembled.
 bed = signal.sosfilt(signal.butter(3, 25, btype='highpass', fs=RATE, output='sos'), bed)
@@ -50,8 +68,14 @@ loop = bed[:SECONDS * RATE].copy()
 n = OVERLAP * RATE
 w = np.sin(np.linspace(0, np.pi / 2, n)) ** 2
 loop[:n] = bed[SECONDS*RATE:(SECONDS+OVERLAP)*RATE] * (1-w) + loop[:n] * w
+# The first soft puff is available promptly even at 4x scoring.  Its smooth
+# envelope is zero at both ends, so it does not disturb the loop seam.
+count = int(.65 * RATE)
+start = int(.12 * RATE)
+t = np.linspace(0, 1, count, endpoint=False)
+loop[start:start+count] += .18 * presence_raw[start:start+count] * np.sin(np.pi*t) ** 2
 loop *= .74 / max(np.max(np.abs(loop)), 1e-9)
-output = Path(__file__).resolve().parents[1] / 'public/assets/audio/high-multiplier/low-fire.mp3'
+output = Path(__file__).resolve().parents[1] / 'public/assets/audio/high-multiplier/low-fire-v2.mp3'
 with tempfile.TemporaryDirectory() as temp:
     wav = Path(temp) / 'low-fire.wav'
     wavfile.write(wav, RATE, np.int16(np.clip(loop, -1, 1) * 32767))

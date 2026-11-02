@@ -155,7 +155,7 @@ tools/          离线素材工具
 - `GamepadInput` 只让方向导航连发，确认、出牌、弃牌、调序等按键每次按下仅执行一次；首次连接、断线重连和后台恢复须回到中立位置。未知映射不猜测键位。`GamepadNavigation` 只调用 `SceneView` 注册的有效操作及顶层原生弹窗控件，不模拟键盘、不绕过现有命令校验。关闭、切场景和换回鼠标／键盘会清理焦点表现；手柄提示显示时为牌桌保留独立底栏。
 - 有独立操作按钮的选择卡片通过 `WholeActionSurface` 将标题、说明与留白接入同一按钮；嵌套控件、禁用按钮及文本选择保持各自行为。点击选择卡片仍由原有确认流程决定是否提交。
 - 音频统一走应用级总线，处理解锁、后台 suspend、音量偏好和实例清理。
-- 高倍率火焰使用项目自制的 `public/assets/audio/high-multiplier/low-fire.mp3`，不是外部录音；离线生成脚本为 `tools/generate-low-fire.py`。解锁后优先预载，计分前最多等待 800ms；加载失败时该次静音，不补播。声音在播放速度变化时不变调，随计分表现淡出并在静音、跳过或销毁时停止。
+- 高倍率火焰使用项目自制的 `public/assets/audio/high-multiplier/low-fire-v2.mp3`，不是外部录音；离线生成脚本为 `tools/generate-low-fire.py`。为小扬声器保留适度中低频火焰质感，并限制混音增益；旧文件保留给已缓存旧脚本的客户端。解锁后优先预载，计分前最多等待 800ms；若解码稍晚，仅在同一火焰仍在显示时开始播放，结束、跳过或静音后不补播。火声最多独占一个额外声部，不占用或抢占其他效果的 16 声部预算。声音在播放速度变化时不变调，随计分表现淡出并在静音、跳过或销毁时停止。
 - 资源使用注册表与 `BASE_URL`；源素材、运行时变体和预览文件分开，首屏只加载必要资源。`BootScene` 先关闭静态首屏并进入标题，旧局 IndexedDB 恢复与 opening 图片恢复由 `prepareDestinationBackground` 后台运行；缺图保留 `ResourceRecovery` 重试，不得阻塞新局入口。
 - 当前素材清单为 `docs/assets/inventory.json`，素材检查工具位于 `tools/blender/`。
 - 原始素材的完整副本保存在私有仓库 `big-dimple/tangsongpai-assets`，正式运行图、音频和模型仍由 `public/assets/` 管理。`docs/assets/source-archive.json` 固定已验证的资产提交和清单摘要，`docs/assets/source-inventory.jsonl` 按原路径记录 542 个文件的字节数及 SHA256。获取对应提交后，设置 `TANGSONGPAI_ASSETS_ROOT` 为资产仓库检出目录并运行 `npm run test:source-archive`，逐文件校验 SHA256 并执行原图检查；需要读取原图的素材重建脚本也使用此变量。公开 CI 只能核对来源清单与运行资源，不能把未读取的原图称为已验证；B05 严格原图解码测试在没有私有素材时跳过。

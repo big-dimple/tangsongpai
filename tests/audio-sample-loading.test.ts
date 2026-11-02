@@ -52,7 +52,7 @@ it('prioritizes the local fire and lets scoring start as soon as it decodes', as
   await vi.advanceTimersByTimeAsync(200000);await inside.scoreSampleTask;
 });
 
-it.each(['abort','timeout'] as const)('bounds a missing fire load on %s and never starts a late voice', async boundary => {
+it.each(['abort','timeout'] as const)('bounds preparation of a missing fire on %s without starting a voice', async boundary => {
   const {engine,inside,sources}=fixture();inside.unlocked=true;vi.stubGlobal('fetch',vi.fn(never));
   const controller=new AbortController(),ready=engine.prepareHighMultiplierFire(controller.signal);
   if(boundary==='abort')controller.abort();else await vi.advanceTimersByTimeAsync(801);
