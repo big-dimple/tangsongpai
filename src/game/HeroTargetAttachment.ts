@@ -58,6 +58,7 @@ export class HeroTargetAttachment {
  private cadence=0;
  private pulseAfter=0;
  private sourceElapsed=0;
+ private sourceVisibleFrames=0;
  private lastFrameTime?:number;
  private sourceDecision:SourceElectricDecision={};
  private staticKey='';
@@ -109,7 +110,8 @@ export class HeroTargetAttachment {
   const style=heroAtmosphereStyle({key:eventId,targetId:id,releaseReason:'laohuan.refill'}),layout=this.layout(root,new Set([card.container]));this.refillPhases.bind({owner:'retained-impact',activationId:eventId,eventId,reasonKey:'laohuan.refill',targetIds:[id],sourceTargetIds:[],motion:'full',context});this.refillPhases.publish('impact');if(this.destroyed||context.signal.aborted||!this.refillPhases.isCurrent(eventId))return;const done=()=>{this.refillPhases.publish('settled');this.refillPhases.end();};if(!this.refillSmoke.playImpact(eventId,{id,...card},style,root,layout.masks,context,done,()=>this.layout(root,new Set([card.container])).masks)){done();return;}
   const cancel=()=>{this.refillSmoke.clear();this.refillPhases.end('aborted');};context.signal.addEventListener('abort',cancel,{once:true});this.burstAbort=()=>{context.signal.removeEventListener('abort',cancel);cancel();};
  }
- private activateSource(key:string):void {this.pulseAfter=this.sourceKeys.has(key)||this.options.motion()!=='full'?Infinity:0;this.sourceElapsed=0;this.sourceDecision={};this.sourceKeys.add(key);}
+ private activateSource(key:string):void {this.pulseAfter=this.sourceKeys.has(key)||this.options.motion()!=='full'?Infinity:0;this.sourceElapsed=0;this.sourceVisibleFrames=0;this.sourceDecision={};this.sourceKeys.add(key);}
+ private needsSourceFrames():boolean {return this.sourceVisibleFrames>0&&this.sourceVisibleFrames<4&&this.sourceElapsed<HERO_SCORE_SOURCE_MS*2;}
  consume(targetId:string,eventId:string,context:EffectContext,confirmedTargets:readonly string[]=[]):void {if(this.destroyed)return;const previous=this.state.value?.eventId;if(this.state.consume(targetId,eventId,context)){this.phaseContext=context;if(!previous){this.confirmedGlowTargets=[...confirmedTargets];this.glowImpacts.clear();this.sourceImpactEventId=undefined;this.activateSource(this.state.value!.key);}}this.update(0);}
  commit(eventId:string,context:EffectContext,confirmedTargets:readonly string[]=[]):void {const id=this.state.value?.targetId;if(id)this.consume(id,eventId,context,confirmedTargets);}
  retainTargets(ids:readonly string[]):void {this.state.retainTargets(ids);this.update(0);}
@@ -128,7 +130,7 @@ export class HeroTargetAttachment {
  private settleLanding():void {
   const context=this.pendingLanding,state=this.state.value;if(!context)return;
   if(context.signal.aborted||this.phaseContext?.signal!==context.signal||!state?.eventId||this.options.motion()!=='full'){this.pendingLanding=undefined;return;}
-  if(!state.suppressSource&&this.particles.available&&Number.isFinite(this.pulseAfter)&&this.sourceElapsed<HERO_SCORE_SOURCE_MS)return;
+  if(!state.suppressSource&&this.particles.available&&Number.isFinite(this.pulseAfter)&&(this.sourceElapsed<HERO_SCORE_SOURCE_MS||this.needsSourceFrames()))return;
   this.pendingLanding=undefined;this.flight?.destroy();this.flight=undefined;this.flightCurrent?.destroy();this.flightCurrent=undefined;
   // Re-arm the same saved beneficiaries at landing so the visible hold is
   // measured after the cards spread out, even after a slow flight.
@@ -208,7 +210,7 @@ export class HeroTargetAttachment {
    // frame rates retain one visible arrival frame instead of losing it to a
    // single long delta, while avoiding a multi-second lag behind landing.
    this.sourceElapsed+=Math.min(before.eventId?HERO_SCORE_SOURCE_MS*.9:50*rate,elapsed);
-  }this.state.advance(delta);this.settleLanding();if(before?.phase==='release'&&!this.state.value){this.phases.publish('settled');this.phases.end();}const viewport=cssViewport(this.scene),hz=viewport.width<600?HERO_ATMOSPHERE_BUDGET.portraitHz:HERO_ATMOSPHERE_BUDGET.desktopHz;this.cadence+=delta;if(!force&&this.cadence<1000/hz)return;this.cadence%=1000/hz;
+  }this.state.advance(delta);this.settleLanding();if(before?.phase==='release'&&!this.state.value){this.phases.publish('settled');this.phases.end();}const viewport=cssViewport(this.scene),hz=viewport.width<600?HERO_ATMOSPHERE_BUDGET.portraitHz:HERO_ATMOSPHERE_BUDGET.desktopHz;this.cadence+=wallDelta;if(!force&&this.cadence<1000/hz)return;this.cadence%=1000/hz;
   const state=this.state.value,root=this.options.root();if(!state||!root?.active){this.phases.end('expired');this.disposeVisuals();return;}
   const ids=state.targetIds??[state.targetId],limit=state.kind==='candidate'&&state.releaseReason==='laohuan.refill'?HERO_NATIVE_PARTICLE_BUDGET.targets:HERO_ATMOSPHERE_BUDGET.targets,members=ids.map(id=>({id,card:this.options.target(id)})).filter((t):t is {id:string;card:AttachmentCard}=>!!t.card?.container.active&&t.card.container.visible).filter(t=>{const b=t.card.container.getBounds();return b.right>0&&b.bottom>0&&b.x<viewport.width&&b.y<viewport.height;}).slice(0,limit);
   if(!members.length){this.hide();return;}
@@ -241,12 +243,14 @@ export class HeroTargetAttachment {
   const scoreTime=this.sourceElapsed/HERO_SCORE_SOURCE_MS;
   // Reach the moving card early, then let the transmitted current recede
   // gradually instead of shortening the entire source to one flash.
-  const scoreProgress=scoreTime<.34?scoreTime*.78/.34:.78+(scoreTime-.34)*.22/.66;
+  // At unusually low FPS, keep a dim release visible for at most another
+  // source window so the transmission is not reduced to one rendered frame.
+  const scoreProgress=scoreTime>=1&&this.needsSourceFrames()? .94 :scoreTime<.34?scoreTime*.78/.34:.78+(scoreTime-.34)*.22/.66;
   const progress=Number.isFinite(this.pulseAfter)?state.eventId?scoreProgress:this.sourceElapsed/HERO_SOURCE_CURRENT_MS:-1;
   if(full&&this.state.accepted&&!state.suppressSource&&!releasing&&!state.failed&&source&&progress>=0&&progress<1){
    this.phases.publish('source');
    if(this.destroyed||this.state.value!==state||this.phaseContext?.signal.aborted)return;
-   if(!this.flight?.active){this.flight=this.scene.add.graphics().setName('hero/target-travel');root.add(this.flight);}if(!this.flightCurrent?.active){this.flightCurrent=this.scene.add.graphics().setName('hero/target-current');root.add(this.flightCurrent);}const protectedBoxes=layout.protectedBoxes,scoreWorld=this.options.sourceExclusions?.()[0],fallbackBoard=scoreWorld?this.localBounds(root,scoreWorld):undefined,stats=drawHeroOriginStream(this.flight,source.point,sourceBoxes,style,progress,protectedBoxes,1-release,this.flightCurrent,fallbackBoard,this.sourceDecision,this.localBounds(root,{x:0,y:0,width:viewport.width,height:viewport.height}));this.flight.setData('stats',stats).setData('progress',progress).setData('sourceKind',source.kind).setData('source',source.point).setData('targetIds',sourceMembers.map(t=>t.id));this.flightCurrent.setData('stats',stats).setData('progress',progress).setData('protectedBoxes',protectedBoxes).setData('eventId',state.eventId).setData('fallbackBoard',fallbackBoard);
+   if(!this.flight?.active){this.flight=this.scene.add.graphics().setName('hero/target-travel');root.add(this.flight);}if(!this.flightCurrent?.active){this.flightCurrent=this.scene.add.graphics().setName('hero/target-current');root.add(this.flightCurrent);}const protectedBoxes=layout.protectedBoxes,scoreWorld=this.options.sourceExclusions?.()[0],fallbackBoard=scoreWorld?this.localBounds(root,scoreWorld):undefined,stats=drawHeroOriginStream(this.flight,source.point,sourceBoxes,style,progress,protectedBoxes,1-release,this.flightCurrent,fallbackBoard,this.sourceDecision,this.localBounds(root,{x:0,y:0,width:viewport.width,height:viewport.height}));this.flight.setData('stats',stats).setData('progress',progress).setData('sourceKind',source.kind).setData('source',source.point).setData('targetIds',sourceMembers.map(t=>t.id));this.flightCurrent.setData('stats',stats).setData('progress',progress).setData('protectedBoxes',protectedBoxes).setData('eventId',state.eventId).setData('fallbackBoard',fallbackBoard);if(!force&&state.eventId&&stats.electricSegments>0)this.sourceVisibleFrames++;
    // Only the saved beneficiaries react, once the visible source has reached
    // the moving card. The ink is a child of that exact card and follows it.
    if(state.eventId&&this.phaseContext&&!this.phaseContext.signal.aborted&&this.sourceImpactEventId!==state.eventId&&(stats.front??0)>=.98&&stats.electricSegments>0){this.sourceImpactEventId=state.eventId;this.startAfterglow(this.phaseContext,this.confirmedGlowTargets);}

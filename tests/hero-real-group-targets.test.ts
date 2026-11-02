@@ -123,6 +123,8 @@ it('advances the saved source with moving cards after a slow frame and still sho
   layer.preview({key:'slow-frame',targetId:'slow',targetIds:['slow'],kind:'group',releaseReason:'azao.multiply-multiplier'});layer.commit('event',context,['slow']);
   f.step(50,20);f.step(300,20);const current=descendants(f.root.list).find(o=>o.name==='hero/target-current')!;expect(current.getData('progress')).toBeGreaterThan(.7);
   f.step(550,20);expect(descendants(f.root.list).some(o=>o.name==='hero/target-afterglow')).toBe(true);
+  f.step(800,20);expect(descendants(f.root.list).some(o=>o.name==='hero/target-current')).toBe(true);expect(layer.sourceRemaining()).toBe(0);
+  f.step(1050,20);expect(descendants(f.root.list).some(o=>o.name==='hero/target-current')).toBe(true);f.step(1300,20);expect(descendants(f.root.list).some(o=>o.name==='hero/target-current')).toBe(false);
   abort.abort();expect(descendants(f.root.list).some(o=>o.name==='hero/target-afterglow')).toBe(false);
  }finally{layer.destroy();f.root.destroy();}
 });
