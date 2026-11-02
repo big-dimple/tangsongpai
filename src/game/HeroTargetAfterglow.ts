@@ -19,7 +19,7 @@ export interface AfterglowRequest {
  /** A later impact may refresh its own card without extinguishing its peers. */
  retainOthers?:boolean;
 }
-interface Glow {request:AfterglowRequest;card:AfterglowCard;body:Phaser.GameObjects.Container;ink:Phaser.GameObjects.Graphics;elapsed:number;cancel:()=>void}
+interface Glow {request:AfterglowRequest;card:AfterglowCard;body:Phaser.GameObjects.Container;ink:Phaser.GameObjects.Graphics;elapsed:number;lastTime?:number;cancel:()=>void}
 
 function visibleThrough(node:Phaser.GameObjects.Container,root:Phaser.GameObjects.Container):boolean {
  for(let n:Phaser.GameObjects.Container|null=node;n;n=n.parentContainer){if(!n.active||!n.visible||n.alpha<=0)return false;if(n===root)return true;}return false;
@@ -34,7 +34,8 @@ export class HeroTargetAfterglow {
  private readonly glows=new Map<string,Glow>();
  private destroyed=false;
  private drawElapsed=0;
- private readonly tick=(_time:number,delta:number)=>this.update(delta);
+ private lastFrameTime?:number;
+ private readonly tick=(time:number,delta:number)=>{const dt=this.lastFrameTime===undefined?delta:Math.max(0,time-this.lastFrameTime);this.lastFrameTime=time;this.update(time,dt);};
  private readonly hide=()=>this.clear();
  private readonly visibility=()=>{if(document.hidden)this.clear();};
  constructor(private readonly scene:Phaser.Scene,private readonly motion:()=>AttachmentMotion){
@@ -51,7 +52,7 @@ export class HeroTargetAfterglow {
    const body=cardVisualRoot(card);
    if(!Number.isFinite(card.width+card.height)||card.width<=0||card.height<=0||request.isCurrent?.(card)===false||!visibleThrough(body,root)||!visibleThrough(card.container,root))continue;
    const ink=this.scene.add.graphics().setName('hero/target-afterglow').setData('targetCardId',card.id);body.add(ink);
-   const cancel=()=>this.remove(card.id),glow:Glow={request,card,body,ink,elapsed:0,cancel};this.glows.set(card.id,glow);
+   const now=this.scene.game.loop?.now,cancel=()=>this.remove(card.id),glow:Glow={request,card,body,ink,elapsed:0,lastTime:Number.isFinite(now)?now:undefined,cancel};this.glows.set(card.id,glow);
    signal.addEventListener('abort',cancel,{once:true});body.once('destroy',cancel);if(body!==card.container)card.container.once('destroy',cancel);
   }
   if(this.glows.size)this.drawAll();
@@ -134,11 +135,14 @@ export class HeroTargetAfterglow {
   }
   glow.ink.setData('electricSegments',segments).setData('electricHeads',heads).setData('impactOutlineSegments',sideSegments.reduce((n,v)=>n+v,0)).setData('perimeterSides',sideSegments);
  }
- private update(delta:number):void {
+ private update(time:number,delta:number):void {
   const dt=Math.max(0,Number.isFinite(delta)?delta:0);this.drawElapsed+=dt;
   for(const [id,glow] of this.glows){const {root,signal,isCurrent}=glow.request,card=glow.card;
    if(signal.aborted||document.hidden||this.motion()!=='full'||isCurrent?.(card)===false||!glow.ink.active||cardVisualRoot(card)!==glow.body||!visibleThrough(glow.body,root)||!visibleThrough(card.container,root)){this.remove(id);continue;}
-   glow.elapsed+=dt;if(glow.elapsed>=HERO_TARGET_AFTERGLOW_MS)this.remove(id);
+   // The renderer can smooth its delta severely at low FPS. Wall-frame time
+   // keeps the promised hold and fade bounded instead of lingering for seconds.
+   const elapsed=glow.lastTime===undefined?dt:Math.max(0,time-glow.lastTime);glow.lastTime=time;
+   glow.elapsed+=Number.isFinite(elapsed)?elapsed:0;if(glow.elapsed>=HERO_TARGET_AFTERGLOW_MS)this.remove(id);
   }
   if(this.drawElapsed<1000/30||!this.glows.size)return;
   this.drawElapsed%=1000/30;

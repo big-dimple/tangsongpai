@@ -15,7 +15,7 @@ it('follows exact transformed targets, fades within its bounded lifetime and rep
   glow.play({cards,root:f.root,masks:()=>[bounds(a),bounds(b)],signal:signal.signal});const ink=effects(body)[0];expect(ink).toBeTruthy();expect(effects(b)).toHaveLength(1);expect(ink.input).toBeFalsy();expect(ink.commandBuffer.length).toBeGreaterThan(0);
   const moveIndex=ink.commandBuffer.indexOf(5),initialMove=ink.commandBuffer.slice(moveIndex,moveIndex+3);const before=ink.getWorldTransformMatrix().transformPoint(0,0);a.setPosition(300,220);body.setAngle(25).setScale(1.2);f.step(100,100);const after=ink.getWorldTransformMatrix().transformPoint(0,0);expect(after).not.toEqual(before);expect(ink.commandBuffer.length).toBeGreaterThan(0);const nextMove=ink.commandBuffer.indexOf(5);expect(ink.commandBuffer.slice(nextMove,nextMove+3)).not.toEqual(initialMove);
   glow.play({cards:[cards[1]],root:f.root,masks:()=>[],signal:signal.signal});expect(effects(body)).toHaveLength(0);expect(effects(b)).toHaveLength(1);
-  f.step(HERO_TARGET_AFTERGLOW_MS-1,HERO_TARGET_AFTERGLOW_MS-1);expect(effects(b)).toHaveLength(1);f.step(HERO_TARGET_AFTERGLOW_MS,1);expect(effects(b)).toHaveLength(0);
+  f.step(100+HERO_TARGET_AFTERGLOW_MS-1,HERO_TARGET_AFTERGLOW_MS-1);expect(effects(b)).toHaveLength(1);f.step(100+HERO_TARGET_AFTERGLOW_MS,1);expect(effects(b)).toHaveLength(0);
  }finally{glow.destroy();f.root.destroy();}
 });
 
@@ -148,5 +148,13 @@ it('keeps the irregular perimeter outside its face and clips it against a neighb
   glow.play({cards:[card],root:f.root,masks:()=>masks,signal:controller.signal});const ink=effects(a)[0],paths=bluePaths(ink);expect(ink.getData('perimeterSides').every((n:number)=>n>0)).toBe(true);expect(paths.flat().every(p=>p.x<=-37.75||p.x>=37.75||p.y<=-52.75||p.y>=52.75)).toBe(true);
   // This foreground face cuts the right side, while the other sides remain.
   masks=[{x:a.x+30,y:a.y-70,width:30,height:140,ownerId:'neighbor',inkKind:'face'}];f.step(200,200);const clipped=bluePaths(ink);expect(clipped.length).toBeGreaterThan(0);expect(clipped.every(path=>path.every(p=>p.x<27.25||p.x>62.75))).toBe(true);expect(ink.getData('perimeterSides')[1]).toBe(0);
+ }finally{glow.destroy();f.root.destroy();}
+});
+
+it('expires on wall-frame time even when the renderer smooths long frame deltas',()=>{
+ const f=nativeHeroRuntime(),card=f.card('slow',{x:100,y:100,width:70,height:100}),controller=new AbortController(),glow=new HeroTargetAfterglow(f.scene,()=> 'full');
+ try{
+  glow.play({cards:[{id:'slow',container:card,width:70,height:100}],root:f.root,masks:()=>[],signal:controller.signal});f.step(100,16);f.step(1100,16);expect(effects(card)).toHaveLength(1);
+  f.step(2100,16);expect(effects(card)).toHaveLength(0);
  }finally{glow.destroy();f.root.destroy();}
 });

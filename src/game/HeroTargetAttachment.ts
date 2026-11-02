@@ -130,7 +130,9 @@ export class HeroTargetAttachment {
   if(context.signal.aborted||this.phaseContext?.signal!==context.signal||!state?.eventId||this.options.motion()!=='full'){this.pendingLanding=undefined;return;}
   if(!state.suppressSource&&this.particles.available&&Number.isFinite(this.pulseAfter)&&this.sourceElapsed<HERO_SCORE_SOURCE_MS)return;
   this.pendingLanding=undefined;this.flight?.destroy();this.flight=undefined;this.flightCurrent?.destroy();this.flightCurrent=undefined;
-  if(this.sourceImpactEventId!==state.eventId){this.sourceImpactEventId=state.eventId;this.startAfterglow(context,this.confirmedGlowTargets);}
+  // Re-arm the same saved beneficiaries at landing so the visible hold is
+  // measured after the cards spread out, even after a slow flight.
+  this.sourceImpactEventId=state.eventId;this.startAfterglow(context,this.confirmedGlowTargets);
  }
  /** Remaining animation-clock time; callers do not repeat a full source wait after the cards move. */
  sourceRemaining():number {return this.state.value?.eventId&&Number.isFinite(this.pulseAfter)?Math.max(0,HERO_SCORE_SOURCE_MS-this.sourceElapsed):0;}

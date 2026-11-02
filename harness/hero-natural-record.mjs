@@ -87,10 +87,12 @@ try {
    const firstGlow=visual.glowFrames.find(x=>x.ids.length>=expectedTargets),arrival=visual.arrival,sourceStart=visual.sourceFrames[0];
    assert.ok(firstGlow&&arrival!==undefined&&sourceStart&&(speed!==1||firstGlow.at<arrival)&&visual.sourceFrames.some(x=>x.at<=firstGlow.at&&x.front>=.98),'the source reaches the real moving beneficiaries before they light');
    assert.ok(visual.glowFrames.some(x=>x.arrived&&x.ids.length>=expectedTargets&&x.sides.every(s=>s.counts?.every(n=>n>0))),'every beneficiary has four visible perimeter sides after landing');
+   assert.ok(visual.shots['landed-glow-after-900ms'],'the full target group remains visible at least 900ms after landing');
    assert.ok(visual.glowFrames.every(x=>x.ids.every(id=>row.targetIds.includes(id))),'unrelated cards never receive a discharge');
    assert.ok(visual.stageFrames.length,'the saved hero event reaches its actual skill stage');
    assert.ok(visual.stageFrames.every(x=>!x.obscuredCards.length&&!x.obscuredScore),'skill stage must not cover any live card or score in any frame');
    assert.equal(visual.unexpectedAuraFrames,0,'this low-multiplier hand must not receive a high-multiplier aura');
+   if(process.env.HERO_NATURAL_VISUAL_ONLY==='1'){assert.deepEqual(row.errors,[]);row.status='PASS';continue;}
    await tapUI(page,'intermission','action/continue-stage',phone);await waitScene(page,'shop');await enterStage(page,phone);mark('second_stage');
    const stale=await page.evaluate(()=>{const s=window.__harness.game.scene.getScene('game'),walk=list=>list.flatMap(o=>[o,...(o.list?walk(o.list):[])]);return walk(s.view.root?.list??[]).filter(o=>o.active&&['hero/target-current','hero/target-afterglow'].includes(o.name)).map(o=>o.name);});
    assert.deepEqual(stale,[],'re-entering a later stage must not revive an old current');row.reentryClean=true;
