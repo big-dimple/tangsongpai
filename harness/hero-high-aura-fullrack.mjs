@@ -45,23 +45,41 @@ assert.ok(oracle.state.lastTrace.events.some(e=>e.reasonKey==='erxiang.handoff'&
 const all=[{name:'pc',width:1366,height:768,phone:false},{name:'phone500',width:500,height:757,phone:true},{name:'phone390',width:390,height:844,phone:true},{name:'phone320',width:320,height:568,phone:true}];
 const names=(process.env.FULLRACK_VIEWPORTS??'pc,phone390,phone320').split(',');
 const modes=(process.env.FULLRACK_MODES??'normal').split(',');
+const music=Number(process.env.FULLRACK_MUSIC??0);
 const browser=await chromium.launch({executablePath:process.env.SMOKE_CHROMIUM_EXECUTABLE_PATH??'/usr/bin/chromium',args:['--disable-gpu','--disable-software-rasterizer']});
 const report={scope:'Validated controlled five-joker inventory and public hand; actual GameScene, native skill/play input, saved score events and post-mix browser audio. Chromium software emulation; not natural acquisition, live site, physical hardware, human listening or aesthetic acceptance.',legacyCommit:legacyCommit??null,cases:[]};
 try {
  for(const spec of all.filter(x=>names.includes(x.name)))for(const mode of modes){
   const row={...spec,mode,errors:[],assetResponses:[]};report.cases.push(row);
   const context=await browser.newContext({viewport:{width:spec.width,height:spec.height},deviceScaleFactor:1,hasTouch:spec.phone,reducedMotion:mode==='reduced'?'reduce':'no-preference'}),page=await context.newPage();
-  page.setDefaultTimeout(30000);page.on('pageerror',error=>row.errors.push(String(error)));page.on('response',response=>{if(response.url().endsWith('/assets/audio/high-multiplier/low-fire.mp3'))row.assetResponses.push(response.status());});
+  let releaseNetwork;
+  if(mode==='slowNet'||mode==='lateNet'){
+   const gate=new Promise(resolve=>{releaseNetwork=resolve;});
+   await page.route('**/assets/audio/high-multiplier/low-fire-v2.mp3',async route=>{await gate;await route.continue().catch(()=>{});});
+  }
+  if(mode==='failNet')await page.route('**/assets/audio/high-multiplier/low-fire-v2.mp3',route=>route.abort('failed'));
+  page.setDefaultTimeout(30000);page.on('pageerror',error=>row.errors.push(String(error)));page.on('response',response=>{if(response.url().endsWith('/assets/audio/high-multiplier/low-fire-v2.mp3'))row.assetResponses.push(response.status());});
   try {
-   await page.addInitScript(mode=>{
+   await page.addInitScript(({mode,music})=>{
     const speed=mode==='speed2'?2:mode==='speed4'?4:1;
     localStorage.setItem('tangsongpai-presentation-v1',JSON.stringify({speed,reducedMotion:mode==='reduced'}));
-    localStorage.setItem('tangsongpai-audio-v2',JSON.stringify({version:2,music:0,sfx:mode==='muted'?0:.8}));
+    localStorage.setItem('tangsongpai-audio-v2',JSON.stringify({version:2,music,sfx:mode==='muted'?0:.8}));
     const original=AudioContext.prototype.createWaveShaper;
     AudioContext.prototype.createWaveShaper=function(...args){const node=original.apply(this,args);window.__fullrackCeiling=node;return node;};
-   },mode);
+    // Hold only the fire decoder to exercise the real 800ms gate and its
+    // cancellation without delaying or replacing the other audio resources.
+    if(mode==='slow'||mode==='late'){
+     const decode=AudioContext.prototype.decodeAudioData,pending=[];
+     AudioContext.prototype.decodeAudioData=function(bytes,...args){
+      if(bytes.byteLength!==192620)return decode.call(this,bytes,...args);
+      return new Promise((resolve,reject)=>pending.push(()=>decode.call(this,bytes,...args).then(resolve,reject)));
+     };
+     window.__releaseFireDecode=()=>{for(const start of pending.splice(0))start();};
+    }
+   },{mode,music});
    await page.route('**/__fullrack-bootstrap',route=>route.fulfill({contentType:'text/html',body:'<!doctype html><title>controlled checkpoint</title>'}));
    await page.goto(`http://127.0.0.1:${port}/__fullrack-bootstrap`);
+   if(mode==='warm')assert.equal(await page.evaluate(async()=>{const response=await fetch('/assets/audio/high-multiplier/low-fire-v2.mp3');return response.status;}),200);
    await page.evaluate(async cp=>{const {IndexedDbSave}=await import('/src/platform/IndexedDbSave.ts');await new IndexedDbSave().commit(0,cp,null);},checkpoint);
    await page.goto(`http://127.0.0.1:${port}/?harness=1`);await waitScene(page,'title');await tapUI(page,'title','action/title-continue',spec.phone);await waitScene(page,'game');
    await page.waitForFunction(()=>{const s=window.__harness.game.scene.getScene('game');return s.ready&&!s.playing&&s.cardViews.length&&s.cardViews.every(v=>!v.dealing);});
@@ -76,7 +94,15 @@ try {
     const g=window.__harness.game,s=g.scene.getScene('game'),engine=s.audio,dest=engine.context.createMediaStreamDestination();window.__fullrackCeiling.connect(dest);
     const capture=g.canvas.captureStream(25),stream=new MediaStream([...capture.getVideoTracks(),...dest.stream.getAudioTracks()]),recorder=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp8,opus'}),chunks=[];
     recorder.ondataavailable=e=>chunks.push(e.data);recorder.start();
-    const p=window.__fullrack={recorder,chunks,stream,dest,frames:[],backdrops:[],sources:[],targets:[],shots:{},events:[],fires:[],ignitions:[]};
+    const p=window.__fullrack={recorder,chunks,stream,dest,frames:[],backdrops:[],sources:[],targets:[],shots:{},events:[],fires:[],ignitions:[],meters:[]};
+    const quiet=engine.context.createGain();quiet.gain.value=0;quiet.connect(engine.context.destination);
+    const musicMeter=engine.context.createAnalyser(),fireMeter=engine.context.createAnalyser(),outputMeter=engine.context.createAnalyser();
+    for(const meter of [musicMeter,fireMeter,outputMeter]){meter.fftSize=2048;meter.smoothingTimeConstant=0;meter.connect(quiet);}
+    engine.gains.music.connect(musicMeter);
+    window.__fullrackCeiling.connect(outputMeter);
+    const level=meter=>{const data=new Float32Array(meter.fftSize);meter.getFloatTimeDomainData(data);return Math.sqrt(data.reduce((s,x)=>s+x*x,0)/data.length);};
+    const peak=meter=>{const data=new Float32Array(meter.fftSize);meter.getFloatTimeDomainData(data);return data.reduce((s,x)=>Math.max(s,Math.abs(x)),0);};
+    p.measure=()=>{const voice=[...engine.voices].find(v=>v.highMultiplierFire);if(voice&&p.meterVoice!==voice){voice.gain.connect(fireMeter);p.meterVoice=voice;}p.meters.push({at:performance.now(),fire:level(fireMeter)*engine.gains.sfx.gain.value,music:level(musicMeter),outputPeak:peak(outputMeter),voice:!!voice,musicPlaying:!!engine.activeMusic&&!engine.activeMusic.element.paused});};
     const originalTrace=s.presentTrace;s.presentTrace=function(score,...args){p.traceAt=performance.now();p.committedRoot=s.run.lastTrace?.rootId;return originalTrace.call(this,score,...args);};
     const originalIgnition=s.showHighMultiplierAura;s.showHighMultiplierAura=function(event,...args){const before=s.presentation?.auraPlayed,at=performance.now(),result=originalIgnition.call(this,event,...args);if(!before&&s.presentation?.auraPlayed)p.ignitions.push({at,eventId:event.eventId,committedRoot:s.run.lastTrace?.rootId});return result;};
     const originalAward=s.award;s.award=async function(...args){p.awardAt=performance.now();try{return await originalAward.apply(this,args);}finally{p.awardEnd=performance.now();}};
@@ -84,7 +110,7 @@ try {
     const originalEvent=s.showScoreEvent;s.showScoreEvent=function(event,...args){p.events.push({at:performance.now(),eventId:event.eventId});return originalEvent.call(this,event,...args);};
     const originalFire=engine.playHighMultiplierFire;engine.playHighMultiplierFire=function(options){const result=originalFire.call(this,options),voice=[...this.voices].find(v=>v.highMultiplierFire),asset=this.scoreSamples.get('high-multiplier-low-fire');p.fires.push({at:performance.now(),active:!!voice,usesLocalAsset:!!voice&&!!asset&&voice.source.buffer===asset,duration:asset?.duration,rate:voice?.source.playbackRate.value});return result;};
     const walk=list=>list.flatMap(o=>[o,...(o.list?walk(o.list):[])]);
-    p.tick=()=>{if(!s.scene.isActive())return;const objects=walk(s.view.root?.list??[]),current=objects.find(o=>o.name==='hero/target-current'&&o.active&&o.visible&&(o.getData('stats')?.electricSegments??0)>0);if(current){const stats=current.getData('stats');const progress=current.getData('progress');if(!p.guards)p.guards=current.getData('protectedBoxes');p.sources.push({at:performance.now(),eventId:current.getData('eventId'),progress,front:stats.front,head:stats.electricHeads?.[0],route:stats.route,coreRadius:stats.coreRadius,sparks:stats.sparks,release:stats.release,burstSegments:stats.sourceBurstSegments??0,fallbackSegments:stats.scoreFallbackSegments??0});if(!p.shots.current)p.shots.current=g.canvas.toDataURL('image/png').split('base64,')[1];for(const [label,threshold] of [['ignite',.08],['advance',.35],['approach',.63],['arrival',.83]])if(progress>=threshold&&!p.shots[label])p.shots[label]=g.canvas.toDataURL('image/png').split('base64,')[1];if(stats.scoreFallbackSegments>0&&!p.shots.fallback)p.shots.fallback=g.canvas.toDataURL('image/png').split('base64,')[1];}for(const glow of objects.filter(o=>o.name==='hero/target-afterglow'&&o.active&&o.visible&&(o.getData('impactOutlineSegments')??0)>0)){p.targets.push({at:performance.now(),id:glow.getData('targetCardId'),segments:glow.getData('impactOutlineSegments')});if(!p.shots.target)p.shots.target=g.canvas.toDataURL('image/png').split('base64,')[1];}const a=objects.find(o=>o.name==='score/high-multiplier-aura'&&o.active&&o.visible);if(!a)return;const count=a.getData('visibleSegments')??0;p.frames.push({at:performance.now(),elapsed:a.getData('elapsed'),segments:count,rootSegments:a.getData('rootSegments')??0,eventId:a.getData('eventId'),eventCount:p.events.length,fireVoices:[...engine.voices].filter(v=>v.highMultiplierFire).length});if(count>0&&!p.shots.first)p.shots.first=g.canvas.toDataURL('image/png').split('base64,')[1];if(count>0&&a.getData('elapsed')>=600&&!p.shots.peak)p.shots.peak=g.canvas.toDataURL('image/png').split('base64,')[1];if(count>0&&p.events.length>=2&&!p.shots.scoring)p.shots.scoring=g.canvas.toDataURL('image/png').split('base64,')[1];};g.events.on('postrender',p.tick);
+    p.tick=()=>{if(!s.scene.isActive())return;p.measure();const objects=walk(s.view.root?.list??[]),current=objects.find(o=>o.name==='hero/target-current'&&o.active&&o.visible&&(o.getData('stats')?.electricSegments??0)>0);if(current){const stats=current.getData('stats');const progress=current.getData('progress');if(!p.guards)p.guards=current.getData('protectedBoxes');p.sources.push({at:performance.now(),eventId:current.getData('eventId'),progress,front:stats.front,head:stats.electricHeads?.[0],route:stats.route,coreRadius:stats.coreRadius,sparks:stats.sparks,release:stats.release,burstSegments:stats.sourceBurstSegments??0,fallbackSegments:stats.scoreFallbackSegments??0});if(!p.shots.current)p.shots.current=g.canvas.toDataURL('image/png').split('base64,')[1];for(const [label,threshold] of [['ignite',.08],['advance',.35],['approach',.63],['arrival',.83]])if(progress>=threshold&&!p.shots[label])p.shots[label]=g.canvas.toDataURL('image/png').split('base64,')[1];if(stats.scoreFallbackSegments>0&&!p.shots.fallback)p.shots.fallback=g.canvas.toDataURL('image/png').split('base64,')[1];}for(const glow of objects.filter(o=>o.name==='hero/target-afterglow'&&o.active&&o.visible&&(o.getData('impactOutlineSegments')??0)>0)){p.targets.push({at:performance.now(),id:glow.getData('targetCardId'),segments:glow.getData('impactOutlineSegments')});if(!p.shots.target)p.shots.target=g.canvas.toDataURL('image/png').split('base64,')[1];}const a=objects.find(o=>o.name==='score/high-multiplier-aura'&&o.active&&o.visible);if(!a)return;const count=a.getData('visibleSegments')??0;p.frames.push({at:performance.now(),elapsed:a.getData('elapsed'),segments:count,rootSegments:a.getData('rootSegments')??0,eventId:a.getData('eventId'),eventCount:p.events.length,fireVoices:[...engine.voices].filter(v=>v.highMultiplierFire).length});if(count>0&&!p.shots.first)p.shots.first=g.canvas.toDataURL('image/png').split('base64,')[1];if(count>0&&a.getData('elapsed')>=600&&!p.shots.peak)p.shots.peak=g.canvas.toDataURL('image/png').split('base64,')[1];if(count>0&&p.events.length>=2&&!p.shots.scoring)p.shots.scoring=g.canvas.toDataURL('image/png').split('base64,')[1];};g.events.on('postrender',p.tick);
     p.guardProbe=()=>{if(!p.auraGuards&&s.view.root?.getByName('score/high-multiplier-aura')){p.auraGuards=s.highMultiplierAuraGuards();p.auraBoard={...s.view.layout.scoreBoard};}};g.events.on('postrender',p.guardProbe);
     p.backdropProbe=()=>{const root=s.view.root,back=root?.getByName('score/high-multiplier-aura-backdrop');if(!back?.active)return;const index=root.list.indexOf(back),texts=[s.resultText,...s.scoreLabels,s.scoreHeat,s.scoreMult,s.scoreTotal,...root.list.filter(o=>o.name.startsWith('score/formula-'))].filter(o=>o?.active&&o.visible&&root.list.includes(o));p.backdrops.push({painted:back.commandBuffer.length>0,behindText:texts.every(o=>root.list.indexOf(o)>index)});};g.events.on('postrender',p.backdropProbe);
    });
@@ -95,15 +121,29 @@ try {
    if(mode==='repeat')assert.equal(after.commandSeq,before.commandSeq+1,'repeated play does not commit another hand');
    assert.equal(after.lastTrace.finalScore,oracle.state.lastTrace.finalScore,'presentation must preserve the canonical domain score');
    if(mode==='skip'){await page.waitForFunction(()=>window.__fullrack.frames.some(f=>f.segments>0));await page.evaluate(()=>window.__harness.game.scene.getScene('game').fastForward());}
+   if(['slow','late','slowNet','lateNet'].includes(mode)){
+    await page.waitForFunction(()=>window.__fullrack.fires.length>0);
+    assert.ok(await page.evaluate(()=>window.__fullrack.fires.every(f=>!f.active)),'held decoder must initially produce no fire voice');
+    if(mode==='late'||mode==='lateNet')await page.evaluate(()=>window.__harness.game.scene.getScene('game').fastForward());
+    if(mode==='slow')await page.evaluate(()=>window.__releaseFireDecode());
+    if(mode==='slowNet')releaseNetwork();
+   }
+   if(mode==='muteon'){
+    await page.waitForFunction(()=>window.__fullrack.fires.some(f=>f.active));
+    row.muteClean=await page.evaluate(()=>{const engine=window.__harness.game.scene.getScene('game').audio;engine.muted=true;engine.muted=false;return ![...engine.voices].some(v=>v.highMultiplierFire);});
+    assert.equal(row.muteClean,true);
+   }
    if(mode==='speedchange'){
     await page.waitForFunction(()=>window.__fullrack.frames.some(f=>f.segments>0));
     row.speedChangeClean=await page.evaluate(async()=>{const {gameSession}=await import('/src/game/session.ts');gameSession().preferences(4,false);const s=window.__harness.game.scene.getScene('game');return !s.view.root?.getByName('score/high-multiplier-aura');});
     assert.equal(row.speedChangeClean,true,'changing speed releases the existing visual immediately');
    }
    await page.waitForFunction(()=>{const g=window.__harness.game,s=g.scene.getScene('game');return g.scene.isActive('intermission')||s.ready&&!s.playing&&!s.presentation;});
-   const result=await page.evaluate(async()=>{const g=window.__harness.game,p=window.__fullrack,s=g.scene.getScene('game');g.events.off('postrender',p.tick);g.events.off('postrender',p.guardProbe);g.events.off('postrender',p.backdropProbe);await new Promise(resolve=>{p.recorder.onstop=resolve;p.recorder.stop();});const bytes=[...new Uint8Array(await new Blob(p.chunks,{type:'video/webm'}).arrayBuffer())];for(const t of p.stream.getTracks())t.stop();window.__fullrackCeiling.disconnect(p.dest);return{bytes,frames:p.frames,backdrops:p.backdrops,sources:p.sources,targets:p.targets,guards:p.guards,auraGuards:p.auraGuards,auraBoard:p.auraBoard,events:p.events,fires:p.fires,traceAt:p.traceAt,handAt:p.handAt,awardAt:p.awardAt,awardEnd:p.awardEnd,committedRoot:p.committedRoot,ignitions:p.ignitions,voices:[...s.audio.voices].filter(v=>v.highMultiplierFire).length,shots:p.shots};});
+   if(mode==='late'){await page.evaluate(()=>window.__releaseFireDecode());await page.waitForTimeout(500);}
+   if(mode==='lateNet'){releaseNetwork();await page.waitForTimeout(500);}
+   const result=await page.evaluate(async()=>{const g=window.__harness.game,p=window.__fullrack,s=g.scene.getScene('game');g.events.off('postrender',p.tick);g.events.off('postrender',p.guardProbe);g.events.off('postrender',p.backdropProbe);await new Promise(resolve=>{p.recorder.onstop=resolve;p.recorder.stop();});const bytes=[...new Uint8Array(await new Blob(p.chunks,{type:'video/webm'}).arrayBuffer())];for(const t of p.stream.getTracks())t.stop();window.__fullrackCeiling.disconnect(p.dest);return{bytes,frames:p.frames,backdrops:p.backdrops,sources:p.sources,targets:p.targets,guards:p.guards,auraGuards:p.auraGuards,auraBoard:p.auraBoard,events:p.events,fires:p.fires,meters:p.meters,traceAt:p.traceAt,handAt:p.handAt,awardAt:p.awardAt,awardEnd:p.awardEnd,committedRoot:p.committedRoot,ignitions:p.ignitions,voices:[...s.audio.voices].filter(v=>v.highMultiplierFire).length,shots:p.shots};});
    await writeFile(resolve(out,`${spec.name}-${mode}.webm`),Buffer.from(result.bytes));for(const [k,v]of Object.entries(result.shots))await writeFile(resolve(out,`${spec.name}-${mode}-${k}.png`),Buffer.from(v,'base64'));
-   row.frames=result.frames;row.backdrops=result.backdrops;row.sources=result.sources;row.targets=result.targets;row.guards=result.guards;row.auraGuards=result.auraGuards;row.auraBoard=result.auraBoard;row.events=result.events;row.fires=result.fires;row.traceAt=result.traceAt;row.handAt=result.handAt;row.awardAt=result.awardAt;row.awardEnd=result.awardEnd;row.committedRoot=result.committedRoot;row.ignitions=result.ignitions;row.remainingFireVoices=result.voices;row.score=after.lastTrace.finalScore;row.crossing=crossing.eventId;
+   row.frames=result.frames;row.backdrops=result.backdrops;row.sources=result.sources;row.targets=result.targets;row.guards=result.guards;row.auraGuards=result.auraGuards;row.auraBoard=result.auraBoard;row.events=result.events;row.fires=result.fires;row.meters=result.meters;row.traceAt=result.traceAt;row.handAt=result.handAt;row.awardAt=result.awardAt;row.awardEnd=result.awardEnd;row.committedRoot=result.committedRoot;row.ignitions=result.ignitions;row.remainingFireVoices=result.voices;row.score=after.lastTrace.finalScore;row.crossing=crossing.eventId;
    if(mode==='reduced')assert.equal(result.frames.length,0,'reduced motion has no animated aura');else assert.ok(result.frames.some(f=>f.segments>0),'full rack must not eliminate every flame');
    if(mode==='normal'||mode==='repeat'){
     assert.equal(result.ignitions.length,1,'one committed hand mounts one flame');
@@ -131,9 +171,22 @@ try {
    assert.ok(result.frames.every(f=>f.fireVoices<=1),'the fire audio must not stack');
    assert.equal(result.voices,0,'no fire voice remains after presentation');
    if(mode==='muted')assert.ok(result.fires.every(f=>!f.active),'muted fire does not start an audio voice');
+   if(mode==='late'||mode==='lateNet')assert.ok(result.fires.every(f=>!f.active),'a load finishing after skip cannot start fire');
+   if(mode==='failNet')assert.ok(result.fires.every(f=>!f.active),'a failed request cannot produce fire audio');
+   if(['normal','warm','speed2','speed4','slow','slowNet'].includes(mode)){
+    const fire=result.fires.find(f=>f.active&&f.usesLocalAsset&&f.rate===1);
+    assert.ok(fire,'the local fire voice must start');
+    assert.ok(result.events.length&&fire.at<result.events.at(-1).at,'fire starts while the committed scoring sequence is still running');
+    if(!['slow','slowNet'].includes(mode))assert.ok(fire.at<=result.events[0].at,'a ready fire starts before the first score event');
+    const during=result.frames.filter(f=>f.segments>0&&f.at>=fire.at&&f.at<=result.events.at(-1).at);
+    assert.ok(during.length&&during.every(f=>f.fireVoices===1),'one fire voice remains present throughout the remaining scoring events');
+    assert.ok(result.meters.some(m=>m.voice&&m.fire>0),'the browser audio graph contains a nonzero fire signal');
+    if(music>0)assert.ok(result.meters.some(m=>m.voice&&m.fire>0&&m.musicPlaying&&m.music>0),'fire and real background music both contribute to the graph');
+    assert.ok(result.meters.every(m=>m.outputPeak<.99),'the final browser mix stays below digital clipping');
+   }
    assert.deepEqual(row.errors,[]);row.status='PASS';console.log(`${spec.name}-${mode} PASS score=${row.score} frames=${row.frames.length}`);
   }catch(error){row.status='FAIL';row.error=String(error.stack??error);console.error(row.error);await page.screenshot({path:resolve(out,`${spec.name}-${mode}-failure.png`)}).catch(()=>{});}
-  finally{await context.close();await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2));}
+  finally{releaseNetwork?.();await context.close();await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2));}
  }
 }finally{await browser.close();if(fixtureServer!==server)await fixtureServer.close();await server.close();if(legacyDirectory)await rm(legacyDirectory,{recursive:true,force:true});await writeFile(resolve(out,'report.json'),JSON.stringify(report,null,2));}
 if(report.cases.some(c=>c.status!=='PASS'))process.exitCode=1;

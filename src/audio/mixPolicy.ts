@@ -2,8 +2,9 @@ import type {FoleyKind} from './foley';
 import {MAX_INTEGER_DIGITS,Rational} from '../domain/rational';
 import type {ScoreTrace} from '../domain/scoreR2';
 import {actualMultiplier} from '../domain/openingShow';
-/** Voices overlapping in time, including already scheduled tails. Future deal
- * trains retain their beats; the existing 32-node retention limit is a backstop. */
+/** Effect voices overlapping in time, including already scheduled tails. The
+ * one sustained high-multiplier fire has its own slot. Future deal trains retain
+ * their beats; the existing 32-node retention limit is a backstop. */
 export const EFFECT_VOICE_BUDGET = 16;
 export const ACCENT_TAIL_FLOOR = .38;
 // Numeric arrivals share this cap across all three materials and multiplication.
