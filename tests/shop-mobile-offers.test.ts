@@ -49,7 +49,7 @@ it.each([true,false])('opening a quote preserves the native list/opener only in 
 it('the scene scopes native contact to its live shelf and removes the guard handoff on teardown',()=>{
  const host=Object.assign(new EventTarget(),{style:{},dataset:{},setAttribute:vi.fn(),querySelectorAll:()=>[],append:vi.fn(),getBoundingClientRect:()=>({top:0,bottom:400})}),noteNativeInteraction=vi.fn();
  vi.stubGlobal('document',{createElement:()=>host,getElementById:()=>({getBoundingClientRect:()=>({x:0,y:0,width:390,height:844})}),body:{append:vi.fn()}});
- const scene=Object.assign(Object.create(ShopScene.prototype),{view:{layout:{width:390,height:844},noteNativeInteraction},scene:{isActive:()=>true},run:{},shelfKind:'jokers',busy:false,workshopSelected:false,shelfOffers:()=>[]});
+ const scene=Object.assign(Object.create(ShopScene.prototype),{registry:{get:()=>undefined},view:{layout:{width:390,height:844},noteNativeInteraction},scene:{isActive:()=>true},run:{},shelfKind:'jokers',busy:false,workshopSelected:false,shelfOffers:()=>[]});
  scene.drawMobileOffers({x:12,y:120,width:366,height:400});host.dispatchEvent(new Event('pointerdown'));expect(noteNativeInteraction).toHaveBeenCalledOnce();
  scene.busy=true;host.dispatchEvent(new Event('pointerdown'));expect(noteNativeInteraction).toHaveBeenCalledOnce();scene.busy=false;
  scene.mobileOffers.dispose();host.dispatchEvent(new Event('pointerdown'));expect(noteNativeInteraction).toHaveBeenCalledOnce();

@@ -37,7 +37,8 @@ export interface NoviceGuideHint {
  recommendedCardIds?:string[];
  choices?:{id:string;label:string;cardIds:string[];selected?:boolean}[];
  offerIds?:string[];
- focus?:'play'|'discard'|'hero'|'score'|'goal';
+ focus?:'play'|'discard'|'hero'|'score'|'goal'|'sort-suit';
+ gesture?:'sweep'|'hold-drag';
  fact?:NoviceGuideFact;
 }
 type Preferences={disabled:boolean;enrolled?:string;muted:boolean;skipped:NoviceGuideStep[]};
@@ -244,7 +245,7 @@ function deriveHint(s:R2RunState,journal?:readonly Command[]):NoviceGuideHint {
   ...(facts.event?{eventId:facts.event.eventId,finalScore:facts.payoff!.finalScore,contribution:contribution(facts.payoffEvents!),briefContribution:briefContribution(facts.payoffEvents!)}:{}),
   ...(facts.skill?{skillEventId:facts.skill.events.find(e=>e.reasonKey==='erxiang.handoff')?.eventId,
     skillContribution:fractionText(facts.skill.events.filter(e=>e.reasonKey==='erxiang.handoff').reduce((sum,e)=>{const before=Rational.fromJSON(e.before.M),after=Rational.fromJSON(e.after.M);return sum.add(after.add(new Rational(-before.n,before.d)));},new Rational(0n)).toJSON())}:{})};
- if(facts.skillPractice)return {step:'complete',cue:'练习完成',body:'你已学会出牌、换牌和技能。',fact};
+ if(facts.skillPractice)return {step:'complete',cue:'练习完成',body:'可继续本局。',fact};
  if(s.phase==='run-lost')return {step:'replay',cue:'可以再练一次',body:'本局已结束，练习尚未完成。可以重新练习，或开始普通局。',fact};
  if(facts.skill){
   // The fixed tutorial's next real stage can be B01. Keep its actual discard
@@ -255,7 +256,7 @@ function deriveHint(s:R2RunState,journal?:readonly Command[]):NoviceGuideHint {
  }
  if(facts.event){
   const elsewhere=s.phase!=='await-input'&&s.phase!=='pending-refill';
-  return {step:'skill',cue:`${cardDisplayName(facts.purchase!.definitionId)}：${fact.briefContribution}`,body:elsewhere?'进入下一场，再试刘娥技能。':'选一对，再试刘娥技能。',recommendedCardIds:elsewhere?[]:pairIds(s),fact};
+  return {step:'skill',cue:`${cardDisplayName(facts.purchase!.definitionId)} ${(fact.briefContribution??'').replace(/\s+/g,'')}`,body:elsewhere?'进入下一场，再试刘娥技能。':'选一对，再试刘娥技能。',recommendedCardIds:elsewhere?[]:pairIds(s),fact};
  }
  if((s.phase==='stage-cleared'||s.stageIndex>0)&&(!facts.pair||!facts.discarded||!facts.independent))return {step:'replay',cue:'已达到目标，过关了',body:'可以继续游戏，或重新练习换牌。',fact};
  if(!facts.pair){
@@ -277,8 +278,8 @@ function deriveHint(s:R2RunState,journal?:readonly Command[]):NoviceGuideHint {
  if(!facts.purchase)return {step:'shop',cue:'过关了',body:s.phase==='shop'?`点「${cardDisplayName('b02')}」看效果和价格。`:'去商店看看唐宋牌。',offerIds:offers(s),fact};
  const owned=s.jokers.some(j=>j.instanceId===facts.purchase!.instanceId);
  const when=s.phase==='shop'?'下一场':'这场';
- const payoff=s.phase==='shop'?'进入下一场，试试这张牌。':facts.purchase.definitionId==='b02'?'选两张同点数的牌，打出看看。':'按这张牌的条件选牌并打出。';
- return {step:'payoff',cue:`${when}试出这张牌的效果`,body:owned?payoff:'之前买的牌已不在持牌中。可在商店选另一张，或重新练习。',recommendedCardIds:facts.purchase.definitionId==='b02'?pairIds(s):[],fact};
+ const payoff=s.phase==='shop'?'进入下一场，试试这张牌。':facts.purchase.definitionId==='b02'?'选两张同点牌，出牌看效果。':'按这张牌的条件选牌并打出。';
+ return {step:'payoff',cue:`${when}试试新牌`,body:owned?payoff:'之前买的牌已不在持牌中。可在商店选另一张，或重新练习。',recommendedCardIds:facts.purchase.definitionId==='b02'?pairIds(s):[],fact};
 }
 
 /** The opening lesson recommends one or two of the visibly marked cards. */
@@ -316,7 +317,7 @@ export function liveNoviceGuide(hint:NoviceGuideHint,selectedIds:readonly string
   if(skill.available)return {...hint,cue:'牌点可转为倍率',body:'点刘娥技能，再选一张牌。',recommendedCardIds:[],focus:'hero'};
   if(!recommended.length){
    if(selected.size)return {...hint,body:skill.canDiscard?'点「弃牌」，换牌找对子。':'先出牌补牌，再找对子。',focus:skill.canDiscard?'discard':'play'};
-   return {...hint,body:skill.canDiscard?'手里没对子，先弃牌换一换。':'先出牌补牌，再找对子。'};
+   return {...hint,body:skill.canDiscard?'无对子，先弃牌换牌。':'先出牌补牌，再找对子。'};
   }
  }
  return hint;

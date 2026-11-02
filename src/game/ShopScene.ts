@@ -32,7 +32,9 @@ import {showSavedToolResult} from './SavedToolResult';
 import {transactionGrowthChange} from './SavedGrowthChange';
 import {paperSceneStart} from './PaperFlow';
 import {bindNoviceGuide} from './NoviceGuideBinding';
-import {noviceGuide} from './NoviceGuide';
+import {mountNoviceGestureDemo,type NoviceGestureDemoHandle} from './NoviceGestureDemo';
+import {noviceGuide,type NoviceGuideHint} from './NoviceGuide';
+import {armNoviceOwnedLesson,attemptNoviceOwnedReorder,closeNoviceOwnedLesson,noviceOwnedLesson,noviceOwnedLessonPcAvoid,openNoviceOwnedLesson,presentNoviceOwnedLesson} from './NoviceOwnedLesson';
 import {needsGuidedPractice} from './GuidedTutorial';
 import {noviceGuideCanvasBox} from './NoviceGuideView';
 import {requestTutorialReplay} from './TutorialEntry';
@@ -124,6 +126,7 @@ export class ShopScene extends Phaser.Scene {
   private workshopSelected=false;
   private inlineWorkshop?:{host:HTMLElement;dispose:()=>void};
   private mobileOffers?:{host:HTMLElement;dispose:()=>void};
+  private ownedLessonHost?:{host:HTMLElement;dispose:()=>void};
   /** Native mobile shelves are presentation-only, but their scroll position is part of the user's task context. */
   private mobileOffersKind?:ShelfKind;
   private mobileOfferFocus?:{kind:ShelfKind;id:string;zoom:boolean};
@@ -205,13 +208,19 @@ export class ShopScene extends Phaser.Scene {
     return l.height<500&&width<640?2:3;
   }
   private visibleOffers():R2Offer[]{return this.shelfOffers().slice(this.shelfPage*this.pageSize,(this.shelfPage+1)*this.pageSize);}
-  private geometry(){
+  private geometry(ownedCollapsed=this.ownedCollapsed){
     const l=this.view.layout,style=getComputedStyle(document.documentElement),inset=(side:string)=>parseFloat(style.getPropertyValue('--safe-'+side))||0;
     const cols=this.shelfKind==='jokers'?this.pageSize:Math.max(1,Math.min(2,this.shelfOffers().length));
     const menu=document.querySelector('.run-menu-dock,.run-menu-toggle')?.getBoundingClientRect(),app=document.getElementById('app')!.getBoundingClientRect();
     const menuBox=menu&&menu.width&&menu.height?{x:(menu.x-app.x)*l.width/app.width,y:(menu.y-app.y)*l.height/app.height,width:menu.width*l.width/app.width,height:menu.height*l.height/app.height}:undefined;
     // Decoration never changes the functional shop bounds.
-    return shopLayout(l.width,l.height,l.hud.y,inset('bottom'),cols,this.run.jokers.some(j=>!!this.jokerCopy(j.definitionId)),!!firstChapterShopPrompt(this.run)&&this.ready,inset('left'),inset('right'),this.run.jokers.length,menuBox,this.ownedCollapsed,typeof window!=='undefined'&&!window.matchMedia('(pointer: coarse)').matches);
+    return shopLayout(l.width,l.height,l.hud.y,inset('bottom'),cols,this.run.jokers.some(j=>!!this.jokerCopy(j.definitionId)),!!firstChapterShopPrompt(this.run)&&this.ready,inset('left'),inset('right'),this.run.jokers.length,menuBox,ownedCollapsed,typeof window!=='undefined'&&!window.matchMedia('(pointer: coarse)').matches);
+  }
+  private ownedLessonPresentation(hint:NoviceGuideHint,p=this.geometry()){
+    const owner=runController(this),lesson=owner&&!owner.guidedOpeningSuppressed?noviceOwnedLesson(this.run,owner.journal,hint):undefined;
+    const expanded=lesson&&p.inventoryCollapsed?this.geometry(false):p;
+    return presentNoviceOwnedLesson(hint,lesson,{collapsed:p.inventoryCollapsed,canExpand:!expanded.inventoryCollapsed&&expanded.slots.length===5,count:this.run.jokers.length,
+      finePointer:typeof window!=='undefined'&&window.matchMedia('(pointer: fine)').matches});
   }
   create(data:{targetLockCommandId?:string}={}):void {
     this.hapticLife?.abort();this.hapticLife=new AbortController();
@@ -226,7 +235,7 @@ export class ShopScene extends Phaser.Scene {
     this.busy=false;this.selectedOfferId=undefined;this.shelfKind='jokers';this.shelfPage=0;this.pcPages={jokers:0,tools:0,items:0};this.notice='';this.ownedCollapsed=false;this.deferredDynamicTarget=undefined;this.lifecycle++;
     this.workshopSelected=false;this.refreshDialog=undefined;
     this.mobileOffersKind=undefined;this.mobileOffersScrollTop={jokers:0,tools:0,items:0};
-    this.events.once('shutdown',()=>{this.clearInlineWorkshop();this.clearMobileOffers();});
+    this.events.once('shutdown',()=>{this.clearInlineWorkshop();this.clearMobileOffers();this.clearOwnedLessonHost();});
     this.pendingRerollFlip=false;this.pendingPurchaseFlight=undefined;this.pendingToolCue=undefined;this.pendingTransactions=[];this.lastTransactionNotes=[];this.lastPurchaseReceipt=undefined;this.pendingPayment=undefined;
     this.resultFeedback=new ShopResultFeedback();this.resultKey=undefined;this.resultNote=undefined;this.resultPlate=undefined;
     this.events.once('shutdown',()=>{this.resultFeedback.dispose();this.resultLayer?.destroy(true);this.resultLayer=undefined;this.resultNote=undefined;this.resultPlate=undefined;this.resultKey=undefined;});
@@ -270,6 +279,8 @@ export class ShopScene extends Phaser.Scene {
     this.menuActions={viewDeck:()=>this.inspectDeck(),viewRules:()=>this.inspectChapter()};this.registry.set('runMenuActions',this.menuActions);
     this.cameras.main.setBackgroundColor('#F3EADB');this.view=new SceneView(this,()=>this.render());
     this.ownedCollapsed=this.view.layout.width<700&&this.view.layout.height>this.view.layout.width;
+    const ownedLesson=!owner.guidedOpeningSuppressed&&noviceOwnedLesson(run,owner.journal,noviceGuide(run,owner.journal));
+    if(ownedLesson)this.ownedCollapsed=!ownedLesson.expanded;
     this.view.controllerAction=(action,targetId)=>{
       if(action!=='previous'&&action!=='next')return false;
       if(!this.ready)return true;
@@ -290,12 +301,56 @@ export class ShopScene extends Phaser.Scene {
     this.ownedInput=new OwnedJokerInput(this,{ready:()=>this.ready,inspectable:()=>!this.busy&&this.run?.phase==='shop',cards:()=>{const p=this.geometry();return p.inventoryCollapsed?[]:this.run.jokers.map((j,i)=>({...p.slots[i],id:j.instanceId}));},cancelCanvas:()=>this.view.cancelInteraction(),tap:id=>this.inspectJoker(id),lift:(id,x,y)=>this.liftOwned(id,x,y),move:(x,y)=>this.previewOwned(x,y),drop:(id,x,y)=>this.moveJoker(id,x,y),cancel:()=>this.cancelOwned()});
     this.events.once('shutdown',()=>{this.ownedInput?.destroy();this.ownedInput=undefined;if(this.ownedDrag?.saving)this.input.enabled=true;this.ownedDrag?.destroy();this.ownedDrag=undefined;});
     warmTableImages(this,this.run.characterId);this.render();this.pendingDynamicTarget=undefined;this.prepareBossEntrance(owner,run,this.lifecycle);
+    let ownedGesture:NoviceGestureDemoHandle|undefined,gestureKey='',dismissedGestureKey='';
+    const stopOwnedGesture=()=>{ownedGesture?.destroy();ownedGesture=undefined;gestureKey='';};
+    const updateOwnedGesture=(hint:NoviceGuideHint|undefined)=>{
+      if(hint?.gesture!=='hold-drag'){stopOwnedGesture();dismissedGestureKey='';return;}
+      if(this.run.jokers.length<2){stopOwnedGesture();return;}
+      const p=this.geometry(),ids=this.run.jokers.slice(0,2).map(j=>j.instanceId),key=JSON.stringify([this.run.runId,...ids]);
+      if(p.inventoryCollapsed||p.slots.length<2){stopOwnedGesture();return;}
+      if(ownedGesture&&gestureKey===key)return;
+      stopOwnedGesture();if(dismissedGestureKey===key)return;
+      gestureKey=key;
+      ownedGesture=mountNoviceGestureDemo({mode:'hold-drag',reducedMotion:()=>gameSession().reducedMotion,
+        points:()=>{
+          if(!this.scene.isActive()||!this.ready||this.ownedDrag||this.run.jokers.length<2||
+            this.run.jokers[0].instanceId!==ids[0]||this.run.jokers[1].instanceId!==ids[1])return;
+          const current=this.geometry();if(current.inventoryCollapsed||current.slots.length<2)return;
+          const canvas=this.game.canvas.getBoundingClientRect(),l=this.view.layout;
+          const points:{x:number;y:number}[]=[];
+          for(const slot of current.slots.slice(0,2)){
+            const box=noviceGuideCanvasBox(slot,canvas,l);
+            // In the portrait rail the name sits below the artwork, so keep the
+            // small hand entirely above it. If scaling leaves no room, hide it.
+            let y=box.y+Math.min(box.height-34,Math.max(22,box.height*.35));
+            if(current.portrait){
+              const name=noviceGuideCanvasBox(shopHeldGeometry(slot,true).name,canvas,l);
+              if(name.y-box.y<33)return;
+              y=Math.min(box.y+8,name.y-32);
+            }
+            points.push({x:box.x+box.width/2,y});
+          }
+          return points;
+        },
+        onDismiss:()=>{dismissedGestureKey=key;ownedGesture=undefined;gestureKey='';},
+      });
+    };
+    const disposeOwnedGesture=()=>{stopOwnedGesture();this.events.off('destroy',disposeOwnedGesture);};
+    this.events.once('shutdown',disposeOwnedGesture);this.events.once('destroy',disposeOwnedGesture);
     const unmountNoviceGuide=bindNoviceGuide(this,{
       kind:'shop',
-      getInlineHost:()=>this.geometry().portrait?this.mobileOffers?.host:undefined,
+      // Owned-card cues reserve their own visible space above the scrollable merchandise.
+      getInlineHost:()=>{
+        const owner=runController(this),hint=owner&&noviceGuide(this.run,owner.journal);
+        const lesson=owner&&!owner.guidedOpeningSuppressed&&noviceOwnedLesson(this.run,owner.journal,hint);
+        return this.geometry().portrait?(lesson?this.ownedLessonHost?.host:this.mobileOffers?.host):undefined;
+      },
+      presentHint:hint=>this.ownedLessonPresentation(hint).hint,
+      onPresented:updateOwnedGesture,
       getGeometry:hint=>{
         const l=this.view.layout,p=this.geometry(),canvas=this.game.canvas.getBoundingClientRect();
         const map=(box:import('./layout').Box)=>noviceGuideCanvasBox(box,canvas,l);
+        const focus=this.ownedLessonPresentation(hint,p).focus;
         const highlights=(hint.offerIds??[]).slice(0,1).flatMap(id=>{
           const index=this.visibleOffers().findIndex(offer=>offer.offerId===id);
           const box=p.portrait?this.mobileOfferBox(id):p.pc?this.pcOfferBoxes.get(id):index>=0?p.shelf[index]:undefined;
@@ -305,8 +360,14 @@ export class ShopScene extends Phaser.Scene {
           const x=Math.max(placed.x,host.left),y=Math.max(placed.y,host.top),right=Math.min(placed.x+placed.width,host.right),bottom=Math.min(placed.y+placed.height,host.bottom);
           return right>x&&bottom>y?[{x,y,width:right-x,height:bottom-y}]:[];
         });
-        if(hint.step==='payoff')highlights.push(map(p.play));
-        return {highlights:highlights.slice(0,1),avoid:[p.play,p.tabs].map(map)};
+        if(focus==='play')highlights.push(map(p.play));
+        else if(focus==='toggle'&&'ownedToggle' in p&&p.ownedToggle)highlights.push(map(p.ownedToggle));
+        else if(focus==='slots'&&p.slots.length===5){
+          const first=p.slots[0],last=p.slots[4];highlights.push(map({x:first.x,y:first.y,width:last.x+last.width-first.x,height:first.height}));
+        }
+        const owner=runController(this),lesson=owner&&!owner.guidedOpeningSuppressed&&noviceOwnedLesson(this.run,owner.journal,hint);
+        const protectedOffers=lesson&&!p.portrait?(p.pc?noviceOwnedLessonPcAvoid(p):p.shelf.map(b=>shopOfferCopy(p,b,true).tile)):[];
+        return {highlights:highlights.slice(0,1),avoid:[p.play,p.tabs,...protectedOffers].map(map)};
       },
       visible:()=>!this.busy&&!document.querySelector('dialog[open]'),
       onReplay:()=>requestTutorialReplay(),
@@ -343,6 +404,7 @@ export class ShopScene extends Phaser.Scene {
   private render():void {
     this.clearInlineWorkshop();
     this.clearMobileOffers();
+    this.clearOwnedLessonHost();
     this.clearSynergyHighlights();
     this.dialog.refreshArtLoad();
     requestJokerArt(this,[...this.run.jokers.map(j=>j.definitionId),...this.run.shop!.offers.map(o=>o.definitionId)],()=>this.refreshJokerPictures());
@@ -485,7 +547,13 @@ export class ShopScene extends Phaser.Scene {
     if(p.pc)return;
     const toggle=()=>{
       if(this.busy)return;
+      const wasCollapsed=p.inventoryCollapsed;
       this.ownedCollapsed=!this.ownedCollapsed;
+      const owner=runController(this),next=this.geometry();
+      if(wasCollapsed&&!next.inventoryCollapsed&&next.slots.length===5&&owner&&!owner.guidedOpeningSuppressed)
+        openNoviceOwnedLesson(this.run,owner.journal,noviceGuide(this.run,owner.journal));
+      else if(!wasCollapsed&&next.inventoryCollapsed&&owner&&!owner.guidedOpeningSuppressed)
+        closeNoviceOwnedLesson(this.run,owner.journal,noviceGuide(this.run,owner.journal));
       this.render();
     };
     if(p.portrait&&entry){
@@ -737,6 +805,26 @@ export class ShopScene extends Phaser.Scene {
     if(this.geometry().pc){label.setWordWrapWidth(0);const wrapped=shopSummaryWrap(copy,b.width,text=>{label.setText(text);return label.width;},Math.max(1,Math.floor(b.height/18)));label.setText(wrapped).setData('fullText',copy);}
   }
   private clearInlineWorkshop():void {const old=this.inlineWorkshop;this.inlineWorkshop=undefined;old?.dispose();old?.host.remove();}
+  private clearOwnedLessonHost():void {const old=this.ownedLessonHost;this.ownedLessonHost=undefined;old?.dispose();old?.host.remove();}
+  /** Reserve a measured, non-scrolling guide row; the merchandise scroll offset is retained. */
+  private reserveOwnedLessonSpace(content:HTMLElement):void {
+    const owner=runController(this);
+    if(!owner||owner.guidedOpeningSuppressed)return;
+    const hint=noviceGuide(this.run,owner.journal);
+    if(!hint||!noviceOwnedLesson(this.run,owner.journal,hint)||!this.geometry().portrait)return;
+    const host=document.createElement('div'),top=parseFloat(content.style.top),height=parseFloat(content.style.height);
+    Object.assign(host.style,{position:'fixed',left:content.style.left,top:content.style.top,width:content.style.width,zIndex:'4',pointerEvents:'none'});
+    document.body.append(host);
+    const resize=()=>{
+      if(!host.isConnected||!content.isConnected)return;
+      const h=host.getBoundingClientRect().height,scrollTop=content.scrollTop;
+      content.style.top=top+h+'px';content.style.height=Math.max(0,height-h)+'px';content.scrollTop=scrollTop;
+    };
+    const observer=typeof ResizeObserver==='undefined'?undefined:new ResizeObserver(resize);observer?.observe(host);
+    const mutation=observer||typeof MutationObserver==='undefined'?undefined:new MutationObserver(()=>requestAnimationFrame(resize));
+    mutation?.observe(host,{childList:true,subtree:true,characterData:true});
+    this.ownedLessonHost={host,dispose:()=>{observer?.disconnect();mutation?.disconnect();}};
+  }
   private clearMobileOffers():void {
     const old=this.mobileOffers;this.mobileOffers=undefined;
     const focused=old?.host.contains(document.activeElement)?document.activeElement as HTMLElement:null,article=focused?.closest<HTMLElement>('[data-offer-id]');
@@ -747,6 +835,7 @@ export class ShopScene extends Phaser.Scene {
   private drawMobileOffers(b:Box):void {
     const host=document.createElement('section'),app=document.getElementById('app')!.getBoundingClientRect(),l=this.view.layout,run=this.run,kind=this.shelfKind;
     host.className='shop-mobile-offers';host.dataset.category=kind;host.setAttribute('aria-label',({jokers:'唐宋牌',tools:'消耗工具',items:'长期物品'}[kind])+'商品');Object.assign(host.style,{left:app.x+b.x*app.width/l.width+'px',top:app.y+b.y*app.height/l.height+'px',width:b.width*app.width/l.width+'px',height:b.height*app.height/l.height+'px'});document.body.append(host);
+    this.reserveOwnedLessonSpace(host);
     const active=()=>this.scene.isActive()&&!this.busy&&this.run===run&&this.shelfKind===kind&&!this.workshopSelected;
     const rows:MobileShopOffer[]=this.shelfOffers().map(o=>{const d=kind==='jokers'?this.jokerDefinition(o.definitionId):undefined,info=kind==='tools'?toolInfo(o.definitionId,run):kind==='items'?itemInfo(o.definitionId):undefined,decision=d?shopOfferGuidance(run,o).decision:undefined;
       return {id:o.offerId,definitionId:o.definitionId,name:d?.name??info!.name,identity:d?shopShelfIdentityText(d.rarity,o.edition):kind==='tools'?'消耗工具':'本局持续生效',summary:d?(shopCandidateTradeoff(run,d.id)??shopOfferSynopsis(decision!.now,decision!.later)):info!.summary,extra:d&&(o.edition??'none')!=='none'?jokerExtraBonusCopy(o.edition,{definitionId:d.id,chapterDisabled:run.chapterDisabledJokerId===d.id}).shelf:undefined,price:r2PurchasePrice(run,o),reason:this.purchaseReason(o,true),consumed:o.consumed,edition:o.edition,thumbnailUrl:d?jokerArtPreviewUrl(d.id):info!.artUrl,detailUrl:d?jokerArtUrl(d.id):info!.detailArtUrl,fallbackUrl:info?.fallbackArtUrl};
@@ -778,6 +867,7 @@ export class ShopScene extends Phaser.Scene {
   private drawInlineWorkshop(b:Box):void {
     const host=document.createElement('section'),app=document.getElementById('app')!.getBoundingClientRect(),l=this.view.layout,run=this.run,seq=run.commandSeq,shopSeq=run.shop!.basicChoice?.shopSeq;
     host.className='shop-workshop shop-inline-workshop';host.setAttribute('aria-label','自选做牌');Object.assign(host.style,{left:app.x+b.x*app.width/l.width+'px',top:app.y+b.y*app.height/l.height+'px',width:b.width*app.width/l.width+'px',height:b.height*app.height/l.height+'px'});document.body.append(host);
+    this.reserveOwnedLessonSpace(host);
     this.inlineWorkshop={host,dispose:()=>{}};
     const dispose=mountWorkshopGoals(host,run,this.makeCardsView,{ready:()=>this.ready&&this.run.commandSeq===seq,active:()=>this.inlineWorkshop?.host===host&&this.run===run,purchaseReason:o=>this.purchaseReason(o),basic:(id,intent)=>{if(shopSeq!==undefined)this.confirmBasicChoice(id,seq,shopSeq,true,intent);},offer:(id,intent)=>this.inspectOffer(id,true,intent),services:this.workshopServices()});
     this.inlineWorkshop={host,dispose};
@@ -1304,6 +1394,13 @@ export class ShopScene extends Phaser.Scene {
       ??(this.geometry().pc?this.pcOfferBoxes.get(action.type==='BuyOffer'?action.offerId:''):buyIndex>=0?this.geometry().shelf[buyIndex]:undefined);
     const landSlot=purchase?.kind==='jokers'?this.geometry().slots[Math.min(previous.jokers.length,r2JokerCapacity(previous)-1)]:purchase?this.geometry().items:undefined;
     const pendingDrag=action.type==='ReorderJokers'&&this.ownedDrag?.saving?this.ownedDrag:undefined,inputEnabled=this.input.enabled;
+    const tutorialOwner=runController(this);
+    if(tutorialOwner&&!tutorialOwner.guidedOpeningSuppressed){
+      if(action.type==='BuyOffer'&&purchase?.kind==='jokers'&&previous.jokers.length===0)
+        armNoviceOwnedLesson(previous,noviceGuide(previous,tutorialOwner.journal),action.offerId);
+      if(action.type==='ReorderJokers'&&pendingDrag)
+        attemptNoviceOwnedReorder(previous,tutorialOwner.journal,noviceGuide(previous,tutorialOwner.journal),action.ids);
+    }
     if(pendingDrag)this.input.enabled=false;else this.render();
     let reorderSaved=false,savedCue:'placement'|'purchase'|undefined,receiptId='';
     try {
