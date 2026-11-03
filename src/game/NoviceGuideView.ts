@@ -100,13 +100,14 @@ let detailsSequence=0;
 /** Non-modal presentation only: it never chooses cards or sends a game command. */
 export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHandle {
   const root=document.createElement('div'),rings=document.createElement('div'),panel=document.createElement('section');
-  const header=document.createElement('div'),heading=document.createElement('div'),progress=document.createElement('span'),title=document.createElement('strong'),closeButton=document.createElement('button');
+  const header=document.createElement('div'),heading=document.createElement('div'),controls=document.createElement('div'),progress=document.createElement('span'),title=document.createElement('strong'),announcement=document.createElement('span'),closeButton=document.createElement('button');
   const body=document.createElement('p'),choiceRow=document.createElement('div'),choices=document.createElement('div'),footer=document.createElement('div'),skipButton=document.createElement('button'),detailsButton=document.createElement('button'),detailsBody=document.createElement('div'),actionButton=document.createElement('button'),reopenButton=document.createElement('button');
   root.className='novice-guide';root.dataset.noviceGuide='';root.dataset.reducedMotion=String(!!options.reducedMotion);
   rings.className='novice-guide-rings';rings.setAttribute('aria-hidden','true');
   panel.className='novice-guide-panel';panel.setAttribute('aria-label','新手引导');panel.dataset.noviceGuidePanel='';
-  header.className='novice-guide-header';heading.className='novice-guide-heading';heading.setAttribute('role','status');heading.setAttribute('aria-live','polite');heading.setAttribute('aria-atomic','true');
-  progress.className='novice-guide-progress';title.className='novice-guide-title';body.className='novice-guide-body';heading.append(progress,title,body);
+  header.className='novice-guide-header';heading.className='novice-guide-heading';
+  announcement.className='novice-guide-announcement';announcement.setAttribute('role','status');announcement.setAttribute('aria-live','polite');announcement.setAttribute('aria-atomic','true');
+  progress.className='novice-guide-progress';title.className='novice-guide-title';body.className='novice-guide-body';heading.append(progress,title);
   closeButton.type='button';closeButton.className='novice-guide-close';closeButton.textContent='×';closeButton.setAttribute('aria-label','收起引导');closeButton.title='收起引导';closeButton.dataset.noviceGuideClose='';
   choiceRow.className='novice-guide-choice-row';choices.className='novice-guide-choices';choices.setAttribute('aria-label','选择要尝试的牌型');choiceRow.append(choices);
   footer.className='novice-guide-actions';
@@ -115,13 +116,17 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
   detailsButton.type='button';detailsButton.className='novice-guide-details-toggle';detailsButton.textContent='技能与路线';detailsButton.dataset.noviceGuideDetailsToggle='';detailsButton.id=detailsId+'-toggle';detailsButton.setAttribute('aria-controls',detailsId);
   detailsBody.className='novice-guide-details';detailsBody.id=detailsId;detailsBody.dataset.noviceGuideDetails='';detailsBody.setAttribute('role','region');detailsBody.setAttribute('aria-labelledby',detailsButton.id);
   actionButton.type='button';actionButton.className='novice-guide-action';actionButton.dataset.noviceGuideAction='';
-  header.append(heading,skipButton,actionButton,closeButton);
-  footer.append(detailsButton);panel.append(header,choiceRow,footer,detailsBody);
+  // The explanation uses the full panel width below the 44px controls. This
+  // keeps long score breakdowns legible without shrinking their touch targets.
+  controls.className='novice-guide-controls';controls.append(skipButton,actionButton,closeButton);header.append(heading,controls);
+  footer.append(detailsButton);panel.append(header,body,choiceRow,footer,detailsBody,announcement);
   reopenButton.type='button';reopenButton.className='novice-guide-reopen';reopenButton.textContent='查看引导';reopenButton.setAttribute('aria-label','查看新手引导');reopenButton.dataset.noviceGuideReopen='';reopenButton.hidden=true;
   root.append(rings,panel,reopenButton);(options.host??document.body).append(root);
   let step=options.step,closed=false,disposed=false,frame=0,detailsExpanded=false,choiceIds='';
   const renderStep=()=>{
     root.dataset.noviceGuideStep=step.id;progress.textContent=step.progress??'';progress.hidden=!step.progress;title.textContent=step.title;body.textContent=step.body;
+    const message=[step.progress,step.title,step.body].filter(Boolean).join('。');
+    if(announcement.textContent!==message)announcement.textContent=message;
     if(!step.action&&document.activeElement===actionButton)closeButton.focus({preventScroll:true});
     actionButton.hidden=!step.action;actionButton.textContent=step.action?.label??'';
     const rows=step.choices??[],ids=JSON.stringify(rows.map(choice=>choice.id));
@@ -133,7 +138,7 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
     }
     const hasChoices=rows.length>0;panel.classList.toggle('has-choices',hasChoices);choiceRow.hidden=!hasChoices;
     if(hasChoices&&skipButton.parentElement!==choiceRow)choiceRow.append(skipButton,closeButton);
-    else if(!hasChoices&&skipButton.parentElement!==header){header.insertBefore(skipButton,actionButton);header.append(closeButton);}
+    else if(!hasChoices&&skipButton.parentElement!==controls){controls.insertBefore(skipButton,actionButton);controls.append(closeButton);}
     rows.forEach((choice,index)=>{
       const button=choices.children[index] as HTMLButtonElement;
       button.textContent=choice.label;button.dataset.cardIds=JSON.stringify(choice.cardIds);
@@ -141,6 +146,7 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
     });
     const skipFocused=document.activeElement===skipButton;
     skipButton.hidden=!options.onSkip||step.id==='complete';
+    controls.hidden=![...controls.children].some(child=>!(child as HTMLElement).hidden);
     if(skipButton.hidden&&skipFocused)(step.action?actionButton:closeButton).focus({preventScroll:true});
     if(!step.details&&document.activeElement===detailsButton)closeButton.focus({preventScroll:true});
     panel.classList.toggle('has-details',!!step.details);detailsButton.hidden=!step.details;detailsButton.setAttribute('aria-expanded',String(!!step.details&&detailsExpanded));
@@ -162,6 +168,9 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
       Object.assign(panel.style,{left:'',top:'',width:'',maxHeight:'',visibility:'visible'});
       panel.classList.remove('is-constrained');panel.setAttribute('aria-label','新手引导');panel.removeAttribute('tabindex');return;
     }
+    // Temporarily removing the height cap can reset a scrollable explanation's
+    // scroll position. Preserve it across the natural-height measurement.
+    const scrollTop=element.scrollTop;
     // Read the natural height at the likely width, then remeasure once if a narrow free region wraps the text.
     element.style.maxHeight='none';element.style.width=closed?'auto':Math.min(320,bounds.width)+'px';
     let rect=element.getBoundingClientRect();
@@ -174,6 +183,7 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
     element.style.visibility=placement?'visible':'hidden';
     if(!placement)return;
     Object.assign(element.style,{left:placement.x+'px',top:placement.y+'px',width:placement.width+'px',maxHeight:placement.height+'px'});
+    if(scrollTop>0)element.scrollTop=scrollTop;
     const constrained=!closed&&rect.height>placement.height+.5;
     panel.classList.toggle('is-constrained',constrained);
     panel.setAttribute('aria-label',constrained?'新手引导，可滚动查看':'新手引导');

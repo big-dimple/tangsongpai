@@ -2,9 +2,10 @@ import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import {SavedRun,type SaveSlots,type SaveStore} from '../src/application/SavedRun';
 import type {Checkpoint} from '../src/application/checkpoint';
 import {createRun,type Action} from '../src/domain/run';
+import {r2PurchasePrice} from '../src/domain/r2Shop';
 import {guidedTutorialRunId,newRunIdentity} from '../src/game/RunLaunch';
 import {cardDisplayName} from '../src/game/tangsongCardNames';
-import {clearPendingNoviceStart,dismissNoviceGuide,enrollNoviceGuide,liveNoviceGuide,markNoviceStart,mayResumeNoviceOpening,noviceGuide,noviceGuideDisabled,noviceGuideEnrolled,novicePairResultCue,NOVICE_GUIDE_KEY,NOVICE_GUIDE_PENDING_PREFIX,restoreNoviceGuide,stopNoviceGuide,suppressImportedNovice,validNoviceDiscardSelection} from '../src/game/NoviceGuide';
+import {clearPendingNoviceStart,dismissNoviceGuide,enrollNoviceGuide,liveNoviceGuide,markNoviceStart,mayResumeNoviceOpening,noviceGuide,noviceGuideDisabled,noviceGuideEnrolled,novicePairBreakdownCue,novicePairResultCue,NOVICE_GUIDE_KEY,NOVICE_GUIDE_PENDING_PREFIX,restoreNoviceGuide,stopNoviceGuide,suppressImportedNovice,validNoviceDiscardSelection} from '../src/game/NoviceGuide';
 
 class Store implements SaveStore {
  slots:SaveSlots={revision:0,current:null,previous:null};fail=false;
@@ -62,9 +63,16 @@ describe('guided first match from saved commands',()=>{
   const {run,store}=await start();await enter(run);
   expect(guide(run)).toMatchObject({step:'pair',recommendedCardIds:['clubs-5','hearts-5']});
   expect(guide(run)!.body).toContain('花色');
+  expect(guide(run)!.body).toContain('累计400分过关');
   await send(run,{type:'PlayHand',selectedIds:['hearts-5','clubs-5']});
   expect(guide(run)).toMatchObject({step:'discard',fact:{pairScore:'90'}});
-  expect(guide(run)!.cue).toBe('45 筹码 × 2 倍率 = 90 分');expect(guide(run)!.body).toContain('弃牌');
+  expect(guide(run)!.cue).toBe('基础35+牌点5+5=45筹码；×2倍率=90分');expect(guide(run)!.body).toContain('弃牌');
+  expect(guide(run)!.fact).toMatchObject({pairBaseHeat:'35',pairBaseMultiplier:'2',pairCardHeat:'10',pairCardHeats:['5','5'],pairStageHeat:'90',pairTarget:'400',pairRemaining:'310'});
+  expect(guide(run)!.body).toContain('90/400');
+  const incomplete=structuredClone(run.state.lastTrace!);incomplete.events.splice(1,1);
+  expect(novicePairBreakdownCue(incomplete)).toBe(novicePairResultCue(incomplete));
+  const changed=structuredClone(run.state.lastTrace!);changed.events[1].value.n='99';
+  expect(novicePairBreakdownCue(changed)).toBe(novicePairResultCue(changed));
   await send(run,{type:'DiscardHand',selectedIds:['clubs-4','diamonds-4','spades-14','clubs-7','spades-11']});
   expect(guide(run)?.step).toBe('independent');
   expect(guide(run)!.cue).toContain('400');expect(guide(run)!.body).toContain('选一种');
@@ -78,9 +86,14 @@ describe('guided first match from saved commands',()=>{
   await send(restored,{type:'BuyOffer',offerId:offer.offerId});
   const bought=restored.state.jokers.find(j=>j.definitionId==='b02')!;
   expect(guide(restored)).toMatchObject({step:'payoff',fact:{purchaseInstanceId:bought.instanceId}});
+  expect(guide(restored)?.body).toContain('+0.25倍率');
   await send(restored,{type:'LeaveShop'});await send(restored,{type:'EnterStage'});
   expect(guide(restored)?.step).toBe('payoff');
   expect(restored.state.handOrder).toEqual(expect.arrayContaining(['clubs-6','spades-6']));
+  const payoff=guide(restored)!,liveSkill={available:false,chosen:false,enabled:true,canDiscard:true};
+  expect(payoff.body).toContain('+0.25倍率');
+  for(const ids of [payoff.recommendedCardIds!.slice(0,1),payoff.recommendedCardIds!])
+   expect(liveNoviceGuide(payoff,ids,liveSkill).body).toContain('+0.25倍率');
   await send(restored,{type:'PlayHand',selectedIds:['clubs-6','spades-6']});
   const event=restored.state.lastTrace!.events.find(e=>e.sourceType==='joker'&&e.sourceInstanceId===bought.instanceId&&e.operation==='add-multiplier')!;
   expect(event).toBeDefined();expect(guide(restored)).toMatchObject({step:'skill',fact:{eventId:event.eventId,purchaseInstanceId:bought.instanceId}});
@@ -96,6 +109,19 @@ describe('guided first match from saved commands',()=>{
   if(restoredSkill.state.phase==='stage-cleared'){await send(restoredSkill,{type:'OpenShop'});await send(restoredSkill,{type:'LeaveShop'});await send(restoredSkill,{type:'EnterStage'});}
   await send(restoredSkill,{type:'PlayHand',selectedIds:[restoredSkill.state.handOrder[0]]});
   expect(guide(restoredSkill)).toMatchObject({step:'complete',fact:{eventId:event.eventId,skillEventId:skill!.eventId}});
+ });
+
+ it('explains an actual zero growth read and advances only when later growth contributes',async()=>{
+  const {run,store}=await start('zero-growth');await enter(run);await clearFirst(run);await send(run,{type:'OpenShop'});
+  const offer=run.state.shop!.offers.find(o=>o.definitionId==='f11')!;
+  await send(run,{type:'BuyOffer',offerId:offer.offerId});
+  const bought=run.state.jokers.find(j=>j.definitionId==='f11')!;
+  await send(run,{type:'LeaveShop'});await send(run,{type:'EnterStage'});
+  await send(run,{type:'PlayHand',selectedIds:['clubs-4']});
+  expect(guide(run)?.step).toBe('payoff');expect(guide(run)?.body).toContain('已积累加成为0');
+  const restored=SavedRun.restore(store,await store.read());expect(guide(restored)?.body).toContain('已积累加成为0');
+  await send(restored,{type:'PlayHand',selectedIds:[restored.state.handOrder[0]]});
+  expect(guide(restored)).toMatchObject({step:'skill',fact:{purchaseInstanceId:bought.instanceId}});
  });
 
  it('keeps errors and a duplicate from becoming successful lessons',async()=>{
@@ -117,8 +143,55 @@ describe('guided first match from saved commands',()=>{
   await send(run,{type:'PlayHand',selectedIds:[nonPair]});
   expect(run.state.lastTrace!.events.some(e=>e.sourceType==='joker'&&e.sourceInstanceId===bought.instanceId)).toBe(false);
   expect(guide(run)?.step).toBe('payoff');
+  expect(guide(run)!.cue).toContain(cardDisplayName('b02'));
+  expect(guide(run)!.cue).toContain('未加成');expect(guide(run)!.body).toContain('上手无同点');
+  expect(guide(run)!.body).toContain('同点');
+  const missed=guide(run)!,one=liveNoviceGuide(missed,[missed.recommendedCardIds![0]],{available:false,chosen:false,enabled:true,canDiscard:true});
+  expect(one.body).not.toContain('上手无同点');expect(one.body).toContain('+0.25倍率');
   await send(run,{type:'PlayHand',selectedIds:['clubs-6','spades-6']});
   expect(guide(run)?.step).toBe('skill');
+ });
+
+ it('keeps the first purchase as its target after a second purchase, then follows an actual purchased contribution',async()=>{
+  const {run,store}=await start('two-purchases');await enter(run);await clearFirst(run);await send(run,{type:'OpenShop'});
+  const first=run.state.shop!.offers.find(o=>o.definitionId==='b02')!;
+  await send(run,{type:'BuyOffer',offerId:first.offerId});
+  const firstBought=run.state.jokers.find(j=>j.definitionId==='b02')!;
+  const second=run.state.shop!.offers.find(o=>!o.consumed&&o.definitionId!=='b02'&&r2PurchasePrice(run.state,o)<=run.state.gold);
+  expect(second,JSON.stringify({gold:run.state.gold,offers:run.state.shop!.offers})).toBeDefined();
+  await send(run,{type:'BuyOffer',offerId:second!.offerId});
+  const secondBought=run.state.jokers.find(j=>j.definitionId===second!.definitionId)!;
+  expect(guide(run)?.fact?.purchaseInstanceId).toBe(firstBought.instanceId);
+  expect(guide(run)?.cue).toContain(cardDisplayName(firstBought.definitionId));
+  const restored=SavedRun.restore(store,await store.read());
+  expect(guide(restored)?.fact?.purchaseInstanceId).toBe(firstBought.instanceId);
+  await send(restored,{type:'LeaveShop'});await send(restored,{type:'EnterStage'});
+  // A single card cannot satisfy b02. An actually contributing second
+  // purchase may advance the lesson without forcing the displayed example.
+  const card=restored.state.handOrder.find(id=>id.startsWith('clubs-'))!;
+  await send(restored,{type:'PlayHand',selectedIds:[card]});
+  expect(guide(restored)?.fact?.purchaseInstanceId).toBe(firstBought.instanceId);
+  const next=restored.state.handOrder[0];await send(restored,{type:'PlayHand',selectedIds:[next]});
+  const event=restored.state.lastTrace!.events.find(e=>e.sourceInstanceId===secondBought.instanceId&&
+   ['onCardScore','onHeldCard','jokerScore'].includes(e.phase)&&e.sourceType==='joker'&&JSON.stringify(e.before)!==JSON.stringify(e.after));
+  expect(event,secondBought.definitionId).toBeDefined();
+  expect(guide(restored)).toMatchObject({step:'skill',fact:{purchaseInstanceId:secondBought.instanceId,eventId:event!.eventId}});
+ });
+
+ it('falls back to another actually owned purchase after selling the first, and remains safe if both are sold',async()=>{
+  const {run,store}=await start('sold-purchases');await enter(run);await clearFirst(run);await send(run,{type:'OpenShop'});
+  const first=run.state.shop!.offers.find(o=>o.definitionId==='b02')!;
+  await send(run,{type:'BuyOffer',offerId:first.offerId});const firstBought=run.state.jokers.find(j=>j.definitionId==='b02')!;
+  const second=run.state.shop!.offers.find(o=>!o.consumed&&o.definitionId!=='b02'&&r2PurchasePrice(run.state,o)<=run.state.gold);
+  expect(second,JSON.stringify({gold:run.state.gold,offers:run.state.shop!.offers})).toBeDefined();
+  await send(run,{type:'BuyOffer',offerId:second!.offerId});const secondBought=run.state.jokers.find(j=>j.definitionId===second!.definitionId)!;
+  await send(run,{type:'SellJoker',instanceId:firstBought.instanceId});
+  expect(guide(run)).toMatchObject({step:'payoff',fact:{purchaseInstanceId:secondBought.instanceId}});
+  expect(guide(run)!.cue).toContain(cardDisplayName(secondBought.definitionId));
+  expect(guide(SavedRun.restore(store,await store.read()))?.fact?.purchaseInstanceId).toBe(secondBought.instanceId);
+  await send(run,{type:'SellJoker',instanceId:secondBought.instanceId});
+  expect(guide(run)?.body).toContain('不在持有牌中');
+  expect(guide(run)!.recommendedCardIds).toEqual([]);
  });
 
  it('updates prompts from live selections without treating them as saved progress',async()=>{
@@ -127,7 +200,8 @@ describe('guided first match from saved commands',()=>{
   expect(liveNoviceGuide(hint,[],skill).cue).toBe('先找一对');
   expect(liveNoviceGuide(hint,['clubs-5'],skill).cue).toBe('再选另一张');
   expect(liveNoviceGuide(hint,['clubs-5','hearts-5'],skill)).toMatchObject({cue:'对子选好了',focus:'play'});
-  expect(liveNoviceGuide(hint,['clubs-5','clubs-4'],skill).cue).toBe('再找一对');
+  expect(liveNoviceGuide(hint,['clubs-5','clubs-4'],skill).cue).toBe('也可自己选牌');
+  expect(liveNoviceGuide(hint,['clubs-5','clubs-4'],skill).body).toContain('点已选牌取消');
   expect(guide(run)?.step).toBe('pair');expect(run.state.stage!.playIndex).toBe(0);
   const skillHint={step:'skill' as const,cue:'练习技能',body:'选对子',recommendedCardIds:['a','b']};
   expect(liveNoviceGuide(skillHint,['a','b'],{...skill,available:true}).focus).toBe('hero');

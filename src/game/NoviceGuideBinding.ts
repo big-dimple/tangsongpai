@@ -81,7 +81,7 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
   let stopped=false,suspended=false,actionPending=false,view:NoviceGuideHandle|undefined;
   let sourceRun:SavedRun|undefined,sourceState:R2RunState|undefined,sourceJournal:SavedRun['journal']|undefined;
   let hint:NoviceGuideHint|undefined,shownHint:NoviceGuideHint|undefined,shownHintKey='',shownMotion:boolean|undefined;
-  let actionError='',shownError='',sawPair=false,scoreFeedbackStart:number|undefined;
+  let actionError='',shownError='';
   let geometry:NoviceGuideGeometry={},geometryKey='',lastMeasurement=-Infinity;
   let inlineHost:HTMLElement|undefined;
   let presentedKey:string|undefined;
@@ -145,14 +145,9 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
     if(!run){removeView();return;}
     const prefs=presentation(run);let current=hint?(options.presentHint?.(hint)??hint):undefined;
     if(!current||!canShow(run,current)){removeView();return;}
-    if(current.step==='pair')sawPair=true;
-    if(current.step==='discard'&&sawPair&&scoreFeedbackStart===undefined)scoreFeedbackStart=performance.now();
-    if(current.step==='discard'&&current.focus!=='discard'&&scoreFeedbackStart!==undefined){
-      const elapsed=performance.now()-scoreFeedbackStart,stage=run.state.stage;
-      if(elapsed<1300)current={...current,focus:'score',body:`这一手得 ${current.fact?.pairScore??'0'} 分。`};
-      else if(elapsed<2600&&stage)current={...current,focus:'goal',body:`累计 ${stage.heat} / ${stage.targetHeat} 分。`};
-    }
-    if(current.focus==='score'||current.focus==='goal')current={...current,gesture:undefined};
+    // The saved hint already contains the score and goal. Keep it available
+    // until the player's selection changes the prompt, rather than replacing
+    // it with a timed sequence that can expire while the scene is obscured.
     const currentKey=JSON.stringify([current.step,current.cue,current.body,current.details,current.recommendedCardIds,current.offerIds,current.focus,current.choices,current.gesture]);
     const hintChanged=shownHintKey!==currentKey;
     if(shownHint&&(shownHint.step!==current.step||shownHint.gesture!==current.gesture))clearPresented();

@@ -36,7 +36,7 @@ import {mountNoviceGestureDemo,type NoviceGestureDemoHandle} from './NoviceGestu
 import {noviceGuide,type NoviceGuideHint} from './NoviceGuide';
 import {armNoviceOwnedLesson,attemptNoviceOwnedReorder,closeNoviceOwnedLesson,noviceOwnedLesson,noviceOwnedLessonPcAvoid,openNoviceOwnedLesson,presentNoviceOwnedLesson} from './NoviceOwnedLesson';
 import {needsGuidedPractice} from './GuidedTutorial';
-import {noviceGuideCanvasBox} from './NoviceGuideView';
+import {noviceGuideCanvasBox,placeNoviceGuide} from './NoviceGuideView';
 import {requestTutorialReplay} from './TutorialEntry';
 import {skipTutorialToNormal} from './RunMenu';
 import {drawShopArt,drawShopBackdrop,shopSheet} from './ShopArt';
@@ -115,6 +115,10 @@ export class ShopScene extends Phaser.Scene {
   private ownedArts=new Map<string,Phaser.GameObjects.Container>();
   private ownedDrag?:OwnedJokerDragVisual;
   private ownedHint?:Phaser.GameObjects.Text;
+  private ownedHintText='';
+  private ownedDragStatus?:HTMLElement;
+  private dragObscuredGuide?:HTMLElement;
+  private ownedContentLayout?:{content:HTMLElement;top:number;height:number;guide?:HTMLElement;inset:number;resize:()=>void};
   private get jokerDefinitions(){return r2JokerDefinitionsFor(this.run);}
   private jokerDefinition(id:string){const d=r2JokerDefinitionFor(this.run,id);return {...d,name:cardDisplayName(d.id,d.name)};}
   private busy=false;
@@ -218,6 +222,10 @@ export class ShopScene extends Phaser.Scene {
   }
   private ownedLessonPresentation(hint:NoviceGuideHint,p=this.geometry()){
     const owner=runController(this),lesson=owner&&!owner.guidedOpeningSuppressed?noviceOwnedLesson(this.run,owner.journal,hint):undefined;
+    if(lesson&&this.ownedDrag){
+      const {cue,body}=this.ownedDragFeedback(this.ownedDrag);
+      return {hint:{...hint,cue,body,gesture:undefined},focus:'none' as const};
+    }
     const expanded=lesson&&p.inventoryCollapsed?this.geometry(false):p;
     return presentNoviceOwnedLesson(hint,lesson,{collapsed:p.inventoryCollapsed,canExpand:!expanded.inventoryCollapsed&&expanded.slots.length===5,count:this.run.jokers.length,
       finePointer:typeof window!=='undefined'&&window.matchMedia('(pointer: fine)').matches});
@@ -299,7 +307,7 @@ export class ShopScene extends Phaser.Scene {
     this.events.once('shutdown',()=>{motion.removeEventListener('change',clearPreview);document.removeEventListener('pointerdown',outside,true);document.removeEventListener('visibilitychange',visibility);window.removeEventListener('blur',clearPreview);this.input.off('pointerdown',otherTarget);this.input.keyboard?.off('keydown-ESC',clearPreview);this.game.canvas.removeEventListener('pointercancel',clearPreview);});
     const canvasLabel=this.game.canvas.getAttribute('aria-label');this.events.once('shutdown',()=>{if(canvasLabel===null)this.game.canvas.removeAttribute('aria-label');else this.game.canvas.setAttribute('aria-label',canvasLabel);});
     this.ownedInput=new OwnedJokerInput(this,{ready:()=>this.ready,inspectable:()=>!this.busy&&this.run?.phase==='shop',cards:()=>{const p=this.geometry();return p.inventoryCollapsed?[]:this.run.jokers.map((j,i)=>({...p.slots[i],id:j.instanceId}));},cancelCanvas:()=>this.view.cancelInteraction(),tap:id=>this.inspectJoker(id),lift:(id,x,y)=>this.liftOwned(id,x,y),move:(x,y)=>this.previewOwned(x,y),drop:(id,x,y)=>this.moveJoker(id,x,y),cancel:()=>this.cancelOwned()});
-    this.events.once('shutdown',()=>{this.ownedInput?.destroy();this.ownedInput=undefined;if(this.ownedDrag?.saving)this.input.enabled=true;this.ownedDrag?.destroy();this.ownedDrag=undefined;});
+    this.events.once('shutdown',()=>{this.ownedInput?.destroy();this.ownedInput=undefined;if(this.ownedDrag?.saving)this.input.enabled=true;this.ownedDrag?.destroy();this.ownedDrag=undefined;this.clearOwnedDragStatus();});
     warmTableImages(this,this.run.characterId);this.render();this.pendingDynamicTarget=undefined;this.prepareBossEntrance(owner,run,this.lifecycle);
     let ownedGesture:NoviceGestureDemoHandle|undefined,gestureKey='',dismissedGestureKey='';
     const stopOwnedGesture=()=>{ownedGesture?.destroy();ownedGesture=undefined;gestureKey='';};
@@ -367,7 +375,9 @@ export class ShopScene extends Phaser.Scene {
         }
         const owner=runController(this),lesson=owner&&!owner.guidedOpeningSuppressed&&noviceOwnedLesson(this.run,owner.journal,hint);
         const protectedOffers=lesson&&!p.portrait?(p.pc?noviceOwnedLessonPcAvoid(p):p.shelf.map(b=>shopOfferCopy(p,b,true).tile)):[];
-        return {highlights:highlights.slice(0,1),avoid:[p.play,p.tabs,...protectedOffers].map(map)};
+        const avoid=[p.play,p.tabs,...protectedOffers].map(map),dragged=this.ownedDrag&&this.ownedArts.get(this.ownedDrag.id);
+        if(dragged?.active){const b=dragged.getBounds();avoid.push(map({x:b.x,y:b.y,width:b.width,height:b.height}));}
+        return {highlights:highlights.slice(0,1),avoid};
       },
       visible:()=>!this.busy&&!document.querySelector('dialog[open]'),
       onReplay:()=>requestTutorialReplay(),
@@ -375,6 +385,9 @@ export class ShopScene extends Phaser.Scene {
       onComplete:()=>skipTutorialToNormal(this.game,'complete'),
     });
     this.events.once('shutdown',unmountNoviceGuide);
+    const syncDragStatus=()=>this.syncOwnedDragStatus();
+    this.events.on('postupdate',syncDragStatus);
+    this.events.once('shutdown',()=>this.events.off('postupdate',syncDragStatus));
     if(!freshTarget&&!gameSession().reducedMotion&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
       this.view.root.setAlpha(.35);this.tweens.add({targets:this.view.root,alpha:1,duration:220,ease:'Cubic.easeOut'});
       if(!this.dialog.current){
@@ -435,7 +448,7 @@ export class ShopScene extends Phaser.Scene {
     if(!p.portrait&&!p.short)v.text(p.x,p.top+37,`${stage.name} · 目标 ${heatText(stage.targetHeat)}`,14,'#3F606B',p.short?p.slots[4].x+p.slots[4].width-p.x:p.w-24);
     if(!p.short&&!p.inventoryCollapsed&&this.run.jokers.length>0){
       const savedGrowth=buildGrowthProgress(this.run)[0];
-      const ownedLabel=p.portrait?`持有 ${this.run.jokers.length}/${r2JokerCapacity(this.run)} · 点牌查看 · 长按调序`:this.run.jokers.length&&!p.inventoryCollapsed?this.ownedDragHint():savedGrowth?savedGrowth.name+' · '+savedGrowth.metric:`随身 ${this.run.jokers.length}/${r2JokerCapacity(this.run)} · 点牌出售／调序`;
+      const ownedLabel=p.portrait?`持有 ${this.run.jokers.length}/${r2JokerCapacity(this.run)} · 点牌查看`+(this.run.jokers.length>1?' · 长按调序':''):this.run.jokers.length&&!p.inventoryCollapsed?this.ownedDragHint():savedGrowth?savedGrowth.name+' · '+savedGrowth.metric:`随身 ${this.run.jokers.length}/${r2JokerCapacity(this.run)} · 点牌出售／调序`;
       const inline=p.portrait&&!p.copyBeside&&p.slots[0].y-p.shelf[0].y-p.shelf[0].height<122;
       v.text(inline?p.x:p.slots[0].x,inline?p.top+27:p.slots[0].y-20,ownedLabel,14,'#26313A',p.slots[4].x+p.slots[4].width-p.slots[0].x).setName('shop/owned-heading');
     }
@@ -530,6 +543,7 @@ export class ShopScene extends Phaser.Scene {
       this.ownedHint=p.pc&&heading?heading.setText(`持有 ${this.run.jokers.length}/${r2JokerCapacity(this.run)} · `+this.ownedDragHint()):p.short?v.text(first.x,first.y-24,this.ownedDragHint(),14,PAPER_CSS.jade,railEnd.x+railEnd.width-first.x).setName('shop/owned-drag-hint'):heading;
       if(this.ownedHint&&!p.pc&&this.ownedHint.y>first.y-30)this.ownedHint.setY(first.y-24);
       if(this.ownedHint&&p.portrait){this.ownedHint.setWordWrapWidth(0);this.ellipsis(this.ownedHint,p.w);}
+      this.ownedHintText=this.ownedHint?.text??'';
       this.ownedDrag?.rebind();
     }
     if(!p.short&&this.run.jokers.length&&!firstChapterShopPrompt(this.run)){
@@ -805,25 +819,26 @@ export class ShopScene extends Phaser.Scene {
     if(this.geometry().pc){label.setWordWrapWidth(0);const wrapped=shopSummaryWrap(copy,b.width,text=>{label.setText(text);return label.width;},Math.max(1,Math.floor(b.height/18)));label.setText(wrapped).setData('fullText',copy);}
   }
   private clearInlineWorkshop():void {const old=this.inlineWorkshop;this.inlineWorkshop=undefined;old?.dispose();old?.host.remove();}
-  private clearOwnedLessonHost():void {const old=this.ownedLessonHost;this.ownedLessonHost=undefined;old?.dispose();old?.host.remove();}
+  private clearOwnedLessonHost():void {const old=this.ownedLessonHost;this.ownedLessonHost=undefined;this.ownedContentLayout=undefined;old?.dispose();old?.host.remove();}
   /** Reserve a measured, non-scrolling guide row; the merchandise scroll offset is retained. */
   private reserveOwnedLessonSpace(content:HTMLElement):void {
     const owner=runController(this);
-    if(!owner||owner.guidedOpeningSuppressed)return;
-    const hint=noviceGuide(this.run,owner.journal);
-    if(!hint||!noviceOwnedLesson(this.run,owner.journal,hint)||!this.geometry().portrait)return;
-    const host=document.createElement('div'),top=parseFloat(content.style.top),height=parseFloat(content.style.height);
-    Object.assign(host.style,{position:'fixed',left:content.style.left,top:content.style.top,width:content.style.width,zIndex:'4',pointerEvents:'none'});
-    document.body.append(host);
+    if(!owner)return;
+    if(!this.geometry().portrait)return;
+    const hint=!owner.guidedOpeningSuppressed?noviceGuide(this.run,owner.journal):undefined;
+    const lesson=hint&&noviceOwnedLesson(this.run,owner.journal,hint);
+    const host=lesson?document.createElement('div'):undefined,top=parseFloat(content.style.top),height=parseFloat(content.style.height);
+    if(host){Object.assign(host.style,{position:'fixed',left:content.style.left,top:content.style.top,width:content.style.width,zIndex:'4',pointerEvents:'none'});document.body.append(host);}
     const resize=()=>{
-      if(!host.isConnected||!content.isConnected)return;
-      const h=host.getBoundingClientRect().height,scrollTop=content.scrollTop;
-      content.style.top=top+h+'px';content.style.height=Math.max(0,height-h)+'px';content.scrollTop=scrollTop;
+      if(!content.isConnected)return;
+      const h=host?.getBoundingClientRect().height??0,inset=this.ownedContentLayout?.inset??0,scrollTop=content.scrollTop;
+      content.style.top=top+h+inset+'px';content.style.height=Math.max(0,height-h-inset)+'px';content.scrollTop=scrollTop;
     };
-    const observer=typeof ResizeObserver==='undefined'?undefined:new ResizeObserver(resize);observer?.observe(host);
-    const mutation=observer||typeof MutationObserver==='undefined'?undefined:new MutationObserver(()=>requestAnimationFrame(resize));
-    mutation?.observe(host,{childList:true,subtree:true,characterData:true});
-    this.ownedLessonHost={host,dispose:()=>{observer?.disconnect();mutation?.disconnect();}};
+    this.ownedContentLayout={content,top,height,guide:host,inset:0,resize};
+    const observer=host&&typeof ResizeObserver!=='undefined'?new ResizeObserver(resize):undefined;if(host)observer?.observe(host);
+    const mutation=host&&!observer&&typeof MutationObserver!=='undefined'?new MutationObserver(()=>requestAnimationFrame(resize)):undefined;
+    if(host)mutation?.observe(host,{childList:true,subtree:true,characterData:true});
+    if(host)this.ownedLessonHost={host,dispose:()=>{observer?.disconnect();mutation?.disconnect();}};
   }
   private clearMobileOffers():void {
     const old=this.mobileOffers;this.mobileOffers=undefined;
@@ -1324,15 +1339,73 @@ export class ShopScene extends Phaser.Scene {
     const ids=reorderJokerIds(current,current[from],to);if(ids===current)return false;
     return this.send({type:'ReorderJokers',ids},expectedSeq);
   }
+  private ownedDragFeedback(drag:OwnedJokerDragVisual){
+    return this.run.jokers.length<2&&!drag.saving?{cue:'当前只有一张',body:'持有多张后可换序。'}:drag.feedback;
+  }
+  /** Keep the status in the existing lesson, or reserve a separate non-interactive
+   * row. Never put text on a moving face or overwrite the visible rail heading. */
+  private syncOwnedDragStatus():void {
+    const status=this.ownedDragStatus,drag=this.ownedDrag;if(!status||!drag)return;
+    const p=this.geometry(),layout=this.ownedContentLayout,owner=runController(this),hint=owner&&noviceGuide(this.run,owner.journal);
+    const lesson=owner&&!owner.guidedOpeningSuppressed&&noviceOwnedLesson(this.run,owner.journal,hint);
+    const panel=document.querySelector<HTMLElement>('[data-novice-guide-panel]'),panelRect=panel?.getBoundingClientRect();
+    const canvas=this.game.canvas.getBoundingClientRect(),l=this.view.layout,map=(b:Box)=>noviceGuideCanvasBox(b,canvas,l);
+    const art=this.ownedArts.get(drag.id),artBounds=art?.active?art.getBounds():undefined;
+    const floating=artBounds?map({x:artBounds.x,y:artBounds.y,width:artBounds.width,height:artBounds.height}):undefined;
+    const overlaps=(a:Box,b:Box)=>a.x<b.x+b.width&&a.x+a.width>b.x&&a.y<b.y+b.height&&a.y+a.height>b.y;
+    // Inline mobile guides cannot be repositioned like desktop guides. Temporarily
+    // hide one if a card leaves the rail and passes through it; the independent
+    // status row is shown when that row is clear.
+    if(this.dragObscuredGuide&&this.dragObscuredGuide!==panel){
+      this.dragObscuredGuide.removeAttribute('data-novice-drag-obscured');this.dragObscuredGuide=undefined;
+    }
+    if(panel&&lesson&&!panel.hidden&&panelRect&&floating&&overlaps(panelRect,floating)){
+      if(getComputedStyle(panel).visibility!=='hidden'||this.dragObscuredGuide===panel){panel.setAttribute('data-novice-drag-obscured','');this.dragObscuredGuide=panel;}
+    }else if(this.dragObscuredGuide){
+      this.dragObscuredGuide.removeAttribute('data-novice-drag-obscured');
+      this.dragObscuredGuide=undefined;
+    }
+    const inline=!!lesson&&!this.busy&&!!panel&&!panel.hidden&&!!panelRect&&panelRect.width>0&&panelRect.height>0&&this.dragObscuredGuide!==panel&&getComputedStyle(panel).visibility!=='hidden';
+    const reserve=p.portrait&&!inline&&!!layout?32:0;
+    if(layout&&layout.inset!==reserve){layout.inset=reserve;layout.resize();}
+    if(inline){status.hidden=true;return;}
+    const {cue,body}=this.ownedDragFeedback(drag),text=cue+' · '+body;
+    if(status.textContent!==text)status.textContent=text;
+    let box:Box|undefined;
+    if(p.portrait&&layout){
+      const guideHeight=layout.guide?.getBoundingClientRect().height??0;
+      if(layout.height-guideHeight>=reserve)box={x:parseFloat(layout.content.style.left),y:layout.top+guideHeight,width:parseFloat(layout.content.style.width),height:reserve};
+    }else{
+      const viewport=window.visualViewport,bounds={x:(viewport?.offsetLeft??0)+8,y:(viewport?.offsetTop??0)+8,width:(viewport?.width??innerWidth)-16,height:(viewport?.height??innerHeight)-16};
+      const avoid=[p.play,p.tabs,p.chapter,p.items,p.reroll,p.build,...(p.pc?noviceOwnedLessonPcAvoid(p):p.shelf.map(b=>shopOfferCopy(p,b,true).tile)),...p.slots].map(map);
+      if(panelRect&&panel&&!panel.hidden&&panelRect.width&&panelRect.height)avoid.push({x:panelRect.x,y:panelRect.y,width:panelRect.width,height:panelRect.height});
+      if(floating)avoid.push(floating);
+      const anchor=p.slots[0]?map(p.slots[0]):undefined;
+      const placed=placeNoviceGuide(bounds,avoid,{width:240,height:44},anchor);
+      if(placed&&placed.width>=140&&placed.height>=44)box=placed;
+    }
+    // The pointer can travel outside the rail. If the floating card reaches the
+    // reserved row, hide the status until it is clear instead of covering it.
+    if(!box||floating&&overlaps(box,floating)){status.hidden=true;return;}
+    Object.assign(status.style,{left:box.x+'px',top:box.y+'px',width:box.width+'px',height:box.height+'px'});status.hidden=false;
+  }
+  private clearOwnedDragStatus():void {
+    this.ownedDragStatus?.remove();this.ownedDragStatus=undefined;
+    this.dragObscuredGuide?.removeAttribute('data-novice-drag-obscured');this.dragObscuredGuide=undefined;
+    const layout=this.ownedContentLayout;if(layout?.inset){layout.inset=0;layout.resize();}
+  }
   private liftOwned(id:string,x:number,y:number):void {
     if(!this.ready)return;this.hideHoverPicture();
     for(const art of this.ownedArts.values())this.tweens.killTweensOf(art);
-    this.ownedDrag=new OwnedJokerDragVisual(this,id,this.run.commandSeq,{x,y},()=>({root:this.view.root,arts:this.ownedArts,slots:this.geometry().slots,ids:this.run.jokers.map(j=>j.instanceId),hint:this.ownedHint}),()=>this.resultReduced);
+    this.ownedDrag=new OwnedJokerDragVisual(this,id,this.run.commandSeq,{x,y},()=>({root:this.view.root,arts:this.ownedArts,slots:this.geometry().slots,ids:this.run.jokers.map(j=>j.instanceId),hint:this.ownedHint,externalFeedback:true}),()=>this.resultReduced);
+    const status=document.createElement('div');status.dataset.ownedDragStatus='';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
+    Object.assign(status.style,{position:'fixed',zIndex:'6',boxSizing:'border-box',padding:'3px 6px',border:'1px solid #a77b47',borderRadius:'6px',background:'#fff7e7',color:'#193940',font:'bold 14px/1.25 "Microsoft YaHei", "PingFang SC", system-ui, sans-serif',textAlign:'center',pointerEvents:'none'});
+    document.body.append(status);this.ownedDragStatus=status;this.syncOwnedDragStatus();
   }
   private previewOwned(x:number,y:number):void {this.ownedDrag?.preview(x,y);}
   private cancelOwned():void {
     const drag=this.ownedDrag;if(!drag||drag.saving)return;
-    this.ownedDrag=undefined;drag.cancel();this.ownedHint?.setText(this.ownedDragHint());
+    this.ownedDrag=undefined;drag.cancel();this.ownedHint?.setText(this.ownedHintText).setVisible(true);this.clearOwnedDragStatus();
   }
   private moveJoker(id:string,x:number,y:number):void {
     const drag=this.ownedDrag,to=ownedJokerDropIndex(this.geometry().slots,this.run.jokers.length,x,y),from=this.run.jokers.findIndex(j=>j.instanceId===id);
@@ -1466,7 +1539,7 @@ export class ShopScene extends Phaser.Scene {
       owner?.removeEventListener('close',cancelHaptic);owner?.removeEventListener('cancel',cancelHaptic);
       if(!savedCue)haptic.cancel();
       if(lifecycle===this.lifecycle){
-        this.busy=false;if(pendingDrag){pendingDrag.capture();this.ownedDrag=undefined;this.input.enabled=inputEnabled;}
+        this.busy=false;if(pendingDrag){pendingDrag.capture();this.ownedDrag=undefined;this.clearOwnedDragStatus();this.input.enabled=inputEnabled;}
         if(this.scene.isActive()&&this.run.phase==='shop'){
           this.render();pendingDrag?.settle(reorderSaved,()=>haptic.saved('placement',receiptId));this.afterRenderFx();
           if(savedCue&&!pendingDrag)haptic.saved(savedCue,receiptId);
