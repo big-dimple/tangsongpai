@@ -176,6 +176,22 @@ describe('novice guide scene binding',()=>{
   expect(JSON.stringify(run.state)).toBe(before);unmount();
  });
 
+ it('keeps the saved score explanation until the player starts choosing a discard',async()=>{
+  const {run}=await start('score-feedback');session.run=run;await enter(run);const owner=scene(run);let selected:string[]=[];
+  let now=0;const clock=vi.spyOn(performance,'now').mockImplementation(()=>now);
+  const unmount=bindNoviceGuide(owner.value,{kind:'game',getGeometry:geometry,onReplay:()=>true,onSkip:()=>true,onComplete:()=>true,
+   presentHint:hint=>liveNoviceGuide(hint,selected,{available:false,chosen:false,enabled:true,canDiscard:true})});
+  await send(run,{type:'PlayHand',selectedIds:['hearts-5','clubs-5']});
+  const saved=noviceGuide(run.state,run.journal)!;
+  expect(saved.step).toBe('discard');expect(latest()?.step.title).toBe(saved.cue);expect(latest()?.step.body).toBe(saved.body);
+  now=10000;owner.events.emit('postupdate');
+  expect(latest()?.step.title).toBe(saved.cue);expect(latest()?.step.body).toBe(saved.body);
+  selected=[saved.recommendedCardIds![0]];owner.events.emit('postupdate');
+  expect(latest()?.step.body).toBe(liveNoviceGuide(saved,selected,{available:false,chosen:false,enabled:true,canDiscard:true}).body);
+  selected=[];owner.events.emit('postupdate');expect(latest()?.step.body).toBe(saved.body);
+  unmount();clock.mockRestore();
+ });
+
  it('reports only a visible final hint and clears gestures on close, layout hiding, mode changes and pause',async()=>{
   const {run}=await start('presented');session.run=run;await enter(run);const owner=scene(run);
   let gesture:'sweep'|'hold-drag'|undefined='sweep',shown=true,x=0;

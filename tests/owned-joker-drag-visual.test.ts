@@ -1,5 +1,5 @@
 import {describe,it,expect} from 'vitest';
-import {OWNED_DRAG,ownedDragPose,ownedOrderHint,ownedOrderReversed} from '../src/game/OwnedJokerDragVisual';
+import {OWNED_DRAG,ownedDragFeedback,ownedDragPose,ownedOrderHint,ownedOrderReversed} from '../src/game/OwnedJokerDragVisual';
 import {ownedJokerDropIndex,reorderJokerIds} from '../src/game/JokerReorder';
 
 describe('owned drag feedback and real slot semantics',()=>{
@@ -17,6 +17,12 @@ describe('owned drag feedback and real slot semantics',()=>{
       expect(reorderJokerIds(ids,ids[from],drop)).toEqual(expected);expect(ids).toEqual(['a','b','c','d','e']);
     }
     expect(ownedJokerDropIndex(slots,5,60,slots[0].y-1)).toBe(-1);
+  });
+  it('describes pickup, a real destination, cancellation and saving distinctly',()=>{
+    expect(ownedDragFeedback(0,0,false)).toEqual({cue:'牌已浮起',body:'拖到另一张牌后松手。'});
+    expect(ownedDragFeedback(0,1,false)).toEqual({cue:'松手放第 2 位',body:'移出牌栏可取消。'});
+    expect(ownedDragFeedback(0,-1,false)).toEqual({cue:'移回牌栏',body:'在牌栏外松手可取消。'});
+    expect(ownedDragFeedback(0,1,true)).toEqual({cue:'正在保存顺序',body:'请稍候。'});
   });
   it('explains the default order without promising higher scores, with the B13 exception',()=>{
     expect(ownedOrderHint(true,false)).toBe('通常从左到右结算 · 长按拖动排序');

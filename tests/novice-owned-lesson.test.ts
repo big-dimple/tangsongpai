@@ -61,8 +61,9 @@ describe('owned-card lesson follows saved, real actions',()=>{
   restored=SavedRun.restore(store,await store.read());expect(lesson(restored)).toMatchObject({opened:true,expanded:true});
   const shown=presentNoviceOwnedLesson(guide(restored)!,lesson(restored),{collapsed:false,canExpand:true,count:1});
   expect(shown).toMatchObject({focus:'slots',hint:{cue:'这里有五个槽'}});
-  expect(shown.hint.body).toContain('只有一张');expect(shown.hint.body).toContain('按住牌不松手');
-  expect(shown.hint.body).not.toContain('交换');
+  expect(shown.hint.body).toContain('最多放五张');expect(shown.hint.body).toContain('通常从左到右触发');
+  expect(shown.hint.body).toContain('继续买');expect(shown.hint.body).toContain('进入牌桌');
+  expect(shown.hint.body).not.toMatch(/第 2 张|拖|按住/);expect(shown.hint.gesture).toBeUndefined();
   expect(ownedJokerDropIndex(expanded.slots,1,expanded.slots[1].x+1,expanded.slots[1].y+1)).toBe(-1);
   closeNoviceOwnedLesson(restored.state,restored.journal,guide(restored));
   restored=SavedRun.restore(store,await store.read());expect(lesson(restored)).toMatchObject({opened:true,expanded:false});
@@ -77,9 +78,10 @@ describe('owned-card lesson follows saved, real actions',()=>{
   expect(lesson(run)?.expanded).toBe(false);openNoviceOwnedLesson(run.state,run.journal,guide(run));expect(lesson(run)?.expanded).toBe(true);
   const before=SavedRun.restore(store,await store.read()),ids=run.state.jokers.map(j=>j.instanceId).reverse();
   const shown=presentNoviceOwnedLesson(guide(run)!,lesson(run),{collapsed:false,canExpand:true,count:2});
-  expect(shown).toMatchObject({focus:'slots',hint:{cue:'试试调整顺序'}});expect(shown.hint.body).toContain('不松手');
+  expect(shown).toMatchObject({focus:'slots',hint:{cue:'试试调整顺序'}});
+  expect(shown.hint.body).toMatch(/按住第 1 张.*浮起.*拖到第 2 张.*松手/);
   const mouse=presentNoviceOwnedLesson(guide(run)!,lesson(run),{collapsed:false,canExpand:true,count:2,finePointer:true});
-  expect(mouse.hint.body).toContain('鼠标左键');expect(mouse.hint.gesture).toBe('hold-drag');
+  expect(mouse.hint.body).toMatch(/第 1 张.*按住鼠标左键.*浮起.*拖到第 2 张.*松开/);expect(mouse.hint.gesture).toBe('hold-drag');
   attemptNoviceOwnedReorder(run.state,run.journal,guide(run),ids);expect(lesson(run)?.reordered).toBe(false);
   store.fail=true;expect(await run.dispatch({type:'ReorderJokers',ids})).toMatchObject({ok:false,code:'save-failed'});
   expect(lesson(run)?.reordered).toBe(false);store.fail=false;expect((await run.retry()).ok).toBe(true);

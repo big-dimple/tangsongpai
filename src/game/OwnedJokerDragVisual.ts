@@ -7,6 +7,8 @@ type Art=Phaser.GameObjects.Container;
 interface Surface {
   root:Phaser.GameObjects.Container;arts:ReadonlyMap<string,Art>;slots:readonly Box[];
   ids:readonly string[];hint?:Phaser.GameObjects.Text;
+  /** A scene with its own safe status region can suppress text on the cards. */
+  externalFeedback?:boolean;
 }
 /** CSS-pixel feedback; no domain state, command or persistence is owned here. */
 export const OWNED_DRAG={lift:16,scale:1.06,giveWayMs:110,settleMs:150} as const;
@@ -21,6 +23,14 @@ export function ownedOrderReversed(run:{stageIndex:number;boss:{definitionId:str
   return run.stageIndex%3===2&&run.boss.definitionId==='B13';
 }
 
+/** A same-seat release cancels, so it must not be advertised as a placement. */
+export function ownedDragFeedback(from:number,to:number,saving:boolean):{cue:string;body:string} {
+  if(saving)return {cue:'正在保存顺序',body:'请稍候。'};
+  if(to<0)return {cue:'移回牌栏',body:'在牌栏外松手可取消。'};
+  if(to===from)return {cue:'牌已浮起',body:'拖到另一张牌后松手。'};
+  return {cue:'松手放第 '+(to+1)+' 位',body:'移出牌栏可取消。'};
+}
+
 export class OwnedJokerDragVisual {
   private overlay?:Phaser.GameObjects.Graphics;
   private shadow?:Phaser.GameObjects.Graphics;
@@ -30,6 +40,7 @@ export class OwnedJokerDragVisual {
   private pointer:{x:number;y:number};
   private target=-1;
   saving=false;
+  get feedback(){return ownedDragFeedback(this.surface().ids.indexOf(this.id),this.target,this.saving);}
   constructor(private readonly scene:Phaser.Scene,readonly id:string,readonly seq:number,
     private readonly start:{x:number;y:number},private readonly surface:()=>Surface,private readonly reduced:()=>boolean){
     this.pointer=start;this.preview(start.x,start.y);
@@ -38,8 +49,8 @@ export class OwnedJokerDragVisual {
     if(this.overlay?.active)return;
     this.overlay=this.scene.add.graphics().setName('shop/owned-insertion');
     this.shadow=this.scene.add.graphics().setName('shop/owned-drag-shadow');
-    this.label=this.scene.add.text(0,0,'',{fontFamily:UI_FONT,fontSize:'14px',fontStyle:'bold',color:PAPER_CSS.jade,backgroundColor:PAPER_CSS.paperLight,padding:{x:4,y:2}}).setOrigin(.5).setName('shop/owned-drop-label');
-    s.root.add([this.overlay,this.shadow,this.label]);
+    if(!s.externalFeedback)this.label=this.scene.add.text(0,0,'',{fontFamily:UI_FONT,fontSize:'14px',fontStyle:'bold',color:PAPER_CSS.jade,backgroundColor:PAPER_CSS.paperLight,padding:{x:4,y:2}}).setOrigin(.5).setName('shop/owned-drop-label');
+    s.root.add(this.label?[this.overlay,this.shadow,this.label]:[this.overlay,this.shadow]);
   }
   preview(x:number,y:number){
     if(this.saving)return;this.pointer={x,y};
@@ -53,8 +64,8 @@ export class OwnedJokerDragVisual {
     if(seat){
       overlay.fillStyle(PAPER_THEME.jade,.16).fillRoundedRect(seat.x,seat.y,seat.width,seat.height,5);
       overlay.lineStyle(3,PAPER_THEME.jade,.95).strokeRoundedRect(seat.x+1,seat.y+1,seat.width-2,seat.height-2,5);
-      this.label!.setPosition(seat.x+seat.width/2,seat.y+seat.height-13).setText(this.saving?'保存中':'第'+(to+1)+'位').setVisible(true);
-    }else this.label!.setVisible(false);
+      this.label?.setPosition(seat.x+seat.width/2,seat.y+seat.height-13).setText(this.saving?'保存中':'第'+(to+1)+'位').setVisible(true);
+    }else this.label?.setVisible(false);
     s.root.bringToTop(overlay);
     for(const [id,art] of s.arts){
       if(!art.active)continue;const dest=order.indexOf(id),b=s.slots[dest];if(!b)continue;
@@ -73,8 +84,11 @@ export class OwnedJokerDragVisual {
       }
       this.destinations.set(id,dest);this.positions.set(id,{x:art.x,y:art.y,scale:art.scaleX});
     }
-    s.root.bringToTop(this.label!);
-    s.hint?.setText(this.saving?'正在保存顺序…':to<0?'移回持牌区 · 松手取消':'松手放第 '+(to+1)+' 位 · 移出取消');
+    if(this.label)s.root.bringToTop(this.label);
+    const feedback=this.feedback;
+    s.hint?.setText(s.externalFeedback?feedback.cue+' · '+feedback.body:
+      this.saving?'正在保存顺序…':to<0?'移回持牌区 · 松手取消':'松手放第 '+(to+1)+' 位 · 移出取消');
+    if(s.externalFeedback)s.hint?.setVisible(false);
   }
   /** Submitted preview stays raised and explicitly pending until the save result. */
   pending(){this.saving=true;this.paint(false);}
@@ -84,6 +98,7 @@ export class OwnedJokerDragVisual {
   capture(){for(const [id,art] of this.surface().arts)if(art.active)this.positions.set(id,{x:art.x,y:art.y,scale:art.scaleX});}
   settle(saved:boolean,onLanded?:()=>void){
     const s=this.surface();this.removeLayers();
+    if(s.externalFeedback&&s.hint?.active)s.hint.setVisible(true);
     for(const [i,id] of s.ids.entries()){
       const art=s.arts.get(id),b=s.slots[i];if(!art?.active||!b)continue;
       this.scene.tweens.killTweensOf(art);

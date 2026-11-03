@@ -103,7 +103,7 @@ export function presentNoviceOwnedLesson(hint:NoviceGuideHint,lesson:{reordered:
   if(layout.canExpand)return {hint:{...hint,cue:'展开已拥有牌',body:'点上箭头，展开已拥有牌区域。'},focus:'toggle'};
   return {hint:{...hint,cue:'查看已拥有牌',body:'当前屏幕空间不足以展开牌列；调整窗口大小后可查看。'},focus:'none'};
  }
- if(layout.count===1)return {hint:{...hint,cue:'这里有五个槽',body:layout.finePointer?'现在只有一张。以后有多张时，按住鼠标左键，等牌抬起后拖到另一张再松开换序。':'现在只有一张。以后有多张时，按住牌不松手，等抬起后拖到另一张再松手换序。'},focus:'slots'};
- if(!lesson.reordered)return {hint:{...hint,cue:'试试调整顺序',body:layout.finePointer?'按住鼠标左键，等牌抬起后拖到另一张再松开换序。这里共有五个槽。':'按住牌不松手，等抬起后拖到另一张再松手换序。这里共有五个槽。',gesture:'hold-drag'},focus:'slots'};
+ if(layout.count===1)return {hint:{...hint,cue:'这里有五个槽',body:'最多放五张唐宋牌，通常从左到右触发。可继续买，或进入牌桌。',gesture:undefined},focus:'slots'};
+ if(!lesson.reordered)return {hint:{...hint,cue:'试试调整顺序',body:layout.finePointer?'在第 1 张按住鼠标左键，等牌浮起；拖到第 2 张后松开。':'按住第 1 张，等牌浮起；拖到第 2 张后松手。',gesture:'hold-drag'},focus:'slots'};
  return {hint:{...hint,cue:'顺序已保存',body:'可以继续整理，或进入下一场试试效果。'},focus:'play'};
 }

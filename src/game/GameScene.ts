@@ -64,6 +64,7 @@ import {bindNoviceGuide} from './NoviceGuideBinding';
 import {liveNoviceGuide,noviceGuide,noviceGuideEnrolled,validNoviceDiscardSelection} from './NoviceGuide';
 import {firstStageOptions,type FirstStageOption} from './NoviceFirstStage';
 import {consecutiveSuitCards,NoviceHandLesson} from './NoviceHandLesson';
+import {noviceHandDefinition,noviceSameSuitFeedback} from './NoviceSuitLesson';
 import {mountNoviceGestureDemo,type NoviceGestureDemoHandle} from './NoviceGestureDemo';
 import {needsGuidedPractice} from './GuidedTutorial';
 import {noviceGuideCanvasBox} from './NoviceGuideView';
@@ -613,15 +614,17 @@ export class GameScene extends Phaser.Scene {
           const choices=firstStage.options.map(row=>({id:row.id,label:row.label,cardIds:row.cardIds,selected:target?.id===row.id}));
           const cue=`累计 ${stage.heat}/${stage.targetHeat} · 剩${stage.handsLeft}次出牌`;
           if(!choices.length)return {...hint,cue,body:result?.status==='unsupported'?'暂不能列牌型，可自己选牌出牌。':'正在整理当前手牌，请稍候。',choices};
+          const handRules=r2ScoreContext(this.run,this.hand,selected).handRules;
           if(!target){
             const short=stage.handsLeft===1&&!firstStage.options.some(option=>option.canClear);
-            return {...hint,cue,body:short?(stage.discardsLeft?'暂无可过关的牌，可先弃牌。':'这手不足目标，请继续出牌。'):selected.length?'从已选牌滑过可取消；或选一种牌型。':'选一种牌型，再选亮起的牌。',choices};
+            const suitFeedback=selected.length?noviceSameSuitFeedback(this.hand,selected,handRules):undefined;
+            return {...hint,cue,body:short?(stage.discardsLeft?'暂无可过关的牌，可先弃牌。':'这手不足目标，请继续出牌。'):suitFeedback?`${suitFeedback}选一种牌型。`:(selected.length?'从已选牌滑过可取消；或选一种牌型。':'选一种牌型，再选亮起的牌。'),choices};
           }
           const extra=selected.filter(id=>!target.cardIds.includes(id)),remaining=target.cardIds.filter(id=>!this.selectedIds.has(id));
           if(extra.length)return {...hint,cue,body:'先点亮起的已选牌取消。',recommendedCardIds:extra,choices};
-          if(!remaining.length)return {...hint,cue,body:stage.handsLeft===1&&!target.canClear?'这手不足目标，可弃牌或出牌。':'牌选好了，点「出牌」。',recommendedCardIds:[],focus:'play',choices};
-          const explain:Record<string,string>={'high-card':'高牌：选点数最高的亮牌。','pair':'对子：两张同点，点亮牌。','two-pair':'两对：两组同点，点亮牌。','three-kind':'三条：三张同点，点亮牌。','straight':'顺子：五张连续，点亮牌。','flush':'同花：5张同色，点亮牌。'};
-          return {...hint,cue,body:selected.length?`再选亮起的${remaining.length}张牌。`:(explain[target.id]??'选亮起的牌。'),recommendedCardIds:remaining,choices};
+          const definition=noviceHandDefinition(target.id,handRules);
+          if(!remaining.length)return {...hint,cue,body:stage.handsLeft===1&&!target.canClear?'这手不足目标，可弃牌或出牌。':target.id==='flush'||target.id==='high-card'?`${definition}点「出牌」。`:'牌选好了，点「出牌」。',recommendedCardIds:[],focus:'play',choices};
+          return {...hint,cue,body:target.id==='flush'?`${definition}${selected.length?`再选${remaining.length}张亮牌。`:'点亮牌。'}`:selected.length?`再选亮起的${remaining.length}张牌。`:(definition?definition+'点亮牌。':'选亮起的牌。'),recommendedCardIds:remaining,choices};
         }
         firstStage=undefined;
         if(hint.step==='skill'){
@@ -638,6 +641,11 @@ export class GameScene extends Phaser.Scene {
         firstStage.target=choice;unmountNoviceGuide.refresh();
       },
       onPresented:hint=>{
+        const sortLabel=this.suitButton?.getData('label') as Phaser.GameObjects.Text|undefined;
+        if(sortLabel?.active){
+          const guided=hint?.focus==='sort-suit',text=guided?'点花色':'花色';
+          if(sortLabel.text!==text)sortLabel.setText(text).setFontSize(guided&&this.view.layout.buttons.suit.width<=48?12:14);
+        }
         if(hint?.gesture!=='sweep'){
           clearSwipeDemo();
           if(!this.handInput?.active)dismissedSwipeKey='';
@@ -687,10 +695,19 @@ export class GameScene extends Phaser.Scene {
           return [map({x:topLeft.x,y:topLeft.y,width:Math.min(bottomRight.x-topLeft.x,seat.hit.width),height:bottomRight.y-topLeft.y})];
         };
         const cards=hint.focus==='score'||hint.focus==='goal'?[]:hint.recommendedCardIds??[];
-        const highlights=[...(focus?[map(focus)]:[]),...(hint.step==='discard'||hint.step==='independent'?cards:focus?[]:cards.slice(0,1)).flatMap(cardBox)];
+        const joker=hint.step==='payoff'&&!focus&&hint.fact?.purchaseInstanceId?this.jokerViews.get(hint.fact.purchaseInstanceId):undefined;
+        const jokerFrame=joker?.getData('frame') as Phaser.GameObjects.Rectangle|undefined;
+        const ownedHighlight=joker?.active&&joker.visible&&jokerFrame?.active?[map(jokerFrame.getBounds())]:[];
+        const highlights=[...(focus?[map(focus)]:ownedHighlight),...(hint.step==='discard'||hint.step==='independent'?cards:focus?[]:cards.slice(0,1)).flatMap(cardBox)];
         // The hint must not intercept the optional skill or utility buttons:
         // tapping through to the skip control would unexpectedly leave the run.
-        const controls=[l.hud,l.scoreBoard,l.playedArea,l.hand,l.actions,...Object.values(l.buttons),l.heroAction,l.inventoryEntry,l.helpEntry,...this.run.jokers.map((_,index)=>l.slots[index])];
+        // PC labels and their detail hit targets sit beside the card frame, so
+        // protect the occupied column rather than only the painted card.
+        const owned=this.run.jokers.map((_,index)=>{
+          const slot=l.slots[index];if(!slot||!l.pc)return slot;
+          return {...slot,width:Math.min(l.jokers.width/5,l.jokers.x+l.jokers.width-slot.x)};
+        });
+        const controls=[l.hud,l.scoreBoard,l.playedArea,l.hand,l.actions,...Object.values(l.buttons),l.heroAction,l.inventoryEntry,l.helpEntry,...owned];
         return {highlights,avoid:controls.filter((box):box is import('./layout').Box=>!!box).map(map)};
       },
       visible:()=>!this.presentation&&!this.playing&&!document.querySelector('dialog[open]'),
