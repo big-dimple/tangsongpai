@@ -169,7 +169,7 @@ tools/          离线素材工具
 
 ## 8. CI、Release 与服务器部署
 
-开发侧按改动执行检查；完整门禁为 `npm ci` 后运行 `npm run verify:ci -- --scope=all`，包含单元测试、内容校验、类型检查、生产构建及 Chromium 桌面／手机冒烟。手柄相关改动另运行 `npm run test:gamepad:browser`。自动检查不等于人工美术、听感或实体设备验收。
+开发侧按改动执行检查；完整门禁为 `npm ci` 后运行 `npm run verify:ci -- --scope=all`，包含单元测试、独立串行的 `test:deployment` 部署脚本校验、内容校验、类型检查、生产构建及 Chromium 桌面／手机冒烟。日常 `npm test` 不运行部署 shell 夹具；完整门禁和 Release candidate 仍必须执行全部部署场景，不得省略。手柄相关改动另运行 `npm run test:gamepad:browser`。自动检查不等于人工美术、听感或实体设备验收。
 
 `.github/workflows/release-candidate.yml`（GitHub Actions 名称 **CI and release**）在 main push 时触发，也支持手动运行。只读的 candidate job 执行上述门禁并生成生产包；通过后，只有 main 的 publish job 使用内置 `GITHUB_TOKEN` 的 `contents: write` 创建并验证 Release。工作流和账号是否可运行，以实际 Actions 结果为准。
 

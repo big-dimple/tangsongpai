@@ -9,7 +9,7 @@ if(args.length>1||(args.length&&!args[0].startsWith('--scope='))||!['all','domai
 const npmCli=process.env.npm_execpath;if(!npmCli)throw Error('run via npm run verify:ci');
 const npm=name=>({name,command:process.execPath,args:[npmCli,'run',name]});
 const gates={
-  domain:[npm('test'),npm('verify:content')],
+  domain:[npm('test'),npm('test:deployment'),npm('verify:content')],
   browser:[npm('build'),npm('verify:smoke')],
 };
 const selected=scope==='all'?Object.values(gates).flat():gates[scope],result=runSteps(root,selected);

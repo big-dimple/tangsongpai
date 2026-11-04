@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "test:deployment": "vitest run --config vitest.deployment.config.ts",
     "test:domain": "vitest run tests/domain.test.ts tests/SeededRng.test.ts",
     "test:domain:browser": "node harness/domain.mjs",
     "test:rules": "vitest run tests/rules.test.ts tests/rational.test.ts tests/r2-command.test.ts tests/content-schema.test.ts",
