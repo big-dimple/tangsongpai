@@ -27,6 +27,11 @@ describe('novice guide placement',()=>{
     const result=placeNoviceGuide({x:0,y:0,width:320,height:500},[{x:0,y:130,width:320,height:80},{x:0,y:270,width:320,height:230}],{width:280,height:100},{x:0,y:210,width:20,height:20});
     expect(result).toBeDefined();expect(result!.y+result!.height).toBeLessThanOrEqual(130);expect(result!.height).toBe(100);
   });
+  it('places a complete hint beside the current hand instead of a distant top banner',()=>{
+    const result=placeNoviceGuide({x:0,y:0,width:390,height:700},[{x:0,y:80,width:390,height:110},{x:0,y:490,width:390,height:210}],{width:300,height:100},{x:40,y:500,width:60,height:90});
+    expect(result).toBeDefined();expect(result!.y).toBeGreaterThanOrEqual(190);expect(result!.y+result!.height).toBeLessThanOrEqual(490);
+    expect(Math.abs(result!.y+50-545)).toBeLessThan(200);
+  });
   it('returns no hit target if no safe 44px area exists',()=>{
     expect(placeNoviceGuide({x:0,y:0,width:320,height:568},[{x:0,y:0,width:320,height:568}],{width:88,height:44})).toBeUndefined();
   });

@@ -49,3 +49,11 @@ it.each([1280,390])('%i: scattered K♠/2♦/3♥ each stay on their own visible
   const k=cards.get('spades-13')!;k.setY(k.y-17);f.root.bringToTop(k);f.step(3300,50);check();expect([...cards.values()].every(c=>c.active&&c.alpha===1)).toBe(true);layer.previewSushiDiscard([]);expect(nativeMaterials(f.root)).toHaveLength(0);
  }finally{layer.destroy();f.root.destroy();expect(f.scene.sys.updateList.getActive()).toHaveLength(0);}
 });
+it('keeps retained-card badges out of crowded phone actions without hiding target rings',()=>{
+ const f=nativeHeroRuntime({width:390,height:844,density:2,renderer:2}),ids=['clubs-1','clubs-8','spades-13','diamonds-8','hearts-8','spades-1','diamonds-2','hearts-3'],targets=ids.slice(3),boxes=layout({width:390,height:844},{top:0,right:0,bottom:0,left:0},'portrait',{count:8}).cards,cards=new Map(ids.map((id,i)=>[id,f.card(id,boxes[i].visual)])),controls=[{x:12,y:777,width:112,height:60},{x:132,y:777,width:128,height:60},{x:268,y:777,width:112,height:60}];
+ const layer=new HeroTargetAttachment(f.scene,{root:()=>f.root,target:id=>{const container=cards.get(id);return container?{container,width:Number(container.getData('width')),height:Number(container.getData('height'))}:undefined;},source:()=>({x:30,y:70}),motion:()=> 'full',blocked:()=>false,labelExclusions:()=>controls});
+ try{
+  layer.preview({key:'retained-phone',targetId:targets[0],targetIds:targets,sourceTargetIds:[],kind:'candidate',label:'已留',releaseReason:'laohuan.refill',confirmed:true});f.step(50,50);
+  for(const id of targets){const tag=cards.get(id)!.list.find(o=>o.name==='hero/target-tag') as Phaser.GameObjects.Text|undefined;expect(tag?.visible??false).toBe(false);expect(nativeMaterials(cards.get(id)!)).toHaveLength(1);}
+ }finally{layer.destroy();f.root.destroy();}
+});

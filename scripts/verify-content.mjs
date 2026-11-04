@@ -159,7 +159,11 @@ function legalEventEnvelope(definitions,catalog,limits,scoreLimits,chapter) {
       'An upper envelope is not an attained witness. Independent88 pure /91 shared goldens and the exported checkpoint provide attainment.']};
 }
 
-const server=await createServer({server:{middlewareMode:true},appType:'custom'});
+// This is an SSR-only checker. Do not scan ignored videos, evidence copies or
+// locally installed tool documentation as if they were application entries.
+// Skip the app config merge too: Vite drops a null inline watch override during
+// that merge, turning this short-lived process into a recursive public watcher.
+const server=await createServer({configFile:false,server:{middlewareMode:true,hmr:false,watch:null},optimizeDeps:{noDiscovery:true,include:[]},appType:'custom',logLevel:'error'});
 try {
   const {validateR2Content,R2_JOKERS}=await server.ssrLoadModule('/src/content/r2Schema.ts');
   const {R2_CONTENT_VERSION,R2_CONTENT_HASH,R2_LIMITS}=await server.ssrLoadModule('/src/domain/r2Run.ts');

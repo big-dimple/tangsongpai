@@ -82,8 +82,10 @@ export function placeNoviceGuide(bounds:Box,avoid:readonly Box[],desired:{width:
     const fits=width>=desired.width-.01&&height>=desired.height-.01;
     const coverage=(width/desired.width)*(height/desired.height);
     const distance=Math.hypot(x+width/2-centerX,y+height/2-centerY)/Math.max(1,bounds.width+bounds.height);
-    // A complete hint wins over proximity. When space is tight, keep as much of it as possible.
-    const score=(fits?10:coverage)-distance*.1;
+    // Never trade a complete explanation for a clipped one. Among complete
+    // placements, proximity is a primary cue: a remote top banner is easy to
+    // miss while the player is looking at the bottom hand or a shop slot.
+    const score=(fits?100:coverage)-distance*(fits?18:2);
     if(score>bestScore){bestScore=score;best={x,y,width,height};}
   }
   return best;

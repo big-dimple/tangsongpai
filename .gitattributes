@@ -1,3 +1,5 @@
 *.sh text eol=lf
 src/game/GameScene.ts text eol=lf
 tests/fixtures/hand-sort-9abedd01.txt text eol=lf
+# This inventory's receipt hashes the canonical LF text on every OS.
+docs/assets/source-inventory.jsonl text eol=lf

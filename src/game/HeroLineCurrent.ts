@@ -3,7 +3,7 @@ import {clearInkRuns,type InkBox,type InkPoint} from './AssistInkGeometry';
 import {drawHeroFuse,type FuseRoute} from './HeroFuse';
 
 export interface SourceElectricCue {burstSegments:number;fallbackSegments:number}
-export interface SourceElectricDecision {route?:FuseRoute;lastAttempt?:number}
+export interface SourceElectricDecision {route?:FuseRoute;lastAttempt?:number;chargeRetried?:boolean}
 
 /** Stage currents follow one visible guide with one advancing ignition front. */
 export function drawHeroLineCurrent(g:Phaser.GameObjects.Graphics,curve:(t:number)=>InkPoint,start:number,end:number,phase:number,boxes:readonly InkBox[],_color:number,alpha:number,_variation=0,_fallbackBoard?:InkBox,_cue?:SourceElectricCue,_decision?:SourceElectricDecision){

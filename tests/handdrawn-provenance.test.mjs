@@ -2,6 +2,7 @@ import {it, expect} from 'vitest';
 import fs from 'node:fs';
 import {readJSON, receiptHash, receiptOutputs, receiptRecord, runtimeManifestPath, sha256, verifyOriginal, verifyProvenance} from '../scripts/handdrawn-provenance.mjs';
 import {originalPath,sourceInventory} from '../scripts/source-originals.mjs';
+import {canonicalInventoryText} from '../scripts/verify-source-archive.mjs';
 
 const manifest = readJSON(runtimeManifestPath);
 const half1 = 'art/sources/handdrawn-runtime-20261017-half1/manifest.json';
@@ -106,4 +107,7 @@ it('rejects an original-byte substitution of identical length', () => {
 it('uses one declared receipt hash policy across LF/CRLF checkouts', () => {
   const text = JSON.stringify(readJSON(half1), null, 2) + '\n';
   expect(receiptHash(JSON.parse(text.replaceAll('\n','\r\n')))).toBe(receiptHash(JSON.parse(text)));
+  const inventory=fs.readFileSync('docs/assets/source-inventory.jsonl','utf8');
+  const receipt=readJSON('docs/assets/source-archive.json');
+  expect(sha256(canonicalInventoryText(Buffer.from(inventory.replaceAll('\n','\r\n'))))).toBe(receipt.inventorySHA256);
 });

@@ -178,6 +178,19 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
     }
   });
 
+  it('gives the desktop hero a guarded exterior echo without thinning the board roots',()=>{
+    const f=fixture({width:1280,height:720,density:1,renderer:2}),board=f.table.scoreBoard;
+    const hero:Box={x:40,y:150,width:160,height:380},source=f.text(board.x+10,board.y+4,'score').setName('score/source');
+    f.root.add(source);f.opts.getHero=()=>hero;f.opts.getBackdropGuards=()=>[hero];f.play();f.step(600);
+    const backdrop=f.root.list.find(o=>o.name==='score/high-multiplier-aura-backdrop') as Phaser.GameObjects.Graphics;
+    const shapes=painted(backdrop),roots=painted(f.ink()!).filter(path=>path.color===0x7135ad);
+    expect(f.ink()!.getData('heroSegments')).toBeGreaterThan(0);
+    expect(Math.max(...roots.map(path=>Math.max(...path.points.map(p=>p.y))-Math.min(...path.points.map(p=>p.y))))).toBeGreaterThan(24);
+    expect(shapes.some(path=>path.points.some(p=>p.x<hero.x||p.x>hero.x+hero.width||p.y>hero.y+hero.height))).toBe(true);
+    for(const shape of shapes){expect(separated(shape.points,hero)).toBe(true);expect(within(shape.points,{x:0,y:0,width:1280,height:720})).toBe(true);}
+    expect(f.root.list.indexOf(backdrop)).toBeLessThan(f.root.list.indexOf(source));f.signal.abort();expect(backdrop.active).toBe(false);
+  });
+
   it('keeps the soft backing below score text, outside cards and controls, and cleans both layers',()=>{
     const f=fixture({width:390,height:844,density:1,renderer:2}),board=f.table.scoreBoard;
     const source=f.text(board.x+10,board.y+4,'score').setName('score/source');

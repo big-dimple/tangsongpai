@@ -6,8 +6,8 @@ import {chromium} from 'playwright';
 import {tapUI,waitScene} from './ui.mjs';
 
 const out='shots/startup-audio';await mkdir(out,{recursive:true});
-const server=await createServer({mode:'e2e',cacheDir:'/tmp/tangsongpai-startup-vite',server:{host:'127.0.0.1',port:5630,strictPort:true},logLevel:'error'});await server.listen();
-const browser=await chromium.launch({executablePath:process.env.STARTUP_CHROMIUM??'/usr/bin/chromium',args:['--no-sandbox','--disable-gpu']});
+const server=await createServer({mode:'e2e',cacheDir:'/tmp/tangsongpai-startup-vite',optimizeDeps:{noDiscovery:true,include:['phaser']},server:{host:'127.0.0.1',port:5630,strictPort:true,watch:null,hmr:false},logLevel:'error'});await server.listen();
+const browser=await chromium.launch({executablePath:process.env.STARTUP_CHROMIUM??(process.platform==='win32'?undefined:'/usr/bin/chromium'),args:['--no-sandbox','--disable-gpu']});
 const report={browser:browser.version(),scope:'Chromium software rendering and emulated touch; audio states and scheduled sources observed, not human listening or physical-device acceptance.',cases:[]};
 const url='http://127.0.0.1:5630/?harness=1&seed=startup-check';
 const ready=page=>page.waitForFunction(()=>window.__harness?.game.scene.isActive('title'),null,{timeout:20000});

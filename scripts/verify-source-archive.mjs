@@ -7,6 +7,9 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 
 const digest=bytes=>createHash('sha256').update(bytes).digest('hex');
+// The receipt binds canonical JSONL text, not Git's platform checkout newlines.
+// Original artwork bytes remain byte-for-byte verified; only this text is normalized.
+export function canonicalInventoryText(bytes){return bytes.toString('utf8').replaceAll('\r\n','\n');}
 export function parseInventory(text,receipt){
  const records=text.split('\n').filter(Boolean).map(line=>JSON.parse(line)),names=new Set();
  for(const row of records){
@@ -29,8 +32,8 @@ async function walk(root,relative){
 export async function verifyArchive(project,archive){
  const receipt=JSON.parse(await readFile(path.join(project,'docs/assets/source-archive.json'),'utf8'));
  assert.equal(receipt.schemaVersion,1);assert.equal(receipt.sourceRoot,'art/sources');assert.equal(receipt.inventory,'docs/assets/source-inventory.jsonl');
- const text=await readFile(path.join(project,receipt.inventory));assert.equal(digest(text),receipt.inventorySHA256,'source inventory SHA256');
- const records=parseInventory(text.toString('utf8'),receipt),archiveRoot=path.resolve(archive);
+ const text=canonicalInventoryText(await readFile(path.join(project,receipt.inventory)));assert.equal(digest(text),receipt.inventorySHA256,'source inventory SHA256');
+ const records=parseInventory(text,receipt),archiveRoot=path.resolve(archive);
  assert.equal(execFileSync('git',['-C',archiveRoot,'rev-parse','HEAD'],{encoding:'utf8'}).trim(),receipt.revision,'source archive commit');
  const actual=(await walk(archiveRoot,receipt.sourceRoot)).sort(),expected=records.map(r=>r.destination).sort();assert.deepEqual(actual,expected,'source archive paths');
  for(const record of records){

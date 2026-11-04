@@ -200,7 +200,10 @@ export class HeroTargetAttachment {
   const exclusions=this.options.labelExclusions?.()??[],overlaps=(b:InkBox)=>exclusions.some(a=>b.x<a.x+a.width&&b.x+b.width>a.x&&b.y<a.y+a.height&&b.y+b.height>a.y);if(!overlaps(label.getBounds()))return;
   if(!group){label.y=(card.center?.y??0)-card.height/2-11/Math.max(.2,Math.abs(card.container.scaleY));if(!overlaps(label.getBounds()))return;}
   const bounds=label.getBounds(),worldX=bounds.x+bounds.width/2,worldY=bounds.y+bounds.height/2,matrix=card.container.getWorldTransformMatrix(),original=matrix.applyInverse(worldX,worldY),candidates=exclusions.flatMap(b=>[b.x-4-bounds.width/2,b.x+b.width+4+bounds.width/2]).sort((a,b)=>Math.abs(a-worldX)-Math.abs(b-worldX));
-  for(const x of candidates){const b={...bounds,x:x-bounds.width/2};if(b.x<4||b.x+b.width>cssViewport(this.scene).width-4||overlaps(b))continue;label.x+=matrix.applyInverse(x,worldY).x-original.x;break;}
+  for(const x of candidates){const b={...bounds,x:x-bounds.width/2};if(b.x<4||b.x+b.width>cssViewport(this.scene).width-4||overlaps(b))continue;label.x+=matrix.applyInverse(x,worldY).x-original.x;return;}
+  // Crowded phone cards retain their own perimeter; never keep a badge over a
+  // real action just because every horizontal fallback is occupied.
+  label.setVisible(false);
  }
  private update(delta:number,force=true,wallDelta=delta):void {
   if(this.destroyed)return;if(this.blurred||document.hidden||this.options.blocked()){this.hide();return;}
@@ -224,7 +227,7 @@ export class HeroTargetAttachment {
   const prepared=!state.eventId&&state.kind!=='assist',full=this.options.motion()==='full'&&(this.state.accepted||prepared)&&this.particles.available,releasing=state.phase==='release',release=releasing?Math.min(1,state.elapsed/ATTACHMENT_RELEASE_MS):0;
   for(const {id,card}of targets){
    const {container,width,height}=card,center=card.center??{x:0,y:0};let mark=this.marks.get(id);
-   if(!mark||mark.container!==container||!mark.edge.active){this.removeMark(id);const edge=this.scene.add.graphics().setName('hero/target-edge').setData('targetId',id).setData('attachmentKind',state.kind??'card');container.add(edge);const showLabel=state.kind!=='assist'&&!!state.label&&state.label!=='待转'&&state.releaseReason!=='erxiang.handoff'&&(!state.kind||state.kind!=='group'||id===targets[0]?.id),label=showLabel?this.scene.add.text(0,0,state.label!,{fontFamily:UI_FONT,fontSize:'13px',fontStyle:'bold',color:'#215f70',backgroundColor:'#edf7f5',padding:{x:3,y:1},resolution:textDensity(this.scene)}).setOrigin(.5).setName('hero/target-tag').setData('targetId',id):undefined;if(label)container.add(label);mark={container,edge,label};this.marks.set(id,mark);}
+   if(!mark||mark.container!==container||!mark.edge.active){this.removeMark(id);const edge=this.scene.add.graphics().setName('hero/target-edge').setData('targetId',id).setData('attachmentKind',state.kind??'card');container.add(edge);const showLabel=!(state.kind==='candidate'&&state.releaseReason==='laohuan.refill'&&cssViewport(this.scene).width<600)&&state.kind!=='assist'&&!!state.label&&state.label!=='待转'&&state.releaseReason!=='erxiang.handoff'&&(!state.kind||state.kind!=='group'||id===targets[0]?.id),label=showLabel?this.scene.add.text(0,0,state.label!,{fontFamily:UI_FONT,fontSize:'13px',fontStyle:'bold',color:'#215f70',backgroundColor:'#edf7f5',padding:{x:3,y:1},resolution:textDensity(this.scene)}).setOrigin(.5).setName('hero/target-tag').setData('targetId',id):undefined;if(label)container.add(label);mark={container,edge,label};this.marks.set(id,mark);}
    const {edge,label}=mark,sx=Math.max(.2,Math.abs(container.scaleX)),sy=Math.max(.2,Math.abs(container.scaleY));edge.clear().setPosition(center.x,center.y);
    if(label){label.visible=!(state.eventId&&this.sourceImpactEventId===state.eventId);const text=releasing?(state.resolvedLabel??state.label!):state.kind==='candidate'&&state.selectedIds?.includes(id)?'待留':state.label!;label.setText(text).setData('fullText',text);if(card.labelWidth&&label.width>card.labelWidth*sx&&state.kind==='wager')label.setText(releasing?(state.failed?'未成':'已成'):'新?');const group=state.kind==='group';label.setScale(1/sx,1/sy).setPosition(group?center.x:center.x-width/2+(label.width/2+2)/sx,group?center.y-height/2-11/sy:center.y+height/2+11/sy).setAlpha(1-release);this.avoidControls(label,card,group);}
    edge.setData('phase',state.phase).setData('eventId',state.eventId).setData('generation',state.generation).setData('flowPhase',full?state.clock%1600/1600:0).setData('memberIds',ids).setData('width',width).setData('height',height).setData('labelText',label?.text);
@@ -244,14 +247,21 @@ export class HeroTargetAttachment {
   this.atmosphere.setData('phase',state.phase).setData('memberIds',members.map(t=>t.id)).setData('costIds',style.key==='exile'?layout.costIds:[]).setData('protectedPrint',layout.protectedBoxes).setData('clock',state.clock).setData('cadenceHz',hz).setData('sourceKind',source?.kind);
   const scoreTime=this.sourceElapsed/HERO_SCORE_SOURCE_MS;
   // Reach the moving card early, then let the transmitted current recede
-  // gradually instead of shortening the entire source to one flash.
-  // At unusually low FPS, keep a dim release visible for at most another
-  // source window so the transmission is not reduced to one rendered frame.
-  const scoreProgress=scoreTime>=1&&this.needsSourceFrames()? .94 :scoreTime<.34?scoreTime*.78/.34:.78+(scoreTime-.34)*.22/.66;
+  // gradually instead of shortening the entire source to one flash. If a long
+  // frame skips the travel phase, retain its charge and three actual travel
+  // frames. Never rewind an already advanced front or extend the existing bound.
+  const previousProgress=Number(this.flightCurrent?.getData('progress')??0);
+  const recoverCharge=scoreTime>=.45&&this.sourceVisibleFrames===0&&previousProgress<.27&&this.sourceElapsed<HERO_SCORE_SOURCE_MS*2;
+  const recoverTravel=scoreTime>=.45&&this.sourceVisibleFrames<3&&previousProgress<.45&&this.sourceElapsed<HERO_SCORE_SOURCE_MS*2;
+  const scoreProgress=recoverCharge?Math.max(.14,previousProgress):recoverTravel?.58:scoreTime>=1&&this.needsSourceFrames()? .94 :scoreTime<.34?scoreTime*.78/.34:.78+(scoreTime-.34)*.22/.66;
   const progress=Number.isFinite(this.pulseAfter)?state.eventId?scoreProgress:this.sourceElapsed/HERO_SOURCE_CURRENT_MS:-1;
   if(full&&this.state.accepted&&!state.suppressSource&&!releasing&&!state.failed&&source&&progress>=0&&progress<1){
    this.phases.publish('source');
    if(this.destroyed||this.state.value!==state||this.phaseContext?.signal.aborted)return;
+   // A blocked initial route otherwise shares the same retained charge progress,
+   // so its ordinary retry threshold never advances. Retry once when the art has
+   // moved, without rewinding the front or searching on every subsequent frame.
+   if(recoverCharge&&!this.sourceDecision.chargeRetried){this.sourceDecision.chargeRetried=true;this.sourceDecision.lastAttempt=undefined;}
    if(!this.flight?.active){this.flight=this.scene.add.graphics().setName('hero/target-travel');root.add(this.flight);}if(!this.flightCurrent?.active){this.flightCurrent=this.scene.add.graphics().setName('hero/target-current');root.add(this.flightCurrent);}const protectedBoxes=layout.protectedBoxes,scoreWorld=this.options.sourceExclusions?.()[0],fallbackBoard=scoreWorld?this.localBounds(root,scoreWorld):undefined,stats=drawHeroOriginStream(this.flight,source.point,sourceBoxes,style,progress,protectedBoxes,1-release,this.flightCurrent,fallbackBoard,this.sourceDecision,this.localBounds(root,{x:0,y:0,width:viewport.width,height:viewport.height}));this.flight.setData('stats',stats).setData('progress',progress).setData('sourceKind',source.kind).setData('source',source.point).setData('targetIds',sourceMembers.map(t=>t.id));this.flightCurrent.setData('stats',stats).setData('progress',progress).setData('protectedBoxes',protectedBoxes).setData('eventId',state.eventId).setData('fallbackBoard',fallbackBoard);if(!force&&state.eventId&&stats.electricSegments>0)this.sourceVisibleFrames++;
    // Only the saved beneficiaries react, once the visible source has reached
    // the moving card. The ink is a child of that exact card and follows it.

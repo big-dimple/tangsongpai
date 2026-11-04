@@ -1,18 +1,26 @@
 .novice-gesture-demo { position:fixed;inset:0;z-index:69;pointer-events:none; }
 .novice-gesture-demo *, .novice-gesture-demo svg { pointer-events:none; }
 .novice-gesture-demo[hidden] { display:none; }
-.novice-gesture-route { position:fixed;inset:0;width:100%;height:100%;overflow:visible;display:none; }
-.novice-gesture-route polyline,.novice-gesture-route path { fill:none;stroke:#a43b28;stroke-width:2;stroke-linejoin:round;stroke-linecap:round;opacity:.8; }
-.novice-gesture-route polyline { stroke-dasharray:4 4; }
-.novice-gesture-demo[data-reduced="true"] .novice-gesture-route { display:block; }
+.novice-gesture-route { position:fixed;inset:0;width:100%;height:100%;overflow:visible;display:block; }
+.novice-gesture-route polyline,.novice-gesture-route path { fill:none;stroke:#fff4d6;stroke-width:5;stroke-linejoin:round;stroke-linecap:round;opacity:.92;paint-order:stroke; }
+.novice-gesture-route polyline { stroke:#8f321f;stroke-width:2.5;stroke-dasharray:5 4;filter:drop-shadow(0 0 1.5px #fff8e9); }
+.novice-gesture-route path { stroke:#8f321f;stroke-width:3;filter:drop-shadow(0 0 1px #fff8e9); }
 .novice-gesture-hand,.novice-gesture-contact { position:fixed;left:0;top:0;display:block;will-change:transform; }
-.novice-gesture-hand { width:24px;height:30px;filter:drop-shadow(0 1px 2px #2b261fa0); }
+.novice-gesture-hand { width:32px;height:40px;filter:drop-shadow(0 0 2px #fff8e9) drop-shadow(0 2px 2px #2b261f99); }
+.novice-gesture-demo[data-mode="hold-drag"] .novice-gesture-hand { width:28px;height:35px; }
+@media (max-width:380px) { .novice-gesture-demo[data-mode="sweep"] .novice-gesture-hand { width:28px;height:35px; } }
 .novice-gesture-hand svg { display:block;width:100%;height:100%;overflow:visible;transform-origin:44% 6%;transition:transform 90ms ease-out; }
-.novice-gesture-hand path { fill:#ffe4b8;stroke:#633e2e;stroke-width:2.4;stroke-linejoin:round; }
-.novice-gesture-demo[data-phase="press"] .novice-gesture-hand svg,.novice-gesture-demo[data-phase="hold"] .novice-gesture-hand svg { transform:scale(.92); }
-.novice-gesture-demo[data-phase="release"] .novice-gesture-hand svg { transform:translateY(-5px); }
+.novice-gesture-hand path { fill:#ffd59e;stroke:#4d2c20;stroke-width:2.7;stroke-linejoin:round; }
+.novice-gesture-demo[data-phase="press"] .novice-gesture-hand svg,.novice-gesture-demo[data-phase="hold"] .novice-gesture-hand svg { transform:scale(.9); }
+.novice-gesture-demo[data-phase="release"] .novice-gesture-hand svg { transform:translateY(-7px); }
 .novice-gesture-demo[data-reduced="true"] .novice-gesture-hand svg { transition:none; }
-.novice-gesture-contact { width:9px;height:9px;box-sizing:border-box;border:2px solid #a53726;border-radius:50%;background:#fff8e9d9; }
-.novice-gesture-demo[data-phase="hold"] .novice-gesture-contact,.novice-gesture-demo[data-phase="move"] .novice-gesture-contact { background:#b83b26; }
-.novice-gesture-demo[data-phase="release"] .novice-gesture-contact { width:15px;height:15px;background:transparent; }
-.novice-gesture-demo[data-phase="rest"] .novice-gesture-hand,.novice-gesture-demo[data-phase="rest"] .novice-gesture-contact { opacity:0; }
+.novice-gesture-contact { width:14px;height:14px;box-sizing:border-box;border:3px solid #91331f;border-radius:50%;background:#fff8e9;box-shadow:0 0 0 2px #fff8e9cc; }
+.novice-gesture-contact::after { content:'';position:absolute;inset:-8px;border:2px solid #a43b28;border-radius:50%;opacity:0; }
+.novice-gesture-demo[data-phase="press"] .novice-gesture-contact::after { opacity:.7; }
+.novice-gesture-demo[data-phase="hold"] .novice-gesture-contact::after { opacity:.8;animation:novice-gesture-hold 800ms ease-out infinite; }
+.novice-gesture-demo[data-phase="hold"] .novice-gesture-contact,.novice-gesture-demo[data-phase="move"] .novice-gesture-contact { background:#b83b26;box-shadow:0 0 0 2px #fff8e9,0 0 0 4px #91331f66; }
+.novice-gesture-demo[data-phase="release"] .novice-gesture-contact { width:20px;height:20px;background:transparent; }
+.novice-gesture-demo[data-phase="rest"] .novice-gesture-hand,.novice-gesture-demo[data-phase="rest"] .novice-gesture-contact,.novice-gesture-demo[data-phase="rest"] .novice-gesture-route { opacity:0; }
+.novice-gesture-demo[data-reduced="true"] .novice-gesture-contact::after { animation:none;opacity:0; }
+@keyframes novice-gesture-hold { from { transform:scale(.55);opacity:.85; } to { transform:scale(1.15);opacity:0; } }
+@media (prefers-reduced-motion:reduce) { .novice-gesture-contact::after { animation:none!important; } }

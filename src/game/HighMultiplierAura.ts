@@ -14,6 +14,8 @@ export interface HighMultiplierAuraOptions {
   getGuards:()=>readonly Box[]|undefined;
   /** Guards for a faint layer below the score's own foreground text. */
   getBackdropGuards?:()=>readonly Box[]|undefined;
+  /** Current root-local portrait bounds for the desktop high-multiplier echo. */
+  getHero?:()=>Box|undefined;
   signal:AbortSignal;
   /** A live setting: turning reduced motion on also removes an existing cue. */
   reduced:()=>boolean;
@@ -154,12 +156,12 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
     const fit:Box={x:inner.x+VIEWPORT_GAP,y:inner.y+VIEWPORT_GAP,width:inner.width-2*VIEWPORT_GAP,height:inner.height-2*VIEWPORT_GAP};
     if(!valid(inner)||!valid(fit))return;
     const bounds=pad(board,REACH),region=intersect(inner,bbox(corners(bounds).map(world)));if(!region)return;
-    const partition=(items:readonly Box[]|undefined):{areas:Box[];protectedGuards:Box[]}|undefined=>{
+    const partition=(items:readonly Box[]|undefined,within=region):{areas:Box[];protectedGuards:Box[]}|undefined=>{
       if(!items||!Array.isArray(items)||items.length>MAX_GUARDS||items.some(b=>!b||!Number.isFinite(b.x+b.y+b.width+b.height)||b.width<0||b.height<0))return;
-      let areas:Box[]=[region];const protectedGuards:Box[]=[];
+      let areas:Box[]=[within];const protectedGuards:Box[]=[];
       for(const guard of items){
         if(guard.width===0||guard.height===0)continue;
-        const protectedGuard=pad(guard,EDGE);if(!overlaps(protectedGuard,region))continue;
+        const protectedGuard=pad(guard,EDGE);if(!overlaps(protectedGuard,within))continue;
         protectedGuards.push(protectedGuard);
         const next:Box[]=[];for(const area of areas){next.push(...subtract(area,protectedGuard));if(next.length>MAX_AREAS)return;}
         areas=next;if(!areas.length)break;
@@ -196,26 +198,28 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
     // a hole in the whole row.
     const rootLeft=board.x+4*size,rootRight=board.x+board.width-4*size;
     const rootBottom=board.y+board.height-Math.max(EDGE/minimum,3.5*size);
-    let backdropVisible=false;
+    const desktop=!!options.getHero;
+    let backdropVisible=false,heroVisible=0;const bodyScale=desktop?1.45:1;
     if(backdrop?.active){
-      let behind:ReturnType<typeof partition>;
-      try{behind=partition(options.getBackdropGuards?.());}catch{behind=undefined;}
+      let backdropGuards:readonly Box[]|undefined;
+      try{backdropGuards=options.getBackdropGuards?.();}catch{backdropGuards=undefined;}
+      const behind=partition(backdropGuards);
       if(behind?.areas.length){
         const baseAlpha=smooth(elapsed/180)*fade;
         const contour=Array.from({length:81},(_,i)=>{
           const u=i/80,x=rootLeft+(rootRight-rootLeft)*u;
-          let lift=12+1.4*Math.sin(u*19+elapsed/1000);
+          let lift=(12+1.4*Math.sin(u*19+elapsed/1000))*bodyScale;
           for(let j=0;j<9;j++){
             const center=(j+.42+(j%3)*.06)/9+.008*Math.sin(elapsed/1200+j*1.7);
             const width=u<center?.047+(j%2)*.012:.032+(j%3)*.008;
             const tip=Math.pow(Math.max(0,1-Math.abs(u-center)/width),.8);
-            lift=Math.max(lift,10+(17+(j%4)*4+2*Math.sin(elapsed/850+j))*tip);
+            lift=Math.max(lift,(10+(17+(j%4)*4+2*Math.sin(elapsed/850+j))*tip)*bodyScale);
           }
           return {x,y:rootBottom-lift*size};
         });
         const layer=[...contour,{x:rootRight,y:rootBottom},{x:rootLeft,y:rootBottom}];
         const inner=layer.map(p=>({x:p.x,y:p.y+(rootBottom-p.y)*.5}));
-        for(const [points,color,alpha] of [[layer,0x8549bc,.17],[inner,0xc392e5,.12]] as const){
+        for(const [points,color,alpha] of [[layer,0x8549bc,desktop?.24:.17],[inner,0xc392e5,desktop?.18:.12]] as const){
           const bounded=clipSheet(points,boardSafe),wp=bounded.map(world),box=bbox(wp);
           for(const area of behind.areas){
             const open=intersect(fit,area);if(!open||!overlaps(box,open))continue;
@@ -225,19 +229,46 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
           }
         }
       }
+      // The desktop portrait gets a restrained exterior echo of the same saved
+      // high-multiplier event. It never runs for an ordinary hero skill.
+      const hero=options.getHero?.();
+      if(valid(hero)){
+        const heroRegion=intersect(inner,bbox(corners(pad(hero,30)).map(world))),open=heroRegion&&partition(backdropGuards,heroRegion);
+        if(open?.areas.length){
+          const baseAlpha=smooth(elapsed/260)*fade;
+          const paint=(points:Point[],color:number,alpha:number):boolean=>{
+            const wp=points.map(world),box=bbox(wp);let painted=false;
+            for(const area of open.areas){
+              const free=intersect(fit,area);if(!free||!overlaps(box,free))continue;
+              const safe={x:free.x+.02,y:free.y+.02,width:free.width-.04,height:free.height-.04};if(!valid(safe))continue;
+              const clipped=clipSheet(wp,safe).map(local);if(clipped.length<3)continue;
+              backdrop.fillStyle(color,alpha*baseAlpha).fillPoints(clipped,true);painted=true;
+            }
+            if(painted){heroVisible++;backdropVisible=true;}return painted;
+          };
+          const left=hero.x-13,right=hero.x+hero.width+13,bottom=hero.y+hero.height+19;
+          const contour=Array.from({length:33},(_,i)=>{const u=i/32,wave=Math.sin(u*Math.PI*5+elapsed/800),arch=Math.sin(u*Math.PI);return{x:left+(right-left)*u,y:bottom-(8+6*wave*wave+4*arch*arch)*(.92+.08*Math.sin(elapsed/510))};});
+          paint([...contour,{x:right,y:bottom},{x:left,y:bottom}],0x7135ad,.28);
+          for(const side of [-1,1])for(let i=0;i<3;i++){
+            const x=side<0?hero.x-8:hero.x+hero.width+8,foot=hero.y+hero.height*(.94-i*.18),height=hero.height*(.22-i*.025),width=24+i*3,phase=elapsed/610+i*1.7+side;
+            const sheets=[flameSheet(x,foot,width*1.3,height*1.04,phase,side*8,1+i),flameSheet(x,foot-.4,width,height,phase,side*8,1+i),flameSheet(x,foot-.7,width*.52,height*.67,phase,side*6,1+i)];
+            for(const [index,color,alpha] of [[0,0x7135ad,.28],[1,0x9352c5,.42],[2,0xc28ae9,.34]] as const)paint(sheets[index],color,alpha);
+          }
+        }
+      }
     }
     const rootPieces=Math.min(80,Math.max(1,Math.ceil((rootRight-rootLeft)/Math.max(1,11*size))));
     const localGuards=protectedGuards.map(guard=>bbox(corners(guard).map(local)));
     const rootPeaks=FLAMES.flatMap((flame,i)=>{
-      const drift=.004*Math.sin(elapsed/930+flame.phase),height=6+flame.height*.25+1.4*Math.sin(elapsed/710+flame.phase);
+      const drift=.004*Math.sin(elapsed/930+flame.phase),height=(6+flame.height*.25+1.4*Math.sin(elapsed/710+flame.phase))*bodyScale;
       const peak={center:flame.position+drift,left:.034+(i%2)*.005,right:.042-(i%3)*.003,height};
       if(i===FLAMES.length-1)return [peak];
-      const next=FLAMES[i+1],between={center:(flame.position+next.position)/2-drift*.6,left:.025,right:.03,height:4+(i%3)*1.2+.7*Math.sin(elapsed/870+flame.phase)};
+      const next=FLAMES[i+1],between={center:(flame.position+next.position)/2-drift*.6,left:.025,right:.03,height:(4+(i%3)*1.2+.7*Math.sin(elapsed/870+flame.phase))*bodyScale};
       return [peak,between];
     });
     const rootTop=(x:number)=>{
-      const u=(x-board.x)/board.width;let lift=7+1.1*Math.sin(u*Math.PI*8+elapsed/1100);
-      for(const peak of rootPeaks){const d=(u-peak.center)/(u<peak.center?peak.left:peak.right),shape=smooth(1-Math.abs(d));lift=Math.max(lift,5+peak.height*shape);}
+      const u=(x-board.x)/board.width;let lift=(7+1.1*Math.sin(u*Math.PI*8+elapsed/1100))*bodyScale;
+      for(const peak of rootPeaks){const d=(u-peak.center)/(u<peak.center?peak.left:peak.right),shape=smooth(1-Math.abs(d));lift=Math.max(lift,5*bodyScale+peak.height*shape);}
       // Ease the crest down before a text boundary instead of chopping it flat.
       for(const guard of localGuards){
         if(guard.y>=rootBottom||guard.y+guard.height<=rootBottom-lift*size)continue;
@@ -294,7 +325,7 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
       for(let i=0;i<sheets.length;i++)ink.fillStyle(colors[i],alpha*opacities[i]*pulse).fillPoints(sheets[i].map(p=>({x:p.x+shift,y:p.y})),true);
       placed.push(x+shift);visible++;
     }
-    ink.setData('visibleSegments',visible).setData('rootSegments',rootVisible);
+    ink.setData('visibleSegments',visible).setData('rootSegments',rootVisible).setData('heroSegments',heroVisible);
     if((visible>0||rootVisible>0||backdropVisible)&&!notifiedVisible&&endingAt===undefined){notifiedVisible=true;options.onVisibleOnce?.();}
   };
   scene.events.on('postupdate',tick);scene.events.once('shutdown',dispose);scene.events.once('destroy',dispose);

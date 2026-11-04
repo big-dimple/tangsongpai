@@ -110,26 +110,44 @@ function safeFlare(g:Phaser.GameObjects.Graphics,point:InkPoint,radius:number,co
 /** A spark is born on the already-lit wire, grows briefly, and dies there. */
 function ignitionSpark(g:Phaser.GameObjects.Graphics,origin:InkPoint,tip:InkPoint,boxes:readonly InkBox[],bounds:InkBox,opacity:number):number {
  const within=(p:InkPoint)=>bounds.width<=0||p.x>=bounds.x+1.5&&p.x<=bounds.x+bounds.width-1.5&&p.y>=bounds.y+1.5&&p.y<=bounds.y+bounds.height-1.5;
- const safe=(p:InkPoint)=>within(p)&&!boxes.some(b=>inkSegmentCrosses(origin,p,b,1.6));
- let low=0,high=1;for(let i=0;i<8;i++){const t=(low+high)/2,p={x:origin.x+(tip.x-origin.x)*t,y:origin.y+(tip.y-origin.y)*t};if(safe(p))low=t;else high=t;}
- const end={x:origin.x+(tip.x-origin.x)*low,y:origin.y+(tip.y-origin.y)*low};if(Math.hypot(end.x-origin.x,end.y-origin.y)<2)return 0;
- let segments=stroke(g,[origin,end],boxes,2.2,0x1463ad,.9*opacity);
- segments+=stroke(g,[origin,end],boxes,1,0xe4fbff,opacity);
+ const dx=tip.x-origin.x,dy=tip.y-origin.y,length=Math.hypot(dx,dy)||1,middle={x:origin.x+dx*.52-dy/length*1.8,y:origin.y+dy*.52+dx/length*1.8};
+ const safe=(a:InkPoint,b:InkPoint)=>within(b)&&!boxes.some(box=>inkSegmentCrosses(a,b,box,1.6));
+ let low=0,high=1;for(let i=0;i<8;i++){const t=(low+high)/2,p={x:origin.x+(middle.x-origin.x)*t,y:origin.y+(middle.y-origin.y)*t};if(safe(origin,p))low=t;else high=t;}
+ const joint={x:origin.x+(middle.x-origin.x)*low,y:origin.y+(middle.y-origin.y)*low};if(Math.hypot(joint.x-origin.x,joint.y-origin.y)<2)return 0;
+ low=0;high=1;for(let i=0;i<8;i++){const t=(low+high)/2,p={x:joint.x+(tip.x-joint.x)*t,y:joint.y+(tip.y-joint.y)*t};if(safe(joint,p))low=t;else high=t;}
+ const end={x:joint.x+(tip.x-joint.x)*low,y:joint.y+(tip.y-joint.y)*low};
+ let segments=stroke(g,[origin,joint,end],boxes,2.2,0x1463ad,.9*opacity);
+ segments+=stroke(g,[origin,joint,end],boxes,1,0xe4fbff,opacity);
  safeDisc(g,end,1.5,0xb5eaff,.85*opacity,boxes,bounds);return segments;
 }
 /** A hot, asymmetric front travels one real path and releases at its destination. */
 export function drawHeroIgnition(g:Phaser.GameObjects.Graphics,route:FuseRoute,progress:number,boxes:readonly InkBox[],alpha:number){
- const p=Math.max(0,Math.min(1,progress)),raw=Math.min(1,p/.78);
- // Uneven but strictly forward movement: no abrupt blinking or independent heads.
- const front=Math.max(0,Math.min(1,raw+.028*Math.sin(2*Math.PI*raw)+.016*Math.sin(4*Math.PI*raw)));
+ const p=Math.max(0,Math.min(1,progress)),smooth=(value:number)=>{const t=Math.max(0,Math.min(1,value));return t*t*(3-2*t);};
+ // A short pressure beat precedes the launch. The front itself never reverses;
+ // irregularity belongs to the attached current, not to independent motes.
+ const raw=p<.12?.018*smooth(p/.12):.018+.982*smooth((p-.12)/.66),front=Math.max(0,Math.min(1,raw));
  const arrival=Math.max(0,Math.min(1,(p-.78)/.22)),release=Math.sin(Math.PI*arrival),fade=p>.84?Math.max(0,(1-p)/.16):1;
  const start=Math.min(1,.25+p/.06),opacity=alpha*fade*start,guide=route.points,total=guide.slice(1).reduce((n,q,i)=>n+Math.hypot(q.x-guide[i].x,q.y-guide[i].y),0);
  const at=(fraction:number)=>atDistance(guide,total*Math.max(0,Math.min(1,fraction)));
  const head=at(front),back=at(Math.max(0,front-.012)),ahead=at(Math.min(1,front+.012)),dx=ahead.x-back.x,dy=ahead.y-back.y,d=Math.hypot(dx,dy)||1,tangent={x:dx/d,y:dy/d},normal={x:-dy/d,y:dx/d};
+ let segments=0,sourceChargeSegments=0;
+ const sourceCharge=Math.max(0,1-Math.max(0,(p-.1)/.17));
+ if(sourceCharge>0){
+  const origin=at(0),next=at(Math.min(1,.025)),vx=next.x-origin.x,vy=next.y-origin.y,length=Math.hypot(vx,vy)||1,nx=-vy/length,ny=vx/length;
+  const sheath=portion(guide,0,Math.min(.16,40/Math.max(1,total)));
+  for(const side of [-1,1]){
+   const branch=sheath.map((q,i)=>({x:q.x+nx*side*Math.sin(i*2.4)*3.2*sourceCharge,y:q.y+ny*side*Math.sin(i*2.4)*3.2*sourceCharge}));
+   sourceChargeSegments+=stroke(g,branch,boxes,6.4,0x155da7,.24*opacity*sourceCharge);
+   sourceChargeSegments+=stroke(g,branch,boxes,2.1,0x6bdcff,.82*opacity*sourceCharge);
+   sourceChargeSegments+=stroke(g,branch,boxes,.85,0xf1fdff,.94*opacity*sourceCharge);
+  }
+  safeFlare(g,origin,6+3*sourceCharge,0x55caff,.42*opacity*sourceCharge,boxes,route.bounds,Math.atan2(vy,vx));
+ }
+ segments+=sourceChargeSegments;
  // A compact, irregular hot channel follows the actual advancing front.
  // There is no straight, permanent wire spanning the screen. Each bend is
  // bounded to the viewport and clipped before it can cross protected content.
- const length=Math.min(64,total*.24,front*total),steps=Math.max(2,Math.ceil(length/8)),step=Math.floor(p*900/110),trail:InkPoint[]=[];
+ const length=Math.min(82,total*.3,front*total),steps=Math.max(2,Math.ceil(length/8)),step=Math.floor(p*900/110),trail:InkPoint[]=[];
  for(let i=0;i<=steps;i++){
   const fraction=(front*total-length+length*i/steps)/Math.max(1,total),q=at(fraction),a=at(fraction-.004),b=at(fraction+.004),dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1;
   const raw=Math.sin((i+1)*91.71+step*47.13)*43758.5453,noise=(raw-Math.floor(raw))*2-1,offset=i===0||i===steps?0:noise*4.2;
@@ -138,11 +156,10 @@ export function drawHeroIgnition(g:Phaser.GameObjects.Graphics,route:FuseRoute,p
  }
  trail[trail.length-1]=head;
  const connected=clearInkRuns(trail,boxes,4.3).find(run=>run[run.length-1]===head)??[];
- let segments=0;
  if(connected.length>1){
-  segments+=stroke(g,connected,boxes,7.2,0x2777bd,.24*opacity);
-  segments+=stroke(g,connected,boxes,4.0,0x146ab4,.88*opacity);
-  segments+=stroke(g,connected,boxes,1.65,0xe5faff,.98*opacity);
+  segments+=stroke(g,connected,boxes,8.6,0x2777bd,.28*opacity);
+  segments+=stroke(g,connected,boxes,4.4,0x146ab4,.9*opacity);
+  segments+=stroke(g,connected,boxes,1.75,0xe5faff,.98*opacity);
  }
  const pulse=.9+.1*Math.sin(p*Math.PI*4),spread=8+4*release,angle=Math.atan2(tangent.y,tangent.x)+.12*Math.sin(p*Math.PI*3);
  // If the wire is beside a card, keep the flame connected but bias its core
@@ -162,6 +179,18 @@ export function drawHeroIgnition(g:Phaser.GameObjects.Graphics,route:FuseRoute,p
  safeFlare(g,core,4.8+1.3*release,0x65d8ff,.95*opacity,boxes,route.bounds,angle+.18);
  const hot={x:core.x-tangent.x*.65,y:core.y-tangent.y*.65};
  const coreRadius=safeFlare(g,hot,2.9+1.1*release,0xf4fdff,opacity,boxes,route.bounds,angle-.1);
+ // Paired, forward-facing barbs make the direction legible. Each barb is
+ // anchored to the hot front and clipped like the conductor, never a loose dot.
+ let directionalSegments=0;
+ if(p>=.12&&p<.85&&front<.995){
+  const reach=16+10*Math.sin(Math.PI*Math.min(1,p/.78));
+  for(const side of [-1,1]){
+   const root={x:head.x-tangent.x*reach+normal.x*side*2,y:head.y-tangent.y*reach+normal.y*side*2},elbow={x:head.x-tangent.x*reach*.45+normal.x*side*5,y:head.y-tangent.y*reach*.45+normal.y*side*5},tip={x:head.x+tangent.x*5,y:head.y+tangent.y*5};
+   directionalSegments+=stroke(g,[root,elbow,tip],boxes,4.2,0x1d8ed4,.46*opacity);
+   directionalSegments+=stroke(g,[root,elbow,tip],boxes,1.15,0xe7fcff,.88*opacity);
+  }
+ }
+ segments+=directionalSegments;
  // Three short offshoots remain anchored within 16px of the hot front. Their
  // unequal lifetimes make a compact burning edge, never free-roaming motes.
  let sparkSegments=0,sparks=0;const time=p*900;
@@ -179,5 +208,5 @@ export function drawHeroIgnition(g:Phaser.GameObjects.Graphics,route:FuseRoute,p
   if(sparks>=3)break;const reach=(5+6*release),tip={x:head.x+(tangent.x*a+normal.x*b)*reach,y:head.y+(tangent.y*a+normal.y*b)*reach};
   const drawn=ignitionSpark(g,head,tip,boxes,route.bounds,opacity*release);sparkSegments+=drawn;if(drawn)sparks++;
  }}
- segments+=sparkSegments;return{segments,heads:segments?[head]:[],front,corePoint:core,coreRadius,sparks,release};
+ segments+=sparkSegments;return{segments,heads:segments?[head]:[],front,corePoint:core,coreRadius,sparks,release,sourceCharge,sourceChargeSegments,directionalSegments};
 }

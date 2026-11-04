@@ -25,7 +25,8 @@ import {createServer} from 'vite';
 import {confirmHeroRoute,enterOpeningShop,openMenuSection,point,tapUI,waitScene} from './ui.mjs';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
-const out=await mkdtemp('/tmp/tsp-novice-cognition-e2e-');
+const out=await mkdtemp(join(tmpdir(),'tsp-novice-cognition-e2e-'));
+const ffmpeg=process.env.FFMPEG_PATH??(process.platform==='win32'?'ffmpeg':'/usr/bin/ffmpeg');
 const run=promisify(execFile),git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
 const sourcePaths=['src','public','index.html','vite.config.ts','package.json','package-lock.json','harness/ui.mjs','harness/novice-cognition-e2e.mjs','tests/fixtures/r2-v10-amo-checkpoints.json'];
 function sourceFingerprint(){
@@ -47,9 +48,9 @@ if(!process.env.PLAYWRIGHT_BROWSERS_PATH&&existsSync('/usr/bin/ffmpeg')){
 }
 const {chromium}=await import('playwright');
 const port=Number(process.env.NOVICE_COGNITION_PORT??5821);
-const server=await createServer({root,mode:'e2e',cacheDir:`/tmp/tsp-cognition-vite-${port}`,optimizeDeps:{noDiscovery:true,include:['phaser']},server:{host:'127.0.0.1',port,strictPort:true,watch:null,hmr:false},logLevel:'error'});
+const server=await createServer({root,mode:'e2e',cacheDir:join(tmpdir(),`tsp-cognition-vite-${port}`),optimizeDeps:{noDiscovery:true,include:['phaser']},server:{host:'127.0.0.1',port,strictPort:true,watch:null,hmr:false},logLevel:'error'});
 await server.listen();
-const browser=await chromium.launch({executablePath:process.env.SMOKE_CHROMIUM_EXECUTABLE_PATH??'/usr/bin/chromium',args:['--disable-gpu','--disable-software-rasterizer']});
+const browser=await chromium.launch({executablePath:process.env.SMOKE_CHROMIUM_EXECUTABLE_PATH??(process.platform==='win32'?undefined:'/usr/bin/chromium'),args:['--disable-gpu','--disable-software-rasterizer']});
 const diagnostic=process.env.NOVICE_COGNITION_DIAGNOSTIC==='1';
 const specs=[
   {name:'desktop-one',width:1366,height:768,touch:false,discardCount:1},
@@ -75,7 +76,14 @@ async function scenario(spec){
   const dir=join(out,spec.name);await mkdir(dir,{recursive:true});
   const context=await browser.newContext({viewport:{width:spec.width,height:spec.height},hasTouch:spec.touch,isMobile:spec.touch,deviceScaleFactor:1,recordVideo:{dir,size:{width:spec.width,height:spec.height}}});
   const page=await context.newPage(),cdp=spec.touch?await context.newCDPSession(page):undefined;
-  const row={...spec,status:'RUNNING',checks:[],shots:[],errors:[]};report.cases.push(row);
+  const row={...spec,status:'RUNNING',checks:[],shots:[],errors:[],network:[],console:[]};report.cases.push(row);
+  const pending=new Map();
+  const network=(type,request,detail={})=>{const url=request.url(),entry={type,at:Date.now(),url,resource:request.resourceType(),...detail};row.network.push(entry);if(row.network.length>500)row.network.shift();return entry;};
+  page.on('request',request=>pending.set(request,network('request',request)));
+  page.on('requestfinished',request=>{const entry=pending.get(request);pending.delete(request);if(entry){entry.finishedAt=Date.now();entry.status='finished';}});
+  page.on('requestfailed',request=>{const entry=pending.get(request);pending.delete(request);network('requestfailed',request,{failure:request.failure(),previous:entry});});
+  page.on('response',response=>{if(response.status()>=400)network('http-error',response.request(),{status:response.status()});});
+  page.on('console',message=>{if(['warning','error'].includes(message.type())){row.console.push({type:message.type(),text:message.text()});if(row.console.length>100)row.console.shift();}});
   const edgeCases=!!spec.edgeCases&&!(diagnostic&&process.env.NOVICE_COGNITION_DIAG_EDGES==='0');
   page.setDefaultTimeout(30000);page.on('pageerror',error=>row.errors.push(String(error.stack??error)));
   if(diagnostic&&cdp){
@@ -186,9 +194,12 @@ async function scenario(spec){
     const before=await saved(),selectionBefore=mode==='sweep'?await selected():null;
     const meta=await page.locator(selector).evaluate(el=>({aria:el.getAttribute('aria-hidden'),pointer:getComputedStyle(el).pointerEvents,children:[...el.querySelectorAll('*')].map(x=>getComputedStyle(x).pointerEvents)}));
     assert.equal(meta.aria,'true');assert.equal(meta.pointer,'none');assert.ok(meta.children.every(x=>x==='none'));
-    // Sample changing frames as evidence and catch transient occlusion, not just the end points.
+    const route=await page.locator(selector+' polyline').evaluate(el=>el.getAttribute('points').trim().split(/\s+/).map(pair=>pair.split(',').map(Number)));
+    assert.ok(route.length>=2&&route.every(p=>p.length===2&&p.every(Number.isFinite)),'gesture follows measurable live positions');
+    // Sample changing frames as evidence and catch transient occlusion. In particular,
+    // do not label the first moving frame as proof that the hand traverses the cards.
     for(const phase of mode==='hold-drag'?['press','hold','move','release']:['press','move','release']){
-      await page.waitForFunction(({selector,phase})=>{const e=document.querySelector(selector);return e&&!e.hidden&&e.dataset.phase===phase;},{selector,phase},{timeout:12000});
+      await page.waitForFunction(({selector,phase,route})=>{const e=document.querySelector(selector);if(!e||e.hidden||e.dataset.phase!==phase)return false;if(phase!=='move')return true;const [a,b]=[route[0],route.at(-1)],p={x:Number(e.dataset.x),y:Number(e.dataset.y)};return Math.hypot(p.x-a[0],p.y-a[1])>=Math.hypot(b[0]-a[0],b[1]-a[1])*.45;},{selector,phase,route},{timeout:12000});
       await shot(`${name}-${phase}`);
     }
     assert.deepEqual(await saved(),before,'passive demonstration must not submit a command');
@@ -209,7 +220,9 @@ async function scenario(spec){
     row.shots.push({name,drag:observed});return observed;
   };
   const restore=async scene=>{
-    const before=await saved();await page.reload();await waitScene(page,'title');await tap('title','action/title-continue');await waitScene(page,scene);if(scene==='game')await ready();else if(scene==='shop')await shopReady();
+    // DOMContentLoaded starts the real readiness checks below; waiting for the
+    // window load event can outlast a streaming audio request on Windows.
+    const before=await saved();await page.reload({waitUntil:'domcontentloaded'});await waitScene(page,'title');await tap('title','action/title-continue');await waitScene(page,scene);if(scene==='game')await ready();else if(scene==='shop'){await shopReady();await page.locator('.qiyu-entrance-burst-canvas').waitFor({state:'detached',timeout:45000});}
     const after=await saved();assert.deepEqual(after.state,before.state,'saved state survives refresh');assert.deepEqual(after.journal,before.journal,'saved commands survive refresh');return after;
   };
   const continueResult=async()=>{
@@ -463,15 +476,16 @@ async function scenario(spec){
     row.status='FAIL';row.error=String(error.stack??error);console.error(spec.name,row.error);
     if(diagnostic)row.diagnostic.events=await page.evaluate(()=>window.__cognitionEventLog??[]).catch(()=>[]);
     row.flushClick=await page.evaluate(()=>window.__cognitionFlushClick??[]).catch(()=>[]);
-    row.failure=await page.evaluate(()=>{const g=window.__harness?.game,c=g?.registry.get('runController');return {active:g?.scene.getScenes(true).map(s=>s.scene.key),state:c?.state,journal:c?.journal,guide:document.querySelector('[data-novice-guide]')?.outerHTML,dialogs:[...document.querySelectorAll('dialog[open]')].map(d=>d.innerText)};}).catch(()=>null);
-    await page.screenshot({path:join(dir,'failure.png'),scale:'css'}).catch(()=>{});process.exitCode=1;
+    row.pendingRequests=[...pending.values()].map(entry=>({...entry,pendingMs:Date.now()-entry.at}));
+    row.failure=await page.evaluate(()=>{const g=window.__harness?.game,c=g?.registry.get('runController'),loading=document.querySelector('#resource-loading');return {readyState:document.readyState,url:location.href,active:g?.scene.getScenes(true).map(s=>s.scene.key),boot:g?.scene.getScene('boot')?{active:g.scene.isActive('boot'),loader:g.scene.getScene('boot').load?.state}:null,loading:loading?{dataset:{...loading.dataset},text:loading.innerText}:null,scripts:[...document.scripts].map(s=>s.src||s.textContent?.slice(0,120)),resources:performance.getEntriesByType('resource').slice(-30).map(r=>({name:r.name,initiator:r.initiatorType,duration:r.duration,responseEnd:r.responseEnd,transferSize:r.transferSize})),state:c?.state,journal:c?.journal,guide:document.querySelector('[data-novice-guide]')?.outerHTML,dialogs:[...document.querySelectorAll('dialog[open]')].map(d=>d.innerText)};}).catch(()=>null);
+    await page.screenshot({path:join(dir,'failure.png'),scale:'css'}).catch(()=>{});await writeReport();console.error(spec.name,'startup/network observation',JSON.stringify({pending:row.pendingRequests,console:row.console,failure:row.failure},null,2));process.exitCode=1;
   }finally{
     await cdp?.detach().catch(()=>{});const video=page.video();await context.close();
     if(video){
       const source=await video.path(),target=join(dir,'session.webm');await video.saveAs(target);if(source!==target)await unlink(source);row.video=target;
       const frames=join(dir,'frames');await mkdir(frames,{recursive:true});
       try{
-        await run('/usr/bin/ffmpeg',['-hide_banner','-loglevel','error','-threads','1','-i',target,'-vf','fps=1/2','-threads','1','-q:v','3',join(frames,'frame-%05d.jpg')],{maxBuffer:1024*1024});
+        await run(ffmpeg,['-hide_banner','-loglevel','error','-threads','1','-i',target,'-vf','fps=1/2','-threads','1','-q:v','3',join(frames,'frame-%05d.jpg')],{maxBuffer:1024*1024});
         row.frames={directory:frames,intervalSeconds:2,count:(await readdir(frames)).filter(n=>n.endsWith('.jpg')).length};
         assert.ok(row.frames.count>0,'complete video has sampled frames');
       }catch(error){row.status='FAIL';row.frameError=String(error.stack??error);process.exitCode=1;}

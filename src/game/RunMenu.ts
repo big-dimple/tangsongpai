@@ -216,7 +216,20 @@ export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|un
     const actions=getActions();for(const entry of inspectButtons)entry.button.hidden=typeof actions?.[entry.key]!=='function';
     inspect.hidden=inspectButtons.every(entry=>entry.button.hidden);
   }
-  panel.append(more);
+  const saveTools=document.createElement('details'),saveLabel=document.createElement('summary');saveLabel.textContent='进度与存档';saveTools.append(saveLabel);
+  const download=(filename:string,text:string)=>{
+    const url=URL.createObjectURL(new Blob([text],{type:'application/json'})),anchor=document.createElement('a');anchor.href=url;anchor.download=filename;anchor.hidden=true;document.body.append(anchor);anchor.click();anchor.remove();globalThis.setTimeout(()=>URL.revokeObjectURL(url),0);
+  };
+  const exportCurrent=button('导出本局',()=>{const run=session.pendingRun??session.run;if(run)download('tangsongpai-'+run.state.runId.replace(/[^a-zA-Z0-9_-]+/g,'-')+'.json',run.exportJSON());},saveTools);
+  const exportRetained=button('导出保留数据',async()=>download('tangsongpai-retained.json',await session.storage.exportRetained()),saveTools);
+  const importInput=document.createElement('input');importInput.type='file';importInput.accept='application/json,.json';importInput.hidden=true;saveTools.append(importInput);
+  importInput.onchange=async()=>{
+    try {const file=importInput.files?.[0];if(file&&await session.importJSON(await file.text())&&!await routeSavedRun(game))session.reportNotice('导入已保存，请继续本局。');}
+    catch{session.reportNotice('导入失败：无法读取所选文件。原进度未修改。');}
+    finally {importInput.value='';refreshState();}
+  };
+  const importCurrent=button('导入本局',()=>{importInput.value='';importInput.click();},saveTools);
+  panel.append(saveTools,more);
   function refreshState():void {
     const run=session.run,pending=session.pendingRun,saving=pending??run;
     game.registry.set('persistentStorageReady',session.persistentReady);
@@ -227,6 +240,8 @@ export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|un
     retry.hidden=saving?.status!=='paused';retry.disabled=session.working;cancelCandidate.hidden=!pending;cancelCandidate.disabled=session.working||saving?.status==='saving';
     reload.hidden=session.persistentReady||!!run||!!pending||!session.notice;reload.disabled=session.working||!!pending||!session.notice;
     takeover.hidden=!!run||!session.loaded||!session.lease.elsewhere;takeover.disabled=session.working||!!pending;
+    exportCurrent.hidden=!run&&!pending;exportCurrent.disabled=session.working;exportRetained.hidden=!session.loaded;exportRetained.disabled=session.working;
+    importCurrent.disabled=session.working||!!pending||!session.loaded||session.storageUnavailable||!session.lease.writable||run?.status==='saving';
     start.disabled=session.working||!!pending||!session.loaded||session.storageUnavailable||!!run&&!session.lease.writable||run?.status==='saving'||run?.status==='paused';
     replay.disabled=start.disabled;skip.hidden=run?.state.mode!=='tutorial';skip.disabled=start.disabled;
     enableGuide.hidden=!noviceGuideDisabled()&&!firstChapterGuideDisabled();

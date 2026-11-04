@@ -141,3 +141,12 @@ it('keeps the temporary-save risk visible outside the closed menu and removes it
  button.click();button.click();expect(modal.open).toBe(false);expect(notice.hidden).toBe(false);
  session.temporaryRun=false;notify();expect(notice.hidden).toBe(true);
 });
+
+it('exports the unsaved candidate, retains raw backups and imports through the existing session',async()=>{
+ const createObjectURL=vi.fn((_blob:Blob)=> 'blob:checkpoint'),revokeObjectURL=vi.fn();vi.stubGlobal('URL',{createObjectURL,revokeObjectURL});
+ const importJSON=vi.fn().mockResolvedValue(true),reportNotice=vi.fn(),exportRetained=vi.fn().mockResolvedValue('{"format":"tangsongpai-storage-backup","records":[]}');Object.assign(session,{importJSON,reportNotice,storage:{exportRetained}});
+ const {modal,find}=mount();session.lease.writable=true;session.run={status:'paused',state:{phase:'shop',runId:'run/old',seed:'component'},exportJSON:()=> '{"old":true}'} as unknown as SavedRun;session.pendingRun={status:'paused',state:{phase:'shop',runId:'run/candidate',seed:'component'},exportJSON:()=> '{"candidate":true}'} as unknown as SavedRun;notify();
+ await find('导出本局').onclick?.();const blob=createObjectURL.mock.calls[0][0];expect(await blob.text()).toBe('{"candidate":true}');
+ await find('导出保留数据').onclick?.();expect(exportRetained).toHaveBeenCalledOnce();expect(createObjectURL).toHaveBeenCalledTimes(2);
+ session.pendingRun=undefined;session.lease.writable=true;notify();const input=walk(modal,e=>e.type==='file')!;expect((input as unknown as HTMLInputElement).accept).toBe('application/json,.json');Object.defineProperty(input,'files',{value:[{text:async()=> '{"valid":true}'}]});await input.onchange?.();expect(importJSON).toHaveBeenCalledWith('{"valid":true}');expect(reportNotice).not.toHaveBeenCalled();
+});

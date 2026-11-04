@@ -48,6 +48,10 @@ it('advances one bright front with a short-lived wake and a single release on th
  for(let i=1;i<5;i++)expect(samples[i].front).toBeGreaterThan(samples[i-1].front);
  expect(samples[5].heads[0]).toEqual(points.at(-1));expect(samples[6].release).toBeGreaterThan(samples[5].release);expect(samples[7].release).toBeLessThan(samples[6].release);
  const speeds=samples.slice(1,5).map((sample,i)=>sample.front-samples[i].front);expect(Math.max(...speeds)-Math.min(...speeds)).toBeGreaterThan(.005);
+ expect(samples[0].sourceCharge).toBeGreaterThan(samples[1].sourceCharge);expect(samples[0].sourceChargeSegments).toBeGreaterThan(0);
+ expect(samples[3].directionalSegments).toBeGreaterThan(0);expect(samples[6].directionalSegments).toBe(0);
+ for(const sample of samples)expect(sample.front).toBeGreaterThanOrEqual(0);
+ for(let i=1;i<samples.length;i++)expect(samples[i].front).toBeGreaterThanOrEqual(samples[i-1].front);
 });
 it('keeps the source as a short irregular connected channel rather than a screen-spanning wire',()=>{
  const points=[{x:30,y:150},{x:350,y:150}],route={points,source:points[0],target:points[1],bounds},paint=graphics();

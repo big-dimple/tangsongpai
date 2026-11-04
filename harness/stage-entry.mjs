@@ -9,7 +9,7 @@ export async function enterCurrentStage(page,touch=false){
    const start=directory.locator('.dialog-actions > .dialog-primary');
    if(touch)await start.tap();else await start.click();
   }
-  await page.waitForFunction(()=>window.__harness.game.registry.get('runController').state.phase==='await-input'&&window.__harness.game.scene.getScene('game').cardViews.length>0);
+  await page.waitForFunction(()=>{const s=window.__harness.game.scene.getScene('game');return window.__harness.game.registry.get('runController').state.phase==='await-input'&&s.ready&&s.cardViews.length>0&&s.cardViews.every(v=>!v.dealing);});
  }catch(error){
   const snapshot=await page.evaluate(()=>({phase:window.__harness?.game.registry.get('runController')?.state.phase,waitingForStage:window.__harness?.game.scene.getScene('game').waitingForStage,cards:window.__harness?.game.scene.getScene('game').cardViews.length,dialogs:[...document.querySelectorAll('dialog[open]')].map(d=>({className:d.className,context:d.dataset.context}))})).catch(()=>({unavailable:true}));
   error.message+=' [stage-entry '+JSON.stringify(snapshot)+']';throw error;

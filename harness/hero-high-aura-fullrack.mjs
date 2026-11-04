@@ -18,8 +18,9 @@ if(process.env.FULLRACK_LEGACY_REF){
  legacyCommit=execFileSync('git',['rev-parse',`${process.env.FULLRACK_LEGACY_REF}^{commit}`],{encoding:'utf8'}).trim();
  legacyDirectory=await mkdtemp(join(tmpdir(),'tsp-fullrack-legacy-'));
  const archive=execFileSync('git',['archive','--format=tar',legacyCommit],{maxBuffer:256*1024*1024});
- execFileSync('tar',['-xf','-','-C',legacyDirectory],{input:archive});
- await symlink(resolve('node_modules'),join(legacyDirectory,'node_modules'),'dir');
+ const extractionDirectory=process.platform==='win32'?legacyDirectory.replace(/^([A-Za-z]):/,(_,drive)=>'/'+drive.toLowerCase()).replaceAll('\\','/'):legacyDirectory;
+ execFileSync('tar',['-xf','-','-C',extractionDirectory],{input:archive});
+ await symlink(resolve('node_modules'),join(legacyDirectory,'node_modules'),process.platform==='win32'?'junction':'dir');
  fixtureServer=await createServer({root:legacyDirectory,server:{middlewareMode:true,hmr:false,watch:null},appType:'custom',logLevel:'error'});
 }
 const {createRun}=await fixtureServer.ssrLoadModule('/src/domain/run.ts');
@@ -46,13 +47,14 @@ const all=[{name:'pc',width:1366,height:768,phone:false},{name:'phone500',width:
 const names=(process.env.FULLRACK_VIEWPORTS??'pc,phone390,phone320').split(',');
 const modes=(process.env.FULLRACK_MODES??'normal').split(',');
 const music=Number(process.env.FULLRACK_MUSIC??0);
-const browser=await chromium.launch({executablePath:process.env.SMOKE_CHROMIUM_EXECUTABLE_PATH??'/usr/bin/chromium',args:['--disable-gpu','--disable-software-rasterizer']});
+const browser=await chromium.launch({executablePath:process.env.SMOKE_CHROMIUM_EXECUTABLE_PATH??(process.platform==='win32'?undefined:'/usr/bin/chromium'),args:['--disable-gpu','--disable-software-rasterizer']});
 const report={scope:'Validated controlled five-joker inventory and public hand; actual GameScene, native skill/play input, saved score events and post-mix browser audio. Chromium software emulation; not natural acquisition, live site, physical hardware, human listening or aesthetic acceptance.',legacyCommit:legacyCommit??null,cases:[]};
 try {
  for(const spec of all.filter(x=>names.includes(x.name)))for(const mode of modes){
   const row={...spec,mode,errors:[],assetResponses:[]};report.cases.push(row);
   const context=await browser.newContext({viewport:{width:spec.width,height:spec.height},deviceScaleFactor:1,hasTouch:spec.phone,reducedMotion:mode==='reduced'?'reduce':'no-preference'}),page=await context.newPage();
   let releaseNetwork;
+  if(mode==='throttle'){const cdp=await context.newCDPSession(page);await cdp.send('Emulation.setCPUThrottlingRate',{rate:4});row.cpuThrottle=4;}
   if(mode==='slowNet'||mode==='lateNet'){
    const gate=new Promise(resolve=>{releaseNetwork=resolve;});
    await page.route('**/assets/audio/high-multiplier/low-fire-v2.mp3',async route=>{await gate;await route.continue().catch(()=>{});});
@@ -89,20 +91,25 @@ try {
    for(const id of selectedIds)await tapUI(page,'game','card/'+id,spec.phone);
    await tapUI(page,'game','hero/action-shortcut',spec.phone);
    const index=before.handOrder.indexOf(selectedIds[0])+1,choice=page.getByRole('button',{name:new RegExp('^第'+index+'张 · ')});if(spec.phone)await choice.tap();else await choice.click();
-   await page.waitForFunction(()=>{const s=window.__harness.game.scene.getScene('game');return s.audio?.context?.state==='running'&&window.__fullrackCeiling;});
-   await page.evaluate(()=>{
-    const g=window.__harness.game,s=g.scene.getScene('game'),engine=s.audio,dest=engine.context.createMediaStreamDestination();window.__fullrackCeiling.connect(dest);
-    const capture=g.canvas.captureStream(25),stream=new MediaStream([...capture.getVideoTracks(),...dest.stream.getAudioTracks()]),recorder=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp8,opus'}),chunks=[];
+   await page.waitForFunction(muted=>{const s=window.__harness.game.scene.getScene('game');return s.ready&&(muted||s.audio?.context?.state==='running'&&window.__fullrackCeiling);},mode==='muted');
+   row.audioCapture=mode==='muted'?'not-applicable-muted':'post-mix';
+   await page.evaluate(muted=>{
+    const g=window.__harness.game,s=g.scene.getScene('game'),engine=s.audio,capture=g.canvas.captureStream(25);
+    // SFX=0 intentionally has no running game audio context. Do not unmute or
+    // create a replacement graph: muted cases capture the actual silent canvas.
+    const dest=muted||!engine.context?undefined:engine.context.createMediaStreamDestination();if(dest)window.__fullrackCeiling.connect(dest);
+    const stream=new MediaStream([...capture.getVideoTracks(),...(dest?.stream.getAudioTracks()??[])]),recorder=new MediaRecorder(stream,{mimeType:'video/webm;codecs=vp8,opus'}),chunks=[];
     recorder.ondataavailable=e=>chunks.push(e.data);recorder.start();
     const p=window.__fullrack={recorder,chunks,stream,dest,frames:[],backdrops:[],sources:[],targets:[],shots:{},events:[],fires:[],ignitions:[],meters:[]};
-    const quiet=engine.context.createGain();quiet.gain.value=0;quiet.connect(engine.context.destination);
-    const musicMeter=engine.context.createAnalyser(),fireMeter=engine.context.createAnalyser(),outputMeter=engine.context.createAnalyser();
-    for(const meter of [musicMeter,fireMeter,outputMeter]){meter.fftSize=2048;meter.smoothingTimeConstant=0;meter.connect(quiet);}
-    engine.gains.music.connect(musicMeter);
-    window.__fullrackCeiling.connect(outputMeter);
-    const level=meter=>{const data=new Float32Array(meter.fftSize);meter.getFloatTimeDomainData(data);return Math.sqrt(data.reduce((s,x)=>s+x*x,0)/data.length);};
-    const peak=meter=>{const data=new Float32Array(meter.fftSize);meter.getFloatTimeDomainData(data);return data.reduce((s,x)=>Math.max(s,Math.abs(x)),0);};
-    p.measure=()=>{const voice=[...engine.voices].find(v=>v.highMultiplierFire);if(voice&&p.meterVoice!==voice){voice.gain.connect(fireMeter);p.meterVoice=voice;}p.meters.push({at:performance.now(),fire:level(fireMeter)*engine.gains.sfx.gain.value,music:level(musicMeter),outputPeak:peak(outputMeter),voice:!!voice,musicPlaying:!!engine.activeMusic&&!engine.activeMusic.element.paused});};
+    if(dest){
+     const quiet=engine.context.createGain();quiet.gain.value=0;quiet.connect(engine.context.destination);
+     const musicMeter=engine.context.createAnalyser(),fireMeter=engine.context.createAnalyser(),outputMeter=engine.context.createAnalyser();
+     for(const meter of [musicMeter,fireMeter,outputMeter]){meter.fftSize=2048;meter.smoothingTimeConstant=0;meter.connect(quiet);}
+     engine.gains.music.connect(musicMeter);window.__fullrackCeiling.connect(outputMeter);
+     const level=meter=>{const data=new Float32Array(meter.fftSize);meter.getFloatTimeDomainData(data);return Math.sqrt(data.reduce((s,x)=>s+x*x,0)/data.length);};
+     const peak=meter=>{const data=new Float32Array(meter.fftSize);meter.getFloatTimeDomainData(data);return data.reduce((s,x)=>Math.max(s,Math.abs(x)),0);};
+     p.measure=()=>{const voice=[...engine.voices].find(v=>v.highMultiplierFire);if(voice&&p.meterVoice!==voice){voice.gain.connect(fireMeter);p.meterVoice=voice;}p.meters.push({at:performance.now(),fire:level(fireMeter)*engine.gains.sfx.gain.value,music:level(musicMeter),outputPeak:peak(outputMeter),voice:!!voice,musicPlaying:!!engine.activeMusic&&!engine.activeMusic.element.paused});};
+    }else p.measure=()=>{};
     const originalTrace=s.presentTrace;s.presentTrace=function(score,...args){p.traceAt=performance.now();p.committedRoot=s.run.lastTrace?.rootId;return originalTrace.call(this,score,...args);};
     const originalIgnition=s.showHighMultiplierAura;s.showHighMultiplierAura=function(event,...args){const before=s.presentation?.auraPlayed,at=performance.now(),result=originalIgnition.call(this,event,...args);if(!before&&s.presentation?.auraPlayed)p.ignitions.push({at,eventId:event.eventId,committedRoot:s.run.lastTrace?.rootId});return result;};
     const originalAward=s.award;s.award=async function(...args){p.awardAt=performance.now();try{return await originalAward.apply(this,args);}finally{p.awardEnd=performance.now();}};
@@ -110,17 +117,25 @@ try {
     const originalEvent=s.showScoreEvent;s.showScoreEvent=function(event,...args){p.events.push({at:performance.now(),eventId:event.eventId});return originalEvent.call(this,event,...args);};
     const originalFire=engine.playHighMultiplierFire;engine.playHighMultiplierFire=function(options){const result=originalFire.call(this,options),voice=[...this.voices].find(v=>v.highMultiplierFire),asset=this.scoreSamples.get('high-multiplier-low-fire');p.fires.push({at:performance.now(),active:!!voice,usesLocalAsset:!!voice&&!!asset&&voice.source.buffer===asset,duration:asset?.duration,rate:voice?.source.playbackRate.value});return result;};
     const walk=list=>list.flatMap(o=>[o,...(o.list?walk(o.list):[])]);
-    p.tick=()=>{if(!s.scene.isActive())return;p.measure();const objects=walk(s.view.root?.list??[]),current=objects.find(o=>o.name==='hero/target-current'&&o.active&&o.visible&&(o.getData('stats')?.electricSegments??0)>0);if(current){const stats=current.getData('stats');const progress=current.getData('progress');if(!p.guards)p.guards=current.getData('protectedBoxes');p.sources.push({at:performance.now(),eventId:current.getData('eventId'),progress,front:stats.front,head:stats.electricHeads?.[0],route:stats.route,coreRadius:stats.coreRadius,sparks:stats.sparks,release:stats.release,burstSegments:stats.sourceBurstSegments??0,fallbackSegments:stats.scoreFallbackSegments??0});if(!p.shots.current)p.shots.current=g.canvas.toDataURL('image/png').split('base64,')[1];for(const [label,threshold] of [['ignite',.08],['advance',.35],['approach',.63],['arrival',.83]])if(progress>=threshold&&!p.shots[label])p.shots[label]=g.canvas.toDataURL('image/png').split('base64,')[1];if(stats.scoreFallbackSegments>0&&!p.shots.fallback)p.shots.fallback=g.canvas.toDataURL('image/png').split('base64,')[1];}for(const glow of objects.filter(o=>o.name==='hero/target-afterglow'&&o.active&&o.visible&&(o.getData('impactOutlineSegments')??0)>0)){p.targets.push({at:performance.now(),id:glow.getData('targetCardId'),segments:glow.getData('impactOutlineSegments')});if(!p.shots.target)p.shots.target=g.canvas.toDataURL('image/png').split('base64,')[1];}const a=objects.find(o=>o.name==='score/high-multiplier-aura'&&o.active&&o.visible);if(!a)return;const count=a.getData('visibleSegments')??0;p.frames.push({at:performance.now(),elapsed:a.getData('elapsed'),segments:count,rootSegments:a.getData('rootSegments')??0,eventId:a.getData('eventId'),eventCount:p.events.length,fireVoices:[...engine.voices].filter(v=>v.highMultiplierFire).length});if(count>0&&!p.shots.first)p.shots.first=g.canvas.toDataURL('image/png').split('base64,')[1];if(count>0&&a.getData('elapsed')>=600&&!p.shots.peak)p.shots.peak=g.canvas.toDataURL('image/png').split('base64,')[1];if(count>0&&p.events.length>=2&&!p.shots.scoring)p.shots.scoring=g.canvas.toDataURL('image/png').split('base64,')[1];};g.events.on('postrender',p.tick);
+    p.tick=()=>{if(!s.scene.isActive())return;p.measure();const objects=walk(s.view.root?.list??[]),current=objects.find(o=>o.name==='hero/target-current'&&o.active&&o.visible&&(o.getData('stats')?.electricSegments??0)>0);if(current){const stats=current.getData('stats');const progress=current.getData('progress');if(!p.guards)p.guards=current.getData('protectedBoxes');p.sources.push({at:performance.now(),eventId:current.getData('eventId'),progress,sourceElapsed:s.targetAttachment?.sourceElapsed,sourceVisibleFrames:s.targetAttachment?.sourceVisibleFrames,front:stats.front,head:stats.electricHeads?.[0],route:stats.route,coreRadius:stats.coreRadius,sparks:stats.sparks,release:stats.release,sourceCharge:stats.sourceCharge??0,chargeSegments:stats.sourceChargeSegments??0,directionalSegments:stats.directionalSegments??0,burstSegments:stats.sourceBurstSegments??0,fallbackSegments:stats.scoreFallbackSegments??0});if(!p.shots.current)p.shots.current=g.canvas.toDataURL('image/png').split('base64,')[1];for(const [label,threshold] of [['ignite',.08],['advance',.35],['approach',.63],['arrival',.83]])if(progress>=threshold&&!p.shots[label])p.shots[label]=g.canvas.toDataURL('image/png').split('base64,')[1];if(stats.scoreFallbackSegments>0&&!p.shots.fallback)p.shots.fallback=g.canvas.toDataURL('image/png').split('base64,')[1];}for(const glow of objects.filter(o=>o.name==='hero/target-afterglow'&&o.active&&o.visible&&(o.getData('impactOutlineSegments')??0)>0)){p.targets.push({at:performance.now(),id:glow.getData('targetCardId'),segments:glow.getData('impactOutlineSegments')});if(!p.shots.target)p.shots.target=g.canvas.toDataURL('image/png').split('base64,')[1];}const a=objects.find(o=>o.name==='score/high-multiplier-aura'&&o.active&&o.visible);if(!a)return;const count=a.getData('visibleSegments')??0;p.frames.push({at:performance.now(),elapsed:a.getData('elapsed'),segments:count,rootSegments:a.getData('rootSegments')??0,heroSegments:a.getData('heroSegments')??0,eventId:a.getData('eventId'),eventCount:p.events.length,fireVoices:[...engine.voices].filter(v=>v.highMultiplierFire).length});if(count>0&&!p.shots.first)p.shots.first=g.canvas.toDataURL('image/png').split('base64,')[1];if(count>0&&a.getData('elapsed')>=600&&!p.shots.peak)p.shots.peak=g.canvas.toDataURL('image/png').split('base64,')[1];if(a.getData('heroSegments')>0&&!p.shots.hero)p.shots.hero=g.canvas.toDataURL('image/png').split('base64,')[1];if(count>0&&p.events.length>=2&&!p.shots.scoring)p.shots.scoring=g.canvas.toDataURL('image/png').split('base64,')[1];};g.events.on('postrender',p.tick);
     p.guardProbe=()=>{if(!p.auraGuards&&s.view.root?.getByName('score/high-multiplier-aura')){p.auraGuards=s.highMultiplierAuraGuards();p.auraBoard={...s.view.layout.scoreBoard};}};g.events.on('postrender',p.guardProbe);
     p.backdropProbe=()=>{const root=s.view.root,back=root?.getByName('score/high-multiplier-aura-backdrop');if(!back?.active)return;const index=root.list.indexOf(back),texts=[s.resultText,...s.scoreLabels,s.scoreHeat,s.scoreMult,s.scoreTotal,...root.list.filter(o=>o.name.startsWith('score/formula-'))].filter(o=>o?.active&&o.visible&&root.list.includes(o));p.backdrops.push({painted:back.commandBuffer.length>0,behindText:texts.every(o=>root.list.indexOf(o)>index)});};g.events.on('postrender',p.backdropProbe);
    });
    await tapUI(page,'game','action/play',spec.phone);
+   row.playInput=await page.evaluate(()=>{const s=window.__harness.game.scene.getScene('game');return {ready:s.ready,playing:s.playing,presentation:!!s.presentation,dialog:s.dialog.current?.outerHTML,selected:[...s.selectedIds],erxiangTargetId:s.erxiangTargetId,commandSeq:s.run.commandSeq,buttonEnabled:s.playButton.input?.enabled,diagnostics:window.__harness.game.registry.get('uiDiagnostics')?.slice(-12)};});
    if(mode==='repeat')await page.evaluate(()=>{const s=window.__harness.game.scene.getScene('game');void s.playSelected();void s.playSelected();});
    await page.waitForFunction(seq=>window.__harness.game.registry.get('runController').state.commandSeq>seq,before.commandSeq);
    const after=await page.evaluate(()=>window.__harness.game.registry.get('runController').state),crossing=after.lastTrace.events.find(e=>e.reasonKey==='erxiang.handoff'&&BigInt(e.before.M.n)<10n*BigInt(e.before.M.d)&&BigInt(e.after.M.n)>=10n*BigInt(e.after.M.d));assert.ok(crossing);
    if(mode==='repeat')assert.equal(after.commandSeq,before.commandSeq+1,'repeated play does not commit another hand');
    assert.equal(after.lastTrace.finalScore,oracle.state.lastTrace.finalScore,'presentation must preserve the canonical domain score');
    if(mode==='skip'){await page.waitForFunction(()=>window.__fullrack.frames.some(f=>f.segments>0));await page.evaluate(()=>window.__harness.game.scene.getScene('game').fastForward());}
+   if(mode==='background'){
+    await page.waitForFunction(()=>window.__fullrack.frames.some(f=>f.segments>0)&&window.__fullrack.fires.some(f=>f.active));
+    await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>true});Object.defineProperty(document,'visibilityState',{configurable:true,get:()=>'hidden'});document.dispatchEvent(new Event('visibilitychange'));});
+    await page.waitForFunction(()=>{const s=window.__harness.game.scene.getScene('game');return !s.playing&&!s.presentation;});
+    await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,get:()=>false});Object.defineProperty(document,'visibilityState',{configurable:true,get:()=>'visible'});document.dispatchEvent(new Event('visibilitychange'));});await page.waitForTimeout(350);
+    row.background=await page.evaluate(()=>{const s=window.__harness.game.scene.getScene('game'),p=window.__fullrack;return {simulatedVisibility:true,ignitions:p.ignitions.length,noLateReplay:p.ignitions.length===1&&!s.view.root?.getByName('score/high-multiplier-aura')};});assert.ok(row.background.noLateReplay,'background return replayed or retained the aura');
+   }
    if(['slow','late','slowNet','lateNet'].includes(mode)){
     await page.waitForFunction(()=>window.__fullrack.fires.length>0);
     assert.ok(await page.evaluate(()=>window.__fullrack.fires.every(f=>!f.active)),'held decoder must initially produce no fire voice');
@@ -141,11 +156,11 @@ try {
    await page.waitForFunction(()=>{const g=window.__harness.game,s=g.scene.getScene('game');return g.scene.isActive('intermission')||s.ready&&!s.playing&&!s.presentation;});
    if(mode==='late'){await page.evaluate(()=>window.__releaseFireDecode());await page.waitForTimeout(500);}
    if(mode==='lateNet'){releaseNetwork();await page.waitForTimeout(500);}
-   const result=await page.evaluate(async()=>{const g=window.__harness.game,p=window.__fullrack,s=g.scene.getScene('game');g.events.off('postrender',p.tick);g.events.off('postrender',p.guardProbe);g.events.off('postrender',p.backdropProbe);await new Promise(resolve=>{p.recorder.onstop=resolve;p.recorder.stop();});const bytes=[...new Uint8Array(await new Blob(p.chunks,{type:'video/webm'}).arrayBuffer())];for(const t of p.stream.getTracks())t.stop();window.__fullrackCeiling.disconnect(p.dest);return{bytes,frames:p.frames,backdrops:p.backdrops,sources:p.sources,targets:p.targets,guards:p.guards,auraGuards:p.auraGuards,auraBoard:p.auraBoard,events:p.events,fires:p.fires,meters:p.meters,traceAt:p.traceAt,handAt:p.handAt,awardAt:p.awardAt,awardEnd:p.awardEnd,committedRoot:p.committedRoot,ignitions:p.ignitions,voices:[...s.audio.voices].filter(v=>v.highMultiplierFire).length,shots:p.shots};});
+   const result=await page.evaluate(async()=>{const g=window.__harness.game,p=window.__fullrack,s=g.scene.getScene('game');g.events.off('postrender',p.tick);g.events.off('postrender',p.guardProbe);g.events.off('postrender',p.backdropProbe);await new Promise(resolve=>{p.recorder.onstop=resolve;p.recorder.stop();});const bytes=[...new Uint8Array(await new Blob(p.chunks,{type:'video/webm'}).arrayBuffer())];for(const t of p.stream.getTracks())t.stop();if(p.dest)window.__fullrackCeiling?.disconnect(p.dest);return{bytes,frames:p.frames,backdrops:p.backdrops,sources:p.sources,targets:p.targets,guards:p.guards,auraGuards:p.auraGuards,auraBoard:p.auraBoard,events:p.events,fires:p.fires,meters:p.meters,traceAt:p.traceAt,handAt:p.handAt,awardAt:p.awardAt,awardEnd:p.awardEnd,committedRoot:p.committedRoot,ignitions:p.ignitions,voices:[...s.audio.voices].filter(v=>v.highMultiplierFire).length,shots:p.shots};});
    await writeFile(resolve(out,`${spec.name}-${mode}.webm`),Buffer.from(result.bytes));for(const [k,v]of Object.entries(result.shots))await writeFile(resolve(out,`${spec.name}-${mode}-${k}.png`),Buffer.from(v,'base64'));
    row.frames=result.frames;row.backdrops=result.backdrops;row.sources=result.sources;row.targets=result.targets;row.guards=result.guards;row.auraGuards=result.auraGuards;row.auraBoard=result.auraBoard;row.events=result.events;row.fires=result.fires;row.meters=result.meters;row.traceAt=result.traceAt;row.handAt=result.handAt;row.awardAt=result.awardAt;row.awardEnd=result.awardEnd;row.committedRoot=result.committedRoot;row.ignitions=result.ignitions;row.remainingFireVoices=result.voices;row.score=after.lastTrace.finalScore;row.crossing=crossing.eventId;
    if(mode==='reduced')assert.equal(result.frames.length,0,'reduced motion has no animated aura');else assert.ok(result.frames.some(f=>f.segments>0),'full rack must not eliminate every flame');
-   if(mode==='normal'||mode==='repeat'){
+   if(mode==='normal'||mode==='repeat'||mode==='throttle'){
     assert.equal(result.ignitions.length,1,'one committed hand mounts one flame');
     assert.equal(result.ignitions[0].eventId,crossing.eventId);assert.equal(result.committedRoot,after.lastTrace.rootId);
     assert.equal(result.ignitions[0].committedRoot,after.lastTrace.rootId,'flame begins only after the saved score is installed');
@@ -155,6 +170,9 @@ try {
     assert.ok(result.backdrops.every(f=>f.behindText),'the soft layer stays below the live score text');
     const source=result.sources.filter(s=>s.eventId===crossing.eventId);
     assert.ok(source.length>3,'full rack needs a visible source cue for the actual committed event');
+    assert.ok(source.some(s=>s.sourceCharge>0&&s.chargeSegments>0),'the source visibly charges before release');
+    assert.ok(source.some(s=>s.directionalSegments>0),'the source has a directional advancing branch');
+    if(spec.name==='pc')assert.ok(result.frames.some(f=>f.heroSegments>0),'desktop hero perimeter participates in the actual aura');
     assert.ok(source.some(s=>s.coreRadius>2)&&source.some(s=>s.sparks>0),'the advancing head and its brief offshoots must be present');
     assert.ok(source.some(s=>s.release>0),'the real target receives a visible end release');
     assert.ok(source.every((s,i)=>!i||s.front>=source[i-1].front-.001),'the ignition front never moves backwards');
@@ -173,7 +191,11 @@ try {
    if(mode==='muted')assert.ok(result.fires.every(f=>!f.active),'muted fire does not start an audio voice');
    if(mode==='late'||mode==='lateNet')assert.ok(result.fires.every(f=>!f.active),'a load finishing after skip cannot start fire');
    if(mode==='failNet')assert.ok(result.fires.every(f=>!f.active),'a failed request cannot produce fire audio');
-   if(['normal','warm','speed2','speed4','slow','slowNet'].includes(mode)){
+   if(mode==='background'){
+    const fire=result.fires.find(f=>f.active&&f.usesLocalAsset&&f.rate===1);assert.ok(fire,'the fire audibly starts before the simulated background interruption');
+    assert.equal(result.ignitions.length,1,'background return cannot mount another fire');assert.ok(result.meters.some(m=>m.voice&&m.fire>0),'nonzero fire signal exists before interruption');assert.ok(result.meters.every(m=>m.outputPeak<.99),'interrupted mix stays below digital clipping');
+   }
+   if(['normal','warm','speed2','speed4','slow','slowNet','throttle'].includes(mode)){
     const fire=result.fires.find(f=>f.active&&f.usesLocalAsset&&f.rate===1);
     assert.ok(fire,'the local fire voice must start');
     assert.ok(result.events.length&&fire.at<result.events.at(-1).at,'fire starts while the committed scoring sequence is still running');

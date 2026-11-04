@@ -92,5 +92,5 @@ export function drawHeroOriginStream(g:Phaser.GameObjects.Graphics,source:InkPoi
   }
   if(!route)return {segments:0,heads:0,electricSegments:0,electricHeads:[],sourceBurstSegments:0,scoreFallbackSegments:0};
   const result=drawHeroIgnition(currentInk,route,progress,guards,alpha);
-  return {segments:result.segments,heads:result.heads.length,electricSegments:result.segments,electricHeads:result.heads,sourceBurstSegments:result.segments,scoreFallbackSegments:0,route:route.points,front:result.front,coreRadius:result.coreRadius,sparks:result.sparks,release:result.release};
+  return {segments:result.segments,heads:result.heads.length,electricSegments:result.segments,electricHeads:result.heads,sourceBurstSegments:result.segments,scoreFallbackSegments:0,route:route.points,front:result.front,coreRadius:result.coreRadius,sparks:result.sparks,release:result.release,sourceCharge:result.sourceCharge,sourceChargeSegments:result.sourceChargeSegments,directionalSegments:result.directionalSegments};
 }

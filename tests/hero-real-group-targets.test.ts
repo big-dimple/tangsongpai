@@ -116,6 +116,21 @@ it('lets target arcs pass over the mobile backdrop but still protects foreground
  }finally{abort.abort();layer.destroy();f.root.destroy();}
 });
 
+it('retains a real charge frame when the first saved-source frame is slow',()=>{
+ const f=nativeHeroRuntime({width:320,height:568,density:1,renderer:2}),card=f.card('slow',{x:140,y:330,width:40,height:64}),abort=new AbortController(),context={generation:1,signal:abort.signal};
+ let art={x:0,y:0,width:320,height:568};
+ const layer=new HeroTargetAttachment(f.scene,{root:()=>f.root,target:id=>id==='slow'?{container:card,width:40,height:64}:undefined,source:()=>({x:30,y:40}),motion:()=> 'full',blocked:()=>false,sourceArtExclusions:()=>[art]});
+ try{
+  layer.preview({key:'slow-charge',targetId:'slow',targetIds:['slow'],kind:'group',releaseReason:'erxiang.handoff'});layer.commit('event',context,['slow']);
+  f.step(50,20);expect(descendants(f.root.list).find(o=>o.name==='hero/target-current')!.getData('stats').electricSegments).toBe(0);
+  art={x:280,y:40,width:20,height:20};
+  f.step(500,20);const charge=descendants(f.root.list).find(o=>o.name==='hero/target-current')!,charged=charge.getData('stats');
+  expect(charged.sourceCharge).toBeGreaterThan(0);expect(charged.sourceChargeSegments).toBeGreaterThan(0);
+  f.step(550,20);const travel=descendants(f.root.list).find(o=>o.name==='hero/target-current')!.getData('stats');
+  expect(travel.directionalSegments).toBeGreaterThan(0);expect(travel.front).toBeGreaterThan(charged.front);
+ }finally{abort.abort();layer.destroy();f.root.destroy();}
+});
+
 it('advances the saved source with moving cards after a slow frame and still shows an arrival',()=>{
  const f=nativeHeroRuntime(),card=f.card('slow',{x:160,y:250,width:70,height:100}),abort=new AbortController(),context={generation:1,signal:abort.signal};
  const layer=new HeroTargetAttachment(f.scene,{root:()=>f.root,target:id=>id==='slow'?{container:card,width:70,height:100}:undefined,source:()=>({x:30,y:40}),motion:()=> 'full',blocked:()=>false});

@@ -2388,6 +2388,7 @@ export class GameScene extends Phaser.Scene {
     let fire={stop:()=>{},fadeOut:(_durationMs:number)=>{}};
     this.highMultiplierAuraDispose=mountHighMultiplierAura(this,{root,eventId:event.eventId,signal:context.signal,reduced:()=>this.reducedMotion,
       getBoard:()=>this.view.layout.scoreBoard,getViewport:()=>({x:0,y:0,...cssViewport(this)}),getGuards:()=>this.highMultiplierAuraGuards(),getBackdropGuards:()=>this.highMultiplierAuraGuards(true),
+      getHero:this.view.layout.pc?()=>{const image=this.heroPortrait;if(!image?.active||!image.visible)return;const b=image.getBounds(),matrix=root.getWorldTransformMatrix(),points=[[b.x,b.y],[b.x+b.width,b.y],[b.x,b.y+b.height],[b.x+b.width,b.y+b.height]].map(([x,y])=>matrix.applyInverse(x,y)),xs=points.map(p=>p.x),ys=points.map(p=>p.y);return{x:Math.min(...xs),y:Math.min(...ys),width:Math.max(...xs)-Math.min(...xs),height:Math.max(...ys)-Math.min(...ys)};}:undefined,
       speed:()=>gameSession().speed,
       ending:()=>presentation.auraEnding,
       onVisibleOnce:()=>{
