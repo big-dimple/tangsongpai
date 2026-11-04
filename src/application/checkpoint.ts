@@ -809,7 +809,7 @@ function safeTree(value:unknown):void {
 }
 function dynamicPolicy(value:unknown,state:R2RunState):void {
  const p=record(value,['version','origin','activation','fromStage','status','anchor','bootstrap','previousNormal','hands','frontier','records']);
- oneOf(p.version,['dynamic-endless-v1']);oneOf(p.origin,['start','choice']);oneOf(p.status,['armed','pending','active']);integer(p.fromStage,24,R2_ENDLESS_MAX_CHAPTER*3);if(p.anchor!==null)score(p.anchor);
+ oneOf(p.version,['dynamic-endless-v1','dynamic-endless-v2']);oneOf(p.origin,['start','choice']);oneOf(p.status,['armed','pending','active']);integer(p.fromStage,24,R2_ENDLESS_MAX_CHAPTER*3);if(p.anchor!==null)score(p.anchor);
  const command=(value:unknown)=>{const c=record(value,['runId','commandId','expectedSeq','action']);text(c.runId);text(c.commandId);integer(c.expectedSeq,0,state.commandSeq);action(c.action,state);};
  const hand=(value:unknown)=>{const h=record(value,['stageIndex','before','after','score','rootId','command']);integer(h.stageIndex,0,R2_ENDLESS_MAX_CHAPTER*3-1);score(h.before);score(h.after);score(h.score);text(h.rootId);command(h.command);};
  const sample=(value:unknown)=>{const s=record(value,['clear','hands']),c=record(s.clear,['stageIndex','clearId','score','target','finalHandScore','rootId','command']);integer(c.stageIndex,0,R2_ENDLESS_MAX_CHAPTER*3-1);text(c.clearId);score(c.score);score(c.target);score(c.finalHandScore);text(c.rootId);command(c.command);array(s.hands,7).forEach(hand);};

@@ -38,3 +38,15 @@ it('measures a four-hand Azao charge cycle against the confirmed ordinary anchor
  let before=emptyAzaoCharge();before=azaoChargeStep('two-pair',{before,release:false},true).after;before=azaoChargeStep('three-kind',{before,release:false},true).after;
  const b09=scores[0]+scores[1]+BigInt(calculate(hands[2],'B09',before,true).finalScore);expect(b09).toBeGreaterThanOrEqual(goal);
 });
+
+
+it('reduces only Joker-suppressing Boss targets under the new policy, retaining exact old rules and floors',()=>{
+ for(const boss of ['B06','B15','B16'] as const){
+  expect(dynamicEndlessBossTarget('280000000','1',boss,false,'dynamic-endless-v1')).toBe('210000000');
+  expect(dynamicEndlessBossTarget('280000000','1',boss,false,'dynamic-endless-v2')).toBe('140000000');
+  expect(dynamicEndlessBossTarget('280000001','150000000',boss,false,'dynamic-endless-v2')).toBe('150000000');
+ }
+ expect(dynamicEndlessBossTarget('101','1','B06',false,'dynamic-endless-v2')).toBe('51');
+ expect(dynamicEndlessBossTarget('280000000','1','B09',false,'dynamic-endless-v2')).toBe('210000000');
+ expect(dynamicEndlessBossTarget('280000000','1','B03',true,'dynamic-endless-v2')).toBe('98000000');
+});

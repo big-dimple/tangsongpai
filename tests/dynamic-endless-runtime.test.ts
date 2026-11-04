@@ -63,6 +63,15 @@ describe('dynamic endless runtime',()=>{
    (x:R2RunState)=>{const id=x.dynamicEndless!.frontier!.sample!.clear.command.commandId;delete (x.receipts.find(r=>r.commandId===id)! as unknown as {endlessOutcome?:string}).endlessOutcome;},
   ]){const cp=structuredClone(compact);change(cp.state);const {checksum:_,...payload}=cp;expect(readCheckpoint({...payload,checksum:stableHash(payload)}).ok).toBe(false);}
  });
+ it('locks the new B06 target before preparation and restores it without rewriting earlier outcomes',()=>{
+  let s=nearWin();s.seenBossIds[3]='B09';s=send(s,{type:'PlayHand',selectedIds:s.handOrder.slice(0,5)}).state;
+  let cursor:ReturnType<SeededRng['snapshot']>|undefined;for(let i=0;i<200;i++){const candidate=new SeededRng(`relief-b06/${i}`).snapshot();if(drawR2Boss(SeededRng.restore(candidate),s.seenBossIds,9,'endless').definitionId==='B06'){cursor=candidate;break;}}if(!cursor)throw Error('missing B06 seed');s.rng.rule=cursor;
+  s=send(s,{type:'ContinueEndless'}).state;expect(s.dynamicEndless!.version).toBe('dynamic-endless-v2');expect(s.boss.definitionId).toBe('B06');
+  for(let i=0;i<2;i++){s=send(s,{type:'SkipStage'}).state;s=send(s,{type:'OpenShop'}).state;}
+  const row=s.dynamicEndless!.records.at(-1)!;expect(row.index).toBe(26);expect(row.target).toBe(dynamicEndlessStageTarget(26,0,row.anchorBefore,row.boss,false,undefined,'dynamic-endless-v2'));expect(BigInt(row.target)).toBeLessThan(BigInt(dynamicEndlessStageTarget(26,0,row.anchorBefore,row.boss)));
+  const locked=row.target;round(s);const restored=readCheckpoint(makeCheckpoint(s,[]));expect(restored.ok).toBe(true);if(!restored.ok)return;expect(restored.checkpoint.state.dynamicEndless!.records.at(-1)!.target).toBe(locked);
+  const altered=makeCheckpoint(s,[]);altered.state.dynamicEndless!.records.at(-1)!.target='1';const {checksum:_,...payload}=altered;expect(readCheckpoint({...payload,checksum:stableHash(payload)}).ok).toBe(false);
+ });
  it('freezes B03 with a real all-disabled deck snapshot and preserves it after restoration',()=>{
   let s=nearWin(true);s=send(s,{type:'PlayHand',selectedIds:s.handOrder.slice(0,5)}).state;s=send(s,{type:'ContinueEndless'}).state;
   s=send(s,{type:'ActivateDynamicEndless',stageIndex:s.stageIndex}).state;

@@ -117,8 +117,11 @@ const DYNAMIC_HOUSE_PROFILES=VALUE_HOUSE_PROFILES.map(p=>Object.freeze({...p,con
 const TARGETED_VALUE_PROFILES=DYNAMIC_HOUSE_PROFILES.map(p=>Object.freeze({...p,contentVersion:p.contentVersion+'-targeted-value-v1',contentHash:stableHash({inherits:p.contentHash,jokers:R2_TARGETED_VALUE_JOKERS}),heatBase:Object.freeze({contentVersion:p.contentVersion,contentHash:p.contentHash})}));
 const PURCHASE_VALUE_PROFILES=TARGETED_VALUE_PROFILES.map(p=>Object.freeze({...p,contentVersion:p.contentVersion+'-purchase-value-v1',contentHash:stableHash({inherits:p.contentHash,jokers:R2_PURCHASE_VALUE_JOKERS}),purchaseBase:Object.freeze({contentVersion:p.contentVersion,contentHash:p.contentHash})}));
 const VOICE_CHOICE_PROFILES=PURCHASE_VALUE_PROFILES.map(p=>Object.freeze({...p,contentVersion:p.contentVersion+'-voice-choice-v1',contentHash:stableHash({inherits:p.contentHash,tool:'T13',price:4,quota:'shared-basic-choice',duplicate:'independent-of-random-shelf',legacy:'no-migration'}),voiceBase:Object.freeze({contentVersion:p.contentVersion,contentHash:p.contentHash})}));
-const ALL_VALUE_HOUSE_PROFILES=Object.freeze([...VALUE_HOUSE_PROFILES,...DYNAMIC_HOUSE_PROFILES,...TARGETED_VALUE_PROFILES,...PURCHASE_VALUE_PROFILES,...VOICE_CHOICE_PROFILES]);
-export const isR2VoiceChoice=(s:{contentVersion?:unknown;contentHash?:unknown})=>VOICE_CHOICE_PROFILES.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
+const BOSS_RELIEF_PROFILES=VOICE_CHOICE_PROFILES.map(p=>Object.freeze({...p,contentVersion:p.contentVersion+'-boss-relief-v1',contentHash:stableHash({inherits:p.contentHash,policy:'dynamic-endless-v2-b06-b15-b16-50pct-static-floor'}),reliefBase:Object.freeze({contentVersion:p.contentVersion,contentHash:p.contentHash})}));
+export const isR2BossRelief=(s:{contentVersion?:unknown;contentHash?:unknown})=>BOSS_RELIEF_PROFILES.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
+export function withBossReliefIdentity(base:{contentVersion:string;contentHash:string}) {const p=BOSS_RELIEF_PROFILES.find(p=>p.reliefBase.contentVersion===base.contentVersion&&p.reliefBase.contentHash===base.contentHash);if(!p)throw Error('unsupported-boss-relief-base');return {contentVersion:p.contentVersion,contentHash:p.contentHash};}
+const ALL_VALUE_HOUSE_PROFILES=Object.freeze([...VALUE_HOUSE_PROFILES,...DYNAMIC_HOUSE_PROFILES,...TARGETED_VALUE_PROFILES,...PURCHASE_VALUE_PROFILES,...VOICE_CHOICE_PROFILES,...BOSS_RELIEF_PROFILES]);
+export const isR2VoiceChoice=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...VOICE_CHOICE_PROFILES,...BOSS_RELIEF_PROFILES].some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
 export function withVoiceChoiceIdentity(base:{contentVersion:string;contentHash:string}) {
  const p=VOICE_CHOICE_PROFILES.find(p=>p.voiceBase.contentVersion===base.contentVersion&&p.voiceBase.contentHash===base.contentHash);
  if(!p)throw Error('unsupported-voice-choice-base');
@@ -129,22 +132,22 @@ export function withPurchaseValueIdentity(base:{contentVersion:string;contentHas
  if(!profile)throw Error('unsupported-purchase-value-base');
  return {contentVersion:profile.contentVersion,contentHash:profile.contentHash};
 }
-export const isR2PurchaseValue=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...PURCHASE_VALUE_PROFILES,...VOICE_CHOICE_PROFILES].some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
-export const r2PurchaseValueBase=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...PURCHASE_VALUE_PROFILES,...VOICE_CHOICE_PROFILES].find(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash)?.purchaseBase??s;
+export const isR2PurchaseValue=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...PURCHASE_VALUE_PROFILES,...VOICE_CHOICE_PROFILES,...BOSS_RELIEF_PROFILES].some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
+export const r2PurchaseValueBase=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...PURCHASE_VALUE_PROFILES,...VOICE_CHOICE_PROFILES,...BOSS_RELIEF_PROFILES].find(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash)?.purchaseBase??s;
 export function withTargetedValueIdentity(base:{contentVersion:string;contentHash:string}) {
  const profile=TARGETED_VALUE_PROFILES.find(p=>p.heatBase.contentVersion===base.contentVersion&&p.heatBase.contentHash===base.contentHash);
  if(!profile)throw Error('unsupported-targeted-value-base');
  return {contentVersion:profile.contentVersion,contentHash:profile.contentHash};
 }
 export const isR2TargetedValue=(s:{contentVersion?:unknown;contentHash?:unknown})=>TARGETED_VALUE_PROFILES.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
-export const r2TargetedValueBase=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...TARGETED_VALUE_PROFILES,...PURCHASE_VALUE_PROFILES,...VOICE_CHOICE_PROFILES].find(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash)?.heatBase??s;
+export const r2TargetedValueBase=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...TARGETED_VALUE_PROFILES,...PURCHASE_VALUE_PROFILES,...VOICE_CHOICE_PROFILES,...BOSS_RELIEF_PROFILES].find(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash)?.heatBase??s;
 export function withDynamicEndlessIdentity(base:{contentVersion:string;contentHash:string}) {
  const profile=DYNAMIC_HOUSE_PROFILES.find(p=>p.dynamicBase.contentVersion===base.contentVersion&&p.dynamicBase.contentHash===base.contentHash);
  if(!profile)throw Error('unsupported-dynamic-endless-base');
  return {contentVersion:profile.contentVersion,contentHash:profile.contentHash};
 }
-export const isR2DynamicEndless=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...DYNAMIC_HOUSE_PROFILES,...TARGETED_VALUE_PROFILES,...PURCHASE_VALUE_PROFILES,...VOICE_CHOICE_PROFILES].some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
-export const r2DynamicEndlessBase=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...DYNAMIC_HOUSE_PROFILES,...TARGETED_VALUE_PROFILES,...PURCHASE_VALUE_PROFILES,...VOICE_CHOICE_PROFILES].find(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash)?.dynamicBase??s;
+export const isR2DynamicEndless=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...DYNAMIC_HOUSE_PROFILES,...TARGETED_VALUE_PROFILES,...PURCHASE_VALUE_PROFILES,...VOICE_CHOICE_PROFILES,...BOSS_RELIEF_PROFILES].some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
+export const r2DynamicEndlessBase=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...DYNAMIC_HOUSE_PROFILES,...TARGETED_VALUE_PROFILES,...PURCHASE_VALUE_PROFILES,...VOICE_CHOICE_PROFILES,...BOSS_RELIEF_PROFILES].find(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash)?.dynamicBase??s;
 export function withJokerValueIdentity(base:{contentVersion:string;contentHash:string}) {
  const profile=VALUE_HOUSE_PROFILES.find(p=>p.valueBase.contentVersion===base.contentVersion&&p.valueBase.contentHash===base.contentHash);
  if(!profile)throw Error('unsupported-joker-value-base');

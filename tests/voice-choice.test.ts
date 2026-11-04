@@ -17,8 +17,10 @@ const round=(s:R2RunState)=>{const result=readCheckpoint(makeCheckpoint(s,[]));e
 const previousHashes:Record<string,string>={amo:'json-fnv-v1:145e0781e9f608ed',touye:'json-fnv-v1:47cb3174c988f8a8',laohuan:'json-fnv-v1:b2ee5e7cebdfc738',erxiang:'json-fnv-v1:8299113f8a4b68b3',azao:'json-fnv-v1:25bace1192d60cfd',xiemu:'json-fnv-v1:a9081e58cd37cb3c'};
 it.each(CHARACTER_IDS)('new %s identity adds voice choice while the exact prior identity stays usable',id=>{
  const identity=newRunIdentity(id,'group');expect(isR2VoiceChoice(identity)).toBe(true);
- const old=R2_HOUSE_PROFILES.find(p=>p.contentVersion===identity.contentVersion.replace(/-voice-choice-v1$/,''))!;
+ const old=R2_HOUSE_PROFILES.find(p=>p.contentVersion===identity.contentVersion.replace(/-voice-choice-v1-boss-relief-v1$/,''))!;
  expect(old).toBeTruthy();expect(old.contentHash).toBe(previousHashes[id]);expect(isR2PurchaseValue(identity)).toBe(true);expect(isR2DynamicEndless(identity)).toBe(true);expect(r2PurchaseValueBase(identity)).toEqual(r2PurchaseValueBase(old));expect(r2TargetedValueBase(identity)).toEqual(r2TargetedValueBase(old));expect(r2DynamicEndlessBase(identity)).toEqual(r2DynamicEndlessBase(old));expect(r2BasicChoiceIds(old)).not.toContain('T13');expect(r2BasicChoiceIds(identity)).toContain('T13');
+ const voice=R2_HOUSE_PROFILES.find(p=>p.contentVersion===identity.contentVersion.replace(/-boss-relief-v1$/,''))!;expect(voice).toBeTruthy();expect(isR2VoiceChoice(voice)).toBe(true);
+ const previousVoice=createRun({seed:'voice-previous',runId:'voice-previous',rulesVersion:'r2',characterId:id,openingRoute:'group',r2Identity:{contentVersion:voice.contentVersion,contentHash:voice.contentHash}});expect(previousVoice.dynamicEndless?.version).toBe('dynamic-endless-v1');round(previousVoice);
  const state=createRun({seed:'voice-old',runId:'voice-old',rulesVersion:'r2',characterId:id,openingRoute:'group',r2Identity:{contentVersion:old.contentVersion,contentHash:old.contentHash}});round(state);
  expect(launchIdentity(id,{kind:'retry',run:state})).toEqual({contentVersion:old.contentVersion,contentHash:old.contentHash});
 });
