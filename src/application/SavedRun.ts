@@ -1,7 +1,7 @@
 import {prepareBossSuitRescueAction} from '../domain/r2BossSuitRescue';
 import {applyCommand,type Action,type Command,type CommandResult,type R2RunState} from '../domain/run';
 import {freezeCheckpoint} from './RunController';
-import {makeCheckpoint,restoreSlots,type Checkpoint} from './checkpoint';
+import {makeCheckpoint,readCheckpoint,restoreSlots,type Checkpoint} from './checkpoint';
 
 export interface SaveSlots {revision:number;current:unknown|null;previous:unknown|null;guidedOpeningSuppressedRunIds?:readonly string[]}
 export interface SaveCommitOptions {suppressGuidedOpening?:boolean}
@@ -11,10 +11,12 @@ export interface SaveStore {
 }
 type Success=Extract<CommandResult<R2RunState>,{ok:true}>;
 export type SaveStatus='idle'|'saving'|'paused'|'readonly';
+const validPrevious=(value:unknown):Checkpoint|null=>{const read=readCheckpoint(value);return read.ok?read.checkpoint:null;};
 
 /** One pending transaction: retry persists the candidate, never re-applies the domain command. */
 export class SavedRun {
   private checkpoint:Checkpoint;
+  private previous:Checkpoint|null;
   private revision:number;
   private pending?:{checkpoint:Checkpoint;result:Success;backup:Checkpoint|null;suppressGuidedOpening?:boolean};
   private active?:Promise<CommandResult<R2RunState>>;
@@ -23,8 +25,8 @@ export class SavedRun {
   lastError='';
   onChange:()=>void=()=>{};
 
-  private constructor(private readonly store:SaveStore,checkpoint:Checkpoint,revision:number,suppressedOpenings:readonly string[]=[]){
-    this.checkpoint=freezeCheckpoint(checkpoint);this.revision=revision;this.suppressedOpenings=new Set(suppressedOpenings);
+  private constructor(private readonly store:SaveStore,checkpoint:Checkpoint,revision:number,suppressedOpenings:readonly string[]=[],previous:Checkpoint|null=null){
+    this.checkpoint=freezeCheckpoint(checkpoint);this.previous=previous?freezeCheckpoint(previous):null;this.revision=revision;this.suppressedOpenings=new Set(suppressedOpenings);
   }
   get state():R2RunState {return this.checkpoint.state;}
   get journal():readonly Command[] {return this.checkpoint.journal;}
@@ -36,13 +38,13 @@ export class SavedRun {
     return SavedRun.import(store,makeCheckpoint(state,[]),slots);
   }
   static async import(store:SaveStore,checkpoint:Checkpoint,slots:SaveSlots,options:SaveCommitOptions={}):Promise<SavedRun> {
-    const run=new SavedRun(store,checkpoint,slots.revision,slots.guidedOpeningSuppressedRunIds),state=checkpoint.state,receipt=state.receipts.at(-1)!;
+    const run=new SavedRun(store,checkpoint,slots.revision,slots.guidedOpeningSuppressedRunIds,validPrevious(slots.previous)),state=checkpoint.state,receipt=state.receipts.at(-1)!;
     run.pending={checkpoint,result:{ok:true,state,events:[],receipt,duplicate:false},backup:restoreSlots(slots).checkpoint??null,...(options.suppressGuidedOpening?{suppressGuidedOpening:true}:{})};
     await run.persist();return run;
   }
   static restore(store:SaveStore,slots:SaveSlots):SavedRun {
     const restored=restoreSlots(slots);if(!restored.checkpoint)throw Error(restored.code??'invalid-save');
-    return new SavedRun(store,restored.checkpoint,slots.revision,slots.guidedOpeningSuppressedRunIds);
+    return new SavedRun(store,restored.checkpoint,slots.revision,slots.guidedOpeningSuppressedRunIds,validPrevious(slots.previous));
   }
   dispatch(action:Action,expectedSeq=this.state.commandSeq):Promise<CommandResult<R2RunState>> {
     return this.submit({runId:this.state.runId,commandId:`${this.state.runId}/command/${this.state.commandSeq+1}`,expectedSeq,action:prepareBossSuitRescueAction(this.state,action)});
@@ -52,6 +54,21 @@ export class SavedRun {
     const result=applyCommand(this.state,command);
     if(!result.ok||result.duplicate)return result;
     this.pending={checkpoint:makeCheckpoint(result.state,[...this.journal,structuredClone(command)]),result,backup:this.checkpoint};
+    return this.persist();
+  }
+  private rollbackTarget():Checkpoint|null {
+    const current=this.state,previous=this.previous?.state,stage=current.stage,previousStage=previous?.stage;
+    if(current.phase!=='run-lost'||current.outcome?.reason==='abandoned'||!previous||!stage||!previousStage||previous.phase!=='await-input')return null;
+    if(previous.runId!==current.runId||previous.stageIndex!==current.stageIndex||previousStage.index!==stage.index||current.commandSeq!==previous.commandSeq+1||stage.playIndex!==previousStage.playIndex+1)return null;
+    if(current.lastTrace?.rootId!==`${current.runId}/hand/${current.runId}/command/${current.commandSeq}`)return null;
+    return this.previous;
+  }
+  get rollbackAvailable():boolean {return this.rollbackTarget()!==null;}
+  async rollback():Promise<CommandResult<R2RunState>> {
+    if(this.status!=='idle')return {ok:false,code:this.status==='saving'?'command-busy':this.status==='readonly'?'read-only':'save-paused',state:this.state};
+    const checkpoint=this.rollbackTarget();if(!checkpoint)return {ok:false,code:'rollback-unavailable',state:this.state};
+    const state=checkpoint.state,receipt=state.receipts.at(-1);if(!receipt)return {ok:false,code:'rollback-unavailable',state:this.state};
+    this.pending={checkpoint,result:{ok:true,state,events:[],receipt,duplicate:false},backup:this.checkpoint};
     return this.persist();
   }
   async retry():Promise<CommandResult<R2RunState>> {
@@ -71,7 +88,7 @@ export class SavedRun {
         await this.store.commit(this.revision,pending.checkpoint,pending.backup,{suppressGuidedOpening:true}):
         await this.store.commit(this.revision,pending.checkpoint,pending.backup);
       if(pending.suppressGuidedOpening)this.suppressedOpenings.add(pending.checkpoint.state.runId);
-      this.checkpoint=freezeCheckpoint(pending.checkpoint);this.pending=undefined;if(!this.isReadOnly())this.status='idle';this.lastError='';
+      this.previous=pending.backup;this.checkpoint=freezeCheckpoint(pending.checkpoint);this.pending=undefined;if(!this.isReadOnly())this.status='idle';this.lastError='';
       return {...pending.result,state:this.state};
     } catch(error) {
       this.lastError=error instanceof DOMException&&error.name==='QuotaExceededError'?'quota-exceeded':error instanceof Error?error.message:'storage-error';
