@@ -24,7 +24,12 @@ class CandidateTest(unittest.TestCase):
         self.ci = {'scope': 'all', 'testedCommit': self.revision, 'status': 'PASS', 'exitCode': 0,
                    'before': snapshot, 'after': snapshot.copy(),
                    'steps': [{'name': name, 'status': 'PASS', 'childExitCode': 0}
-                             for name in ['test', 'verify:content', 'build', 'verify:smoke']]}
+                             for name in ['test', 'test:deployment', 'verify:content', 'build', 'verify:smoke']]}
+
+    def test_rejects_missing_deployment_validation(self):
+        del self.ci['steps'][1]
+        with self.assertRaisesRegex(ValueError, 'CI steps'):
+            verifier.prepare.check_ci(self.ci, self.revision)
 
     def package(self, extra=None):
         archive = self.root / 'dist.tar.gz'

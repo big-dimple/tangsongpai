@@ -33,7 +33,7 @@ def check_ci(ci, revision):
             'CI source/index/HEAD snapshots do not match')
     steps = ci.get('steps')
     require(isinstance(steps, list) and [s.get('name') for s in steps] ==
-            ['test', 'verify:content', 'build', 'verify:smoke'] and
+            ['test', 'test:deployment', 'verify:content', 'build', 'verify:smoke'] and
             all(s.get('status') == 'PASS' and s.get('childExitCode') == 0 for s in steps),
             'CI steps are incomplete or failed')
 
