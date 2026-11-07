@@ -1,5 +1,7 @@
 import {prepareBossSuitRescueAction} from '../domain/r2BossSuitRescue';
 import {applyCommand,type Action,type Command,type CommandResult,type R2RunState} from '../domain/run';
+import {stableHash} from '../domain/hash';
+import {routeStarterStartCommand} from '../domain/r2RouteStarter';
 import {freezeCheckpoint} from './RunController';
 import {makeCheckpoint,readCheckpoint,restoreSlots,type Checkpoint} from './checkpoint';
 
@@ -56,12 +58,33 @@ export class SavedRun {
     this.pending={checkpoint:makeCheckpoint(result.state,[...this.journal,structuredClone(command)]),result,backup:this.checkpoint};
     return this.persist();
   }
+  private rollbackCache?:{source:Checkpoint;target:Checkpoint|null};
   private rollbackTarget():Checkpoint|null {
-    const current=this.state,previous=this.previous?.state,stage=current.stage,previousStage=previous?.stage;
-    if(current.phase!=='run-lost'||current.outcome?.reason==='abandoned'||!previous||!stage||!previousStage||previous.phase!=='await-input')return null;
-    if(previous.runId!==current.runId||previous.stageIndex!==current.stageIndex||previousStage.index!==stage.index||current.commandSeq!==previous.commandSeq+1||stage.playIndex!==previousStage.playIndex+1)return null;
+    if(this.rollbackCache?.source===this.checkpoint)return this.rollbackCache.target;
+    const target=this.rebuildStageEntry();this.rollbackCache={source:this.checkpoint,target};return target;
+  }
+  private rebuildStageEntry():Checkpoint|null {
+    const current=this.state,stage=current.stage,journal=this.journal;
+    if(current.phase!=='run-lost'||current.outcome?.reason==='abandoned'||!stage||stage.playIndex<1)return null;
     if(current.lastTrace?.rootId!==`${current.runId}/hand/${current.runId}/command/${current.commandSeq}`)return null;
-    return this.previous;
+    if(this.checkpoint.journalBaseSeq!==1||journal.length!==current.commandSeq-1)return null;
+    try {
+      // Older starts omitted default options. Accept only the exact shape committed by receipt one.
+      const full=JSON.parse(JSON.stringify(routeStarterStartCommand(current))) as Command;
+      const identityOnly=structuredClone(full);if(identityOnly.action.type==='StartRun')delete identityOnly.action.modeConfig;
+      const minimal={...identityOnly,action:{type:'StartRun',seed:current.seed,characterId:current.characterId,rulesVersion:'r2'}} as Command;
+      const receipt=current.receipts.find(r=>r.seq===1),start=[full,identityOnly,minimal].find(command=>receipt?.fingerprint===stableHash(command));
+      if(!receipt||!start||receipt.commandId!==start.commandId)return null;
+      const opened=applyCommand(null,start);if(!opened.ok||opened.state.rulesVersion!=='r2')return null;
+      let replayed=opened.state as R2RunState,target:Checkpoint|null=null;
+      for(const [index,command] of journal.entries()){
+        const result=applyCommand(replayed,command);if(!result.ok||result.duplicate)return null;
+        replayed=result.state;
+        if(command.action.type==='EnterStage'&&replayed.phase==='await-input'&&replayed.stageIndex===current.stageIndex&&replayed.stage?.index===stage.index&&replayed.stage.playIndex===0)
+          target=makeCheckpoint(replayed,journal.slice(0,index+1));
+      }
+      return target&&stableHash(replayed)===stableHash(current)?target:null;
+    } catch {return null;}
   }
   get rollbackAvailable():boolean {return this.rollbackTarget()!==null;}
   async rollback():Promise<CommandResult<R2RunState>> {

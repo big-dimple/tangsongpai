@@ -195,7 +195,7 @@ export class IntermissionScene extends Phaser.Scene {
       heading='已达数值上限';body='进度已保存。可查看本场、在菜单导出，或返回选角。';
     }else if(lost){
       heading=rollback?'起死回生':'再来一局';
-      const retryCopy=rollback?'回到致命一手之前，保留本局构筑、金币与进度；可以换一手再试。':'同局重试从开局重新开始，构筑不继承。';
+      const retryCopy=rollback?'回到本场第一手之前，重新打整场，保留本局构筑、金币与进度；可以换一手再试。':'同局重试从开局重新开始，构筑不继承。';
       body=p.tight?retryCopy:`${failureSummary(run).resources}\n已过关场次累计得分 ${heatText(run.totalHeat)} · 余额 ${run.gold} 金\n${retryCopy}`;
     }
     const touye=savedTouyeWager(trace,run);if(touye&&!nextStage&&!p.short)body=touye+'\n'+body;
@@ -297,7 +297,7 @@ export class IntermissionScene extends Phaser.Scene {
       {label:'返回选角',run:()=>this.returnToSelect()},
       {label:rollback?'回档续命':'同局重试',primary:true,disabled:!this.ready,run:()=>{this.dialog.close();return rollback?this.rollbackLoss():this.retrySeed();}},
     ],{closeLabel:'返回失败页',effectBody:facts.reason+' · '+facts.gap+'\n'+facts.lastHand+'\n'+facts.resources,
-      summaryBody:rollback?'回到致命一手之前；保留金币、构筑、工具、成长与本局进度，不消耗额外资源。':'重试从开局开始；金币、构筑、工具与成长不继承，建议不保证过关。',
+      summaryBody:rollback?'回到本场第一手之前，重新打整场；保留金币、构筑、工具、成长与本局进度，不消耗额外资源。':'重试从开局开始；金币、构筑、工具与成长不继承，建议不保证过关。',
       cards:facts.advice.map((row,index)=>({title:(index+1)+'. '+row.title,body:row.body})),
       collapseRules:true,rulesLabel:'升级与做牌的实际规则',secondaryActions:[{label:'对局回顾',run:()=>this.inspectFinale()}]});
   }

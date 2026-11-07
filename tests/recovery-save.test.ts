@@ -190,6 +190,40 @@ describe('complete checkpoint validation and save-before-publish',()=>{
 });
 
 
+describe('stage-entry rollback after a natural loss',()=>{
+  async function lostSecondStage(){
+    const store=new MemoryStore();let run=await SavedRun.start(store,initial(),{revision:0,current:null,previous:null});
+    const offer=run.state.shop!.offers.find(o=>o.definitionId==='mantangcai')!;
+    for(const action of [{type:'BuyOffer',offerId:offer.offerId},{type:'LeaveShop'},{type:'EnterStage'},{type:'PlayHand',selectedIds:['clubs-14','hearts-14']},{type:'OpenShop'},{type:'LeaveShop'},{type:'EnterStage'}] as const)
+      expect((await run.dispatch(action)).ok).toBe(true);
+    expect(run.state.stageIndex).toBe(1);expect(run.state.phase).toBe('await-input');
+    const entry=structuredClone(run.state);
+    expect((await run.dispatch({type:'DiscardHand',selectedIds:[run.state.handOrder[0]]})).ok).toBe(true);
+    for(let hands=0;run.state.phase==='await-input'&&hands<10;hands++)
+      expect((await run.dispatch({type:'PlayHand',selectedIds:[run.state.handOrder[0]]})).ok).toBe(true);
+    expect(run.state.phase).toBe('run-lost');expect(run.state.outcome?.reason).toBe('hands-exhausted');
+    return {store,run,entry};
+  }
+  it('restores the whole second stage, survives reload and returns to the same entry after another loss',async()=>{
+    const {store,entry}=await lostSecondStage();let run=SavedRun.restore(store,await store.read());expect(run.state.stage!.playIndex).toBeGreaterThan(1);
+    expect(run.rollbackAvailable).toBe(true);expect((await run.rollback()).ok).toBe(true);expect(run.state).toEqual(entry);
+    expect(run.state.stage).toMatchObject({playIndex:0,heat:'0',handsLeft:entry.stage!.initialHands,discardsUsed:0,goldEarned:0});
+    expect(run.state.handOrder).toEqual(entry.handOrder);expect(run.state.rng).toEqual(entry.rng);
+    expect(run.state.gold).toBe(entry.gold);expect(run.state.jokers).toEqual(entry.jokers);expect(run.state.deckInstances).toEqual(entry.deckInstances);
+    run=SavedRun.restore(store,await store.read());expect(run.state).toEqual(entry);
+    for(let hands=0;run.state.phase==='await-input'&&hands<10;hands++)
+      expect((await run.dispatch({type:'PlayHand',selectedIds:[run.state.handOrder[0]]})).ok).toBe(true);
+    expect(run.state.phase).toBe('run-lost');expect(run.rollbackAvailable).toBe(true);
+    expect((await run.rollback()).ok).toBe(true);expect(run.state).toEqual(entry);
+  });
+  it('refuses rollback when the command journal cannot reconstruct the stage entry',async()=>{
+    const {run}=await lostSecondStage(),store=new MemoryStore();
+    const truncated=await SavedRun.import(store,makeCheckpoint(run.state,[]),{revision:0,current:null,previous:null});
+    expect(truncated.rollbackAvailable).toBe(false);const result=await truncated.rollback();
+    expect(result.ok).toBe(false);if(!result.ok)expect(result.code).toBe('rollback-unavailable');
+  });
+});
+
 describe('normal session launch intent',()=>{
   it('launches all six characters on their approved new-game identities',async()=>{
     const {session}=await existingSession();
