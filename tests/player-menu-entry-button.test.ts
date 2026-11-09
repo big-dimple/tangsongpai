@@ -71,8 +71,8 @@ it('continue preserves the current scene; retry/cancel/read buttons invoke their
  session.pendingRun={status:'paused'} as SavedRun;notify();if(!modal.open)button.click();await find('取消这次操作').onclick?.();expect(session.cancelPending).toHaveBeenCalledOnce();expect(session.run).toBe(saved);expect(session.pendingRun).toBeUndefined();
  session.notice='浏览器暂时无法读取进度，请重试。';session.storageUnavailable=true;notify();await find('重试读取').onclick?.();expect(session.initialize).toHaveBeenCalledOnce();
 });
-it('speed, reduced motion and both audio sliders keep their existing setting callbacks',()=>{
- const {button,modal}=mount();button.click();const speed=walk(modal,e=>e.tagName==='select')!,reduced=walk(modal,e=>e.type==='checkbox')!;speed.value='2';speed.onchange?.();expect(session.preferences).toHaveBeenLastCalledWith(2,false);reduced.checked=true;reduced.onchange?.();expect(session.preferences).toHaveBeenLastCalledWith(2,true);
+it('speed and both audio sliders work without a reduced-motion setting',()=>{
+ const {button,modal}=mount();button.click();const speed=walk(modal,e=>e.tagName==='select')!;speed.value='2';speed.onchange?.();expect(session.preferences).toHaveBeenLastCalledWith(2);expect(walk(modal,e=>e.textContent.includes('减少动态'))).toBeUndefined();
  const music=walk(modal,e=>e.attrs.get('aria-label')==='背景音量')!,sfx=walk(modal,e=>e.attrs.get('aria-label')==='音效音量')!;music.value='0';music.oninput?.();expect(audio.setVolume).toHaveBeenCalledWith('music',0);sfx.value='30';sfx.oninput?.();expect(audio.setVolume).toHaveBeenCalledWith('sfx',.3);expect(audio.setVolume).toHaveBeenCalledWith('ui',.3);
 });
 it('common settings remain visible while current queries and fullscreen use the More disclosure',()=>{

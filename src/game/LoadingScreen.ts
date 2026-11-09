@@ -31,8 +31,7 @@ export class LoadingScreen {
   this.frame=requestAnimationFrame(this.animate);
  };
  private syncMotion=()=>{
-  let reduced=this.motion.matches;
-  try{reduced ||= JSON.parse(localStorage.getItem('tangsongpai-presentation-v1')??'null')?.reducedMotion===true;}catch{/* Optional preference cannot block preparation. */}
+  const reduced=this.motion.matches;
   this.host.dataset.loadMotion=reduced?'reduce':'full';
   this.reduced=reduced;
   if(reduced||document.hidden)this.cancelFlourishes();

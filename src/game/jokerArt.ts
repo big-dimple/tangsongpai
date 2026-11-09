@@ -17,7 +17,7 @@ export const jokerArtKey = (definitionId: string): string | undefined =>
 
 export function jokerArtUrl(definitionId: string): string | undefined {
   const art = JOKER_ART.find(candidate => candidate.id === definitionId);
-  return art ? assetUrl(art.detailPath) : undefined;
+  return art ? assetUrl(definitionId==='e11'?'assets/handdrawn-p08/cards/e11.preview.gif':art.detailPath) : undefined;
 }
 
 export function jokerArtPreviewUrl(definitionId:string):string|undefined {

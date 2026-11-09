@@ -843,7 +843,8 @@ export class GameScene extends Phaser.Scene {
     this.stopHandHint();
     this.dialog.refreshArtLoad();
     this.handInput?.cancel();this.ownedInput?.setBounds(undefined);
-    requestJokerArt(this,this.run.jokers.map(j=>j.definitionId),()=>{this.dialog.refreshArtLoad();if(!this.presentation&&!this.playing)this.render();});
+    const previewE11=import.meta.env.DEV&&new URLSearchParams(location.search).get('previewCard')==='e11';
+    requestJokerArt(this,[...this.run.jokers.map(j=>j.definitionId),...(previewE11?['e11']:[])],()=>{this.dialog.refreshArtLoad();if(!this.presentation&&!this.playing)this.render();});
     this.stage={...this.stage,targetHeat:this.run.stage!.targetHeat};
     this.controlsLive=false;this.stopScoreFire();
     this.heroPortraitMotion?.destroy();this.heroPortraitMotion=undefined;this.heroPortrait=undefined;this.giftDelivery?.destroy();this.giftDelivery=undefined;
@@ -1046,6 +1047,12 @@ export class GameScene extends Phaser.Scene {
     l.slots.forEach((b,i)=>{
       if(i>=r2JokerCapacity(this.run))return;
       const j=jokers[i];if(!j){
+        if(import.meta.env.DEV&&new URLSearchParams(location.search).get('previewCard')==='e11'&&i===jokers.length&&this.textures.exists('p08-joker-e11')){
+          const image=v.add(this.add.image(b.x+b.width/2,b.y+b.height/2,'p08-joker-e11'));
+          image.setScale(Math.min((b.width-2)/image.width,(b.height-2)/image.height));
+          if(l.pc){const x=b.x+b.width+10;v.text(x,b.y+12,'薪火相传',l.pc.compact?16:20,C.ink).setFontStyle('bold');v.text(x,b.y+42,'动画预览 · 不参与计分',12,'#46565c',l.jokers.width/5-b.width-28);}
+          return;
+        }
         if(l.pc){v.add(this.add.graphics().lineStyle(1,T.divider,.55).strokeRoundedRect(b.x,b.y,b.width,b.height,6));v.text(b.x+b.width/2,b.y+b.height/2,'空槽 '+(i+1),14,'#46565c').setOrigin(.5);}
         return;
       }

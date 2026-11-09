@@ -193,11 +193,9 @@ export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|un
   const sizeHint=document.createElement('small');sizeHint.className='canvas-size-hint';settings.append(sizeHint);
   const refreshSizeHint=()=>{const bounds=game.canvas.getBoundingClientRect(),factor=canvasSizeFactor(bounds.width,bounds.height,selectedCanvasSize(),viewportSafeInsets());sizeHint.textContent=`当前画布 ${Math.round(factor*100)}%。跟随模式在浏览器默认字号达到20px时放大画布文字和按钮，部分页面会重新排布；小窗口和安全区会限制放大。`;};
   size.onchange=()=>{setCanvasSize(size.value==='large'?'large':size.value==='standard'?'standard':'auto');refreshSizeHint();};refreshSizeHint();globalThis.addEventListener?.('resize',refreshSizeHint);globalThis.addEventListener?.('focus',refreshSizeHint);
-  const reduced=document.createElement('input'),reducedLabel=document.createElement('label');reduced.type='checkbox';reduced.checked=session.reducedMotion;reducedLabel.append(reduced,document.createTextNode(' 减少动态'));settings.append(reducedLabel);
   const enableGuide=button('重新开启新手引导',()=>{restoreNoviceGuide();restoreFirstChapterGuide();refreshActions();},settings);enableGuide.dataset.menuAction='enable-tutorial-guide';
   const disableGuide=button('不再显示新手引导',()=>{const run=session.run;if(run)dismissNoviceGuide(run.state,'forever',run.journal);refreshActions();},settings);disableGuide.dataset.menuAction='disable-tutorial-guide';
-  const presentation=()=>session.preferences(Number(speed.value) as 1|2|4,reduced.checked);
-  speed.onchange=presentation;reduced.onchange=presentation;
+  speed.onchange=()=>session.preferences(Number(speed.value) as 1|2|4);
   const removeHapticSetting=installHapticSetting(settings,haptics);
   const audioControls=document.createElement('div');audioControls.className='audio-controls';settings.append(audioControls);
   for(const [bus,label]of [['music','背景音量'],['sfx','音效音量']] as const){
