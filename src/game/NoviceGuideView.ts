@@ -1,4 +1,5 @@
 import type {Box} from './layout';
+import {characterArt} from './CharacterArt';
 import './NoviceGuideView.css';
 
 /** All geometry is in browser viewport CSS pixels, not framebuffer pixels. */
@@ -98,18 +99,33 @@ function safeViewport():Box {
   return {x:left,y:top,width:Math.max(0,(visual?.width??window.innerWidth)-inset('left')-inset('right')-16),height:Math.max(0,(visual?.height??window.innerHeight)-inset('top')-inset('bottom')-16)};
 }
 
+const stepProgress:Readonly<Record<string,string>>={
+  pair:'新手首战 1/6 · 认识牌型',discard:'新手首战 2/6 · 换牌与计分',independent:'新手首战 3/6 · 自主出牌',
+  shop:'新手首战 4/6 · 商店构筑',payoff:'新手首战 5/6 · 唐宋牌生效',skill:'新手首战 6/6 · 英雄技能',
+  'skill-practice':'新手首战 6/6 · 英雄技能',complete:'新手首战 · 已完成',replay:'新手首战 · 再练一次',
+};
+function emphasis(step:NoviceGuideStep):'score'|'reward'|'action' {
+  if(step.id==='discard'&&/筹码|倍率/.test(step.title))return 'score';
+  if(step.id==='skill'&&/筹码|倍率/.test(step.title))return 'reward';
+  return 'action';
+}
+
 let detailsSequence=0;
 /** Non-modal presentation only: it never chooses cards or sends a game command. */
 export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHandle {
   const root=document.createElement('div'),rings=document.createElement('div'),panel=document.createElement('section');
+  const focus=document.createElementNS('http://www.w3.org/2000/svg','svg'),focusPath=document.createElementNS('http://www.w3.org/2000/svg','path');
   const header=document.createElement('div'),heading=document.createElement('div'),controls=document.createElement('div'),progress=document.createElement('span'),title=document.createElement('strong'),announcement=document.createElement('span'),closeButton=document.createElement('button');
+  const portrait=document.createElement('img'),speaker=document.createElement('span');
   const body=document.createElement('p'),choiceRow=document.createElement('div'),choices=document.createElement('div'),footer=document.createElement('div'),skipButton=document.createElement('button'),detailsButton=document.createElement('button'),detailsBody=document.createElement('div'),actionButton=document.createElement('button'),reopenButton=document.createElement('button');
   root.className='novice-guide';root.dataset.noviceGuide='';root.dataset.reducedMotion=String(!!options.reducedMotion);
+  focus.classList.add('novice-guide-focus');focus.setAttribute('aria-hidden','true');focusPath.setAttribute('fill','#142e31');focusPath.setAttribute('fill-opacity','.3');focusPath.setAttribute('fill-rule','evenodd');focus.append(focusPath);
   rings.className='novice-guide-rings';rings.setAttribute('aria-hidden','true');
   panel.className='novice-guide-panel';panel.setAttribute('aria-label','新手引导');panel.dataset.noviceGuidePanel='';
   header.className='novice-guide-header';heading.className='novice-guide-heading';
+  portrait.className='novice-guide-portrait';portrait.alt='';portrait.src=characterArt('erxiang','avatar')?.url??'';speaker.className='novice-guide-speaker';speaker.textContent='刘娥 · 陪你入局';
   announcement.className='novice-guide-announcement';announcement.setAttribute('role','status');announcement.setAttribute('aria-live','polite');announcement.setAttribute('aria-atomic','true');
-  progress.className='novice-guide-progress';title.className='novice-guide-title';body.className='novice-guide-body';heading.append(progress,title);
+  progress.className='novice-guide-progress';title.className='novice-guide-title';body.className='novice-guide-body';heading.append(speaker,progress,title);
   closeButton.type='button';closeButton.className='novice-guide-close';closeButton.textContent='×';closeButton.setAttribute('aria-label','收起引导');closeButton.title='收起引导';closeButton.dataset.noviceGuideClose='';
   choiceRow.className='novice-guide-choice-row';choices.className='novice-guide-choices';choices.setAttribute('aria-label','选择要尝试的牌型');choiceRow.append(choices);
   footer.className='novice-guide-actions';
@@ -120,14 +136,15 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
   actionButton.type='button';actionButton.className='novice-guide-action';actionButton.dataset.noviceGuideAction='';
   // The explanation uses the full panel width below the 44px controls. This
   // keeps long score breakdowns legible without shrinking their touch targets.
-  controls.className='novice-guide-controls';controls.append(skipButton,actionButton,closeButton);header.append(heading,controls);
+  controls.className='novice-guide-controls';controls.append(skipButton,actionButton,closeButton);header.append(portrait,heading,controls);
   footer.append(detailsButton);panel.append(header,body,choiceRow,footer,detailsBody,announcement);
   reopenButton.type='button';reopenButton.className='novice-guide-reopen';reopenButton.textContent='查看引导';reopenButton.setAttribute('aria-label','查看新手引导');reopenButton.dataset.noviceGuideReopen='';reopenButton.hidden=true;
-  root.append(rings,panel,reopenButton);(options.host??document.body).append(root);
+  root.append(focus,rings,panel,reopenButton);(options.host??document.body).append(root);
   let step=options.step,closed=false,disposed=false,frame=0,detailsExpanded=false,choiceIds='';
   const renderStep=()=>{
-    root.dataset.noviceGuideStep=step.id;progress.textContent=step.progress??'';progress.hidden=!step.progress;title.textContent=step.title;body.textContent=step.body;
-    const message=[step.progress,step.title,step.body].filter(Boolean).join('。');
+    const label=step.progress??stepProgress[step.id]??'';
+    root.dataset.noviceGuideStep=step.id;panel.dataset.emphasis=emphasis(step);progress.textContent=label;progress.hidden=!label;title.textContent=step.title;body.textContent=step.body;
+    const message=[label,step.title,step.body].filter(Boolean).join('。');
     if(announcement.textContent!==message)announcement.textContent=message;
     if(!step.action&&document.activeElement===actionButton)closeButton.focus({preventScroll:true});
     actionButton.hidden=!step.action;actionButton.textContent=step.action?.label??'';
@@ -160,6 +177,15 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
     const inline=options.getInlineHost?.();
     if(inline?.isConnected){if(root.parentElement!==inline)inline.prepend(root);root.classList.add('is-inline');}
     else {const host=options.host??document.body;if(root.parentElement!==host)host.append(root);root.classList.remove('is-inline');}
+    const showFocus=!closed&&!inline?.isConnected&&visibleHighlights.length>0,width=window.innerWidth,height=window.innerHeight;
+    focus.toggleAttribute('hidden',!showFocus);focus.setAttribute('viewBox',`0 0 ${width} ${height}`);
+    if(showFocus){
+      const holes=visibleHighlights.map(b=>{
+        const pad=5,x=b.x-pad,y=b.y-pad,w=b.width+pad*2,h=b.height+pad*2;
+        return `M${x} ${y}h${w}v${h}h${-w}Z`;
+      });
+      focusPath.setAttribute('d',[`M0 0H${width}V${height}H0Z`,...holes].join(' '));
+    }else focusPath.removeAttribute('d');
     rings.replaceChildren();
     if(!closed)for(const b of visibleHighlights){
       const ring=document.createElement('div');ring.className='novice-guide-ring';ring.dataset.noviceGuideHighlight='';
@@ -174,7 +200,8 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
     // scroll position. Preserve it across the natural-height measurement.
     const scrollTop=element.scrollTop;
     // Read the natural height at the likely width, then remeasure once if a narrow free region wraps the text.
-    element.style.maxHeight='none';element.style.width=closed?'auto':Math.min(320,bounds.width)+'px';
+    const desiredWidth=emphasis(step)==='action'?360:420;
+    element.style.maxHeight='none';element.style.width=closed?'auto':Math.min(desiredWidth,bounds.width)+'px';
     let rect=element.getBoundingClientRect();
     let placement=placeNoviceGuide(bounds,protectedAreas,{width:closed?Math.max(88,rect.width):rect.width,height:Math.max(44,rect.height)},visibleHighlights[0]);
     if(placement&&!closed&&placement.width<rect.width-.5){

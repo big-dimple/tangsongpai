@@ -22,6 +22,8 @@
 .title-home .home-actions .home-primary:hover{background:#9d3c32}
 .title-home .home-actions .home-secondary{background:#fff9ee;border:1px solid #3f606b;color:#3f606b}
 .title-home .home-actions .home-secondary:hover{background:#e2e8e5}
+.title-home .home-actions .home-text-action{flex-basis:100%;min-height:44px;background:transparent;border:0;color:#3f606b;font-size:14px;text-decoration:underline;text-underline-offset:4px}
+.title-home .home-actions .home-text-action:hover{background:#e2e8e566}
 .title-home .home-actions button:focus-visible{outline:2px solid #b8473a;outline-offset:4px}
 .title-home .home-actions button:disabled{opacity:.6;cursor:default}
 .home-hint,.home-notice{font-size:14px;line-height:1.6;text-align:center;color:#3f606b;margin:14px 0 0}

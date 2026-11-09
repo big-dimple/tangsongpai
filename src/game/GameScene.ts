@@ -698,7 +698,8 @@ export class GameScene extends Phaser.Scene {
         const joker=hint.step==='payoff'&&!focus&&hint.fact?.purchaseInstanceId?this.jokerViews.get(hint.fact.purchaseInstanceId):undefined;
         const jokerFrame=joker?.getData('frame') as Phaser.GameObjects.Rectangle|undefined;
         const ownedHighlight=joker?.active&&joker.visible&&jokerFrame?.active?[map(jokerFrame.getBounds())]:[];
-        const highlights=[...(focus?[map(focus)]:ownedHighlight),...(hint.step==='discard'||hint.step==='independent'?cards:focus?[]:cards.slice(0,1)).flatMap(cardBox)];
+        const highlightedCards=hint.step==='discard'||hint.step==='independent'?cards:focus?[]:cards;
+        const highlights=[...(focus?[map(focus)]:ownedHighlight),...highlightedCards.flatMap(cardBox)];
         // The hint must not intercept the optional skill or utility buttons:
         // tapping through to the skip control would unexpectedly leave the run.
         // PC labels and their detail hit targets sit beside the card frame, so

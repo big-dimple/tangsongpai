@@ -311,7 +311,7 @@ function deriveHint(s:R2RunState,journal?:readonly Command[]):NoviceGuideHint {
   const ids=pairIds(s),rank=ids.length?s.deckInstances.find(c=>c.id===ids[0])?.rank:undefined;
   if(!rank&&s.phase==='await-input'&&s.stage&&(s.drawPile.length===0||s.stage.discardsLeft===0&&s.stage.handsLeft<=1))return {step:'replay',cue:'可以重练找对子',body:'手中没有对子，也无法再换来牌。可以继续出牌，或重新练习。',fact};
   const next=rank?`点两张 ${rankLabel(rank)}；花色可以不同。`:s.stage&&s.stage.discardsLeft===0?'先出牌，补牌后再找对子。':'先弃牌换牌，再找同点数。';
-  const target=s.stage?`累计${heatText(s.stage.targetHeat)}分过关；`:'';
+  const target=s.stage?`这一场累计${heatText(s.stage.targetHeat)}分过关。` : '';
   return {step:'pair',cue:s.lastTrace?'再找一对':'先找一对',body:target+next,recommendedCardIds:ids,fact};
  }
  if(!facts.discarded){
