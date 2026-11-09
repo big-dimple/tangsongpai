@@ -20,7 +20,11 @@ it('maps all72 production IDs to their exact reviewed handdrawn faces without bo
 });
 
 it('covers C00/C02 additions and keeps unknown fixture IDs on the mechanism fallback',()=>{
-  for(const id of [...c00Pool,...c02Pool]){expect(jokerArtKey(id)).toBe('p08-joker-'+id);expect(jokerArtUrl(id)).toContain('assets/handdrawn-p08/'+HANDDRAWN_ART.find(a=>a.id===id)!.outputs.find(o=>o.purpose==='detail')!.path);}
+  for(const id of [...c00Pool,...c02Pool]){
+    expect(jokerArtKey(id)).toBe('p08-joker-'+id);
+    const detail=id==='e11'?'cards/e11.preview.gif':HANDDRAWN_ART.find(a=>a.id===id)!.outputs.find(o=>o.purpose==='detail')!.path;
+    expect(jokerArtUrl(id)).toContain('assets/handdrawn-p08/'+detail);
+  }
   expect(jokerArtKey('fixture/never-registered')).toBeUndefined();expect(jokerArtUrl('fixture/never-registered')).toBeUndefined();
   for(const joker of R2_JOKERS)expect([...approvedPool,...c00Pool,...c02Pool]).toContain(joker.id);
 });
