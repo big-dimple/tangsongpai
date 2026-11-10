@@ -199,8 +199,16 @@ describe('stage-entry rollback after a natural loss',()=>{
       expect((await send(action)).ok).toBe(true);
     expect(run.state.stageIndex).toBe(1);expect(run.state.phase).toBe('await-input');
     const entry=structuredClone(run.state);
-    for(let index=0;index<extraCommands;index++)
+    if(extraCommands){
+      // Build the long legal history once; exercise the real saved command at its bounded edge.
+      const checkpoint=JSON.parse(run.exportJSON());let state=run.state;const journal=[...run.journal];
+      for(let index=0;index<extraCommands-1;index++){
+        const command=next(state,{type:'ReorderHand',ids:[...state.handOrder].reverse()}),result=applyCommand(state,command);
+        if(!result.ok)throw Error(result.code);state=result.state;journal.push(command);
+      }
+      run=await SavedRun.import(store,makeCheckpoint(state,journal,checkpoint.stageEntry),await store.read());
       expect((await send({type:'ReorderHand',ids:[...run.state.handOrder].reverse()})).ok).toBe(true);
+    }
     expect((await send({type:'DiscardHand',selectedIds:[run.state.handOrder[0]]})).ok).toBe(true);
     for(let hands=0;run.state.phase==='await-input'&&hands<10;hands++)
       expect((await send({type:'PlayHand',selectedIds:[run.state.handOrder[0]]})).ok).toBe(true);
