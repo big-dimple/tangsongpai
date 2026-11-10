@@ -100,12 +100,13 @@ function safeViewport():Box {
 }
 
 const stepProgress:Readonly<Record<string,string>>={
-  pair:'新手首战 1/6 · 认识牌型',discard:'新手首战 2/6 · 换牌与计分',independent:'新手首战 3/6 · 自主出牌',
-  shop:'新手首战 4/6 · 商店构筑',payoff:'新手首战 5/6 · 唐宋牌生效',skill:'新手首战 6/6 · 英雄技能',
-  'skill-practice':'新手首战 6/6 · 英雄技能',complete:'新手首战 · 已完成',replay:'新手首战 · 再练一次',
+  pair:'新手首战 · 认识牌型',discard:'新手首战 · 换牌（可选）',independent:'新手首战 · 自主出牌',
+  shop:'新手首战 · 商店构筑',payoff:'新手首战 · 唐宋牌生效',skill:'新手首战 · 英雄技能',
+  complete:'新手首战 · 已完成',replay:'新手首战 · 再练一次',
 };
 function emphasis(step:NoviceGuideStep):'score'|'reward'|'action' {
-  if(step.id==='discard'&&/筹码|倍率/.test(step.title))return 'score';
+  if(step.id==='discard')return 'score';
+  if(step.id==='complete')return 'reward';
   if(step.id==='skill'&&/筹码|倍率/.test(step.title))return 'reward';
   return 'action';
 }
@@ -131,7 +132,7 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
   footer.className='novice-guide-actions';
   skipButton.type='button';skipButton.className='novice-guide-skip';skipButton.textContent='跳过';skipButton.setAttribute('aria-label','跳过教学并开始普通游戏，之后可在菜单重看');skipButton.title='跳过教学并开始普通游戏，之后可在菜单重看';skipButton.dataset.noviceGuideSkip='';skipButton.hidden=!options.onSkip;
   const detailsId='novice-guide-details-'+(++detailsSequence);
-  detailsButton.type='button';detailsButton.className='novice-guide-details-toggle';detailsButton.textContent='技能与路线';detailsButton.dataset.noviceGuideDetailsToggle='';detailsButton.id=detailsId+'-toggle';detailsButton.setAttribute('aria-controls',detailsId);
+  detailsButton.type='button';detailsButton.className='novice-guide-details-toggle';detailsButton.textContent='计分与规则';detailsButton.dataset.noviceGuideDetailsToggle='';detailsButton.id=detailsId+'-toggle';detailsButton.setAttribute('aria-controls',detailsId);
   detailsBody.className='novice-guide-details';detailsBody.id=detailsId;detailsBody.dataset.noviceGuideDetails='';detailsBody.setAttribute('role','region');detailsBody.setAttribute('aria-labelledby',detailsButton.id);
   actionButton.type='button';actionButton.className='novice-guide-action';actionButton.dataset.noviceGuideAction='';
   // The explanation uses the full panel width below the 44px controls. This

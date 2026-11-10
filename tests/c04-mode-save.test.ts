@@ -585,13 +585,6 @@ describe('guided first-run creation and real transactions',()=>{
     expect(skillPair).toBeDefined();if(!skillPair)throw Error('no pair for the real hero skill');
     expect((await run.dispatch({type:'PlayHand',selectedIds:skillPair,erxiangTargetId:skillPair[0]})).ok).toBe(true);
     expect(run.state.lastTrace?.events.some(event=>event.reasonKey==='erxiang.handoff')).toBe(true);
-    expect(noviceGuide(run.state,run.journal)?.step).toBe('skill-practice');stored();
-    if(run.state.phase==='stage-cleared'){
-      expect((await run.dispatch({type:'OpenShop'})).ok).toBe(true);
-      expect((await run.dispatch({type:'LeaveShop'})).ok).toBe(true);
-      expect((await run.dispatch({type:'EnterStage'})).ok).toBe(true);
-    }
-    expect((await run.dispatch({type:'PlayHand',selectedIds:[run.state.handOrder[0]]})).ok).toBe(true);
     expect(noviceGuide(run.state,run.journal)?.step).toBe('complete');stored();
   });
   it.each([1,2,3])('keeps the exact candidate when tutorial save %s fails, then resumes it',async failedWrite=>{

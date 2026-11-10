@@ -46,7 +46,7 @@ function committed(s:R2RunState,journal:readonly Command[],seq:number,predicate:
  * still-owned instance. Missing, rolled-back, imported or old runs stay safe. */
 export function noviceOwnedLesson(s:R2RunState,journal:readonly Command[],hint:NoviceGuideHint|undefined) {
  const p=read(s);
- if(!p||!hint||!['payoff','skill','skill-practice'].includes(hint.step)||s.phase!=='shop'||s.stageIndex<p.stageIndex)return;
+ if(!p||!hint||!['payoff','skill'].includes(hint.step)||s.phase!=='shop'||s.stageIndex<p.stageIndex)return;
  const purchase=committed(s,journal,p.purchaseSeq,c=>c.action.type==='BuyOffer'&&c.action.offerId===p.offerId);
  if(!purchase||!s.jokers.some(j=>j.instanceId===`${s.runId}/joker/${purchase.commandId}`))return;
  const reordered=!!p.reorder&&!!committed(s,journal,p.reorder.seq,c=>c.action.type==='ReorderJokers'&&

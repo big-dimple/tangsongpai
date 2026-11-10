@@ -57,7 +57,7 @@ function enteredNotice(run:StageNoticeInput,selectedIds:readonly string[]=[]):St
     disabledJokerIds:r2ScoringDisabledJokerIds(boss,run.jokers??[],r2JokerDefinitionsForContext(run),stage.sealedJokerIds)};
   switch(boss.definitionId){
     case 'B01':
-      return {...notice,title:'贵宾场 · 弃牌耗'+discardCost+'次',description:discardCost===2?'第一手前，每次弃牌消耗2次额度。':'第一手已打出，每次弃牌消耗1次额度。',symbol:discardCost===2?'×2':'○',warning:discardCost===2};
+      return {...notice,title:'贵宾场 · 每次弃牌扣'+discardCost+'次额度',description:discardCost===2?'可以直接出牌；若在第一手前选择弃牌，每次扣2次弃牌额度。第一手后每次扣1次。':'第一手已打出，每次弃牌扣1次额度；是否换牌由你决定。',symbol:discardCost===2?'×2':'○',warning:discardCost===2};
     case 'B02':
       return {...notice,title:'低调点 · 第4/5张无普通点数',description:'按手牌顺序，第4/5张仅普通点数归零；仍成型，明确的唐宋牌效果正常。',symbol:'4/5'};
     case 'B03': {

@@ -8,7 +8,7 @@ import type {GameSession} from './session';
 export function needsGuidedPractice(run:Pick<SavedRun,'state'|'journal'|'guidedOpeningSuppressed'>):boolean {
   if(run.guidedOpeningSuppressed)return false;
   const step=noviceGuide(run.state,run.journal)?.step;
-  return step==='payoff'||step==='skill'||step==='skill-practice';
+  return step==='payoff'||step==='skill';
 }
 
 /** Continue only the two saved setup commands of a new guided tutorial. */

@@ -37,8 +37,9 @@ export interface NoviceGuideUnmount {
 interface RunPresentation {
   runId:string;
   closed:boolean;
+  step?:NoviceGuideHint['step'];
 }
-// Scene transitions reuse the same SavedRun; a closed panel stays closed.
+// Keep a deliberate collapse within one lesson; the next lesson reopens.
 // Weak keys do not retain a replaced run.
 const presentations=new WeakMap<SavedRun,RunPresentation>();
 function presentation(run:SavedRun):RunPresentation {
@@ -52,11 +53,12 @@ function belongs(kind:NoviceGuideSceneKind,state:R2RunState,hint:NoviceGuideHint
   switch(hint.step){
     case 'pair':case 'discard':case 'independent':
       return kind==='game'&&(phase==='await-input'||phase==='pending-refill');
-    case 'skill':case 'skill-practice':
+    case 'skill':
       return kind==='shop'&&phase==='shop'||kind==='game'&&['stage-ready','await-input','pending-refill'].includes(phase)||
         kind==='intermission'&&phase==='stage-cleared';
     case 'shop':
-      return kind==='shop'&&phase==='shop'||kind==='intermission'&&phase==='stage-cleared';
+      return kind==='shop'&&phase==='shop'||kind==='intermission'&&phase==='stage-cleared'||
+        kind==='game'&&['stage-ready','await-input','pending-refill'].includes(phase);
     case 'payoff':
       return kind==='shop'&&phase==='shop'||kind==='game'&&['stage-ready','await-input','pending-refill'].includes(phase)||
         kind==='intermission'&&phase==='stage-cleared';
@@ -145,6 +147,8 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
     if(!run){removeView();return;}
     const prefs=presentation(run);let current=hint?(options.presentHint?.(hint)??hint):undefined;
     if(!current||!canShow(run,current)){removeView();return;}
+    const stepChanged=prefs.step!==current.step;
+    if(stepChanged){prefs.step=current.step;prefs.closed=false;}
     // The saved hint already contains the score and goal. Keep it available
     // until the player's selection changes the prompt, rather than replacing
     // it with a timed sequence that can expire while the scene is obscured.
@@ -172,6 +176,7 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
       if(prefs.closed)view.close();
     } else if(hintChanged||shownError!==actionError){shownHint=current;shownHintKey=currentKey;shownError=actionError;view.update(makeStep(run,current));}
     else if(geometryChanged||hostChanged)view.refresh();
+    if(stepChanged&&!view.isVisible())view.reopen();
     reportPresented();
   };
   const refreshSource=(force=false)=>{
