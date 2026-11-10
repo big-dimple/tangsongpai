@@ -1,5 +1,6 @@
 import {assetUrl} from './theme';
 import {HANDDRAWN_ART,handdrawnPath} from './HanddrawnArt';
+import {JOKER_ART_FRAME_MS} from './JokerArtAnimation';
 
 interface JokerArt {id:string;key:string;path:string;detailPath:string;detailOnDemand?:boolean;alignedLayers?:boolean}
 // These public files were replaced in place. Bind both Phaser and DOM requests to
@@ -17,7 +18,7 @@ export const jokerArtKey = (definitionId: string): string | undefined =>
 
 export function jokerArtUrl(definitionId: string): string | undefined {
   const art = JOKER_ART.find(candidate => candidate.id === definitionId);
-  return art ? assetUrl(definitionId==='e11'?'assets/handdrawn-p08/cards/e11.preview.gif':art.detailPath) : undefined;
+  return art ? assetUrl(JOKER_ART_FRAME_MS[definitionId]?'assets/handdrawn-p08/cards/'+definitionId+'.preview.gif':art.detailPath) : undefined;
 }
 
 export function jokerArtPreviewUrl(definitionId:string):string|undefined {
