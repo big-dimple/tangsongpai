@@ -6,9 +6,10 @@ import assert from 'node:assert/strict';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {gzipSync} from 'node:zlib';
 import {execFileSync} from 'node:child_process';
-import {waitScene,tapUI,point,confirmHeroRoute} from './ui.mjs';
+import {waitScene,tapUI,point,confirmHeroRoute,openRunMenu,chooseCharacter} from './ui.mjs';
 const scrollOnly=process.env.FAILURE_QA_SCROLL_ONLY==='1';
 const selectionOnly=process.env.FAILURE_QA_SELECTION_ONLY==='1';
+const retryOnly=process.env.FAILURE_QA_RETRY_ONLY==='1';
 const out=process.env.FAILURE_QA_OUT??'/tmp/failure-retry-guidance',port=Number(process.env.FAILURE_QA_PORT??4181);
 await mkdir(out,{recursive:true});
 const server=await createServer({mode:'e2e',server:{host:'127.0.0.1',port,strictPort:true},logLevel:'error'});
@@ -16,7 +17,8 @@ const {failureRetryFixture}=await server.ssrLoadModule('/harness/fixtures/failur
 const {makeCheckpoint,readCheckpoint}=await server.ssrLoadModule('/src/application/checkpoint.ts');
 const {r2ModeStorageKey}=await server.ssrLoadModule('/src/content/r2Modes.ts');
 const {createRun}=await server.ssrLoadModule('/src/domain/run.ts');
-const fixtures=Object.fromEntries(['hands','cards','abandoned','boss','post-skip'].map(kind=>[kind,failureRetryFixture(kind).after]));
+const fixtureCases=Object.fromEntries(['hands','cards','abandoned','boss','post-skip'].map(kind=>[kind,failureRetryFixture(kind)]));
+const fixtures=Object.fromEntries(Object.entries(fixtureCases).map(([kind,fixture])=>[kind,fixture.after]));
 for(const state of Object.values(fixtures)){assert.equal(state.phase,'run-lost');assert.ok(readCheckpoint(makeCheckpoint(state,[])).ok);}
 await server.listen();
 const browser=await chromium.launch({executablePath:process.env.SMOKE_CHROMIUM_EXECUTABLE_PATH??'/usr/bin/chromium',args:['--no-sandbox','--disable-gpu','--disable-software-rasterizer']});
@@ -27,8 +29,11 @@ const observe=page=>page.evaluate(async()=>{
 });
 async function importState(page,state){
  await page.goto('http://127.0.0.1:'+port+'/?harness=1');await waitScene(page,'title');
- await page.locator('.run-menu-toggle').click();const section=page.getByText('进度与存档',{exact:true}).locator('..');if(!await section.evaluate(e=>e.open))await section.locator('summary').click();
- const chooser=page.waitForEvent('filechooser');await page.getByRole('button',{name:'导入本局',exact:true}).click();await(await chooser).setFiles({name:'failure-controlled.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(makeCheckpoint(state,[])))});
+ // Empty startup intentionally owns no writer lease; start through the real UI before importing.
+ await chooseCharacter(page,'erxiang');
+ await openRunMenu(page);const section=page.getByText('进度与存档',{exact:true}).locator('..');if(!await section.evaluate(e=>e.open))await section.locator('summary').click();
+ const checkpoint=state===fixtures.hands?fixtureCases.hands.checkpoint:makeCheckpoint(state,[]);
+ const [chooser]=await Promise.all([page.waitForEvent('filechooser'),page.getByRole('button',{name:'导入本局',exact:true}).click()]);await chooser.setFiles({name:'failure-controlled.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(checkpoint))});
  await waitScene(page,'intermission');await page.waitForFunction(()=>window.__harness.game.scene.getScene('intermission').ready);await page.waitForTimeout(1250);
 }
 async function shot(page,key){await page.screenshot({path:out+'/'+key+'.png',scale:'css',fullPage:true});}
@@ -116,28 +121,31 @@ async function armCommit(page,mode){
 }
 function expectedRestart(old){return createRun({r2Identity:{contentVersion:old.contentVersion,contentHash:old.contentHash},seed:old.seed,characterId:old.characterId,runId:`run/${old.seed}/${old.characterId}`,rulesVersion:'r2',openingRoute:old.openingRoute,modeConfig:{mode:old.mode,difficulty:old.difficulty,challengeId:old.challengeId,programsEnabled:old.programsEnabled}});}
 async function retryFlow(page,row,initial,viewport,fault){
+ const entry=initial.storage.current.stageEntry;assert.ok(entry);assert.ok(initial.storage.current.journalBaseSeq>1);
  await tapUI(page,'intermission','action/failure-guidance',viewport.width<700);await armCommit(page,fault?'fault':'delay');
  if(!fault){
-  const button=page.getByRole('button',{name:'同局重试',exact:true}),p=await button.boundingBox();await page.mouse.click(p.x+p.width/2,p.y+p.height/2,{clickCount:3,delay:20});
- }else await page.getByRole('button',{name:'同局重试',exact:true}).tap();
+  const button=page.getByRole('button',{name:'重试本局',exact:true}),p=await button.boundingBox();await page.mouse.click(p.x+p.width/2,p.y+p.height/2,{clickCount:3,delay:20});
+ }else await page.getByRole('button',{name:'重试本局',exact:true}).tap();
  if(fault){
-  await page.waitForFunction(async()=>{const {gameSession}=await import('/src/game/session.ts');return gameSession().pendingRun?.status==='paused'&&!gameSession().working;});
-  const failed=await observe(page);assert.deepEqual(failed.state,initial.state);assert.deepEqual(failed.storage,initial.storage);assert.deepEqual(failed.pending.state,expectedRestart(initial.state));assert.equal(failed.pending.status,'paused');row.failed=failed;full.push({key:row.key+'/failed',saved:failed});
+  await page.waitForFunction(()=>window.__harness.game.registry.get('runController')?.status==='paused');
+  const failed=await observe(page);assert.deepEqual(failed.state,initial.state);assert.deepEqual(failed.storage,initial.storage);assert.equal(failed.pending,null);assert.equal(failed.status,'paused');row.failed=failed;full.push({key:row.key+'/failed',saved:failed});
   await shot(page,row.key+'-save-failed');assert.equal(await page.evaluate(()=>window.__harness.game.scene.getScene('intermission').ready),false);
-  if(!await page.locator('.run-menu-modal').evaluate(el=>el.open))await page.locator('.run-menu-toggle').click();await page.getByRole('button',{name:'重试保存',exact:true}).click();const again=await observe(page);assert.equal(again.pending.json,failed.pending.json);assert.deepEqual(again.storage,initial.storage);row.fixedCandidateAfterRepeatedFault=true;
+  const candidate=await page.evaluate(()=>window.__harness.game.registry.get('runController').exportJSON());assert.deepEqual(JSON.parse(candidate).state,entry.state);
+  if(!await page.locator('.run-menu-modal').evaluate(el=>el.open))await page.locator('.run-menu-toggle').click();await page.getByRole('button',{name:'重试保存',exact:true}).click();const again=await observe(page);assert.equal(await page.evaluate(()=>window.__harness.game.registry.get('runController').exportJSON()),candidate);assert.deepEqual(again.storage,initial.storage);row.fixedCandidateAfterRepeatedFault=true;
   await page.evaluate(()=>{window.__failureProbe.mode='delay';});await page.getByRole('button',{name:'重试保存',exact:true}).click();
  }
- await waitScene(page,'shop');await page.waitForFunction(()=>window.__harness.game.scene.getScene('shop').ready);const after=await observe(page);
- assert.deepEqual(after.state,expectedRestart(initial.state));assert.equal(after.state.commandSeq,1);assert.deepEqual(after.journal,[]);assert.equal(after.pending,null);assert.equal(after.storage.revision,initial.storage.revision+1);assert.deepEqual(after.storage.previous,initial.storage.current);assert.equal(await page.evaluate(()=>window.__failureProbe.calls),fault?3:1);
+ await waitScene(page,'game');await page.waitForFunction(()=>window.__harness.game.scene.getScene('game').ready);const after=await observe(page);
+ assert.deepEqual(after.state,entry.state);assert.deepEqual(after.journal,entry.journal);assert.equal(after.pending,null);assert.equal(after.storage.revision,initial.storage.revision+1);assert.deepEqual(after.storage.previous,initial.storage.current);assert.equal(await page.evaluate(()=>window.__failureProbe.calls),fault?3:1);
  row.retry={status:'PASS',commitAttempts:await page.evaluate(()=>window.__failureProbe.calls),successfulRevisionDelta:1,singleNewState:true};full.push({key:row.key+'/retry',saved:after});await shot(page,row.key+'-retry-shop');
- await page.reload({waitUntil:'networkidle'});await waitScene(page,'title');await tapUI(page,'title','action/title-continue',viewport.width<700);await waitScene(page,'shop');await page.waitForFunction(()=>window.__harness.game.scene.getScene('shop').ready);assert.deepEqual(await observe(page),after);row.coldRecovery='PASS';
+ await page.reload({waitUntil:'networkidle'});await waitScene(page,'title');await tapUI(page,'title','action/title-continue',viewport.width<700);await waitScene(page,'game');await page.waitForFunction(()=>window.__harness.game.scene.getScene('game').ready);assert.deepEqual(await observe(page),after);row.coldRecovery='PASS';
 }
 try{
  const sizes=[{name:'pc',width:1366,height:768},{name:'390',width:390,height:844},{name:'320-short',width:320,height:568}];
- for(const viewport of (selectionOnly||scrollOnly?[]:sizes))for(const kind of ['hands','cards','abandoned']){
+ for(const viewport of (selectionOnly||scrollOnly?[]:sizes))for(const kind of (retryOnly?['hands']:['hands','cards','abandoned'])){
   const context=await browser.newContext({viewport:{width:viewport.width,height:viewport.height},hasTouch:viewport.width<700,deviceScaleFactor:1}),page=await context.newPage(),row={key:viewport.name+'-'+kind,kind,viewport,errors:[]};report.cases.push(row);page.on('pageerror',e=>row.errors.push(e.message));page.on('dialog',d=>d.accept());page.setDefaultTimeout(15000);
   try{
    await importState(page,fixtures[kind]);const initial=await observe(page);full.push({key:row.key+'/initial',saved:initial});row.resultGeometry=await resultGeometry(page,viewport);await shot(page,row.key+'-failure');
+   if(retryOnly){await retryFlow(page,row,initial,viewport,false);assert.deepEqual(row.errors,[]);row.status='PASS';console.log('PASS',row.key);continue;}
    const hit=await point(page,'intermission','action/failure-guidance');assert.ok(hit.enabled&&hit.x>=0&&hit.x<=viewport.width&&hit.y>=0&&hit.y<=viewport.height);
    await tapUI(page,'intermission','action/failure-guidance',viewport.width<700);row.dialog=await checkDialog(page,viewport);await shot(page,row.key+'-advice');await same(page,initial);
    const review=page.getByRole('button',{name:'回看最后一手',exact:true});
@@ -154,7 +162,7 @@ try{
    assert.deepEqual(row.errors,[]);row.status='PASS';console.log('PASS',row.key);
   }catch(e){row.status='FAIL';row.error=e.stack;await shot(page,row.key+'-FAIL').catch(()=>{});throw e;}finally{await context.close();}
  }
- for(const kind of (selectionOnly||scrollOnly?[]:['boss','fault','post-skip'])){
+ for(const kind of (selectionOnly||scrollOnly?[]:retryOnly?['fault']:['boss','fault','post-skip'])){
   const viewport={width:390,height:568},context=await browser.newContext({viewport,hasTouch:true,deviceScaleFactor:1}),page=await context.newPage(),row={key:'390-short-'+kind,kind,viewport,errors:[]};report.cases.push(row);page.on('pageerror',e=>row.errors.push(e.message));page.on('dialog',d=>d.accept());
   try{
    await importState(page,fixtures[kind==='fault'?'hands':kind]);const initial=await observe(page);full.push({key:row.key+'/initial',saved:initial});
@@ -164,7 +172,7 @@ try{
    assert.deepEqual(row.errors,[]);row.status='PASS';console.log('PASS',row.key);
   }catch(e){row.status='FAIL';row.error=e.stack;await shot(page,row.key+'-FAIL').catch(()=>{});throw e;}finally{await context.close();}
  }
- if(!scrollOnly){
+ if(!scrollOnly&&!retryOnly){
   const viewport={width:390,height:568},context=await browser.newContext({viewport,hasTouch:true,deviceScaleFactor:1}),page=await context.newPage(),row={key:'390-short-new-selection',kind:'new-selection',viewport,errors:[]};report.cases.push(row);page.on('pageerror',e=>row.errors.push(e.message));page.on('dialog',d=>d.accept());
   try{
    await importState(page,fixtures.hands);const initial=await observe(page);full.push({key:row.key+'/initial',saved:initial});await tapUI(page,'intermission','action/failure-guidance',true);

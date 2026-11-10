@@ -67,6 +67,7 @@ const programRuleDefinitions=['PG01','PG02','PG03','PG04'] as const;
 export interface Checkpoint {
   format:'tangsongpai-checkpoint';formatVersion:1;state:R2RunState;
   journalBaseSeq:number;journal:Command[];checksum:string;
+  stageEntry?:Checkpoint;
 }
 type ReadResult={ok:true;checkpoint:Checkpoint}|{ok:false;code:string};
 const fail=(message:string):never=>{throw Error(message);};
@@ -1026,15 +1027,16 @@ function validateState(value:unknown):asserts value is R2RunState {
   }
   assertR2Invariants(value as unknown as R2RunState);
 }
-export function makeCheckpoint(state:R2RunState,journal:readonly Command[]):Checkpoint {
+export function makeCheckpoint(state:R2RunState,journal:readonly Command[],stageEntry?:Checkpoint):Checkpoint {
   safeTree(state);validateState(state);
   const kept=structuredClone(journal.slice(-MAX_JOURNAL)),payload={format:'tangsongpai-checkpoint' as const,formatVersion:1 as const,state:structuredClone(state),journalBaseSeq:state.commandSeq-kept.length,journal:kept};
-  const checkpoint={...payload,checksum:stableHash(payload)};
+  const saved={...payload,...(stageEntry?{stageEntry:structuredClone(stageEntry)}:{})};
+  const checkpoint={...saved,checksum:stableHash(saved)};
   const read=readCheckpoint(checkpoint);if(!read.ok)fail(read.code);return checkpoint;
 }
 export function readCheckpoint(value:unknown):ReadResult {
   try {
-    safeTree(value);const c=record(value,['format','formatVersion','state','journalBaseSeq','journal','checksum']);
+    safeTree(value);const c=record(value,['format','formatVersion','state','journalBaseSeq','journal','checksum'],['stageEntry']);
     if(c.format!=='tangsongpai-checkpoint'||c.formatVersion!==1)fail('incompatible-save-format');
     validateState(c.state);integer(c.journalBaseSeq,1);text(c.checksum);
     const state=c.state as R2RunState,journal=array(c.journal,MAX_JOURNAL);let seq=c.journalBaseSeq as number;
@@ -1122,6 +1124,17 @@ export function readCheckpoint(value:unknown):ReadResult {
       if(consumed.some(id=>!state.playedPile.includes(id)&&!state.destroyedIds.includes(id)))fail('invalid-save-assist-used-zone');
     }
 
+    if(c.stageEntry!==undefined){
+      const raw=c.stageEntry as Checkpoint;
+      if(!raw||Object.hasOwn(raw,'stageEntry'))fail('invalid-save-stage-entry');
+      const checked=readCheckpoint(raw);if(!checked.ok)fail('invalid-save-stage-entry');
+      const entry=raw.state,last=raw.journal.at(-1);
+      if(entry.phase!=='await-input'||entry.stage?.playIndex!==0||last?.action.type!=='EnterStage'||last.expectedSeq!==entry.commandSeq-1||
+        entry.runId!==state.runId||entry.seed!==state.seed||entry.characterId!==state.characterId||entry.contentHash!==state.contentHash||
+        r2ModeStorageKey(entry,entry.contentHash)!==r2ModeStorageKey(state,state.contentHash)||entry.stageIndex!==state.stageIndex||
+        entry.commandSeq>state.commandSeq||!['await-input','pending-refill','run-lost'].includes(state.phase)||
+        entry.receipts.some((receipt,index)=>stableHash(receipt)!==stableHash(state.receipts[index])))fail('invalid-save-stage-entry');
+    }
     const {checksum,...payload}=c;if(checksum!==stableHash(payload))fail('corrupt-checksum');
     return {ok:true,checkpoint:structuredClone(value) as Checkpoint};
   } catch(error){return {ok:false,code:error instanceof Error?error.message:'invalid-save'};}

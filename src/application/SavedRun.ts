@@ -55,7 +55,10 @@ export class SavedRun {
     if(this.status!=='idle')return {ok:false,code:this.status==='saving'?'command-busy':this.status==='readonly'?'read-only':'save-paused',state:this.state};
     const result=applyCommand(this.state,command);
     if(!result.ok||result.duplicate)return result;
-    this.pending={checkpoint:makeCheckpoint(result.state,[...this.journal,structuredClone(command)]),result,backup:this.checkpoint};
+    const journal=[...this.journal,structuredClone(command)],state=result.state;
+    const entry=command.action.type==='EnterStage'?makeCheckpoint(state,journal):this.checkpoint.stageEntry;
+    const stageEntry=entry&&entry.state.stageIndex===state.stageIndex&&['await-input','pending-refill','run-lost'].includes(state.phase)?entry:undefined;
+    this.pending={checkpoint:makeCheckpoint(state,journal,stageEntry),result,backup:this.checkpoint};
     return this.persist();
   }
   private rollbackCache?:{source:Checkpoint;target:Checkpoint|null};
@@ -66,14 +69,20 @@ export class SavedRun {
   private rebuildStageEntry():Checkpoint|null {
     const current=this.state,stage=current.stage,journal=this.journal;
     if(current.phase!=='run-lost'||current.outcome?.reason==='abandoned'||!stage||stage.playIndex<1)return null;
-    if(current.lastTrace?.rootId!==`${current.runId}/hand/${current.runId}/command/${current.commandSeq}`)return null;
+    if(this.checkpoint.stageEntry)return this.checkpoint.stageEntry;
     if(this.checkpoint.journalBaseSeq!==1||journal.length!==current.commandSeq-1)return null;
     try {
       // Older starts omitted default options. Accept only the exact shape committed by receipt one.
       const full=JSON.parse(JSON.stringify(routeStarterStartCommand(current))) as Command;
-      const identityOnly=structuredClone(full);if(identityOnly.action.type==='StartRun')delete identityOnly.action.modeConfig;
-      const minimal={...identityOnly,action:{type:'StartRun',seed:current.seed,characterId:current.characterId,rulesVersion:'r2'}} as Command;
-      const receipt=current.receipts.find(r=>r.seq===1),start=[full,identityOnly,minimal].find(command=>receipt?.fingerprint===stableHash(command));
+      const candidates:Command[]=[];
+      for(let mask=0;mask<8;mask++){
+        const candidate=structuredClone(full);if(candidate.action.type!=='StartRun')continue;
+        if(mask&1)delete candidate.action.modeConfig;
+        if(mask&2)delete candidate.action.r2Identity;
+        if(mask&4)delete candidate.action.openingRoute;
+        candidates.push(candidate);
+      }
+      const receipt=current.receipts.find(r=>r.seq===1),start=candidates.find(command=>receipt?.fingerprint===stableHash(command));
       if(!receipt||!start||receipt.commandId!==start.commandId)return null;
       const opened=applyCommand(null,start);if(!opened.ok||opened.state.rulesVersion!=='r2')return null;
       let replayed=opened.state as R2RunState,target:Checkpoint|null=null;
@@ -91,7 +100,7 @@ export class SavedRun {
     if(this.status!=='idle')return {ok:false,code:this.status==='saving'?'command-busy':this.status==='readonly'?'read-only':'save-paused',state:this.state};
     const checkpoint=this.rollbackTarget();if(!checkpoint)return {ok:false,code:'rollback-unavailable',state:this.state};
     const state=checkpoint.state,receipt=state.receipts.at(-1);if(!receipt)return {ok:false,code:'rollback-unavailable',state:this.state};
-    this.pending={checkpoint,result:{ok:true,state,events:[],receipt,duplicate:false},backup:this.checkpoint};
+    this.pending={checkpoint:makeCheckpoint(state,checkpoint.journal,checkpoint),result:{ok:true,state,events:[],receipt,duplicate:false},backup:this.checkpoint};
     return this.persist();
   }
   async retry():Promise<CommandResult<R2RunState>> {

@@ -194,8 +194,8 @@ export class IntermissionScene extends Phaser.Scene {
     }else if(capped){
       heading='已达数值上限';body='进度已保存。可查看本场、在菜单导出，或返回选角。';
     }else if(lost){
-      heading=rollback?'起死回生':'再来一局';
-      const retryCopy=rollback?'回到本场第一手之前，重新打整场，保留本局构筑、金币与进度；可以换一手再试。':'同局重试从开局重新开始，构筑不继承。';
+      heading=rollback?'起死回生':'本局已结束';
+      const retryCopy=rollback?'回到本场第一手之前，重新打整场，保留进场时的构筑、金币与进度；可以换一手再试。':'缺少本场起点，无法重试；原进度保留，可在菜单开始新局。';
       body=p.tight?retryCopy:`${failureSummary(run).resources}\n已过关场次累计得分 ${heatText(run.totalHeat)} · 余额 ${run.gold} 金\n${retryCopy}`;
     }
     const touye=savedTouyeWager(trace,run);if(touye&&!nextStage&&!p.short)body=touye+'\n'+body;
@@ -229,11 +229,11 @@ export class IntermissionScene extends Phaser.Scene {
       v.button(p.primary,'返回选角','action/return-select',()=>this.returnToSelect(),!this.busy,true);
     }else {
       this.auxiliary(p.left,'返回选角','action/continue-stage',()=>void this.next(),!this.busy);
-      v.button(p.primary,this.busy?(rollback?'正在回档…':'正在开局…'):rollback?'回档续命':'同局重试','action/retry-seed',()=>void (rollback?this.rollbackLoss():this.retrySeed()),this.ready,true);
+      v.button(p.primary,this.busy?'正在回档…':'重试本局','action/retry-seed',()=>void this.rollbackLoss(),this.ready&&rollback,true);
     }
     this.auxiliary(p.right,won||lost?'对局回顾':'回看上手','action/last-hand',()=>{if(won||lost)this.inspectFinale();else this.inspectLastHand();},!this.busy&&(won||lost||!!trace));
     const discovery=this.ready&&!this.notice&&!lost&&!skipped?savedGrowthDiscovery(run):undefined,gift=this.ready&&!this.notice&&!lost&&!skipped?stageGiftReceipt(run):undefined;
-    v.text(p.short||p.wide?p.next.x:p.x,p.noticeY,this.busy?'正在保存…':this.notice||(!this.ready?'当前进度未保存或只读，请查看菜单。':capped?'已达数值上限，进度已保存':won?run.mode==='standard'?'八章通关已保存，继续无尽由你决定。':'本模式结果已保存，可重试或返回选角。':nextStage?gift?'':discovery?.full||'':lost?rollback?'回档不消耗金币或道具；右上角菜单可开始新局。':'重试从开局开始，金币与构筑不继承。':''),14,this.notice?'#ffd0b1':'#3F606B',p.short||p.wide?p.next.width:p.w).setName(discovery&&!gift&&nextStage?'growth/discovery':'result/notice');
+    v.text(p.short||p.wide?p.next.x:p.x,p.noticeY,this.busy?'正在保存…':this.notice||(!this.ready?'当前进度未保存或只读，请查看菜单。':capped?'已达数值上限，进度已保存':won?run.mode==='standard'?'八章通关已保存，继续无尽由你决定。':'本模式结果已保存，可重试或返回选角。':nextStage?gift?'':discovery?.full||'':lost?rollback?'回到本场开始；右上角菜单可开始新局。':'缺少本场起点，无法重试；原进度保留，可在菜单开始新局。':''),14,this.notice?'#ffd0b1':'#3F606B',p.short||p.wide?p.next.width:p.w).setName(discovery&&!gift&&nextStage?'growth/discovery':'result/notice');
     content.add(v.root.list.slice(backgroundCount));v.add(content);
     const safeTop=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-top'))||0;
     const hint=noviceGuide(run,runController(this)!.journal),reserve=hint?(hint.step==='complete'||hint.step==='replay'?128:86):0;
@@ -295,9 +295,9 @@ export class IntermissionScene extends Phaser.Scene {
     this.dialog.open(facts.title,facts.shopOptions,[
       {label:'回看最后一手',disabled:!facts.canReview,run:()=>this.inspectLastHand()},
       {label:'返回选角',run:()=>this.returnToSelect()},
-      {label:rollback?'回档续命':'同局重试',primary:true,disabled:!this.ready,run:()=>{this.dialog.close();return rollback?this.rollbackLoss():this.retrySeed();}},
+      {label:'重试本局',primary:true,disabled:!this.ready||!rollback,run:()=>{this.dialog.close();return this.rollbackLoss();}},
     ],{closeLabel:'返回失败页',effectBody:facts.reason+' · '+facts.gap+'\n'+facts.lastHand+'\n'+facts.resources,
-      summaryBody:rollback?'回到本场第一手之前，重新打整场；保留金币、构筑、工具、成长与本局进度，不消耗额外资源。':'重试从开局开始；金币、构筑、工具与成长不继承，建议不保证过关。',
+      summaryBody:rollback?'回到本场第一手之前，重新打整场；保留进场时的金币、构筑、工具、成长与本局进度，不消耗额外资源。':'缺少本场起点，无法重试；原进度保留，可在菜单开始新局。',
       cards:facts.advice.map((row,index)=>({title:(index+1)+'. '+row.title,body:row.body})),
       collapseRules:true,rulesLabel:'升级与做牌的实际规则',secondaryActions:[{label:'对局回顾',run:()=>this.inspectFinale()}]});
   }
@@ -371,7 +371,9 @@ export class IntermissionScene extends Phaser.Scene {
     }finally {if(lifecycle===this.lifecycle&&this.scene.isActive()){this.busy=false;this.render();}}
   }
   private async retrySeed():Promise<void> {
-    if(!this.ready)return;const owner=runController(this)!,run=owner.state,lifecycle=this.lifecycle;this.busy=true;this.notice='';this.render();
+    if(!this.ready)return;const owner=runController(this)!,run=owner.state;
+    if(run.phase==='run-lost'){await this.rollbackLoss();return;}
+    const lifecycle=this.lifecycle;this.busy=true;this.notice='';this.render();
     try {
       // A guided retry must create a fresh, enrolled visit instead of silently
       // falling back to the legacy tutorial run identity and its opening shop.
@@ -383,7 +385,7 @@ export class IntermissionScene extends Phaser.Scene {
       }
       const controller=await startRun(this,run.seed,run.characterId,{mode:run.mode,difficulty:run.difficulty,challengeId:run.challengeId,programsEnabled:run.programsEnabled},{kind:'retry',run});if(lifecycle!==this.lifecycle||!this.scene.isActive())return;
       if(controller?.status==='idle'){this.exitResult('shop');return;}
-      this.notice=run.phase==='run-lost'?(gameSession().pendingRun?'新局未保存；菜单重试，原局保留。':'未开新局；请看菜单，原局保留。'):gameSession().notice||'新局未保存，请在菜单重试保存。';this.audio.invalid();
+      this.notice=gameSession().notice||'新局未保存，请在菜单重试保存。';this.audio.invalid();
     }finally {if(lifecycle===this.lifecycle&&this.scene.isActive()){this.busy=false;this.render();}}
   }
   private async next():Promise<void> {

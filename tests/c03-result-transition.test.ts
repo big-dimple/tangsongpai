@@ -2,7 +2,7 @@ import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 import type {R2RunState} from '../src/domain/run';
 
 const fixture=vi.hoisted(()=>({
-  controller:null as unknown as {state:R2RunState;status:string},
+  controller:null as unknown as {state:R2RunState;status:string;rollback?:()=>Promise<unknown>},
   start:vi.fn(),dispatch:vi.fn(),sceneStart:vi.fn(),
   session:{lease:{writable:true},pendingRun:null,working:false,notice:''},
   confirm:null as null|(()=>Promise<void>),
@@ -50,7 +50,7 @@ describe('result page exits while Phaser queues the next scene',()=>{
   afterEach(()=>vi.restoreAllMocks());
 
   it('same-seed retry never repaints the old result against a fresh run without a stage',async()=>{
-    const {actions,state,rendered}=resultScene('run-lost');
+    const {actions,state,rendered}=resultScene('run-won');
     fixture.start.mockImplementation(async()=>{fixture.controller={state:createRun({seed:'result-queued-exit',runId:'fresh',characterId:'erxiang',rulesVersion:'r2'}),status:'idle'};return fixture.controller;});
     await expect(actions.retrySeed()).resolves.toBeUndefined();
     expect(fixture.start).toHaveBeenCalledWith(expect.anything(),state.seed,state.characterId,{mode:state.mode,difficulty:state.difficulty,challengeId:state.challengeId,programsEnabled:state.programsEnabled},{kind:'retry',run:state});
@@ -58,8 +58,9 @@ describe('result page exits while Phaser queues the next scene',()=>{
   });
 
   it('an unsuccessful retry keeps the result and redraws the save notice',async()=>{
-    const {actions,state,rendered}=resultScene('run-lost');fixture.session.notice='保存失败';fixture.start.mockResolvedValue(null);
+    const {actions,state,rendered}=resultScene('run-lost');fixture.controller.rollback=vi.fn().mockResolvedValue({ok:false,code:'rollback-unavailable'});
     await actions.retrySeed();expect(fixture.controller.state).toBe(state);expect(fixture.sceneStart).not.toHaveBeenCalled();expect(rendered).toEqual(['400','400']);
+    expect(fixture.start).not.toHaveBeenCalled();expect(fixture.controller.rollback).toHaveBeenCalledOnce();
   });
 
   it('opening a shop does not repaint the completed result after the committed state switches',async()=>{

@@ -191,16 +191,19 @@ describe('complete checkpoint validation and save-before-publish',()=>{
 
 
 describe('stage-entry rollback after a natural loss',()=>{
-  async function lostSecondStage(){
+  async function lostSecondStage(extraCommands=0){
     const store=new MemoryStore();let run=await SavedRun.start(store,initial(),{revision:0,current:null,previous:null});
+    const send=(action:Command['action'])=>run.submit(next(run.state,action));
     const offer=run.state.shop!.offers.find(o=>o.definitionId==='mantangcai')!;
     for(const action of [{type:'BuyOffer',offerId:offer.offerId},{type:'LeaveShop'},{type:'EnterStage'},{type:'PlayHand',selectedIds:['clubs-14','hearts-14']},{type:'OpenShop'},{type:'LeaveShop'},{type:'EnterStage'}] as const)
-      expect((await run.dispatch(action)).ok).toBe(true);
+      expect((await send(action)).ok).toBe(true);
     expect(run.state.stageIndex).toBe(1);expect(run.state.phase).toBe('await-input');
     const entry=structuredClone(run.state);
-    expect((await run.dispatch({type:'DiscardHand',selectedIds:[run.state.handOrder[0]]})).ok).toBe(true);
+    for(let index=0;index<extraCommands;index++)
+      expect((await send({type:'ReorderHand',ids:[...run.state.handOrder].reverse()})).ok).toBe(true);
+    expect((await send({type:'DiscardHand',selectedIds:[run.state.handOrder[0]]})).ok).toBe(true);
     for(let hands=0;run.state.phase==='await-input'&&hands<10;hands++)
-      expect((await run.dispatch({type:'PlayHand',selectedIds:[run.state.handOrder[0]]})).ok).toBe(true);
+      expect((await send({type:'PlayHand',selectedIds:[run.state.handOrder[0]]})).ok).toBe(true);
     expect(run.state.phase).toBe('run-lost');expect(run.state.outcome?.reason).toBe('hands-exhausted');
     return {store,run,entry};
   }
@@ -221,6 +224,31 @@ describe('stage-entry rollback after a natural loss',()=>{
     const truncated=await SavedRun.import(store,makeCheckpoint(run.state,[]),{revision:0,current:null,previous:null});
     expect(truncated.rollbackAvailable).toBe(false);const result=await truncated.rollback();
     expect(result.ok).toBe(false);if(!result.ok)expect(result.code).toBe('rollback-unavailable');
+  });
+  it('retains the exact stage entry after journal truncation, export/import and reload',async()=>{
+    const {store,run,entry}=await lostSecondStage(MAX_JOURNAL+1);
+    expect(JSON.parse(run.exportJSON()).journalBaseSeq).toBeGreaterThan(1);
+    const restored=SavedRun.restore(store,await store.read());
+    const importedStore=new MemoryStore(),imported=await SavedRun.import(importedStore,JSON.parse(restored.exportJSON()),await importedStore.read());
+    expect(imported.rollbackAvailable).toBe(true);expect((await imported.rollback()).ok).toBe(true);expect(imported.state).toEqual(entry);
+    expect(SavedRun.restore(importedStore,await importedStore.read()).state).toEqual(entry);
+  });
+  it('keeps the loss when rollback saving fails, blocks double clicks and retries the same entry once',async()=>{
+    const {store,run,entry}=await lostSecondStage(),lost=run.state,slots=await store.read();store.fail=true;
+    expect(await run.rollback()).toMatchObject({ok:false,code:'save-failed'});
+    expect(run.state).toBe(lost);expect(await store.read()).toEqual(slots);
+    expect((await run.rollback()).ok).toBe(false);store.fail=false;
+    let release!:()=>void;const commit=store.commit.bind(store);
+    store.commit=async(...args)=>{await new Promise<void>(resolve=>release=resolve);return commit(...args);};
+    const saving=run.retry();expect((await run.rollback()).ok).toBe(false);release();expect((await saving).ok).toBe(true);
+    expect(run.state).toEqual(entry);expect((await store.read()).revision).toBe(slots.revision+1);
+    expect((await run.retry()).ok).toBe(false);
+  });
+  it('rebuilds legacy saves without a snapshot and with custom command IDs',async()=>{
+    const {run,entry}=await lostSecondStage();
+    const checkpoint=makeCheckpoint(run.state,run.journal),store=new MemoryStore();
+    const legacy=await SavedRun.import(store,checkpoint,await store.read());
+    expect(legacy.rollbackAvailable).toBe(true);expect((await legacy.rollback()).ok).toBe(true);expect(legacy.state).toEqual(entry);
   });
 });
 
