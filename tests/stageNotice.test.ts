@@ -41,8 +41,10 @@ describe('P05 entered-stage notice',()=>{
   it('stops the double-discard warning after the first actual play',()=>{
     const run=fixture(2,{definitionId:'B01',disabledSuit:null});
     expect(stageNotice(run)!.discardCost).toBe(2);expect(stageNotice(run)!.warning).toBe(true);
+    expect(stageNotice(run)!.title).toContain('每次弃牌扣2次额度');
+    expect(stageNotice(run)!.description).toContain('可以直接出牌');
     run.stage!.playIndex=1;run.stage!.handsLeft=3;
-    expect(stageNotice(run)!.discardCost).toBe(1);expect(stageNotice(run)!.warning).toBe(false);expect(stageNotice(run)!.title).toContain('耗1次');
+    expect(stageNotice(run)!.discardCost).toBe(1);expect(stageNotice(run)!.warning).toBe(false);expect(stageNotice(run)!.title).toContain('每次弃牌扣1次额度');
   });
   it('does not reuse the previous stage as a live restriction in shop or intermission',()=>{
     const run=fixture(2);
