@@ -4,6 +4,7 @@ import type {SceneView} from './SceneView';
 import {PAPER_THEME as T} from './theme';
 import {selectionPortraitKey} from './portraits';
 import {jokerArtKey} from './jokerArt';
+import {animateJokerImage} from './JokerArtPlayback';
 import type {resultStageFacts} from './ResultStage';
 import {rankLabel,SUIT_SYMBOL} from '../cards/types';
 import {HAND_LABELS} from '../content/handLabels';
@@ -47,7 +48,7 @@ export function resultStageSources(scene:Phaser.Scene,view:SceneView,b:Box,facts
  const total=keys.reduce((n,k)=>n+k.width,0)+Math.max(0,keys.length-1)*8,available=side?Math.min(total,b.width*.48):b.width;
  const scale=Math.min(1,available/Math.max(1,total)),imageHeight=height*scale;
  let x=side?b.x:b.x+(b.width-total*scale)/2;
- for(const k of keys){const box={x,y:b.y,width:k.width*scale,height:imageHeight};const image=scene.add.image(box.x+box.width/2,box.y+box.height/2,k.key);image.setScale(Math.min(box.width/image.width,box.height/image.height)).setName('result-art/source').setData('assetId',k.id).setData('bounds',box);view.add(image);art.push(image);x+=box.width+8*scale;}
+ for(const k of keys){const box={x,y:b.y,width:k.width*scale,height:imageHeight};const image=animateJokerImage(scene,scene.add.image(box.x+box.width/2,box.y+box.height/2,k.key));image.setScale(Math.min(box.width/image.width,box.height/image.height)).setName('result-art/source').setData('assetId',k.id).setData('bounds',box);view.add(image);art.push(image);x+=box.width+8*scale;}
  // A real played hand is already available locally. It is a result keepsake,
  // not a loading placeholder or a claim that an unrelated joker/hero triggered.
  if(!keys.length&&facts.trace&&height>=66){

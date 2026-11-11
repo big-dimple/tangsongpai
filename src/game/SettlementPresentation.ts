@@ -15,6 +15,7 @@ import {stageOutcome} from './stageOutcome';
 import {getCharacter} from './characters';
 import {selectionPortraitKey,avatarKey} from './portraits';
 import {jokerArtKey} from './jokerArt';
+import {animateJokerImage} from './JokerArtPlayback';
 import {heatText,readableFractionText,readableScoreFormula} from './scoreText';
 import {failureSummary} from './FailureSummary';
 import {PAPER_THEME as T,PAPER_CSS as C,SCORE_FONT} from './theme';
@@ -122,7 +123,7 @@ export function drawSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2Run
  let contentBottom=receiptBottom,reviewBookBand:Box|undefined;
  const paint=()=>{
   artLayer.removeAll(true);const start=view.root.length;
-  const addArt=(key:string,box:Box,name:string,id:string)=>{const image=scene.add.image(box.x+box.width/2,box.y+box.height/2,key).setName(name).setData('assetId',id).setData('bounds',box);image.setScale(Math.min(box.width/image.width,box.height/image.height));view.add(image);return image;};
+  const addArt=(key:string,box:Box,name:string,id:string)=>{const image=animateJokerImage(scene,scene.add.image(box.x+box.width/2,box.y+box.height/2,key)).setName(name).setData('assetId',id).setData('bounds',box);image.setScale(Math.min(box.width/image.width,box.height/image.height));view.add(image);return image;};
   const hero=p.hero,artHeight=p.desktop?168:compact?(facts.hero?40:64):facts.hero?76:96,key=selectionPortraitKey(run.characterId),box={...hero,height:artHeight};
   let heroImage:Phaser.GameObjects.Image|undefined;
   if(scene.textures.exists(key))heroImage=addArt(key,box,'result-art/hero',run.characterId+'.selection');

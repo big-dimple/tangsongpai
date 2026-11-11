@@ -232,6 +232,9 @@ describe('novice guide scene binding',()=>{
   expect(noviceGuide(run.state,run.journal)?.step).toBe('skill');expect(latest()).toBeUndefined();
   scoreActive=false;owner.events.emit('postupdate');expect(latest()?.step.id).toBe('skill');
   const pair=await findPair(run);await send(run,{type:'PlayHand',selectedIds:pair,erxiangTargetId:pair[0]});
+  expect(noviceGuide(run.state,run.journal)?.step).toBe('skill-practice');
+  if(run.state.phase==='stage-cleared'){await send(run,{type:'OpenShop'});await send(run,{type:'LeaveShop'});await send(run,{type:'EnterStage'});}
+  await send(run,{type:'PlayHand',selectedIds:[run.state.handOrder[0]]});
   expect(noviceGuide(run.state,run.journal)?.step).toBe('complete');expect(needsGuidedPractice(run)).toBe(false);expect(latest()?.step.id).toBe('complete');
   latest()!.step.action!.run();expect(onComplete).toHaveBeenCalledOnce();await Promise.resolve();expect(latest()?.step.body).toContain('操作尚未完成');
   latest()!.step.action!.run();expect(onComplete).toHaveBeenCalledTimes(2);expect(onSkip).not.toHaveBeenCalled();expect(noviceGuide(run.state,run.journal)?.step).toBe('complete');

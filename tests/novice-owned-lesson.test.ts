@@ -136,14 +136,11 @@ describe('owned-card lesson follows saved, real actions',()=>{
    expect(pair).toBeDefined();await send(run,{type:'PlayHand',selectedIds:pair!,erxiangTargetId:pair![0]});
   }
   expect(run.state.phase).toBe('stage-cleared');await send(run,{type:'OpenShop'});
-  expect(['skill','complete']).toContain(guide(run)?.step);expect(lesson(run)).toBeUndefined();
+  expect(['skill','skill-practice']).toContain(guide(run)?.step);expect(lesson(run)).toBeUndefined();
   const offer=run.state.shop!.offers.find(o=>!o.consumed&&r2PurchasePrice(run.state,o)<=run.state.gold&&!run.state.jokers.some(j=>j.definitionId===o.definitionId))!;
   expect(offer).toBeDefined();await send(run,{type:'BuyOffer',offerId:offer.offerId});expect(run.state.jokers).toHaveLength(2);
-  if(guide(run)?.step==='complete')expect(lesson(run)).toBeUndefined();
-  else {
-   expect(lesson(run)).toMatchObject({reordered:false});
-   expect(presentNoviceOwnedLesson(guide(run)!,lesson(run),{collapsed:false,canExpand:true,count:2}).hint.cue).toBe('试试调整顺序');
-  }
+  expect(lesson(run)).toMatchObject({reordered:false});
+  expect(presentNoviceOwnedLesson(guide(run)!,lesson(run),{collapsed:false,canExpand:true,count:2}).hint.cue).toBe('试试调整顺序');
   expect(noviceOwnedLesson(run.state,run.journal,{step:'complete',cue:'',body:''})).toBeUndefined();
  });
 });

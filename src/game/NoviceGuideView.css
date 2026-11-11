@@ -5,13 +5,13 @@
 .novice-guide-focus { position:fixed;inset:0;width:100%;height:100%;pointer-events:none; }
 .novice-guide.is-inline .novice-guide-focus { display:none; }
 .novice-guide-rings,.novice-guide-ring { position:fixed;pointer-events:none; }
-.novice-guide-ring { box-sizing:border-box;border:3px solid #c4553e;border-radius:9px;box-shadow:0 0 0 3px #fff8e9e6,0 0 0 5px #315653cc,0 0 26px 8px #efbd5c80;animation:novice-guide-ring-pulse 1.8s ease-in-out infinite; }
-.novice-guide-ring::after { content:'';position:absolute;right:-6px;top:-6px;width:10px;height:10px;box-sizing:border-box;border:2px solid #fff8e9;border-radius:2px;background:#c4553e;box-shadow:0 0 10px #efbd5c; }
-@keyframes novice-guide-ring-pulse { 0%,100% { box-shadow:0 0 0 3px #fff8e9e6,0 0 0 5px #315653cc,0 0 16px 4px #efbd5c66; } 50% { box-shadow:0 0 0 3px #fff8e9,0 0 0 5px #315653cc,0 0 30px 10px #efbd5c99; } }
+.novice-guide-ring { box-sizing:border-box;border:3px solid #c4553e;border-radius:9px;box-shadow:0 0 0 2px #fff8e9e6,0 0 10px 2px #efbd5c80; }
+.novice-guide-ring::after { content:'';position:absolute;right:-6px;top:-6px;width:10px;height:10px;box-sizing:border-box;border:2px solid #fff8e9;border-radius:2px;background:#c4553e;animation:novice-guide-ring-pulse 1.8s ease-in-out infinite; }
+@keyframes novice-guide-ring-pulse { 0%,100% { opacity:.45; } 50% { opacity:1; } }
 /* Native modal focus belongs to the actionable button itself. */
 .detail-dialog button.novice-focus-action { outline:3px solid #d39c41;outline-offset:2px;box-shadow:0 0 10px #e0b05b80; }
 .novice-guide-panel,.novice-guide-reopen { position:fixed;box-sizing:border-box;pointer-events:auto;touch-action:manipulation; }
-.novice-guide-panel { overflow:auto;overscroll-behavior:contain;padding:7px 11px 8px;border:1px solid #a88a5d;border-top:3px solid #a94436;border-radius:10px;background:linear-gradient(135deg,#fffdf5,#f4ead4);color:#193940;box-shadow:0 10px 32px #102b3673,inset 0 0 0 2px #fffdf3;animation:novice-guide-arrive .22s ease-out; }
+.novice-guide-panel { overflow:visible;padding:7px 11px 8px;border:1px solid #a88a5d;border-top:3px solid #a94436;border-radius:10px;background:linear-gradient(135deg,#fffdf5,#f4ead4);color:#193940;box-shadow:0 10px 32px #102b3673,inset 0 0 0 2px #fffdf3;animation:novice-guide-arrive .22s ease-out; }
 @keyframes novice-guide-arrive { from { opacity:.35; } to { opacity:1; } }
 .novice-guide-panel[data-emphasis=score] { border-color:#b89252;border-top-color:#b8473a;background:linear-gradient(135deg,#fffdf2,#f3e2bc);box-shadow:0 12px 38px #102b3680,0 0 28px #e5b75b45,inset 0 0 0 2px #fffdf3; }
 .novice-guide-panel[data-emphasis=reward] { border-color:#829a78;border-top-color:#397166;background:linear-gradient(135deg,#fbfff7,#e2edda);box-shadow:0 12px 38px #102b3680,0 0 28px #80b79b45,inset 0 0 0 2px #fffdf3; }
@@ -42,12 +42,10 @@
 .novice-guide-skip { flex:0 0 44px;padding:2px;border:0;border-radius:5px;background:transparent;color:#315653;font-size:13px;text-align:center;text-decoration:underline;text-underline-offset:2px; }
 .novice-guide-action,.novice-guide-reopen { padding:4px 12px;border:1px solid #315653;border-radius:6px;background:#234c4b;color:#fff9e9;font-size:14px;font-weight:700; }
 .novice-guide-details-toggle { padding:3px 4px;border:0;background:transparent;color:#315956;font-size:12px;text-decoration:underline;text-underline-offset:2px; }
-.novice-guide-details-toggle::after { content:' ▾';text-decoration:none; }
-.novice-guide-details-toggle[aria-expanded=true]::after { content:' ▴'; }
 .novice-guide-panel.has-details .novice-guide-actions { flex-wrap:nowrap; }
 .novice-guide-panel.has-details .novice-guide-details-toggle,.novice-guide-panel.has-details .novice-guide-action { flex:0 1 auto;padding-left:4px;padding-right:4px;font-size:12px; }
-.novice-guide-details { padding:5px 4px 8px;border-top:1px solid #dccbae;color:#274647;font-size:max(14px,.875rem);line-height:1.45;white-space:pre-line;overflow-wrap:anywhere; }
-.novice-guide-panel.is-constrained::after { content:'滑动查看完整引导';display:block;position:sticky;bottom:-5px;padding:2px;background:#fff7e7;color:#526763;font-size:12px;line-height:16px;text-align:center;pointer-events:none; }
+.novice-guide-panel.is-compact { padding:3px 7px; }
+.novice-guide-panel.is-compact .novice-guide-portrait,.novice-guide-panel.is-compact .novice-guide-speaker,.novice-guide-panel.is-compact .novice-guide-progress { display:none; }
 .novice-guide button:focus-visible { outline:3px solid #b34e32;outline-offset:2px; }
 .novice-guide button:active { transform:none; }
 .novice-guide [hidden] { display:none!important; }

@@ -1,28 +1,5 @@
 import type Phaser from 'phaser';
 import {assertCharacterArtReference,assertCharacterArtDimensions,characterArtByKey} from './CharacterArt';
-import {assetUrl} from './theme';
-import {JOKER_ART_FRAME_MS} from './JokerArtAnimation';
-
-// Animated cards retain their original thumbnail until the strip is available.
-function animateJokerArt(game:Phaser.Game,key:string,fallback:HTMLImageElement):boolean {
-  const id=key.startsWith('p08-joker-')?key.slice('p08-joker-'.length):'',frameMs=JOKER_ART_FRAME_MS[id];
-  if(!frameMs)return false;
-  const texture=game.textures.createCanvas(key,fallback.naturalWidth,fallback.naturalHeight);
-  if(!texture)return false;
-  const ctx=texture.getContext();ctx.drawImage(fallback,0,0,texture.width,texture.height);texture.refresh();
-  const frames=new Image();frames.src=assetUrl('assets/handdrawn-p08/cards/'+id+'.frames.webp');
-  let shownFrame=-1;
-  const update=(time:number)=>{
-    if(!game.textures.exists(key))return;
-    if(document.hidden)return;
-    if(!frames.complete||!frames.naturalWidth)return;
-    const frame=Math.floor(time/frameMs)%9;if(frame===shownFrame)return;
-    shownFrame=frame;ctx.drawImage(frames,frame*180,0,180,224,0,0,texture.width,texture.height);texture.refresh();
-  };
-  game.events.on('step',update);
-  game.events.once('destroy',()=>{game.events.off('step',update);frames.removeAttribute('src');});
-  return true;
-}
 
 /** At most four transfers (original separate pools allowed six), two per lane: visible faces > optional detail > speculative stage images.
  * Preempted optional work keeps its subscribers and resumes after the visible faces.
@@ -105,7 +82,7 @@ export function loadArtTexture(game:Phaser.Game,key:string,url:string,signal:Abo
         if(transferSignal.aborted)throw Error('art-aborted');
         assertCharacterArtDimensions(url,image.naturalWidth,image.naturalHeight);
         if(image.naturalWidth*image.naturalHeight>maxPixels)throw Object.assign(Error('art-pixels'),{retryable:false});
-        if(!game.textures.exists(key)&&!animateJokerArt(game,key,image))game.textures.addImage(key,image);
+        if(!game.textures.exists(key))game.textures.addImage(key,image);
       }finally{clearTimeout(deadline);transferSignal.removeEventListener('abort',cleanup);if(source)URL.revokeObjectURL(source);}
     },priority.value,controller.signal,key.startsWith('goods-art/')?'goods':key.includes('joker-')?'joker':'optional').finally(()=>{if(jobs!.get(key)===current)jobs!.delete(key);});
   }else if(visible)promoteArtTexture(game,key);

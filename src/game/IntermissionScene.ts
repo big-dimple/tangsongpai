@@ -141,6 +141,7 @@ export class IntermissionScene extends Phaser.Scene {
         return {avoid:top>reserve?[map({x:0,y:0,width:l.width,height:top-reserve}),map({x:0,y:top,width:l.width,height:l.height-top})]:[]};
       },
       visible:()=>!this.busy&&!document.querySelector('dialog[open]'),
+      onDetails:hint=>{if(hint.details)this.dialog.open('计分与规则',hint.details,[],{closeLabel:'返回练习'});},
       onReplay:()=>requestTutorialReplay(),
       onSkip:()=>skipTutorialToNormal(this.game),
       onComplete:()=>skipTutorialToNormal(this.game,'complete'),

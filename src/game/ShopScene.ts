@@ -100,6 +100,7 @@ import {shopToolInventoryRow} from './ToolInventoryEntry';
 import type {IntermissionResult} from './IntermissionScene';
 import type {Box} from './layout';
 import {jokerArtKey,jokerArtUrl,jokerArtPreviewUrl} from './jokerArt';
+import {animateJokerImage} from './JokerArtPlayback';
 import {UI_FONT,PAPER_THEME,PAPER_CSS} from './theme';
 import {fitJokerLabel} from './JokerLabel';
 import {drawJokerMotif} from './JokerMotif';
@@ -380,6 +381,7 @@ export class ShopScene extends Phaser.Scene {
         return {highlights:highlights.slice(0,1),avoid};
       },
       visible:()=>!this.busy&&!document.querySelector('dialog[open]'),
+      onDetails:hint=>{if(hint.details)this.dialog.open('计分与规则',hint.details,[],{closeLabel:'返回练习'});},
       onReplay:()=>requestTutorialReplay(),
       onSkip:()=>skipTutorialToNormal(this.game),
       onComplete:()=>skipTutorialToNormal(this.game,'complete'),
@@ -1172,7 +1174,7 @@ export class ShopScene extends Phaser.Scene {
     const first=this.view.root.length;
     const v=this.view,d=this.jokerDefinition(definitionId),badge=mechanismBadge(d),key=shopJokerPictureKey(this,definitionId,b),g=this.add.graphics();
     if(key&&this.textures.exists(key)){
-      const picture=this.add.image(b.x+b.width/2,b.y+b.height/2,key),scale=Math.min(b.width/picture.width,b.height/picture.height);
+      const picture=animateJokerImage(this,this.add.image(b.x+b.width/2,b.y+b.height/2,key),definitionId),scale=Math.min(b.width/picture.width,b.height/picture.height);
       v.add(picture.setScale(scale).setAlpha(alpha));
     }else {
       v.material(b,badge.paper,0xcbb591,3).setAlpha(alpha);

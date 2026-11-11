@@ -105,8 +105,11 @@ describe('guided first match from saved commands',()=>{
   const invalid=await again.dispatch({type:'PlayHand',selectedIds:pair,erxiangTargetId:'not-in-hand'});expect(invalid.ok).toBe(false);expect(guide(again)?.step).toBe('skill');
   await send(again,{type:'PlayHand',selectedIds:pair,erxiangTargetId:pair[0]});
   const skill=again.state.lastTrace!.events.find(e=>e.reasonKey==='erxiang.handoff');expect(skill).toBeDefined();
-  expect(guide(again)).toMatchObject({step:'complete',fact:{eventId:event.eventId,skillEventId:skill!.eventId}});
-  const restoredSkill=SavedRun.restore(store,await store.read());
+  expect(guide(again)).toMatchObject({step:'skill-practice',fact:{eventId:event.eventId,skillEventId:skill!.eventId}});
+  const restoredSkill=SavedRun.restore(store,await store.read());expect(guide(restoredSkill)?.step).toBe('skill-practice');
+  expect(guide(restoredSkill)?.body).not.toContain('弃牌要用 2 次');
+  if(restoredSkill.state.phase==='stage-cleared'){await send(restoredSkill,{type:'OpenShop'});await send(restoredSkill,{type:'LeaveShop'});await send(restoredSkill,{type:'EnterStage'});}
+  await send(restoredSkill,{type:'PlayHand',selectedIds:[restoredSkill.state.handOrder[0]]});
   expect(guide(restoredSkill)).toMatchObject({step:'complete',fact:{eventId:event.eventId,skillEventId:skill!.eventId}});
  });
 

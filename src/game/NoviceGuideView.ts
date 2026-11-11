@@ -28,6 +28,7 @@ export interface NoviceGuideOptions {
   host?:HTMLElement;
   /** A mobile list can reserve natural space for the guide instead of covering items. */
   getInlineHost?:()=>HTMLElement|undefined;
+  onDetails?:()=>void;
 }
 export interface NoviceGuideHandle {
   update(step:NoviceGuideStep):void;
@@ -54,10 +55,14 @@ const clamp=(n:number,min:number,max:number)=>Math.max(min,Math.min(max,n));
 /** Empty rectangles in the safe viewport. No candidate crosses any protected input area. */
 function freeRegions(bounds:Box,avoid:readonly Box[]):Box[] {
   if(!valid(bounds))return [];
-  const obstacles=avoid.filter(valid).filter(b=>overlap(bounds,b)).map(b=>{
+  const clipped=avoid.filter(valid).filter(b=>overlap(bounds,b)).map(b=>{
     const x=Math.max(bounds.x,b.x),y=Math.max(bounds.y,b.y);
     return {x,y,width:Math.min(right(bounds),right(b))-x,height:Math.min(bottom(bounds),bottom(b))-y};
   });
+  // HUD / action containers already cover most child controls. Keeping their
+  // nested boxes multiplies candidate regions without protecting anything new.
+  const obstacles=clipped.filter((b,i)=>!clipped.some((outer,j)=>i!==j&&outer.x<=b.x&&outer.y<=b.y&&right(outer)>=right(b)&&bottom(outer)>=bottom(b)&&
+    (outer.x<b.x||outer.y<b.y||right(outer)>right(b)||bottom(outer)>bottom(b)||j<i)));
   const ys=[...new Set([bounds.y,bottom(bounds),...obstacles.flatMap(b=>[b.y,bottom(b)])])].sort((a,b)=>a-b),regions:Box[]=[];
   for(let i=0;i<ys.length-1;i++)for(let j=i+1;j<ys.length;j++){
     const y=ys[i],height=ys[j]-y;
@@ -102,6 +107,7 @@ function safeViewport():Box {
 const stepProgress:Readonly<Record<string,string>>={
   pair:'新手首战 · 认识牌型',discard:'新手首战 · 换牌（可选）',independent:'新手首战 · 自主出牌',
   shop:'新手首战 · 商店构筑',payoff:'新手首战 · 唐宋牌生效',skill:'新手首战 · 英雄技能',
+  'skill-practice':'新手首战 · 自主实战',
   complete:'新手首战 · 已完成',replay:'新手首战 · 再练一次',
 };
 function emphasis(step:NoviceGuideStep):'score'|'reward'|'action' {
@@ -111,14 +117,13 @@ function emphasis(step:NoviceGuideStep):'score'|'reward'|'action' {
   return 'action';
 }
 
-let detailsSequence=0;
 /** Non-modal presentation only: it never chooses cards or sends a game command. */
 export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHandle {
   const root=document.createElement('div'),rings=document.createElement('div'),panel=document.createElement('section');
   const focus=document.createElementNS('http://www.w3.org/2000/svg','svg'),focusPath=document.createElementNS('http://www.w3.org/2000/svg','path');
   const header=document.createElement('div'),heading=document.createElement('div'),controls=document.createElement('div'),progress=document.createElement('span'),title=document.createElement('strong'),announcement=document.createElement('span'),closeButton=document.createElement('button');
   const portrait=document.createElement('img'),speaker=document.createElement('span');
-  const body=document.createElement('p'),choiceRow=document.createElement('div'),choices=document.createElement('div'),footer=document.createElement('div'),skipButton=document.createElement('button'),detailsButton=document.createElement('button'),detailsBody=document.createElement('div'),actionButton=document.createElement('button'),reopenButton=document.createElement('button');
+  const body=document.createElement('p'),choiceRow=document.createElement('div'),choices=document.createElement('div'),footer=document.createElement('div'),skipButton=document.createElement('button'),detailsButton=document.createElement('button'),actionButton=document.createElement('button'),reopenButton=document.createElement('button');
   root.className='novice-guide';root.dataset.noviceGuide='';root.dataset.reducedMotion=String(!!options.reducedMotion);
   focus.classList.add('novice-guide-focus');focus.setAttribute('aria-hidden','true');focusPath.setAttribute('fill','#142e31');focusPath.setAttribute('fill-opacity','.3');focusPath.setAttribute('fill-rule','evenodd');focus.append(focusPath);
   rings.className='novice-guide-rings';rings.setAttribute('aria-hidden','true');
@@ -131,17 +136,17 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
   choiceRow.className='novice-guide-choice-row';choices.className='novice-guide-choices';choices.setAttribute('aria-label','选择要尝试的牌型');choiceRow.append(choices);
   footer.className='novice-guide-actions';
   skipButton.type='button';skipButton.className='novice-guide-skip';skipButton.textContent='跳过';skipButton.setAttribute('aria-label','跳过教学并开始普通游戏，之后可在菜单重看');skipButton.title='跳过教学并开始普通游戏，之后可在菜单重看';skipButton.dataset.noviceGuideSkip='';skipButton.hidden=!options.onSkip;
-  const detailsId='novice-guide-details-'+(++detailsSequence);
-  detailsButton.type='button';detailsButton.className='novice-guide-details-toggle';detailsButton.textContent='计分与规则';detailsButton.dataset.noviceGuideDetailsToggle='';detailsButton.id=detailsId+'-toggle';detailsButton.setAttribute('aria-controls',detailsId);
-  detailsBody.className='novice-guide-details';detailsBody.id=detailsId;detailsBody.dataset.noviceGuideDetails='';detailsBody.setAttribute('role','region');detailsBody.setAttribute('aria-labelledby',detailsButton.id);
+  detailsButton.type='button';detailsButton.className='novice-guide-details-toggle';detailsButton.textContent='计分与规则';detailsButton.dataset.noviceGuideDetailsToggle='';detailsButton.setAttribute('aria-haspopup','dialog');
   actionButton.type='button';actionButton.className='novice-guide-action';actionButton.dataset.noviceGuideAction='';
   // The explanation uses the full panel width below the 44px controls. This
   // keeps long score breakdowns legible without shrinking their touch targets.
   controls.className='novice-guide-controls';controls.append(skipButton,actionButton,closeButton);header.append(portrait,heading,controls);
-  footer.append(detailsButton);panel.append(header,body,choiceRow,footer,detailsBody,announcement);
+  footer.append(detailsButton);panel.append(header,body,choiceRow,footer,announcement);
   reopenButton.type='button';reopenButton.className='novice-guide-reopen';reopenButton.textContent='查看引导';reopenButton.setAttribute('aria-label','查看新手引导');reopenButton.dataset.noviceGuideReopen='';reopenButton.hidden=true;
   root.append(focus,rings,panel,reopenButton);(options.host??document.body).append(root);
-  let step=options.step,closed=false,disposed=false,frame=0,detailsExpanded=false,choiceIds='';
+  let step=options.step,closed=false,disposed=false,frame=0,choiceIds='';
+  let revision=0,lastPositionRevision=-1,lastPositionKey='',lastLayout=-Infinity,positionedVisible=false,lastFocusPath='';
+  const ringNodes:HTMLDivElement[]=[];
   const renderStep=()=>{
     const label=step.progress??stepProgress[step.id]??'';
     root.dataset.noviceGuideStep=step.id;panel.dataset.emphasis=emphasis(step);progress.textContent=label;progress.hidden=!label;title.textContent=step.title;body.textContent=step.body;
@@ -169,8 +174,8 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
     controls.hidden=![...controls.children].some(child=>!(child as HTMLElement).hidden);
     if(skipButton.hidden&&skipFocused)(step.action?actionButton:closeButton).focus({preventScroll:true});
     if(!step.details&&document.activeElement===detailsButton)closeButton.focus({preventScroll:true});
-    panel.classList.toggle('has-details',!!step.details);detailsButton.hidden=!step.details;detailsButton.setAttribute('aria-expanded',String(!!step.details&&detailsExpanded));
-    detailsBody.hidden=!step.details||!detailsExpanded;detailsBody.textContent=step.details??'';
+    const showDetails=!!step.details&&!!options.onDetails&&!hasChoices;
+    panel.classList.toggle('has-details',showDetails);detailsButton.hidden=!showDetails;
   };
   const position=()=>{
     if(disposed)return;
@@ -185,23 +190,29 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
         const pad=5,x=b.x-pad,y=b.y-pad,w=b.width+pad*2,h=b.height+pad*2;
         return `M${x} ${y}h${w}v${h}h${-w}Z`;
       });
-      focusPath.setAttribute('d',[`M0 0H${width}V${height}H0Z`,...holes].join(' '));
-    }else focusPath.removeAttribute('d');
-    rings.replaceChildren();
-    if(!closed)for(const b of visibleHighlights){
-      const ring=document.createElement('div');ring.className='novice-guide-ring';ring.dataset.noviceGuideHighlight='';
-      Object.assign(ring.style,{left:b.x+'px',top:b.y+'px',width:b.width+'px',height:b.height+'px'});rings.append(ring);
+      const path=[`M0 0H${width}V${height}H0Z`,...holes].join(' ');
+      if(path!==lastFocusPath){focusPath.setAttribute('d',path);lastFocusPath=path;}
+    }else if(lastFocusPath){focusPath.removeAttribute('d');lastFocusPath='';}
+    const ringCount=closed?0:visibleHighlights.length;
+    while(ringNodes.length>ringCount)ringNodes.pop()!.remove();
+    for(let i=0;i<ringCount;i++){
+      const b=visibleHighlights[i];let ring=ringNodes[i];
+      if(!ring){ring=document.createElement('div');ring.className='novice-guide-ring';ring.dataset.noviceGuideHighlight='';ringNodes.push(ring);rings.append(ring);}
+      Object.assign(ring.style,{left:'0',top:'0',transform:`translate3d(${b.x}px,${b.y}px,0)`,width:b.width+'px',height:b.height+'px'});
     }
+    const quantize=(b:Box)=>[Math.round(b.x/8),Math.round(b.y/8),Math.round(b.width/8),Math.round(b.height/8)];
+    const positionKey=JSON.stringify([revision,closed,!!inline?.isConnected,bounds,avoid.map(quantize),visibleHighlights.map(quantize)]);
+    if(positionKey===lastPositionKey)return;
+    const now=performance.now();if(revision===lastPositionRevision&&now-lastLayout<100)return;
+    lastPositionKey=positionKey;lastLayout=now;lastPositionRevision=revision;
     const protectedAreas=[...avoid,...visibleHighlights],element=closed?reopenButton:panel;
     if(inline?.isConnected&&!closed){
       Object.assign(panel.style,{left:'',top:'',width:'',maxHeight:'',visibility:'visible'});
-      panel.classList.remove('is-constrained');panel.setAttribute('aria-label','新手引导');panel.removeAttribute('tabindex');return;
+      return;
     }
-    // Temporarily removing the height cap can reset a scrollable explanation's
-    // scroll position. Preserve it across the natural-height measurement.
-    const scrollTop=element.scrollTop;
     // Read the natural height at the likely width, then remeasure once if a narrow free region wraps the text.
     const desiredWidth=emphasis(step)==='action'?360:420;
+    panel.classList.remove('is-compact');
     element.style.maxHeight='none';element.style.width=closed?'auto':Math.min(desiredWidth,bounds.width)+'px';
     let rect=element.getBoundingClientRect();
     let placement=placeNoviceGuide(bounds,protectedAreas,{width:closed?Math.max(88,rect.width):rect.width,height:Math.max(44,rect.height)},visibleHighlights[0]);
@@ -209,21 +220,20 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
       element.style.width=placement.width+'px';rect=element.getBoundingClientRect();
       placement=placeNoviceGuide(bounds,protectedAreas,{width:placement.width,height:Math.max(44,rect.height)},visibleHighlights[0]);
     }
+    if(placement&&!closed&&placement.height<rect.height-.5){
+      panel.classList.add('is-compact');rect=element.getBoundingClientRect();
+      placement=placeNoviceGuide(bounds,protectedAreas,{width:rect.width,height:Math.max(44,rect.height)},visibleHighlights[0]);
+    }
     // If no 44px target can fit, do not place an invisible blocker on top of gameplay.
-    element.style.visibility=placement?'visible':'hidden';
+    positionedVisible=!!placement;element.style.visibility=placement?'visible':'hidden';
     if(!placement)return;
-    Object.assign(element.style,{left:placement.x+'px',top:placement.y+'px',width:placement.width+'px',maxHeight:placement.height+'px'});
-    if(scrollTop>0)element.scrollTop=scrollTop;
-    const constrained=!closed&&rect.height>placement.height+.5;
-    panel.classList.toggle('is-constrained',constrained);
-    panel.setAttribute('aria-label',constrained?'新手引导，可滚动查看':'新手引导');
-    if(constrained)panel.tabIndex=0;else panel.removeAttribute('tabindex');
+    Object.assign(element.style,{left:placement.x+'px',top:Math.max(bounds.y,Math.min(placement.y,bottom(bounds)-rect.height))+'px',width:placement.width+'px',maxHeight:'none'});
   };
   const schedule=()=>{if(disposed)return;if(frame)cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{frame=0;position();});};
   const setClosed=(next:boolean,notify:boolean)=>{
     if(disposed||closed===next)return;
     const focused=next?panel.contains(document.activeElement):document.activeElement===reopenButton;
-    closed=next;panel.hidden=closed;reopenButton.hidden=!closed;position();
+    closed=next;revision++;panel.hidden=closed;reopenButton.hidden=!closed;position();
     if(focused)(closed?reopenButton:closeButton).focus({preventScroll:true});
     if(notify)(closed?options.onClose:options.onReopen)?.();
   };
@@ -232,26 +242,24 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
   skipButton.onclick=()=>{if(disposed)return;setClosed(true,false);options.onSkip?.();};
   detailsButton.onclick=()=>{
     if(disposed||closed||!step.details)return;
-    detailsExpanded=!detailsExpanded;renderStep();position();
-    if(detailsExpanded){const outer=panel.getBoundingClientRect(),inner=detailsBody.getBoundingClientRect();panel.scrollTop+=Math.max(0,inner.top-(outer.bottom-36));}
+    options.onDetails?.();
   };
   actionButton.onclick=()=>{if(!disposed&&!closed)step.action?.run();};
   panel.addEventListener('keydown',event=>{
     if(event.key==='Escape'){event.preventDefault();event.stopPropagation();setClosed(true,true);}
-    // A focused, scrollable panel is not a card target. Let its native scrolling
-    // work without also delivering the same keys to the scene's window handler.
-    else if(event.target===panel&&['ArrowLeft','ArrowRight','ArrowUp','ArrowDown',' ','Enter','PageUp','PageDown','Home','End'].includes(event.key))event.stopPropagation();
   });
   window.addEventListener('resize',schedule);window.visualViewport?.addEventListener('resize',schedule);window.visualViewport?.addEventListener('scroll',schedule);
-  const observer=typeof ResizeObserver==='undefined'?undefined:new ResizeObserver(schedule);observer?.observe(panel);
+  const observer=typeof ResizeObserver==='undefined'?undefined:new ResizeObserver(()=>{lastPositionKey='';revision++;schedule();});observer?.observe(panel);
   renderStep();position();
   return {
-    update(next){if(disposed)return;if(next.id!==step.id||!next.details)detailsExpanded=false;step=next;renderStep();position();},
+    update(next){if(disposed)return;step=next;revision++;renderStep();position();},
     refresh(){if(!disposed)position();},
     close(){setClosed(true,true);},
     reopen(){setClosed(false,true);},
     isVisible(){
       if(disposed||closed||panel.hidden||document.hidden||!panel.isConnected)return false;
+      if(panel.hasAttribute('data-novice-drag-obscured'))return false;
+      if(!root.classList.contains('is-inline'))return positionedVisible;
       const r=panel.getBoundingClientRect(),visual=window.visualViewport;
       if(r.width<=0||r.height<=0)return false;
       let left=visual?.offsetLeft??0,top=visual?.offsetTop??0,right=left+(visual?.width??innerWidth),bottom=top+(visual?.height??innerHeight);

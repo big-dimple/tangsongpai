@@ -22,10 +22,13 @@ export interface NoviceGuideBindingOptions {
   visible?:(hint:NoviceGuideHint)=>boolean;
   /** Local selections can update the prompt without becoming saved progress. */
   presentHint?:(hint:NoviceGuideHint)=>NoviceGuideHint;
+  /** Cheap local input tokens; a change bypasses the idle refresh throttle. */
+  presentationInputs?:()=>readonly unknown[];
   /** Final hint only while its actual panel is visible; undefined when hidden or removed. */
   onPresented?:(hint:NoviceGuideHint|undefined)=>void;
   onChoice?:(id:string)=>void;
   onVisibilityChange?:(closed:boolean)=>void;
+  onDetails?:(hint:NoviceGuideHint)=>void;
   getInlineHost?:()=>HTMLElement|undefined;
 }
 export interface NoviceGuideUnmount {
@@ -53,7 +56,7 @@ function belongs(kind:NoviceGuideSceneKind,state:R2RunState,hint:NoviceGuideHint
   switch(hint.step){
     case 'pair':case 'discard':case 'independent':
       return kind==='game'&&(phase==='await-input'||phase==='pending-refill');
-    case 'skill':
+    case 'skill':case 'skill-practice':
       return kind==='shop'&&phase==='shop'||kind==='game'&&['stage-ready','await-input','pending-refill'].includes(phase)||
         kind==='intermission'&&phase==='stage-cleared';
     case 'shop':
@@ -87,6 +90,8 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
   let geometry:NoviceGuideGeometry={},geometryKey='',lastMeasurement=-Infinity;
   let inlineHost:HTMLElement|undefined;
   let presentedKey:string|undefined;
+  let lastRender=-Infinity;
+  let previousInputs:readonly unknown[]|undefined;
 
   const reportPresented=(force=false)=>{
     if(!options.onPresented)return;
@@ -143,6 +148,14 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
 
   const render=(forceGeometry=false)=>{
     if(stopped)return;
+    const now=performance.now();
+    const inputs=options.presentationInputs?.();
+    const inputChanged=!inputs||!previousInputs||inputs.length!==previousInputs.length||inputs.some((value,index)=>value!==previousInputs![index]);
+    // Selection changes stay immediate; idle anchor tracking does not need the
+    // render loop's full cadence. Adapters without input tokens remain live.
+    if(!forceGeometry&&!inputChanged&&now-lastRender<50)return;
+    previousInputs=inputs;
+    lastRender=now;
     const run=activeRun();
     if(!run){removeView();return;}
     const prefs=presentation(run);let current=hint?(options.presentHint?.(hint)??hint):undefined;
@@ -163,6 +176,7 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
       geometryKey=makeGeometryKey(geometry);
       view=mountNoviceGuideView({
         step:makeStep(run,current),getGeometry:()=>geometry,getInlineHost:options.getInlineHost,reducedMotion:motion,
+        onDetails:options.onDetails?()=>{if(shownHint&&shownHint.details&&stillCurrent(run,shownHint))options.onDetails?.(shownHint);}:undefined,
         onClose:()=>{presentation(run).closed=true;options.onVisibilityChange?.(true);reportPresented();},
         onReopen:()=>{if(!stopped&&activeRun()===run){presentation(run).closed=false;options.onVisibilityChange?.(false);reportPresented(true);}},
         onSkip:()=>{

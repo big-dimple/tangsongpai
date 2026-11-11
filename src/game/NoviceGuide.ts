@@ -18,7 +18,7 @@ import {noviceContributionPrefix,novicePurchaseAdvice,novicePurchasedContributio
 export const NOVICE_GUIDE_KEY='tangsongpai-novice-guide-v1';
 export const NOVICE_GUIDE_PENDING_PREFIX='tangsongpai-novice-start:';
 export const NOVICE_GUIDE_PREFERENCES_EVENT='tangsongpai-novice-guide-preferences';
-export type NoviceGuideStep='pair'|'discard'|'independent'|'shop'|'payoff'|'skill'|'complete'|'replay';
+export type NoviceGuideStep='pair'|'discard'|'independent'|'shop'|'payoff'|'skill'|'skill-practice'|'complete'|'replay';
 export interface NoviceGuideFact {
  pairScore?:string;
  pairHeat?:string;
@@ -54,7 +54,7 @@ export interface NoviceGuideHint {
  fact?:NoviceGuideFact;
 }
 type Preferences={disabled:boolean;enrolled?:string;muted:boolean;skipped:NoviceGuideStep[]};
-const allSteps:readonly NoviceGuideStep[]=['pair','discard','independent','shop','payoff','skill','complete','replay'];
+const allSteps:readonly NoviceGuideStep[]=['pair','discard','independent','shop','payoff','skill','skill-practice','complete','replay'];
 const empty=():Preferences=>({disabled:false,muted:false,skipped:[]});
 const runKey=(s:R2RunState)=>JSON.stringify([s.runId,s.seed,s.characterId,s.contentVersion,s.contentHash,s.mode,s.difficulty,s.challengeId,s.tourMode]);
 function decode(raw:string|null):Preferences {
@@ -149,7 +149,7 @@ export function dismissNoviceGuide(s:R2RunState,scope:'step'|'run'|'forever',jou
 
 type Facts={pair?:ScoreTrace;pairTarget?:string;pairStageHeat?:string;discarded:boolean;independent:boolean;cleared:boolean;
  purchase?:NovicePurchase;purchaseStatus?:'ready'|'disabled'|'no-scoring'|'sold';attempt?:{trace:ScoreTrace;playIndex:number};event?:ScoreEvent;payoff?:ScoreTrace;payoffEvents?:ScoreEvent[];
- skill?:ScoreTrace};
+ skill?:ScoreTrace;skillPractice?:boolean};
 const factCache=new WeakMap<R2RunState,{journal:readonly Command[];facts:Facts}>();
 const fraction=(v:{n:string;d:string})=>v.d==='1'?v.n:`${v.n}/${v.d}`;
 const positive=(value:string)=>/^\d+$/.test(value)&&BigInt(value)>0n;
@@ -220,6 +220,7 @@ function savedFacts(state:R2RunState,journal?:readonly Command[]):Facts|undefine
     }else for(const purchase of available)attempts.set(purchase.instanceId,{trace:scored,playIndex:before.stage.playIndex+1});
    }
    if(scored&&!facts.skill&&scored.erxiangHandoff?.targetId&&scored.events.some(e=>e.sourceDefinitionId==='erxiang'&&e.reasonKey==='erxiang.handoff'))facts.skill=scored;
+   if(facts.event&&facts.skill&&scored&&scored.rootId!==facts.skill.rootId&&positive(scored.finalScore))facts.skillPractice=true;
   }
   if(stableHash(current)!==stableHash(state))return;
   if(!facts.event){
@@ -301,8 +302,9 @@ function deriveHint(s:R2RunState,journal?:readonly Command[]):NoviceGuideHint {
   ...(facts.event?{eventId:facts.event.eventId,finalScore:facts.payoff!.finalScore,contribution:noviceContributionPrefix(facts.event)+contribution(facts.payoffEvents!),briefContribution:noviceContributionPrefix(facts.event)+briefContribution(facts.payoffEvents!)}:{}),
   ...(facts.skill?{skillEventId:facts.skill.events.find(e=>e.reasonKey==='erxiang.handoff')?.eventId,
     skillContribution:fractionText(facts.skill.events.filter(e=>e.reasonKey==='erxiang.handoff').reduce((sum,e)=>{const before=Rational.fromJSON(e.before.M),after=Rational.fromJSON(e.after.M);return sum.add(after.add(new Rational(-before.n,before.d)));},new Rational(0n)).toJSON())}:{})};
- if(facts.event&&facts.skill)return {step:'complete',cue:'首战教学完成',body:`刘娥已将${fact.skillContribution}点转为倍率。你已体验出牌、构筑和英雄技能。${s.phase==='run-lost'?'本局已结束，可以开始普通游戏。':'可继续本局，或开始普通游戏。'}`,fact};
+ if(facts.skillPractice)return {step:'complete',cue:'首战教学完成',body:`你已体验选牌、构筑和英雄技能，并完成自主出牌。${s.phase==='run-lost'?'本局已结束，可以开始普通游戏。':'可继续本局，或开始普通游戏。'}`,fact};
  if(s.phase==='run-lost')return {step:'replay',cue:'可以再练一次',body:'本局已结束，练习尚未完成。可以重新练习，或开始普通局。',fact};
+ if(facts.event&&facts.skill)return {step:'skill-practice',cue:'现在由你出一手',body:`刘娥已将${fact.skillContribution}点转为倍率。${s.phase==='await-input'?'自己选1–5张牌，再点「出牌」。':'进入下一场，自己选牌出一手。'}是否弃牌换牌由你决定。`,fact};
  if(facts.event){
   const elsewhere=s.phase!=='await-input'&&s.phase!=='pending-refill';
   return {step:'skill',cue:`${cardDisplayName(facts.purchase!.definitionId)} ${(fact.briefContribution??'').replace(/\s+/g,'')}`,body:elsewhere?'进入下一场，再试刘娥技能。':'选一对，再试刘娥技能。',recommendedCardIds:elsewhere?[]:pairIds(s),fact};
@@ -353,7 +355,7 @@ export function liveNoviceGuide(hint:NoviceGuideHint,selectedIds:readonly string
   const example=selected.size<=2&&[...selected].every(id=>recommended.includes(id));
   return {...hint,cue:example?'选好了，试试换牌':'出牌或换牌，由你选择',body:`点「弃牌」换掉已选${selected.size}张，${discardCost}；也可直接出牌。`,recommendedCardIds:[],focus:example?'discard':undefined};
  }
- if(hint.step==='independent'&&selected.size)return {...hint,body:'点「出牌」，看看结果。',focus:'play'};
+ if((hint.step==='independent'||hint.step==='skill-practice')&&selected.size)return {...hint,body:'点「出牌」，看看结果。',focus:'play'};
  if(hint.step==='payoff'&&recommended.length===2&&selected.size===2&&recommended.every(id=>selected.has(id))){
   const name=hint.fact?.purchaseDefinitionId?cardDisplayName(hint.fact.purchaseDefinitionId):'唐宋牌';
   return {...hint,cue:`${name} · 出牌`,body:hint.payoffAction??hint.body,recommendedCardIds:[],focus:'play'};

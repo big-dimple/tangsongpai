@@ -1,6 +1,7 @@
 import type Phaser from 'phaser';
 import {decodeArtImage,detailArt,invalidateArt,observeDecodedArt} from './DetailArt';
 import {jokerArtKey} from './jokerArt';
+import {JOKER_ART_FRAME_MS} from './JokerArtAnimation';
 import {HANDDRAWN_ART} from './HanddrawnArt';
 import {cardArtSource} from './CardArtSource';
 import {GOODS_ART} from './GoodsArt';
@@ -16,7 +17,7 @@ class GalleryArt {
  private refresh=()=>{};
  constructor(private readonly scene:Phaser.Scene){scene.events.once('shutdown',this.dispose);scene.events.once('destroy',this.dispose);}
  request(ids:readonly string[],refresh:()=>void):void {
-  this.refresh=refresh;const wanted=new Set(ids.filter(id=>cardArtSource(id)));
+  this.refresh=refresh;const wanted=new Set(ids.filter(id=>!JOKER_ART_FRAME_MS[id]&&cardArtSource(id)));
   for(const [id,entry] of this.entries)if(!wanted.has(id)){entry.controller.abort();this.entries.delete(id);this.scene.textures.remove(keyFor(id));}
   for(const id of wanted){
    if(this.disposed||this.entries.has(id))continue;
@@ -46,6 +47,7 @@ export function requestShopGalleryArt(scene:Phaser.Scene,ids:readonly string[],r
 }
 export const requestShopJokerGalleryArt=requestShopGalleryArt;
 export function shopJokerPictureKey(scene:Phaser.Scene,id:string,box:{width:number;height:number}):string|undefined {
+ if(JOKER_ART_FRAME_MS[id])return jokerArtKey(id);
  const detail=keyFor(id);return (box.width>128||box.height>160)&&scene.textures.exists(detail)?detail:jokerArtKey(id);
 }
 /** Dense displays also benefit when a visible goods face is 128 logical pixels wide. */
