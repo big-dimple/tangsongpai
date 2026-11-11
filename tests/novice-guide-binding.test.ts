@@ -138,11 +138,25 @@ describe('novice guide scene binding',()=>{
   unmount();
  });
 
+ it('moves a cleared opening without discards to the intermission shop lesson',async()=>{
+  const {run}=await start('clear-without-discard');session.run=run;await enter(run);
+  const game=scene(run),intermission=scene(run),onReplay=vi.fn(()=>true);
+  const unmountGame=bindNoviceGuide(game.value,{kind:'game',getGeometry:geometry,onReplay,onSkip:()=>true,onComplete:()=>true});
+  const unmountIntermission=bindNoviceGuide(intermission.value,{kind:'intermission',getGeometry:geometry,onReplay,onSkip:()=>true,onComplete:()=>true});
+  while(run.state.phase==='await-input')await send(run,{type:'PlayHand',selectedIds:run.state.handOrder.slice(0,5)});
+  expect(run.state.phase).toBe('stage-cleared');expect(run.state.stage?.discardsUsed).toBe(0);
+  expect(noviceGuide(run.state,run.journal)?.step).toBe('shop');
+  expect(latest()?.step.id).toBe('shop');expect(views.filter(v=>!v.removed)).toHaveLength(1);
+  expect(onReplay).not.toHaveBeenCalled();unmountGame();unmountIntermission();
+ });
+
  it('executes replay, exits on skip and can restore after a failed exit',async()=>{
   const {run}=await start('replay');session.run=run;await enter(run);const owner=scene(run),onReplay=vi.fn(()=>true).mockReturnValueOnce(false),onSkip=vi.fn(()=>false);
   const unmount=bindNoviceGuide(owner.value,{kind:'game',getGeometry:geometry,onReplay,onSkip,onComplete:()=>true});
-  await send(run,{type:'PlayHand',selectedIds:run.state.handOrder.slice(0,5)});
-  while(run.state.phase==='await-input')await send(run,{type:'PlayHand',selectedIds:run.state.handOrder.slice(0,5)});
+  // Spend all hands on single cards so this exercises a real defeat, not a
+  // cleared opening that correctly advances to the shop lesson.
+  while(run.state.phase==='await-input')await send(run,{type:'PlayHand',selectedIds:run.state.handOrder.slice(0,1)});
+  expect(run.state.phase).toBe('run-lost');
   expect(latest()?.step.id).toBe('replay');
   latest()!.step.action!.run();latest()!.step.action!.run();expect(onReplay).toHaveBeenCalledOnce();await Promise.resolve();
   expect(latest()?.step.body).toContain('操作尚未完成');latest()!.step.action!.run();expect(onReplay).toHaveBeenCalledTimes(2);await Promise.resolve();
