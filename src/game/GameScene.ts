@@ -611,6 +611,7 @@ export class GameScene extends Phaser.Scene {
             firstStage.options=options;firstStage.optionKey=result.key;
           }
           const stage=this.run.stage,target=firstStage.target;
+          const canDiscard=stage.discardsLeft>=r2DiscardCost(this.run)&&this.run.drawPile.length>0&&this.run.gold>=(stageNotice(this.run)?.discardGoldCost??0);
           const choices=firstStage.options.map(row=>({id:row.id,label:row.label,cardIds:row.cardIds,selected:target?.id===row.id}));
           const cue=`累计 ${stage.heat}/${stage.targetHeat} · 剩${stage.handsLeft}次出牌`;
           if(!choices.length)return {...hint,cue,body:'可以自己选牌出牌；牌型示例准备好后会显示。',choices};
@@ -618,12 +619,12 @@ export class GameScene extends Phaser.Scene {
           if(!target){
             const short=stage.handsLeft===1&&!firstStage.options.some(option=>option.canClear);
             const suitFeedback=selected.length?noviceSameSuitFeedback(this.hand,selected,handRules):undefined;
-            return {...hint,cue,body:short?(stage.discardsLeft?'暂无可过关的牌，可先弃牌。':'这手不足目标，请继续出牌。'):suitFeedback?`${suitFeedback}选一种牌型。`:(selected.length?'从已选牌滑过可取消；或选一种牌型。':'选一种牌型，再选亮起的牌。'),choices};
+            return {...hint,cue,body:short?(canDiscard?'暂无可过关的牌，可先弃牌。':'这手不足目标，请继续出牌。'):suitFeedback?`${suitFeedback}选一种牌型。`:(selected.length?'从已选牌滑过可取消；或选一种牌型。':'选一种牌型，再选亮起的牌。'),choices};
           }
           const extra=selected.filter(id=>!target.cardIds.includes(id)),remaining=target.cardIds.filter(id=>!this.selectedIds.has(id));
           if(extra.length)return {...hint,cue,body:'先点亮起的已选牌取消。',recommendedCardIds:extra,choices};
           const definition=noviceHandDefinition(target.id,handRules);
-          if(!remaining.length)return {...hint,cue,body:stage.handsLeft===1&&!target.canClear?'这手不足目标，可弃牌或出牌。':target.id==='flush'||target.id==='high-card'?`${definition}点「出牌」。`:'牌选好了，点「出牌」。',recommendedCardIds:[],focus:'play',choices};
+          if(!remaining.length)return {...hint,cue,body:stage.handsLeft===1&&!target.canClear?(canDiscard?'这手不足目标，可弃牌或出牌。':'这手不足目标，请继续出牌。'):target.id==='flush'||target.id==='high-card'?`${definition}点「出牌」。`:'牌选好了，点「出牌」。',recommendedCardIds:[],focus:'play',choices};
           return {...hint,cue,body:target.id==='flush'?`${definition}${selected.length?`再选${remaining.length}张亮牌。`:'点亮牌。'}`:selected.length?`再选亮起的${remaining.length}张牌。`:(definition?definition+'点亮牌。':'选亮起的牌。'),recommendedCardIds:remaining,choices};
         }
         firstStage=undefined;
@@ -1470,17 +1471,30 @@ export class GameScene extends Phaser.Scene {
     label.setPosition(plane.x,plane.y-18).setVisible(presenting||!!this.pendingRefill||this.selectedIds.size>0);
   }
   private renderSelectedCards(preview?:HandPreview):void {
-    this.previewCards?.destroy();this.previewCards=this.view.add(this.add.container(0,0));this.resultText.setVisible(true);(this.view.root.list.find(o=>o.name==='table/played-label') as Phaser.GameObjects.Text|undefined)?.setText('待出牌');const p=toolInventoryPlayedArea(this.view.layout);
+    this.resultText.setVisible(true);(this.view.root.list.find(o=>o.name==='table/played-label') as Phaser.GameObjects.Text|undefined)?.setText('待出牌');const p=toolInventoryPlayedArea(this.view.layout);
     this.placePlayedCaption(false);
     if(this.pendingRefill){const pending=this.pendingRefill,held=this.run.handOrder.map(id=>this.run.deckInstances.find(c=>c.id===id)!).map(c=>rankLabel(c.rank)+SUIT_SYMBOL[c.suit]).join(' '),score=this.view.layout.scoreBoard;
+      this.previewCards?.destroy();this.previewCards=this.view.add(this.add.container(0,0));
       (this.view.root.list.find(o=>o.name==='table/played-label') as Phaser.GameObjects.Text|undefined)?.setText('候选补牌');this.resultText.setVisible(false);
       const text=this.add.text(p.x+p.width/2,p.y+p.height/2,this.refillHidden?'候选已收起 · 点英雄继续选择':`留 ${pending.required} 张 · 已选 ${this.selectedIds.size} / ${pending.required}\n确认后其余 ${pending.candidateIds.length-pending.required} 张进已用区`,{fontFamily:UI_FONT,fontSize:'16px',color:C.jade,align:'center',wordWrap:{width:p.width-16,useAdvancedWrap:true}}).setOrigin(.5).setName('refill/instruction');this.previewCards.add(text);
       const note=this.add.text(score.x+10,score.y+28,'原保留：'+held,{fontFamily:UI_FONT,fontSize:'14px',color:C.mutedInk,wordWrap:{width:score.width-20,useAdvancedWrap:true}}).setName('refill/held').setVisible(!this.xinRefillSequence?.active);this.previewCards.add(note);return;}
-    const score=this.view.layout.scoreBoard;
-    this.renderSelectionQuickButtons(score);
-    if(!preview)return;
-    const cards=this.hand.filter(card=>this.selectedIds.has(card.id)),boxes=this.landingBoxes(cards.length);
-    cards.forEach((card,i)=>{const cv=this.cardPiece(card,boxes[i]);this.previewCards!.add(cv.container);cv.container.setAlpha(1);paintCardFeedback(cv,{scoring:preview.activeScoringIds.includes(card.id)});cv.scoringMark.setVisible(false);});
+    if(!this.previewCards?.active||!this.previewCards.getData('cardViews')){
+      this.previewCards?.destroy();this.previewCards=this.view.add(this.add.container(0,0)).setData('cardViews',new Map<string,CardView>());
+      this.renderSelectionQuickButtons(this.view.layout.scoreBoard);
+    }
+    const views=this.previewCards.getData('cardViews') as Map<string,CardView>;
+    const cards=preview?this.hand.filter(card=>this.selectedIds.has(card.id)):[],boxes=this.landingBoxes(cards.length);
+    // Sweep selection changes one card at a time. Keep unchanged faces and their
+    // text textures instead of rebuilding every selected card on each pointer move.
+    for(const [id,cv] of views)if(!cards.some(card=>card.id===id)){cv.container.destroy();views.delete(id);}
+    cards.forEach((card,i)=>{
+      const b=boxes[i];let cv=views.get(card.id);
+      if(cv&&(cv.card!==card||cv.background.width!==b.width||cv.background.height!==b.height)){cv.container.destroy();views.delete(card.id);cv=undefined;}
+      if(!cv){cv=this.cardPiece(card,b);this.previewCards!.add(cv.container);views.set(card.id,cv);}
+      cv.container.setPosition(b.x+b.width/2,b.y+b.height/2).setAlpha(1);paintCardFeedback(cv,{scoring:preview!.activeScoringIds.includes(card.id)});cv.scoringMark.setVisible(false);
+    });
+    const help=this.previewCards.getByName('selection/source-benefits') as Phaser.GameObjects.Rectangle|undefined;
+    if(help)this.view.setEnabled(help,this.ready);
   }
   private get assistProfile():boolean {return r2UsesAssist(this.run);}
   private get jokerDefinitions(){return r2JokerDefinitionsFor(this.run);}

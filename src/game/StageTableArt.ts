@@ -9,6 +9,7 @@ import type {SceneView} from './SceneView';
 import {PAPER_THEME as T} from './theme';
 
 export interface StageTableArtPlan {surface:Box;program:Box;rack:Box;hand:Box;stage:Box;portrait?:Box}
+let paperSerial=0;
 const fit=(l:TableLayout,b:Box):Box=>{const x=Math.max(0,b.x),y=Math.max(0,b.y);return{x,y,width:Math.max(0,Math.min(l.width,b.x+b.width)-x),height:Math.max(0,Math.min(l.height,b.y+b.height)-y)};};
 /** Decoration follows final published rectangles. It never allocates seats or moves targets. */
 export function stageTableArtPlan(l:TableLayout):StageTableArtPlan {
@@ -28,6 +29,16 @@ export function stageTableArtPlan(l:TableLayout):StageTableArtPlan {
 /** Existing paper/character art; an optional hero entry owns only its portrait bounds. */
 export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:CharacterId,inspectHero?:()=>void,legacyPortrait=true):void {
  const plan=stageTableArtPlan(view.layout);
+ // Paper and trays are unchanged until SceneView rebuilds the layout. Rasterize
+ // them once instead of triangulating their rounded paths on every game frame.
+ const addPaper=(graphics:Phaser.GameObjects.Graphics)=>{
+  const {width,height}=view.layout,density=Math.min(2,1/scene.scale.zoom,4096/width,4096/height,Math.sqrt(4_000_000/(width*height)));
+  const key='table-paper/'+(++paperSerial);
+  // Canvas keeps the rounded edges antialiased, including WebGL1 devices.
+  graphics.setScale(density).generateTexture(key,Math.ceil(width*density),Math.ceil(height*density));
+  const paper=scene.add.image(0,0,key).setOrigin(0).setScale(1/density).setName(graphics.name).setData('bounds',graphics.getData('bounds'));
+  paper.once('destroy',()=>scene.textures.remove(key));graphics.destroy();view.add(paper);
+ };
  if(view.layout.pc){
   const l=view.layout,{frame,main,build}=l.pc!,g=scene.add.graphics().setName('table-art/pc-paper').setData('bounds',frame);
   // Layered lacquer surround, warm card trays and a quiet jade playing field.
@@ -50,7 +61,7 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
   g.fillStyle(0xf6eee0).fillRoundedRect(main.x,l.hand.y-8,main.width,l.actions.y+l.actions.height-l.hand.y+16,9);
   g.lineStyle(1,0xc4b397,.8).strokeRoundedRect(main.x+.5,l.hand.y-7.5,main.width-1,l.actions.y+l.actions.height-l.hand.y+15,9);
   g.lineStyle(3,T.red,.8).lineBetween(main.x+12,frame.y-9,main.x+64,frame.y-9);
-  view.add(g);
+  addPaper(g);
   return;
  }
  function sheet(name:string,b:Box,color:number,edge:number,shadow=false):void {
@@ -74,7 +85,7 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
   accent.fillStyle(T.paperLight,.99).fillRect(l.hand.x-4,l.hand.y-8,l.hand.width+8,l.actions.y-l.hand.y+8);
   accent.lineStyle(2,T.ink,.16).lineBetween(l.hand.x,l.hand.y-8,l.hand.x+l.hand.width,l.hand.y-8);
   accent.lineStyle(2,T.red,.48).lineBetween(l.actions.x,l.actions.y+l.actions.height,l.actions.x+l.actions.width,l.actions.y+l.actions.height);
-  view.add(accent);
+  addPaper(accent);
   // The supplied full-frame hero art is part of the table's atmosphere on
   // phones too. It sits behind the landing lane with a soft alpha so sleeves,
   // hair and weapons dissolve into the paper while the live cards stay crisp.
