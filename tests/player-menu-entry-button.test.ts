@@ -142,6 +142,11 @@ it('keeps the temporary-save risk visible outside the closed menu and removes it
  session.temporaryRun=false;notify();expect(notice.hidden).toBe(true);
 });
 
+it('allows an empty page to choose an import before claiming the writer, but not over a readonly run',()=>{
+ const {find}=mount();session.lease.writable=false;notify();expect(find('导入本局').disabled).toBe(false);
+ session.run={status:'readonly',state:{phase:'shop',mode:'standard'}} as SavedRun;notify();expect(find('导入本局').disabled).toBe(true);
+});
+
 it('exports the unsaved candidate, retains raw backups and imports through the existing session',async()=>{
  const createObjectURL=vi.fn((_blob:Blob)=> 'blob:checkpoint'),revokeObjectURL=vi.fn();vi.stubGlobal('URL',{createObjectURL,revokeObjectURL});
  const importJSON=vi.fn().mockResolvedValue(true),reportNotice=vi.fn(),exportRetained=vi.fn().mockResolvedValue('{"format":"tangsongpai-storage-backup","records":[]}');Object.assign(session,{importJSON,reportNotice,storage:{exportRetained}});

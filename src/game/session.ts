@@ -186,12 +186,15 @@ export class GameSession {
   }
   async importJSON(text:string):Promise<boolean> {
     if(this.restoreInFlight||this.working||this.blockPending())return false;
-    if(!this.lease.writable){this.notice='游戏已在另一页打开。可在这里继续。';this.changed();return false;}
     this.working=true;this.changed();
     try {
+      if(!this.lease.writable){
+        if(this.run||!await this.lease.claim()){this.notice='游戏已在另一页打开。可在这里继续。';this.changed();return false;}
+      }
       if(new TextEncoder().encode(text).length>MAX_IMPORT_BYTES)throw Error('导入文件过大');
       const checked=readCheckpoint(JSON.parse(text));if(!checked.ok)throw Error(checked.code);
-      if(this.run&&!await this.run.flush())throw Error('本局尚未保存，请先重试或导出');
+      const exportedCandidate=this.run?.status==='paused'&&this.run.isUnsavedCheckpoint(checked.checkpoint);
+      if(this.run&&!exportedCandidate&&!await this.run.flush())throw Error('本局尚未保存，请先重试或导出');
       const imported=checked.checkpoint.state,options=imported.mode==='tutorial'&&isGuidedTutorialRunId(imported.runId)?{suppressGuidedOpening:true}:{};
       const run=await SavedRun.import(this.saveStore,checked.checkpoint,await this.readPartition(imported),options);
       this.notice='导入成功，已保存完整进度。';

@@ -239,7 +239,7 @@ export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|un
     reload.hidden=session.persistentReady||!!run||!!pending||!session.notice;reload.disabled=session.working||!!pending||!session.notice;
     takeover.hidden=!!run||!session.loaded||!session.lease.elsewhere;takeover.disabled=session.working||!!pending;
     exportCurrent.hidden=!run&&!pending;exportCurrent.disabled=session.working;exportRetained.hidden=!session.loaded;exportRetained.disabled=session.working;
-    importCurrent.disabled=session.working||!!pending||!session.loaded||session.storageUnavailable||!session.lease.writable||run?.status==='saving';
+    importCurrent.disabled=session.working||!!pending||!session.loaded||session.storageUnavailable||!!run&&!session.lease.writable||run?.status==='saving';
     start.disabled=session.working||!!pending||!session.loaded||session.storageUnavailable||!!run&&!session.lease.writable||run?.status==='saving'||run?.status==='paused';
     replay.disabled=start.disabled;skip.hidden=run?.state.mode!=='tutorial';skip.disabled=start.disabled;
     enableGuide.hidden=!noviceGuideDisabled()&&!firstChapterGuideDisabled();

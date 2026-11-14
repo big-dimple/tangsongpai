@@ -1,6 +1,6 @@
 import {prepareBossSuitRescueAction} from '../domain/r2BossSuitRescue';
 import {applyCommand,type Action,type Command,type CommandResult,type R2RunState} from '../domain/run';
-import {stableHash} from '../domain/hash';
+import {canonicalJson,stableHash} from '../domain/hash';
 import {routeStarterStartCommand} from '../domain/r2RouteStarter';
 import {freezeCheckpoint} from './RunController';
 import {makeCheckpoint,readCheckpoint,restoreSlots,type Checkpoint} from './checkpoint';
@@ -35,6 +35,7 @@ export class SavedRun {
   /** Slot metadata, never part of the game rules or a substitute for its receipts. */
   get guidedOpeningSuppressed():boolean {return this.suppressedOpenings.has(this.state.runId);}
   exportJSON():string {return JSON.stringify(this.pending?.checkpoint??this.checkpoint,null,2);}
+  isUnsavedCheckpoint(checkpoint:Checkpoint):boolean {return this.pending!==undefined&&canonicalJson(this.pending.checkpoint)===canonicalJson(checkpoint);}
 
   static async start(store:SaveStore,state:R2RunState,slots:SaveSlots):Promise<SavedRun> {
     return SavedRun.import(store,makeCheckpoint(state,[]),slots);

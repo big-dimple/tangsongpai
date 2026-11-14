@@ -147,6 +147,26 @@ describe('complete checkpoint validation and save-before-publish',()=>{
     run=SavedRun.restore(store,await store.read());expect(run.state).toEqual(saved);
     expect((await run.submit(command)).ok).toBe(true);expect(run.state).toEqual(saved);expect(run.state.rng).toEqual(saved.rng);
   });
+  it('reimports the exact exported unsaved candidate without dropping it or accepting a different replacement',async()=>{
+    const {session,run,store}=await existingSession(),before=run.state,offer=before.shop!.offers.find(o=>o.price===4)!;
+    store.fail=true;expect((await run.dispatch({type:'BuyOffer',offerId:offer.offerId})).ok).toBe(false);expect(run.status).toBe('paused');
+    const candidate=run.exportJSON(),durable=await store.read(),writes=store.writes;
+    const other=JSON.stringify(makeCheckpoint(createRun({seed:'different-import',characterId:'amo',runId:'different-import',rulesVersion:'r2'}),[]));
+    expect(await session.importJSON(other)).toBe(false);expect(session.notice).toContain('本局尚未保存');expect(session.run).toBe(run);expect(run.exportJSON()).toBe(candidate);expect(await store.read()).toEqual(durable);expect(store.writes).toBe(writes);
+    store.fail=false;expect(await session.importJSON(candidate)).toBe(true);expect(session.pendingRun).toBeUndefined();expect(session.run!.exportJSON()).toBe(candidate);
+    const saved=await store.read();expect(saved.current).toEqual(JSON.parse(candidate));expect(saved.previous).toEqual(durable.current);
+  });
+  it('claims an available writer when importing into an empty session',async()=>{
+    sessionStore=new MemoryStore();vi.stubGlobal('document',{hidden:false,addEventListener:()=>{}});
+    const session=new GameSession();session.lease.writable=false;const claim=vi.spyOn(session.lease,'claim').mockImplementation(async()=>{session.lease.writable=true;return true;});
+    await session.initialize();expect(session.run).toBeUndefined();const exported=JSON.stringify(makeCheckpoint(initial(),[]),null,2);
+    expect(await session.importJSON(exported)).toBe(true);expect(claim).toHaveBeenCalledOnce();expect(session.run!.exportJSON()).toBe(exported);expect(sessionStore.slots.current).toEqual(JSON.parse(exported));
+  });
+  it('keeps an empty session unchanged when another writer owns the import lease',async()=>{
+    sessionStore=new MemoryStore();vi.stubGlobal('document',{hidden:false,addEventListener:()=>{}});
+    const session=new GameSession();session.lease.writable=false;const claim=vi.spyOn(session.lease,'claim').mockResolvedValue(false);await session.initialize();
+    expect(await session.importJSON(JSON.stringify(makeCheckpoint(initial(),[])))).toBe(false);expect(claim).toHaveBeenCalledOnce();expect(session.notice).toContain('另一页');expect(session.run).toBeUndefined();expect(sessionStore.slots.current).toBeNull();
+  });
   it.each(['start','import'] as const)('keeps the published run after a failed %s, then retries the exact unpublished candidate once',async(kind)=>{
     const {session,run,store}=await existingSession(),before=run.state,oldJSON=run.exportJSON(),slots=await store.read();
     let imported=createRun({seed:'replacement-import',characterId:'touye',runId:'replacement-import',rulesVersion:'r2'});
