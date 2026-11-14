@@ -2,7 +2,7 @@ import {stopFirstChapterGuide} from './FirstChapterGuide';
 import {GUIDED_TUTORIAL_SEED,guidedTutorialRunId,isGuidedTutorialRunId,launchIdentity,type RunLaunchIntent} from './RunLaunch';
 import {SavedRun,type SaveCommitOptions,type SaveSlots,type SaveStore} from '../application/SavedRun';
 import {MAX_IMPORT_BYTES,readCheckpoint,restoreSlots} from '../application/checkpoint';
-import {archiveSlots,archiveWithCandidate,MAX_SAVE_FILE_BYTES,readSaveArchive} from '../application/SaveArchive';
+import {archiveHasContent,archiveSlots,archiveWithCandidate,MAX_SAVE_FILE_BYTES,readSaveArchive} from '../application/SaveArchive';
 import {createRun,type R2RunState} from '../domain/run';
 import type {CharacterId} from '../domain/characters';
 import {IndexedDbSave} from '../platform/IndexedDbSave';
@@ -198,8 +198,9 @@ export class GameSession {
         if(run){
           const checked=readCheckpoint(JSON.parse(run.exportJSON()));
           if(!checked.ok)throw Error('存档内容不正确');
-          if(this.replacement||this.temporaryRun||run.isUnsavedCheckpoint(checked.checkpoint))archiveWithCandidate(archive,checked.checkpoint,run.guidedOpeningSuppressed);
+          if(this.replacement||this.temporaryRun||run.isUnsavedCheckpoint(checked.checkpoint)||!restoreSlots(archiveSlots(archive)).checkpoint)archiveWithCandidate(archive,checked.checkpoint,run.guidedOpeningSuppressed);
         }
+        if(!archiveHasContent(archive))throw Error('当前没有存档，请先开始游戏');
         const text=JSON.stringify(archive,null,2);
         if(new TextEncoder().encode(text).length>MAX_SAVE_FILE_BYTES)throw Error('存档文件过大');
         return text;
@@ -224,7 +225,9 @@ export class GameSession {
       const data:unknown=JSON.parse(text);
       if(data&&typeof data==='object'&&!Array.isArray(data)&&(data as {format?:unknown}).format==='tangsongpai-storage-backup'){
         if(!this.persistentReady)throw Error('浏览器暂时无法保存，请重新加载后重试');
-        const archive=readSaveArchive(data),candidate=restoreSlots(archiveSlots(archive)).checkpoint;
+        const archive=readSaveArchive(data);
+        if(!archiveHasContent(archive))throw Error('这个文件里没有存档，请选择有游戏进度的存档文件');
+        const candidate=restoreSlots(archiveSlots(archive)).checkpoint;
         const exportedCandidate=!!candidate&&this.run?.status==='paused'&&this.run.isUnsavedCheckpoint(candidate);
         if(this.run&&!exportedCandidate&&!await this.run.flush())throw Error('本局尚未保存，请先重试或导出存档');
         const current=await this.storage.read();

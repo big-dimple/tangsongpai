@@ -1,5 +1,5 @@
 import {describe,expect,it} from 'vitest';
-import {archiveSlots,archiveWithCandidate,readSaveArchive} from '../src/application/SaveArchive';
+import {archiveHasContent,archiveSlots,archiveWithCandidate,readSaveArchive} from '../src/application/SaveArchive';
 import {makeCheckpoint,restoreSlots} from '../src/application/checkpoint';
 import {r2ModeStorageKey} from '../src/content/r2Modes';
 import {createRun} from '../src/domain/run';
@@ -7,6 +7,12 @@ import {createRun} from '../src/domain/run';
 const checkpoint=(seed:string)=>makeCheckpoint(createRun({seed,characterId:'amo',runId:seed,rulesVersion:'r2'}),[]);
 
 describe('complete save files',()=>{
+  it('distinguishes the old empty download from unlock records and retained saves',()=>{
+    expect(archiveHasContent(readSaveArchive({format:'tangsongpai-storage-backup',records:[]}))).toBe(false);
+    expect(archiveHasContent(readSaveArchive({format:'tangsongpai-storage-backup',records:[{key:'meta',value:{revision:3,slotKey:''}}],progress:null}))).toBe(false);
+    expect(archiveHasContent(readSaveArchive({format:'tangsongpai-storage-backup',records:[],progress:'{"version":1}'}))).toBe(true);
+    expect(archiveHasContent(readSaveArchive({format:'tangsongpai-storage-backup',records:[{key:'retained:old',value:{current:'damaged'}}]}))).toBe(true);
+  });
   it('keeps an unsaved candidate and the entire former slot, including damaged data',()=>{
     const candidate=checkpoint('candidate'),key=r2ModeStorageKey(candidate.state,candidate.state.contentHash);
     const old={current:{format:'old-or-damaged'},previous:checkpoint('older')};

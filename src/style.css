@@ -51,6 +51,8 @@ button:disabled { opacity:.5;cursor:default;box-shadow:none; }
 .audio-controls-hint { display:block;color:#6b624c;font-size:12px; }
 .run-menu-panel details { margin:12px 0 0;border-top:1px solid #c7b89d; }
 .run-menu-panel summary { min-height:44px;box-sizing:border-box;padding:11px 0;cursor:pointer;font-weight:bold; }
+.run-menu-panel .run-menu-save-tools summary { list-style:none;cursor:default; }
+.run-menu-panel .run-menu-save-tools summary::-webkit-details-marker { display:none; }
 .run-menu-panel details button { width:100%;margin:0 0 8px;min-height:44px; }
 .run-menu-panel .run-menu-inspect button,.run-menu-panel .run-menu-screen button { margin:0; }
 .run-fullscreen-notice { position:fixed;top:calc(var(--safe-top) + 64px);right:calc(var(--safe-right) + 12px);width:min(360px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));box-sizing:border-box;margin:0;padding:12px;border:1px solid #b78a4f;border-radius:7px;background:#fff3dc;color:#694530;box-shadow:0 8px 24px #061b2b70; }

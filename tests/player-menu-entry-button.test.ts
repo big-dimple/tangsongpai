@@ -147,6 +147,11 @@ it('allows an empty page to choose an import before claiming the writer, but not
  session.run={status:'readonly',state:{phase:'shop',mode:'standard'}} as SavedRun;notify();expect(find('导入存档').disabled).toBe(true);
 });
 
+it('keeps the save controls expanded instead of making the player open them',()=>{
+ const {modal}=mount(),section=walk(modal,e=>e.className==='run-menu-save-tools')!,heading=section.children[0];
+ expect(section.open).toBe(true);expect(heading.attrs.get('role')).toBe('heading');expect(fire(heading,'click').defaultPrevented).toBe(true);expect(section.open).toBe(true);
+});
+
 it('exposes one save export and restores the selected file through the session',async()=>{
  const createObjectURL=vi.fn((_blob:Blob)=> 'blob:checkpoint'),revokeObjectURL=vi.fn();vi.stubGlobal('URL',{createObjectURL,revokeObjectURL});
  const importJSON=vi.fn().mockResolvedValue(true),reportNotice=vi.fn(),exportJSON=vi.fn().mockResolvedValue('{"format":"tangsongpai-storage-backup","records":[]}');Object.assign(session,{importJSON,reportNotice,exportJSON});

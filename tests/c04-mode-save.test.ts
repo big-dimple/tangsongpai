@@ -506,6 +506,21 @@ describe('explicit Amo prototype shares discovery while preserving published par
 });
 
 describe('guided first-run creation and real transactions',()=>{
+  it('rejects an empty old export without replacing an existing game',async()=>{
+    const session=new GameSession();await session.initialize();
+    await expect(session.exportJSON()).rejects.toThrow('当前没有存档，请先开始游戏');
+    const run=await session.start('keep-existing','amo');if(!run)throw Error('missing run');
+    const before=await session.storage.read(),empty=JSON.stringify({format:'tangsongpai-storage-backup',records:[]});
+    expect(await session.importJSON(empty)).toBe(false);expect(session.notice).toContain('这个文件里没有存档');
+    expect(session.run).toBe(run);expect(await session.storage.read()).toEqual(before);
+  });
+  it('still exports a playable run when stored checkpoints disappeared but unlock records remain',async()=>{
+    const session=new GameSession();await session.initialize();const run=await session.start('recover-current','amo');if(!run)throw Error('missing run');
+    database.records.clear();preferenceValues.set(RunProgress.RUN_PROGRESS_KEY,JSON.stringify({version:1,standardWins:[true,false,false,false]}));
+    const archive=JSON.parse(await session.exportJSON()),active=archive.records.find((row:{key:string})=>row.key==='meta').value.slotKey;
+    expect(archive.records.find((row:{key:string})=>row.key===active).value.current.state).toEqual(run.state);
+    expect(JSON.parse(archive.progress).standardWins).toEqual([true,false,false,false]);
+  });
   it('checks all raw storage before first-run creation and prevents a later writer from winning over an earlier one',async()=>{
     const storage=new IndexedDbSave(),empty=await storage.readEmptyHistory();expect(empty).toEqual({revision:0,current:null,previous:null});
     for(const record of ['retained:unknown','r2:damaged','meta']){

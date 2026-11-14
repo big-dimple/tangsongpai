@@ -23,7 +23,7 @@ async function slots(page){return page.evaluate(async()=>{const {IndexedDbSave}=
 async function menu(page,touch=false){
   await openRunMenu(page,touch);
   const tools=page.locator('.run-menu-panel > details').filter({has:page.locator('summary',{hasText:'进度与存档'})});
-  if(await tools.getAttribute('open')===null){if(touch)await tools.locator('summary').tap();else await tools.locator('summary').click();}
+  assert.notEqual(await tools.getAttribute('open'),null,'save controls are expanded when the menu opens');
 }
 async function advanced(page,seq){await page.waitForFunction(seq=>window.__harness.game.registry.get('runController')?.state.commandSeq>seq,seq);}
 async function start(name,{amo=false,touch=false,video=false,audioFailure=false}={}){
@@ -167,6 +167,22 @@ async function badData(){
     mark({name:'import/illegal-rejected-valid-roundtrip',status:'PASS',stateHash:domain.stateHash(before.state)});
   }finally{await close(test);}
 }
+async function naturalSave(){
+  const test=await start('natural-save'),{page}=test;
+  try {
+    const saved=await buy(page);await menu(page);
+    const [download]=await Promise.all([page.waitForEvent('download'),page.getByRole('button',{name:'导出存档',exact:true}).click()]);
+    const file=path.join(output,'natural-save.json');await download.saveAs(file);
+    await toggleRunMenu(page);await enter(page);assert.notDeepEqual((await read(page)).state,saved.state);
+    await menu(page);await page.evaluate(()=>window.beforeImportRun=window.__harness.game.registry.get('runController'));
+    const chooser=page.waitForEvent('filechooser');await page.getByRole('button',{name:'导入存档',exact:true}).click();await(await chooser).setFiles(file);
+    await page.waitForFunction(()=>window.__harness.game.registry.get('runController')!==window.beforeImportRun);await waitScene(page,'shop');
+    assert.deepEqual((await read(page)).state,saved.state);
+    await page.reload();await waitScene(page,'title');await tapUI(page,'title','action/title-continue');await waitScene(page,'shop');
+    assert.deepEqual((await read(page)).state,saved.state);await enter(page);assert.equal((await read(page)).state.phase,'await-input');
+    mark({name:'archive/natural-play-export-import-reload-continue',status:'PASS'});
+  }finally{await close(test);}
+}
 async function archive(){
   const source=await start('archive-source'),{page}=source;
   let destination;
@@ -181,6 +197,7 @@ async function archive(){
       return structuredClone(run.state);
     });
     await menu(page);
+    const section=page.locator('.run-menu-save-tools');await section.locator('summary').click();assert.equal(await section.evaluate(element=>element.open),true);
     assert.equal(await page.getByRole('button',{name:'导出存档',exact:true}).count(),1);
     assert.equal(await page.getByRole('button',{name:'导入存档',exact:true}).count(),1);
     assert.equal(await page.getByRole('button',{name:/导出本局|导出保留数据|导入本局/}).count(),0);
@@ -197,7 +214,11 @@ async function archive(){
     const upload=async(data,name)=>{const chooser=target.waitForEvent('filechooser');await target.getByRole('button',{name:'导入存档',exact:true}).click();await(await chooser).setFiles({name,mimeType:'application/json',buffer:Buffer.from(data)});};
     const snapshot=()=>target.evaluate(async()=>{const {IndexedDbSave}=await import('/src/platform/IndexedDbSave.ts');return JSON.parse(await new IndexedDbSave().exportRetained());});
     const progress=()=>target.evaluate(()=>localStorage.getItem('tangsongpai.r2.progress.v1'));
-    await menu(target);await upload(text,'complete-save.json');await waitScene(target,'shop');
+    const emptyText=process.env.RECOVERY_EMPTY_SAVE_FILE?await readFile(process.env.RECOVERY_EMPTY_SAVE_FILE,'utf8'):JSON.stringify({format:'tangsongpai-storage-backup',records:[]});
+    let downloads=0;target.on('download',()=>downloads++);
+    await menu(target);await target.getByRole('button',{name:'导出存档',exact:true}).click();await target.locator('.run-menu-status').filter({hasText:'当前没有存档，请先开始游戏'}).waitFor();assert.equal(downloads,0);
+    await upload(emptyText,'old-empty-export.json');await target.locator('.run-menu-status').filter({hasText:'这个文件里没有存档'}).waitFor();assert.equal(await read(target),null);
+    await upload(text,'complete-save.json');await waitScene(target,'shop');
     await target.waitForFunction(id=>window.__harness.game.registry.get('runController')?.state.runId===id,current.runId);
     assert.deepEqual((await read(target)).state,current);assert.deepEqual(rows(await snapshot()),rows(saved));assert.equal(await progress(),saved.progress);
 
@@ -226,8 +247,8 @@ async function archive(){
     assert.deepEqual((await read(target)).state,current);assert.equal(await progress(),saved.progress);
     await menu(target);await target.evaluate(()=>window.archivePreviousRun=window.__harness.game.registry.get('runController'));const checkpoint=saved.records.find(r=>r.key===active).value.current;await upload(JSON.stringify(checkpoint),'legacy-run.json');await target.waitForFunction(()=>window.__harness.game.registry.get('runController')!==window.archivePreviousRun);await waitScene(target,'shop');
     assert.deepEqual((await read(target)).state,current);
-    await menu(target);await upload(JSON.stringify({format:saved.format,version:1,records:[],progress:null}),'empty-save.json');await waitScene(target,'title');
-    const empty=await target.evaluate(async()=>{const {IndexedDbSave}=await import('/src/platform/IndexedDbSave.ts');return new IndexedDbSave().readEmptyHistory();});assert.ok(empty.revision>0);assert.equal(empty.current,null);
+    await menu(target);const beforeEmpty=await snapshot(),progressBeforeEmpty=await progress();await upload(emptyText,'old-empty-export.json');
+    await target.locator('.run-menu-status').filter({hasText:'这个文件里没有存档'}).waitFor();assert.deepEqual(await snapshot(),beforeEmpty);assert.equal(await progress(),progressBeforeEmpty);assert.deepEqual((await read(target)).state,current);
     mark({name:'archive/full-roundtrip-legacy-failure-reload',status:'PASS',partitions:rows(saved).length});
   }finally{if(destination)await close(destination);await close(source);}
 }
@@ -267,7 +288,7 @@ try {
   const deadline=Date.now()+30000;while(true){try{if((await fetch(base)).ok)break;}catch{}if(Date.now()>deadline)throw Error('server timeout');await new Promise(r=>setTimeout(r,200));}
   browser=await chromium.launch(process.env.SMOKE_CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.SMOKE_CHROMIUM_EXECUTABLE_PATH}:{});report.browser=browser.version();
   if(process.argv.includes('--tabs')){const count=Number(process.argv.find(a=>a.startsWith('--repeat='))?.split('=')[1]??1);assert.ok(Number.isInteger(count)&&count>=1&&count<=20);report.scope=`tabs only, ${count} distinct contexts`;for(let i=0;i<count;i++)await tabs();}
-  else if(process.env.RECOVERY_ONLY){const scope=process.env.RECOVERY_ONLY,suites={playback:speeds,quota,badData,archive,tabs,interruption};assert.ok(suites[scope],'known recovery diagnostic scope');report.scope=scope+' diagnostic only';await suites[scope]();}
-  else {report.scope='full recovery suite';await refreshMatrix();await speeds();await quota();await badData();await archive();await tabs();await interruption();}report.status='PASS';
+  else if(process.env.RECOVERY_ONLY){const scope=process.env.RECOVERY_ONLY,suites={playback:speeds,quota,badData,natural:naturalSave,archive,tabs,interruption};assert.ok(suites[scope],'known recovery diagnostic scope');report.scope=scope+' diagnostic only';await suites[scope]();}
+  else {report.scope='full recovery suite';await refreshMatrix();await speeds();await quota();await badData();await naturalSave();await archive();await tabs();await interruption();}report.status='PASS';
 }catch(error){report.status='FAIL';report.error=String(error);console.error(error);process.exitCode=1;}
 finally {await browser?.close();server.kill();await ssr.close();await writeFile(path.join(output,'recovery.json'),JSON.stringify(report,null,2)+'\n');console.log(`recovery: ${report.status}; ${report.checks.length} actual scenarios`);}

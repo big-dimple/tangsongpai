@@ -215,11 +215,14 @@ export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|un
     const actions=getActions();for(const entry of inspectButtons)entry.button.hidden=typeof actions?.[entry.key]!=='function';
     inspect.hidden=inspectButtons.every(entry=>entry.button.hidden);
   }
-  const saveTools=document.createElement('details'),saveLabel=document.createElement('summary');saveLabel.textContent='进度与存档';saveTools.append(saveLabel);
+  const saveTools=document.createElement('details'),saveLabel=document.createElement('summary');
+  saveTools.className='run-menu-save-tools';saveTools.open=true;saveLabel.textContent='进度与存档';
+  saveLabel.setAttribute('role','heading');saveLabel.setAttribute('aria-level','3');saveLabel.tabIndex=-1;
+  saveLabel.addEventListener('click',event=>event.preventDefault());saveTools.append(saveLabel);
   const download=(filename:string,text:string)=>{
     const url=URL.createObjectURL(new Blob([text],{type:'application/json'})),anchor=document.createElement('a');anchor.href=url;anchor.download=filename;anchor.hidden=true;document.body.append(anchor);anchor.click();anchor.remove();globalThis.setTimeout(()=>URL.revokeObjectURL(url),0);
   };
-  const exportSave=button('导出存档',async()=>{try {download('tangsongpai-save.json',await session.exportJSON());}catch{session.reportNotice('导出失败：无法读取存档，请稍后重试。');}},saveTools);
+  const exportSave=button('导出存档',async()=>{try {download('tangsongpai-save.json',await session.exportJSON());}catch(error){const detail=error instanceof Error&&error.message==='当前没有存档，请先开始游戏'?error.message:'无法读取存档，请稍后重试';session.reportNotice('导出失败：'+detail+'。');}},saveTools);
   const importInput=document.createElement('input');importInput.type='file';importInput.accept='application/json,.json';importInput.hidden=true;saveTools.append(importInput);
   importInput.onchange=async()=>{
     try {

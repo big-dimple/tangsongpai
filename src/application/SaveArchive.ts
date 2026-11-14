@@ -12,6 +12,11 @@ export interface SaveArchive {
   progress?:string|null;
 }
 
+/** The old "retained data" button could export an empty file on a new profile. */
+export function archiveHasContent(archive:SaveArchive):boolean {
+  return archive.progress!=null||archive.records.some(row=>row.key!=='meta');
+}
+
 /** Accept previous raw-storage exports as well as complete save files. */
 export function readSaveArchive(value:unknown):SaveArchive {
   if(!value||typeof value!=='object'||Array.isArray(value))throw Error('存档格式不正确');
