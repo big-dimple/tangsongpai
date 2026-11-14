@@ -64,6 +64,7 @@ import {bindNoviceGuide} from './NoviceGuideBinding';
 import {liveNoviceGuide,noviceFreeActions,noviceGuide,noviceGuideEnrolled} from './NoviceGuide';
 import {firstStageOptions,type FirstStageOption} from './NoviceFirstStage';
 import {consecutiveSuitCards,NoviceHandLesson} from './NoviceHandLesson';
+import {flushDiscardHint,flushRefillHint} from './NoviceFlushLesson';
 import {noviceHandDefinition,noviceSameSuitFeedback} from './NoviceSuitLesson';
 import {mountNoviceGestureDemo,type NoviceGestureDemoHandle} from './NoviceGestureDemo';
 import {needsGuidedPractice} from './GuidedTutorial';
@@ -592,9 +593,16 @@ export class GameScene extends Phaser.Scene {
       onDetails:hint=>{if(hint.details)this.dialog.open('计分与规则',hint.details,[],{closeLabel:'返回练习'});},
       presentHint:hint=>{
         const selected=[...this.selectedIds];
+        const owner=runController(this),lesson=this.activeNoviceHandLesson();
+        if(hint.step==='discard'&&owner&&lesson&&this.run.stage?.index===0&&!this.run.stage.disabledIds.length){
+          // During a drag, keep the instruction stable until release.
+          const selection=this.handInput?.active&&this.noviceHandStart?this.noviceHandStart:selected;
+          const flush=flushDiscardHint(hint,this.hand,selection,{introSeen:lesson.flushIntroSeen(),sorted:lesson.sorted(owner.journal),
+            sortedSeen:lesson.flushSortedSeen(owner.journal),coarse:window.matchMedia('(pointer: coarse)').matches});
+          if(flush)return flush;
+        }
         if(hint.step==='independent'&&this.run.stage){
-          const owner=runController(this),lesson=this.activeNoviceHandLesson();
-          if(owner&&lesson&&this.run.stage.index===0&&!lesson.swept(owner.journal)){
+          if(owner&&lesson&&this.run.stage.index===0&&!lesson.swept(owner.journal)&&!lesson.flushSortedSeen(owner.journal)){
             if(!lesson.sorted(owner.journal))return {...hint,cue:'先理牌',body:selected.length?'理牌会清空已选；点「花色」整理。':'点「花色」，把同花色的牌排在一起。',focus:'sort-suit'};
             const targets=this.noviceHandTargets();
             if(targets.length<2)return {...hint,cue:'试试滑动选牌',body:'切换手牌页，找到相邻的同花色牌。'};
@@ -612,6 +620,8 @@ export class GameScene extends Phaser.Scene {
             firstStage.options=options;firstStage.optionKey=result.key;
           }
           const stage=this.run.stage,target=firstStage.target;
+          const postFlush=!!owner&&!!lesson&&stage.index===0&&stage.playIndex===1&&lesson.flushSortedSeen(owner.journal);
+          const refill=postFlush?flushRefillHint(this.hand):undefined;
           const canDiscard=stage.discardsLeft>=r2DiscardCost(this.run)&&this.run.drawPile.length>0&&this.run.gold>=(stageNotice(this.run)?.discardGoldCost??0);
           const choices=firstStage.options.map(row=>({id:row.id,label:row.label,cardIds:row.cardIds,selected:target?.id===row.id}));
           const cue=`累计 ${stage.heat}/${stage.targetHeat} · 剩${stage.handsLeft}次出牌`;
@@ -621,7 +631,10 @@ export class GameScene extends Phaser.Scene {
             const short=stage.handsLeft===1&&!firstStage.options.some(option=>option.canClear);
             const suitFeedback=selected.length?noviceSameSuitFeedback(this.hand,selected,handRules):undefined;
             const free=noviceFreeActions({...hint,cue,body:'选1–5张牌，或选一个牌型参考。'},selected,{canDiscard,skillChosen:!!this.erxiangTargetId});
-            return {...free,body:this.erxiangTargetId?free.body:short?(canDiscard?'暂无可过关的牌，可先弃牌或出牌。':'这手不足目标，请继续出牌。'):suitFeedback?`${suitFeedback}${canDiscard?'可出牌，也可换牌。':'可继续选牌或出牌。'}`:selected.length?free.body:'选1–5张牌，或选一个牌型参考。',choices};
+            const flushResult=postFlush&&!selected.length;
+            const flushText=refill?.body??'';
+            return {...free,body:this.erxiangTargetId?free.body:short?(canDiscard?'暂无可过关的牌，可先弃牌或出牌。':'这手不足目标，请继续出牌。'):suitFeedback?`${suitFeedback}${canDiscard?'可出牌，也可换牌。':'可继续选牌或出牌。'}`:selected.length?free.body:flushResult?flushText:'选1–5张牌，或选一个牌型参考。',
+              ...(flushResult&&refill&&refill.heartIds.length>=5?{focus:undefined,recommendedCardIds:refill.heartIds}:{}),choices};
           }
           const extra=selected.filter(id=>!target.cardIds.includes(id)),remaining=target.cardIds.filter(id=>!this.selectedIds.has(id));
           if(extra.length)return {...hint,cue,body:'先点亮起的已选牌取消。',recommendedCardIds:extra,choices};
@@ -639,6 +652,11 @@ export class GameScene extends Phaser.Scene {
           enabled:!!choice?.enabled&&!choice?.used&&this.run.phase==='await-input',canDiscard:!!this.run.stage&&this.run.stage.discardsLeft>=r2DiscardCost(this.run)&&this.run.drawPile.length>0&&this.run.gold>=(stageNotice(this.run)?.discardGoldCost??0),discardCost:r2DiscardCost(this.run),discardGoldCost:stageNotice(this.run)?.discardGoldCost??0});
       },
       onChoice:id=>{
+        const owner=runController(this),lesson=this.activeNoviceHandLesson();
+        if(owner&&lesson&&noviceGuide(this.run,owner.journal)?.step==='discard'){
+          if(id==='flush-intro'){lesson.acknowledgeFlushIntro();unmountNoviceGuide.refresh();return;}
+          if(id==='flush-sorted'){lesson.acknowledgeFlushSorted(owner.journal);unmountNoviceGuide.refresh();return;}
+        }
         if(firstStage?.key!==firstStageKey())return;
         const choice=firstStage.options.find(row=>row.id===id);if(!choice)return;
         firstStage.target=choice;unmountNoviceGuide.refresh();
@@ -654,7 +672,7 @@ export class GameScene extends Phaser.Scene {
           if(!this.handInput?.active)dismissedSwipeKey='';
           return;
         }
-        const ids=this.noviceHandTargets(),key=JSON.stringify([this.run.runId,ids]);
+        const ids=hint.gestureCardIds??this.noviceHandTargets(),key=JSON.stringify([this.run.runId,ids]);
         if(ids.length<2){clearSwipeDemo();return;}
         if(swipeDemo&&swipeDemoKey!==key)clearSwipeDemo();
         if(swipeDemo||dismissedSwipeKey===key||this.handInput?.active)return;
@@ -663,9 +681,8 @@ export class GameScene extends Phaser.Scene {
           mode:'sweep',
           points:()=>{
             const layout=this.view.layout,canvas=this.game.canvas.getBoundingClientRect();
-            const current=this.noviceHandTargets();
-            if(JSON.stringify(current)!==JSON.stringify(ids))return;
-            const points=current.map(id=>{
+            if(ids.some(id=>!this.hand.some(card=>card.id===id)))return;
+            const points=ids.map(id=>{
               const index=this.hand.findIndex(card=>card.id===id),seat=layout.cards[index],card=this.cardViews[index];
               if(!seat?.visible||!card?.container.active||!card.container.visible)return undefined;
               // During the sorting slide the painted card and its input column differ.
@@ -2059,7 +2076,7 @@ export class GameScene extends Phaser.Scene {
     await this.sortHand('suit');
     if(!owner||owner!==runController(this)||lifecycle!==this.lifecycle||!this.scene.isActive()||this.run.runId!==runId)return;
     const lesson=this.activeNoviceHandLesson(),command=owner.journal.find(c=>c.runId===runId&&c.expectedSeq===seq&&c.action.type==='ReorderHand'&&JSON.stringify(c.action.ids)===JSON.stringify(expected));
-    if(lesson&&command&&this.run.stage?.index===0&&noviceGuide(this.run,owner.journal)?.step==='independent'&&!lesson.swept(owner.journal))lesson.recordSort(command);
+    if(lesson&&command&&this.run.stage?.index===0&&['discard','independent'].includes(noviceGuide(this.run,owner.journal)?.step??'')&&!lesson.swept(owner.journal))lesson.recordSort(command);
   }
   private async sortHand(mode:'rank'|'suit'):Promise<void> {
     if(!this.ready||this.presentation||this.run.phase!=='await-input')return;
