@@ -593,6 +593,9 @@ export class GameScene extends Phaser.Scene {
       onDetails:hint=>{if(hint.details)this.dialog.open('计分与规则',hint.details,[],{closeLabel:'返回练习'});},
       presentHint:hint=>{
         const selected=[...this.selectedIds];
+        // A selected preview and a phone lesson share a small vertical budget.
+        // Keep score details in the unselected state and on desktop.
+        if(selected.length&&this.run.stage?.index===0&&this.view.layout.mode==='portrait'&&this.view.layout.width<=520&&['discard','independent'].includes(hint.step))hint={...hint,details:undefined};
         const owner=runController(this),lesson=this.activeNoviceHandLesson();
         if(hint.step==='discard'&&owner&&lesson&&this.run.stage?.index===0&&!this.run.stage.disabledIds.length){
           // During a drag, keep the instruction stable until release.
@@ -619,7 +622,7 @@ export class GameScene extends Phaser.Scene {
             if(firstStage.target){const index=options.findIndex(row=>row.id===firstStage!.target!.id);if(index>=0)options[index]=firstStage.target;else if(options.length)options[0]=firstStage.target;}
             firstStage.options=options;firstStage.optionKey=result.key;
           }
-          const stage=this.run.stage,target=firstStage.target;
+          const stage=this.run.stage,target=firstStage.target,narrow=this.view.layout.width<=360;
           const postFlush=!!owner&&!!lesson&&stage.index===0&&stage.playIndex===1&&lesson.flushSortedSeen(owner.journal);
           const refill=postFlush?flushRefillHint(this.hand):undefined;
           const canDiscard=stage.discardsLeft>=r2DiscardCost(this.run)&&this.run.drawPile.length>0&&this.run.gold>=(stageNotice(this.run)?.discardGoldCost??0);
@@ -633,14 +636,14 @@ export class GameScene extends Phaser.Scene {
             const free=noviceFreeActions({...hint,cue,body:'选1–5张牌，或选一个牌型参考。'},selected,{canDiscard,skillChosen:!!this.erxiangTargetId});
             const flushResult=postFlush&&!selected.length;
             const flushText=refill?.body??'';
-            return {...free,body:this.erxiangTargetId?free.body:short?(canDiscard?'暂无可过关的牌，可先弃牌或出牌。':'这手不足目标，请继续出牌。'):suitFeedback?`${suitFeedback}${canDiscard?'可出牌，也可换牌。':'可继续选牌或出牌。'}`:selected.length?free.body:flushResult?flushText:'选1–5张牌，或选一个牌型参考。',
+            return {...free,body:this.erxiangTargetId?free.body:short?(canDiscard?'暂无可过关的牌，可先弃牌或出牌。':'这手不足目标，请继续出牌。'):suitFeedback?`${suitFeedback}${narrow?'':canDiscard?'可出牌，也可换牌。':'可继续选牌或出牌。'}`:selected.length?free.body:flushResult?flushText:'选1–5张牌，或选一个牌型参考。',
               ...(flushResult&&refill&&refill.heartIds.length>=5?{focus:undefined,recommendedCardIds:refill.heartIds}:{}),choices};
           }
           const extra=selected.filter(id=>!target.cardIds.includes(id)),remaining=target.cardIds.filter(id=>!this.selectedIds.has(id));
           if(extra.length)return {...hint,cue,body:'先点亮起的已选牌取消。',recommendedCardIds:extra,choices};
           const definition=noviceHandDefinition(target.id,handRules);
-          if(!remaining.length){const action=canDiscard?'点「出牌」，或点「弃牌」换牌。':'点「出牌」。';return {...hint,cue,body:stage.handsLeft===1&&!target.canClear?(canDiscard?'这手不足目标，可弃牌或出牌。':'这手不足目标，请继续出牌。'):target.id==='flush'||target.id==='high-card'?`${definition}${action}`:`牌选好了，${action}`,recommendedCardIds:[],focus:canDiscard?'play-or-discard':'play',choices};}
-          return {...hint,cue,body:target.id==='flush'?`${definition}${selected.length?`再选${remaining.length}张亮牌。`:'点亮牌。'}`:selected.length?`再选亮起的${remaining.length}张牌。`:(definition?definition+'点亮牌。':'选亮起的牌。'),recommendedCardIds:remaining,choices};
+          if(!remaining.length){const action=canDiscard?'点「出牌」，或点「弃牌」换牌。':'点「出牌」。';return {...hint,cue,body:stage.handsLeft===1&&!target.canClear?(canDiscard?'这手不足目标，可弃牌或出牌。':'这手不足目标，请继续出牌。'):narrow?(canDiscard?'牌选好了，可出牌或换牌。':'牌选好了，可出牌。'):target.id==='flush'||target.id==='high-card'?`${definition}${action}`:`牌选好了，${action}`,recommendedCardIds:[],focus:canDiscard?'play-or-discard':'play',choices};}
+          return {...hint,cue,body:narrow&&selected.length?`再选${remaining.length}张亮牌。`:target.id==='flush'?`${definition}${selected.length?`再选${remaining.length}张亮牌。`:'点亮牌。'}`:selected.length?`再选亮起的${remaining.length}张牌。`:(definition?definition+'点亮牌。':'选亮起的牌。'),recommendedCardIds:remaining,choices};
         }
         firstStage=undefined;
         if(hint.step==='skill'){
@@ -716,6 +719,21 @@ export class GameScene extends Phaser.Scene {
           // Follow the painted card, but only ring its exposed phone hit column.
           return [map({x:topLeft.x,y:topLeft.y,width:Math.min(bottomRight.x-topLeft.x,seat.hit.width),height:bottomRight.y-topLeft.y})];
         };
+        // An empty played workplane can host the guide, but an actual selected
+        // preview card (or its caption/control) must remain readable and usable.
+        const preview=this.previewCards,previewViews=preview?.active&&preview.visible?preview.getData('cardViews') as Map<string,CardView>|undefined:undefined;
+        const previewBoxes=previewViews?[...previewViews.values()].flatMap(view=>{
+          const card=view.container;if(!card.active||!card.visible||card.alpha<=.01)return [];
+          const width=Number(card.getData('width')),height=Number(card.getData('height'));
+          const matrix=card.getWorldTransformMatrix(),topLeft=matrix.transformPoint(-width/2,-height/2),bottomRight=matrix.transformPoint(width/2,height/2);
+          return [map({x:topLeft.x-2,y:topLeft.y-2,width:bottomRight.x-topLeft.x+4,height:bottomRight.y-topLeft.y+4})];
+        }):[];
+        const previewControls=preview?.active&&preview.visible?preview.list.flatMap(object=>{
+          if(!object.active||!('visible' in object)||!object.visible||!object.input?.enabled||!('getBounds' in object))return [];
+          const box=(object as Phaser.GameObjects.Rectangle).getBounds();return [map(box)];
+        }):[];
+        const playedCaption=this.view.root.getByName('table/played-label') as Phaser.GameObjects.Text|undefined;
+        const caption=playedCaption?.active&&playedCaption.visible&&playedCaption.text?[map(playedCaption.getBounds())]:[];
         const cards=hint.focus==='score'||hint.focus==='goal'?[]:hint.recommendedCardIds??[];
         const joker=hint.step==='payoff'&&!focus&&hint.fact?.purchaseInstanceId?this.jokerViews.get(hint.fact.purchaseInstanceId):undefined;
         const jokerFrame=joker?.getData('frame') as Phaser.GameObjects.Rectangle|undefined;
@@ -733,7 +751,7 @@ export class GameScene extends Phaser.Scene {
         // The idle presentation area can hold the full lesson; hand and action
         // targets stay protected. Reserving this empty region forced scrolling.
         const controls=[l.hud,l.scoreBoard,l.hand,l.actions,...Object.values(l.buttons),l.heroAction,l.inventoryEntry,l.helpEntry,...owned];
-        return {highlights,avoid:controls.filter((box):box is import('./layout').Box=>!!box).map(map)};
+        return {highlights,avoid:[...controls.filter((box):box is import('./layout').Box=>!!box).map(map),...previewBoxes,...previewControls,...caption]};
       },
       visible:()=>!this.presentation&&!this.playing&&!document.querySelector('dialog[open]'),
       onReplay:()=>requestTutorialReplay(),
