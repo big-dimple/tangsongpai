@@ -155,7 +155,7 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
     if(!step.action&&document.activeElement===actionButton)closeButton.focus({preventScroll:true});
     actionButton.hidden=!step.action;actionButton.textContent=step.action?.label??'';
     const rows=step.choices??[],ids=JSON.stringify(rows.map(choice=>choice.id));
-    choices.setAttribute('aria-label',step.id==='payoff'?'新手引导下一步':'选择要尝试的牌型');
+    choices.setAttribute('aria-label',step.id==='payoff'||step.id==='discard'?'新手引导下一步':'选择要尝试的牌型');
     if(ids!==choiceIds){
       choiceIds=ids;choices.replaceChildren(...rows.map(choice=>{
         const button=document.createElement('button');button.type='button';button.dataset.noviceGuideChoice=choice.id;
@@ -168,7 +168,8 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
     rows.forEach((choice,index)=>{
       const button=choices.children[index] as HTMLButtonElement;
       button.textContent=choice.label;button.dataset.cardIds=JSON.stringify(choice.cardIds);
-      button.setAttribute('aria-pressed',String(!!choice.selected));
+      if(choice.id==='flush-intro'||choice.id==='flush-sorted')button.removeAttribute('aria-pressed');
+      else button.setAttribute('aria-pressed',String(!!choice.selected));
     });
     const skipFocused=document.activeElement===skipButton;
     skipButton.hidden=!options.onSkip||step.id==='complete';

@@ -43,6 +43,8 @@ const cases=[
   {name:'phone-two',width:390,height:740,touch:true,discardCount:2,choiceIndex:1},
   {name:'narrow-one',width:320,height:568,touch:true,discardCount:1,choiceIndex:1},
   {name:'narrow-two',width:320,height:568,touch:true,discardCount:2,choiceIndex:0},
+  {name:'desktop-play',width:1920,height:1080,touch:false,flow:'play'},
+  {name:'phone-play',width:390,height:740,touch:true,flow:'play'},
   {name:'phone-skip',width:390,height:740,touch:true,flow:'skip'},
 ].filter(s=>!process.env.NOVICE_FIRST_CASE||process.env.NOVICE_FIRST_CASE.split(',').includes(s.name));
 assert.ok(cases.length,'NOVICE_FIRST_CASE must name a case');
@@ -97,7 +99,7 @@ try {for(const spec of cases){
       for(const choice of info.choices){
         assert.ok(choice.box.width>=43&&choice.box.height>=43,`${name}: choice has an undersized hit area: ${JSON.stringify(choice)}`);
         assert.ok(choice.scrollWidth<=choice.clientWidth+1&&choice.scrollHeight<=choice.clientHeight+1,`${name}: choice text overflows: ${JSON.stringify(choice)}`);
-        assert.match(choice.text,/预计\s*\d+(?:\s*[–~-]\s*\d+)?\s*分/,`${name}: complete score estimate is visible`);
+        if(!choice.id.startsWith('flush-'))assert.match(choice.text,/预计\s*\d+(?:\s*[–~-]\s*\d+)?\s*分/,`${name}: complete score estimate is visible`);
         for(const b of choice.textBoxes)assert.ok(b.x>=choice.box.x-1&&b.y>=choice.box.y-1&&b.x+b.width<=choice.box.x+choice.box.width+1&&b.y+b.height<=choice.box.y+choice.box.height+1,`${name}: choice text leaves its button: ${JSON.stringify(choice)}`);
       }
     }
@@ -129,6 +131,13 @@ try {for(const spec of cases){
     const saved={runId:current.runId,seq:current.commandSeq};await page.reload();await waitScene(page,'title');await tapUI(page,'title','action/title-continue',spec.touch);await waitScene(page,'game');await waitReady();await guide('discard');
     current=await state();assert.equal(current.runId,saved.runId);assert.equal(current.commandSeq,saved.seq);await capture('08-restored');
     if(process.env.NOVICE_FIRST_OPENING_ONLY==='1'){row.status='OPENING_ONLY';continue;}
+    if(spec.flow==='play'){
+      await select('spades-14');await waitSelection(['spades-14']);await capture('09-free-play-selected');
+      assert.equal((await point(page,'game','action/play')).enabled,true,'the player may bypass the example');
+      before=await state();await tapUI(page,'game','action/play',spec.touch);await settleAfterAction(before);await waitReady();await guide('independent');
+      current=await state();assert.equal((await journal()).at(-1).action.type,'PlayHand');assert.equal(current.stage.discardsLeft,before.stage.discardsLeft);
+      await capture('10-free-play-continues');assert.deepEqual(row.errors,[]);row.status='PASS';continue;
+    }
     if(spec.flow==='skip'){
       const view=await measure(),candidates=view.cards.filter(card=>view.rings.some(ring=>sameBox(ring,card))).map(card=>card.id);
       const ordinary=current.handOrder.find(id=>!candidates.includes(id));assert.ok(ordinary,'an unhighlighted hand card is available');
@@ -136,9 +145,8 @@ try {for(const spec of cases){
       await page.locator('[data-novice-guide-panel]').waitFor({state:'hidden'});await select(ordinary);await waitSelection([ordinary]);
       assert.equal((await point(page,'game','action/discard')).enabled,true,'closing the guide restores ordinary discard selection');
       const reopen=page.locator('[data-novice-guide-reopen]');if(spec.touch)await reopen.tap();else await reopen.click();
-      await guide('discard');const restored=await capture('09-reopen-invalid-selection');
-      assert.match(restored.body,/取消/,'reopening explains the existing invalid selection');
-      assert.equal((await point(page,'game','action/discard')).enabled,false,'the guide rechecks the selection when reopened');
+      await guide('discard');await capture('09-reopen-alternative-selection');
+      assert.equal((await point(page,'game','action/discard')).enabled,true,'reopening the guide never blocks a legal selection');
       await select(ordinary);await waitSelection([]);await capture('10-reopen-corrected');
       const skip=page.locator('[data-novice-guide-skip]');if(spec.touch)await skip.tap();else await skip.click();
       await waitScene(page,'character-select');current=await state();assert.equal(current.runId,saved.runId);assert.equal(current.commandSeq,saved.seq);
@@ -146,71 +154,26 @@ try {for(const spec of cases){
       assert.deepEqual(row.errors,[]);row.status='PASS';continue;
     }
 
-    // Use the ringed cards, rather than the known fixed deck or a preset five-card discard.
-    await page.waitForFunction(()=>document.querySelectorAll('[data-novice-guide-highlight]').length>1);
-    const discardGuide=await capture('09-discard-choices');
-    assert.match(discardGuide.body,/一两|一到两|一至两|1\s*[~～—–-]\s*2|1\s*或\s*2|1\s*至\s*2/,'discard copy tells the player to choose one or two cards');
-    assert.match(discardGuide.body,/弃牌|换牌/,'discard copy explains what to press or why');
-    const ringed=discardGuide.cards.filter(card=>discardGuide.rings.some(ring=>sameBox(ring,card)));
-    assert.ok(ringed.length>=2,`a choice of discard cards is actually highlighted: ${JSON.stringify(discardGuide)}`);
-    const discarded=ringed.slice(0,spec.discardCount).map(card=>card.id);
-    await select(discarded[0]);await waitSelection([discarded[0]]);await waitReady();
-    const oneDiscard=await capture('10-discard-one-selected');
-    assert.ok(ringed.slice(1).some(original=>{const card=oneDiscard.cards.find(card=>card.id===original.id);return card&&oneDiscard.rings.some(ring=>sameBox(ring,card));}),'the other discard option stays highlighted after one selection');
-    await select(discarded[0]);await waitSelection([]);await capture('11-discard-cancelled');
-    const recommended=ringed.slice(0,2).map(card=>card.id);
-    const extra=discardGuide.cards.find(card=>!ringed.some(ring=>ring.id===card.id))?.id;
-    assert.ok(extra,'a third, non-recommended card is available to test a mistaken over-selection');
-    for(const id of recommended)await select(id);
-    await select(extra);await waitSelection([...recommended,extra]);await waitReady();
-    const overselected=await capture('11a-discard-overselected');
-    assert.match(overselected.body,/取消/,'an over-selection explains how to undo it');
-    const mistaken=overselected.cards.find(card=>card.id===extra);
-    assert.ok(mistaken&&overselected.rings.some(ring=>sameBox(ring,mistaken)),'the wrongly selected card is highlighted for correction');
-    assert.equal((await point(page,'game','action/discard')).enabled,false,'three selected cards cannot be discarded during the lesson');
-    await select(extra);await waitSelection(recommended);await capture('11b-extra-cancelled');
-    assert.equal((await point(page,'game','action/discard')).enabled,true,'discard becomes available again after cancelling the extra card');
-    for(const id of recommended)await select(id);
-    await waitSelection([]);
-    for(const id of discarded)await select(id);
-    await waitSelection(discarded);await capture('12-discard-ready');
-    before=await state();await tapUI(page,'game','action/discard',spec.touch);await settleAfterAction(before);await waitReady();
-    current=await state();assert.equal(current.stage.discardsLeft,before.stage.discardsLeft-1);
-    assert.equal((await journal()).at(-1).action.type,'DiscardHand');
-    assert.deepEqual(new Set((await journal()).at(-1).action.selectedIds),new Set(discarded));
-    assert.ok(discarded.every(id=>!current.handOrder.includes(id)),'the selected cards really left the hand');
-    row.discarded=discarded;row.replacement=current.handOrder.filter(id=>!before.handOrder.includes(id));
-    assert.equal(row.replacement.length,discarded.length);
-
-    await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='先理牌');
-    await capture('12a-sort-instruction');
+    // A shorter, legal exchange remains possible at every step of the example.
+    await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='先看看三张红桃');
+    await capture('09-three-hearts');
+    const intro=page.locator('[data-novice-guide-choice="flush-intro"]');if(spec.touch)await intro.tap();else await intro.click();
+    await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='让同花色排在一起');await capture('09a-sort-instruction');
     before=await state();await tapUI(page,'game','action/sort-suit',spec.touch);await waitReady();
-    await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='试试滑动选牌');
-    current=await state();assert.ok(current.commandSeq>before.commandSeq,'suit sorting saves a command');
-    assert.equal((await journal()).at(-1).action.type,'ReorderHand');
-    const sweepGuide=await capture('12b-swipe-instruction');
-    const endpoints=sweepGuide.cards.filter(card=>sweepGuide.rings.some(ring=>sameBox(ring,card)));
-    assert.ok(endpoints.length>=2,`the swipe endpoints are highlighted: ${JSON.stringify(sweepGuide)}`);
-    const positions=endpoints.map(card=>current.handOrder.indexOf(card.id)).sort((a,b)=>a-b);
-    const swept=current.handOrder.slice(positions[0],positions.at(-1)+1);
-    assert.ok(swept.length>=2&&swept.length<=5,`the highlighted span contains 2–5 cards: ${JSON.stringify({endpoints,swept})}`);
-    const sweepCards=swept.map(id=>sweepGuide.cards.find(card=>card.id===id));
-    assert.ok(sweepCards.every(card=>card&&card.suit===sweepCards[0].suit),'the whole visible span has one suit');
-    assert.deepEqual(await selection(),[],'the sort leaves no selected cards');
-    const start=await point(page,'game','card/'+swept[0]),end=await point(page,'game','card/'+swept.at(-1));
-    if(spec.touch){
-      const touch=(type,points)=>cdp.send('Input.dispatchTouchEvent',{type,touchPoints:points.map(({x,y})=>({x,y,id:1,radiusX:2,radiusY:2,force:1}))});
-      await touch('touchStart',[start]);await touch('touchMove',[end]);
-      assert.equal((await measure()).title,'试试滑动选牌','the lesson waits for release');await touch('touchEnd',[]);
-    }else{
-      await page.mouse.move(start.x,start.y);await page.mouse.down();await page.mouse.move(end.x,end.y);
-      assert.equal((await measure()).title,'试试滑动选牌','the lesson waits for release');await page.mouse.up();
-    }
-    await waitReady();await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent!=='试试滑动选牌');
-    await waitSelection(swept);await capture('12c-swipe-complete');
-    for(const id of swept)await select(id);
-    await waitSelection([]);await waitReady();current=await state();
-    row.sweep=swept;
+    await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='三张红桃排在一起了');current=await state();
+    assert.ok(current.commandSeq>before.commandSeq);assert.equal((await journal()).at(-1).action.type,'ReorderHand');await capture('09b-sorted-hearts');
+    const ack=page.locator('[data-novice-guide-choice="flush-sorted"]');if(spec.touch)await ack.tap();else await ack.click();
+    await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='选左侧其他花色');
+    await select('hearts-10');await waitSelection(['hearts-10']);const warning=await capture('10-heart-selected');
+    assert.match(warning.body,/取消/);assert.equal((await point(page,'game','action/discard')).enabled,true,'even the alternative heart discard remains legal');
+    await select('hearts-10');await waitSelection([]);
+    const discarded=current.handOrder.filter(id=>!id.startsWith('hearts-')).slice(0,spec.discardCount);
+    for(const id of discarded)await select(id);await waitSelection(discarded);await capture('11-alternative-discard');
+    before=await state();await tapUI(page,'game','action/discard',spec.touch);await settleAfterAction(before);await waitReady();
+    current=await state();assert.equal(current.stage.discardsLeft,before.stage.discardsLeft-1);assert.equal(current.stage.handsLeft,before.stage.handsLeft);
+    assert.equal((await journal()).at(-1).action.type,'DiscardHand');assert.deepEqual(new Set((await journal()).at(-1).action.selectedIds),new Set(discarded));
+    assert.ok(discarded.every(id=>!current.handOrder.includes(id)));row.discarded=discarded;row.replacement=current.handOrder.filter(id=>!before.handOrder.includes(id));
+    assert.equal(row.replacement.length,discarded.length);
 
     const waitChoices=async()=>{
       await page.locator('[data-novice-guide-choice]').first().waitFor({state:'visible',timeout:30000});
@@ -220,6 +183,9 @@ try {for(const spec of cases){
         return buttons.length&&buttons.every(el=>{try {const ids=JSON.parse(el.dataset.cardIds);return ids.length&&ids.every(id=>hand.includes(id));}catch{return false;}});
       });
     };
+    await waitChoices();
+    const afterExchange=await capture('12-real-refill');const hearts=current.handOrder.filter(id=>id.startsWith('hearts-')).length;
+    assert.match(afterExchange.body,new RegExp(hearts+'张红桃'),'the lesson reports the real replacement outcome');
     const used=[];
     for(let hand=0;hand<4;hand++){
       await waitChoices();
