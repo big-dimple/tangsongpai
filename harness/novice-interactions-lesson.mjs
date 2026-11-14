@@ -286,7 +286,14 @@ async function scenario(spec){
       const handIndex=(await state()).handOrder.indexOf(skillPair[0])+1;await click(skillDialog.getByRole('button',{name:new RegExp('^第'+handIndex+'张 · ')}));await cue('技能已选');await shot('17-skill-selected');
       before=await saved();await tap('game','action/play');await settleCommand(before);after=await state();assert.ok(after.lastTrace.events.some(event=>event.reasonKey==='erxiang.handoff'),'hero skill really contributes');
       await page.waitForFunction(()=>document.querySelector('[data-novice-guide]')?.dataset.noviceGuideStep==='skill-practice');await shot('18-skill-result');
-      if(after.phase==='stage-cleared'){await waitScene(page,'intermission');await continueResult();await waitScene(page,'game');await ready();await page.waitForFunction(()=>document.querySelector('[data-novice-guide]')?.dataset.noviceGuideStep==='skill-practice');await shot('19-practice-next-stage');}
+      if(after.phase==='stage-cleared'){
+        await waitScene(page,'intermission');await continueResult();await waitScene(page,'game');await ready();
+        // A real boss introduction can cover the table after a quick clear.
+        // Dismiss its actual start control before expecting the guide beneath it.
+        await page.waitForFunction(()=>document.querySelector('dialog[open]')||document.querySelector('[data-novice-guide]')?.dataset.noviceGuideStep==='skill-practice');
+        const bossStart=page.getByRole('button',{name:'开始出牌',exact:true});if(await bossStart.isVisible())await click(bossStart);
+        await page.waitForFunction(()=>document.querySelector('[data-novice-guide]')?.dataset.noviceGuideStep==='skill-practice');await shot('19-practice-next-stage');
+      }
       await ready();after=await state();await select([after.handOrder[0]]);before=await saved();await tap('game','action/play');await settleCommand(before);await page.waitForFunction(()=>document.querySelector('[data-novice-guide]')?.dataset.noviceGuideStep==='complete');await shot('20-tutorial-complete');
       assert.ok(await page.getByRole('button',{name:'开始普通游戏',exact:true}).isVisible());await click(page.getByRole('button',{name:'开始普通游戏',exact:true}));await waitScene(page,'character-select');
       assert.deepEqual(row.errors,[]);row.checks.push('next-stage purchase payoff, hero skill and final free practice really execute and lead to tutorial completion');row.status='PASS';return;
@@ -295,6 +302,13 @@ async function scenario(spec){
     const held=(await state()).jokers[0].instanceId,stableFirst=await saved();await tap('shop','joker/'+held);let dialog=page.locator('.detail-dialog[open]').last();await dialog.waitFor();await click(dialog.getByRole('button',{name:'出售',exact:true}));dialog=page.locator('.detail-dialog[open]').last();await dialog.waitFor();await shot('11-sale-confirm');await click(dialog.getByRole('button',{name:'取消',exact:true}));
     dialog=page.locator('.detail-dialog[open]').last();if(await dialog.count())await click(dialog.getByRole('button',{name:'关闭',exact:true}));assert.deepEqual(await saved(),stableFirst,'sale cancellation changes no saved data');
     const secondStep=page.locator('[data-novice-guide-choice="novice-second-card"]');await secondStep.waitFor({state:'visible'});await click(secondStep);await cue('再看看一张牌');
+    if(spec.touch)await page.waitForFunction(()=>{
+      const s=window.__harness.game.scene.getScene('shop'),id=s.noviceSecondOffer().secondOffer?.id,host=document.querySelector('.shop-mobile-offers');
+      const row=[...(host?.querySelectorAll('.shop-mobile-offer')??[])].find(node=>node.dataset.offerId===id),ring=document.querySelector('[data-novice-guide-highlight]');
+      if(!host||!row||!ring)return false;const a=row.getBoundingClientRect(),b=host.getBoundingClientRect(),r=ring.getBoundingClientRect();
+      const x=Math.max(a.left,b.left),y=Math.max(a.top,b.top),right=Math.min(a.right,b.right),bottom=Math.min(a.bottom,b.bottom);
+      return right>x&&bottom>y&&Math.abs(r.left-x)<3&&Math.abs(r.top-y)<3&&Math.abs(r.width-(right-x))<3&&Math.abs(r.height-(bottom-y))<3;
+    },null,{timeout:5000});
     const secondGuide=await shot('11a-second-card-guide');assert.match(secondGuide.body,/查看效果和价格/);assert.match(secondGuide.body,/可选别的或进入牌桌/);
     await page.waitForFunction(()=>document.querySelectorAll('[data-novice-guide-highlight]').length>0);
     const secondPurchase=await buy('c03');assert.equal(secondPurchase.state.jokers.length,2);
