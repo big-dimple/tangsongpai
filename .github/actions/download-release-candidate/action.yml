@@ -1,0 +1,55 @@
+name: Download release candidate with bounded retry
+description: Download one exact artifact, retrying transient visibility or download failures.
+inputs:
+  artifact-id:
+    description: Artifact ID returned by the candidate upload.
+    required: true
+  path:
+    description: Parent directory for independent download attempts.
+    required: true
+outputs:
+  path:
+    description: Directory of the successful attempt, to be verified by the caller.
+    value: ${{ (steps.attempt_1.outcome == 'success' && format('{0}/attempt-1', inputs.path)) || (steps.attempt_2.outcome == 'success' && format('{0}/attempt-2', inputs.path)) || (steps.attempt_3.outcome == 'success' && format('{0}/attempt-3', inputs.path)) }}
+runs:
+  using: composite
+  steps:
+    - name: Require a single artifact ID
+      shell: bash
+      env:
+        ARTIFACT_ID: ${{ inputs.artifact-id }}
+      run: |
+        if [[ ! "$ARTIFACT_ID" =~ ^[1-9][0-9]*$ ]]; then
+          echo "Missing or invalid artifact ID" >&2
+          exit 1
+        fi
+    - id: attempt_1
+      uses: actions/download-artifact@v4
+      continue-on-error: true
+      with:
+        artifact-ids: ${{ inputs.artifact-id }}
+        path: ${{ inputs.path }}/attempt-1
+        merge-multiple: true
+    - name: Wait before second attempt
+      if: steps.attempt_1.outcome == 'failure'
+      shell: bash
+      run: sleep 5
+    - id: attempt_2
+      if: steps.attempt_1.outcome == 'failure'
+      uses: actions/download-artifact@v4
+      continue-on-error: true
+      with:
+        artifact-ids: ${{ inputs.artifact-id }}
+        path: ${{ inputs.path }}/attempt-2
+        merge-multiple: true
+    - name: Wait before final attempt
+      if: steps.attempt_1.outcome == 'failure' && steps.attempt_2.outcome == 'failure'
+      shell: bash
+      run: sleep 10
+    - id: attempt_3
+      if: steps.attempt_1.outcome == 'failure' && steps.attempt_2.outcome == 'failure'
+      uses: actions/download-artifact@v4
+      with:
+        artifact-ids: ${{ inputs.artifact-id }}
+        path: ${{ inputs.path }}/attempt-3
+        merge-multiple: true

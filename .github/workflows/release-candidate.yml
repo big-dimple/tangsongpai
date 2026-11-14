@@ -14,6 +14,8 @@ concurrency:
 
 jobs:
   candidate:
+    outputs:
+      artifact-id: ${{ steps.upload_candidate.outputs.artifact-id }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
@@ -42,8 +44,9 @@ jobs:
           python3 scripts/prepare-release-artifact.py
           python3 scripts/verify-release-artifact.py "shots/deploy/$GITHUB_SHA" "$GITHUB_SHA"
       - uses: actions/upload-artifact@v4
+        id: upload_candidate
         with:
-          name: release-candidate-${{ github.sha }}
+          name: release-candidate-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
             shots/deploy/${{ github.sha }}/dist.tar.gz
             shots/deploy/${{ github.sha }}/dist.tar.gz.sha256
@@ -51,12 +54,16 @@ jobs:
           if-no-files-found: error
           compression-level: 0
           retention-days: 14
-      - uses: actions/download-artifact@v4
+      - name: Download uploaded candidate
+        id: download_candidate
+        uses: ./.github/actions/download-release-candidate
         with:
-          name: release-candidate-${{ github.sha }}
+          artifact-id: ${{ steps.upload_candidate.outputs.artifact-id }}
           path: ${{ runner.temp }}/release-candidate
       - name: Verify downloaded candidate
-        run: python3 scripts/verify-release-artifact.py "$RUNNER_TEMP/release-candidate" "$GITHUB_SHA"
+        env:
+          CANDIDATE_DIRECTORY: ${{ steps.download_candidate.outputs.path }}
+        run: python3 scripts/verify-release-artifact.py "$CANDIDATE_DIRECTORY" "$GITHUB_SHA"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -84,9 +91,13 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
-      - uses: actions/download-artifact@v4
+      - name: Download verified candidate
+        id: download_candidate
+        uses: ./.github/actions/download-release-candidate
         with:
-          name: release-candidate-${{ github.sha }}
+          artifact-id: ${{ needs.candidate.outputs.artifact-id }}
           path: ${{ runner.temp }}/release-candidate
       - name: Publish verified candidate
-        run: python3 -B scripts/publish-release.py "$RUNNER_TEMP/release-candidate" "$GITHUB_REPOSITORY" "$GITHUB_SHA"
+        env:
+          CANDIDATE_DIRECTORY: ${{ steps.download_candidate.outputs.path }}
+        run: python3 -B scripts/publish-release.py "$CANDIDATE_DIRECTORY" "$GITHUB_REPOSITORY" "$GITHUB_SHA"

@@ -181,7 +181,7 @@ tools/          离线素材工具
 
 开发侧按改动执行检查；完整门禁为 `npm ci` 后运行 `npm run verify:ci -- --scope=all`，包含单元测试、独立串行的 `test:deployment` 部署脚本校验、内容校验、类型检查、生产构建及 Chromium 桌面／手机冒烟。日常 `npm test` 不运行部署 shell 夹具；完整门禁和 Release candidate 仍必须执行全部部署场景，不得省略。手柄相关改动另运行 `npm run test:gamepad:browser`。自动检查不等于人工美术、听感或实体设备验收。
 
-`.github/workflows/release-candidate.yml`（GitHub Actions 名称 **CI and release**）在 main push 时触发，也支持手动运行。只读的 candidate job 执行上述门禁并生成生产包；通过后，只有 main 的 publish job 使用内置 `GITHUB_TOKEN` 的 `contents: write` 创建并验证 Release。工作流和账号是否可运行，以实际 Actions 结果为准。
+`.github/workflows/release-candidate.yml`（GitHub Actions 名称 **CI and release**）在 main push 时触发，也支持手动运行。只读的 candidate job 执行上述门禁并生成生产包；通过后，只有 main 的 publish job 使用内置 `GITHUB_TOKEN` 的 `contents: write` 创建并验证 Release。候选包使用本次上传返回的 artifact ID 下载并复验，查找或下载暂时失败时最多重试两次，仍失败则阻断发布；artifact 名称包含运行及重试编号以避免重跑冲突。工作流和账号是否可运行，以实际 Actions 结果为准。
 
 正式 Release 使用 `v<完整提交SHA>` 标签，标签指向该提交；完整资产只有 `dist.tar.gz`、`dist.tar.gz.sha256`、`manifest.json`。manifest 的 `sourceRevision`、归档内 `build-info.json` 的 `revision` 和标签提交必须相同，`dist.tar.gz.sha256` 与 manifest 中的摘要必须对应归档；manifest 还包含构建信息及同一提交通过的 CI 报告。完整草稿验证通过且 main 仍匹配时才发布并设为 latest；已有正式 Release 不覆盖。
 
