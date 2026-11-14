@@ -165,3 +165,19 @@ it('PC worst-case disabled edition requires276px instead of clamping overlapping
   for(const [i,a] of parts.entries())for(const b of parts.slice(i+1))expect(intersects(a,b)).toBe(false);
  }
 });
+
+it('medium PC shop uses the empty lower tile for readable conditions without moving the art or covering actions',()=>{
+ const p=shopLayout(1180,757,8,0,3,true),tile=p.pc!.jokerOffers[0],g=pcShopOfferGeometry(tile)!;
+ const summary='每次出牌 倍率+2\n≥2组各≥2张同点';
+ const lineCount=Math.max(2,Math.floor(g.summary.height/24));
+ const wrapped=shopSummaryWrap(summary,g.summary.width,s=>Array.from(s).length*16,lineCount);
+ expect(lineCount).toBeGreaterThanOrEqual(4);
+ expect(wrapped.replaceAll('\n','')).toBe(summary.replaceAll('\n',''));
+ const flow=pcShopOfferGeometry(tile,false,1,lineCount*24)!;
+ expect(flow.art).toEqual(g.art);
+ expect(inside(flow.summary,tile)).toBe(true);
+ expect(inside(flow.price,tile)).toBe(true);
+ expect(intersects(flow.summary,flow.price)).toBe(false);
+ expect(intersects(flow.art,flow.price)).toBe(false);
+ expect(flow.price.height).toBeGreaterThanOrEqual(44);
+});

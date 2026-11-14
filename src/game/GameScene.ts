@@ -130,6 +130,7 @@ import Phaser from 'phaser';
 import {handActionContent,handActionCountColor,pcHandActionContent} from './HandActionArt';
 import {mountPcActionArt,refreshPcActionArt} from './PcActionArt';
 import {wrapPcJokerSummary} from './PcJokerSummary';
+import {pcJokerTextArea} from './PcTableLayout';
 import {mountPcActionKeyboard} from './PcActionKeyboard';
 import {renderHandSortGroup,handAiButtonLabel} from './HandActionControls';
 import {r2JokerCapacity} from '../domain/r2Resources';
@@ -1054,7 +1055,7 @@ export class GameScene extends Phaser.Scene {
       }
       const d=this.jokerDefinition(j.definitionId),rarityStyle=JOKER_RARITY[d.rarity];
       if(l.pc){
-        const textX=b.x+b.width+10,textWidth=l.jokers.width/5-b.width-28;
+        const {x:textX,width:textWidth}=pcJokerTextArea(l.jokers,b);
         const heading=v.text(textX,b.y+12,d.name,l.pc.compact?16:20,C.ink,textWidth).setFontStyle('bold').setName('pc/joker-name');
         heading.setWordWrapWidth(0);for(let size=l.pc.compact?16:20;heading.width>textWidth&&size>14;)heading.setFontSize(--size);
         if(heading.width>textWidth){let name=d.name;while(heading.width>textWidth&&name.length)heading.setText((name=name.slice(0,-1))+'…');}

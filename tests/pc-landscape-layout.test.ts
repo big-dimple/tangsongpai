@@ -1,5 +1,6 @@
 import {expect,it} from 'vitest';
 import {layout,intersects,type Box} from '../src/game/layout';
+import {pcJokerTextArea} from '../src/game/PcTableLayout';
 const safe={top:0,right:0,bottom:0,left:0};
 it.each([[1920,1080],[1920,924],[1366,768],[1280,640],[1180,640]])('PC %sx%s footer keeps discard, sorting and play compact beneath the hand, with a separate skill',(width,height)=>{
  const l=layout({width,height},safe,undefined,{count:8},{pc:true}),{discard,play}=l.tableActions;
@@ -89,4 +90,14 @@ it('keeps the complete compact actions and skill within the main column at minim
  expect(l.heroAction.width).toBeGreaterThanOrEqual(140);
  expect(l.heroAction.x+l.heroAction.width).toBeLessThanOrEqual(l.pc!.main.x+l.pc!.main.width);
  for(const a of [discard,play,...Object.values(l.buttons),l.heroAction])for(const card of l.cards)expect(intersects(a,card.hit)).toBe(false);
+});
+
+it.each([[1180,757],[1280,720],[1366,768],[1920,1080]])('PC %sx%s gives each held card readable copy without touching the next seat',(width,height)=>{
+ const l=layout({width,height},safe,undefined,{count:8},{pc:true});
+ for(const [i,slot] of l.slots.entries()){
+  const text=pcJokerTextArea(l.jokers,slot);
+  expect(text.width).toBeGreaterThanOrEqual(56);
+  expect(text.x).toBeGreaterThan(slot.x+slot.width);
+  expect(text.x+text.width).toBeLessThanOrEqual(l.jokers.x+(i+1)*l.jokers.width/5);
+ }
 });

@@ -26,3 +26,15 @@ it('reduced motion and score ownership suppress selection response and shutdown 
  const f=fixture(true);f.motion.input(false,false);f.motion.input(true,false);f.motion.hint('draft');f.tick(30);expect(f.pose()).toEqual([0,0,0,1,1]);
  const job=f.motion.claim({generation:1,signal:new AbortController().signal},{windup:100,flight:0,impact:120,rest:0,strength:'role'})!;job.step(100);expect(f.pose()).toEqual([0,0,0,1,1]);f.scene.events.emit('shutdown');expect(f.scene.events.listenerCount('update')).toBe(0);job.step(120);expect(f.pose()).toEqual([0,0,0,1,1]);f.outer.destroy();
 });
+it('avoids rewriting an idle card pose while keeping input responsive',()=>{
+ const f=fixture(),position=vi.spyOn(f.body,'setPosition'),angle=vi.spyOn(f.body,'setAngle');
+ f.motion.input(false,false);f.tick(300);
+ expect(position).not.toHaveBeenCalled();
+ expect(angle).not.toHaveBeenCalled();
+ f.motion.input(true,false);f.tick(5);expect(Math.abs(f.body.angle)).toBeGreaterThan(.1);
+ f.tick(220);expect(f.pose()).toEqual([0,0,0,1,1]);position.mockClear();angle.mockClear();f.tick(300);
+ expect(position).not.toHaveBeenCalled();expect(angle).not.toHaveBeenCalled();
+ f.motion.hint('target',{x:20,y:100});f.tick(5);expect(f.body.x).toBeLessThan(0);
+ f.allow(false);f.tick();expect(f.pose()).toEqual([0,0,0,1,1]);position.mockClear();f.tick(30);expect(position).not.toHaveBeenCalled();
+ f.close();
+});

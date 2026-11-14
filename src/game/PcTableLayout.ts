@@ -4,6 +4,12 @@ import {pcLandscapeFrame} from './PcLandscapeFrame';
 const box=(x:number,y:number,width:number,height:number):Box=>({x,y,width,height});
 export interface PcTableOptions {pc?:boolean}
 
+/** Text has its own seat and never runs into the next card or the rack edge. */
+export function pcJokerTextArea(rack:Box,slot:Box):{x:number;width:number} {
+ const x=slot.x+slot.width+4;
+ return {x,width:Math.max(0,rack.width/5-slot.width-12)};
+}
+
 /**
  * The PC arena is deliberately authored as a wide composition rather than a
  * scaled version of the phone table. The left wing carries identity and
@@ -49,7 +55,7 @@ export function pcTableAreas(viewport:{width:number;height:number},safe:Insets,h
  const rackLabelHeight=short?28:32,headerHeight=rackCardWidth*1.4+rackLabelHeight;
  const rackWidth=Math.min(1100,main.width),rackX=main.x+(main.width-rackWidth)/2;
  const jokers=box(rackX,main.y,rackWidth,headerHeight);
- const slots=Array.from({length:5},(_,i)=>box(rackX+16+i*rackWidth/5,jokers.y+rackLabelHeight,rackCardWidth,rackCardWidth*1.4));
+ const slots=Array.from({length:5},(_,i)=>box(rackX+4+i*rackWidth/5,jokers.y+rackLabelHeight,rackCardWidth,rackCardWidth*1.4));
  // A single central band keeps scoring beside the played cards at every PC height.
  const middleY=main.y+headerHeight+(short?12:16),middleHeight=hand.y-40-middleY;
  const scoreWidth=Math.min(360,main.width*.4),scoreHeight=Math.min(middleHeight,compact?110:130);

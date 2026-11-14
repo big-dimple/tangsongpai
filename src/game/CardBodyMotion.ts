@@ -14,28 +14,31 @@ export class CardBodyMotion {
  private hintKey?:string;
  private score?:{dispose:()=>void};
  private destroyed=false;
+ // A settled card needs no per-frame spring integration or transform writes.
+ private parked=true;
  constructor(private readonly scene:Phaser.Scene,private readonly outer:Phaser.GameObjects.Container,readonly body:Phaser.GameObjects.Container,private readonly reduced:()=>boolean,private readonly inputAllowed:()=>boolean){
   for(const s of [this.spring.x,this.spring.y,this.spring.rotation])s.setConfig(SPRING_PRESETS.gentle);
   scene.events.on('update',this.update);scene.events.once('shutdown',this.destroy);outer.once('destroy',this.destroy);
  }
  input(selected:boolean,hovered:boolean):void {
   this.hovered=hovered;const changed=this.selected!==undefined&&this.selected!==selected;this.selected=selected;
-  if(changed&&this.inputAllowed()&&!this.reduced()&&!this.score){const width=Number(this.outer.getData('width'))||64,height=Number(this.outer.getData('height'))||90,angle=Math.min(7,600/width);this.selecting=true;this.spring.y.velocity=height*(selected?-.8:.45);this.spring.rotation.velocity=(selected?1:-1)*angle*Math.PI/180*24;}
+  if(changed&&this.inputAllowed()&&!this.reduced()&&!this.score){const width=Number(this.outer.getData('width'))||64,height=Number(this.outer.getData('height'))||90,angle=Math.min(7,600/width);this.selecting=true;this.parked=false;this.spring.y.velocity=height*(selected?-.8:.45);this.spring.rotation.velocity=(selected?1:-1)*angle*Math.PI/180*24;}
  }
  hint(key:string|undefined,source?:{x:number;y:number}):void {
   if(key===this.hintKey)return;this.hintKey=key;
   if(!key||!this.inputAllowed()||this.reduced()||this.score)return;
-  const d=this.direction(source);this.spring.x.velocity=d.x*45;this.spring.y.velocity=d.y*45;this.spring.rotation.velocity=d.x*.65;
+  this.parked=false;const d=this.direction(source);this.spring.x.velocity=d.x*45;this.spring.y.velocity=d.y*45;this.spring.rotation.velocity=d.x*.65;
  }
  private direction(source?:{x:number;y:number}){const p=source?this.outer.getWorldTransformMatrix().applyInverse(source.x,source.y):{x:0,y:-1},n=Math.hypot(p.x,p.y)||1;return {x:p.x/n,y:p.y/n};}
- private reset(){this.spring.reset();this.selecting=false;if(this.body.active)this.body.setPosition(0,0).setAngle(0).setScale(1);}
+ private reset(){if(this.parked)return;this.spring.reset();this.selecting=false;this.parked=true;if(this.body.active)this.body.setPosition(0,0).setAngle(0).setScale(1);}
  private readonly update=(_time:number,delta:number)=>{
   if(this.destroyed||!this.body.active)return;
   if(typeof document!=='undefined'&&document.hidden){this.score?.dispose();this.reset();return;}
   if(this.reduced()){this.reset();return;}
   if(this.score)return;
   if(!this.inputAllowed()){this.reset();return;}
-  if(!Number.isFinite(delta)||delta<=0)return;this.spring.step(Math.min(delta/1000,.05));
+  if(this.parked||!Number.isFinite(delta)||delta<=0)return;
+  if(this.spring.step(Math.min(delta/1000,.05))){this.reset();return;}
   const width=Number(this.outer.getData('width'))||64,quietHover=this.hovered&&!this.selecting,angle=quietHover?1:Math.min(7,600/width),tilt=Math.max(-angle,Math.min(angle,this.spring.rotation.value*180/Math.PI)),lift=Math.max(0,22-(this.selected?16:this.hovered?4:0)-width*Math.sin(Math.abs(tilt)*Math.PI/180)/2);
   this.body.setPosition(Math.max(-3,Math.min(3,this.spring.x.value)),Math.max(-lift,Math.min(2,this.spring.y.value))).setAngle(tilt);
   if(Math.abs(this.spring.y.value)+Math.abs(this.spring.y.velocity)+Math.abs(this.spring.rotation.value)+Math.abs(this.spring.rotation.velocity)<.005)this.selecting=false;
@@ -48,6 +51,7 @@ export class CardBodyMotion {
   const owner={dispose};this.score=owner;context.signal.addEventListener('abort',dispose,{once:true});
   const step=(elapsed:number)=>{
    if(disposed||context.signal.aborted||!this.body.active)return;if(this.reduced()){this.reset();return;}
+   this.parked=false;
    const arrival=beat.windup+beat.flight;
    if(elapsed<arrival){const t=elapsed<=beat.windup?Math.min(1,elapsed/Math.max(1,beat.windup)):Math.max(0,1-(elapsed-beat.windup)/Math.max(1,beat.flight)),u=t*t*(3-2*t);this.body.setPosition(direction.x*4*u,direction.y*4*u).setAngle(direction.x*2*u).setScale(1-.012*u,1);}
    else{const t=Math.max(0,Math.min(1,(elapsed-arrival-(beat.strike?.hold??0))/Math.max(1,beat.strike?.recovery??beat.impact))),s=t===1?0:OWNED_SCORE_SPRING.value(t*.5)*(t>.7?((1-t)/.3)**2:1),side=direction.x<0?-1:1;this.body.setPosition(side*1.5*s,0).setAngle(side*3*s).setScale(1-.02*Math.abs(s),1);}

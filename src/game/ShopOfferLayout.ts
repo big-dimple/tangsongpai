@@ -78,7 +78,9 @@ export function pcShopOfferGeometry(tile:Box,hasExtra=false,extraRows=1,usedSumm
  const art={x:tile.x+pad,y:tile.y+header,width:artWidth,height:artWidth*1.25};
  const x=art.x+art.width+gap,copyWidth=tile.x+tile.width-pad-x;
  if(artWidth<64||copyWidth<64)return;
- const maxPriceY=Math.max(art.y+minSummary+12+extraHeight,Math.min(tile.y+tile.height-pad-reasonHeight-reasonGap-priceHeight,art.y+art.height-priceHeight));
+ // Allow long copy to use the empty lower part of the tile.  The measured
+ // short-copy path below still keeps its button close to the description.
+ const maxPriceY=tile.y+tile.height-pad-reasonHeight-reasonGap-priceHeight;
  const priceY=usedSummaryHeight===undefined?maxPriceY:Math.min(maxPriceY,art.y+Math.max(76,usedSummaryHeight+16)+extraHeight);
  return {art,title:{x:tile.x+pad,y:tile.y+12,width:tile.width-pad*2,height:28},identity:{x:tile.x+pad,y:tile.y+42,width:tile.width-pad*2,height:18},summary:{x,y:art.y,width:copyWidth,height:priceY-art.y-12-extraHeight},...(hasExtra?{extra:{x,y:priceY-extraHeight-4,width:copyWidth,height:extraHeight}}:{}),price:{x,y:priceY,width:copyWidth,height:priceHeight},reason:{x,y:priceY+priceHeight+4,width:copyWidth,height:reasonHeight}};
 }
