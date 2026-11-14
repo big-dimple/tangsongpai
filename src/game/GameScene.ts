@@ -64,7 +64,7 @@ import {bindNoviceGuide} from './NoviceGuideBinding';
 import {liveNoviceGuide,noviceFreeActions,noviceGuide,noviceGuideEnrolled} from './NoviceGuide';
 import {firstStageOptions,type FirstStageOption} from './NoviceFirstStage';
 import {consecutiveSuitCards,NoviceHandLesson} from './NoviceHandLesson';
-import {flushDiscardHint,flushRefillHint} from './NoviceFlushLesson';
+import {flushDiscardHint,flushRefillHint,noviceHandPageFocus} from './NoviceFlushLesson';
 import {noviceHandDefinition,noviceSameSuitFeedback} from './NoviceSuitLesson';
 import {mountNoviceGestureDemo,type NoviceGestureDemoHandle} from './NoviceGestureDemo';
 import {needsGuidedPractice} from './GuidedTutorial';
@@ -597,11 +597,12 @@ export class GameScene extends Phaser.Scene {
         // Keep score details in the unselected state and on desktop.
         if(selected.length&&this.run.stage?.index===0&&this.view.layout.mode==='portrait'&&this.view.layout.width<=520&&['discard','independent'].includes(hint.step))hint={...hint,details:undefined};
         const owner=runController(this),lesson=this.activeNoviceHandLesson();
+        const visibleIds=this.hand.filter((_,index)=>this.view.layout.cards[index]?.visible).map(card=>card.id),visibleSet=new Set(visibleIds);
         if(hint.step==='discard'&&owner&&lesson&&this.run.stage?.index===0&&!this.run.stage.disabledIds.length){
           // During a drag, keep the instruction stable until release.
           const selection=this.handInput?.active&&this.noviceHandStart?this.noviceHandStart:selected;
           const flush=flushDiscardHint(hint,this.hand,selection,{introSeen:lesson.flushIntroSeen(),sorted:lesson.sorted(owner.journal),
-            sortedSeen:lesson.flushSortedSeen(owner.journal),coarse:window.matchMedia('(pointer: coarse)').matches});
+            sortedSeen:lesson.flushSortedSeen(owner.journal),coarse:window.matchMedia('(pointer: coarse)').matches,visibleIds});
           if(flush)return flush;
         }
         if(hint.step==='independent'&&this.run.stage){
@@ -635,15 +636,23 @@ export class GameScene extends Phaser.Scene {
             const suitFeedback=selected.length?noviceSameSuitFeedback(this.hand,selected,handRules):undefined;
             const free=noviceFreeActions({...hint,cue,body:'选1–5张牌，或选一个牌型参考。'},selected,{canDiscard,skillChosen:!!this.erxiangTargetId});
             const flushResult=postFlush&&!selected.length;
-            const flushText=refill?.body??'';
+            const heartIds=refill?.heartIds??[],visibleHearts=heartIds.filter(id=>visibleSet.has(id)),hiddenHearts=visibleHearts.length<heartIds.length;
+            const flushText=(refill?.body??'')+(hiddenHearts?'翻页可查看其余红桃。':'');
             return {...free,body:this.erxiangTargetId?free.body:short?(canDiscard?'暂无可过关的牌，可先弃牌或出牌。':'这手不足目标，请继续出牌。'):suitFeedback?`${suitFeedback}${narrow?'':canDiscard?'可出牌，也可换牌。':'可继续选牌或出牌。'}`:selected.length?free.body:flushResult?flushText:'选1–5张牌，或选一个牌型参考。',
-              ...(flushResult&&refill&&refill.heartIds.length>=5?{focus:undefined,recommendedCardIds:refill.heartIds}:{}),choices};
+              ...(flushResult&&heartIds.length>=5?{focus:hiddenHearts?noviceHandPageFocus(this.hand,heartIds,visibleIds):undefined,recommendedCardIds:visibleHearts}:{}),choices};
           }
           const extra=selected.filter(id=>!target.cardIds.includes(id)),remaining=target.cardIds.filter(id=>!this.selectedIds.has(id));
-          if(extra.length)return {...hint,cue,body:'先点亮起的已选牌取消。',recommendedCardIds:extra,choices};
+          if(extra.length){
+            const shown=extra.filter(id=>visibleSet.has(id));
+            return shown.length?{...hint,cue,body:'先点亮起的已选牌取消。',recommendedCardIds:shown,choices}:
+              {...hint,cue,body:'翻页找到已选牌，再点它取消。',recommendedCardIds:[],focus:noviceHandPageFocus(this.hand,extra,visibleIds),choices};
+          }
           const definition=noviceHandDefinition(target.id,handRules);
           if(!remaining.length){const action=canDiscard?'点「出牌」，或点「弃牌」换牌。':'点「出牌」。';return {...hint,cue,body:stage.handsLeft===1&&!target.canClear?(canDiscard?'这手不足目标，可弃牌或出牌。':'这手不足目标，请继续出牌。'):narrow?(canDiscard?'牌选好了，可出牌或换牌。':'牌选好了，可出牌。'):target.id==='flush'||target.id==='high-card'?`${definition}${action}`:`牌选好了，${action}`,recommendedCardIds:[],focus:canDiscard?'play-or-discard':'play',choices};}
-          return {...hint,cue,body:narrow&&selected.length?`再选${remaining.length}张亮牌。`:target.id==='flush'?`${definition}${selected.length?`再选${remaining.length}张亮牌。`:'点亮牌。'}`:selected.length?`再选亮起的${remaining.length}张牌。`:(definition?definition+'点亮牌。':'选亮起的牌。'),recommendedCardIds:remaining,choices};
+          const shown=remaining.filter(id=>visibleSet.has(id));
+          if(!shown.length)return {...hint,cue,body:'翻页找到剩余的牌，再继续选牌。',recommendedCardIds:[],focus:noviceHandPageFocus(this.hand,remaining,visibleIds),choices};
+          const split=shown.length<remaining.length;
+          return {...hint,cue,body:split?'先选当前页亮牌，其余可翻页查看。':narrow&&selected.length?`再选${remaining.length}张亮牌。`:target.id==='flush'?`${definition}${selected.length?`再选${remaining.length}张亮牌。`:'点亮牌。'}`:selected.length?`再选亮起的${remaining.length}张牌。`:(definition?definition+'点亮牌。':'选亮起的牌。'),recommendedCardIds:shown,choices};
         }
         firstStage=undefined;
         if(hint.step==='skill'){
@@ -710,7 +719,7 @@ export class GameScene extends Phaser.Scene {
         const targetText=this.view.root.getByName('hud/target') as Phaser.GameObjects.Text|undefined;
         const visibleSeats=l.cards.filter(card=>card.visible).map(card=>card.hit);
         const handFocus=visibleSeats.length?{x:Math.min(...visibleSeats.map(b=>b.x)),y:Math.min(...visibleSeats.map(b=>b.y)),width:Math.max(...visibleSeats.map(b=>b.x+b.width))-Math.min(...visibleSeats.map(b=>b.x)),height:Math.max(...visibleSeats.map(b=>b.y+b.height))-Math.min(...visibleSeats.map(b=>b.y))}:undefined;
-        const focus=hint.focus==='play'?l.tableActions.play:hint.focus==='discard'?hero.discard:hint.focus==='hand'?handFocus:hint.focus==='hero'?hero.shortcut:hint.focus==='sort-suit'?l.buttons.suit:hint.focus==='score'?this.heatText.getBounds():hint.focus==='goal'?(targetText?.getBounds()??this.heatText.getBounds()):undefined;
+        const focus=hint.focus==='play'?l.tableActions.play:hint.focus==='discard'?hero.discard:hint.focus==='hand'?handFocus:hint.focus==='hero'?hero.shortcut:hint.focus==='sort-suit'?l.buttons.suit:hint.focus==='hand-previous'?l.handNavigation.previous:hint.focus==='hand-next'?l.handNavigation.next:hint.focus==='score'?this.heatText.getBounds():hint.focus==='goal'?(targetText?.getBounds()??this.heatText.getBounds()):undefined;
         const cardBox=(id:string)=>{
           const index=this.hand.findIndex(card=>card.id===id),seat=l.cards[index],card=this.cardViews[index];
           if(!seat?.visible||!card?.container.active||!card.container.visible)return [];
@@ -2094,7 +2103,7 @@ export class GameScene extends Phaser.Scene {
     await this.sortHand('suit');
     if(!owner||owner!==runController(this)||lifecycle!==this.lifecycle||!this.scene.isActive()||this.run.runId!==runId)return;
     const lesson=this.activeNoviceHandLesson(),command=owner.journal.find(c=>c.runId===runId&&c.expectedSeq===seq&&c.action.type==='ReorderHand'&&JSON.stringify(c.action.ids)===JSON.stringify(expected));
-    if(lesson&&command&&this.run.stage?.index===0&&['discard','independent'].includes(noviceGuide(this.run,owner.journal)?.step??'')&&!lesson.swept(owner.journal))lesson.recordSort(command);
+    if(lesson&&command&&this.run.stage?.index===0&&['discard','independent'].includes(noviceGuide(this.run,owner.journal)?.step??'')&&!lesson.swept(owner.journal))lesson.recordSort(command,owner.journal);
   }
   private async sortHand(mode:'rank'|'suit'):Promise<void> {
     if(!this.ready||this.presentation||this.run.phase!=='await-input')return;

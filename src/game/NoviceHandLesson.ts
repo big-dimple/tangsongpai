@@ -40,10 +40,13 @@ export class NoviceHandLesson {
  flushSortedSeen(journal:readonly Command[]):boolean {return this.sorted(journal)&&this.value.flushSortedSeen===true;}
  acknowledgeFlushIntro():void {this.value={...this.value,flushIntroSeen:true};this.save();}
  acknowledgeFlushSorted(journal:readonly Command[]):void {if(this.sorted(journal)){this.value={...this.value,flushSortedSeen:true};this.save();}}
- recordSort(command:Command):void {
+ recordSort(command:Command,journal?:readonly Command[]):void {
   if(command.runId!==this.runId||command.action.type!=='ReorderHand')return;
+  // A later successful sort must not erase a confirmed lesson. Only transfer
+  // the acknowledgement when its original sort is still in this journal.
+  const reviewed=!!journal&&this.sorted(journal)&&this.value.flushSortedSeen===true;
   const hash=stableHash(command),same=this.value.sortId===command.commandId&&this.value.sortHash===hash;
-  this.value={sortId:command.commandId,sortHash:hash,swept:same&&this.value.swept,flushIntroSeen:this.value.flushIntroSeen,flushSortedSeen:same&&this.value.flushSortedSeen};this.save();
+  this.value={sortId:command.commandId,sortHash:hash,swept:same&&this.value.swept,flushIntroSeen:this.value.flushIntroSeen,flushSortedSeen:reviewed||same&&this.value.flushSortedSeen};this.save();
  }
  recordSweep(update:HandSelectionUpdate,targetIds:readonly string[],initialIds:readonly string[]):boolean {
   const target=new Set(targetIds),selected=new Set(update.selectedIds),visited=new Set(update.visitedIds),initial=new Set(initialIds);

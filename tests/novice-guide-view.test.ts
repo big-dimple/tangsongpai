@@ -36,6 +36,37 @@ describe('novice guide placement',()=>{
       for(const box of [...controls,...previews])expect(intersects(placed!,box),`selected ${count}: ${JSON.stringify({placed,box})}`).toBe(false);
     }
   });
+  it('remeasures a compact full-width guide before considering a side sliver',()=>{
+    const table=layout({width:320,height:568},{top:0,right:0,bottom:0,left:0},undefined,{count:8});
+    const bounds={x:8,y:8,width:304,height:552};
+    const controls=[table.hud,table.scoreBoard,table.hand,table.actions,table.heroAction,table.inventoryEntry,table.helpEntry,...Object.values(table.buttons)].filter((box):box is Box=>!!box);
+    // A single played card divides the otherwise vacant lower band into two
+    // narrow columns. The full-width band above the score is 88.64px high.
+    const selectedPreview={x:126,y:217.84,width:68,height:93.6};
+    const caption={x:8,y:196.64,width:42,height:16};
+    const protectedAreas=[...controls,selectedPreview,caption];
+    const anchor=table.cards[6].hit;
+    expect(placeNoviceGuide(bounds,protectedAreas,{width:304,height:103},anchor,{requireFit:true})).toBeUndefined();
+    const compact=placeNoviceGuide(bounds,protectedAreas,{width:304,height:86},anchor,{requireFit:true});
+    expect(compact).toBeDefined();expect(compact!.width).toBe(304);expect(compact!.height).toBe(86);
+    expect(compact!.y).toBeGreaterThanOrEqual(table.hud.y+table.hud.height);
+    expect(compact!.y+compact!.height).toBeLessThanOrEqual(table.scoreBoard.y);
+    for(const area of protectedAreas)expect(intersects(compact!,area)).toBe(false);
+    // If content really cannot fit, the scroll fallback keeps the full-width
+    // region and is bounded by it, instead of spilling out over the hand.
+    const fallback=placeNoviceGuide(bounds,protectedAreas,{width:304,height:130},anchor,{minWidth:240});
+    expect(fallback!.width).toBe(304);expect(fallback!.height).toBeLessThan(130);
+    for(const area of protectedAreas)expect(intersects(fallback!,area)).toBe(false);
+  });
+  it('keeps the full compact sort prompt above the hero control',()=>{
+    const table=layout({width:320,height:568},{top:0,right:0,bottom:0,left:0},undefined,{count:8});
+    const bounds={x:8,y:8,width:304,height:552};
+    const controls=[table.hud,table.scoreBoard,table.hand,table.actions,table.heroAction,table.inventoryEntry,table.helpEntry,...Object.values(table.buttons)].filter((box):box is Box=>!!box);
+    expect(placeNoviceGuide(bounds,controls,{width:304,height:115},table.buttons.suit,{requireFit:true})).toBeUndefined();
+    const compact=placeNoviceGuide(bounds,controls,{width:304,height:84},table.buttons.suit,{requireFit:true});
+    expect(compact).toBeDefined();expect(compact!.width).toBe(304);expect(compact!.height).toBe(84);
+    for(const area of controls)expect(intersects(compact!,area)).toBe(false);
+  });
   it('prefers a complete hint over a closer region that would clip it',()=>{
     const result=placeNoviceGuide({x:0,y:0,width:320,height:500},[{x:0,y:130,width:320,height:80},{x:0,y:270,width:320,height:230}],{width:280,height:100},{x:0,y:210,width:20,height:20});
     expect(result).toBeDefined();expect(result!.y+result!.height).toBeLessThanOrEqual(130);expect(result!.height).toBe(100);

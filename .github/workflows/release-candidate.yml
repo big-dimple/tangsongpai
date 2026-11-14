@@ -21,6 +21,8 @@ jobs:
           - {name: alternatives-phone, kind: first, cases: "phone-one,narrow-two,phone-skip", motion: normal}
           - {name: cognition-pc, kind: cognition, cases: desktop-five, motion: normal}
           - {name: cognition-narrow, kind: cognition, cases: short320-five, motion: normal}
+          - {name: route, kind: route, cases: all, motion: normal}
+          - {name: hero, kind: hero, cases: all, motion: normal}
     env:
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
       TEST_KIND: ${{ matrix.kind }}
@@ -46,6 +48,10 @@ jobs:
             NOVICE_LESSON_CASE="$TEST_CASE" NOVICE_LESSON_MOTION="$TEST_MOTION" NOVICE_LESSON_OUT=shots/lesson node harness/novice-interactions-lesson.mjs
           elif [ "$TEST_KIND" = payoff ]; then
             NOVICE_LESSON_CASE="$TEST_CASE" NOVICE_LESSON_PAYOFF_ONLY=1 NOVICE_LESSON_OUT=shots/lesson node harness/novice-interactions-lesson.mjs
+          elif [ "$TEST_KIND" = route ]; then
+            ROUTE_CHOICE_OUT=shots/route node harness/route-choice.mjs
+          elif [ "$TEST_KIND" = hero ]; then
+            SELECTION_ENTRANCE_OUT=shots/hero node harness/selection-entrance.mjs
           elif [ "$TEST_KIND" = first ]; then
             NOVICE_FIRST_CASE="$TEST_CASE" NOVICE_FIRST_OUT=shots/first node harness/novice-first-stage-interaction.mjs
           else
@@ -63,5 +69,7 @@ jobs:
             shots/lesson/
             shots/first/
             shots/cognition/
+            shots/route/
+            shots/hero/
           if-no-files-found: ignore
           retention-days: 5

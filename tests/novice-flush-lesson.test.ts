@@ -15,8 +15,8 @@ const hint:NoviceGuideHint={step:'discard',cue:'换牌',body:''};
 const make=(id:string,suit:PlayingCard['suit'],rank:PlayingCard['rank']):PlayingCard=>({id,suit,rank});
 const unsorted=[make('clubs-4','clubs',4),make('spades-14','spades',14),make('diamonds-4','diamonds',4),make('clubs-7','clubs',7),make('spades-11','spades',11),make('hearts-10','hearts',10),make('hearts-3','hearts',3),make('hearts-6','hearts',6)];
 const sorted=[unsorted[1],unsorted[4],unsorted[5],unsorted[7],unsorted[6],unsorted[3],unsorted[0],unsorted[2]];
-const flags={introSeen:false,sorted:false,sortedSeen:false,coarse:false};
-const view=(hand:PlayingCard[],selected:string[]=[],opts=flags)=>flushDiscardHint(hint,hand,selected,opts)!;
+const flags:Parameters<typeof flushDiscardHint>[3]={introSeen:false,sorted:false,sortedSeen:false,coarse:false};
+const view=(hand:PlayingCard[],selected:string[]=[],opts:Parameters<typeof flushDiscardHint>[3]=flags)=>flushDiscardHint(hint,hand,selected,opts)!;
 
 describe('goal-directed first discard',()=>{
  it('shows and waits for the real three hearts before requesting suit sort',()=>{
@@ -38,6 +38,28 @@ describe('goal-directed first discard',()=>{
   expect(view(sorted,['hearts-10'],active)).toMatchObject({cue:'红桃先留在手里',focus:'play-or-discard',recommendedCardIds:['hearts-10']});
   expect(view(sorted,['clubs-7','clubs-4','diamonds-4'],active).cue).toBe('选左侧其他花色');
   expect(view(unsorted,[],active)).toMatchObject({focus:'sort-suit'});
+ });
+ it('describes cards on just one side without claiming the hearts are in the middle',()=>{
+  const oneSide=[...sorted.slice(2,5),make('clubs-14','clubs',14),make('clubs-7','clubs',7),make('clubs-4','clubs',4),make('diamonds-9','diamonds',9),make('diamonds-4','diamonds',4)];
+  const opts={...flags,introSeen:true,sorted:true};const overview=view(oneSide,[],opts);
+  expect(flushLessonGroups(oneSide)).toMatchObject({left:[],right:['clubs-14','clubs-7','clubs-4','diamonds-9','diamonds-4'],grouped:true});
+  expect(overview.body).toContain('旁边');expect(overview.body).not.toMatch(/中间|两侧/);
+  expect(view(oneSide,[],{...opts,sortedSeen:true}).cue).toBe('选右侧其他花色');
+ });
+ it('only highlights or demonstrates visible cards and points to the needed hand page',()=>{
+  const firstPage=sorted.slice(0,4).map(card=>card.id),lastPage=sorted.slice(4).map(card=>card.id),middle=sorted.slice(2,6).map(card=>card.id);
+  const intro=view(sorted,[],{...flags,visibleIds:firstPage});
+  expect(intro).toMatchObject({cue:'翻页看看三张红桃',focus:'hand-next',recommendedCardIds:['hearts-10','hearts-6']});
+  expect(intro.choices?.[0].id).toBe('flush-intro');
+  const active={...flags,introSeen:true,sorted:true,sortedSeen:true};
+  expect(view(sorted,[],{...active,visibleIds:firstPage})).toMatchObject({cue:'选左侧其他花色',gestureCardIds:['spades-14','spades-11']});
+  const rightHidden=view(sorted,['spades-14','spades-11'],{...active,visibleIds:firstPage});
+  expect(rightHidden).toMatchObject({cue:'翻页找右侧其他花色',focus:'hand-next',recommendedCardIds:[]});expect(rightHidden.gesture).toBeUndefined();
+  expect(view(sorted,[],{...active,visibleIds:lastPage})).toMatchObject({cue:'翻页找左侧其他花色',focus:'hand-previous',recommendedCardIds:[]});
+  const onlyOne=view(sorted,['spades-14','spades-11'],{...active,visibleIds:middle});
+  expect(onlyOne).toMatchObject({cue:'选右侧其他花色',recommendedCardIds:['clubs-7']});expect(onlyOne.gesture).toBeUndefined();
+  expect(view(sorted,['spades-14','spades-11','clubs-7'],{...active,visibleIds:middle})).toMatchObject({cue:'翻页找右侧其他花色',focus:'hand-next'});
+  expect(view(sorted,['hearts-10'],{...active,visibleIds:lastPage})).toMatchObject({cue:'翻页查看已选红桃',focus:'hand-previous',recommendedCardIds:[]});
  });
  it('describes the actual refill count without promising a completed flush',()=>{
   expect(flushRefillHint(unsorted.filter(card=>card.suit!=='hearts')).body).toContain('有0张红桃');
