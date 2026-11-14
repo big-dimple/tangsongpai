@@ -165,7 +165,7 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
     // The saved hint already contains the score and goal. Keep it available
     // until the player's selection changes the prompt, rather than replacing
     // it with a timed sequence that can expire while the scene is obscured.
-    const currentKey=JSON.stringify([current.step,current.cue,current.body,current.details,current.recommendedCardIds,current.offerIds,current.focus,current.choices,current.gesture]);
+    const currentKey=JSON.stringify([current.step,current.cue,current.body,current.details,current.recommendedCardIds,current.offerIds,current.focus,current.choices,current.gesture,current.gestureCardIds]);
     const hintChanged=shownHintKey!==currentKey;
     if(shownHint&&(shownHint.step!==current.step||shownHint.gesture!==current.gesture))clearPresented();
     const nextInlineHost=options.getInlineHost?.(),hostChanged=nextInlineHost!==inlineHost;inlineHost=nextInlineHost;

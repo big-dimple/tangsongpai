@@ -47,6 +47,10 @@
 .novice-guide-panel.has-details .novice-guide-details-toggle,.novice-guide-panel.has-details .novice-guide-action { flex:0 1 auto;padding-left:4px;padding-right:4px;font-size:12px; }
 .novice-guide-panel.is-compact { padding:3px 7px; }
 .novice-guide-panel.is-compact .novice-guide-portrait,.novice-guide-panel.is-compact .novice-guide-speaker,.novice-guide-panel.is-compact .novice-guide-progress { display:none; }
+.novice-guide-panel.is-compact.has-choices .novice-guide-header,.novice-guide-panel.is-compact.has-choices .novice-guide-heading { display:inline; }
+.novice-guide-panel.is-compact.has-choices .novice-guide-title,.novice-guide-panel.is-compact.has-choices .novice-guide-body { display:inline; }
+.novice-guide-panel.is-compact.has-choices .novice-guide-title::after { content:' · '; }
+.novice-guide-panel.is-scrollable { overflow-y:auto;overscroll-behavior:contain; }
 .novice-guide button:focus-visible { outline:3px solid #b34e32;outline-offset:2px; }
 .novice-guide button:active { transform:none; }
 .novice-guide [hidden] { display:none!important; }

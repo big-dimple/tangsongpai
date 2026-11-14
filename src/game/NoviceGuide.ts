@@ -49,8 +49,12 @@ export interface NoviceGuideHint {
  recommendedCardIds?:string[];
  choices?:{id:string;label:string;cardIds:string[];selected?:boolean}[];
  offerIds?:string[];
- focus?:'play'|'discard'|'play-or-discard'|'hand'|'hero'|'score'|'goal'|'sort-suit';
+ focus?:'play'|'discard'|'play-or-discard'|'hand'|'hero'|'score'|'goal'|'sort-suit'|'hand-previous'|'hand-next';
  gesture?:'sweep'|'hold-drag';
+ /** Explicit gesture path; unlike highlights this may contain intermediate cards. */
+ gestureCardIds?:string[];
+ /** The current hand really supports the optional three-heart example. */
+ flushExample?:boolean;
  fact?:NoviceGuideFact;
 }
 type Preferences={disabled:boolean;enrolled?:string;muted:boolean;skipped:NoviceGuideStep[]};
@@ -320,12 +324,12 @@ function deriveHint(s:R2RunState,journal?:readonly Command[]):NoviceGuideHint {
  }
  if(!openingDone&&!facts.discarded&&!facts.independent&&discardAvailable(s)){
   const available=s.handOrder.filter(id=>!s.stage?.disabledIds.includes(id));
-  const fours=['clubs-4','diamonds-4'];
-  const recommended=fours.every(id=>available.includes(id))?fours:[...available].sort((a,b)=>
+  const hearts=available.filter(id=>s.deckInstances.find(card=>card.id===id)?.suit==='hearts');
+  const flushExample=hearts.length===3&&available.length===8;
+  const recommended=flushExample?hearts:[...available].sort((a,b)=>
    (s.deckInstances.find(c=>c.id===a)?.rank??99)-(s.deckInstances.find(c=>c.id===b)?.rank??99)).slice(0,2);
-  const reason=fours.every(id=>recommended.includes(id))?'可以保留红桃，试着换掉亮起的4。':'可以试着换掉亮起的低点牌。';
   const total=fact.pairStageHeat&&fact.pairTarget?`累计${heatText(fact.pairStageHeat)}/${heatText(fact.pairTarget)}分；`:'';
-  return {step:'discard',cue:'试试换牌 · 可选',body:'选1–2张亮牌点「弃牌」换新牌，也可直接出牌。\n'+discardCostText(s)+'。',details:novicePairBreakdownCue(facts.pair!)+'\n'+total+reason,recommendedCardIds:recommended,fact};
+  return {step:'discard',cue:flushExample?'留住红桃 · 换牌可选':'试试换牌 · 可选',body:flushExample?'手里有3张红桃；5张同花色可以组成同花。可留住红桃，点「弃牌」换其他牌，也可直接出牌。':'可选不想留的牌点「弃牌」换新牌，也可直接出牌。\n'+discardCostText(s)+'。',details:novicePairBreakdownCue(facts.pair!)+'\n'+total+discardCostText(s)+'。',recommendedCardIds:recommended,...(flushExample?{flushExample:true}:{}),fact};
  }
  if(!openingDone)return {step:'independent',cue:`累计 ${s.stage?.heat??'0'} / ${s.stage?.targetHeat??'目标'} 分`,body:'自己选1–5张牌出牌；也可参考牌型示例，想换牌时再用弃牌。',details:fact.pairScore?novicePairBreakdownCue(facts.pair!):undefined,fact};
  if(!facts.purchase){
@@ -359,6 +363,11 @@ export function liveNoviceGuide(hint:NoviceGuideHint,selectedIds:readonly string
  }
  if(hint.step==='discard'&&selected.size){
   if(!skill.canDiscard)return {...hint,cue:'可以继续出牌',body:'当前无法再换牌，点「出牌」继续。',recommendedCardIds:[],focus:'play'};
+  if(hint.flushExample){
+   const hearts=recommended.filter(id=>selected.has(id));
+   return hearts.length?{...hint,cue:'红桃先留在手里',body:'想尝试同花，可点已选红桃取消；也可直接出牌或换牌。',recommendedCardIds:hearts,focus:'play-or-discard'}:
+    {...hint,cue:'出牌或换牌，由你选择',body:`点「弃牌」换掉已选${selected.size}张，${discardCost}；也可直接出牌。`,recommendedCardIds:[],focus:'play-or-discard'};
+  }
   const example=selected.size<=2&&[...selected].every(id=>recommended.includes(id));
   return {...hint,cue:example?'选好了，试试换牌':'出牌或换牌，由你选择',body:`点「弃牌」换掉已选${selected.size}张，${discardCost}；也可直接出牌。`,recommendedCardIds:[],focus:example?'discard':'play-or-discard'};
  }

@@ -75,9 +75,10 @@ function freeRegions(bounds:Box,avoid:readonly Box[]):Box[] {
 }
 
 /** Exported to verify placement against real table layouts without creating a scene. */
-export function placeNoviceGuide(bounds:Box,avoid:readonly Box[],desired:{width:number;height:number},anchor?:Box):Box|undefined {
+export function placeNoviceGuide(bounds:Box,avoid:readonly Box[],desired:{width:number;height:number},anchor?:Box,options:{requireFit?:boolean;minWidth?:number}={}):Box|undefined {
   if(!valid(bounds)||!Number.isFinite(desired.width)||!Number.isFinite(desired.height)||desired.width<=0||desired.height<=0)return;
-  const regions=freeRegions(bounds,avoid).filter(b=>b.width>=44&&b.height>=44);
+  const regions=freeRegions(bounds,avoid).filter(b=>b.width>=Math.max(44,options.minWidth??44)&&b.height>=44&&
+    (!options.requireFit||b.width>=desired.width-.01&&b.height>=desired.height-.01));
   const target=valid(anchor??{x:0,y:0,width:0,height:0})?anchor:undefined;
   let best:Box|undefined,bestScore=-Infinity;
   for(const region of regions){
@@ -146,8 +147,10 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
   root.append(focus,rings,panel,reopenButton);(options.host??document.body).append(root);
   let step=options.step,closed=false,disposed=false,frame=0,choiceIds='';
   let revision=0,lastPositionRevision=-1,lastPositionKey='',lastLayout=-Infinity,positionedVisible=false,lastFocusPath='';
+  let contentRevision=0,lastCompactContent=-1,lastCompactWidth=-1,lastCompactHeight=-1;
   const ringNodes:HTMLDivElement[]=[];
   const renderStep=()=>{
+    contentRevision++;
     const label=step.progress??stepProgress[step.id]??'';
     root.dataset.noviceGuideStep=step.id;panel.dataset.emphasis=emphasis(step);progress.textContent=label;progress.hidden=!label;title.textContent=step.title;body.textContent=step.body;
     const message=[label,step.title,step.body].filter(Boolean).join('。');
@@ -155,7 +158,7 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
     if(!step.action&&document.activeElement===actionButton)closeButton.focus({preventScroll:true});
     actionButton.hidden=!step.action;actionButton.textContent=step.action?.label??'';
     const rows=step.choices??[],ids=JSON.stringify(rows.map(choice=>choice.id));
-    choices.setAttribute('aria-label',step.id==='payoff'?'新手引导下一步':'选择要尝试的牌型');
+    choices.setAttribute('aria-label',step.id==='payoff'||step.id==='discard'?'新手引导下一步':'选择要尝试的牌型');
     if(ids!==choiceIds){
       choiceIds=ids;choices.replaceChildren(...rows.map(choice=>{
         const button=document.createElement('button');button.type='button';button.dataset.noviceGuideChoice=choice.id;
@@ -168,7 +171,8 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
     rows.forEach((choice,index)=>{
       const button=choices.children[index] as HTMLButtonElement;
       button.textContent=choice.label;button.dataset.cardIds=JSON.stringify(choice.cardIds);
-      button.setAttribute('aria-pressed',String(!!choice.selected));
+      if(choice.id==='flush-intro'||choice.id==='flush-sorted')button.removeAttribute('aria-pressed');
+      else button.setAttribute('aria-pressed',String(!!choice.selected));
     });
     const skipFocused=document.activeElement===skipButton;
     skipButton.hidden=!options.onSkip||step.id==='complete';
@@ -177,6 +181,16 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
     if(!step.details&&document.activeElement===detailsButton)closeButton.focus({preventScroll:true});
     const showDetails=!!step.details&&!!options.onDetails&&!hasChoices;
     panel.classList.toggle('has-details',showDetails);detailsButton.hidden=!showDetails;
+  };
+  const setCompact=(compact:boolean)=>{
+    panel.classList.toggle('is-compact',compact);
+    // Preserve the rules link and its 44px target, but share the title row in
+    // tight spaces rather than spending a whole additional row on it.
+    const destination=compact?controls:footer;
+    if(detailsButton.parentElement!==destination){
+      if(compact)controls.insertBefore(detailsButton,controls.firstChild);
+      else footer.append(detailsButton);
+    }
   };
   const position=()=>{
     if(disposed)return;
@@ -208,27 +222,54 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
     lastPositionKey=positionKey;lastLayout=now;lastPositionRevision=revision;
     const protectedAreas=[...avoid,...visibleHighlights],element=closed?reopenButton:panel;
     if(inline?.isConnected&&!closed){
+      setCompact(false);panel.classList.remove('is-scrollable');panel.removeAttribute('tabindex');panel.setAttribute('aria-label','新手引导');
       Object.assign(panel.style,{left:'',top:'',width:'',maxHeight:'',visibility:'visible'});
       return;
     }
-    // Read the natural height at the likely width, then remeasure once if a narrow free region wraps the text.
+    // Find a region for the panel's actual measured dimensions. Trying a
+    // clipped, narrow candidate first makes the text wrap and can make the
+    // real panel taller than the very region it was meant to fit in.
     const desiredWidth=emphasis(step)==='action'?360:420;
-    panel.classList.remove('is-compact');
-    element.style.maxHeight='none';element.style.width=closed?'auto':Math.min(desiredWidth,bounds.width)+'px';
+    const fullWidth=Math.min(desiredWidth,bounds.width);
+    const detailsFocused=document.activeElement===detailsButton;
+    // Keep the current compact layout during ordinary moving-card updates:
+    // repeatedly moving the rules button would also discard keyboard focus.
+    const startCompact=!closed&&panel.classList.contains('is-compact')&&(detailsFocused||
+      contentRevision===lastCompactContent&&fullWidth===lastCompactWidth&&bounds.height===lastCompactHeight);
+    setCompact(startCompact);panel.classList.remove('is-scrollable');panel.removeAttribute('tabindex');panel.setAttribute('aria-label','新手引导');
+    element.style.maxHeight='none';element.style.width=closed?'auto':fullWidth+'px';
     let rect=element.getBoundingClientRect();
-    let placement=placeNoviceGuide(bounds,protectedAreas,{width:closed?Math.max(88,rect.width):rect.width,height:Math.max(44,rect.height)},visibleHighlights[0]);
-    if(placement&&!closed&&placement.width<rect.width-.5){
-      element.style.width=placement.width+'px';rect=element.getBoundingClientRect();
-      placement=placeNoviceGuide(bounds,protectedAreas,{width:placement.width,height:Math.max(44,rect.height)},visibleHighlights[0]);
+    const findFit=()=>placeNoviceGuide(bounds,protectedAreas,{width:closed?Math.max(88,rect.width):rect.width,height:Math.max(44,rect.height)},visibleHighlights[0],{requireFit:true});
+    let placement=findFit();
+    if(!placement&&!closed&&!startCompact){
+      // Compact at full width first: on short phones the 89px band above the
+      // scoreboard is much more useful than a tall, unreadable side sliver.
+      setCompact(true);rect=element.getBoundingClientRect();placement=findFit();
     }
-    if(placement&&!closed&&placement.height<rect.height-.5){
-      panel.classList.add('is-compact');rect=element.getBoundingClientRect();
-      placement=placeNoviceGuide(bounds,protectedAreas,{width:rect.width,height:Math.max(44,rect.height)},visibleHighlights[0]);
+    if(!placement&&!closed){
+      // Some layouts have a usable wider column but not the preferred width.
+      // Measure those widths before accepting them, with a readable minimum.
+      const minWidth=Math.min(240,bounds.width);
+      const widths=[...new Set(freeRegions(bounds,protectedAreas).map(b=>Math.floor(Math.min(fullWidth,b.width)*10)/10))]
+        .filter(width=>width>=minWidth&&width<fullWidth-.5).sort((a,b)=>b-a).slice(0,6);
+      for(const width of widths){element.style.width=width+'px';rect=element.getBoundingClientRect();placement=findFit();if(placement)break;}
+    }
+    if(!placement){
+      // Extreme viewports may have no complete region. Keep every instruction
+      // and control reachable in a bounded scroller rather than letting the
+      // panel spill over protected gameplay. Prefer a readable width.
+      element.style.width=closed?'auto':fullWidth+'px';rect=element.getBoundingClientRect();
+      const desired={width:closed?Math.max(88,rect.width):rect.width,height:Math.max(44,rect.height)};
+      placement=placeNoviceGuide(bounds,protectedAreas,desired,visibleHighlights[0],{minWidth:closed?44:Math.min(240,bounds.width)})??
+        placeNoviceGuide(bounds,protectedAreas,desired,visibleHighlights[0]);
+      if(placement&&!closed){panel.classList.add('is-scrollable');panel.setAttribute('tabindex','0');panel.setAttribute('aria-label','新手引导，可滚动查看');}
     }
     // If no 44px target can fit, do not place an invisible blocker on top of gameplay.
     positionedVisible=!!placement;element.style.visibility=placement?'visible':'hidden';
     if(!placement)return;
-    Object.assign(element.style,{left:placement.x+'px',top:Math.max(bounds.y,Math.min(placement.y,bottom(bounds)-rect.height))+'px',width:placement.width+'px',maxHeight:'none'});
+    Object.assign(element.style,{left:placement.x+'px',top:placement.y+'px',width:placement.width+'px',maxHeight:panel.classList.contains('is-scrollable')?placement.height+'px':'none'});
+    if(!closed&&panel.classList.contains('is-compact')){lastCompactContent=contentRevision;lastCompactWidth=fullWidth;lastCompactHeight=bounds.height;}
+    if(detailsFocused&&!detailsButton.hidden&&document.activeElement!==detailsButton)detailsButton.focus({preventScroll:true});
   };
   const schedule=()=>{if(disposed)return;if(frame)cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>{frame=0;position();});};
   const setClosed=(next:boolean,notify:boolean)=>{
@@ -248,6 +289,7 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
   actionButton.onclick=()=>{if(!disposed&&!closed)step.action?.run();};
   panel.addEventListener('keydown',event=>{
     if(event.key==='Escape'){event.preventDefault();event.stopPropagation();setClosed(true,true);}
+    else if(panel.classList.contains('is-scrollable')&&['ArrowUp','ArrowDown','PageUp','PageDown','Home','End'].includes(event.key))event.stopPropagation();
   });
   window.addEventListener('resize',schedule);window.visualViewport?.addEventListener('resize',schedule);window.visualViewport?.addEventListener('scroll',schedule);
   const observer=typeof ResizeObserver==='undefined'?undefined:new ResizeObserver(()=>{lastPositionKey='';revision++;schedule();});observer?.observe(panel);

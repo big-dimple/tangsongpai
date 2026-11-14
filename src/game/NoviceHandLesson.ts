@@ -4,7 +4,7 @@ import type {Command} from '../domain/run';
 import type {HandSelectionUpdate} from './HandSelectionGesture';
 
 const PREFIX='tangsongpai-novice-hand-interaction-v1:';
-type Lesson={sortId?:string;sortHash?:string;swept:boolean};
+type Lesson={sortId?:string;sortHash?:string;swept:boolean;flushIntroSeen?:boolean;flushSortedSeen?:boolean};
 
 /** The longest consecutive same-suit run, as it is actually arranged on the table. */
 export function consecutiveSuitCards(hand:readonly PlayingCard[]):string[] {
@@ -24,20 +24,29 @@ export class NoviceHandLesson {
   this.key=PREFIX+runId;
   try{
    const data=JSON.parse(localStorage.getItem(this.key)??'null');
-   if(data&&typeof data.sortId==='string'&&typeof data.sortHash==='string'&&typeof data.swept==='boolean')this.value=data;
+   if(data&&typeof data.swept==='boolean')this.value={swept:data.swept,
+    ...(typeof data.sortId==='string'&&typeof data.sortHash==='string'?{sortId:data.sortId,sortHash:data.sortHash}:{}),
+    flushIntroSeen:data.flushIntroSeen===true,flushSortedSeen:data.flushSortedSeen===true};
   }catch{/* The lesson remains usable in memory if optional local storage is unavailable. */}
  }
  private save():void {try{localStorage.setItem(this.key,JSON.stringify(this.value));}catch{/* Preferences must never block the game. */}}
  sorted(journal:readonly Command[]):boolean {
   const valid=!!this.value.sortId&&!!this.value.sortHash&&journal.some(command=>command.runId===this.runId&&command.commandId===this.value.sortId&&command.action.type==='ReorderHand'&&stableHash(command)===this.value.sortHash);
-  if(!valid&&this.value.sortId){this.value={swept:false};this.save();}
+  if(!valid&&this.value.sortId){this.value={swept:false,flushIntroSeen:this.value.flushIntroSeen};this.save();}
   return valid;
  }
  swept(journal:readonly Command[]):boolean {return this.sorted(journal)&&this.value.swept;}
- recordSort(command:Command):void {
+ flushIntroSeen():boolean {return this.value.flushIntroSeen===true;}
+ flushSortedSeen(journal:readonly Command[]):boolean {return this.sorted(journal)&&this.value.flushSortedSeen===true;}
+ acknowledgeFlushIntro():void {this.value={...this.value,flushIntroSeen:true};this.save();}
+ acknowledgeFlushSorted(journal:readonly Command[]):void {if(this.sorted(journal)){this.value={...this.value,flushSortedSeen:true};this.save();}}
+ recordSort(command:Command,journal?:readonly Command[]):void {
   if(command.runId!==this.runId||command.action.type!=='ReorderHand')return;
+  // A later successful sort must not erase a confirmed lesson. Only transfer
+  // the acknowledgement when its original sort is still in this journal.
+  const reviewed=!!journal&&this.sorted(journal)&&this.value.flushSortedSeen===true;
   const hash=stableHash(command),same=this.value.sortId===command.commandId&&this.value.sortHash===hash;
-  this.value={sortId:command.commandId,sortHash:hash,swept:same&&this.value.swept};this.save();
+  this.value={sortId:command.commandId,sortHash:hash,swept:same&&this.value.swept,flushIntroSeen:this.value.flushIntroSeen,flushSortedSeen:reviewed||same&&this.value.flushSortedSeen};this.save();
  }
  recordSweep(update:HandSelectionUpdate,targetIds:readonly string[],initialIds:readonly string[]):boolean {
   const target=new Set(targetIds),selected=new Set(update.selectedIds),visited=new Set(update.visitedIds),initial=new Set(initialIds);

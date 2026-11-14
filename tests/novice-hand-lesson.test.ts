@@ -93,6 +93,15 @@ describe('tutorial hand lesson evidence',()=>{
     expect(current.swept([sort,later])).toBe(false);
   });
 
+  it('keeps the acknowledged flush lesson through another published sort, but not a rolled-back source sort',()=>{
+    const current=new NoviceHandLesson(runId);current.acknowledgeFlushIntro();current.recordSort(sort);current.acknowledgeFlushSorted([sort]);
+    const later:Command={runId,commandId:`${runId}/command/8`,expectedSeq:7,action:{type:'ReorderHand',ids:['d','c','b','a']}};
+    current.recordSort(later,[sort,next,later]);expect(current.flushSortedSeen([sort,next,later])).toBe(true);
+    expect(new NoviceHandLesson(runId).flushSortedSeen([sort,next,later])).toBe(true);
+    const rollback=new NoviceHandLesson(runId),replacement:Command={...later,commandId:`${runId}/replacement`};
+    rollback.recordSort(replacement,[replacement]);expect(rollback.flushSortedSeen([replacement])).toBe(false);
+  });
+
   it.each(['pending','sweeping','interrupted','cancelled'] as const)('does not finish on a %s update',phase=>{
     const current=lesson();
     expect(current.recordSweep(update({phase}),['a','b'],[])).toBe(false);

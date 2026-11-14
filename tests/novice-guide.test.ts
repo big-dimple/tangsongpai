@@ -232,17 +232,16 @@ describe('guided first match from saved commands',()=>{
   await send(run,{type:'PlayHand',selectedIds:['hearts-5','clubs-5']});
   const hint=guide(run)!;
   expect(hint.step).toBe('discard');
-  expect(hint.recommendedCardIds).toHaveLength(2);
-  expect(hint.recommendedCardIds).toEqual(expect.arrayContaining(['clubs-4','diamonds-4']));
+  expect(hint.recommendedCardIds).toEqual(expect.arrayContaining(['hearts-10','hearts-6','hearts-3']));
+  expect(hint.recommendedCardIds).toHaveLength(3);
   const skill={available:false,chosen:false,enabled:true,canDiscard:true};
   const none=liveNoviceGuide(hint,[],skill);
-  expect(none.body).toContain('弃牌');
-  expect(none.body).toContain('亮');expect(none.details).toContain('红桃');
-  expect(none.body).toMatch(/(?:1\s*[–—~～-]\s*2|1\s*或\s*2|一两|一至两|一到两|一或两)/);
+  expect(none.body).toContain('弃牌');expect(none.body).toContain('红桃');
   expect(none.focus).not.toBe('discard');
-  expect(none.cue).toContain('可选');expect(none.body).toContain('不消耗出牌次数');expect(none.body).toContain('直接出牌');
-  expect(liveNoviceGuide(hint,['clubs-4'],skill).focus).toBe('discard');
-  expect(liveNoviceGuide(hint,['clubs-4','diamonds-4'],skill).focus).toBe('discard');
+  expect(none.cue).toContain('可选');expect(none.details).toContain('不消耗出牌次数');expect(none.body).toContain('直接出牌');
+  expect(liveNoviceGuide(hint,['clubs-4'],skill).focus).toBe('play-or-discard');
+  expect(liveNoviceGuide(hint,['clubs-4','diamonds-4'],skill).focus).toBe('play-or-discard');
+  expect(liveNoviceGuide(hint,['hearts-10'],skill)).toMatchObject({cue:'红桃先留在手里',recommendedCardIds:['hearts-10']});
   for(const ids of [['spades-14'],['clubs-4','spades-14'],['clubs-4','diamonds-4','spades-14']]){
    const choice=liveNoviceGuide(hint,ids,skill);
    expect(choice.body).toContain('也可直接出牌');expect(choice.body).not.toContain('取消');

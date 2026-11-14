@@ -39,7 +39,7 @@ const server=await createServer({root,mode:'e2e',cacheDir:`/tmp/tsp-lesson-vite-
 await server.listen();
 const browser=await chromium.launch({executablePath:process.env.SMOKE_CHROMIUM_EXECUTABLE_PATH??'/usr/bin/chromium',args:['--disable-gpu','--disable-software-rasterizer']});
 const cases=[
-  {name:'desktop',width:1366,height:768,touch:false},
+  {name:'desktop',width:1920,height:1080,touch:false},
   {name:'phone390',width:390,height:740,touch:true},
   {name:'short320',width:320,height:568,touch:true},
 ].filter(spec=>!process.env.NOVICE_LESSON_CASE||process.env.NOVICE_LESSON_CASE.split(',').includes(spec.name));
@@ -199,38 +199,32 @@ async function scenario(spec){
     await tap('title','action/title-start');await waitScene(page,'game');await ready();await cue('先找一对');
     await shot('01-pair');await select(['clubs-5','hearts-5']);await expectSelected(['clubs-5','hearts-5'],'select first pair');
     let before=await saved();await tap('game','action/play');await settleCommand(before);await ready();await page.waitForFunction(()=>document.querySelector('[data-novice-guide]')?.dataset.noviceGuideStep==='discard');
-    await page.waitForTimeout(2800);await select(['clubs-4','diamonds-4']);await expectSelected(['clubs-4','diamonds-4'],'choose both suggested discards');
-    before=await saved();await tap('game','action/discard');await settleCommand(before);await ready();await cue('先理牌');await shot('02-sort-instruction');
-
-    before=await saved();await tap('game','action/sort-rank');await ready();assert.equal((await guideView()).title,'先理牌','rank sorting alone does not complete the suit lesson');
-    before=await saved();await tap('game','action/sort-suit');await ready();await cue('试试滑动选牌');
-    assert.match((await guideView()).body,spec.touch?/按下.*滑/:/鼠标左键.*拖/,'swipe instructions describe the actual input device');
-    const suitSaved=await saved();assert.ok(suitSaved.state.commandSeq>before.state.commandSeq,'suit sorting saves a command');assert.equal(suitSaved.journal.at(-1).action.type,'ReorderHand');
-    await shot('03-swipe-instruction');
-    const firstHand=await observeHand(),firstRinged=firstHand.cards.filter(card=>firstHand.rings.some(ring=>sameBox(card,ring))),firstPositions=firstRinged.map(card=>firstHand.order.indexOf(card.id)).sort((a,b)=>a-b);
-    assert.ok(firstPositions.length>=2,'swipe lesson exposes both endpoints');
-    const firstFrom=await point(page,'game','card/'+firstHand.order[firstPositions[0]]),firstTo=await point(page,'game','card/'+firstHand.order[firstPositions.at(-1)]);
-    await sampleDemo('sweep',firstFrom,firstTo);await sampleMotionSwitches('sweep',firstFrom,firstTo);
-    await click(page.locator('[data-novice-guide-close]'));await page.locator('[data-novice-guide-reopen]:visible').waitFor();await noDemo('closing the swipe guide');
-    await click(page.locator('[data-novice-guide-reopen]'));await cue('试试滑动选牌');assert.ok(await page.locator('[data-novice-gesture]').count()<=1,'reopening never duplicates the demonstration');
-    await restore('game');await cue('试试滑动选牌');assert.deepEqual((await state()).handOrder,suitSaved.state.handOrder,'suit order survives refresh');
-    await page.locator('[data-novice-gesture][data-mode="sweep"]:visible').waitFor();assert.equal(await page.locator('[data-novice-gesture]').count(),1,'refresh leaves exactly one live swipe demonstration');
-    await shot('04-swipe-restored');
-
-    const hand=await observeHand(),ringed=hand.cards.filter(card=>hand.rings.some(ring=>sameBox(card,ring)));
-    assert.ok(ringed.length>=2,`visible highlighted endpoints: ${JSON.stringify(hand)}`);
-    const positions=ringed.map(card=>hand.order.indexOf(card.id)).sort((a,b)=>a-b),first=positions[0],last=positions.at(-1),between=hand.order.slice(first,last+1);
-    assert.ok(between.length>=3&&between.length<=5,`highlighted span contains 3–5 cards: ${JSON.stringify({hand,ringed})}`);
-    const a=await point(page,'game','card/'+between[0]),b=await point(page,'game','card/'+between.at(-1));
-    const beforeInterruptedLesson=await saved();await down(a);assert.equal(await page.locator('[data-novice-gesture]').count(),0,'real hand press immediately dismisses the sweep demonstration');await move(b);await noDemo('during real hand swipe');
-    if(spec.touch)await touchEvent('touchCancel',[]);else{await page.keyboard.press('Escape');await page.mouse.up();}
-    await ready();assert.equal(await page.locator('[data-novice-guide-choice]:visible').count(),0,'interruption cannot complete the swipe lesson');
-    await clear();await cue('试试滑动选牌');assert.deepEqual(await saved(),beforeInterruptedLesson,'interrupted tutorial sweep changes no saved command');
-    await route([between[0],between[1]]);await cue('再试一次');assert.equal(await page.locator('[data-novice-guide-choice]:visible').count(),0,'partial sweep does not complete the lesson');await clear();await cue('试试滑动选牌');
-    await down(a);await move(b);assert.equal((await guideView()).title,'试试滑动选牌','lesson stays until the pointer is released');await up();await ready();
-    await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent!=='试试滑动选牌');await noDemo('leaving the swipe lesson');await expectSelected(between,'real sweep selects the highlighted span');
-    await shot('05-sweep-complete');const afterSweep=await saved();await restore('game');assert.notEqual((await guideView()).title,'试试滑动选牌','completed lesson stays complete after reload');assert.deepEqual((await state()).handOrder,afterSweep.state.handOrder);await expectSelected([],'unsent selection is cleared by reload');
-    row.checks.push('suit sort saves and resumes swipe lesson; completed real sweep survives refresh');
+    await cue('先看看三张红桃');await shot('flush-01-see-three-hearts');
+    let hand=await observeHand(),ringed=hand.cards.filter(card=>hand.rings.some(ring=>sameBox(card,ring))).map(card=>card.id);
+    assert.deepEqual(sorted(ringed),sorted(['hearts-10','hearts-6','hearts-3']),'three real hearts are highlighted before sorting');
+    assert.match((await guideView()).body,/未必/,'replacement is not promised');
+    await restore('game');await cue('先看看三张红桃');await click(page.locator('[data-novice-guide-choice="flush-intro"]'));await cue('让同花色排在一起');await shot('flush-02-sort-suit');
+    await select(['spades-14']);assert.equal((await point(page,'game','action/play')).enabled,true,'legal play remains available');assert.equal((await point(page,'game','action/discard')).enabled,true,'legal discard remains available');await clear();
+    before=await saved();await tap('game','action/sort-rank');await ready();await cue('让同花色排在一起');
+    before=await saved();await tap('game','action/sort-suit');await ready();await cue('三张红桃排在一起了');
+    const suitSaved=await saved();assert.equal(suitSaved.journal.at(-1).action.type,'ReorderHand');assert.ok(suitSaved.state.commandSeq>before.state.commandSeq);
+    assert.deepEqual(suitSaved.state.handOrder,['spades-14','spades-11','hearts-10','hearts-6','hearts-3','clubs-7','clubs-4','diamonds-4'],'two left, three hearts, three right');
+    await shot('flush-03-sorted-hearts');hand=await observeHand();ringed=hand.cards.filter(card=>hand.rings.some(ring=>sameBox(card,ring))).map(card=>card.id);
+    assert.deepEqual(sorted(ringed),sorted(['hearts-10','hearts-6','hearts-3']),'the grouped hearts are highlighted until acknowledged');
+    await click(page.locator('[data-novice-guide-choice="flush-sorted"]'));await cue('选左侧其他花色');await shot('flush-04-left-sweep');
+    await restore('game');await cue('选左侧其他花色');
+    const left=['spades-14','spades-11'],right=['clubs-7','clubs-4','diamonds-4'];
+    const leftFrom=await point(page,'game','card/'+left[0]),leftTo=await point(page,'game','card/'+left.at(-1));
+    await sampleDemo('sweep',leftFrom,leftTo);await sampleMotionSwitches('sweep',leftFrom,leftTo);
+    await select(['hearts-10']);await cue('红桃先留在手里');assert.equal((await point(page,'game','action/discard')).enabled,true,'guidance does not block a different legal discard');await clear();await cue('选左侧其他花色');
+    await down(leftFrom);await move(leftTo);assert.equal((await guideView()).title,'选左侧其他花色','instruction remains stable while dragging');await up();await ready();await expectSelected(left,'first sweep selects only the left side');await cue('选右侧其他花色');await shot('flush-05-right-sweep');
+    await route([right[0],right.at(-1)]);await expectSelected([...left,...right],'second sweep adds the right side without selecting hearts');await cue('选好了，试试换牌');await shot('flush-06-discard-ready');
+    before=await saved();await tap('game','action/discard');await settleCommand(before);await ready();
+    const exchanged=await saved();assert.equal(exchanged.journal.at(-1).action.type,'DiscardHand');assert.deepEqual(sorted(exchanged.journal.at(-1).action.selectedIds),sorted([...left,...right]));
+    assert.equal(exchanged.state.stage.discardsLeft,before.state.stage.discardsLeft-1);assert.equal(exchanged.state.stage.handsLeft,before.state.stage.handsLeft);
+    assert.deepEqual(sorted(exchanged.state.handOrder.filter(id=>id.startsWith('hearts-'))),sorted(['hearts-10','hearts-6','hearts-3','hearts-11','hearts-7','hearts-12']));
+    await page.locator('[data-novice-guide-choice="flush"]').waitFor({state:'visible'});assert.match((await guideView()).body,/6张红桃/);await shot('flush-07-real-refill');
+    row.checks.push('three hearts and suit sort are explicitly acknowledged; two genuine input sweeps select five non-hearts, one discard refills five cards and displays the actual flush');
 
     const ids=(await state()).handOrder;assert.equal(ids.length,8);const stable=await saved(),firstFive=ids.slice(0,5);
     await route([ids[0],ids[4],ids[0]]);await expectSelected(firstFive,'reverse sweep does not retoggle visited cards');
@@ -251,8 +245,8 @@ async function scenario(spec){
     if(spec.touch)await touchEvent('touchCancel',[]);else{await page.keyboard.press('Escape');await page.mouse.up();}await ready();await expectSelected(spec.touch?applied:[],'system touch cancel retains applied selection; Escape restores original selection');await clear();
     assert.deepEqual(await saved(),stable,'unsent selection and interrupted sweeps do not mutate saved run');row.checks.push('reverse, cancel, five-card limit and interrupted pointer preserve the saved game');
 
-    const flush=page.locator('[data-novice-guide-choice="flush"]');await flush.waitFor({state:'visible'});await click(flush);
-    const hearts=(await state()).handOrder.filter(id=>id.startsWith('hearts-'));assert.equal(hearts.length,5);await route([hearts[0],hearts.at(-1)]);await expectSelected(hearts,'five actual hearts selected by sweep');
+    const flush=page.locator('[data-novice-guide-choice="flush"]');await flush.waitFor({state:'visible'});const hearts=JSON.parse(await flush.getAttribute('data-card-ids'));assert.equal(hearts.length,5);assert.ok(hearts.every(id=>id.startsWith('hearts-')));await click(flush);
+    await select(hearts);await expectSelected(hearts,'five actual hearts selected from the six available');
     before=await saved();await tap('game','action/play');await settleCommand(before);assert.equal((await state()).phase,'stage-cleared');assert.equal((await state()).lastTrace.handType,'flush');await waitScene(page,'intermission');await shot('07-cleared');
     await continueResult();await shopReady();await page.locator('.qiyu-entrance-burst-canvas').waitFor({state:'detached'});const firstPurchase=await buy('b02');await cue(spec.touch?'展开已拥有牌':'这里有五个槽');
     const firstView=await shot('08-first-purchase');
@@ -343,9 +337,10 @@ async function returningScenarios(){
     await page.goto(`http://127.0.0.1:${port}/?harness=1`);await waitScene(page,'title');await tapUI(page,'title','action/title-start',true);await waitScene(page,'game');
     const waitReady=()=>page.waitForFunction(()=>{const s=window.__harness.game.scene.getScene('game');return s.scene.isActive()&&s.ready&&!s.playing&&!s.presentation&&s.cardViews.length&&s.cardViews.every(v=>!v.dealing&&!s.tweens.isTweening(v.container));});
     const command=async(name,ids)=>{await waitReady();for(const id of ids)await tapUI(page,'game','card/'+id,true);const seq=await page.evaluate(()=>window.__harness.game.registry.get('runController').state.commandSeq);await tapUI(page,'game','action/'+name,true);await page.waitForFunction(seq=>window.__harness.game.registry.get('runController').state.commandSeq>seq,seq);await waitReady();};
-    await command('play',['clubs-5','hearts-5']);await page.waitForFunction(()=>document.querySelector('[data-novice-guide]')?.dataset.noviceGuideStep==='discard');await page.waitForTimeout(2800);
-    await command('discard',['clubs-4','diamonds-4']);await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='先理牌');await tapUI(page,'game','action/sort-suit',true);await waitReady();
-    await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='试试滑动选牌');await page.locator('[data-novice-gesture][data-mode="sweep"]:visible').waitFor();
+    await command('play',['clubs-5','hearts-5']);await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='先看看三张红桃');
+    await page.locator('[data-novice-guide-choice="flush-intro"]').tap();await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='让同花色排在一起');
+    await tapUI(page,'game','action/sort-suit',true);await waitReady();await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='三张红桃排在一起了');
+    await page.locator('[data-novice-guide-choice="flush-sorted"]').tap();await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='选左侧其他花色');await page.locator('[data-novice-gesture][data-mode="sweep"]:visible').waitFor();
     const before=await page.evaluate(()=>window.__harness.game.registry.get('runController').state);await page.locator('[data-novice-guide-skip]').tap();await waitScene(page,'character-select');
     assert.equal(await page.locator('[data-novice-gesture]').count(),0,'skip removes the active swipe demonstration');assert.equal(await page.evaluate(()=>window.__harness.game.registry.get('runController').state.runId),before.runId,'skip preserves the tutorial save');
     assert.equal(await page.evaluate(()=>window.__harness.game.registry.get('runController').state.commandSeq),before.commandSeq,'skip submits no game command');

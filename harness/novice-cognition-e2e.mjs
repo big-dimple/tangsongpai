@@ -53,10 +53,13 @@ await server.listen();
 const browser=await chromium.launch({executablePath:process.env.SMOKE_CHROMIUM_EXECUTABLE_PATH??(process.platform==='win32'?undefined:'/usr/bin/chromium'),args:['--disable-gpu','--disable-software-rasterizer']});
 const diagnostic=process.env.NOVICE_COGNITION_DIAGNOSTIC==='1';
 const specs=[
+  {name:'desktop-five',width:1920,height:1080,touch:false,discardCount:5},
   {name:'desktop-one',width:1366,height:768,touch:false,discardCount:1},
   {name:'desktop-two',width:1366,height:768,touch:false,discardCount:2},
+  {name:'phone390-five',width:390,height:740,touch:true,discardCount:5,restart:true},
   {name:'phone390-one',width:390,height:740,touch:true,discardCount:1,restart:true},
   {name:'phone390-two',width:390,height:740,touch:true,discardCount:2},
+  {name:'short320-five',width:320,height:568,touch:true,discardCount:5,edgeCases:true},
   {name:'short320-one',width:320,height:568,touch:true,discardCount:1},
   {name:'short320-two',width:320,height:568,touch:true,discardCount:2,edgeCases:true,replay:true},
   {name:'legacy-v10',width:390,height:740,touch:true,legacy:true},
@@ -145,11 +148,21 @@ async function scenario(spec){
     const rect=el=>{const b=el.getBoundingClientRect();return {x:b.x,y:b.y,width:b.width,height:b.height};};
     const panel=rect(p),scroll=document.scrollingElement,protect=[],critical=[];
     const add=(name,b,important=false)=>{const x=box(b);if(x&&x.width>0&&x.height>0){protect.push({name,...x});if(important)critical.push({name,...x});}};
-    let cards=[],owned=[];
+    let cards=[],owned=[],previewCount=0,selectedCount=0;
     if(key==='game'&&l){
-      for(const [name,b] of Object.entries({hud:l.hud,score:l.scoreBoard,played:l.playedArea,hand:l.hand,actions:l.actions,hero:l.heroAction,inventory:l.inventoryEntry,help:l.helpEntry,...Object.fromEntries(Object.entries(l.buttons??{}).map(([k,v])=>['button/'+k,v]))}))add(name,b,!['hud','score','played','hand'].includes(name));
+      for(const [name,b] of Object.entries({hud:l.hud,score:l.scoreBoard,hand:l.hand,actions:l.actions,hero:l.heroAction,inventory:l.inventoryEntry,help:l.helpEntry,...Object.fromEntries(Object.entries(l.buttons??{}).map(([k,v])=>['button/'+k,v]))}))add(name,b,!['hud','score','hand'].includes(name));
       for(let i=0;i<s.run.jokers.length;i++)add('owned-slot/'+i,l.slots[i]);
       cards=s.hand.flatMap((card,i)=>{const v=s.cardViews[i],seat=l.cards[i];if(!v?.container.active||!v.container.visible||!seat?.visible)return[];const w=Number(v.container.getData('width')),h=Number(v.container.getData('height')),m=v.container.getWorldTransformMatrix(),a=m.transformPoint(-w/2,-h/2),z=m.transformPoint(w/2,h/2),b=box({x:a.x,y:a.y,width:Math.min(z.x-a.x,seat.hit.width),height:z.y-a.y});return b?[{id:card.id,suit:card.suit,rank:card.rank,...b}]:[];});
+      const preview=s.previewCards,previewMap=preview?.active&&preview.visible?preview.getData('cardViews'):undefined;
+      const previews=previewMap instanceof Map?[...previewMap].flatMap(([id,card])=>{
+        const o=card.container;if(!o?.active||!o.visible||o.alpha<=.01)return[];
+        const w=Number(o.getData('width')),h=Number(o.getData('height')),m=o.getWorldTransformMatrix(),a=m.transformPoint(-w/2,-h/2),z=m.transformPoint(w/2,h/2),camera=s.cameras.main;
+        const points=[[a.x,a.y],[z.x,a.y],[a.x,z.y],[z.x,z.y]].map(([x,y])=>camera.matrix.transformPoint(x-camera.scrollX,y-camera.scrollY)),xs=points.map(point=>c.left+point.x*c.width/g.scale.width),ys=points.map(point=>c.top+point.y*c.height/g.scale.height);
+        return [{name:'played-card/'+id,x:Math.min(...xs),y:Math.min(...ys),width:Math.max(...xs)-Math.min(...xs),height:Math.max(...ys)-Math.min(...ys)}];
+      }):[];
+      protect.push(...previews);previewCount=previews.length;selectedCount=s.selectedIds.size;
+      if(preview?.active&&preview.visible)for(const o of preview.list){if(!o.active||!o.visible||!o.input?.enabled||typeof o.getBounds!=='function')continue;const b=objectBox(o);if(b)protect.push({name:o.name||'preview-control',...b});}
+      const caption=s.view.root.getByName('table/played-label');if(caption?.active&&caption.visible&&caption.text){const b=objectBox(caption);if(b)protect.push({name:'played-caption',...b});}
     }
     if(key==='shop'&&l){const geo=s.geometry();if(geo.play)add('shop/play',geo.play,true);if(geo.ownedToggle)add('shop/owned-toggle',geo.ownedToggle,true);if(!geo.inventoryCollapsed)geo.slots.slice(0,s.run.jokers.length).forEach((b,i)=>add('shop/owned-slot/'+i,b));}
     if(s){
@@ -164,7 +177,7 @@ async function scenario(spec){
     const textParts=[...p.querySelectorAll('.novice-guide-title,.novice-guide-body,[data-novice-guide-choice]')].filter(el=>el.getClientRects().length).map(el=>({text:el.innerText,box:rect(el),scrollHeight:el.scrollHeight,clientHeight:el.clientHeight,scrollWidth:el.scrollWidth,clientWidth:el.clientWidth}));
     let clip={left:0,top:0,right:innerWidth,bottom:innerHeight};for(let el=p.parentElement;el;el=el.parentElement){const style=getComputedStyle(el),r=el.getBoundingClientRect();if(/auto|scroll|hidden|clip/.test(style.overflowX)){clip.left=Math.max(clip.left,r.left);clip.right=Math.min(clip.right,r.right);}if(/auto|scroll|hidden|clip/.test(style.overflowY)){clip.top=Math.max(clip.top,r.top);clip.bottom=Math.min(clip.bottom,r.bottom);}}
     const demo=document.querySelector('[data-novice-gesture]:not([hidden])'),hand=demo?.querySelector('[data-novice-gesture-hand]');
-    return {scene:key,step:document.querySelector('[data-novice-guide]')?.dataset.noviceGuideStep,title:p.querySelector('.novice-guide-title')?.textContent,body:p.querySelector('.novice-guide-body')?.textContent,text:p.innerText,panel,clip,scrollHeight:p.scrollHeight,clientHeight:p.clientHeight,documentScroll:{width:scroll?.scrollWidth,clientWidth:scroll?.clientWidth,height:scroll?.scrollHeight,clientHeight:scroll?.clientHeight},protect,critical,owned,cards,rings,choices,textParts,demo:demo?{mode:demo.dataset.mode,phase:demo.dataset.phase,aria:demo.getAttribute('aria-hidden'),pointerEvents:getComputedStyle(demo).pointerEvents,hand:hand?rect(hand):null,opacity:hand?getComputedStyle(hand).opacity:null}:null,result:key==='game'?s.resultText?.text:null,status:key==='game'?s.statusText?.text:null};
+    return {scene:key,step:document.querySelector('[data-novice-guide]')?.dataset.noviceGuideStep,title:p.querySelector('.novice-guide-title')?.textContent,body:p.querySelector('.novice-guide-body')?.textContent,text:p.innerText,panel,clip,scrollHeight:p.scrollHeight,clientHeight:p.clientHeight,documentScroll:{width:scroll?.scrollWidth,clientWidth:scroll?.clientWidth,height:scroll?.scrollHeight,clientHeight:scroll?.clientHeight},protect,critical,owned,cards,previewCount,selectedCount,rings,choices,textParts,demo:demo?{mode:demo.dataset.mode,phase:demo.dataset.phase,aria:demo.getAttribute('aria-hidden'),pointerEvents:getComputedStyle(demo).pointerEvents,hand:hand?rect(hand):null,opacity:hand?getComputedStyle(hand).opacity:null}:null,result:key==='game'?s.resultText?.text:null,status:key==='game'?s.statusText?.text:null};
   });
   const shot=async(name,{guideRequired=true}={})=>{
     // Record the picture before assertions so a failed geometry check is reviewable.
@@ -178,6 +191,7 @@ async function scenario(spec){
       assert.ok(v.documentScroll.width<=v.documentScroll.clientWidth+1,`${name}: unexpected horizontal page overflow`);
       for(const t of v.textParts)assert.ok(t.scrollHeight<=t.clientHeight+1&&t.scrollWidth<=t.clientWidth+1,`${name}: guide text or choice is clipped: ${JSON.stringify(t)}`);
       for(const b of v.protect)assert.ok(!overlaps(p,b),`${name}: guide covers ${b.name}: ${JSON.stringify({panel:p,covered:b})}`);
+      if(v.scene==='game')assert.equal(v.previewCount,v.selectedCount,`${name}: every selected card has a measured visible preview`);
       for(const card of v.cards)assert.ok(!overlaps(p,card),`${name}: guide covers a painted hand card: ${JSON.stringify({panel:p,card})}`);
       if(v.demo?.hand&&v.demo.opacity!=='0'){
         assert.equal(v.demo.pointerEvents,'none',`${name}: visual hand must not intercept input`);assert.equal(v.demo.aria,'true');
@@ -281,83 +295,88 @@ async function scenario(spec){
       let before=await saved();await tap('game','action/play');await afterCommand(before);await ready();await guide('discard');let current=await state();
       assert.equal(current.lastTrace.handType,'pair');assert.equal((await saved()).journal.at(-1).action.type,'PlayHand');
       const trace=current.lastTrace;assert.ok(fractionsEqual(trace.accumulator.H,trace.accumulator.M,trace.finalScore),'opening displayed product is backed by exact saved score');
-      await page.waitForFunction(score=>document.querySelector('[data-novice-guide-panel]')?.innerText.includes(score),trace.finalScore,{timeout:6000});
-      const scoreView=await shot('05-first-score');assert.match(scoreView.text,/筹码/,'first score names chips');assert.match(scoreView.text,/倍率/,'first score names multiplier');assert.match(scoreView.text,/基础|牌型/,'first score identifies its base');assert.match(scoreView.text,/牌点|点数/,'first score identifies the scoring card values');assert.match(scoreView.text,/×|乘/,'first score explains multiplication');assert.ok(containsNumber(scoreView.text,[trace.finalScore]),'score text agrees with the actual saved hand');
       const base=trace.events.find(e=>e.phase==='base'&&e.operation==='base'),ordinary=trace.events.filter(e=>e.phase==='onCardScore'&&e.sourceType==='card'&&e.sourceDefinitionId.startsWith('rank-')&&e.operation==='add-heat');
-      assert.ok(base&&ordinary.length===trace.sets.activeScoringIds.length,'the opening explanation has a complete saved base and card-event chain');
-      for(const [label,value] of [['base',base.after.H],['chips',trace.accumulator.H],['multiplier',trace.accumulator.M],...ordinary.map((event,index)=>['card '+index,event.value])])assert.ok(containsNumber(scoreView.text,fractionForms(value)),`opening explanation must show the saved ${label}: ${JSON.stringify({value,text:scoreView.text})}`);
-      await page.waitForTimeout(2900);const discardView=await shot('06-discard-instruction');
-      assert.ok(containsNumber(discardView.text,[current.stage.heat])&&containsNumber(discardView.text,[current.stage.targetHeat]),'guide shows the saved cumulative score and actual goal');
-      assert.match(discardView.text,/弃牌|换牌/);assert.match(discardView.text,/一两|一到两|一至两|1\s*[~～—–-]\s*2|1\s*或\s*2|1\s*至\s*2/,'guide permits choosing one or two');
+      assert.ok(base&&ordinary.length===trace.sets.activeScoringIds.length,'the saved opening score has a complete base and card-event chain');
+      await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='先看看三张红桃');
+      const discardView=await shot('05-three-hearts');assert.match(discardView.text,/3张红桃/);assert.match(discardView.text,/5张同花色/);assert.match(discardView.text,/未必/,'the next draw is not promised');
+      const openingHearts=['hearts-10','hearts-6','hearts-3'];
+      for(const id of openingHearts){const card=discardView.cards.find(c=>c.id===id);assert.ok(card&&discardView.rings.some(r=>sameBox(r,card)),`actual ${id} is highlighted before sorting`);}
       if(spec.width===320&&!diagnostic){
-        await page.waitForTimeout(10000);const lasting=await shot('06b-score-visible-after-ten-seconds');
-        assert.equal(lasting.title,discardView.title,'first-hand formula persists without input');assert.equal(lasting.body,discardView.body,'cumulative goal and instructions persist without input');
-        assert.ok(containsNumber(lasting.text,[trace.finalScore])&&containsNumber(lasting.text,[current.stage.targetHeat]),'real score and target remain visible after ten seconds');
+        await page.waitForTimeout(10000);const lasting=await shot('05b-three-hearts-after-ten-seconds');
+        assert.equal(lasting.title,discardView.title,'the player controls when to proceed');assert.equal(lasting.body,discardView.body,'the goal and caveat remain readable');
       }
-      row.firstScore={handType:trace.handType,base:base.after,cardEvents:ordinary,accumulator:trace.accumulator,score:trace.finalScore,stage:current.stage.heat,target:current.stage.targetHeat,guide:scoreView.text};
-      if(spec.restart){await restore('game');await guide('discard');await shot('07-discard-restored');}
-      let discards=['clubs-4','diamonds-4'];assert.ok(discards.every(id=>current.handOrder.includes(id)));
-      let cardView=await view();for(const id of discards){const card=cardView.cards.find(c=>c.id===id);assert.ok(card&&cardView.rings.some(r=>sameBox(r,card)),`the recommended ${id} is visually highlighted`);}
+      if(spec.restart){await restore('game');await guide('discard');await shot('06-intro-restored');}
+      await click(page.locator('[data-novice-guide-choice="flush-intro"]'));await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='让同花色排在一起');
+      const sortPrompt=await shot('07-sort-prompt'),sortPoint=await point(page,'game','action/sort-suit');
+      assert.match(sortPrompt.text,/花色/);assert.ok(sortPrompt.rings.some(r=>sortPoint.x>=r.x-2&&sortPoint.x<=r.x+r.width+2&&sortPoint.y>=r.y-2&&sortPoint.y<=r.y+r.height+2),'sorting highlight frames the actual suit control');
+      if(spec.width===320){const label=await page.evaluate(()=>window.__harness.game.scene.getScene('game').suitButton?.getData('label')?.text??'');assert.match(label,/点.*花色/);}
+      // The arithmetic is deliberately available on demand while the goal-driven
+      // instruction remains concise. Compare it with the saved trace, not a fixture.
+      await click(page.locator('[data-novice-guide-details-toggle]'));const details=page.locator('dialog[open]').last();await details.waitFor();
+      const scoreText=await details.innerText();await page.screenshot({path:join(dir,'07b-actual-score-details.png'),scale:'css'});
+      assert.match(scoreText,/筹码/);assert.match(scoreText,/倍率/);assert.match(scoreText,/基础|牌型/);assert.match(scoreText,/牌点|点数/);assert.match(scoreText,/×|乘/);
+      for(const [label,value] of [['base',base.after.H],['chips',trace.accumulator.H],['multiplier',trace.accumulator.M],...ordinary.map((event,index)=>['card '+index,event.value])])assert.ok(containsNumber(scoreText,fractionForms(value)),`score details match saved ${label}: ${JSON.stringify({value,scoreText})}`);
+      assert.ok(containsNumber(scoreText,[trace.finalScore])&&containsNumber(scoreText,[current.stage.targetHeat]));
+      row.firstScore={handType:trace.handType,base:base.after,cardEvents:ordinary,accumulator:trace.accumulator,score:trace.finalScore,stage:current.stage.heat,target:current.stage.targetHeat,guide:scoreText};
+      await click(details.getByRole('button',{name:'返回练习',exact:true}));await guide('discard');
+      before=await saved();await tap('game','action/sort-suit');await ready();current=await state();
+      assert.equal((await saved()).journal.at(-1).action.type,'ReorderHand');assert.ok(current.commandSeq>before.state.commandSeq);
+      const left=['spades-14','spades-11'],hearts=['hearts-10','hearts-6','hearts-3'],right=['clubs-7','clubs-4','diamonds-4'];
+      assert.deepEqual(current.handOrder,[...left,...hearts,...right],'actual suit sort groups two left, three hearts, three right');
+      await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='三张红桃排在一起了');const sortedView=await shot('08-sorted-hearts');
+      for(const id of hearts){const card=sortedView.cards.find(c=>c.id===id);assert.ok(card&&sortedView.rings.some(r=>sameBox(r,card)),`sorted ${id} remains highlighted`);}
+      await click(page.locator('[data-novice-guide-choice="flush-sorted"]'));await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='选左侧其他花色');
+      await page.locator('[data-novice-gesture][data-mode="sweep"]:visible').waitFor({timeout:45000});await shot('09-left-sweep');
       if(edgeCases){
-        const extra=current.handOrder.find(id=>!discards.includes(id));await choose([discards[0],discards[1],extra]);const wrong=await shot('08-overselected-discard');assert.match(wrong.text,/取消|去掉|选错/);assert.equal((await point(page,'game','action/discard')).enabled,false,'lesson blocks incorrect discard');await clear();
+        await captureGesture('sweep','09b-left-demo');
+        await choose([hearts[0]]);const alternative=await shot('09c-alternative-heart');assert.match(alternative.text,/取消/);
+        assert.equal((await point(page,'game','action/discard')).enabled,true,'a different legal discard is never blocked');await clear();
+        const unchanged=await saved(),a=await point(page,'game','card/'+left[0]),b=await point(page,'game','card/'+left[1]);
+        await down(a);await glide(a,b);const applied=await selected();if(spec.touch)await touchEvent('touchCancel',[]);else{await page.keyboard.press('Escape');await up();}
+        await page.waitForTimeout(300);await ready();if(spec.touch)assert.deepEqual(sorted(await selected()),sorted(applied),'touch cancellation retains applied selection');
+        await clear();assert.deepEqual(await saved(),unchanged,'interrupted gestures never submit commands');
       }
-      const chosen=discards.slice(0,spec.discardCount);await choose([chosen[0]]);let one=await shot('09-discard-one');
-      const unchosen=one.cards.find(c=>c.id===discards[1]);assert.ok(unchosen&&one.rings.some(r=>sameBox(r,unchosen)),'other valid discard remains highlighted after selecting one');
-      assert.equal(await page.locator('dialog[open]').count(),0,'selecting a hand card requires no extra confirmation');assert.equal((await point(page,'game','action/discard')).enabled,true,'one valid card can be discarded directly');
-      await tap('game','card/'+chosen[0]);await waitSelected([]);await ready();await shot('10-discard-cancelled');await choose(chosen);await shot('11-discard-ready');
-      before=await saved();await tap('game','action/discard');await afterCommand(before);await ready();current=await state();const action=(await saved()).journal.at(-1).action;
-      assert.equal(action.type,'DiscardHand');assert.deepEqual(sorted(action.selectedIds),sorted(chosen));assert.equal(current.stage.discardsLeft,before.state.stage.discardsLeft-1);assert.equal(current.handOrder.filter(id=>!before.state.handOrder.includes(id)).length,chosen.length);
-      row.discard={selected:chosen,replacements:current.handOrder.filter(id=>!before.state.handOrder.includes(id))};
-      await guide('independent');await page.waitForFunction(()=>document.querySelector('[data-novice-guide-panel]')?.innerText.includes('花色'));
-      const sortPrompt=await shot('12-sort-prompt'),sortPoint=await point(page,'game','action/sort-suit');
-      assert.match(sortPrompt.text,/花色/,'sorting hint identifies the suit-sort control');
-      assert.ok(sortPrompt.rings.some(r=>sortPoint.x>=r.x-2&&sortPoint.x<=r.x+r.width+2&&sortPoint.y>=r.y-2&&sortPoint.y<=r.y+r.height+2),'sorting highlight frames the actual suit-sort hit target');
-      if(spec.width===320){const label=await page.evaluate(()=>window.__harness.game.scene.getScene('game').suitButton?.getData('label')?.text??'');assert.match(label,/点.*花色/,'narrow sort button itself indicates the next action');}
-      before=await saved();await tap('game','action/sort-suit');await ready();
-      await page.locator('[data-novice-gesture][data-mode="sweep"]:visible').waitFor({timeout:45000});current=await state();assert.equal((await saved()).journal.at(-1).action.type,'ReorderHand');assert.ok(current.commandSeq>before.state.commandSeq);
-      let sw=await shot('13-sweep-prompt');const endpoints=sw.cards.filter(card=>sw.rings.some(r=>sameBox(r,card))),positions=endpoints.map(card=>current.handOrder.indexOf(card.id)).sort((a,b)=>a-b);
-      assert.ok(positions.length>=2,'sweep endpoints match actual hand cards');const swept=current.handOrder.slice(positions[0],positions.at(-1)+1);assert.ok(swept.length>=2&&swept.length<=5);assert.ok(swept.every(id=>sw.cards.find(c=>c.id===id)?.suit===sw.cards.find(c=>c.id===swept[0])?.suit),'highlighted route is a contiguous same-suit span');
-      if(edgeCases){
-        await captureGesture('sweep','14-demo-sweep');
-        const unchanged=await saved(),a=await point(page,'game','card/'+swept[0]),b=await point(page,'game','card/'+swept.at(-1));await down(a);await glide(a,b);const applied=await selected();await touchEvent('touchCancel',[]);await page.waitForTimeout(300);await ready();assert.deepEqual(sorted(await selected()),sorted(applied),'system cancel preserves already applied touch selection');await clear();assert.deepEqual(await saved(),unchanged,'cancel never submits saved commands');
-        if(swept.length>2){await route([swept[0],swept[1]]);assert.equal(await page.locator('[data-novice-guide-choice]:visible').count(),0,'partial sweep does not advance the lesson');await clear();}
+      const chosen=spec.discardCount===5?[...left,...right]:left.slice(0,spec.discardCount);
+      if(spec.discardCount===1)await choose([left[0]]);else{await route(left);await waitSelected(left);}
+      if(spec.discardCount===5){
+        await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='选右侧其他花色');await shot('10-right-sweep');
+        await route([right[0],right.at(-1)]);await waitSelected(chosen);
+        await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='选好了，试试换牌');
       }
-      await route([swept[0],swept.at(-1)]);await waitSelected(swept);await page.locator('[data-novice-guide-choice]:visible').first().waitFor({timeout:45000});
-      const afterSweep=await shot('15-sweep-complete'),heartsAfterSweep=(await state()).handOrder.filter(id=>id.startsWith('hearts-'));
-      if(spec.discardCount===1){
-        assert.equal(heartsAfterSweep.length,4,'the real one-card discard leaves four hearts');assert.deepEqual(sorted(swept),sorted(heartsAfterSweep),'the real sweep selected those four hearts');
-        assert.match(afterSweep.result??'',/高牌/,'four selected hearts are correctly classified as high card');assert.match(afterSweep.text,/同花|同花色|同色/,'guide discusses the actual same-suit choice');
-        assert.match(afterSweep.text,/缺(?:少)?\s*[一1]|(?:还|再)(?:需|差|要|加|选)?\s*[一1]/,'guide explicitly explains that one more card is needed');
-        assert.match(afterSweep.text,/高牌/,'guide names the actual four-card hand');assert.match(afterSweep.text,/最高/,'guide explains which card determines high card');
-      }else{
-        assert.equal(heartsAfterSweep.length,5);assert.deepEqual(sorted(swept),sorted(heartsAfterSweep),'the real sweep selected those five hearts');
-        const flush=page.locator('[data-novice-guide-choice="flush"]');await flush.waitFor({state:'visible'});const ids=JSON.parse(await flush.getAttribute('data-card-ids'));assert.deepEqual(sorted(ids),sorted(heartsAfterSweep));
-        await page.evaluate(()=>{const button=document.querySelector('[data-novice-guide-choice="flush"]'),events=[];window.__cognitionFlushClick=events;for(const type of ['pointerdown','pointerup','click'])button.addEventListener(type,event=>events.push({type,trusted:event.isTrusted,time:performance.now()}),{once:true,passive:true});});
+      assert.equal(await page.locator('dialog[open]').count(),0);assert.equal((await point(page,'game','action/discard')).enabled,true,'partial or full legal selection can be discarded');
+      await shot('11-discard-ready');before=await saved();await tap('game','action/discard');await afterCommand(before);await ready();current=await state();const action=(await saved()).journal.at(-1).action;
+      assert.equal(action.type,'DiscardHand');assert.deepEqual(sorted(action.selectedIds),sorted(chosen));assert.equal(current.stage.discardsLeft,before.state.stage.discardsLeft-1);assert.equal(current.stage.handsLeft,before.state.stage.handsLeft);
+      assert.equal(current.handOrder.filter(id=>!before.state.handOrder.includes(id)).length,chosen.length);row.discard={selected:chosen,replacements:current.handOrder.filter(id=>!before.state.handOrder.includes(id))};
+      await guide('independent');await page.locator('[data-novice-guide-choice]:visible').first().waitFor({timeout:45000});
+      const afterRefill=await shot('12-actual-refill'),actualHearts=current.handOrder.filter(id=>id.startsWith('hearts-'));
+      assert.equal(actualHearts.length,3+Math.min(spec.discardCount,3),'fixed-seed refill produces the observed count');
+      assert.match(afterRefill.body,new RegExp(actualHearts.length+'张红桃'),'the guidance reports the actual result');
+      await choose(actualHearts.slice(0,4));await page.waitForFunction(()=>window.__harness.game.scene.getScene('game').resultText.text.includes('高牌'));
+      const four=await shot('13-four-hearts-high-card');assert.match(four.result??'',/高牌/);assert.match(four.text,/同花|同花色|同色/);assert.match(four.text,/差1张/);assert.match(four.text,/最高/);
+      if(actualHearts.length>=5){
+        await tap('game','card/'+actualHearts[4]);await waitSelected(actualHearts.slice(0,5));await ready();
+        await page.waitForFunction(()=>window.__harness.game.scene.getScene('game').resultText.text.includes('同花'));const five=await shot('14-five-hearts-flush');assert.match(five.result??'',/同花/);
+        const flush=page.locator('[data-novice-guide-choice="flush"]');await flush.waitFor({state:'visible'});
+        await page.evaluate(()=>{const button=document.querySelector('[data-novice-guide-choice="flush"'),events=[];window.__cognitionFlushClick=events;for(const type of ['pointerdown','pointerup','click'])button.addEventListener(type,event=>events.push({type,trusted:event.isTrusted,time:performance.now()}),{once:true,passive:true});});
         if(diagnostic)await page.evaluate(()=>{window.__cognitionEventLog.length=0;window.__cognitionTappedElement=document.querySelector('[data-novice-guide-choice="flush"]');});
         if(spec.touch&&(!diagnostic||process.env.NOVICE_COGNITION_DIAG_TAP==='cdp')){
           const b=await flush.boundingBox();assert.ok(b,'choice has a real touch target');const p={x:b.x+b.width/2,y:b.y+b.height/2};await touchEvent('touchStart',[p]);await touchEvent('touchEnd',[]);
         }else await click(flush);
         if(diagnostic)row.diagnostic.afterTap=await page.evaluate(()=>{const old=window.__cognitionTappedElement,current=document.querySelector('[data-novice-guide-choice="flush"]'),s=window.__harness.game.scene.getScene('game'),h=s.handInput;return{same:old===current,oldConnected:old?.isConnected,oldPressed:old?.getAttribute('aria-pressed'),currentPressed:current?.getAttribute('aria-pressed'),hand:{active:h?.active,owner:h?.owner,pointers:h?.pointers?[...h.pointers]:null,contacts:h?.contacts?[...h.contacts]:null}};});
         await page.waitForFunction(()=>document.querySelector('[data-novice-guide-choice="flush"]')?.getAttribute('aria-pressed')==='true',null,{timeout:diagnostic?5000:30000});
-        row.flushClick=await page.evaluate(()=>window.__cognitionFlushClick??[]);assert.ok(row.flushClick.some(event=>event.type==='click'&&event.trusted),'the real input generated a trusted button click');
-        assert.deepEqual(sorted(await selected()),sorted(heartsAfterSweep),'choosing the flush retains the cards already selected by a real sweep');
-        const named=await shot('15b-flush-chosen-after-sweep');assert.match(named.text,/花色相同|相同花色|同一花色|同花色|同色/,'flush explanation still states that the suits match');assert.match(named.result??'',/同花/);
-        assert.equal((await point(page,'game','action/play')).enabled,true,'already selected flush remains playable without another confirmation');
-        if(diagnostic){row.diagnostic.events=await page.evaluate(()=>window.__cognitionEventLog??[]);row.checks.push('diagnostic ended after real flush selection; this is not the complete acceptance scenario');row.status='PASS';return;}
+        row.flushClick=await page.evaluate(()=>window.__cognitionFlushClick??[]);assert.ok(row.flushClick.some(event=>event.type==='click'&&event.trusted),'a real input chose the flush example');
+        assert.deepEqual(sorted(await selected()),sorted(actualHearts.slice(0,5)),'choosing an example never auto-selects or changes cards');
+        assert.equal((await point(page,'game','action/play')).enabled,true);await shot('15-flush-example-selected');
+        if(diagnostic){row.diagnostic.events=await page.evaluate(()=>window.__cognitionEventLog??[]);row.checks.push('diagnostic ended after the real flush choice; not a complete acceptance scenario');row.status='PASS';return;}
+        row.hearts={four:{ids:actualHearts.slice(0,4),label:four.result},five:{ids:actualHearts.slice(0,5),total:actualHearts.length,label:five.result}};
       }
       await clear();
       if(edgeCases){
         const stable=await saved(),ids=(await state()).handOrder;assert.equal(ids.length,8);
         await route([ids[0],ids[4],ids[0]]);await waitSelected(ids.slice(0,5));await route([ids[4],ids[0],ids[4]]);await waitSelected([]);
         await choose([ids[2]]);await clear();await route([ids[0],ids[7]]);await waitSelected(ids.slice(0,5));await tap('game','card/'+ids[7]);await waitSelected(ids.slice(0,5));
-        const limit=await shot('16-selection-limit');assert.match(limit.status??'',/最多.*5|5.*上限/,'selection limit feedback remains visible');await clear();
+        const limit=await shot('16-selection-limit');assert.match(limit.status??'',/最多.*5|5.*上限/);await clear();
         await route([ids[7],ids[0]]);await waitSelected(ids.slice(3));await clear();assert.deepEqual(await saved(),stable,'reverse, cancel and limit do not change saved gameplay');
-      }
-      if(spec.discardCount===2){
-        const hearts=(await state()).handOrder.filter(id=>id.startsWith('hearts-'));assert.equal(hearts.length,5,'real two-card replacement produces five hearts');
-        await choose(hearts.slice(0,4));await page.waitForFunction(()=>window.__harness.game.scene.getScene('game').resultText.text.includes('高牌'));const four=await shot('17-four-hearts-high-card');assert.match(four.result,/高牌/,'four hearts have their real high-card classification');
-        await tap('game','card/'+hearts[4]);await waitSelected(hearts);await ready();await page.waitForFunction(()=>window.__harness.game.scene.getScene('game').resultText.text.includes('同花'));const five=await shot('18-five-hearts-flush');assert.match(five.result,/同花/,'five hearts have their real flush classification');await clear();
-        row.hearts={four:{ids:hearts.slice(0,4),label:four.result},five:{ids:hearts,label:five.result}};
       }
       const hands=[];
       for(let attempt=0;attempt<3;attempt++){
