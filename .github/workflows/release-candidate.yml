@@ -33,6 +33,15 @@ jobs:
           test -n "$chrome"
           echo "SMOKE_CHROMIUM_EXECUTABLE_PATH=$chrome" >> "$GITHUB_ENV"
       - run: npm ci
+      - name: Check hero entrance in desktop and phone Chromium
+        run: node harness/selection-entrance.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: hero-entrance-evidence-${{ github.run_id }}
+          path: shots/selection-entrance/
+          if-no-files-found: ignore
+          retention-days: 7
       - name: Test candidate validation
         run: python3 -B -m unittest discover -s tests -p 'test_*release*.py'
       - name: Run the complete gate and build once
