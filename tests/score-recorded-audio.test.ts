@@ -7,6 +7,12 @@ import {numberImpact} from '../src/game/ScoreEnergy';
 import type {PlayingCard, Rank} from '../src/cards/types';
 const fixture=()=>{vi.stubGlobal('document',{hidden:false});const sources:any[]=[];const param=()=>({value:1,cancelScheduledValues:vi.fn(),setValueAtTime:vi.fn(),setTargetAtTime:vi.fn(),linearRampToValueAtTime:vi.fn()});const gain=()=>({gain:param(),connect:vi.fn(),disconnect:vi.fn()});const engine=new AudioEngine(),inside=engine as any;inside.context={currentTime:1,state:'running',createGain:gain,createBufferSource:()=>{const node={buffer:null,playbackRate:param(),start:vi.fn(),stop:vi.fn(),connect:vi.fn(),disconnect:vi.fn(),onended:null};sources.push(node);return node;}};inside.gains={master:gain(),sfx:gain(),ui:gain(),music:gain()};inside.unlocked=true;for(const name of [...FOLEY_SAMPLES.map(a=>a.name),'cloth2'])inside.scoreSamples.set(name,{name,duration:.3});return {engine,inside,sources};};
 afterEach(()=>vi.unstubAllGlobals());
+it('hero entrance cue uses the shared effects bus and honors mute and zero effects volume',()=>{
+ const audible=fixture();audible.engine.sourceCue('character');
+ expect(audible.sources.map(s=>s.buffer.name)).toEqual(['impactWood_heavy_000','impactBell_heavy_003']);
+ const muted=fixture();muted.engine.muted=true;muted.engine.sourceCue('character');expect(muted.sources).toHaveLength(0);
+ const silent=fixture();silent.engine.setVolume('sfx',0);silent.engine.sourceCue('character');expect(silent.sources).toHaveLength(0);
+});
 it('ordinary wood and multiplication glass/low-body layers remain separately cancellable',()=>{const {engine,inside,sources}=fixture(),show={};engine.scoreImpact(show,'one','add',0,0);expect(sources.map(s=>s.buffer.name)).toEqual(['sfx-penta-1-gong','impactWood_light_000']);engine.scoreImpact(show,'two','multiply',3,3);expect(sources.slice(2).map(s=>s.buffer.name)).toEqual(['impactGlass_heavy_002','sfx-wardrum-mult-hit','impactGlass_heavy_002']);expect(sources[2].playbackRate.value).toBeCloseTo(.94*noteRate(3));expect(sources[3].playbackRate.value).toBeCloseTo(noteRate(3));expect(inside.voices.size).toBe(5);engine.cancelPresentation();expect(inside.voices.size).toBe(0);expect(sources.every(s=>s.disconnect.mock.calls.length===1)).toBe(true);});
 
 it.each([0,1,2,99])('multiplication pulse %i stays in the low register through every actual layer', step=>{
