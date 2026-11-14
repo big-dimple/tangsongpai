@@ -75,7 +75,7 @@ export class CharacterSelectScene extends Phaser.Scene {
       if(this.choosing){if(action==='confirm'&&this.confirming)this.entryParticles?.skipConfirm();return true;}
       return false;
     };
-    this.entryParticles=new SelectionEntryParticles(this,()=>this.reducedMotion());
+    this.entryParticles=new SelectionEntryParticles(this,()=>this.reducedMotion(),()=>this.audio.sourceCue('character'));
     resetHeroEntranceForNewRun();
     const refreshImage=(key:string)=>{
       if(!this.scene.isActive())return;

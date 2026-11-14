@@ -19,7 +19,7 @@ export class SelectionEntryParticles {
  private readonly blur=()=>{this.blurred=true;this.sync();};
  private readonly focus=()=>{this.blurred=false;this.sync();};
  private readonly tick=(_time:number,delta:number)=>{if(!this.running()){this.sync();return;}this.elapsed+=delta;const hz=cssViewport(this.scene).width<ENTRY_PARTICLE_BUDGET.breakpoint?ENTRY_PARTICLE_BUDGET.mobileHz:ENTRY_PARTICLE_BUDGET.desktopHz;if(this.elapsed<1000/hz)return;this.ambientTime+=Math.min(100,this.elapsed);advanceEntryParticleField(this.field!,this.elapsed);this.elapsed=0;this.paint();};
- constructor(private readonly scene:Phaser.Scene,private readonly reduced:()=>boolean){
+ constructor(private readonly scene:Phaser.Scene,private readonly reduced:()=>boolean,private readonly onConfirmImpact:()=>void=()=>{}){
   document.addEventListener('visibilitychange',this.changed);window.addEventListener('blur',this.blur);window.addEventListener('focus',this.focus);window.addEventListener('tangsongpai-presentation',this.changed);this.media.addEventListener('change',this.changed);
   this.observer=new MutationObserver(this.changed);this.observer.observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['open']});
   if(typeof IntersectionObserver!=='undefined'){this.intersection=new IntersectionObserver(([e])=>{if(e){this.onScreen=e.isIntersecting;this.sync();}});this.intersection.observe(scene.game.canvas);}
@@ -71,6 +71,7 @@ export class SelectionEntryParticles {
   // Reuse the pool for ten directional flecks plus a local soft brush, or six broken ink tips.
   if(animated){if(kind==='confirm')this.gathering=gold.slice(0,11);else if(kind==='switch')this.trailing=gold.slice(0,6);}
   for(const i of [...this.gathering,...this.trailing])this.front?.add(this.nodes[i]);
+  let confirmImpactFired=false;
   return new Promise(resolve=>{
    this.finishFeedback=resolve;
    const draw=()=>{
@@ -102,10 +103,10 @@ export class SelectionEntryParticles {
      this.seal?.setPosition(cx,cy).setScale(scale).setRotation(-.06).setVisible(alpha>0).setAlpha(alpha);
     }else{
      const b=finalBox,cx=b.x+b.width/2,cy=b.y+b.height/2,impact=Math.max(0,Math.min(1,(t-.30)/.16)),fade=1-Math.max(0,(t-.82)/.18),alpha=Math.min(1,impact*4)*fade,scale=impact<1?2.15-1.15*(1-(1-impact)**3):1,size=b.width*scale,sx=cx-size/2,sy=cy-size/2;
-     // Ink sweep and a wide paper flash make the saved choice visible even when the portrait is tiny.
+     // Keep the existing stamp and flash; the landing shares the hero-entrance cue.
      const flash=Math.max(0,1-Math.abs(t-.46)/.16);
      g.fillStyle(0x152a29,.28*fade*Math.min(1,t/.2)).fillRect(0,0,viewport.width,viewport.height);
-     const sweep=Math.min(1,t/.32);g.fillStyle(0x183b36,.88*fade).fillPoints([{x:cx-viewport.width*.45*sweep,y:cy-b.height*.28},{x:cx+viewport.width*.45*sweep,y:cy-b.height*.40},{x:cx+viewport.width*.45*sweep,y:cy+b.height*.26},{x:cx-viewport.width*.45*sweep,y:cy+b.height*.39}],true);
+     if(!confirmImpactFired&&t>=.46){confirmImpactFired=true;try{this.onConfirmImpact();}catch{/* Sound is optional; it must not block the saved choice. */}}
      g.lineStyle(4,0xf1cf83,flash*.9).strokeCircle(cx,cy,b.width*(.55+flash*.25));
      for(let j=0;j<12;j++){const a=j*Math.PI/6,r=b.width*(.62+.18*(1-flash)),len=b.width*.24*flash;g.lineStyle(j%2?3:5,j%2?0xf6d58a:0xb8473a,flash).lineBetween(cx+Math.cos(a)*r,cy+Math.sin(a)*r,cx+Math.cos(a)*(r+len),cy+Math.sin(a)*(r+len));}
      g.fillStyle(0xb63f30,.98*alpha).fillRoundedRect(sx,sy,size,size,8).lineStyle(Math.max(2,size*.025),0xffedca,.9*alpha).strokeRoundedRect(sx+size*.08,sy+size*.08,size*.84,size*.84,4);

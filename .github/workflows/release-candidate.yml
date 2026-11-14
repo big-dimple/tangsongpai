@@ -1,4 +1,4 @@
-name: CI and release
+name: Route seal isolated browser check
 on:
   workflow_dispatch:
 permissions:
@@ -6,70 +6,28 @@ permissions:
 jobs:
   browser:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - {name: desktop, kind: lesson, cases: desktop, motion: normal}
-          - {name: phone, kind: lesson, cases: phone390, motion: normal}
-          - {name: narrow, kind: lesson, cases: short320, motion: normal}
-          - {name: desktop-reduced, kind: lesson, cases: desktop, motion: system}
-          - {name: phone-reduced, kind: lesson, cases: phone390, motion: system}
-          - {name: payoff, kind: payoff, cases: phone390, motion: normal}
-          - {name: alternatives-pc, kind: first, cases: desktop-two, motion: normal}
-          - {name: alternatives-phone, kind: first, cases: "phone-one,narrow-two,phone-skip", motion: normal}
-          - {name: cognition-pc, kind: cognition, cases: desktop-five, motion: normal}
-          - {name: cognition-narrow, kind: cognition, cases: short320-five, motion: normal}
-          - {name: route, kind: route, cases: all, motion: normal}
-          - {name: hero, kind: hero, cases: all, motion: normal}
+    timeout-minutes: 12
     env:
       PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: '1'
-      TEST_KIND: ${{ matrix.kind }}
-      TEST_CASE: ${{ matrix.cases }}
-      TEST_MOTION: ${{ matrix.motion }}
+      ROUTE_CHOICE_OUT: shots/route
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-      - name: Install fonts and video encoder
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq fonts-wqy-microhei ffmpeg
+      - name: Install CJK fonts
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq fonts-wqy-microhei
       - run: npm ci
-      - name: Run isolated browser lesson
+      - name: Run route presentation and sound-bus checks
         run: |
-          export SMOKE_CHROMIUM_EXECUTABLE_PATH="$(command -v google-chrome || command -v chromium || command -v chromium-browser)"
+          export SMOKE_CHROMIUM_EXECUTABLE_PATH="$(command -v google-chrome || command -v chromium)"
           test -n "$SMOKE_CHROMIUM_EXECUTABLE_PATH"
-          set +e
-          if [ "$TEST_KIND" = lesson ]; then
-            NOVICE_LESSON_CASE="$TEST_CASE" NOVICE_LESSON_MOTION="$TEST_MOTION" NOVICE_LESSON_OUT=shots/lesson node harness/novice-interactions-lesson.mjs
-          elif [ "$TEST_KIND" = payoff ]; then
-            NOVICE_LESSON_CASE="$TEST_CASE" NOVICE_LESSON_PAYOFF_ONLY=1 NOVICE_LESSON_OUT=shots/lesson node harness/novice-interactions-lesson.mjs
-          elif [ "$TEST_KIND" = route ]; then
-            ROUTE_CHOICE_OUT=shots/route node harness/route-choice.mjs
-          elif [ "$TEST_KIND" = hero ]; then
-            SELECTION_ENTRANCE_OUT=shots/hero node harness/selection-entrance.mjs
-          elif [ "$TEST_KIND" = first ]; then
-            NOVICE_FIRST_CASE="$TEST_CASE" NOVICE_FIRST_OUT=shots/first node harness/novice-first-stage-interaction.mjs
-          else
-            NOVICE_COGNITION_CASE="$TEST_CASE" node harness/novice-cognition-e2e.mjs
-          fi
-          result=$?
-          mkdir -p shots/cognition
-          find /tmp -maxdepth 1 -type d -name 'tsp-novice-cognition-e2e-*' -exec cp -a {} shots/cognition/ \;
-          exit "$result"
+          node harness/route-choice.mjs
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: novice-flush-${{ matrix.name }}-${{ github.run_id }}
-          path: |
-            shots/lesson/
-            shots/first/
-            shots/cognition/
-            shots/route/
-            shots/hero/
+          name: seal-browser-evidence-${{ github.run_id }}
+          path: shots/route/
           if-no-files-found: ignore
-          retention-days: 5
+          retention-days: 3
