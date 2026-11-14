@@ -38,6 +38,11 @@ export function drawLiueListeningEar(g:Phaser.GameObjects.Graphics,cx:number,cy:
  brush(g,points(outer),2.5*scale,INK,.92);
  for(const p of [helix,antihelix,concha])brush(g,points(p),2.05*scale,INK,.86);
 }
+/** One full ear prelude per scored hand; every saved card event still resolves. */
+export function claimLiueListening(owner:{liueListeningShown:boolean},eligible:boolean):boolean {
+ if(!eligible||owner.liueListeningShown)return false;
+ owner.liueListeningShown=true;return true;
+}
 export interface LiueListeningView {step:(elapsed:number)=>void;dispose:()=>void}
 /** Saved handoff only. The existing queue owns the prelude; the existing real
  * card strike clock owns release and impact. No input, rule state or extra loop. */

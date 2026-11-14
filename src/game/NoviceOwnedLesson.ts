@@ -7,7 +7,7 @@ import type {Box} from './layout';
 /** This is presentation state, not a game checkpoint or proof of a purchase. */
 export const NOVICE_OWNED_LESSON_PREFIX='tangsongpai-novice-owned-v1:';
 type ReorderAttempt={seq:number;stageIndex:number;ids:string[]};
-type Record={identity:string;offerId:string;purchaseSeq:number;stageIndex:number;opened:boolean;expanded:boolean;openSeq:number;reorder?:ReorderAttempt};
+type Record={identity:string;offerId:string;purchaseSeq:number;stageIndex:number;opened:boolean;expanded:boolean;openSeq:number;secondPrompt:boolean;reorder?:ReorderAttempt};
 const memory=new Map<string,Record>(),unpersisted=new Set<string>();
 const identity=(s:R2RunState)=>JSON.stringify([s.runId,s.seed,s.characterId,s.contentVersion,s.contentHash,s.mode,s.difficulty,s.challengeId,s.tourMode]);
 const key=(s:R2RunState)=>NOVICE_OWNED_LESSON_PREFIX+s.runId;
@@ -21,7 +21,7 @@ function read(s:R2RunState):Record|undefined {
   const reorder=p.reorder&&Number.isInteger(p.reorder.seq)&&Array.isArray(p.reorder.ids)&&p.reorder.ids.every((id:unknown)=>typeof id==='string')
    ?{seq:p.reorder.seq as number,stageIndex:Number.isInteger(p.reorder.stageIndex)?p.reorder.stageIndex:p.stageIndex,ids:p.reorder.ids as string[]}:undefined;
   const result:Record={identity:p.identity,offerId:p.offerId,purchaseSeq:p.purchaseSeq,stageIndex:p.stageIndex,opened:p.opened,
-   expanded:typeof p.expanded==='boolean'?p.expanded:p.opened,openSeq:Number.isInteger(p.openSeq)?p.openSeq:p.purchaseSeq,...(reorder?{reorder}:{})};
+   expanded:typeof p.expanded==='boolean'?p.expanded:p.opened,openSeq:Number.isInteger(p.openSeq)?p.openSeq:p.purchaseSeq,secondPrompt:p.secondPrompt===true,...(reorder?{reorder}:{})};
   memory.set(k,result);return result;
  }catch{return memory.get(k);}
 }
@@ -34,7 +34,7 @@ function write(s:R2RunState,p:Record):void {
  * harmless until its exact command appears in the published saved journal. */
 export function armNoviceOwnedLesson(s:R2RunState,hint:NoviceGuideHint|undefined,offerId:string):void {
  if(s.phase!=='shop'||s.jokers.length!==0||hint?.step!=='shop')return;
- write(s,{identity:identity(s),offerId,purchaseSeq:s.commandSeq+1,stageIndex:s.stageIndex,opened:false,expanded:false,openSeq:s.commandSeq});
+ write(s,{identity:identity(s),offerId,purchaseSeq:s.commandSeq+1,stageIndex:s.stageIndex,opened:false,expanded:false,openSeq:s.commandSeq,secondPrompt:false});
 }
 
 function committed(s:R2RunState,journal:readonly Command[],seq:number,predicate:(command:Command)=>boolean):Command|undefined {
@@ -61,7 +61,7 @@ export function noviceOwnedLesson(s:R2RunState,journal:readonly Command[],hint:N
   const id=`${s.runId}/joker/${c.commandId}`;
   return s.jokers.some(j=>j.instanceId===id)||journal.some(sale=>sale.action.type==='SellJoker'&&sale.action.instanceId===id);
  });
- return {opened:p.opened,expanded:p.expanded&&!purchasedAfterOpen,reordered};
+ return {opened:p.opened,expanded:p.expanded&&!purchasedAfterOpen,reordered,...(p.secondPrompt?{secondPrompt:true}:{})};
 }
 
 /** Record only an actual click that made the real rail visible. */
@@ -69,6 +69,13 @@ export function openNoviceOwnedLesson(s:R2RunState,journal:readonly Command[],hi
  const p=read(s);if(!p||!noviceOwnedLesson(s,journal,hint))return;
  write(s,{...p,opened:true,expanded:true,openSeq:s.commandSeq});
 }
+/** The player explicitly moves from the five-slot explanation to browsing. */
+export function advanceNoviceSecondOffer(s:R2RunState,journal:readonly Command[],hint:NoviceGuideHint|undefined):void {
+ const p=read(s),lesson=noviceOwnedLesson(s,journal,hint);
+ if(!p||!lesson||s.jokers.length!==1||p.secondPrompt)return;
+ write(s,{...p,secondPrompt:true});
+}
+
 /** Keep a deliberate re-fold across a refresh without changing lesson progress. */
 export function closeNoviceOwnedLesson(s:R2RunState,journal:readonly Command[],hint:NoviceGuideHint|undefined):void {
  const p=read(s);if(!p||!p.expanded||!noviceOwnedLesson(s,journal,hint))return;
@@ -84,7 +91,7 @@ export function attemptNoviceOwnedReorder(s:R2RunState,journal:readonly Command[
  write(s,{...p,reorder:{seq:s.commandSeq+1,stageIndex:s.stageIndex,ids:[...ids]}});
 }
 
-export type NoviceOwnedFocus='toggle'|'slots'|'play'|'none';
+export type NoviceOwnedFocus='toggle'|'slots'|'offer'|'tab'|'shelf'|'play'|'none';
 /** Keep the entire PC rail legible, including labels outside the card hitboxes.
  * Leave the blank sidebar below the chapter button available for the hint. */
 export function noviceOwnedLessonPcAvoid(p:ReturnType<typeof shopLayout>):Box[] {
@@ -97,13 +104,19 @@ export function noviceOwnedLessonPcAvoid(p:ReturnType<typeof shopLayout>):Box[] 
  ];
 }
 /** The caller supplies actual layout visibility; no hint asks for an impossible move. */
-export function presentNoviceOwnedLesson(hint:NoviceGuideHint,lesson:{reordered:boolean}|undefined,layout:{collapsed:boolean;canExpand:boolean;count:number;finePointer?:boolean}):{hint:NoviceGuideHint;focus:NoviceOwnedFocus} {
+export function presentNoviceOwnedLesson(hint:NoviceGuideHint,lesson:{reordered:boolean;secondPrompt?:boolean}|undefined,layout:{collapsed:boolean;canExpand:boolean;count:number;finePointer?:boolean;secondOffer?:{id:string;name:string};secondLocation?:'tab'|'more'|'none'}):{hint:NoviceGuideHint;focus:NoviceOwnedFocus} {
  if(!lesson)return {hint,focus:hint.step==='payoff'?'play':'none'};
  if(layout.collapsed){
   if(layout.canExpand)return {hint:{...hint,cue:'展开已拥有牌',body:'点上箭头，展开已拥有牌区域。'},focus:'toggle'};
   return {hint:{...hint,cue:'查看已拥有牌',body:'当前屏幕空间不足以展开牌列；调整窗口大小后可查看。'},focus:'none'};
  }
- if(layout.count===1)return {hint:{...hint,cue:'这里有五个槽',body:'最多放五张唐宋牌，通常从左到右触发。可继续买，或进入牌桌。',gesture:undefined},focus:'slots'};
+ if(layout.count===1){
+  if(!lesson.secondPrompt)return {hint:{...hint,cue:'这里有五个槽',body:'最多放五张唐宋牌，通常从左到右触发。可继续买，或进入牌桌。',gesture:undefined,choices:[{id:'novice-second-card',label:'看看第二张',cardIds:[]}]},focus:'slots'};
+  if(layout.secondOffer)return {hint:{...hint,cue:'再看看一张牌',body:`点亮的「${layout.secondOffer.name}」可查看效果和价格，也可选别的或进入牌桌。`,gesture:undefined,choices:undefined,offerIds:[layout.secondOffer.id]},focus:'offer'};
+  if(layout.secondLocation==='tab')return {hint:{...hint,cue:'再看看唐宋牌',body:'点「唐宋牌」看看其他牌，也可直接进入牌桌。',gesture:undefined,choices:undefined,offerIds:[]},focus:'tab'};
+  if(layout.secondLocation==='more')return {hint:{...hint,cue:'再看看唐宋牌',body:'翻页或下滑看看其他牌，也可直接进入牌桌。',gesture:undefined,choices:undefined,offerIds:[]},focus:'shelf'};
+  return {hint:{...hint,cue:'继续下一场',body:'目前没有可买的第二张，先进入牌桌；之后还可以再买。',gesture:undefined,choices:undefined,offerIds:[]},focus:'play'};
+ }
  if(!lesson.reordered)return {hint:{...hint,cue:'试试调整顺序',body:layout.finePointer?'在第 1 张按住鼠标左键，等牌浮起；拖到第 2 张后松开。':'按住第 1 张，等牌浮起；拖到第 2 张后松手。',gesture:'hold-drag'},focus:'slots'};
  return {hint:{...hint,cue:'顺序已保存',body:'可以继续整理，或进入下一场试试效果。'},focus:'play'};
 }

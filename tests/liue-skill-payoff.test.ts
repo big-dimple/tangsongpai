@@ -1,5 +1,7 @@
 import {afterEach,expect,it,vi} from 'vitest';
 import {mountLiueSkillPayoff,LIUE_PAYOFF_INK} from '../src/game/LiueSkillPayoff';
+import {claimLiueListening} from '../src/game/LiueListeningStage';
+import {heroScoreAction} from '../src/game/HeroScoreAction';
 import {nativeHeroRuntime} from './fixtures/native-hero-runtime';
 import {liueSkillPayoffFixture} from '../harness/fixtures/liue-skill-payoff';
 import {applyCommand} from '../src/domain/run';
@@ -18,6 +20,15 @@ it.each([8,10] as const)('a real +%s packet floats from its saved card, travels 
 it('enhancement/foil remain separate and every saved group conversion, including retriggers, can mount',async()=>{
  const r=await receipt(8,true),f=runtime(),options={context:{generation:1,signal:new AbortController().signal},beat,reduced:false,root:f.root,cards:r.selectedIds.map(id=>({id,container:f.card}))};expect(r.trace.events.filter(e=>e.reasonKey==='erxiang.handoff')).toHaveLength(5);expect(r.trace.events.some(e=>e.retriggerDepth===1)).toBe(true);expect(r.trace.events.some(e=>e.reasonKey.startsWith('edition.'))).toBe(true);
  for(const e of r.trace.events){const job=mountLiueSkillPayoff(f.scene,f.button,r.trace,e.eventId,options);expect(!!job).toBe(e.reasonKey==='erxiang.handoff');job?.dispose();}f.root.destroy();
+});
+it('shows one listening prelude per hand while preserving every same-rank conversion and retrigger',async()=>{
+ const r=await receipt(8,true),before=JSON.stringify(r.trace),owner={liueListeningShown:false};
+ const eligible=r.trace.events.filter(e=>heroScoreAction(r.trace,e)?.kind==='handoff');
+ expect(eligible.length).toBeGreaterThan(1);expect(eligible.some(e=>e.retriggerDepth>0)).toBe(true);
+ expect(claimLiueListening(owner,false)).toBe(false);
+ expect(eligible.filter(()=>claimLiueListening(owner,true))).toHaveLength(1);
+ expect(claimLiueListening({liueListeningShown:false},true)).toBe(true);
+ expect(JSON.stringify(r.trace)).toBe(before);
 });
 it('labels only the saved retrigger transfers as retriggers, including in reduced motion',async()=>{
  const r=await receipt(8,true),f=runtime(),events=r.trace.events.filter(e=>e.reasonKey==='erxiang.handoff'),cards=r.selectedIds.map(id=>({id,container:f.card}));

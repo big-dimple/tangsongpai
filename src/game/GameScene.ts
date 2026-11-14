@@ -6,7 +6,7 @@ import {previewR2Hand} from '../domain/scoreR2';
 import {usesBossSuitRescue,bossSuitRescueQualified,bossSuitRescueActive,bossSuitDisabledCards} from '../domain/r2BossSuitRescue';
 import {bossSuitRescueLabel,showBossSuitRescue} from './BossSuitRescue';
 import {playHeroSkillStage} from './HeroSkillStage';
-import {playLiueListeningStage,liueListeningSlot} from './LiueListeningStage';
+import {claimLiueListening,playLiueListeningStage,liueListeningSlot} from './LiueListeningStage';
 import {mountLiueSkillPayoff} from './LiueSkillPayoff';
 import {renderXinPassiveSkillEntry} from './XinPassiveSkillEntry';
 import {laohuanRefillUsed,laohuanRefillRepeats} from '../domain/r2LaohuanRefill';
@@ -61,7 +61,7 @@ import {savedHeroAttachment,retainedRefillImpact} from './HeroAttachmentFacts';
 import {drawStageTableArt,playedCaptionBox} from './StageTableArt';
 import {paperSceneStart} from './PaperFlow';
 import {bindNoviceGuide} from './NoviceGuideBinding';
-import {liveNoviceGuide,noviceGuide,noviceGuideEnrolled} from './NoviceGuide';
+import {liveNoviceGuide,noviceFreeActions,noviceGuide,noviceGuideEnrolled} from './NoviceGuide';
 import {firstStageOptions,type FirstStageOption} from './NoviceFirstStage';
 import {consecutiveSuitCards,NoviceHandLesson} from './NoviceHandLesson';
 import {noviceHandDefinition,noviceSameSuitFeedback} from './NoviceSuitLesson';
@@ -289,7 +289,7 @@ export class GameScene extends Phaser.Scene {
   private ownedDrag?:OwnedJokerDragVisual;
   private lifecycle=0;
   private intent=0;
-  private presentation?:{generation:number;lifecycle:number;intent:number;state:RunState;score:ScoreTrace;phrase:Map<string,ScoreBeat>;hand:readonly PlayingCard[];retainedIds:string[];displayHeat:string;originHeat:string;replay:boolean;previousTrace:ScoreTrace|null;credited:boolean;resourcePlayLeft?:number;resourceGold?:number;resourceTools?:number;gifts:readonly SavedStageGift[];auraEventId?:string;auraPlayed:boolean;auraEnding:boolean};
+  private presentation?:{generation:number;lifecycle:number;intent:number;state:RunState;score:ScoreTrace;phrase:Map<string,ScoreBeat>;hand:readonly PlayingCard[];retainedIds:string[];displayHeat:string;originHeat:string;replay:boolean;previousTrace:ScoreTrace|null;credited:boolean;resourcePlayLeft?:number;resourceGold?:number;resourceTools?:number;gifts:readonly SavedStageGift[];auraEventId?:string;auraPlayed:boolean;auraEnding:boolean;liueListeningShown:boolean};
   private characterId!: CharacterId;
   private laohuanFindRank:number|null=null;
   private erxiangTargetId:string|null=null;
@@ -615,17 +615,18 @@ export class GameScene extends Phaser.Scene {
           const canDiscard=stage.discardsLeft>=r2DiscardCost(this.run)&&this.run.drawPile.length>0&&this.run.gold>=(stageNotice(this.run)?.discardGoldCost??0);
           const choices=firstStage.options.map(row=>({id:row.id,label:row.label,cardIds:row.cardIds,selected:target?.id===row.id}));
           const cue=`累计 ${stage.heat}/${stage.targetHeat} · 剩${stage.handsLeft}次出牌`;
-          if(!choices.length)return {...hint,cue,body:'可以自己选牌出牌；牌型示例准备好后会显示。',choices};
+          if(!choices.length)return {...noviceFreeActions({...hint,cue,body:'先选1–5张牌；也可等牌型示例。'},selected,{canDiscard,skillChosen:!!this.erxiangTargetId}),choices};
           const handRules=r2ScoreContext(this.run,this.hand,selected).handRules;
           if(!target){
             const short=stage.handsLeft===1&&!firstStage.options.some(option=>option.canClear);
             const suitFeedback=selected.length?noviceSameSuitFeedback(this.hand,selected,handRules):undefined;
-            return {...hint,cue,body:short?(canDiscard?'暂无可过关的牌，可先弃牌。':'这手不足目标，请继续出牌。'):suitFeedback?`${suitFeedback}选一种牌型。`:(selected.length?'从已选牌滑过可取消；或选一种牌型。':'选一种牌型，再选亮起的牌。'),choices};
+            const free=noviceFreeActions({...hint,cue,body:'选1–5张牌，或选一个牌型参考。'},selected,{canDiscard,skillChosen:!!this.erxiangTargetId});
+            return {...free,body:this.erxiangTargetId?free.body:short?(canDiscard?'暂无可过关的牌，可先弃牌或出牌。':'这手不足目标，请继续出牌。'):suitFeedback?`${suitFeedback}${canDiscard?'可出牌，也可换牌。':'可继续选牌或出牌。'}`:selected.length?free.body:'选1–5张牌，或选一个牌型参考。',choices};
           }
           const extra=selected.filter(id=>!target.cardIds.includes(id)),remaining=target.cardIds.filter(id=>!this.selectedIds.has(id));
           if(extra.length)return {...hint,cue,body:'先点亮起的已选牌取消。',recommendedCardIds:extra,choices};
           const definition=noviceHandDefinition(target.id,handRules);
-          if(!remaining.length)return {...hint,cue,body:stage.handsLeft===1&&!target.canClear?(canDiscard?'这手不足目标，可弃牌或出牌。':'这手不足目标，请继续出牌。'):target.id==='flush'||target.id==='high-card'?`${definition}点「出牌」。`:'牌选好了，点「出牌」。',recommendedCardIds:[],focus:'play',choices};
+          if(!remaining.length){const action=canDiscard?'点「出牌」，或点「弃牌」换牌。':'点「出牌」。';return {...hint,cue,body:stage.handsLeft===1&&!target.canClear?(canDiscard?'这手不足目标，可弃牌或出牌。':'这手不足目标，请继续出牌。'):target.id==='flush'||target.id==='high-card'?`${definition}${action}`:`牌选好了，${action}`,recommendedCardIds:[],focus:canDiscard?'play-or-discard':'play',choices};}
           return {...hint,cue,body:target.id==='flush'?`${definition}${selected.length?`再选${remaining.length}张亮牌。`:'点亮牌。'}`:selected.length?`再选亮起的${remaining.length}张牌。`:(definition?definition+'点亮牌。':'选亮起的牌。'),recommendedCardIds:remaining,choices};
         }
         firstStage=undefined;
@@ -634,7 +635,7 @@ export class GameScene extends Phaser.Scene {
           if(key!==guideChoiceKey){guideChoiceKey=key;guideChoice=erxiangChoice(this.run,this.selectionPreview(),this.erxiangTargetId);}
         }
         const choice=hint.step==='skill'?guideChoice:undefined;
-        return liveNoviceGuide(hint,selected,{available:!!choice?.candidates.length,chosen:!!choice?.selected,
+        return liveNoviceGuide(hint,selected,{available:!!choice?.candidates.length,chosen:!!choice?.selected||!!this.erxiangTargetId,
           enabled:!!choice?.enabled&&!choice?.used&&this.run.phase==='await-input',canDiscard:!!this.run.stage&&this.run.stage.discardsLeft>=r2DiscardCost(this.run)&&this.run.drawPile.length>0&&this.run.gold>=(stageNotice(this.run)?.discardGoldCost??0),discardCost:r2DiscardCost(this.run),discardGoldCost:stageNotice(this.run)?.discardGoldCost??0});
       },
       onChoice:id=>{
@@ -687,7 +688,9 @@ export class GameScene extends Phaser.Scene {
         const map=(box:import('./layout').Box)=>noviceGuideCanvasBox(box,canvas,l);
         const hero=heroActionShortcut(l.tableActions.discard,l.heroAction);
         const targetText=this.view.root.getByName('hud/target') as Phaser.GameObjects.Text|undefined;
-        const focus=hint.focus==='play'?l.tableActions.play:hint.focus==='discard'?hero.discard:hint.focus==='hero'?hero.shortcut:hint.focus==='sort-suit'?l.buttons.suit:hint.focus==='score'?this.heatText.getBounds():hint.focus==='goal'?(targetText?.getBounds()??this.heatText.getBounds()):undefined;
+        const visibleSeats=l.cards.filter(card=>card.visible).map(card=>card.hit);
+        const handFocus=visibleSeats.length?{x:Math.min(...visibleSeats.map(b=>b.x)),y:Math.min(...visibleSeats.map(b=>b.y)),width:Math.max(...visibleSeats.map(b=>b.x+b.width))-Math.min(...visibleSeats.map(b=>b.x)),height:Math.max(...visibleSeats.map(b=>b.y+b.height))-Math.min(...visibleSeats.map(b=>b.y))}:undefined;
+        const focus=hint.focus==='play'?l.tableActions.play:hint.focus==='discard'?hero.discard:hint.focus==='hand'?handFocus:hint.focus==='hero'?hero.shortcut:hint.focus==='sort-suit'?l.buttons.suit:hint.focus==='score'?this.heatText.getBounds():hint.focus==='goal'?(targetText?.getBounds()??this.heatText.getBounds()):undefined;
         const cardBox=(id:string)=>{
           const index=this.hand.findIndex(card=>card.id===id),seat=l.cards[index],card=this.cardViews[index];
           if(!seat?.visible||!card?.container.active||!card.container.visible)return [];
@@ -701,7 +704,7 @@ export class GameScene extends Phaser.Scene {
         const jokerFrame=joker?.getData('frame') as Phaser.GameObjects.Rectangle|undefined;
         const ownedHighlight=joker?.active&&joker.visible&&jokerFrame?.active?[map(jokerFrame.getBounds())]:[];
         const highlightedCards=hint.step==='discard'||hint.step==='independent'?cards:focus?[]:cards;
-        const highlights=[...(focus?[map(focus)]:ownedHighlight),...highlightedCards.flatMap(cardBox)];
+        const highlights=[...(hint.focus==='play-or-discard'?[map(hero.discard),map(l.tableActions.play)]:focus?[map(focus)]:ownedHighlight),...highlightedCards.flatMap(cardBox)];
         // The hint must not intercept the optional skill or utility buttons:
         // tapping through to the skip control would unexpectedly leave the run.
         // PC labels and their detail hit targets sit beside the card frame, so
@@ -2607,7 +2610,11 @@ export class GameScene extends Phaser.Scene {
       const payoff=mountLiueSkillPayoff(this,this.heroActionButton,this.presentation.score,event.eventId,{context,beat:timing,reduced:this.reducedMotion,root:this.view.root,cards:this.heroStrikeCards(heroAction.targetIds),onDispose:()=>{if(this.liueSkillPayoff===payoff)this.liueSkillPayoff=undefined;}});
       this.liueSkillPayoff=payoff;
     }
-    const listening=liue?await this.showLiueListeningStage(event.eventId,heroAction.targetIds[0],timing,context,this.liueSkillPayoff?.charge):undefined;
+    const listeningFirst=!!this.presentation&&claimLiueListening(this.presentation,!!liue);
+    const listening=listeningFirst&&heroAction?await this.showLiueListeningStage(event.eventId,heroAction.targetIds[0],timing,context,this.liueSkillPayoff?.charge):undefined;
+    // Later same-rank/retrigger events retain their own card-to-skill feedback,
+    // but do not replay the long ear prelude.
+    if(liue&&!listeningFirst)this.liueSkillPayoff?.charge(1);
     if(context.signal.aborted)return;
     if(heroAction?.positive&&heroAction.kind!=='retained-card'&&!liue&&!this.presentation?.replay){await this.showSkillStage(event.eventId,context);if(context.signal.aborted)return;}
     const heroCards=heroAction?this.heroStrikeCards(heroAction.targetIds):[],heroPose=heroAction&&!plainExile&&!this.reducedMotion&&!this.presentation?.replay?this.bindHeroScorePose(heroAction,event,timing,context):undefined;
@@ -2894,7 +2901,7 @@ export class GameScene extends Phaser.Scene {
     const originHeat=replay?(BigInt(beforeHeat)>BigInt(score.finalScore)?BigInt(beforeHeat)-BigInt(score.finalScore):0n).toString():beforeHeat;
     const retainedIds=replay?[]:[...new Set([...(this.appliedRefill?.ids??[]),...(score.laohuanFind?.batchIds??[])])],orderedEvents=remainingScoreEvents(score).filter(event=>!isNeutralScoreReceipt(event)),phrase=scorePhrase(orderedEvents,this.stage.targetHeat,gameSession().speed,score,retainedIds);
     const auraEventId=firstScoreHighMultiplierCue({...score,events:orderedEvents.filter(event=>!gifts.some(gift=>gift.eventId===event.eventId))},replay)?.eventId;
-    const hand=score.cards,presentation={generation,lifecycle,intent,state,score,phrase,hand,retainedIds,displayHeat:beforeHeat,originHeat,replay,previousTrace,credited:replay,resourcePlayLeft:!replay&&beforeHands!==undefined?beforeHands-1:undefined,resourceGold:!replay?beforeGold:undefined,resourceTools:!replay?gifts[0]?.inventoryBefore:undefined,gifts:replay?[]:gifts,auraEventId,auraPlayed:false,auraEnding:false};this.presentation=presentation;
+    const hand=score.cards,presentation={generation,lifecycle,intent,state,score,phrase,hand,retainedIds,displayHeat:beforeHeat,originHeat,replay,previousTrace,credited:replay,resourcePlayLeft:!replay&&beforeHands!==undefined?beforeHands-1:undefined,resourceGold:!replay?beforeGold:undefined,resourceTools:!replay?gifts[0]?.inventoryBefore:undefined,gifts:replay?[]:gifts,auraEventId,auraPlayed:false,auraEnding:false,liueListeningShown:false};this.presentation=presentation;
     // This trace has already been committed by the play command.
     const openingAura=orderedEvents.find(event=>event.eventId===auraEventId);
     if(replay){

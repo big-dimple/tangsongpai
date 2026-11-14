@@ -155,6 +155,7 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
     if(!step.action&&document.activeElement===actionButton)closeButton.focus({preventScroll:true});
     actionButton.hidden=!step.action;actionButton.textContent=step.action?.label??'';
     const rows=step.choices??[],ids=JSON.stringify(rows.map(choice=>choice.id));
+    choices.setAttribute('aria-label',step.id==='payoff'?'新手引导下一步':'选择要尝试的牌型');
     if(ids!==choiceIds){
       choiceIds=ids;choices.replaceChildren(...rows.map(choice=>{
         const button=document.createElement('button');button.type='button';button.dataset.noviceGuideChoice=choice.id;

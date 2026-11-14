@@ -9,7 +9,7 @@ import {intersects} from '../src/game/layout';
 import {placeNoviceGuide} from '../src/game/NoviceGuideView';
 import {guidedTutorialRunId,newRunIdentity} from '../src/game/RunLaunch';
 import {dismissNoviceGuide,enrollNoviceGuide,markNoviceStart,noviceGuide} from '../src/game/NoviceGuide';
-import {armNoviceOwnedLesson,attemptNoviceOwnedReorder,closeNoviceOwnedLesson,noviceOwnedLesson,noviceOwnedLessonPcAvoid,openNoviceOwnedLesson,presentNoviceOwnedLesson} from '../src/game/NoviceOwnedLesson';
+import {advanceNoviceSecondOffer,armNoviceOwnedLesson,attemptNoviceOwnedReorder,closeNoviceOwnedLesson,noviceOwnedLesson,noviceOwnedLessonPcAvoid,openNoviceOwnedLesson,presentNoviceOwnedLesson} from '../src/game/NoviceOwnedLesson';
 
 class Store implements SaveStore {
  slots:SaveSlots={revision:0,current:null,previous:null};fail=false;
@@ -67,6 +67,29 @@ describe('owned-card lesson follows saved, real actions',()=>{
   expect(ownedJokerDropIndex(expanded.slots,1,expanded.slots[1].x+1,expanded.slots[1].y+1)).toBe(-1);
   closeNoviceOwnedLesson(restored.state,restored.journal,guide(restored));
   restored=SavedRun.restore(store,await store.read());expect(lesson(restored)).toMatchObject({opened:true,expanded:false});
+ });
+
+ it('bridges the saved first purchase to a real affordable second offer without requiring it',async()=>{
+  const {run,store}=await firstShop('108');
+  advanceNoviceSecondOffer(run.state,run.journal,guide(run));expect(lesson(run)).toBeUndefined();
+  await purchaseFirst(run);openNoviceOwnedLesson(run.state,run.journal,guide(run));
+  const before=JSON.stringify(run.state),first=presentNoviceOwnedLesson(guide(run)!,lesson(run),{collapsed:false,canExpand:true,count:1});
+  expect(first.focus).toBe('slots');expect(first.hint.choices).toEqual([{id:'novice-second-card',label:'看看第二张',cardIds:[]}]);
+  advanceNoviceSecondOffer(run.state,run.journal,guide(run));
+  const restored=SavedRun.restore(store,await store.read()),continued=lesson(restored);
+  expect(continued?.secondPrompt).toBe(true);expect(JSON.stringify(run.state)).toBe(before);
+  const offer=run.state.shop!.offers.find(o=>!o.consumed&&r2PurchasePrice(run.state,o)<=run.state.gold&&!run.state.jokers.some(j=>j.definitionId===o.definitionId))!;
+  expect(offer).toBeDefined();
+  const suggested=presentNoviceOwnedLesson(guide(restored)!,continued,{collapsed:false,canExpand:true,count:1,secondOffer:{id:offer.offerId,name:'示例牌'}});
+  expect(suggested).toMatchObject({focus:'offer',hint:{cue:'再看看一张牌',offerIds:[offer.offerId]}});
+  expect(suggested.hint.body).toContain('可选别的或进入牌桌');expect(suggested.hint.choices).toBeUndefined();
+  expect(presentNoviceOwnedLesson(guide(restored)!,continued,{collapsed:false,canExpand:true,count:1,secondLocation:'tab'}).focus).toBe('tab');
+  expect(presentNoviceOwnedLesson(guide(restored)!,continued,{collapsed:false,canExpand:true,count:1,secondLocation:'more'}).focus).toBe('shelf');
+  const noOffer=presentNoviceOwnedLesson(guide(restored)!,continued,{collapsed:false,canExpand:true,count:1,secondLocation:'none'});
+  expect(noOffer.focus).toBe('play');expect(noOffer.hint.body).toContain('没有可买的第二张');
+  await send(run,{type:'BuyOffer',offerId:offer.offerId});expect(run.state.jokers).toHaveLength(2);
+  openNoviceOwnedLesson(run.state,run.journal,guide(run));
+  expect(presentNoviceOwnedLesson(guide(run)!,lesson(run),{collapsed:false,canExpand:true,count:2}).hint.cue).toBe('试试调整顺序');
  });
 
  it('recognizes a second-card drag only after its exact command saves, including retry and rollback',async()=>{

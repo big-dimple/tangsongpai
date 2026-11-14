@@ -34,7 +34,7 @@ import {paperSceneStart} from './PaperFlow';
 import {bindNoviceGuide} from './NoviceGuideBinding';
 import {mountNoviceGestureDemo,type NoviceGestureDemoHandle} from './NoviceGestureDemo';
 import {noviceGuide,type NoviceGuideHint} from './NoviceGuide';
-import {armNoviceOwnedLesson,attemptNoviceOwnedReorder,closeNoviceOwnedLesson,noviceOwnedLesson,noviceOwnedLessonPcAvoid,openNoviceOwnedLesson,presentNoviceOwnedLesson} from './NoviceOwnedLesson';
+import {advanceNoviceSecondOffer,armNoviceOwnedLesson,attemptNoviceOwnedReorder,closeNoviceOwnedLesson,noviceOwnedLesson,noviceOwnedLessonPcAvoid,openNoviceOwnedLesson,presentNoviceOwnedLesson} from './NoviceOwnedLesson';
 import {needsGuidedPractice} from './GuidedTutorial';
 import {noviceGuideCanvasBox,placeNoviceGuide} from './NoviceGuideView';
 import {requestTutorialReplay} from './TutorialEntry';
@@ -221,6 +221,14 @@ export class ShopScene extends Phaser.Scene {
     // Decoration never changes the functional shop bounds.
     return shopLayout(l.width,l.height,l.hud.y,inset('bottom'),cols,this.run.jokers.some(j=>!!this.jokerCopy(j.definitionId)),!!firstChapterShopPrompt(this.run)&&this.ready,inset('left'),inset('right'),this.run.jokers.length,menuBox,ownedCollapsed,typeof window!=='undefined'&&!window.matchMedia('(pointer: coarse)').matches);
   }
+  private noviceSecondOffer(p=this.geometry()):{secondOffer?:{id:string;name:string};secondLocation:'tab'|'more'|'none'} {
+    const available=this.shelfOffers('jokers').filter(o=>!o.consumed&&!this.purchaseReason(o,true));
+    if(!available.length)return {secondLocation:'none'};
+    if(this.workshopSelected||this.shelfKind!=='jokers')return {secondLocation:'tab'};
+    const visible=p.portrait?available:this.visibleOffers().filter(o=>available.some(a=>a.offerId===o.offerId));
+    const offer=visible[0];
+    return offer?{secondOffer:{id:offer.offerId,name:this.jokerDefinition(offer.definitionId).name},secondLocation:'more'}:{secondLocation:'more'};
+  }
   private ownedLessonPresentation(hint:NoviceGuideHint,p=this.geometry()){
     const owner=runController(this),lesson=owner&&!owner.guidedOpeningSuppressed?noviceOwnedLesson(this.run,owner.journal,hint):undefined;
     if(lesson&&this.ownedDrag){
@@ -228,8 +236,9 @@ export class ShopScene extends Phaser.Scene {
       return {hint:{...hint,cue,body,gesture:undefined},focus:'none' as const};
     }
     const expanded=lesson&&p.inventoryCollapsed?this.geometry(false):p;
+    const second=lesson?.secondPrompt&&this.run.jokers.length===1?this.noviceSecondOffer(p):undefined;
     return presentNoviceOwnedLesson(hint,lesson,{collapsed:p.inventoryCollapsed,canExpand:!expanded.inventoryCollapsed&&expanded.slots.length===5,count:this.run.jokers.length,
-      finePointer:typeof window!=='undefined'&&window.matchMedia('(pointer: fine)').matches});
+      finePointer:typeof window!=='undefined'&&window.matchMedia('(pointer: fine)').matches,...second});
   }
   create(data:{targetLockCommandId?:string}={}):void {
     this.hapticLife?.abort();this.hapticLife=new AbortController();
@@ -355,6 +364,19 @@ export class ShopScene extends Phaser.Scene {
         return this.geometry().portrait?(lesson?this.ownedLessonHost?.host:this.mobileOffers?.host):undefined;
       },
       presentHint:hint=>this.ownedLessonPresentation(hint).hint,
+      onChoice:id=>{
+        if(id!=='novice-second-card')return;
+        const owner=runController(this),hint=owner&&noviceGuide(this.run,owner.journal);
+        if(!owner||owner.guidedOpeningSuppressed||!hint)return;
+        advanceNoviceSecondOffer(this.run,owner.journal,hint);
+        const offer=this.noviceSecondOffer().secondOffer,host=this.mobileOffers?.host;
+        if(offer&&host){
+          const row=Array.from(host.querySelectorAll<HTMLElement>('.shop-mobile-offer')).find(node=>node.dataset.offerId===offer.id);
+          if(row){const target=host.scrollTop+row.getBoundingClientRect().top-host.getBoundingClientRect().top-8;
+            host.scrollTo({top:Math.max(0,target),behavior:this.resultReduced?'auto':'smooth'});}
+        }
+        unmountNoviceGuide.refresh();
+      },
       onPresented:updateOwnedGesture,
       getGeometry:hint=>{
         const l=this.view.layout,p=this.geometry(),canvas=this.game.canvas.getBoundingClientRect();
@@ -370,6 +392,8 @@ export class ShopScene extends Phaser.Scene {
           return right>x&&bottom>y?[{x,y,width:right-x,height:bottom-y}]:[];
         });
         if(focus==='play')highlights.push(map(p.play));
+        else if(focus==='tab')highlights.push(map({...p.tabs,width:p.tabs.width/4}));
+        else if(focus==='shelf')highlights.push(map({...p.tabs,x:p.tabs.x+Math.max(0,p.tabs.width-44),width:Math.min(44,p.tabs.width)}));
         else if(focus==='toggle'&&'ownedToggle' in p&&p.ownedToggle)highlights.push(map(p.ownedToggle));
         else if(focus==='slots'&&p.slots.length===5){
           const first=p.slots[0],last=p.slots[4];highlights.push(map({x:first.x,y:first.y,width:last.x+last.width-first.x,height:first.height}));
@@ -1284,7 +1308,8 @@ export class ShopScene extends Phaser.Scene {
     };
     const dialog=this.dialog.open(name+' · 购买详情',body,[...(d&&this.run.jokers.length?[{label:'比较替换',run:()=>this.inspectReplacement(id)}]:[]),{label:`购买 · ${price} 金`,primary:true,disabled:!!reason,run:()=>buy(true)}],{artBackground:{},shopContext:'purchase',closeLabel:'取消',portrait,rarity:d?.rarity,...(d?{artLoad:this.jokerArtStatus(d.id)}:info?.detailArtUrl?{artLoad:{status:goodsArtLoadState(this,o.definitionId).status,readStatus:()=>goodsArtLoadState(this,o.definitionId).status,retry:()=>retryGoodsArt(this,o.definitionId,info.artUrl,()=>{this.paintGoodsArt(goodsArtKey(o.definitionId));this.dialog.refreshArtLoad();})}}:{}),summaryBody:plainSummary??(d?shopOfferRelation(this.run,o,currentBuildFocus(this.run,this.run.openingRoute)).label+' · ':'')+`实付 ${price} 金 · `+(after<0?`现有 ${this.run.gold} 金，差 ${-after} 金`:`余额 ${this.run.gold} → ${after} 金`)+'\n'+trade+(investment?'\n'+investment.next:'')+(d?.id==='f04'&&after>=0?'\n购后余额仅供参考；+3 条件在每次出牌开始时检查。':'')+(reason?'\n'+reason:''),effectBody:d?shopOfferRelation(this.run,o,currentBuildFocus(this.run,this.run.openingRoute)).body:[info!.summary,o.definitionId==='S04'?s04QualificationText(this.run):undefined].filter(Boolean).join('\n'),editionBody:ability?this.jokerEditionSummary(o.edition,d!.id):undefined,ability,collapseRules:true});
     const tutorialOwner=runController(this),tutorialHint=tutorialOwner&&noviceGuide(this.run,tutorialOwner.journal);
-    if(tutorialHint?.step==='shop'&&tutorialHint.offerIds?.[0]===id)dialog.querySelector<HTMLButtonElement>('.dialog-primary:not(:disabled)')?.classList.add('novice-focus-action');
+    const guidedOffer=tutorialHint&&this.ownedLessonPresentation(tutorialHint).hint.offerIds?.includes(id);
+    if(guidedOffer)dialog.querySelector<HTMLButtonElement>('.dialog-primary:not(:disabled)')?.classList.add('novice-focus-action');
     if(kind==='tools')dialog.classList.add('shop-tool-purchase');
     if(guidance){dialog.classList.add('shop-joker-purchase');const intro=dialog.querySelector('.dialog-intro');dialog.querySelector('.dialog-header')?.append(createShopIdentityTags(d!.rarity,o.edition));if(!ability?.minimal&&synergy&&(synergy.tradeoff||synergy.matches.length)&&!guidance.purchaseConditionLosses.length){const connection=document.createElement('p');connection.className='shop-purchase-connection';connection.textContent=guidance.decision.connection;intro?.querySelector('.card-ability')?.after(connection);}}
     if(kind==='tools')dialog.classList.add('make-cards-purchase');

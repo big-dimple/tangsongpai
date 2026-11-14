@@ -235,7 +235,15 @@ async function scenario(spec){
     const ids=(await state()).handOrder;assert.equal(ids.length,8);const stable=await saved(),firstFive=ids.slice(0,5);
     await route([ids[0],ids[4],ids[0]]);await expectSelected(firstFive,'reverse sweep does not retoggle visited cards');
     await route([ids[4],ids[0],ids[4]]);await expectSelected([],'starting on selected card cancels across the row');
-    await tap('game','card/'+ids[2]);await expectSelected([ids[2]],'tap selects one');await tap('game','card/'+ids[2]);await expectSelected([],'second tap cancels');
+    await tap('game','card/'+ids[2]);await expectSelected([ids[2]],'tap selects one');
+    const discardPoint=await point(page,'game','action/discard'),playPoint=await point(page,'game','action/play');
+    await page.waitForFunction(({discardPoint,playPoint})=>{
+      const rings=[...document.querySelectorAll('[data-novice-guide-highlight]')].map(e=>e.getBoundingClientRect());
+      const covers=p=>rings.some(r=>p.x>=r.left-2&&p.x<=r.right+2&&p.y>=r.top-2&&p.y<=r.bottom+2);
+      return covers(discardPoint)&&covers(playPoint);
+    },{discardPoint,playPoint});
+    assert.match((await guideView()).body,/出牌.*换牌|换牌.*出牌/,'free choice explains both options');await shot('06a-free-actions');
+    await tap('game','card/'+ids[2]);await expectSelected([],'second tap cancels');
     await route([ids[0],ids[7]]);await expectSelected(firstFive,'sweep stops at five');await tap('game','card/'+ids[7]);await expectSelected(firstFive,'sixth tap is rejected');
     assert.match((await observeHand()).status,/最多选择\s*5/,'limit feedback is visible');await shot('06-selection-limit');await clear();
     await route([ids[7],ids[0]]);await expectSelected(ids.slice(3),'reverse full-row sweep selects the first five encountered');await clear();
@@ -286,6 +294,9 @@ async function scenario(spec){
 
     const held=(await state()).jokers[0].instanceId,stableFirst=await saved();await tap('shop','joker/'+held);let dialog=page.locator('.detail-dialog[open]').last();await dialog.waitFor();await click(dialog.getByRole('button',{name:'出售',exact:true}));dialog=page.locator('.detail-dialog[open]').last();await dialog.waitFor();await shot('11-sale-confirm');await click(dialog.getByRole('button',{name:'取消',exact:true}));
     dialog=page.locator('.detail-dialog[open]').last();if(await dialog.count())await click(dialog.getByRole('button',{name:'关闭',exact:true}));assert.deepEqual(await saved(),stableFirst,'sale cancellation changes no saved data');
+    const secondStep=page.locator('[data-novice-guide-choice="novice-second-card"]');await secondStep.waitFor({state:'visible'});await click(secondStep);await cue('再看看一张牌');
+    const secondGuide=await shot('11a-second-card-guide');assert.match(secondGuide.body,/查看效果和价格/);assert.match(secondGuide.body,/可选别的或进入牌桌/);
+    await page.waitForFunction(()=>document.querySelectorAll('[data-novice-guide-highlight]').length>0);
     const secondPurchase=await buy('c03');assert.equal(secondPurchase.state.jokers.length,2);
     if(spec.touch){await cue('展开已拥有牌');await shot('12a-two-cards-folded');await tap('shop','action/toggle-owned');}
     await cue('试试调整顺序');assert.match((await guideView()).body,spec.touch?/按住.*拖/:/鼠标左键.*拖/,'reordering instructions describe the actual input device');await shot('12-two-cards');

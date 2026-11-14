@@ -215,6 +215,18 @@ describe('guided first match from saved commands',()=>{
   expect(liveNoviceGuide(skillHint,[],{...skill,enabled:false}).body).toContain('技能不可用');
  });
 
+ it('keeps free hand choices and legal actions visibly guided without selecting for the player',()=>{
+  const hint={step:'skill-practice' as const,cue:'自由出牌',body:'选牌出牌'};
+  const free={available:false,chosen:false,enabled:true,canDiscard:true};
+  expect(liveNoviceGuide(hint,[],free)).toMatchObject({focus:'hand',recommendedCardIds:[]});
+  expect(liveNoviceGuide(hint,['a'],free)).toMatchObject({focus:'play-or-discard',recommendedCardIds:[]});
+  expect(liveNoviceGuide(hint,['a'],{...free,canDiscard:false}).focus).toBe('play');
+  expect(liveNoviceGuide(hint,['a','b'],{...free,chosen:true})).toMatchObject({focus:'play',body:'技能已准备，点「确认出牌」。'});
+  const discard={step:'discard' as const,cue:'换牌',body:'',recommendedCardIds:['a','b']};
+  expect(liveNoviceGuide(discard,['c'],free)).toMatchObject({focus:'play-or-discard',recommendedCardIds:[]});
+  expect(liveNoviceGuide(discard,['a'],free).focus).toBe('discard');
+ });
+
  it('explains optional replacement without rejecting other selections or requiring a discard',async()=>{
   const {run}=await start('discard-choice');await enter(run);
   await send(run,{type:'PlayHand',selectedIds:['hearts-5','clubs-5']});

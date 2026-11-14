@@ -49,7 +49,7 @@ export interface NoviceGuideHint {
  recommendedCardIds?:string[];
  choices?:{id:string;label:string;cardIds:string[];selected?:boolean}[];
  offerIds?:string[];
- focus?:'play'|'discard'|'hero'|'score'|'goal'|'sort-suit';
+ focus?:'play'|'discard'|'play-or-discard'|'hand'|'hero'|'score'|'goal'|'sort-suit';
  gesture?:'sweep'|'hold-drag';
  fact?:NoviceGuideFact;
 }
@@ -340,6 +340,13 @@ function deriveHint(s:R2RunState,journal?:readonly Command[]):NoviceGuideHint {
  return {step:'payoff',cue:advice.cause?`${name} · 未加成`:name,body,payoffAction:advice.action,recommendedCardIds:!inShop&&target.status==='ready'&&advice.pair?pairIds(s):[],fact};
 }
 
+/** Keep both legal actions visible without choosing cards for the player. */
+export function noviceFreeActions(hint:NoviceGuideHint,selectedIds:readonly string[],options:{canDiscard:boolean;skillChosen?:boolean}):NoviceGuideHint {
+ if(!selectedIds.length)return {...hint,focus:'hand',recommendedCardIds:[]};
+ if(options.skillChosen)return {...hint,body:'技能已准备，点「确认出牌」。',focus:'play',recommendedCardIds:[]};
+ return {...hint,body:options.canDiscard?'选好了可以出牌，或点「弃牌」换牌。':'选好了，点「出牌」。',focus:options.canDiscard?'play-or-discard':'play',recommendedCardIds:[]};
+}
+
 /** Unsaved selection affects only the next prompt, never saved tutorial progress. */
 export function liveNoviceGuide(hint:NoviceGuideHint,selectedIds:readonly string[],skill:{available:boolean;chosen:boolean;enabled:boolean;canDiscard:boolean;discardCost?:number;discardGoldCost?:number}):NoviceGuideHint {
  const selected=new Set(selectedIds),recommended=hint.recommendedCardIds??[];
@@ -353,9 +360,9 @@ export function liveNoviceGuide(hint:NoviceGuideHint,selectedIds:readonly string
  if(hint.step==='discard'&&selected.size){
   if(!skill.canDiscard)return {...hint,cue:'可以继续出牌',body:'当前无法再换牌，点「出牌」继续。',recommendedCardIds:[],focus:'play'};
   const example=selected.size<=2&&[...selected].every(id=>recommended.includes(id));
-  return {...hint,cue:example?'选好了，试试换牌':'出牌或换牌，由你选择',body:`点「弃牌」换掉已选${selected.size}张，${discardCost}；也可直接出牌。`,recommendedCardIds:[],focus:example?'discard':undefined};
+  return {...hint,cue:example?'选好了，试试换牌':'出牌或换牌，由你选择',body:`点「弃牌」换掉已选${selected.size}张，${discardCost}；也可直接出牌。`,recommendedCardIds:[],focus:example?'discard':'play-or-discard'};
  }
- if((hint.step==='independent'||hint.step==='skill-practice')&&selected.size)return {...hint,body:'点「出牌」，看看结果。',focus:'play'};
+ if(hint.step==='independent'||hint.step==='skill-practice')return noviceFreeActions(hint,selectedIds,{canDiscard:skill.canDiscard,skillChosen:skill.chosen});
  if(hint.step==='payoff'&&recommended.length===2&&selected.size===2&&recommended.every(id=>selected.has(id))){
   const name=hint.fact?.purchaseDefinitionId?cardDisplayName(hint.fact.purchaseDefinitionId):'唐宋牌';
   return {...hint,cue:`${name} · 出牌`,body:hint.payoffAction??hint.body,recommendedCardIds:[],focus:'play'};
@@ -363,11 +370,12 @@ export function liveNoviceGuide(hint:NoviceGuideHint,selectedIds:readonly string
  if(hint.step==='payoff'&&selected.size&&recommended.length===2){
   const name=hint.fact?.purchaseDefinitionId?cardDisplayName(hint.fact.purchaseDefinitionId):hint.cue;
   if(selected.size===1&&recommended.includes([...selected][0]))return {...hint,cue:name,body:hint.payoffAction??hint.body,recommendedCardIds:recommended.filter(id=>!selected.has(id))};
-  return {...hint,cue:name,body:hint.payoffAction??hint.body,recommendedCardIds:[]};
+  return noviceFreeActions({...hint,cue:name,body:hint.payoffAction??hint.body},selectedIds,{canDiscard:skill.canDiscard,skillChosen:skill.chosen});
  }
+ if(hint.step==='payoff'&&!recommended.length)return noviceFreeActions(hint,selectedIds,{canDiscard:skill.canDiscard,skillChosen:skill.chosen});
  if(hint.step==='skill'&&recommended.length===2&&!skill.available){
   const extra=[...selected].filter(id=>!recommended.includes(id));
-  if(extra.length)return {...hint,body:'也可自行选牌，选好后试刘娥技能。',recommendedCardIds:[]};
+  if(extra.length)return noviceFreeActions({...hint,body:'也可自行选牌，选好后试刘娥技能。'},selectedIds,{canDiscard:skill.canDiscard,skillChosen:skill.chosen});
   if(selected.size===1)return {...hint,body:'再选另一张同点数的牌。',recommendedCardIds:recommended.filter(id=>!selected.has(id))};
  }
  if(hint.step==='skill'){
@@ -376,7 +384,7 @@ export function liveNoviceGuide(hint:NoviceGuideHint,selectedIds:readonly string
   if(skill.available)return {...hint,cue:'牌点可转为倍率',body:'点刘娥技能，再选一张牌。',recommendedCardIds:[],focus:'hero'};
   if(!recommended.length){
    if(selected.size)return {...hint,body:skill.canDiscard?`可直接出牌；想找适合技能的组合，也可弃掉已选牌换新牌，${discardCost}。`:'可先出牌，再从补回的牌中找适合技能的组合。',focus:skill.canDiscard?'discard':'play'};
-   return {...hint,body:skill.canDiscard?`技能需要对子或更高牌型。可自己选牌；想换牌时，选1–5张点「弃牌」，${discardCost}。`:'技能需要对子或更高牌型。当前无法换牌，可先自己选牌出牌。'};
+   return {...hint,body:skill.canDiscard?`技能需要对子或更高牌型。可自己选牌；想换牌时，选1–5张点「弃牌」，${discardCost}。`:'技能需要对子或更高牌型。当前无法换牌，可先自己选牌出牌。',focus:'hand'};
   }
  }
  return hint;

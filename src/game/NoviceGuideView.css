@@ -5,7 +5,8 @@
 .novice-guide-focus { position:fixed;inset:0;width:100%;height:100%;pointer-events:none; }
 .novice-guide.is-inline .novice-guide-focus { display:none; }
 .novice-guide-rings,.novice-guide-ring { position:fixed;pointer-events:none; }
-.novice-guide-ring { box-sizing:border-box;border:3px solid #c4553e;border-radius:9px;box-shadow:0 0 0 2px #fff8e9e6,0 0 10px 2px #efbd5c80; }
+.novice-guide-ring { box-sizing:border-box;border:3px solid #c4553e;border-radius:9px;box-shadow:0 0 0 2px #fff8e9e6,0 0 10px 2px #efbd5c80;animation:novice-guide-ring-breathe 1.8s ease-in-out infinite; }
+@keyframes novice-guide-ring-breathe { 0%,100% { opacity:.72; } 50% { opacity:1; } }
 .novice-guide-ring::after { content:'';position:absolute;right:-6px;top:-6px;width:10px;height:10px;box-sizing:border-box;border:2px solid #fff8e9;border-radius:2px;background:#c4553e;animation:novice-guide-ring-pulse 1.8s ease-in-out infinite; }
 @keyframes novice-guide-ring-pulse { 0%,100% { opacity:.45; } 50% { opacity:1; } }
 /* Native modal focus belongs to the actionable button itself. */
