@@ -57,6 +57,9 @@
 .novice-guide[data-reduced-motion=true] * { animation:none!important;transition:none!important; }
 @media (max-width:520px) { .novice-guide-panel { padding:4px 8px; } .novice-guide-progress { margin-bottom:0;font-size:10px;line-height:1.1; } .novice-guide-title,.novice-guide-panel[data-emphasis=score] .novice-guide-title,.novice-guide-panel[data-emphasis=reward] .novice-guide-title { font-size:max(15px,.94rem);line-height:1.15; } .novice-guide-body { margin-top:2px;line-height:1.2; } .novice-guide-panel.has-choices { padding:2px 6px; } .novice-guide-panel.has-choices .novice-guide-progress { display:none; } .novice-guide-panel.has-choices .novice-guide-body { margin:0 3px;line-height:1.2; } .novice-guide-panel.has-choices .novice-guide-choice-row { margin-top:2px; } }
 @media (max-width:520px) and (max-height:650px) { .novice-guide-panel { padding-top:2px;padding-bottom:2px; } .novice-guide-progress { display:none; } .novice-guide-body { margin-top:0; } .novice-guide-panel.has-choices .novice-guide-choice-row { margin-top:0; } }
+/* Tight phone bands cannot spare an extra vertical padding row. The text
+   line-height and every button's 44px target remain unchanged. */
+@media (max-width:520px) { .novice-guide-panel.is-compact { padding-top:0;padding-bottom:0; } }
 @media (prefers-reduced-motion:reduce) { .novice-guide * { animation:none!important;transition:none!important; } }
 .detail-dialog.novice-hero-dialog[open] { width:min(440px,calc(100vw - 24px));height:fit-content;display:flex;flex-direction:column; }
 .detail-dialog.novice-hero-dialog > .dialog-content { flex:0 1 auto;overflow:auto; }
