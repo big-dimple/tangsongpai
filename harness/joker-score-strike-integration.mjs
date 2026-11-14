@@ -23,7 +23,7 @@ const saved=()=>p.evaluate(async()=>{const c=window.__harness.game.registry.get(
 p.setDefaultTimeout(45000);p.on('dialog',d=>d.accept());p.on('pageerror',e=>report.errors.push(e.stack));
 try{
  await p.goto('http://127.0.0.1:5699/?harness=1');await waitScene(p,'title');await openRunMenu(p);const sec=p.getByText('进度与存档',{exact:true}).locator('..');if(!await sec.evaluate(e=>e.open))await sec.locator('summary').click();
- const chooser=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入本局',exact:true}).click();await(await chooser).setFiles({name:'strike-and-assist.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(checkpoint))});
+ const chooser=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入存档',exact:true}).click();await(await chooser).setFiles({name:'strike-and-assist.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(checkpoint))});
  await waitScene(p,'game');await p.waitForFunction(()=>{const s=window.__harness.game.scene.getScene('game');return s.ready&&!s.playing&&!s.presentation&&s.cardViews.every(v=>!v.dealing&&!s.tweens.isTweening(v.container));});
  if(await p.locator('.detail-dialog[open]').count())await p.keyboard.press('Escape');report.before=await saved();
  for(const id of f.selectedIds)await tapUI(p,'game','card/'+id,touch);await tapUI(p,'game','hero/action-shortcut',touch);

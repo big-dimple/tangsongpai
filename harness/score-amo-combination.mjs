@@ -28,7 +28,7 @@ async function importFixture(p,checkpoint){
   await p.locator('.run-menu-toggle').tap();
   const section=p.getByText('进度与存档',{exact:true}).locator('..');
   if(!await section.evaluate(e=>e.open))await section.locator('summary').tap();
-  const chooser=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入本局',exact:true}).tap();
+  const chooser=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入存档',exact:true}).tap();
   await(await chooser).setFiles({name:'explicit-amo-rule-fixture.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(checkpoint))});
   await waitScene(p,'game');
   await p.waitForFunction(()=>{const s=window.__harness.game.scene.getScene('game');return s.ready&&!s.playing&&s.cardViews.every(v=>!v.dealing&&!v.back?.visible&&!s.tweens.isTweening(v.container));});

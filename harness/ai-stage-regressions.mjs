@@ -34,7 +34,7 @@ const snap=p=>p.evaluate(async()=>{const {gameSession}=await import('/src/game/s
 async function load(p,f){
  await p.goto('http://127.0.0.1:'+port+'/?harness=1');await waitScene(p,'title');
  await p.locator('.run-menu-toggle').click();const saves=p.getByText('进度与存档',{exact:true}).locator('..');await saves.locator('summary').click();
- const chooser=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入本局',exact:true}).click();await(await chooser).setFiles({name:'regression.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(f))});
+ const chooser=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入存档',exact:true}).click();await(await chooser).setFiles({name:'regression.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(f))});
 }
 async function scenario(name,fn,viewport={width:1366,height:768}){
  if(process.env.REGRESSION_CASES&&!process.env.REGRESSION_CASES.split(',').includes(name))return;

@@ -28,7 +28,7 @@ async function noForecast(p){
  for(let i=0;i<o.labels.length;i++)for(let j=i+1;j<o.labels.length;j++)assert.ok(!overlap(o.labels[i].bounds,o.labels[j].bounds),JSON.stringify(o.labels));return o;
 }
 async function importFixture(p,kind,touch){
- await p.evaluate(()=>window.__oldSelectionView=window.__harness.game.scene.getScene('game').view);await p.locator('.run-menu-toggle').click();const d=p.getByText('进度与存档',{exact:true}).locator('..');if(!await d.evaluate(e=>e.open))await d.locator('summary').click();const fc=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入本局',exact:true}).click();await(await fc).setFiles({name:kind+'.json',mimeType:'application/json',buffer:Buffer.from(fixtures[kind].file)});await waitScene(p,'game');await p.waitForFunction(()=>window.__harness.game.scene.getScene('game').view!==window.__oldSelectionView);await ready(p);
+ await p.evaluate(()=>window.__oldSelectionView=window.__harness.game.scene.getScene('game').view);await p.locator('.run-menu-toggle').click();const d=p.getByText('进度与存档',{exact:true}).locator('..');if(!await d.evaluate(e=>e.open))await d.locator('summary').click();const fc=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入存档',exact:true}).click();await(await fc).setFiles({name:kind+'.json',mimeType:'application/json',buffer:Buffer.from(fixtures[kind].file)});await waitScene(p,'game');await p.waitForFunction(()=>window.__harness.game.scene.getScene('game').view!==window.__oldSelectionView);await ready(p);
  for(const id of fixtures[kind].ids)await tapUI(p,'game','card/'+id,touch);
 }
 try{

@@ -23,7 +23,7 @@ try{for(const spec of specs){const mode=spec.mode||'normal',key=`${spec.width}-d
  try{
   if(mode==='missing')await p.route('**/characters/*.portrait.webp',r=>r.abort());
   await p.goto('http://127.0.0.1:5458/?harness=1');await waitScene(p,'title');const f=heroClimaxFixture('multiply');if(mode==='replay'){f.selectedIds=f.selectedIds.slice(0,2);f.assistIds=[];}
-  await p.locator('.run-menu-toggle').click();const details=p.getByText('进度与存档',{exact:true}).locator('..');if(!await details.evaluate(e=>e.open))await details.locator('summary').click();const chooser=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入本局',exact:true}).click();await(await chooser).setFiles({name:'clarity.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(makeCheckpoint(f.state,[])))});await waitScene(p,'game');await settle();
+  await p.locator('.run-menu-toggle').click();const details=p.getByText('进度与存档',{exact:true}).locator('..');if(!await details.evaluate(e=>e.open))await details.locator('summary').click();const chooser=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入存档',exact:true}).click();await(await chooser).setFiles({name:'clarity.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(makeCheckpoint(f.state,[])))});await waitScene(p,'game');await settle();
   const intro=p.getByRole('button',{name:'开始出牌',exact:true});if(await intro.count())await intro.click();if(await p.locator('.detail-dialog[open]').count())await p.getByRole('button',{name:'关闭',exact:true}).click();
   assert.deepEqual((await saved(p)).state,f.state);await p.waitForTimeout(mode==='missing'?100:600);
   const initial=await saved(p);

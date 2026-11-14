@@ -53,7 +53,7 @@ async function resetOriginalSelection(){const selected=(await probe()).selected;
 try{
  await page.goto('http://127.0.0.1:'+port+'/?harness=1');await waitScene(page,'title');
  await page.locator('.run-menu-toggle').click();const section=page.getByText('进度与存档',{exact:true}).locator('..');if(!await section.evaluate(e=>e.open))await section.locator('summary').click();
- const chooser=page.waitForEvent('filechooser');await page.getByRole('button',{name:'导入本局',exact:true}).click();await(await chooser).setFiles({name:'ai-parity-public-checkpoint.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(checkpoint))});
+ const chooser=page.waitForEvent('filechooser');await page.getByRole('button',{name:'导入存档',exact:true}).click();await(await chooser).setFiles({name:'ai-parity-public-checkpoint.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(checkpoint))});
  await waitScene(page,'game');await ready();const intro=page.getByRole('button',{name:'开始出牌',exact:true});if(await intro.count())await intro.click();if(await page.locator('.detail-dialog[open]').count())await page.getByRole('button',{name:'关闭',exact:true}).click();
  for(const id of fixture.selectedIds)await tapUI(page,'game','card/'+id);
  initial=await snap();assert.deepEqual(initial.state,fixture.state);

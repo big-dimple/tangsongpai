@@ -32,7 +32,7 @@ async function importState(page,state){
  const checkpoint=makeCheckpoint(state,[]);assert.ok(readCheckpoint(checkpoint).ok,'strict fixture checkpoint');
  await page.locator('.run-menu-toggle').click();const section=page.getByText('进度与存档',{exact:true}).locator('..');
  if(!await section.evaluate(e=>e.open))await section.locator('summary').click();
- const chooser=page.waitForEvent('filechooser');await page.getByRole('button',{name:'导入本局',exact:true}).click();
+ const chooser=page.waitForEvent('filechooser');await page.getByRole('button',{name:'导入存档',exact:true}).click();
  await(await chooser).setFiles({name:'coefficient-label.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(checkpoint))});
  await waitScene(page,'game');await page.waitForFunction(()=>{const s=window.__harness.game.scene.getScene('game');return s.ready&&!s.presentation&&s.cardViews.every(c=>!c.dealing&&!s.tweens.isTweening(c.container));});
  assert.deepEqual((await persisted(page)).state,state);

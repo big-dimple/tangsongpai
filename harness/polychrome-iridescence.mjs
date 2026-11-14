@@ -26,7 +26,7 @@ const state=p=>p.evaluate(()=>JSON.stringify({state:window.__harness.game.regist
 const nextFrame=p=>p.evaluate(()=>new Promise(r=>window.__harness.game.events.once('poststep',r)));
 async function importFixture(p,s){
   await p.locator('.run-menu-toggle').click();const section=p.getByText('进度与存档',{exact:true}).locator('..');if(!await section.evaluate(e=>e.open))await section.locator('summary').click();
-  const chooser=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入本局',exact:true}).click();await(await chooser).setFiles({name:'controlled-iridescence-five.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(makeCheckpoint(s,[])))});
+  const chooser=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入存档',exact:true}).click();await(await chooser).setFiles({name:'controlled-iridescence-five.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(makeCheckpoint(s,[])))});
   await waitScene(p,'shop');await p.waitForFunction(()=>{const s=window.__harness.game.scene.getScene('shop');return s.ready&&s.view.root.alpha===1&&!s.tweens.isTweening(s.view.root)&&s.offerArts.every(a=>a.alpha===1&&!s.tweens.isTweening(a));});
 }
 async function collectShop(p,name='card/polychrome-iridescence'){

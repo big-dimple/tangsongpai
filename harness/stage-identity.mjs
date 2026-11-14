@@ -34,7 +34,7 @@ try{
   const name=width+'-'+boss.definitionId,touch=width===390;
   await page.goto('http://127.0.0.1:5447/?harness=1');await waitScene(page,'title');
   await page.locator('.run-menu-toggle').click();const details=page.getByText('进度与存档',{exact:true}).locator('..');if(!await details.evaluate(e=>e.open))await details.locator('summary').click();
-  const chooser=page.waitForEvent('filechooser');await page.getByRole('button',{name:'导入本局',exact:true}).click();await(await chooser).setFiles({name:'controlled.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(makeCheckpoint(imported,[])))});await waitScene(page,'game');
+  const chooser=page.waitForEvent('filechooser');await page.getByRole('button',{name:'导入存档',exact:true}).click();await(await chooser).setFiles({name:'controlled.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(makeCheckpoint(imported,[])))});await waitScene(page,'game');
   if(entryOnly){
    const expected=send(imported,{type:'EnterStage'});await page.waitForFunction(()=>!!document.querySelector('.stage-identity-entry[open]'));assert.deepEqual(await page.evaluate(()=>window.__harness.game.registry.get('runController').state),expected);
    row.entry=await page.locator('dialog[open]').innerText();row.geometry=[];

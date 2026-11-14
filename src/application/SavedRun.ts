@@ -32,8 +32,9 @@ export class SavedRun {
   }
   get state():R2RunState {return this.checkpoint.state;}
   get journal():readonly Command[] {return this.checkpoint.journal;}
+  get storageRevision():number {return this.revision;}
   /** Slot metadata, never part of the game rules or a substitute for its receipts. */
-  get guidedOpeningSuppressed():boolean {return this.suppressedOpenings.has(this.state.runId);}
+  get guidedOpeningSuppressed():boolean {return this.suppressedOpenings.has(this.state.runId)||this.pending?.suppressGuidedOpening===true;}
   exportJSON():string {return JSON.stringify(this.pending?.checkpoint??this.checkpoint,null,2);}
   isUnsavedCheckpoint(checkpoint:Checkpoint):boolean {return this.pending!==undefined&&canonicalJson(this.pending.checkpoint)===canonicalJson(checkpoint);}
 

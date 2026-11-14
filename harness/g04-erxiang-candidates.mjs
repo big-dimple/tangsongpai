@@ -38,7 +38,7 @@ const idle=p=>p.waitForFunction(()=>{const g=window.__harness.game;if(g.scene.is
 async function imp(p,s){
  if(await p.locator('.run-menu-modal').evaluate(e=>e.open))await p.locator('.run-menu-toggle').click();
  await p.locator('.run-menu-toggle').click();const sec=p.getByText('进度与存档',{exact:true}).locator('..');if(!await sec.evaluate(e=>e.open))await sec.locator('summary').click();
- const event=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入本局',exact:true}).click();await(await event).setFiles({name:'g04-controlled.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(makeCheckpoint(s,[])))});
+ const event=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入存档',exact:true}).click();await(await event).setFiles({name:'g04-controlled.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(makeCheckpoint(s,[])))});
  await waitScene(p,'game');await idle(p);assert.deepEqual((await snap(p)).state,s);
 }
 async function operation(p,touch,empty=false){await tapUI(p,'game','hero/erxiang-handoff',touch);const b=p.getByRole('button',{name:'查看本场技能操作',exact:true});if(touch)await b.tap();else await b.click();await p.getByRole('button',{name:'返回选牌',exact:true}).waitFor();if(!empty)await p.locator('.dialog-choice-actions').waitFor();}

@@ -39,7 +39,7 @@ async function imp(p,state,scene='intermission'){
  assert.ok(readCheckpoint(makeCheckpoint(state,[])).ok);
  await p.goto('http://127.0.0.1:5598/?harness=1');await waitScene(p,'title');await openRunMenu(p,p.viewportSize().width<800);
  const sec=p.getByText('进度与存档',{exact:true}).locator('..');if(!await sec.evaluate(e=>e.open))await sec.locator('summary').click();
- const fc=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入本局',exact:true}).click();await(await fc).setFiles({name:'result-layout.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(makeCheckpoint(state,[])))});
+ const fc=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入存档',exact:true}).click();await(await fc).setFiles({name:'result-layout.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(makeCheckpoint(state,[])))});
  await waitScene(p,scene);await p.waitForFunction(scene=>window.__harness.game.scene.getScene(scene).ready,scene);
 }
 const regions=p=>p.evaluate(()=>{

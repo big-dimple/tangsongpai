@@ -2,6 +2,8 @@ import type {SaveCommitOptions,SaveSlots,SaveStore} from '../application/SavedRu
 import {readCheckpoint,type Checkpoint} from '../application/checkpoint';
 import {r2ModeStorageKey,type R2ModeSelection} from '../content/r2Modes';
 import {R2_RULESETS,r2RulesetFor} from '../domain/r2Run';
+import type {SaveArchive} from '../application/SaveArchive';
+import {RUN_PROGRESS_KEY} from './RunProgress';
 
 const DB_NAME='tangsongpai-checkpoints';
 const STORE='saves';
@@ -29,14 +31,18 @@ export class IndexedDbSave implements SaveStore {
     return this.readSlots();
   }
   /** First-run auto-start must not replace any active, retained or unreadable record.
-   * The following commit compares revision zero atomically with concurrent writers. */
+   * The following commit compares the empty history's revision with concurrent writers. */
   async readEmptyHistory():Promise<SaveSlots> {
     const db=await this.db();
     return new Promise((resolve,reject)=>{
       const tx=db.transaction(STORE,'readonly'),request=tx.objectStore(STORE).openCursor();
-      let occupied=false;
-      request.onsuccess=()=>{occupied=request.result!==null;};
-      tx.oncomplete=()=>occupied?reject(Error('history-not-empty')):resolve({revision:0,current:null,previous:null});
+      let occupied=false,revision=0;
+      request.onsuccess=()=>{
+        const cursor=request.result,meta=cursor?.value as Meta|undefined;
+        if(cursor?.key==='meta'&&meta?.slotKey===''&&Number.isSafeInteger(meta.revision)&&meta.revision>=0){revision=meta.revision;cursor.continue();}
+        else occupied=cursor!==null;
+      };
+      tx.oncomplete=()=>occupied?reject(Error('history-not-empty')):resolve({revision,current:null,previous:null});
       tx.onabort=tx.onerror=()=>reject(tx.error??Error('storage-read-failed'));
     });
   }
@@ -116,6 +122,37 @@ export class IndexedDbSave implements SaveStore {
       request.onsuccess=()=>{const c=request.result;if(c){records.push({key:c.key,value:c.value});c.continue();}};
       tx.oncomplete=()=>resolve(JSON.stringify({format:'tangsongpai-storage-backup',records},null,2));
       tx.onabort=tx.onerror=()=>reject(tx.error??Error('storage-export-failed'));
+    });
+  }
+  /** Replace the snapshot atomically, keeping revisions local to this browser. */
+  async restoreArchive(archive:SaveArchive,expectedRevision:number):Promise<void> {
+    if(!this.canWrite())throw Error('read-only');
+    const hasProgress=Object.hasOwn(archive,'progress');
+    const oldProgress=hasProgress?localStorage.getItem(RUN_PROGRESS_KEY):null;
+    const db=await this.db();
+    return new Promise((resolve,reject)=>{
+      const tx=db.transaction(STORE,'readwrite'),store=tx.objectStore(STORE);let reason:unknown,progressChanged=false;
+      const abort=(error:unknown)=>{reason=error;tx.abort();};
+      const meta=store.get('meta');meta.onsuccess=()=>{
+        if(!this.canWrite())return abort(Error('read-only'));
+        if(((meta.result as Meta|undefined)?.revision??0)!==expectedRevision)return abort(Error('write-conflict'));
+        try {
+          if(hasProgress){
+            if(archive.progress===null)localStorage.removeItem(RUN_PROGRESS_KEY);else localStorage.setItem(RUN_PROGRESS_KEY,archive.progress!);
+            progressChanged=true;
+          }
+          store.clear();
+          for(const row of archive.records)if(row.key!=='meta')store.put(row.value,row.key);
+          const saved=archive.records.find(row=>row.key==='meta')?.value as Meta|undefined;
+          store.put({revision:expectedRevision+1,slotKey:saved?.slotKey??''},'meta');
+        } catch(error){abort(error);}
+      };
+      tx.oncomplete=()=>resolve();
+      tx.onabort=()=>{
+        if(progressChanged)try {if(oldProgress===null)localStorage.removeItem(RUN_PROGRESS_KEY);else localStorage.setItem(RUN_PROGRESS_KEY,oldProgress);}catch{reason=Error('恢复解锁记录失败，请重新导入存档');}
+        reject(reason??tx.error??Error('storage-write-failed'));
+      };
+      tx.onerror=()=>{};
     });
   }
 }

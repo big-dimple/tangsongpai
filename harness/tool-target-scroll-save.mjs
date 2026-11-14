@@ -43,7 +43,7 @@ try{
     const cp=makeCheckpoint(s,[]);assert.ok(readCheckpoint(cp).ok);
     await p.locator('.run-menu-toggle').click();
     const section=p.getByText('进度与存档',{exact:true}).locator('..');if(!await section.evaluate(e=>e.open))await section.locator('summary').click();
-    const event=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入本局',exact:true}).click();
+    const event=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入存档',exact:true}).click();
     await(await event).setFiles({name:'controlled-scroll-save.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(cp))});await ready(scene);
     const before=await saved(),row={width,scene,before,operations:[]};report.cases.push(row);
     await open(scene,width);

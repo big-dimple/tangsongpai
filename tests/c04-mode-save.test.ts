@@ -511,6 +511,7 @@ describe('guided first-run creation and real transactions',()=>{
     for(const record of ['retained:unknown','r2:damaged','meta']){
       database.records.set(record,{unreadable:true});await expect(storage.readEmptyHistory()).rejects.toThrow('history-not-empty');database.records.clear();
     }
+    database.records.set('meta',{revision:7,slotKey:''});expect(await storage.readEmptyHistory()).toEqual({revision:7,current:null,previous:null});database.records.clear();
     const old=roundTrip(start()),candidate=roundTrip(start(TUTORIAL));
     await storage.commit(0,old,null);
     await expect(storage.commit(empty.revision,candidate,null)).rejects.toThrow('write-conflict');
@@ -637,6 +638,9 @@ describe('guided first-run creation and real transactions',()=>{
     vi.stubGlobal('localStorage',{getItem:(key:string)=>preferenceValues.get(key)??null,setItem:(key:string,value:string)=>{if(readOnlyPreferences)throw Error('read-only');preferenceValues.set(key,value);},removeItem:(key:string)=>{if(readOnlyPreferences)throw Error('read-only');preferenceValues.delete(key);}});
     database.failWrites=true;expect(await session.importJSON(saved)).toBe(false);
     expect(await session.storage.read()).toEqual(oldSlots);expect(session.run).toBe(original);expect(mayResumeNoviceOpening(original.state)).toBe(true);
+    expect(session.pendingRun?.guidedOpeningSuppressed).toBe(true);
+    const archive=JSON.parse(await session.exportJSON()),active=archive.records.find((row:{key:string})=>row.key==='meta').value.slotKey;
+    expect(archive.records.find((row:{key:string})=>row.key===active).value.guidedOpeningSuppressedRunIds).toContain(original.state.runId);
     database.failWrites=false;expect(await session.retry()).toBe(true);expect(session.run?.guidedOpeningSuppressed).toBe(true);
     expect(preferenceValues.get(NOVICE_GUIDE_KEY)).toBe(oldPreference);
     const slots=await session.storage.read();expect(slots.guidedOpeningSuppressedRunIds).toContain(original.state.runId);

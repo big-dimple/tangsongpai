@@ -44,7 +44,7 @@ try{for(const spec of specs){
   await p.addInitScript(reduced=>localStorage.setItem('tangsongpai-presentation-v1',JSON.stringify({speed:4,reducedMotion:reduced})),!!spec.reduced);
   console.log(spec.key+': public import');await p.goto('http://127.0.0.1:'+port+'/?harness=1');await waitScene(p,'title');
   await p.locator('.run-menu-toggle').click();const section=p.getByText('进度与存档',{exact:true}).locator('..');if(!await section.evaluate(e=>e.open))await section.locator('summary').click();
-  const fc=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入本局',exact:true}).click();await(await fc).setFiles({name:'hero-gift-controlled.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(makeCheckpoint(spec.state,[])))});
+  const fc=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入存档',exact:true}).click();await(await fc).setFiles({name:'hero-gift-controlled.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(makeCheckpoint(spec.state,[])))});
   await waitScene(p,'game');await p.waitForFunction(()=>{const s=window.__harness.game.scene.getScene('game');return s.ready&&!s.playing&&s.cardViews.every(v=>!v.dealing)&&s.heroPortrait?.active;});
   if(await p.locator('.detail-dialog[open]').count())await p.keyboard.press('Escape');
   row.rest=await p.evaluate(()=>{const s=window.__harness.game.scene.getScene('game'),i=s.heroPortrait;return{hero:s.characterId,key:i.texture.key,bounds:i.getBounds(),source:{width:i.width,height:i.height},scale:[i.scaleX,i.scaleY],slots:s.view.layout.slots,score:s.view.layout.scoreBoard,hand:s.view.layout.hand,inventory:s.inventoryButton.getBounds(),help:s.tableHelpBox()};});

@@ -54,7 +54,7 @@ try{for(const spec of specs){
   try{
     await p.goto('http://127.0.0.1:'+port+'/?harness=1');await waitScene(p,'title');
     await p.locator('.run-menu-toggle').click();const section=p.getByText('进度与存档',{exact:true}).locator('..');if(!await section.evaluate(e=>e.open))await section.locator('summary').click();
-    const chooser=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入本局',exact:true}).click();await(await chooser).setFiles({name:'liue-public-hand.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(checkpoint))});
+    const chooser=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入存档',exact:true}).click();await(await chooser).setFiles({name:'liue-public-hand.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(checkpoint))});
     await waitScene(p,'game');await settled(p);const intro=p.getByRole('button',{name:'开始出牌',exact:true});if(await intro.count())await intro.click();if(await p.locator('.detail-dialog[open]').count())await p.getByRole('button',{name:'关闭',exact:true}).click();
     for(const id of fixture.selectedIds)await tapUI(p,'game','card/'+id,touch);
     let initial=await snap(p);assert.deepEqual(initial.state,fixture.state);await observe(p);await choose(p,fixture.targetId,touch);

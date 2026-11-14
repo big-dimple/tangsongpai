@@ -21,7 +21,7 @@ const mark=(p,tag)=>p.evaluate(tag=>{window.__m.tag=tag;window.__m.marks.push({t
 async function load(p,f,first=false){
  if(first){await p.goto('http://127.0.0.1:5596/?harness=1');await waitScene(p,'title');}
  await p.locator('.run-menu-toggle').click();const details=p.getByText('进度与存档',{exact:true}).locator('..');if(!await details.evaluate(e=>e.open))await details.locator('summary').click();
- const choose=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入本局',exact:true}).click();await(await choose).setFiles({name:'controlled-two-hero.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(f.checkpoint))});await waitScene(p,'game');await settle(p);assert.deepEqual((await snapshot(p)).state,f.state);
+ const choose=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入存档',exact:true}).click();await(await choose).setFiles({name:'controlled-two-hero.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(f.checkpoint))});await waitScene(p,'game');await settle(p);assert.deepEqual((await snapshot(p)).state,f.state);
 }
 async function monitor(p,id){await p.waitForFunction(id=>window.__harness.game.textures.exists('hero-eyes-'+id),id);await p.evaluate(async asset=>{
  const g=window.__harness.game,s=g.scene.getScene('game'),audio=s.audio;await audio.scoreSampleTask;

@@ -25,7 +25,7 @@ try{for(const [width,height] of [[1366,768],[390,844]]){
  for(const [donor,label,stars] of [['d05','弃牌返还',2],['a07','弃牌收入',2],['f07','失败前救场',2],['f10','弃牌后的条件效果',2],['e05',undefined,2],['d07',undefined,4]]){
   const {state,offer,sold}=resourceLossFixture(donor),cp=makeCheckpoint(state,[]);assert.ok(readCheckpoint(cp).ok);
   await dom(p.locator('.run-menu-toggle'));const section=p.getByText('进度与存档',{exact:true}).locator('..');if(!await section.evaluate(e=>e.open))await dom(section.locator('summary'));
-  const chooser=p.waitForEvent('filechooser');await dom(p.getByRole('button',{name:'导入本局',exact:true}));await(await chooser).setFiles({name:'resource-loss.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(cp))});
+  const chooser=p.waitForEvent('filechooser');await dom(p.getByRole('button',{name:'导入存档',exact:true}));await(await chooser).setFiles({name:'resource-loss.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(cp))});
   await waitScene(p,'shop');await p.waitForFunction(()=>{const s=window.__harness.game.scene.getScene('shop');return s.ready&&s.view.root.alpha===1&&!s.tweens.isTweening(s.view.root);});
   const before=await snap();assert.deepEqual(before.state,state);
   await p.evaluate(()=>{const scene=window.__harness.game.scene.getScene('shop'),send=scene.send;window.__resourceSend=[];scene.send=function(...a){window.__resourceSend.push(a[0]);return send.apply(this,a);};});

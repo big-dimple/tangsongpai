@@ -22,7 +22,7 @@ if(mode.includes('fast')||['cancel','reduced'].includes(mode))await page.addInit
 try{
  await page.goto('http://localhost:5188/?harness=1');await waitScene(page,'title');
  await page.locator('.run-menu-toggle').click();const section=page.getByText('进度与存档',{exact:true}).locator('..');if(!await section.evaluate(e=>e.open))await section.locator('summary').click();
- const chooser=page.waitForEvent('filechooser');await page.getByRole('button',{name:'导入本局',exact:true}).click();await(await chooser).setFiles({name:'continuous-public-hand.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(makeCheckpoint(fixture.state,[])))});
+ const chooser=page.waitForEvent('filechooser');await page.getByRole('button',{name:'导入存档',exact:true}).click();await(await chooser).setFiles({name:'continuous-public-hand.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(makeCheckpoint(fixture.state,[])))});
  await waitScene(page,'game');await page.waitForFunction(()=>{const s=window.__harness.game.scene.getScene('game');return s.ready&&!s.playing&&s.cardViews.every(v=>!v.dealing);});
  const intro=page.getByRole('button',{name:'开始出牌',exact:true});if(await intro.count())await intro.click();if(await page.locator('.detail-dialog[open]').count())await page.getByRole('button',{name:'关闭',exact:true}).click();
  if(mode.includes('fast')){await page.locator('.run-menu-toggle').click();const settings=page.locator('.run-menu-settings-tools');if(!await settings.evaluate(e=>e.open))await settings.locator('summary').click();await page.getByLabel('计分速度').selectOption('4');await page.getByRole('button',{name:'继续本局',exact:true}).click();}

@@ -16,6 +16,7 @@ import {dismissNoviceGuide,mayResumeNoviceOpening,noviceGuideDisabled,restoreNov
 import {firstChapterGuideDisabled,restoreFirstChapterGuide} from './FirstChapterGuide';
 import {installTutorialReplayHandler,requestTitleNewGame} from './TutorialEntry';
 import type {SavedRun} from '../application/SavedRun';
+import {MAX_SAVE_FILE_BYTES} from '../application/SaveArchive';
 
 export interface RunMenuActions {
   viewDeck?:()=>void;
@@ -218,28 +219,38 @@ export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|un
   const download=(filename:string,text:string)=>{
     const url=URL.createObjectURL(new Blob([text],{type:'application/json'})),anchor=document.createElement('a');anchor.href=url;anchor.download=filename;anchor.hidden=true;document.body.append(anchor);anchor.click();anchor.remove();globalThis.setTimeout(()=>URL.revokeObjectURL(url),0);
   };
-  const exportCurrent=button('导出本局',()=>{const run=session.pendingRun??session.run;if(run)download('tangsongpai-'+run.state.runId.replace(/[^a-zA-Z0-9_-]+/g,'-')+'.json',run.exportJSON());},saveTools);
-  const exportRetained=button('导出保留数据',async()=>download('tangsongpai-retained.json',await session.storage.exportRetained()),saveTools);
+  const exportSave=button('导出存档',async()=>{try {download('tangsongpai-save.json',await session.exportJSON());}catch{session.reportNotice('导出失败：无法读取存档，请稍后重试。');}},saveTools);
   const importInput=document.createElement('input');importInput.type='file';importInput.accept='application/json,.json';importInput.hidden=true;saveTools.append(importInput);
   importInput.onchange=async()=>{
-    try {const file=importInput.files?.[0];if(file&&await session.importJSON(await file.text())&&!await routeSavedRun(game))session.reportNotice('导入已保存，请继续本局。');}
-    catch{session.reportNotice('导入失败：无法读取所选文件。原进度未修改。');}
+    try {
+      const file=importInput.files?.[0];if(!file)return;
+      if(file.size>MAX_SAVE_FILE_BYTES){session.reportNotice('导入失败：存档文件过大。');return;}
+      let text:string;
+      try {text=await file.text();}catch{session.reportNotice('导入失败：无法读取所选文件。原进度未修改。');return;}
+      if(await session.importJSON(text)){
+        try {
+          if(session.run){if(!await routeSavedRun(game))session.reportNotice('存档已导入，请选择继续游戏。');}
+          else {for(const key of ['title','character-select','shop','game','intermission'])game.scene.stop(key);game.scene.start('title');}
+        }catch{session.reportNotice('存档已导入，请选择继续游戏。');}
+      }
+    }
     finally {importInput.value='';refreshState();}
   };
-  const importCurrent=button('导入本局',()=>{importInput.value='';importInput.click();},saveTools);
+  const importSave=button('导入存档',()=>{importInput.value='';importInput.click();},saveTools);
+  const saveHint=document.createElement('small');saveHint.textContent='导入存档会覆盖当前进度，请先导出备份。';saveTools.append(saveHint);
   panel.append(saveTools,more);
   function refreshState():void {
     const run=session.run,pending=session.pendingRun,saving=pending??run;
     game.registry.set('persistentStorageReady',session.persistentReady);
     if(run){game.registry.set('runController',run);game.registry.set('runState',run.state);}else{game.registry.remove('runController');game.registry.remove('runState');}
     const elsewhere=!!session.lease.elsewhere||run?.status==='readonly';
-    status.textContent=session.storageUnavailable?'浏览器暂时无法保存进度，请重试。':!session.loaded?(session.notice?'暂时无法读取进度，请重试。':'正在准备…'):pending?'这次操作还没保存，请重试，或取消返回原进度。':elsewhere?'游戏已在另一页打开。':run?.status==='paused'?(run.lastError==='quota-exceeded'?'空间不足，暂时无法保存。请清理浏览器空间后重试。':'暂时无法保存进度，请重试。'):run?.status==='saving'?'正在保存…':session.notice||'';
+    status.textContent=/^(导入失败|导出失败|浏览器无法读取全部存档|无法读取解锁记录)/.test(session.notice)?session.notice:session.storageUnavailable?'浏览器暂时无法保存进度，请重试。':!session.loaded?(session.notice?'暂时无法读取进度，请重试。':'正在准备…'):pending?'这次操作还没保存，请重试，或取消返回原进度。':elsewhere?'游戏已在另一页打开。':run?.status==='paused'?(run.lastError==='quota-exceeded'?'空间不足，暂时无法保存。请清理浏览器空间后重试。':'暂时无法保存进度，请重试。'):run?.status==='saving'?'正在保存…':session.notice||'';
     resume.hidden=!run;resume.textContent=elsewhere?'在这里继续':'继续游戏';resume.disabled=session.working||!!pending||!!run&&!['idle','readonly'].includes(run.status);
     retry.hidden=saving?.status!=='paused';retry.disabled=session.working;cancelCandidate.hidden=!pending;cancelCandidate.disabled=session.working||saving?.status==='saving';
     reload.hidden=session.persistentReady||!!run||!!pending||!session.notice;reload.disabled=session.working||!!pending||!session.notice;
     takeover.hidden=!!run||!session.loaded||!session.lease.elsewhere;takeover.disabled=session.working||!!pending;
-    exportCurrent.hidden=!run&&!pending;exportCurrent.disabled=session.working;exportRetained.hidden=!session.loaded;exportRetained.disabled=session.working;
-    importCurrent.disabled=session.working||!!pending||!session.loaded||session.storageUnavailable||!!run&&!session.lease.writable||run?.status==='saving';
+    exportSave.disabled=session.working||!session.loaded;
+    importSave.disabled=session.working||!!pending||!session.loaded||session.storageUnavailable||!!run&&!session.lease.writable||run?.status==='saving';
     start.disabled=session.working||!!pending||!session.loaded||session.storageUnavailable||!!run&&!session.lease.writable||run?.status==='saving'||run?.status==='paused';
     replay.disabled=start.disabled;skip.hidden=run?.state.mode!=='tutorial';skip.disabled=start.disabled;
     enableGuide.hidden=!noviceGuideDisabled()&&!firstChapterGuideDisabled();

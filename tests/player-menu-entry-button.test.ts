@@ -143,15 +143,15 @@ it('keeps the temporary-save risk visible outside the closed menu and removes it
 });
 
 it('allows an empty page to choose an import before claiming the writer, but not over a readonly run',()=>{
- const {find}=mount();session.lease.writable=false;notify();expect(find('导入本局').disabled).toBe(false);
- session.run={status:'readonly',state:{phase:'shop',mode:'standard'}} as SavedRun;notify();expect(find('导入本局').disabled).toBe(true);
+ const {find}=mount();session.lease.writable=false;notify();expect(find('导入存档').disabled).toBe(false);
+ session.run={status:'readonly',state:{phase:'shop',mode:'standard'}} as SavedRun;notify();expect(find('导入存档').disabled).toBe(true);
 });
 
-it('exports the unsaved candidate, retains raw backups and imports through the existing session',async()=>{
+it('exposes one save export and restores the selected file through the session',async()=>{
  const createObjectURL=vi.fn((_blob:Blob)=> 'blob:checkpoint'),revokeObjectURL=vi.fn();vi.stubGlobal('URL',{createObjectURL,revokeObjectURL});
- const importJSON=vi.fn().mockResolvedValue(true),reportNotice=vi.fn(),exportRetained=vi.fn().mockResolvedValue('{"format":"tangsongpai-storage-backup","records":[]}');Object.assign(session,{importJSON,reportNotice,storage:{exportRetained}});
+ const importJSON=vi.fn().mockResolvedValue(true),reportNotice=vi.fn(),exportJSON=vi.fn().mockResolvedValue('{"format":"tangsongpai-storage-backup","records":[]}');Object.assign(session,{importJSON,reportNotice,exportJSON});
  const {modal,find}=mount();session.lease.writable=true;session.run={status:'paused',state:{phase:'shop',runId:'run/old',seed:'component'},exportJSON:()=> '{"old":true}'} as unknown as SavedRun;session.pendingRun={status:'paused',state:{phase:'shop',runId:'run/candidate',seed:'component'},exportJSON:()=> '{"candidate":true}'} as unknown as SavedRun;notify();
- await find('导出本局').onclick?.();const blob=createObjectURL.mock.calls[0][0];expect(await blob.text()).toBe('{"candidate":true}');
- await find('导出保留数据').onclick?.();expect(exportRetained).toHaveBeenCalledOnce();expect(createObjectURL).toHaveBeenCalledTimes(2);
+ await find('导出存档').onclick?.();const blob=createObjectURL.mock.calls[0][0];expect(await blob.text()).toBe('{"format":"tangsongpai-storage-backup","records":[]}');
+ expect(exportJSON).toHaveBeenCalledOnce();expect(find('导出本局')).toBeUndefined();expect(find('导出保留数据')).toBeUndefined();
  session.pendingRun=undefined;session.lease.writable=true;notify();const input=walk(modal,e=>e.type==='file')!;expect((input as unknown as HTMLInputElement).accept).toBe('application/json,.json');Object.defineProperty(input,'files',{value:[{text:async()=> '{"valid":true}'}]});await input.onchange?.();expect(importJSON).toHaveBeenCalledWith('{"valid":true}');expect(reportNotice).not.toHaveBeenCalled();
 });

@@ -99,7 +99,7 @@ try {
     let exported=false;
     if(sample.name==='clean'){
       const saveTools=page.locator('.run-menu-panel > details').filter({has:page.locator('summary',{hasText:'进度与存档'})});await saveTools.locator('summary').tap();
-      const [download]=await Promise.all([page.waitForEvent('download'),page.getByRole('button',{name:'导出本局',exact:true}).tap()]);await download.saveAs(dir+'/exported-checkpoint.json');assert.deepEqual(JSON.parse(await readFile(dir+'/exported-checkpoint.json','utf8')),before.checkpoint);exported=true;
+      const [download]=await Promise.all([page.waitForEvent('download'),page.getByRole('button',{name:'导出存档',exact:true}).tap()]);await download.saveAs(dir+'/exported-checkpoint.json');const archive=JSON.parse(await readFile(dir+'/exported-checkpoint.json','utf8')),key=archive.records.find(row=>row.key==='meta').value.slotKey;assert.deepEqual(archive.records.find(row=>row.key===key).value.current,before.checkpoint);exported=true;
     }
     await page.getByRole('button',{name:'继续本局',exact:true}).tap();assert.deepEqual(await snapshot(page),before,'ordinary resume preserves complete checkpoint/storage/selection');
     report.cases.push({name:sample.name,fixture:sample.fixture,metadata:sample.metadata,displayed,checkpointAndAllStorageEqual:true,selectionPreserved:true,nativeExportMatchesCheckpoint:exported,visibleBounds:box,closeControlUnmoved:true,closeBounds:closeBox});

@@ -285,7 +285,7 @@ export class CharacterSelectScene extends Phaser.Scene {
   }
   private async choose():Promise<boolean> {
     if(this.choosing||!this.selectedId||!this.selectedRoute)return false;
-    if(gameSession().pendingRun){this.notice=gameSession().notice||'候选尚未保存，请先重试保存或取消候选。';this.audio.invalid();this.render();return false;}
+    if(gameSession().pendingRun){this.notice=gameSession().notice||'进度还没保存，请先重试保存或取消这次操作。';this.audio.invalid();this.render();return false;}
     if(!r2ModeUnlocked(readRunProgress().progress,this.modeConfig)){this.notice='此模式尚未解锁，请先完成对应标准八章首通，或继续已有模式存档。';this.audio.invalid();this.render();return false;}
     this.choosing=true;this.notice='';const lifecycle=this.lifecycle,id=this.selectedId,focus=this.selectedRoute;this.render();
     const seed=this.seed??String(Date.now());

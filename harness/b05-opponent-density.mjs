@@ -30,7 +30,7 @@ async function importState(p){
   await p.goto(url);await waitScene(p,'title');await p.locator('.run-menu-toggle').click();
   const section=p.getByText('进度与存档',{exact:true}).locator('..');
   if(!await section.evaluate(e=>e.open))await section.locator('summary').click();
-  const chooser=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入本局',exact:true}).click();
+  const chooser=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入存档',exact:true}).click();
   await(await chooser).setFiles({name:'b05-density.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(makeCheckpoint(initial,[])))});
   await waitScene(p,'game');await idle(p);await p.evaluate(()=>document.fonts.ready);assert.deepEqual((await read(p)).state,initial);
 }

@@ -2,12 +2,13 @@ import {stopFirstChapterGuide} from './FirstChapterGuide';
 import {GUIDED_TUTORIAL_SEED,guidedTutorialRunId,isGuidedTutorialRunId,launchIdentity,type RunLaunchIntent} from './RunLaunch';
 import {SavedRun,type SaveCommitOptions,type SaveSlots,type SaveStore} from '../application/SavedRun';
 import {MAX_IMPORT_BYTES,readCheckpoint,restoreSlots} from '../application/checkpoint';
+import {archiveSlots,archiveWithCandidate,MAX_SAVE_FILE_BYTES,readSaveArchive} from '../application/SaveArchive';
 import {createRun,type R2RunState} from '../domain/run';
 import type {CharacterId} from '../domain/characters';
 import {IndexedDbSave} from '../platform/IndexedDbSave';
 import {WriteLease} from '../platform/WriteLease';
 import {r2RunModeConfig,r2ModeStorageKey,type R2ModeSelection} from '../content/r2Modes';
-import {recordSavedRunProgress} from '../platform/RunProgress';
+import {recordSavedRunProgress,RUN_PROGRESS_KEY} from '../platform/RunProgress';
 import {clearPendingNoviceStart,suppressImportedNovice} from './NoviceGuide';
 
 class VolatileSaveStore implements SaveStore {
@@ -61,7 +62,7 @@ export class GameSession {
     this.listeners.forEach(listener=>listener());
   }
   private pendingNotice():string {
-    return this.replacement?.status==='readonly'?'这次操作还没保存，请先取消，再在这里继续。原进度保留。':'新局或导入候选尚未保存，请重试保存、导出候选或取消。原进度保留。';
+    return this.replacement?.status==='readonly'?'这次操作还没保存，请先取消，再在这里继续。原进度保留。':'新进度还没保存，请重试保存、导出存档或取消。原进度保留。';
   }
   private readPartition(selection:R2ModeSelection&{contentVersion?:unknown;contentHash?:unknown}):Promise<SaveSlots>{
     const store=this.saveStore as SaveStore&{readPartition?:(selection:R2ModeSelection&{contentVersion?:unknown;contentHash?:unknown})=>Promise<SaveSlots>};
@@ -115,7 +116,7 @@ export class GameSession {
       if(generation!==this.restoreGeneration)return false;
       // Keep a memory-backed controller bound to its memory store on takeover.
       this.storageUnavailable=false;
-      this.notice=restored.status==='backup'?'当前存档损坏，已读取上次有效备份；原数据仍保留，可导出。':restored.status==='invalid'?'存档损坏或版本不兼容，原数据已保留。可导出保留数据，或确认后开始新局。':'';
+      this.notice=restored.status==='backup'?'当前存档损坏，已读取上次有效备份；原数据仍保留，可导出存档。':restored.status==='invalid'?'存档损坏或版本不兼容，原数据已保留。可以导出存档，或开始新局。':'';
       if(restored.checkpoint)this.attach(SavedRun.restore(this.saveStore,slots));else this.run=undefined;
       this.loaded=true;
       return true;
@@ -184,6 +185,34 @@ export class GameSession {
       return await this.loadSavedRun()&&this.lease.writable;
     }finally {this.working=false;this.changed();}
   }
+  async exportJSON():Promise<string> {
+    if(this.working)throw Error('请稍后再试');
+    this.working=true;this.notice='';this.changed();
+    try {
+      const run=this.replacement??this.run;
+      if(run?.status==='saving')await run.flush();
+      try {
+        const archive=readSaveArchive(JSON.parse(await this.storage.exportRetained()));
+        archive.version=1;
+        try {archive.progress=localStorage.getItem(RUN_PROGRESS_KEY);}catch{this.notice='无法读取解锁记录，已导出其他进度。';}
+        if(run){
+          const checked=readCheckpoint(JSON.parse(run.exportJSON()));
+          if(!checked.ok)throw Error('存档内容不正确');
+          if(this.replacement||this.temporaryRun||run.isUnsavedCheckpoint(checked.checkpoint))archiveWithCandidate(archive,checked.checkpoint,run.guidedOpeningSuppressed);
+        }
+        const text=JSON.stringify(archive,null,2);
+        if(new TextEncoder().encode(text).length>MAX_SAVE_FILE_BYTES)throw Error('存档文件过大');
+        return text;
+      } catch(error){
+        // When the browser cannot read its old storage, preserve the playable
+        // in-memory candidate in the older single-checkpoint format.
+        if(run&&(this.temporaryRun||this.storageUnavailable)){
+          this.notice='浏览器无法读取全部存档，已导出当前进度。';return run.exportJSON();
+        }
+        throw error;
+      }
+    } finally {this.working=false;this.changed();}
+  }
   async importJSON(text:string):Promise<boolean> {
     if(this.restoreInFlight||this.working||this.blockPending())return false;
     this.working=true;this.changed();
@@ -191,16 +220,37 @@ export class GameSession {
       if(!this.lease.writable){
         if(this.run||!await this.lease.claim()){this.notice='游戏已在另一页打开。可在这里继续。';this.changed();return false;}
       }
-      if(new TextEncoder().encode(text).length>MAX_IMPORT_BYTES)throw Error('导入文件过大');
-      const checked=readCheckpoint(JSON.parse(text));if(!checked.ok)throw Error(checked.code);
+      const size=new TextEncoder().encode(text).length;if(size>MAX_SAVE_FILE_BYTES)throw Error('存档文件过大');
+      const data:unknown=JSON.parse(text);
+      if(data&&typeof data==='object'&&!Array.isArray(data)&&(data as {format?:unknown}).format==='tangsongpai-storage-backup'){
+        if(!this.persistentReady)throw Error('浏览器暂时无法保存，请重新加载后重试');
+        const archive=readSaveArchive(data),candidate=restoreSlots(archiveSlots(archive)).checkpoint;
+        const exportedCandidate=!!candidate&&this.run?.status==='paused'&&this.run.isUnsavedCheckpoint(candidate);
+        if(this.run&&!exportedCandidate&&!await this.run.flush())throw Error('本局尚未保存，请先重试或导出存档');
+        const current=await this.storage.read();
+        if(this.run&&this.run.storageRevision!==current.revision){this.run.setReadOnly();throw Error('其他页面已更新存档，请刷新后重试');}
+        const slots=archiveSlots(archive,current.revision+1),restored=restoreSlots(slots);
+        const imported=restored.checkpoint?SavedRun.restore(this.storage,slots):undefined;
+        await this.storage.restoreArchive(archive,current.revision);
+        stopFirstChapterGuide();if(this.run)this.run.onChange=()=>{};
+        if(imported){
+          this.notice=restored.status==='backup'?'存档已导入，已恢复上次有效进度。':'存档已导入，进度已恢复。';this.attach(imported);
+        } else {this.run=undefined;this.notice=restored.status==='invalid'?'存档已导入，但数据损坏或版本不兼容，暂时无法继续。':'存档已导入，没有可继续的对局。';}
+        this.changed();return true;
+      }
+      if(size>MAX_IMPORT_BYTES)throw Error('存档文件过大');
+      const checked=readCheckpoint(data);if(!checked.ok)throw Error(checked.code);
       const exportedCandidate=this.run?.status==='paused'&&this.run.isUnsavedCheckpoint(checked.checkpoint);
       if(this.run&&!exportedCandidate&&!await this.run.flush())throw Error('本局尚未保存，请先重试或导出');
       const imported=checked.checkpoint.state,options=imported.mode==='tutorial'&&isGuidedTutorialRunId(imported.runId)?{suppressGuidedOpening:true}:{};
       const run=await SavedRun.import(this.saveStore,checked.checkpoint,await this.readPartition(imported),options);
-      this.notice='导入成功，已保存完整进度。';
+      this.notice='存档已导入，进度已恢复。';
       if(!await this.publishReplacement(run,'import'))return false;
       this.changed();return true;
-    }catch(error){this.notice='导入失败：'+(error instanceof Error?error.message:'非法文件')+'。原进度未修改。';this.changed();return false;}
+    }catch(error){
+      const detail=error instanceof SyntaxError?'文件不是有效的存档':error instanceof DOMException&&error.name==='QuotaExceededError'?'浏览器空间不足':error instanceof Error?error.message:'文件无效';
+      this.notice='导入失败：'+(/^[a-z0-9-]+$/.test(detail)?'文件无效、版本不兼容或浏览器暂时无法保存':detail)+'。原进度未修改。';this.changed();return false;
+    }
     finally {this.working=false;this.changed();}
   }
   preferences(speed:1|2|4):void {
@@ -218,7 +268,7 @@ export class GameSession {
     try {
       const result=await run.retry();
       if(!result.ok){this.notice=this.replacement?this.pendingNotice():previousNotice;return false;}
-      if(this.replacement===run){stopFirstChapterGuide();this.replacement=undefined;if(this.replacementKind==='import')suppressImportedNovice(run.state);this.replacementKind=undefined;this.notice='候选已保存，现已切换到该进度。';this.attach(run);}
+      if(this.replacement===run){stopFirstChapterGuide();this.replacement=undefined;if(this.replacementKind==='import')suppressImportedNovice(run.state);this.replacementKind=undefined;this.notice='已保存并切换到新进度。';this.attach(run);}
       else if(!this.notice)this.notice='本局已保存。';
       return true;
     }finally {this.working=false;this.changed();}
@@ -246,7 +296,7 @@ export class GameSession {
     if(!this.replacement||this.working||this.replacement.status==='saving')return false;
     if(this.replacementKind==='start')clearPendingNoviceStart(this.replacement.state.runId);
     this.replacement.onChange=()=>{};this.replacement.setReadOnly();this.replacement=undefined;this.replacementKind=undefined;
-    this.notice='已取消未保存候选；原进度仍保留。';this.changed();return true;
+    this.notice='已取消这次操作，原进度仍保留。';this.changed();return true;
   }
   state():R2RunState|undefined {return this.run?.state;}
 }

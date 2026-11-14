@@ -32,7 +32,7 @@ try{for(const width of [1366,390,320]){
  const importState=async s=>{
   const cp=makeCheckpoint(s,[]);assert.ok(readCheckpoint(cp).ok);
   await dom(p.locator('.run-menu-toggle'));const section=p.getByText('进度与存档',{exact:true}).locator('..');if(!await section.evaluate(e=>e.open))await dom(section.locator('summary'));
-  const fc=p.waitForEvent('filechooser');await dom(p.getByRole('button',{name:'导入本局',exact:true}));await(await fc).setFiles({name:'controlled-s04.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(cp))});
+  const fc=p.waitForEvent('filechooser');await dom(p.getByRole('button',{name:'导入存档',exact:true}));await(await fc).setFiles({name:'controlled-s04.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(cp))});
   await waitScene(p,'shop');await ready('shop');await p.waitForTimeout(300);
   await p.evaluate(()=>{const c=window.__harness.game.registry.get('runController'),dispatch=c.dispatch;window.__s04Dispatch=[];c.dispatch=function(...args){window.__s04Dispatch.push(structuredClone(args));return dispatch.apply(this,args);};});row.last=await snapshot(p);return row.last;
  };

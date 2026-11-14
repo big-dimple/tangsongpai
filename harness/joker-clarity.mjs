@@ -145,7 +145,7 @@ async function importFixture(page,click,fixture){
   if(!await page.locator('.run-menu-modal').evaluate(e=>e.open))await click(page.locator('.run-menu-toggle'));
   const summary=page.locator('.run-menu-modal summary').filter({hasText:'进度与存档'});
   if(!await summary.evaluate(e=>e.parentElement.open))await click(summary);
-  const chooserPromise=page.waitForEvent('filechooser');await click(page.getByRole('button',{name:'导入本局',exact:true}));
+  const chooserPromise=page.waitForEvent('filechooser');await click(page.getByRole('button',{name:'导入存档',exact:true}));
   const chooser=await chooserPromise;await chooser.setFiles({name:fixture.name+'.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(fixture.checkpoint))});
   await page.waitForFunction(checksum=>{const c=window.__harness.game.registry.get('runController');return c?.status==='idle'&&JSON.parse(c.exportJSON()).checksum===checksum;},fixture.checkpoint.checksum);
   await waitScene(page,'game');

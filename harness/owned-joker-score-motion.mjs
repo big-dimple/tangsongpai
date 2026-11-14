@@ -70,7 +70,7 @@ try{for(const spec of specs){
   console.log(spec.key+': loading local compiled page');await p.goto('http://127.0.0.1:'+port+'/?harness=1');await waitScene(p,'title');console.log(spec.key+': title ready');
   await openRunMenu(p,spec.width<800);const section=p.getByText('进度与存档',{exact:true}).locator('..');if(!await section.evaluate(e=>e.open))await section.locator('summary').click();
   await p.screenshot({path:dir+'/import-menu.png'});row.importMenu=await p.locator('.run-menu-modal').innerText();
-  const chooser=p.waitForEvent('filechooser');chooser.catch(()=>{});await p.getByRole('button',{name:'导入本局',exact:true}).click();await(await chooser).setFiles({name:'owned-motion-public.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(checkpoint))});
+  const chooser=p.waitForEvent('filechooser');chooser.catch(()=>{});await p.getByRole('button',{name:'导入存档',exact:true}).click();await(await chooser).setFiles({name:'owned-motion-public.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(checkpoint))});
   await waitScene(p,'game');await p.waitForFunction(()=>{const s=window.__harness.game.scene.getScene('game');return s.ready&&!s.playing&&s.cardViews.every(v=>!v.dealing);});console.log(spec.key+': real public import ready');
   const intro=p.getByRole('button',{name:'开始本场',exact:true});if(await intro.count())await intro.click();if(await p.locator('.detail-dialog[open]').count())await p.getByRole('button',{name:'关闭',exact:true}).click();
   const initial=await p.evaluate(()=>ownedProbe.snapshot());

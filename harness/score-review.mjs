@@ -40,7 +40,7 @@ try {
    const cp=makeCheckpoint(input.state,input.journal);assert.equal(readCheckpoint(cp).ok,true);
    if(!await page.locator('.run-menu-modal').evaluate(d=>d.open))await dom(page.locator('.run-menu-toggle'));
    const saves=page.getByText('进度与存档',{exact:true}).locator('..');if(!await saves.evaluate(e=>e.open))await dom(saves.locator('summary'));
-   const pick=page.waitForEvent('filechooser');await dom(page.getByRole('button',{name:'导入本局',exact:true}));await(await pick).setFiles({name:'existing-saved-view.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(cp))});
+   const pick=page.waitForEvent('filechooser');await dom(page.getByRole('button',{name:'导入存档',exact:true}));await(await pick).setFiles({name:'existing-saved-view.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(cp))});
    await waitScene(page,native?'game':'intermission');if(native)await settle();
    const before=await snap();assert.deepEqual(before.state,input.state);assert.deepEqual(before.journal,input.journal);
    const row={viewport,kind,provenance:{source:native?gameSource:finalSource,rowIndex,field:native?'afterPlay':'after'},beforeHash:hash(before),inputStateHash:hash(input.state),before,images:[]};report.rows.push(row);

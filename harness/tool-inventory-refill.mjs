@@ -46,7 +46,7 @@ try {
   };
   const imp=async cp=>{
    await dom(p.locator('.run-menu-toggle'));const sec=p.getByText('进度与存档',{exact:true}).locator('..');if(!await sec.evaluate(e=>e.open))await dom(sec.locator('summary'));
-   const event=p.waitForEvent('filechooser');await dom(p.getByRole('button',{name:'导入本局',exact:true}));await(await event).setFiles({name:'controlled-refill.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(cp))});await waitScene(p,'game');await settle();
+   const event=p.waitForEvent('filechooser');await dom(p.getByRole('button',{name:'导入存档',exact:true}));await(await event).setFiles({name:'controlled-refill.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(cp))});await waitScene(p,'game');await settle();
   };
   try {
    await p.goto('http://127.0.0.1:5586/?harness=1');await waitScene(p,'title');

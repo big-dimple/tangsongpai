@@ -33,7 +33,7 @@ async function importState(page,state){
  await chooseCharacter(page,'erxiang');
  await openRunMenu(page);const section=page.getByText('进度与存档',{exact:true}).locator('..');if(!await section.evaluate(e=>e.open))await section.locator('summary').click();
  const checkpoint=state===fixtures.hands?fixtureCases.hands.checkpoint:makeCheckpoint(state,[]);
- const [chooser]=await Promise.all([page.waitForEvent('filechooser'),page.getByRole('button',{name:'导入本局',exact:true}).click()]);await chooser.setFiles({name:'failure-controlled.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(checkpoint))});
+ const [chooser]=await Promise.all([page.waitForEvent('filechooser'),page.getByRole('button',{name:'导入存档',exact:true}).click()]);await chooser.setFiles({name:'failure-controlled.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(checkpoint))});
  await waitScene(page,'intermission');await page.waitForFunction(()=>window.__harness.game.scene.getScene('intermission').ready);await page.waitForTimeout(1250);
 }
 async function shot(page,key){await page.screenshot({path:out+'/'+key+'.png',scale:'css',fullPage:true});}

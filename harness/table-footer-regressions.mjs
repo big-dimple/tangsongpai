@@ -23,7 +23,7 @@ const intersect=(a,b)=>a.x<b.x+b.width-1e-6&&b.x<a.x+a.width-1e-6&&a.y<b.y+b.hei
 const inside=(a,b)=>a.x>=b.x-1&&a.y>=b.y-1&&a.x+a.width<=b.x+b.width+1&&a.y+a.height<=b.y+b.height+1;
 async function load(p){
  await p.goto('http://127.0.0.1:5701/?harness=1');await waitScene(p,'title');await p.locator('.run-menu-toggle').click();const sec=p.getByText('进度与存档',{exact:true}).locator('..');await sec.locator('summary').click();
- const choose=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入本局',exact:true}).click();await(await choose).setFiles({name:'controlled-nine.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(checkpoint))});await waitScene(p,'game');await p.waitForFunction(()=>window.__harness.game.scene.getScene('game').controlsLive);
+ const choose=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入存档',exact:true}).click();await(await choose).setFiles({name:'controlled-nine.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(checkpoint))});await waitScene(p,'game');await p.waitForFunction(()=>window.__harness.game.scene.getScene('game').controlsLive);
  // Test setup enrolls the normal UI preference, never changes a game command/state.
  await p.evaluate(async()=>{const {enrollFirstChapterGuide}=await import('/src/game/FirstChapterGuide.ts');enrollFirstChapterGuide(window.__harness.game.registry.get('runController').state);});
 }

@@ -27,7 +27,12 @@ export async function firstPlayerStatus(session:HistorySession,storage?:Pick<Sto
     if(data.format!=='tangsongpai-storage-backup'||!Array.isArray(data.records))return 'unknown';
     // Recheck localStorage after the asynchronous IndexedDB scan.
     if([RUN_PROGRESS_KEY,FIRST_GUIDE_KEY,NOVICE_GUIDE_KEY].some(key=>local.getItem(key)!==null))return 'returning';
-    return data.records.length?'returning':'first';
+    const hasHistory=data.records.some((row:unknown)=>{
+      if(!row||typeof row!=='object'||Array.isArray(row))return true;
+      const entry=row as {key?:unknown;value?:unknown},meta=entry.value as {slotKey?:unknown;revision?:unknown}|null;
+      return !(entry.key==='meta'&&meta?.slotKey===''&&Number.isSafeInteger(meta.revision)&&(meta.revision as number)>=0);
+    });
+    return hasHistory?'returning':'first';
   }catch{return 'unknown';}
 }
 

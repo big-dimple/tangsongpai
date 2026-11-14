@@ -44,7 +44,7 @@ try{
   await p.addInitScript(bottom=>document.addEventListener('DOMContentLoaded',()=>{document.documentElement.style.setProperty('--safe-top','12px');document.documentElement.style.setProperty('--safe-bottom',bottom+'px');}),bottom);
   p.on('dialog',d=>d.accept());await p.goto('http://127.0.0.1:5274/?harness=1');await waitScene(p,'title');
   await p.locator('.run-menu-toggle').tap();const sec=p.getByText('进度与存档',{exact:true}).locator('..');if(!await sec.evaluate(e=>e.open))await sec.locator('summary').tap();
-  const chooser=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入本局',exact:true}).tap();await(await chooser).setFiles({name:'fixture.json',mimeType:'application/json',buffer:Buffer.from(file)});
+  const chooser=p.waitForEvent('filechooser');await p.getByRole('button',{name:'导入存档',exact:true}).tap();await(await chooser).setFiles({name:'fixture.json',mimeType:'application/json',buffer:Buffer.from(file)});
   await waitScene(p,'game');await p.waitForFunction(()=>{const s=window.__harness.game.scene.getScene('game');return s.ready&&s.candidates.result?.status==='ready'&&s.cardViews.every(v=>!v.dealing&&!s.tweens.isTweening(v.container));});
   for(const state of['empty','selected']){
    if(state==='selected')for(const id of ids)await tapUI(p,'game','card/'+id,true);

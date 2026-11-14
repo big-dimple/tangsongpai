@@ -123,8 +123,15 @@ async function quota(){
     const offers=before.state.shop.offers.filter(o=>!o.consumed),i=offers.findIndex(o=>o.definitionId==='mantangcai');await buyOffer(page,offers[i].offerId);
     await page.waitForFunction(()=>{const run=window.__harness.game.registry.get('runController');return run?.status==='paused'&&run?.lastError==='quota-exceeded';});await menu(page);await page.getByText(/空间不足，暂时无法保存/).waitFor();assert.deepEqual((await read(page)).state,before.state);assert.deepEqual(await slots(page),durable);
     await toggleRunMenu(page);await tapUI(page,'shop','action/reroll');assert.deepEqual((await read(page)).state,before.state);
-    await menu(page);await page.screenshot({path:path.join(output,'quota-menu.png')});const exportButton=page.getByRole('button',{name:'导出本局',exact:true});assert.equal(await exportButton.count(),1,'visible export control; actual menu: '+await page.locator('.run-menu-panel').innerText());const [download]=await Promise.all([page.waitForEvent('download'),exportButton.click()]);const file=path.join(output,'unsaved-quota-checkpoint.json');await download.saveAs(file);
-    const exported=JSON.parse(await readFile(file,'utf8'));assert.ok(checkpoints.readCheckpoint(exported).ok);assert.equal(exported.state.gold,2);
+    await menu(page);await page.screenshot({path:path.join(output,'quota-menu.png')});const exportButton=page.getByRole('button',{name:'导出存档',exact:true});assert.equal(await exportButton.count(),1,'visible export control; actual menu: '+await page.locator('.run-menu-panel').innerText());const [download]=await Promise.all([page.waitForEvent('download'),exportButton.click()]);const file=path.join(output,'unsaved-quota-checkpoint.json');await download.saveAs(file);
+    const archiveText=await readFile(file,'utf8'),archive=JSON.parse(archiveText),key=archive.records.find(r=>r.key==='meta').value.slotKey,exported=archive.records.find(r=>r.key===key).value.current;assert.ok(checkpoints.readCheckpoint(exported).ok);assert.equal(exported.state.gold,2);
+    const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true}),target=await context.newPage();
+    try {
+      await target.goto(base);await waitScene(target,'title');await target.waitForFunction(async()=>(await import('/src/game/session.ts')).gameSession().persistentReady);
+      await menu(target,true);const chooser=target.waitForEvent('filechooser');await target.getByRole('button',{name:'导入存档',exact:true}).tap();await(await chooser).setFiles({name:'unsaved-save.json',mimeType:'application/json',buffer:Buffer.from(archiveText)});
+      await waitScene(target,'shop');await target.waitForFunction(id=>window.__harness.game.registry.get('runController')?.state.runId===id,exported.state.runId);
+      assert.deepEqual((await read(target)).state,exported.state);await target.reload();await waitScene(target,'title');await target.waitForFunction(id=>window.__harness.game.registry.get('runController')?.state.runId===id,exported.state.runId);assert.deepEqual((await read(target)).state,exported.state);
+    }finally{await context.close();}
     await page.evaluate(()=>window.restoreStorage());await page.getByRole('button',{name:'重试保存',exact:true}).click();await page.waitForFunction(()=>window.__harness.game.registry.get('runController').status==='idle');await waitScene(page,'shop');
     const retried=await read(page);assert.deepEqual(retried.state,exported.state);assert.equal(retried.state.jokers.length,1);assert.equal(retried.state.commandSeq,before.state.commandSeq+1);
     await restored(page,retried,'quota-retry');mark({name:'quota/pause-export-retry',status:'PASS',stateHash:domain.stateHash(retried.state),atomicRevisionBefore:durable.revision,atomicRevisionAfter:(await slots(page)).revision});
@@ -144,7 +151,7 @@ async function badData(){
       if(mode==='corrupt'){assert.deepEqual((await read(page)).state,valid.previous.state);await page.getByText(/已读取上次有效备份/).waitFor();}
       else {assert.equal(await read(page),null);await page.getByText(/存档损坏或版本不兼容/).waitFor();}
       assert.deepEqual(await slots(page),raw);
-      const [download]=await Promise.all([page.waitForEvent('download'),page.getByRole('button',{name:'导出保留数据',exact:true}).click()]);const file=path.join(output,`retained-${mode}.json`);await download.saveAs(file);const exported=JSON.parse(await readFile(file,'utf8'));assert.ok(exported.records.some(r=>JSON.stringify(r.value).includes(mode==='corrupt'?'broken':'old-content')));
+      const [download]=await Promise.all([page.waitForEvent('download'),page.getByRole('button',{name:'导出存档',exact:true}).click()]);const file=path.join(output,`retained-${mode}.json`);await download.saveAs(file);const exported=JSON.parse(await readFile(file,'utf8'));assert.ok(exported.records.some(r=>JSON.stringify(r.value).includes(mode==='corrupt'?'broken':'old-content')));
       await toggleRunMenu(page);await chooseCharacter(page,'amo');const current=await read(page);assert.equal(current.state.gold,6);
       const retained=await page.evaluate(async()=>{const {IndexedDbSave}=await import('/src/platform/IndexedDbSave.ts');return new IndexedDbSave().exportRetained();});assert.ok(retained.includes(mode==='corrupt'?'broken':'old-content'));
       mark({name:`data/${mode}-backup-retained`,status:'PASS'});
@@ -154,11 +161,75 @@ async function badData(){
   try {
     const before=await read(page),saved=await slots(page);await menu(page);
     for(const value of [{format:'tangsongpai-checkpoint',state:null},JSON.parse('{"__proto__":{"polluted":true}}'),{...saved.current,state:{...saved.current.state,assetUrl:'https://evil.invalid/a.js'}}]){
-      const chooser=page.waitForEvent('filechooser');await page.getByRole('button',{name:'导入本局',exact:true}).click();await (await chooser).setFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(value))});await page.getByText(/导入失败：/).waitFor();assert.deepEqual((await read(page)).state,before.state);assert.deepEqual(await slots(page),saved);
+      const chooser=page.waitForEvent('filechooser');await page.getByRole('button',{name:'导入存档',exact:true}).click();await (await chooser).setFiles({name:'invalid.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(value))});await page.locator('.run-menu-status').filter({hasText:/导入失败：/}).waitFor();assert.deepEqual((await read(page)).state,before.state);assert.deepEqual(await slots(page),saved);
     }
-    const chooser=page.waitForEvent('filechooser');await page.getByRole('button',{name:'导入本局',exact:true}).click();await (await chooser).setFiles({name:'valid.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(saved.current))});await waitScene(page,'shop');await page.waitForFunction(()=>window.__harness.game.registry.get('runController').status==='idle');assert.deepEqual((await read(page)).state,before.state);
+    const chooser=page.waitForEvent('filechooser');await page.getByRole('button',{name:'导入存档',exact:true}).click();await (await chooser).setFiles({name:'valid.json',mimeType:'application/json',buffer:Buffer.from(JSON.stringify(saved.current))});await waitScene(page,'shop');await page.waitForFunction(()=>window.__harness.game.registry.get('runController').status==='idle');assert.deepEqual((await read(page)).state,before.state);
     mark({name:'import/illegal-rejected-valid-roundtrip',status:'PASS',stateHash:domain.stateHash(before.state)});
   }finally{await close(test);}
+}
+async function archive(){
+  const source=await start('archive-source'),{page}=source;
+  let destination;
+  try {
+    await buy(page);
+    const first=await slots(page);
+    const current=await page.evaluate(async()=>{
+      const {gameSession}=await import('/src/game/session.ts'),session=gameSession();
+      const run=await session.start('archive-second','amo',{mode:'standard',difficulty:1,challengeId:null,programsEnabled:true});
+      if(!run)throw Error('second partition setup failed: '+session.notice);
+      localStorage.setItem('tangsongpai.r2.progress.v1',JSON.stringify({version:1,standardWins:[true,true,false,false]}));
+      return structuredClone(run.state);
+    });
+    await menu(page);
+    assert.equal(await page.getByRole('button',{name:'导出存档',exact:true}).count(),1);
+    assert.equal(await page.getByRole('button',{name:'导入存档',exact:true}).count(),1);
+    assert.equal(await page.getByRole('button',{name:/导出本局|导出保留数据|导入本局/}).count(),0);
+    const [download]=await Promise.all([page.waitForEvent('download'),page.getByRole('button',{name:'导出存档',exact:true}).click()]);
+    const file=path.join(output,'complete-save.json');await download.saveAs(file);const text=await readFile(file,'utf8'),saved=JSON.parse(text);
+    const rows=archive=>archive.records.filter(r=>r.key!=='meta').sort((a,b)=>a.key.localeCompare(b.key));
+    assert.ok(rows(saved).length>=2);assert.ok(rows(saved).some(r=>r.value.current?.state.runId===first.current.state.runId));
+    assert.deepEqual(JSON.parse(saved.progress).standardWins,[true,true,false,false]);
+    const active=saved.records.find(r=>r.key==='meta').value.slotKey;assert.deepEqual(saved.records.find(r=>r.key===active).value.current.state,current);
+
+    const context=await browser.newContext({viewport:{width:1280,height:800}}),target=await context.newPage(),errors=[];
+    destination={context,page:target,errors,name:'archive-destination'};target.on('pageerror',e=>errors.push(String(e)));target.on('dialog',d=>d.accept());
+    await target.goto(base);await waitScene(target,'title');await target.waitForFunction(async()=>(await import('/src/game/session.ts')).gameSession().loaded);
+    const upload=async(data,name)=>{const chooser=target.waitForEvent('filechooser');await target.getByRole('button',{name:'导入存档',exact:true}).click();await(await chooser).setFiles({name,mimeType:'application/json',buffer:Buffer.from(data)});};
+    const snapshot=()=>target.evaluate(async()=>{const {IndexedDbSave}=await import('/src/platform/IndexedDbSave.ts');return JSON.parse(await new IndexedDbSave().exportRetained());});
+    const progress=()=>target.evaluate(()=>localStorage.getItem('tangsongpai.r2.progress.v1'));
+    await menu(target);await upload(text,'complete-save.json');await waitScene(target,'shop');
+    await target.waitForFunction(id=>window.__harness.game.registry.get('runController')?.state.runId===id,current.runId);
+    assert.deepEqual((await read(target)).state,current);assert.deepEqual(rows(await snapshot()),rows(saved));assert.equal(await progress(),saved.progress);
+
+    // A failed IndexedDB write must roll back the accompanying unlock record.
+    await target.evaluate(()=>{localStorage.setItem('tangsongpai.r2.progress.v1',JSON.stringify({version:1,standardWins:[false,false,false,false]}));const original=IDBObjectStore.prototype.put;IDBObjectStore.prototype.put=function(...args){if(this.name==='saves'&&args[1]==='meta')throw new DOMException('injected quota','QuotaExceededError');return Reflect.apply(original,this,args);};window.restoreArchiveStorage=()=>IDBObjectStore.prototype.put=original;});
+    const before=await snapshot(),beforeProgress=await progress();await menu(target);await upload(text,'complete-save.json');await target.locator('.run-menu-status').filter({hasText:/导入失败：/}).waitFor();
+    assert.deepEqual(await snapshot(),before);assert.equal(await progress(),beforeProgress);assert.deepEqual((await read(target)).state,current);
+    await target.evaluate(()=>window.restoreArchiveStorage());await upload(text,'complete-save.json');await waitScene(target,'shop');
+    await target.waitForFunction(async expected=>localStorage.getItem('tangsongpai.r2.progress.v1')===expected,saved.progress);
+    assert.deepEqual(rows(await snapshot()),rows(saved));assert.equal(await progress(),saved.progress);
+    // Simulate another writer in a browser without Web Locks: an old controller
+    // must not overwrite a newer revision even if its lease still looks writable.
+    await target.evaluate(async()=>{
+      const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('tangsongpai-checkpoints',1);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});
+      await new Promise((resolve,reject)=>{const tx=db.transaction('saves','readwrite'),store=tx.objectStore('saves'),request=store.get('meta');request.onsuccess=()=>store.put({...request.result,revision:request.result.revision+1},'meta');tx.oncomplete=resolve;tx.onabort=()=>reject(tx.error);});db.close();
+    });
+    const newer=await snapshot();await menu(target);await upload(text,'complete-save.json');await target.locator('.run-menu-status').filter({hasText:/其他页面已更新存档/}).waitFor();assert.deepEqual(await snapshot(),newer);
+    await target.reload();await waitScene(target,'title');await target.waitForFunction(id=>window.__harness.game.registry.get('runController')?.state.runId===id,current.runId);
+    assert.deepEqual((await read(target)).state,current);assert.deepEqual(rows(await snapshot()),rows(saved));assert.equal(await progress(),saved.progress);
+
+    await menu(target);const unchanged=await snapshot(),unchangedProgress=await progress();
+    const invalid=JSON.stringify({...saved,records:[...saved.records,saved.records[0]]});await upload(invalid,'invalid.json');await target.locator('.run-menu-status').filter({hasText:/导入失败：/}).waitFor();
+    assert.deepEqual(await snapshot(),unchanged);assert.equal(await progress(),unchangedProgress);
+    await target.evaluate(()=>window.archivePreviousRun=window.__harness.game.registry.get('runController'));
+    const legacy=JSON.stringify({format:saved.format,records:saved.records});await upload(legacy,'legacy-storage.json');await target.waitForFunction(()=>window.__harness.game.registry.get('runController')!==window.archivePreviousRun);await waitScene(target,'shop');
+    assert.deepEqual((await read(target)).state,current);assert.equal(await progress(),saved.progress);
+    await menu(target);await target.evaluate(()=>window.archivePreviousRun=window.__harness.game.registry.get('runController'));const checkpoint=saved.records.find(r=>r.key===active).value.current;await upload(JSON.stringify(checkpoint),'legacy-run.json');await target.waitForFunction(()=>window.__harness.game.registry.get('runController')!==window.archivePreviousRun);await waitScene(target,'shop');
+    assert.deepEqual((await read(target)).state,current);
+    await menu(target);await upload(JSON.stringify({format:saved.format,version:1,records:[],progress:null}),'empty-save.json');await waitScene(target,'title');
+    const empty=await target.evaluate(async()=>{const {IndexedDbSave}=await import('/src/platform/IndexedDbSave.ts');return new IndexedDbSave().readEmptyHistory();});assert.ok(empty.revision>0);assert.equal(empty.current,null);
+    mark({name:'archive/full-roundtrip-legacy-failure-reload',status:'PASS',partitions:rows(saved).length});
+  }finally{if(destination)await close(destination);await close(source);}
 }
 async function tabs(){
   const test=await start('two-tabs'),first=test.page,second=await test.context.newPage();second.on('pageerror',e=>test.errors.push(String(e)));second.on('dialog',d=>d.accept());
@@ -194,9 +265,9 @@ async function interruption(){
 }
 try {
   const deadline=Date.now()+30000;while(true){try{if((await fetch(base)).ok)break;}catch{}if(Date.now()>deadline)throw Error('server timeout');await new Promise(r=>setTimeout(r,200));}
-  browser=await chromium.launch();report.browser=browser.version();
+  browser=await chromium.launch(process.env.SMOKE_CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.SMOKE_CHROMIUM_EXECUTABLE_PATH}:{});report.browser=browser.version();
   if(process.argv.includes('--tabs')){const count=Number(process.argv.find(a=>a.startsWith('--repeat='))?.split('=')[1]??1);assert.ok(Number.isInteger(count)&&count>=1&&count<=20);report.scope=`tabs only, ${count} distinct contexts`;for(let i=0;i<count;i++)await tabs();}
-  else if(process.env.RECOVERY_ONLY){const scope=process.env.RECOVERY_ONLY,suites={playback:speeds,quota,badData,tabs,interruption};assert.ok(suites[scope],'known recovery diagnostic scope');report.scope=scope+' diagnostic only';await suites[scope]();}
-  else {report.scope='full recovery suite';await refreshMatrix();await speeds();await quota();await badData();await tabs();await interruption();}report.status='PASS';
+  else if(process.env.RECOVERY_ONLY){const scope=process.env.RECOVERY_ONLY,suites={playback:speeds,quota,badData,archive,tabs,interruption};assert.ok(suites[scope],'known recovery diagnostic scope');report.scope=scope+' diagnostic only';await suites[scope]();}
+  else {report.scope='full recovery suite';await refreshMatrix();await speeds();await quota();await badData();await archive();await tabs();await interruption();}report.status='PASS';
 }catch(error){report.status='FAIL';report.error=String(error);console.error(error);process.exitCode=1;}
 finally {await browser?.close();server.kill();await ssr.close();await writeFile(path.join(output,'recovery.json'),JSON.stringify(report,null,2)+'\n');console.log(`recovery: ${report.status}; ${report.checks.length} actual scenarios`);}

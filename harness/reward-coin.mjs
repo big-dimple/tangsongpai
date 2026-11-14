@@ -23,7 +23,7 @@ async function observation(p){return p.evaluate(()=>{
 });}
 async function importCheckpoint(p,touch){
  const click=l=>touch?l.tap():l.click();await click(p.locator('.run-menu-toggle'));const summary=p.locator('.run-menu-modal summary').filter({hasText:'进度与存档'});await click(summary);
- const chooserPromise=p.waitForEvent('filechooser');await click(p.getByRole('button',{name:'导入本局',exact:true}));const chooser=await chooserPromise;await chooser.setFiles({name:'natural-pre-clear.json',mimeType:'application/json',buffer:Buffer.from(checkpoint)});await waitScene(p,'game');
+ const chooserPromise=p.waitForEvent('filechooser');await click(p.getByRole('button',{name:'导入存档',exact:true}));const chooser=await chooserPromise;await chooser.setFiles({name:'natural-pre-clear.json',mimeType:'application/json',buffer:Buffer.from(checkpoint)});await waitScene(p,'game');
  await p.waitForFunction(checksum=>JSON.parse(window.__harness.game.registry.get('runController').exportJSON()).checksum===checksum,JSON.parse(checkpoint).checksum);
 }
 async function play(p,touch){

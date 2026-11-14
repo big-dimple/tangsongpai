@@ -11,6 +11,7 @@ const session=()=>({persistentReady:true,run:undefined as unknown,pendingRun:und
 describe('first-player history checks',()=>{
  it('recognises a new player only after a successful persistent empty-store read',async()=>{
   const s=session();expect(await firstPlayerStatus(s,local())).toBe('first');expect(s.storage.exportRetained).toHaveBeenCalledOnce();
+  s.storage.exportRetained.mockResolvedValueOnce(backup([{key:'meta',value:{revision:7,slotKey:''}}]));expect(await firstPlayerStatus(s,local())).toBe('first');
   s.persistentReady=false;expect(await firstPlayerStatus(s,local())).toBe('unknown');
  });
  it('keeps active, damaged, retained and orphaned saved records out of automatic tutorial',async()=>{
