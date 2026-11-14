@@ -1,6 +1,6 @@
 import {describe,expect,it} from 'vitest';
 import {intersects,layout,type Box} from '../src/game/layout';
-import {noviceGuideCanvasBox,placeNoviceGuide} from '../src/game/NoviceGuideView';
+import {noviceGuideCanvasBox,noviceGuideCandidateWidths,placeNoviceGuide} from '../src/game/NoviceGuideView';
 import {idlePlayedArea} from '../src/game/ScoreTableLayout';
 
 const inside=(outer:Box,inner:Box)=>inner.x>=outer.x-.001&&inner.y>=outer.y-.001&&inner.x+inner.width<=outer.x+outer.width+.001&&inner.y+inner.height<=outer.y+outer.height+.001;
@@ -66,6 +66,24 @@ describe('novice guide placement',()=>{
     const compact=placeNoviceGuide(bounds,controls,{width:304,height:84},table.buttons.suit,{requireFit:true});
     expect(compact).toBeDefined();expect(compact!.width).toBe(304);expect(compact!.height).toBe(84);
     for(const area of controls)expect(intersects(compact!,area)).toBe(false);
+  });
+  it('finds the readable open column beside two owned cards with a played preview',()=>{
+    const table=layout({width:320,height:568},{top:0,right:0,bottom:0,left:0},undefined,{count:8});
+    const bounds={x:8,y:8,width:304,height:552};
+    const controls=[table.hud,table.scoreBoard,table.hand,table.actions,table.heroAction,table.inventoryEntry,table.helpEntry,...Object.values(table.buttons),...table.slots.slice(0,2)].filter((box):box is Box=>!!box);
+    // A selected card and its caption protect the central played area too.
+    const preview={x:126,y:217.84,width:68,height:93.6},caption={x:8,y:196.64,width:42,height:16};
+    const protectedAreas=[...controls,preview,caption];
+    const widths=noviceGuideCandidateWidths(bounds,protectedAreas,304,168);
+    const rightOfOwned=bounds.x+bounds.width-(table.slots[1].x+table.slots[1].width);
+    const width=widths.find(value=>Math.abs(value-rightOfOwned)<.2);
+    expect(width).toBeDefined();expect(width!).toBeGreaterThanOrEqual(168);
+    const placed=placeNoviceGuide(bounds,protectedAreas,{width:width!,height:82},table.tableActions.play,{requireFit:true});
+    expect(placed).toBeDefined();expect(placed!.x).toBeGreaterThanOrEqual(table.slots[1].x+table.slots[1].width-.01);
+    expect(placed!.width).toBeGreaterThanOrEqual(168);expect(placed!.height).toBe(82);
+    for(const area of protectedAreas)expect(intersects(placed!,area)).toBe(false);
+    // A panel with more controls keeps the larger readability threshold.
+    expect(noviceGuideCandidateWidths(bounds,protectedAreas,304,240)).not.toContain(width);
   });
   it('prefers a complete hint over a closer region that would clip it',()=>{
     const result=placeNoviceGuide({x:0,y:0,width:320,height:500},[{x:0,y:130,width:320,height:80},{x:0,y:270,width:320,height:230}],{width:280,height:100},{x:0,y:210,width:20,height:20});
