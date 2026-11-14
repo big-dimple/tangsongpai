@@ -37,6 +37,21 @@ jobs:
         run: python3 -B -m unittest discover -s tests -p 'test_*release*.py'
       - name: Run the complete gate and build once
         run: npm run verify:ci -- --scope=all
+      - name: Install screenshot fonts and video support for temporary review
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-wqy-microhei ffmpeg
+      - name: Exercise tutorial and Liu E on desktop and phone
+        run: |
+          revision="$(node -p "require('./node_modules/playwright-core/browsers.json').browsers.find(x=>x.name==='ffmpeg').revision")"
+          mkdir -p "/tmp/tsp-playwright/ffmpeg-$revision"
+          ln -sf "$(command -v ffmpeg)" "/tmp/tsp-playwright/ffmpeg-$revision/ffmpeg-linux"
+          export PLAYWRIGHT_BROWSERS_PATH=/tmp/tsp-playwright
+          NOVICE_LESSON_CASE=desktop,phone390 NOVICE_LESSON_OUT=shots/ci/novice node harness/novice-interactions-lesson.mjs
+          NOVICE_LESSON_CASE=phone390 NOVICE_LESSON_PAYOFF_ONLY=1 NOVICE_LESSON_OUT=shots/ci/novice-payoff node harness/novice-interactions-lesson.mjs
+          NOVICE_LESSON_CASE=phone390 NOVICE_LESSON_MOTION=system NOVICE_LESSON_OUT=shots/ci/novice-reduced node harness/novice-interactions-lesson.mjs
+          LIUE_STAGE_OUT=shots/ci/liue-stage node harness/liue-listening-stage.mjs
+          LIUE_PAYOFF_MODE=checks LIUE_PAYOFF_CASES=390-10-special LIUE_PAYOFF_OUT=shots/ci/liue-repeat node harness/liue-skill-payoff.mjs
       - name: Prepare and verify release candidate
         run: |
           python3 scripts/prepare-release-artifact.py
