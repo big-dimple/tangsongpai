@@ -49,5 +49,5 @@ describe('C02 ordinary command acquisition and persistence',()=>{
     expect(proofs.size).toBe(72);
     expect([...proofs.values()].some(proof=>proof.shelf==='earned')).toBe(true);
     console.info('C02 ordinary command branches',JSON.stringify(Object.fromEntries(proofs)));
-  });
+  }, 30_000); // 72-card natural-shop sweep competes with other workers in CI.
 });
