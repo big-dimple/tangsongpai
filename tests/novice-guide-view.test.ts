@@ -1,6 +1,7 @@
 import {describe,expect,it} from 'vitest';
 import {intersects,layout,type Box} from '../src/game/layout';
 import {noviceGuideCanvasBox,placeNoviceGuide} from '../src/game/NoviceGuideView';
+import {idlePlayedArea} from '../src/game/ScoreTableLayout';
 
 const inside=(outer:Box,inner:Box)=>inner.x>=outer.x-.001&&inner.y>=outer.y-.001&&inner.x+inner.width<=outer.x+outer.width+.001&&inner.y+inner.height<=outer.y+outer.height+.001;
 
@@ -21,6 +22,18 @@ describe('novice guide placement',()=>{
           for(const area of protectedAreas)expect(intersects(placed!,area),`${width}x${height}`).toBe(false);
         }
       }
+    }
+  });
+  it('fits the compact 320px lesson beside every actual selected-card preview',()=>{
+    const table=layout({width:320,height:568},{top:0,right:0,bottom:0,left:0},undefined,{count:8});
+    const bounds={x:8,y:8,width:304,height:552},area=idlePlayedArea(table);
+    const controls=[table.hud,table.scoreBoard,table.hand,table.actions,table.heroAction,table.inventoryEntry,table.helpEntry,...Object.values(table.buttons)].filter((box):box is Box=>!!box);
+    for(const count of [1,2,5]){
+      const height=Math.max(24,area.height-14),width=Math.min(64,height/1.4,(area.width-24-8*(count-1))/count),total=count*width+(count-1)*8;
+      const previews=Array.from({length:count},(_,index)=>({x:area.x+(area.width-total)/2+index*(width+8)-2,y:area.y+(area.height-width*1.4)/2-2,width:width+4,height:width*1.4+4}));
+      const placed=placeNoviceGuide(bounds,[...controls,...previews],{width:304,height:88},table.cards[6].hit);
+      expect(placed).toMatchObject({width:304,height:88});expect(inside(bounds,placed!)).toBe(true);
+      for(const box of [...controls,...previews])expect(intersects(placed!,box),`selected ${count}: ${JSON.stringify({placed,box})}`).toBe(false);
     }
   });
   it('prefers a complete hint over a closer region that would clip it',()=>{

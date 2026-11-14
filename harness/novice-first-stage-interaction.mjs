@@ -70,8 +70,22 @@ try {for(const spec of cases){
     if(!panel)return null;
     const p=panel.getBoundingClientRect(),layout=scene.view?.layout,canvas=game.canvas.getBoundingClientRect(),sx=layout?canvas.width/layout.width:1,sy=layout?canvas.height/layout.height:1;
     const map=b=>b&&({x:canvas.left+b.x*sx,y:canvas.top+b.y*sy,width:b.width*sx,height:b.height*sy});
-    const protectedBoxes=scene.scene.isActive()&&layout?[layout.hud,layout.scoreBoard,layout.playedArea,layout.hand,layout.actions,layout.heroAction,layout.inventoryEntry,layout.helpEntry,...scene.run.jokers.map((_,i)=>layout.slots[i])].filter(Boolean).map(map):[];
+    const protectedBoxes=scene.scene.isActive()&&layout?Object.entries({hud:layout.hud,score:layout.scoreBoard,hand:layout.hand,actions:layout.actions,hero:layout.heroAction,inventory:layout.inventoryEntry,help:layout.helpEntry,...Object.fromEntries(Object.entries(layout.buttons??{}).map(([key,value])=>['button/'+key,value])),...Object.fromEntries(scene.run.jokers.map((_,i)=>['owned/'+i,layout.slots[i]]))}).filter(([,box])=>box).map(([name,box])=>({name,...map(box)})):[];
     const playedArea=scene.scene.isActive()&&layout?map(layout.playedArea):null;
+    const objectBox=o=>{
+      const b=o.getBounds(),camera=scene.cameras.main,points=[[b.x,b.y],[b.x+b.width,b.y],[b.x,b.y+b.height],[b.x+b.width,b.y+b.height]].map(([x,y])=>camera.matrix.transformPoint(x-camera.scrollX,y-camera.scrollY));
+      const xs=points.map(point=>canvas.left+point.x*canvas.width/game.scale.width),ys=points.map(point=>canvas.top+point.y*canvas.height/game.scale.height);
+      return {x:Math.min(...xs),y:Math.min(...ys),width:Math.max(...xs)-Math.min(...xs),height:Math.max(...ys)-Math.min(...ys)};
+    };
+    const preview=scene.scene.isActive()?scene.previewCards:undefined,previewMap=preview?.active&&preview.visible?preview.getData('cardViews'):undefined;
+    const previewCards=previewMap instanceof Map?[...previewMap].flatMap(([id,view])=>{
+      const o=view.container;if(!o?.active||!o.visible||o.alpha<=.01)return[];
+      const w=Number(o.getData('width')),h=Number(o.getData('height')),m=o.getWorldTransformMatrix(),a=m.transformPoint(-w/2,-h/2),b=m.transformPoint(w/2,h/2);
+      const camera=scene.cameras.main,points=[[a.x,a.y],[b.x,a.y],[a.x,b.y],[b.x,b.y]].map(([x,y])=>camera.matrix.transformPoint(x-camera.scrollX,y-camera.scrollY)),xs=points.map(point=>canvas.left+point.x*canvas.width/game.scale.width),ys=points.map(point=>canvas.top+point.y*canvas.height/game.scale.height);
+      return [{id,x:Math.min(...xs),y:Math.min(...ys),width:Math.max(...xs)-Math.min(...xs),height:Math.max(...ys)-Math.min(...ys)}];
+    }):[];
+    const previewControls=preview?.active&&preview.visible?preview.list.filter(o=>o.active&&o.visible&&o.input?.enabled&&typeof o.getBounds==='function').map(o=>({name:o.name||'preview-control',...objectBox(o)})):[];
+    const caption=scene.view?.root?.getByName('table/played-label'),playedCaption=caption?.active&&caption.visible&&caption.text?objectBox(caption):null;
     const cards=scene.scene.isActive()&&layout?scene.hand.flatMap((card,i)=>{
       const view=scene.cardViews[i],seat=layout.cards[i];if(!view?.container.active||!view.container.visible||!seat?.visible)return [];
       const width=Number(view.container.getData('width')),height=Number(view.container.getData('height')),matrix=view.container.getWorldTransformMatrix();
@@ -86,7 +100,7 @@ try {for(const spec of cases){
         textBoxes:[...range.getClientRects()].map(r=>({x:r.x,y:r.y,width:r.width,height:r.height}))};
     });
     const scroll=document.scrollingElement;
-    return {step:document.querySelector('[data-novice-guide]')?.dataset.noviceGuideStep,title:panel.querySelector('.novice-guide-title')?.textContent,body:panel.querySelector('.novice-guide-body')?.textContent,text:panel.innerText,scrollHeight:panel.scrollHeight,clientHeight:panel.clientHeight,panel:{x:p.x,y:p.y,width:p.width,height:p.height},protectedBoxes,playedArea,rings,cards,choices,documentScroll:{width:scroll?.scrollWidth,clientWidth:scroll?.clientWidth,height:scroll?.scrollHeight,clientHeight:scroll?.clientHeight}};
+    return {step:document.querySelector('[data-novice-guide]')?.dataset.noviceGuideStep,title:panel.querySelector('.novice-guide-title')?.textContent,body:panel.querySelector('.novice-guide-body')?.textContent,text:panel.innerText,scrollHeight:panel.scrollHeight,clientHeight:panel.clientHeight,panel:{x:p.x,y:p.y,width:p.width,height:p.height},protectedBoxes,playedArea,previewCards,previewControls,playedCaption,selectedCount:scene.scene.isActive()?scene.selectedIds.size:0,rings,cards,choices,documentScroll:{width:scroll?.scrollWidth,clientWidth:scroll?.clientWidth,height:scroll?.scrollHeight,clientHeight:scroll?.clientHeight}};
   });
   const capture=async(name,check=true)=>{
     const info=await measure();
@@ -94,7 +108,8 @@ try {for(const spec of cases){
       assert.ok(info,`${name}: guide is visible`);
       assert.ok(info.scrollHeight<=info.clientHeight+1,`${name}: guide needs internal scrolling: ${JSON.stringify(info)}`);
       assert.ok(info.panel.x>=0&&info.panel.y>=0&&info.panel.x+info.panel.width<=spec.width+.5&&info.panel.y+info.panel.height<=spec.height+.5,`${name}: guide leaves viewport`);
-      for(const b of info.protectedBoxes)assert.ok(!overlap(info.panel,b),`${name}: guide covers the live table: ${JSON.stringify({panel:info.panel,b})}`);
+      for(const b of [...info.protectedBoxes,...info.cards,...info.previewCards,...info.previewControls,...(info.playedCaption?[info.playedCaption]:[])])assert.ok(!overlap(info.panel,b),`${name}: guide covers visible content or a live control: ${JSON.stringify({panel:info.panel,b})}`);
+      assert.equal(info.previewCards.length,info.selectedCount,`${name}: every selected card has a measured visible preview`);
       assert.ok(info.documentScroll.width<=info.documentScroll.clientWidth+1&&info.documentScroll.height<=info.documentScroll.clientHeight+1,`${name}: page scrolls: ${JSON.stringify(info.documentScroll)}`);
       for(const choice of info.choices){
         assert.ok(choice.box.width>=43&&choice.box.height>=43,`${name}: choice has an undersized hit area: ${JSON.stringify(choice)}`);

@@ -148,11 +148,21 @@ async function scenario(spec){
     const rect=el=>{const b=el.getBoundingClientRect();return {x:b.x,y:b.y,width:b.width,height:b.height};};
     const panel=rect(p),scroll=document.scrollingElement,protect=[],critical=[];
     const add=(name,b,important=false)=>{const x=box(b);if(x&&x.width>0&&x.height>0){protect.push({name,...x});if(important)critical.push({name,...x});}};
-    let cards=[],owned=[];
+    let cards=[],owned=[],previewCount=0,selectedCount=0;
     if(key==='game'&&l){
-      for(const [name,b] of Object.entries({hud:l.hud,score:l.scoreBoard,played:l.playedArea,hand:l.hand,actions:l.actions,hero:l.heroAction,inventory:l.inventoryEntry,help:l.helpEntry,...Object.fromEntries(Object.entries(l.buttons??{}).map(([k,v])=>['button/'+k,v]))}))add(name,b,!['hud','score','played','hand'].includes(name));
+      for(const [name,b] of Object.entries({hud:l.hud,score:l.scoreBoard,hand:l.hand,actions:l.actions,hero:l.heroAction,inventory:l.inventoryEntry,help:l.helpEntry,...Object.fromEntries(Object.entries(l.buttons??{}).map(([k,v])=>['button/'+k,v]))}))add(name,b,!['hud','score','hand'].includes(name));
       for(let i=0;i<s.run.jokers.length;i++)add('owned-slot/'+i,l.slots[i]);
       cards=s.hand.flatMap((card,i)=>{const v=s.cardViews[i],seat=l.cards[i];if(!v?.container.active||!v.container.visible||!seat?.visible)return[];const w=Number(v.container.getData('width')),h=Number(v.container.getData('height')),m=v.container.getWorldTransformMatrix(),a=m.transformPoint(-w/2,-h/2),z=m.transformPoint(w/2,h/2),b=box({x:a.x,y:a.y,width:Math.min(z.x-a.x,seat.hit.width),height:z.y-a.y});return b?[{id:card.id,suit:card.suit,rank:card.rank,...b}]:[];});
+      const preview=s.previewCards,previewMap=preview?.active&&preview.visible?preview.getData('cardViews'):undefined;
+      const previews=previewMap instanceof Map?[...previewMap].flatMap(([id,card])=>{
+        const o=card.container;if(!o?.active||!o.visible||o.alpha<=.01)return[];
+        const w=Number(o.getData('width')),h=Number(o.getData('height')),m=o.getWorldTransformMatrix(),a=m.transformPoint(-w/2,-h/2),z=m.transformPoint(w/2,h/2),camera=s.cameras.main;
+        const points=[[a.x,a.y],[z.x,a.y],[a.x,z.y],[z.x,z.y]].map(([x,y])=>camera.matrix.transformPoint(x-camera.scrollX,y-camera.scrollY)),xs=points.map(point=>c.left+point.x*c.width/g.scale.width),ys=points.map(point=>c.top+point.y*c.height/g.scale.height);
+        return [{name:'played-card/'+id,x:Math.min(...xs),y:Math.min(...ys),width:Math.max(...xs)-Math.min(...xs),height:Math.max(...ys)-Math.min(...ys)}];
+      }):[];
+      protect.push(...previews);previewCount=previews.length;selectedCount=s.selectedIds.size;
+      if(preview?.active&&preview.visible)for(const o of preview.list){if(!o.active||!o.visible||!o.input?.enabled||typeof o.getBounds!=='function')continue;const b=objectBox(o);if(b)protect.push({name:o.name||'preview-control',...b});}
+      const caption=s.view.root.getByName('table/played-label');if(caption?.active&&caption.visible&&caption.text){const b=objectBox(caption);if(b)protect.push({name:'played-caption',...b});}
     }
     if(key==='shop'&&l){const geo=s.geometry();if(geo.play)add('shop/play',geo.play,true);if(geo.ownedToggle)add('shop/owned-toggle',geo.ownedToggle,true);if(!geo.inventoryCollapsed)geo.slots.slice(0,s.run.jokers.length).forEach((b,i)=>add('shop/owned-slot/'+i,b));}
     if(s){
@@ -167,7 +177,7 @@ async function scenario(spec){
     const textParts=[...p.querySelectorAll('.novice-guide-title,.novice-guide-body,[data-novice-guide-choice]')].filter(el=>el.getClientRects().length).map(el=>({text:el.innerText,box:rect(el),scrollHeight:el.scrollHeight,clientHeight:el.clientHeight,scrollWidth:el.scrollWidth,clientWidth:el.clientWidth}));
     let clip={left:0,top:0,right:innerWidth,bottom:innerHeight};for(let el=p.parentElement;el;el=el.parentElement){const style=getComputedStyle(el),r=el.getBoundingClientRect();if(/auto|scroll|hidden|clip/.test(style.overflowX)){clip.left=Math.max(clip.left,r.left);clip.right=Math.min(clip.right,r.right);}if(/auto|scroll|hidden|clip/.test(style.overflowY)){clip.top=Math.max(clip.top,r.top);clip.bottom=Math.min(clip.bottom,r.bottom);}}
     const demo=document.querySelector('[data-novice-gesture]:not([hidden])'),hand=demo?.querySelector('[data-novice-gesture-hand]');
-    return {scene:key,step:document.querySelector('[data-novice-guide]')?.dataset.noviceGuideStep,title:p.querySelector('.novice-guide-title')?.textContent,body:p.querySelector('.novice-guide-body')?.textContent,text:p.innerText,panel,clip,scrollHeight:p.scrollHeight,clientHeight:p.clientHeight,documentScroll:{width:scroll?.scrollWidth,clientWidth:scroll?.clientWidth,height:scroll?.scrollHeight,clientHeight:scroll?.clientHeight},protect,critical,owned,cards,rings,choices,textParts,demo:demo?{mode:demo.dataset.mode,phase:demo.dataset.phase,aria:demo.getAttribute('aria-hidden'),pointerEvents:getComputedStyle(demo).pointerEvents,hand:hand?rect(hand):null,opacity:hand?getComputedStyle(hand).opacity:null}:null,result:key==='game'?s.resultText?.text:null,status:key==='game'?s.statusText?.text:null};
+    return {scene:key,step:document.querySelector('[data-novice-guide]')?.dataset.noviceGuideStep,title:p.querySelector('.novice-guide-title')?.textContent,body:p.querySelector('.novice-guide-body')?.textContent,text:p.innerText,panel,clip,scrollHeight:p.scrollHeight,clientHeight:p.clientHeight,documentScroll:{width:scroll?.scrollWidth,clientWidth:scroll?.clientWidth,height:scroll?.scrollHeight,clientHeight:scroll?.clientHeight},protect,critical,owned,cards,previewCount,selectedCount,rings,choices,textParts,demo:demo?{mode:demo.dataset.mode,phase:demo.dataset.phase,aria:demo.getAttribute('aria-hidden'),pointerEvents:getComputedStyle(demo).pointerEvents,hand:hand?rect(hand):null,opacity:hand?getComputedStyle(hand).opacity:null}:null,result:key==='game'?s.resultText?.text:null,status:key==='game'?s.statusText?.text:null};
   });
   const shot=async(name,{guideRequired=true}={})=>{
     // Record the picture before assertions so a failed geometry check is reviewable.
@@ -181,6 +191,7 @@ async function scenario(spec){
       assert.ok(v.documentScroll.width<=v.documentScroll.clientWidth+1,`${name}: unexpected horizontal page overflow`);
       for(const t of v.textParts)assert.ok(t.scrollHeight<=t.clientHeight+1&&t.scrollWidth<=t.clientWidth+1,`${name}: guide text or choice is clipped: ${JSON.stringify(t)}`);
       for(const b of v.protect)assert.ok(!overlaps(p,b),`${name}: guide covers ${b.name}: ${JSON.stringify({panel:p,covered:b})}`);
+      if(v.scene==='game')assert.equal(v.previewCount,v.selectedCount,`${name}: every selected card has a measured visible preview`);
       for(const card of v.cards)assert.ok(!overlaps(p,card),`${name}: guide covers a painted hand card: ${JSON.stringify({panel:p,card})}`);
       if(v.demo?.hand&&v.demo.opacity!=='0'){
         assert.equal(v.demo.pointerEvents,'none',`${name}: visual hand must not intercept input`);assert.equal(v.demo.aria,'true');
