@@ -74,6 +74,12 @@ function freeRegions(bounds:Box,avoid:readonly Box[]):Box[] {
   return regions;
 }
 
+/** Widths worth measuring, ordered widest first, without crossing protected areas. */
+export function noviceGuideCandidateWidths(bounds:Box,avoid:readonly Box[],fullWidth:number,minWidth:number):number[] {
+  return [...new Set(freeRegions(bounds,avoid).map(b=>Math.floor(Math.min(fullWidth,b.width)*10)/10))]
+    .filter(width=>width>=minWidth&&width<fullWidth-.5).sort((a,b)=>b-a).slice(0,6);
+}
+
 /** Exported to verify placement against real table layouts without creating a scene. */
 export function placeNoviceGuide(bounds:Box,avoid:readonly Box[],desired:{width:number;height:number},anchor?:Box,options:{requireFit?:boolean;minWidth?:number}={}):Box|undefined {
   if(!valid(bounds)||!Number.isFinite(desired.width)||!Number.isFinite(desired.height)||desired.width<=0||desired.height<=0)return;
@@ -231,6 +237,9 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
     // real panel taller than the very region it was meant to fit in.
     const desiredWidth=emphasis(step)==='action'?360:420;
     const fullWidth=Math.min(desiredWidth,bounds.width);
+    // A short prompt with just skip/close can remain legible in the open
+    // column beside owned cards. Additional controls need a wider panel.
+    const minReadableWidth=Math.min(panel.classList.contains('has-details')||panel.classList.contains('has-choices')||!!step.action?240:168,bounds.width);
     const detailsFocused=document.activeElement===detailsButton;
     // Keep the current compact layout during ordinary moving-card updates:
     // repeatedly moving the rules button would also discard keyboard focus.
@@ -249,9 +258,7 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
     if(!placement&&!closed){
       // Some layouts have a usable wider column but not the preferred width.
       // Measure those widths before accepting them, with a readable minimum.
-      const minWidth=Math.min(240,bounds.width);
-      const widths=[...new Set(freeRegions(bounds,protectedAreas).map(b=>Math.floor(Math.min(fullWidth,b.width)*10)/10))]
-        .filter(width=>width>=minWidth&&width<fullWidth-.5).sort((a,b)=>b-a).slice(0,6);
+      const widths=noviceGuideCandidateWidths(bounds,protectedAreas,fullWidth,minReadableWidth);
       for(const width of widths){element.style.width=width+'px';rect=element.getBoundingClientRect();placement=findFit();if(placement)break;}
     }
     if(!placement){
@@ -260,7 +267,7 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
       // panel spill over protected gameplay. Prefer a readable width.
       element.style.width=closed?'auto':fullWidth+'px';rect=element.getBoundingClientRect();
       const desired={width:closed?Math.max(88,rect.width):rect.width,height:Math.max(44,rect.height)};
-      placement=placeNoviceGuide(bounds,protectedAreas,desired,visibleHighlights[0],{minWidth:closed?44:Math.min(240,bounds.width)})??
+      placement=placeNoviceGuide(bounds,protectedAreas,desired,visibleHighlights[0],{minWidth:closed?44:minReadableWidth})??
         placeNoviceGuide(bounds,protectedAreas,desired,visibleHighlights[0]);
       if(placement&&!closed){panel.classList.add('is-scrollable');panel.setAttribute('tabindex','0');panel.setAttribute('aria-label','新手引导，可滚动查看');}
     }
