@@ -256,6 +256,43 @@ describe('TangSongEntranceBurst presentation and shadow isolation', () => {
     expect(dom.body.querySelector('.qiyu-entrance-burst-canvas')).toBeNull();
   });
 
+  it('replays the same selection cut-in for consecutive heroes and switching back without stacking', () => {
+    const onShown=vi.fn();
+    const options={context:'select' as const,reducedMotion:false,playAudio:false,onShown};
+    const first=mountHeroEntranceBurst(dom.body as unknown as HTMLElement,'amo',options);
+    const firstHost=dom.body.querySelector('.qiyu-entrance-burst-canvas');
+    expect(firstHost).not.toBeNull();
+    first();
+    const second=mountHeroEntranceBurst(dom.body as unknown as HTMLElement,'touye',options);
+    const secondHost=dom.body.querySelector('.qiyu-entrance-burst-canvas');
+    expect(secondHost).not.toBeNull();
+    expect(secondHost).not.toBe(firstHost);
+    expect(dom.body.querySelectorAll('.qiyu-entrance-burst-canvas')).toHaveLength(1);
+    second();
+    const back=mountHeroEntranceBurst(dom.body as unknown as HTMLElement,'amo',options);
+    expect(dom.body.querySelectorAll('.qiyu-entrance-burst-canvas')).toHaveLength(1);
+    expect(onShown).toHaveBeenCalledTimes(3);
+    back();
+    expect(dom.body.querySelector('.qiyu-entrance-burst-canvas')).toBeNull();
+    // Browsing heroes must not rearm or replay the one-per-run stage entrance.
+    const stage=mountHeroEntranceBurst(dom.body as unknown as HTMLElement,'amo',{
+      context:'stage',reducedMotion:false,playAudio:false,onShown,
+    });
+    expect(onShown).toHaveBeenCalledTimes(3);
+    expect(dom.body.querySelector('.qiyu-entrance-burst-canvas')).toBeNull();
+    stage();
+  });
+
+  it('allows a selection cut-in after reduced motion is turned off without consuming the budget', () => {
+    const options={context:'select' as const,playAudio:false};
+    const quiet=mountHeroEntranceBurst(dom.body as unknown as HTMLElement,'amo',{...options,reducedMotion:true});
+    expect(dom.body.querySelector('.qiyu-entrance-burst-canvas')).toBeNull();
+    quiet();
+    const play=mountHeroEntranceBurst(dom.body as unknown as HTMLElement,'touye',{...options,reducedMotion:false});
+    expect(dom.body.querySelector('.qiyu-entrance-burst-canvas')).not.toBeNull();
+    play();
+  });
+
   it.each([1,2,3])('renders the phone entrance at physical pixel density %i without an input surface', dpr => {
     dom=setupDomDouble(390,844,dpr);
     const stop=mountHeroEntranceBurst(dom.body as unknown as HTMLElement,'amo',{context:'stage',playAudio:false});

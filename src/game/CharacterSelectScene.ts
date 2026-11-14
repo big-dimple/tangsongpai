@@ -238,7 +238,6 @@ export class CharacterSelectScene extends Phaser.Scene {
     const changed=this.selectedId!==id;
     this.selectedId=id;this.notice='';this.animateChoice=changed;this.audio.select();this.render();
     if(changed){
-      this.entryParticles?.switchHero();
       this.heroBurstDispose?.();
       // Rapid browsing (arrow keys / quick taps) keeps the visuals but drops the extra cue.
       const now=performance.now(),quiet=now-this.heroBurstAt<450;this.heroBurstAt=now;

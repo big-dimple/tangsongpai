@@ -366,8 +366,8 @@ export function resetHeroEntranceForNewRun(): void {
  *
  * The `select` context is a lighter, faster variant for browsing heroes: it keeps the
  * selection screen readable (lighter veil, smaller shake) and plays a single cue.
- * All contexts share one per-run budget so stage / shop / boss / Qiyu entries cannot
- * repeatedly interrupt the player after the opening cut-in.
+ * Hero selection can replay the same cut-in on each change. Other contexts share
+ * one per-run budget so stage / shop / boss / Qiyu entries do not repeatedly interrupt.
  */
 export function mountHeroEntranceBurst(
   host: HTMLElement | null | undefined,
@@ -381,9 +381,10 @@ export function mountHeroEntranceBurst(
   } = {},
 ): () => void {
   if (typeof window === 'undefined' || typeof document === 'undefined' || !host) return () => {};
-  if (prefersReducedMotion(options.reducedMotion) || heroEntrancePlayed) return () => {};
+  if (prefersReducedMotion(options.reducedMotion)) return () => {};
 
   const context = options.context ?? 'qiyu';
+  if (heroEntrancePlayed && context !== 'select') return () => {};
   const light = context === 'select';
   host.querySelectorAll('.qiyu-entrance-burst-canvas').forEach(node => node.remove());
 
