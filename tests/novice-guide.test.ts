@@ -209,7 +209,9 @@ describe('guided first match from saved commands',()=>{
   expect(liveNoviceGuide(skillHint,['a','b'],{...skill,available:true}).focus).toBe('hero');
   expect(liveNoviceGuide(skillHint,['a','b'],{...skill,available:true,chosen:true}).focus).toBe('play');
   const freeChoice=liveNoviceGuide({...skillHint,recommendedCardIds:[]},['a'],{...skill,discardCost:2});
-  expect(freeChoice.focus).toBe('play');expect(freeChoice.body).toContain('消耗2次弃牌额度');expect(freeChoice.body).toContain('可直接出牌');
+  expect(freeChoice.focus).toBe('discard');expect(freeChoice.body).toContain('消耗2次弃牌额度');expect(freeChoice.body).toContain('可直接出牌');
+  expect(liveNoviceGuide({...skillHint,recommendedCardIds:[]},['a','b','c'],{...skill,discardCost:2}).focus).toBe('discard');
+  expect(liveNoviceGuide({...skillHint,recommendedCardIds:[]},['a'],{...skill,canDiscard:false}).focus).toBe('play');
   expect(liveNoviceGuide(skillHint,[],{...skill,enabled:false}).body).toContain('技能不可用');
  });
 

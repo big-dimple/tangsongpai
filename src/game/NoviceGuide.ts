@@ -375,7 +375,7 @@ export function liveNoviceGuide(hint:NoviceGuideHint,selectedIds:readonly string
   if(skill.chosen)return {...hint,cue:'技能已选',body:'点「确认出牌」发动技能。',recommendedCardIds:[],focus:'play'};
   if(skill.available)return {...hint,cue:'牌点可转为倍率',body:'点刘娥技能，再选一张牌。',recommendedCardIds:[],focus:'hero'};
   if(!recommended.length){
-   if(selected.size)return {...hint,body:skill.canDiscard?`可直接出牌；想找适合技能的组合，也可弃掉已选牌换新牌，${discardCost}。`:'可先出牌，再从补回的牌中找适合技能的组合。',focus:'play'};
+   if(selected.size)return {...hint,body:skill.canDiscard?`可直接出牌；想找适合技能的组合，也可弃掉已选牌换新牌，${discardCost}。`:'可先出牌，再从补回的牌中找适合技能的组合。',focus:skill.canDiscard?'discard':'play'};
    return {...hint,body:skill.canDiscard?`技能需要对子或更高牌型。可自己选牌；想换牌时，选1–5张点「弃牌」，${discardCost}。`:'技能需要对子或更高牌型。当前无法换牌，可先自己选牌出牌。'};
   }
  }

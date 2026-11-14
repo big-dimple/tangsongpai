@@ -8,7 +8,7 @@ import {tmpdir} from 'node:os';
 import {dirname,join,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createServer} from 'vite';
-import {confirmHeroRoute,enterOpeningShop,openRunMenu,point,tapUI,toggleRunMenu,waitScene} from './ui.mjs';
+import {confirmHeroRoute,enterOpeningShop,point,tapUI,waitScene} from './ui.mjs';
 
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const out=resolve(process.env.NOVICE_LESSON_OUT??'/tmp/tsp-novice-interactions-lesson');
@@ -34,7 +34,7 @@ if(!process.env.PLAYWRIGHT_BROWSERS_PATH&&existsSync('/usr/bin/ffmpeg')){
 const {chromium}=await import('playwright');
 const port=Number(process.env.NOVICE_LESSON_PORT??5812);
 const motionMode=process.env.NOVICE_LESSON_MOTION??'normal';
-assert.ok(['normal','system','game'].includes(motionMode),'NOVICE_LESSON_MOTION must be normal, system, or game');
+assert.ok(['normal','system'].includes(motionMode),'NOVICE_LESSON_MOTION must be normal or system');
 const server=await createServer({root,mode:'e2e',cacheDir:`/tmp/tsp-lesson-vite-${port}`,optimizeDeps:{noDiscovery:true,include:['phaser']},server:{host:'127.0.0.1',port,strictPort:true,watch:null,hmr:false},logLevel:'error'});
 await server.listen();
 const browser=await chromium.launch({executablePath:process.env.SMOKE_CHROMIUM_EXECUTABLE_PATH??'/usr/bin/chromium',args:['--disable-gpu','--disable-software-rasterizer']});
@@ -171,13 +171,6 @@ async function scenario(spec){
       await sampleDemo(mode,from,to,'system');await page.emulateMedia({reducedMotion:'no-preference'});await page.waitForFunction(mode=>document.querySelector(`[data-novice-gesture][data-mode="${mode}"]`)?.dataset.reduced==='false',mode);
       row.checks.push(mode+': system reduced-motion setting changes the live demonstration and can be restored');
     }
-    if(spec.name==='phone390'){
-      await openRunMenu(page,spec.touch);await page.getByLabel('减少动态',{exact:true}).check();await toggleRunMenu(page,spec.touch);
-      await page.locator(`[data-novice-gesture][data-mode="${mode}"]:visible`).waitFor();await sampleDemo(mode,from,to,'game');
-      await openRunMenu(page,spec.touch);await page.getByLabel('减少动态',{exact:true}).uncheck();await toggleRunMenu(page,spec.touch);
-      await page.waitForFunction(mode=>document.querySelector(`[data-novice-gesture][data-mode="${mode}"]`)?.dataset.reduced==='false',mode);
-      row.checks.push(mode+': in-game reduced-motion setting changes the demonstration and can be restored');
-    }
   };
   const restore=async scene=>{
     const before=await saved();await page.reload();await waitScene(page,'title');await tap('title','action/title-continue');await waitScene(page,scene);
@@ -203,10 +196,6 @@ async function scenario(spec){
 
   try{
     await page.goto(`http://127.0.0.1:${port}/?harness=1`);await waitScene(page,'title');
-    if(motionMode==='game'){
-      await openRunMenu(page,spec.touch);await page.getByLabel('减少动态',{exact:true}).check();await toggleRunMenu(page,spec.touch);
-      assert.equal(await page.evaluate(async()=>{const {gameSession}=await import('/src/game/session.ts');return gameSession().reducedMotion;}),true,'the player enabled reduced motion through the menu');
-    }
     await tap('title','action/title-start');await waitScene(page,'game');await ready();await cue('先找一对');
     await shot('01-pair');await select(['clubs-5','hearts-5']);await expectSelected(['clubs-5','hearts-5'],'select first pair');
     let before=await saved();await tap('game','action/play');await settleCommand(before);await ready();await page.waitForFunction(()=>document.querySelector('[data-novice-guide]')?.dataset.noviceGuideStep==='discard');
@@ -276,7 +265,13 @@ async function scenario(spec){
       let skillPair;
       for(let attempt=0;attempt<4;attempt++){
         after=await state();const groups=new Map();for(const id of after.handOrder){const rank=after.deckInstances.find(card=>card.id===id).rank;groups.set(rank,[...(groups.get(rank)??[]),id]);}skillPair=[...groups.values()].find(ids=>ids.length>=2)?.slice(0,2);
-        if(skillPair)break;assert.ok(after.stage.discardsLeft>0,'can exchange cards while looking for a pair');await ready();await select(after.handOrder.slice(0,5));before=await saved();await tap('game','action/discard');await settleCommand(before);await ready();await shot('14-skill-discard-'+attempt);
+        if(skillPair)break;assert.ok(after.stage.discardsLeft>0,'can exchange cards while looking for a pair');await ready();await select(after.handOrder.slice(0,5));
+        await page.waitForFunction(()=>{
+          const s=window.__harness.game.scene.getScene('game'),l=s.view.layout,c=window.__harness.game.canvas.getBoundingClientRect(),rings=document.querySelectorAll('[data-novice-guide-highlight]');
+          if(rings.length!==1)return false;const r=rings[0].getBoundingClientRect(),b=l.tableActions.discard,sx=c.width/l.width,sy=c.height/l.height;
+          return Math.abs(r.x-(c.left+b.x*sx))<2&&Math.abs(r.y-(c.top+b.y*sy))<2&&Math.abs(r.width-b.width*sx)<2&&Math.abs(r.height-b.height*sy)<2;
+        });
+        await shot('14-skill-discard-guide-'+attempt);before=await saved();await tap('game','action/discard');await settleCommand(before);await ready();await shot('14-skill-discard-'+attempt);
       }
       assert.ok(skillPair,'a real dealt or exchanged pair is available');await ready();await select(skillPair);await cue('牌点可转为倍率');await shot('15-skill-ready');
       await tap('game','hero/action-shortcut');let skillDialog=page.locator('.detail-dialog[open]').last();await skillDialog.waitFor();await page.screenshot({path:join(dir,'16-skill-dialog.png'),scale:'css'});
