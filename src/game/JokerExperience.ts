@@ -1,4 +1,5 @@
 import {usesTouyeScaling} from '../domain/r2TouyeWager';
+import {touyeTargetLabel} from './TouyeWagerCopy';
 import {savedAmoExileMultiplier} from './AmoExileCopy';
 import {cardDefinitionName} from './tangsongCardNames';
 import {heroSkillTitleForRun} from './CharacterRunCopy';
@@ -52,7 +53,7 @@ export function savedBenefit(state:R2RunState,trace:ScoreTrace,e:ScoreEvent):Sav
   if(trace.erxiangGroup&&handoff?.targetId&&e.reasonKey==='erxiang.handoff'&&e.targetCardId)return fact(skill(),e.value.n+'点热度改加倍率（本次计分）','和所选牌同点、并参与计分的牌','同点牌再次计分时也转，不保证增加得分');
   if(handoff?.targetId&&e.reasonKey==='erxiang.handoff'&&e.targetCardId===handoff.targetId)return fact(skill(),handoff.points+'点热度改加倍率（首次普通计分）','所选计分牌，本场一次','本场已用；增强、版次保留，再次计分仍加热度');
   const wager=trace.touyeWager;
-  if(wager?.commit&&e.reasonKey.startsWith('touye.'+(wager.outcome==='won'?'won.':'lost.')))return fact(skill('已结算'),'押'+HAND_LABELS[wager.commit.target]+' · 实际'+HAND_LABELS[trace.handType]+' · '+(wager.outcome==='won'?'达成×'+wager.multiplier+(usesTouyeScaling(state)&&wager.core?' · 换来的牌计分'+wager.core.activeNewIds.length+'张':''):wager.core?.lossReason==='new-core'?(usesTouyeScaling(state)?'换来的牌没有计分×0.85':'新摸牌没参与成型×0.85'):(usesTouyeScaling(state)?'换来的牌计分'+(wager.core?.activeNewIds.length??0)+'张 · ':'')+'未成×0.85'),'之前的押注在这一手结算',wager.core?'本场已用；输约不是收益':'本场已用；未成不是收益');
+  if(wager?.commit&&e.reasonKey.startsWith('touye.'+(wager.outcome==='won'?'won.':'lost.')))return fact(skill('已结算'),'押'+touyeTargetLabel(wager.commit.target,usesTouyeScaling(state))+' · 实际'+HAND_LABELS[trace.handType]+' · '+(wager.outcome==='won'?'达成×'+wager.multiplier+(usesTouyeScaling(state)&&wager.core?' · 换来的牌计分'+wager.core.activeNewIds.length+'张':''):wager.core?.lossReason==='new-core'?(usesTouyeScaling(state)?'换来的牌没有计分×0.85':'新摸牌没参与成型×0.85'):(usesTouyeScaling(state)?'换来的牌计分'+(wager.core?.activeNewIds.length??0)+'张 · ':'')+'未成×0.85'),'之前的押注在这一手结算',wager.core?'本场已用；输约不是收益':'本场已用；未成不是收益');
   if(trace.assist&&e.reasonKey==='amo.assist.'+trace.assist.kind)return fact(skill(),'副组'+trace.assist.ids.length+'张已用 · 实际×'+trace.assist.multiplier,'有效主手及剩余同点副组','本场已用；副组不再留手');
  }
  if(!hasActualBenefit(e)||e.phase==='base'||e.phase==='finalScore')return;

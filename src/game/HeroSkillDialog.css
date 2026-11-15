@@ -24,3 +24,9 @@ dialog.detail-dialog.hero-skill-compact[open] {
  .detail-dialog.hero-skill-compact > .dialog-header { padding:12px; }
  .detail-dialog.hero-skill-compact > .dialog-actions { padding:8px 12px; }
 }
+
+/* Qin Qiong target groups show their complete accepted hands beside each choice. */
+.detail-dialog.touye-target-choice .dialog-choice-actions { grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-block:8px; }
+.detail-dialog.touye-target-choice .dialog-choice-actions > div { min-width:0;padding:6px; }
+.detail-dialog.touye-target-choice .dialog-choice-actions button { min-height:44px; }
+.detail-dialog.touye-target-choice .dialog-choice-actions p { margin:4px 0 0;font-size:13px;line-height:1.35;overflow-wrap:anywhere; }

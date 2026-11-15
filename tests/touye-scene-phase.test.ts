@@ -34,8 +34,8 @@ it('keeps the real discard saving/effect interval quiet, then shows its saved ta
  const f=fixture(),before=structuredClone(f.state),action=touyeBet(f.state,f.discard,f.target),expected=touyeSend(f.state,action),s=setup(f.state,f.discard),effect=deferred();s.effects.drain.mockReturnValue(effect.promise);
  const work=s.discardSelected(false,(action as Extract<Action,{type:'DiscardHand'}>).touyeBet);
  expectQuiet(s,'drawing','换牌中');await vi.waitFor(()=>expect(s.effects.drain).toHaveBeenCalledOnce());expectQuiet(s,'drawing','换牌中');expect(s.run).toEqual(expected);expect(before).toEqual(f.state);
- effect.resolve();await work;expect(s.touyeSkillPhase).toBeUndefined();expectQuiet(s,'locked','已押顺子');
- for(const ids of [[],f.play,[f.play[0]]]){s.selectedIds=new Set(ids);s.updateHeroControl();expectQuiet(s,'locked','已押顺子');expect(s.run).toEqual(expected);}
+ effect.resolve();await work;expect(s.touyeSkillPhase).toBeUndefined();expectQuiet(s,'locked','已押顺子类');
+ for(const ids of [[],f.play,[f.play[0]]]){s.selectedIds=new Set(ids);s.updateHeroControl();expectQuiet(s,'locked','已押顺子类');expect(s.run).toEqual(expected);}
 });
 
 it('keeps settling through the saved score presentation, then returns to the actual settled state',async()=>{

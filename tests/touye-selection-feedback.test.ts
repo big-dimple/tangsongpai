@@ -38,7 +38,7 @@ it('explains a target miss even when a new card actually scores',()=>{
 
 it('counts a scoring new card with suppressed ordinary points, and never previews an invalid or absent selection',()=>{
  const f=pending('B02-zero'),choice=touyeChoice(f.state,f.play);expect(preview(choice.details)).toContain('计分新牌：9♣');expect(choice.status).toContain('×2');
- for(const ids of [[],['not-in-hand'],[f.play[0],f.play[0]]]){const c=touyeChoice(f.state,ids);expect(c.status).toBe('已押两对 · 出牌后结算');expect(preview(c.details)).toBe('');}
+ for(const ids of [[],['not-in-hand'],[f.play[0],f.play[0]]]){const c=touyeChoice(f.state,ids);expect(c.status).toBe('已押双组类 · 出牌后结算');expect(preview(c.details)).toBe('');}
 });
 
 it('preserves previous saved-rule copy without inventing a scaled preview',()=>{

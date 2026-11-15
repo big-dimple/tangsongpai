@@ -15,14 +15,14 @@ it('locks only the saved wager target, independently of the next selected hand',
  const pending=touyeSend(f.state,touyeBet(f.state,f.discard,f.target)),snapshot=structuredClone(pending);
  for(const ids of [[],f.play,[pending.handOrder[4]]]){
   const cue=heroAbilityCue(pending,undefined,ids);
-  expect(cue).toMatchObject({label:'跃马冲阵',state:'locked',status:'已押顺子',detail:'出牌后结算',available:false,opportunity:false,actionable:false,attention:false});
-  expect(cue!.ariaLabel).toContain('已押顺子，出牌后结算');
+  expect(cue).toMatchObject({label:'跃马冲阵',state:'locked',status:'已押顺子类',detail:'出牌后结算',available:false,opportunity:false,actionable:false,attention:false});
+  expect(cue!.ariaLabel).toContain('已押顺子类，出牌后结算');
   expect(cue!.status+cue!.detail).not.toMatch(/待完成|成功|失败|达成|×/);
  }
- expect(touyeChoice(pending).status).toBe('已押顺子 · 出牌后结算');
+ expect(touyeChoice(pending).status).toBe('已押顺子类 · 出牌后结算');
  expect(savedHeroResult(pending)).toBe('');expect(pending).toEqual(snapshot);
  const restored=readCheckpoint(makeCheckpoint(pending,[]));expect(restored.ok).toBe(true);
- if(restored.ok)expect(heroAbilityCue(restored.checkpoint.state)).toMatchObject({status:'已押顺子',state:'locked',detail:'出牌后结算'});
+ if(restored.ok)expect(heroAbilityCue(restored.checkpoint.state)).toMatchObject({status:'已押顺子类',state:'locked',detail:'出牌后结算'});
 });
 
 it('keeps drawing and settling as temporary non-actionable display phases without predicting a result',()=>{
@@ -34,15 +34,15 @@ it('keeps drawing and settling as temporary non-actionable display phases withou
  for(const [phase,status] of [['drawing','换牌中'],['settling','结算中']] as const){
   const cue=heroAbilityCue(pending,undefined,f.play,false,{touyePhase:phase});
   expect(cue).toMatchObject({state:phase,status,available:false,opportunity:false,actionable:false,attention:false});
-  expect(cue!.detail).toContain('已押顺子');expect(cue!.detail).not.toMatch(/成功|失败|达成|×/);
+  expect(cue!.detail).toContain('已押顺子类');expect(cue!.detail).not.toMatch(/成功|失败|达成|×/);
  }
- expect(heroAbilityCue(pending)).toMatchObject({state:'locked',status:'已押顺子',detail:'出牌后结算'});
+ expect(heroAbilityCue(pending)).toMatchObject({state:'locked',status:'已押顺子类',detail:'出牌后结算'});
  expect(pending).toEqual(snapshot);
 });
 
 it.each(['mature-win','target-miss'] as const)('shows a saved %s result only after a real play',kind=>{
  const f=touyeFixture(kind,current),pending=touyeSend(f.state,touyeBet(f.state,f.discard,f.target));
- expect(heroAbilityCue(pending)).toMatchObject({status:'已押两对',detail:'出牌后结算'});
+ expect(heroAbilityCue(pending)).toMatchObject({status:'已押双组类',detail:'出牌后结算'});
  expect(savedHeroResult(pending)).toBe('');
  const played=touyeSend(pending,{type:'PlayHand',selectedIds:f.play}),snapshot=structuredClone(played);
  expect(played.lastTrace!.touyeWager!.outcome).toBe(kind==='mature-win'?'won':'lost');

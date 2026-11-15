@@ -73,8 +73,8 @@ import {requestTutorialReplay} from './TutorialEntry';
 import {skipTutorialToNormal} from './RunMenu';
 import {enhanceBlindSelectEntrance,mountHeroEntranceBurst} from './QiyuAnimationPresentation';
 import './PokerEncounterDialog.css';
-import {usesTouyeWager,usesTouyeNewCore,type TouyeBet,type TouyeTarget} from '../domain/r2TouyeWager';
-import {touyeChoice,touyeConfirmationCopy} from './TouyeWagerCopy';
+import {usesTouyeWager,usesTouyeNewCore,usesTouyeScaling,type TouyeBet,type TouyeTarget} from '../domain/r2TouyeWager';
+import {touyeChoice,touyeConfirmationCopy,touyeTargetLabel} from './TouyeWagerCopy';
 import {usesLaohuanRefill} from '../domain/r2LaohuanRefill';
 import {presentScoreCredit,presentScoreConvergence} from './ScoreTableCredit';
 import {tableScoreCells,tableScoreCaption,localHeroEyeSlot,idlePlayedArea} from './ScoreTableLayout';
@@ -1669,7 +1669,7 @@ export class GameScene extends Phaser.Scene {
     if(!discovery&&this.statusText.width>this.view.layout.status.width&&memoryReminder&&!sweepReminder&&!this.statusMessage&&!reminders&&!entryReminder)this.statusText.setText(savedReminder!.name+' · 保存状态见详情');
     if(azao&&!this.presentation&&!this.playing&&!discovery&&!sweepReminder&&!selectedReminder&&!guideCue&&!reminders&&!entryReminder&&!benefitReminder&&!memoryReminder)this.statusText.setText(azao.compact+' · '+(this.azaoRelease?'本手释放，消耗全部层':azao.hold)).setName('hero/azao-charge-status');
     }
-    if(usesTouyeWager(this.run)){const copy=touyeChoice(this.run,[...this.selectedIds]);this.roleText.setText(copy.compact);if(!criticalStatus&&!this.playing&&!this.presentation&&copy.status)this.statusText.setText(copy.status);if(this.pendingTouye)this.view.setEnabled(this.discardButton,false);}
+    if(usesTouyeWager(this.run)){const copy=touyeChoice(this.run,[...this.selectedIds]);this.roleText.setText(copy.compact);if(!criticalStatus&&!this.playing&&!this.presentation&&copy.status)this.statusText.setText(copy.status);if(this.pendingTouye)this.view.setEnabled(this.discardButton,false);if(portrait&&copy.pending&&copy.previewShort&&!criticalStatus&&!this.playing&&!this.presentation){const score=this.view.layout.scoreBoard;this.resultText.setText(copy.previewShort);fitScoreLine(this.resultText,{x:score.x+10,y:score.y+(score.height<90?4:7),width:score.width-20-(this.bossSuitRescueButton?154:0),height:score.height<90?18:30},score.height<90?18:24);}}
     const safeBottom=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-bottom'))||0;
     if(portrait){this.statusText.setVisible(!!criticalStatus);if(criticalStatus)this.resultText.setVisible(false);}
     fitStatusSummary(this.statusText,{...handWindow.status,height:Math.max(0,Math.min(Math.max(warning?20:0,handWindow.status.height+(handWindow.mode==='landscape'?12:0)),handWindow.height-safeBottom-handWindow.status.y))},!criticalStatus&&selectedReminder?'点所选条件':undefined);
@@ -1937,14 +1937,14 @@ export class GameScene extends Phaser.Scene {
     const copy=touyeChoice(this.run,ids),seq=this.run.commandSeq;
     const guide=heroSkillGuide(this.run,this.selectionPreview(),ids);
     const dialog=this.dialog.open(characterForRun(this.run).name+' · '+characterForRun(this.run).passiveName,copy.details,[],{
-      guideSteps:heroOperationSteps(this.run,guide),summaryBody:guide.step,effectBody:guide.effect+(copy.enabled&&touyeComboCue(this.run)?'\n'+touyeComboCue(this.run):''),collapseRules:true,rulesLabel:'押注与换牌细则',closeLabel:copy.pending?'返回出牌':'返回 · 保留原出牌选择',
-      choices:copy.pending?[]:copy.choices.map(c=>({label:'押'+c.label,detail:c.reason==='当前手牌已可达，不能押'?'手牌已可凑出'+c.label+'，不能押':c.reason||undefined,disabled:!this.ready||!c.available,run:()=>{if(this.dialog.active(dialog)&&this.ready&&this.run.commandSeq===seq)this.confirmTouye(c.target,copy.snapshotToken,seq,ids,c.accepted);}})),
+      guideSteps:heroOperationSteps(this.run,guide),summaryBody:guide.step,effectBody:guide.effect+(!copy.pending&&copy.enabled?'\n确认后花'+r2DiscardCost(this.run)+'次弃牌'+(stageNotice(this.run)?.discardGoldCost?'和1金币':'')+'；选择目标不消耗。':'')+(copy.scaled&&!copy.pending?'\n牌型可属于多个类别，但只结算一次。':'')+(copy.enabled&&touyeComboCue(this.run)?'\n'+touyeComboCue(this.run):''),collapseRules:true,rulesLabel:'押注与换牌细则',closeLabel:copy.pending?'返回出牌':'返回 · 保留原出牌选择',
+      choices:copy.pending?[]:copy.choices.map(c=>({label:'押'+c.label,detail:c.accepted+(c.reason?' · '+c.reason:''),disabled:!this.ready||!c.available,run:()=>{if(this.dialog.active(dialog)&&this.ready&&this.run.commandSeq===seq)this.confirmTouye(c.target,copy.snapshotToken,seq,ids,c.accepted);}})),
       secondaryActions:[...(!copy.pending?[{label:'重新选弃牌',run:()=>this.inspectTouye()}]:[]),{label:'培养手记',run:()=>this.inspectJourney()},{label:'查看物品',run:()=>showConsumables(this.dialog,this.run,this.ready&&!this.pendingTouye,(a,seq)=>this.command(a,seq))},{label:'上一手详情',disabled:!this.run.lastTrace,run:()=>this.inspectLastTrace()}],
-    });mountHeroSkillGuide(dialog,this.run);if(!copy.pending)mountHeroDecisionEyes(dialog,'target-choice',this.reducedMotion);
+    });dialog.classList.add('touye-target-choice');mountHeroSkillGuide(dialog,this.run);if(!copy.pending)mountHeroDecisionEyes(dialog,'target-choice',this.reducedMotion);
   }
   private confirmTouye(target:TouyeTarget,snapshotToken:string,seq:number,ids:string[],accepted:string):void {
-    const cost=r2DiscardCost(this.run),gold=stageNotice(this.run)?.discardGoldCost??0,copy=touyeConfirmationCopy(this.run,ids);
-    const dialog=this.dialog.open('押'+HAND_LABELS[target]+' · 弃'+ids.length+'张',copy.risk+'。\n'+copy.success+'，替代普通×1.15。\n'+copy.qualification+'；接受：'+accepted+'。\n本次实际弃牌：'+ids.map(id=>{const c=this.hand.find(c=>c.id===id)!;return rankLabel(c.rank)+SUIT_SYMBOL[c.suit];}).join(' ')+'。\n花'+cost+'次弃牌'+(gold?'＋'+gold+'金币':'，不另收金币')+'；确认保存后才补牌，不能取消重抽。',[{label:'确认押'+HAND_LABELS[target]+'并弃'+ids.length+'张',primary:true,run:()=>{if(!this.dialog.active(dialog)||!this.ready||this.run.commandSeq!==seq)return;this.dialog.close(dialog);void this.discardSelected(false,{target,snapshotToken},seq,ids);}}],{closeLabel:'取消 · 不弃牌',guideSteps:{labels:['选要弃的牌','选押注目标','确认补牌'],current:2},summaryBody:'③ 确认押'+HAND_LABELS[target]+'并补牌',effectBody:'要弃的牌：'+ids.map(id=>{const c=this.hand.find(c=>c.id===id)!;return rankLabel(c.rank)+SUIT_SYMBOL[c.suit];}).join(' ')+'\n弃'+ids.length+'张，补'+copy.refillCount+'张 · 花'+cost+'次弃牌'+(gold?'＋'+gold+'金币':'')+'\n'+copy.risk+'；'+copy.success+'。',collapseRules:true,rulesLabel:'目标与弃牌明细'});mountHeroSkillGuide(dialog,this.run);dialog.classList.add('hero-confirm-dialog');
+    const cost=r2DiscardCost(this.run),gold=stageNotice(this.run)?.discardGoldCost??0,copy=touyeConfirmationCopy(this.run,ids),targetName=touyeTargetLabel(target,usesTouyeScaling(this.run));
+    const dialog=this.dialog.open('押'+targetName+' · 弃'+ids.length+'张',copy.risk+'。\n'+copy.success+'，替代普通×1.15。\n'+copy.qualification+'；接受：'+accepted+'。\n本次实际弃牌：'+ids.map(id=>{const c=this.hand.find(c=>c.id===id)!;return rankLabel(c.rank)+SUIT_SYMBOL[c.suit];}).join(' ')+'。\n花'+cost+'次弃牌'+(gold?'＋'+gold+'金币':'，不另收金币')+'；确认保存后才补牌，不能取消重抽。',[{label:'确认押'+targetName+'并弃'+ids.length+'张',primary:true,run:()=>{if(!this.dialog.active(dialog)||!this.ready||this.run.commandSeq!==seq)return;this.dialog.close(dialog);void this.discardSelected(false,{target,snapshotToken},seq,ids);}}],{closeLabel:'取消 · 不弃牌',guideSteps:{labels:['选要弃的牌','选押注目标','确认补牌'],current:2},summaryBody:'③ 确认押'+targetName+'并补牌',effectBody:'要弃的牌：'+ids.map(id=>{const c=this.hand.find(c=>c.id===id)!;return rankLabel(c.rank)+SUIT_SYMBOL[c.suit];}).join(' ')+'\n弃'+ids.length+'张，补'+copy.refillCount+'张 · 花'+cost+'次弃牌'+(gold?'＋'+gold+'金币':'')+'\n'+copy.risk+'；'+copy.success+'。',collapseRules:true,rulesLabel:'目标与弃牌明细'});mountHeroSkillGuide(dialog,this.run);dialog.classList.add('hero-confirm-dialog');
     mountHeroDecisionEyes(dialog,'confirm-target',this.reducedMotion);
   }
   private inspectErxiang():void {
@@ -2603,7 +2603,7 @@ export class GameScene extends Phaser.Scene {
   private async showTouyeLockEyes(target:TouyeTarget,context:EffectContext):Promise<void> {
     if(context.signal.aborted||!this.pendingTouye)return;
     const commit=this.run.stage?.touyeWager?.commit;if(!commit||commit.target!==target)return;
-    const eventId=commit.discardCommandId+'/touye-lock',label='已押'+HAND_LABELS[target]+' · 下一手判定',key:JokerKeyHighlight={eventId,kind:'starter',heroId:'touye',cause:'押型换牌已保存',landing:label,fact:{eventId,sourceInstanceId:this.run.runId+'/character',definitionId:'',title:heroSkillTitle('touye'),effect:label,condition:'真实弃牌押型保存成功',destination:'下一手目标',next:'出牌后判定，尚未兑现'}};
+    const eventId=commit.discardCommandId+'/touye-lock',label='已押'+touyeTargetLabel(target,usesTouyeScaling(this.run))+' · 下一手判定',key:JokerKeyHighlight={eventId,kind:'starter',heroId:'touye',cause:'押型换牌已保存',landing:label,fact:{eventId,sourceInstanceId:this.run.runId+'/character',definitionId:'',title:heroSkillTitle('touye'),effect:label,condition:'真实弃牌押型保存成功',destination:'下一手目标',next:'出牌后判定，尚未兑现'}};
     const l=this.view.layout,stage=mountHeroClimax(this,this.view.root,{x:0,y:0,...cssViewport(this)},key,{label:'目标已锁定',before:label,after:label,note:'尚未兑现'},this.reducedMotion,{eyes:localHeroEyeSlot(l,toolInventoryPlayedArea(l),this.jokerViews.size)});if(!stage)return;
     stage.group.setName('hero/action-eyes').setData('decisionPhase','target-saved').setData('pendingTarget',target);this.heroClimax=stage;
     this.consumeSavedHeroAction(eventId,this.run.runId+'/character',[],context,350);
