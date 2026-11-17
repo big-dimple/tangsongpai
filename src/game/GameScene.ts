@@ -66,6 +66,7 @@ import {bindNoviceGuide} from './NoviceGuideBinding';
 import {liveNoviceGuide,noviceFreeActions,noviceGuide,noviceGuideEnrolled,type NoviceGuideHint} from './NoviceGuide';
 import {firstStageOptions,openingDeal,openingDealHint,type OpeningDeal,type FirstStageOption} from './NoviceFirstStage';
 import {handControlHint,noviceSwipePath,NoviceHandLesson,type HandSort} from './NoviceHandLesson';
+import {attemptNoviceOwnedReorder,noviceOwnedLesson,noviceOwnedPractice,noviceOwnedSaved,recordNoviceOwnedLift} from './NoviceOwnedLesson';
 import {flushDiscardHint,flushRefillHint,noviceHandPageFocus} from './NoviceFlushLesson';
 import {noviceHandDefinition,noviceSameSuitFeedback} from './NoviceSuitLesson';
 import {mountNoviceGestureDemo,type NoviceGestureDemoHandle} from './NoviceGestureDemo';
@@ -182,7 +183,7 @@ import {showDeckInspection} from './DeckInspector';
 import {dispatchRun,runController} from './runAdapter';
 import {reorderJokerIds,ownedJokerDropIndex} from './JokerReorder';
 import {OwnedJokerInput} from './OwnedJokerInput';
-import {OwnedJokerDragVisual} from './OwnedJokerDragVisual';
+import {OwnedJokerDragVisual,ownedOrderReversed} from './OwnedJokerDragVisual';
 import {gameSession} from './session';
 import type {RunMenuActions} from './RunMenu';
 import {R2_BOSSES,r2BossText,r2DisabledCards} from '../domain/r2Chapter';
@@ -586,15 +587,15 @@ export class GameScene extends Phaser.Scene {
     let firstStage:{key:string;optionKey?:string;options:FirstStageOption[];target?:FirstStageOption}|undefined;
     let opening:{run:RunState;deal?:OpeningDeal}|undefined;
     const tutorialPointer=window.matchMedia('(pointer: coarse)');
-    let swipeDemo:NoviceGestureDemoHandle|undefined,swipeDemoKey='',dismissedSwipeKey='';
-    const clearSwipeDemo=()=>{swipeDemo?.destroy();swipeDemo=undefined;swipeDemoKey='';};
-    this.events.once('shutdown',clearSwipeDemo);
+    let gestureDemo:NoviceGestureDemoHandle|undefined,demoKey='',dismissedKey='';
+    const clearDemo=()=>{gestureDemo?.destroy();gestureDemo=undefined;demoKey='';};
+    this.events.once('shutdown',clearDemo);
     const firstStageKey=()=>JSON.stringify([this.run.runId,this.run.stageIndex,this.run.stage?.playIndex,
       [...this.run.handOrder].sort(),this.chosenHeroDraft(),this.assistIds]);
     const unmountNoviceGuide=bindNoviceGuide(this,{
       kind:'game',
       presentationInputs:()=>[[...this.selectedIds].join('|'),this.erxiangTargetId,this.handInput?.active,this.aiCandidates.result,firstStage?.target?.id,
-        this.handStart,this.cardViews,this.noviceHandLesson?.revision,tutorialPointer.matches,window.innerWidth,window.innerHeight],
+        this.handStart,this.cardViews,this.noviceHandLesson?.revision,this.ownedDrag,this.ownedDrag?.feedback.cue,this.ownedInput?.swipedBeforeLift,tutorialPointer.matches,window.innerWidth,window.innerHeight],
       onDetails:hint=>{if(hint.details)this.dialog.open('计分与规则',hint.details,[],{closeLabel:'返回练习'});},
       presentHint:hint=>{
         const selected=[...this.selectedIds];
@@ -603,6 +604,21 @@ export class GameScene extends Phaser.Scene {
         // Keep score details in the unselected state and on desktop.
         if(selected.length&&this.run.stage?.index===0&&layout.mode==='portrait'&&layout.width<=520&&['discard','independent'].includes(hint.step))hint={...hint,details:undefined};
         const owner=runController(this),lesson=this.activeNoviceHandLesson();
+        if(owner&&!selected.length&&this.ownedReady&&this.run.jokers.length){
+          const owned=noviceOwnedLesson(this.run,owner.journal,hint);
+          if(owned){
+            const count=this.run.jokers.length,rail={count,reverse:ownedOrderReversed(this.run),finePointer:!tutorialPointer.matches,swipedBeforeLift:this.ownedInput?.swipedBeforeLift};
+            if(this.ownedDrag){
+              return {...hint,...this.ownedDrag.feedback,focus:undefined,recommendedCardIds:[]};
+            }
+            if(!owned.reordered&&(count>=2||!owned.lifted)){
+              return {...noviceOwnedPractice(hint,rail),gestureCardIds:this.run.jokers.slice(0,2).map(j=>j.instanceId)};
+            }
+            if(owned.reordered&&owner.journal.at(-1)?.action.type==='ReorderJokers'){
+              return noviceOwnedSaved(hint,{...rail,names:this.run.jokers.map(j=>this.jokerDefinition(j.definitionId).name)});
+            }
+          }
+        }
         const visibleIds=this.hand.filter((_,index)=>layout.cards[index]?.visible).map(card=>card.id),visibleSet=new Set(visibleIds);
         // Keep swipe instructions stable until the gesture commits its selection.
         const beforeGesture=this.handInput?.active&&this.noviceHandStart?this.noviceHandStart:selected;
@@ -705,20 +721,28 @@ export class GameScene extends Phaser.Scene {
           const guided=hint?.focus==='sort-suit',text=guided?'点花色':'花色';
           if(sortLabel.text!==text)sortLabel.setText(text).setFontSize(guided&&this.view.layout.buttons.suit.width<=48?12:14);
         }
-        if(hint?.gesture!=='sweep'){
-          clearSwipeDemo();
-          if(!this.handInput?.active)dismissedSwipeKey='';
+        const mode=hint?.gesture;
+        if(!mode){
+          clearDemo();
+          if(!this.handInput?.active&&!this.ownedDrag)dismissedKey='';
           return;
         }
-        const ids=hint.gestureCardIds??[],key=JSON.stringify([this.run.runId,ids]);
-        if(ids.length<2){clearSwipeDemo();return;}
-        if(swipeDemo&&swipeDemoKey!==key)clearSwipeDemo();
-        if(swipeDemo||dismissedSwipeKey===key||this.handInput?.active)return;
-        swipeDemoKey=key;
-        swipeDemo=mountNoviceGestureDemo({
-          mode:'sweep',
+        const ids=hint.gestureCardIds??[],key=JSON.stringify([this.run.runId,mode,hint.cue,ids]);
+        if(ids.length<(mode==='hold'?1:2)){clearDemo();return;}
+        if(gestureDemo&&demoKey!==key)clearDemo();
+        if(gestureDemo||dismissedKey===key||this.handInput?.active||this.ownedDrag)return;
+        demoKey=key;
+        gestureDemo=mountNoviceGestureDemo({
+          mode,
           points:()=>{
             const layout=this.view.layout,canvas=this.game.canvas.getBoundingClientRect();
+            if(mode!=='sweep'){
+              if(!this.ownedReady||this.ownedDrag||ids.some((id,i)=>this.run.jokers[i]?.instanceId!==id||!layout.slots[i]))return;
+              return layout.slots.slice(0,ids.length).map(slot=>{
+                const b=noviceGuideCanvasBox(slot,canvas,layout);
+                return {x:b.x+b.width/2,y:b.y+b.height*.36};
+              });
+            }
             if(ids.some(id=>!this.hand.some(card=>card.id===id)))return;
             const points=ids.map(id=>{
               const index=this.hand.findIndex(card=>card.id===id),seat=layout.cards[index],card=this.cardViews[index];
@@ -735,7 +759,7 @@ export class GameScene extends Phaser.Scene {
           },
           reducedMotion:()=>gameSession().reducedMotion,
           sweepThresholdPx:()=>10*this.game.canvas.getBoundingClientRect().width/(this.scale.width*this.scale.zoom),
-          onDismiss:()=>{swipeDemo=undefined;swipeDemoKey='';dismissedSwipeKey=key;},
+          onDismiss:()=>{gestureDemo=undefined;demoKey='';dismissedKey=key;},
         });
       },
       getGeometry:hint=>{
@@ -771,7 +795,9 @@ export class GameScene extends Phaser.Scene {
         const cards=hint.recommendedCardIds??[];
         const joker=hint.step==='payoff'&&!focus&&hint.fact?.purchaseInstanceId?this.jokerViews.get(hint.fact.purchaseInstanceId):undefined;
         const jokerFrame=joker?.getData('frame') as Phaser.GameObjects.Rectangle|undefined;
-        const ownedHighlight=joker?.active&&joker.visible&&jokerFrame?.active?[map(jokerFrame.getBounds())]:[];
+        const ownedPractice=hint.gesture==='hold'||hint.gesture==='hold-drag';
+        const ownedHighlight=ownedPractice?l.slots.slice(0,hint.gestureCardIds?.length).map(map):
+          joker?.active&&joker.visible&&jokerFrame?.active?[map(jokerFrame.getBounds())]:[];
         const highlightedCards=hint.step==='pair'||hint.step==='discard'||hint.step==='independent'?cards:focus?[]:cards;
         const highlights=[...(hint.focus==='play-or-discard'?[map(hero.discard),map(l.tableActions.play)]:focus?[map(focus)]:ownedHighlight),...highlightedCards.flatMap(cardBox)];
         // The hint must not intercept the optional skill or utility buttons:
@@ -2084,7 +2110,12 @@ export class GameScene extends Phaser.Scene {
   private async command(action:import('../domain/run').Action,expectedSeq?:number):Promise<boolean> {
     if(!this.ready)return false;this.clearHover();this.cancelAiCandidates();this.playing=true;const lifecycle=this.lifecycle,intent=++this.intent;this.updateControls();
     const pendingDrag=action.type==='ReorderJokers'&&this.ownedDrag?.saving?this.ownedDrag:undefined,inputEnabled=pendingDrag?this.input.enabled:true;
-    if(pendingDrag){this.input.enabled=false;pendingDrag.pending();}
+    if(pendingDrag){
+      this.input.enabled=false;pendingDrag.pending();
+      const owner=runController(this);
+      if(action.type==='ReorderJokers'&&this.run.mode==='tutorial'&&owner&&!owner.guidedOpeningSuppressed)
+        attemptNoviceOwnedReorder(this.run,owner.journal,noviceGuide(this.run,owner.journal),action.ids);
+    }
     let reorderSaved=false,reorderReceipt:string|undefined;const haptic=this.placementHaptic;
     const focusedId=this.hand[this.focusIndex]?.id,beforeTool=this.run,toolOwner=action.type==='UseConsumable'?this.dialog.current:undefined;
     const beforeGold=this.run.gold,beforeDiscards=this.run.stage?.discardsLeft,beforeHand=this.hand,used=action.type==='UseConsumable'?this.run.consumables.find(item=>item.instanceId===action.instanceId):undefined;
@@ -2190,6 +2221,8 @@ export class GameScene extends Phaser.Scene {
     this.placementHaptic?.cancel();this.placementHaptic=Haptics.shared.createScope(this.hapticLife?.signal);
     for(const art of this.jokerViews.values())this.tweens.killTweensOf(art);
     this.ownedDrag=new OwnedJokerDragVisual(this,id,this.run.commandSeq,{x,y},()=>({root:this.view.root,arts:this.jokerViews,slots:this.view.layout.slots,ids:this.run.jokers.map(j=>j.instanceId),hint:this.statusText}),()=>this.reducedMotion);
+    const owner=runController(this);
+    if(this.run.mode==='tutorial'&&owner&&!owner.guidedOpeningSuppressed)recordNoviceOwnedLift(this.run,owner.journal,noviceGuide(this.run,owner.journal));
   }
   private cancelOwned():void {
     const drag=this.ownedDrag;if(!drag||drag.saving)return;

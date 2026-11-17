@@ -7,7 +7,7 @@
 .novice-gesture-route path { stroke:#8f321f;stroke-width:3;filter:drop-shadow(0 0 1px #fff8e9); }
 .novice-gesture-hand,.novice-gesture-contact { position:fixed;left:0;top:0;display:block;will-change:transform; }
 .novice-gesture-hand { width:32px;height:40px;filter:drop-shadow(0 0 2px #fff8e9) drop-shadow(0 2px 2px #2b261f99); }
-.novice-gesture-demo[data-mode="hold-drag"] .novice-gesture-hand { width:28px;height:35px; }
+.novice-gesture-demo:is([data-mode="hold"],[data-mode="hold-drag"]) .novice-gesture-hand { width:28px;height:35px; }
 @media (max-width:380px) { .novice-gesture-demo[data-mode="sweep"] .novice-gesture-hand { width:28px;height:35px; } }
 .novice-gesture-hand svg { display:block;width:100%;height:100%;overflow:visible;transform-origin:44% 6%;transition:transform 90ms ease-out; }
 .novice-gesture-hand path { fill:#ffd59e;stroke:#4d2c20;stroke-width:2.7;stroke-linejoin:round; }

@@ -7,7 +7,7 @@ class Node extends EventTarget {
  setAttribute(key:string,value:string){this.attributes.set(key,value);}remove(){this.removed=true;}
  querySelector(selector:string){return this.children.get(selector);}
 }
-function setup(){
+function setup(mode:'hold'|'hold-drag'='hold-drag'){
  let now=0,next=0,gameReduced=false,points:{x:number;y:number}[]|undefined=[{x:40,y:100},{x:100,y:100}];
  const root=new Node(),hand=new Node(),contact=new Node(),line=new Node(),arrow=new Node();
  root.children.set('.novice-gesture-hand',hand);root.children.set('.novice-gesture-contact',contact);
@@ -18,7 +18,7 @@ function setup(){
  vi.stubGlobal('window',win);vi.stubGlobal('document',doc);
  vi.stubGlobal('requestAnimationFrame',(fn:FrameRequestCallback)=>{frames.set(++next,fn);return next;});
  vi.stubGlobal('cancelAnimationFrame',(id:number)=>frames.delete(id));vi.spyOn(performance,'now').mockImplementation(()=>now);
- const dismissed=vi.fn(),demo=mountNoviceGestureDemo({mode:'hold-drag',points:()=>points,reducedMotion:()=>gameReduced,onDismiss:dismissed});
+ const dismissed=vi.fn(),demo=mountNoviceGestureDemo({mode,points:()=>points,reducedMotion:()=>gameReduced,onDismiss:dismissed});
  return {root,hand,contact,line,arrow,media,win,doc,frames,dismissed,demo,
   step(time:number){now=time;const pending=[...frames.values()];frames.clear();for(const callback of pending)callback(time);},
   points(value:typeof points){points=value;},reduced(value:boolean){gameReduced=value;}};
@@ -41,6 +41,16 @@ it('sweeps past the actual movement threshold before a stationary hold could ope
   expect(sample.phase).toBe('move');expect(sample.point.x).toBeGreaterThan(threshold);
   expect(235).toBeLessThan(350);
  }
+});
+
+it('demonstrates lifting the sole owned card without pointing at an empty destination',()=>{
+ const f=setup('hold');try{
+  f.points([{x:43,y:80}]);f.step(0);f.step(600);
+  expect(f.root.dataset).toMatchObject({mode:'hold',phase:'hold',x:'43.00',y:'80.00'});
+  expect(f.arrow.attributes.get('d')).toBeUndefined();
+  f.step(1250);expect(f.root.dataset).toMatchObject({phase:'release',x:'43.00',y:'80.00'});
+  f.reduced(true);f.step(1300);expect(f.root.dataset.phase).toBe('static');
+ }finally{f.demo.destroy();}
 });
 
 it('uses actual live geometry, hides invalid paths, and restarts when real points return',()=>{

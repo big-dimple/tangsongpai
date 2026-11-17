@@ -253,7 +253,7 @@ async function scenario(spec){
     await continueResult();await shopReady();await page.locator('.qiyu-entrance-burst-canvas').waitFor({state:'detached'});const firstPurchase=await buy('b02');await cue(spec.touch?'展开已拥有牌':'这里有五个槽');
     const firstView=await shot('08-first-purchase');
     if(spec.touch){assert.match(firstView.title,/展开/,'phone explains how to open owned cards');await tap('shop','action/toggle-owned');await cue('这里有五个槽');}
-    const expanded=await shot('09-owned-open');assert.match(expanded.text,/(五|5)\s*(个)?\s*槽/,'five slots are explained');assert.match(expanded.text,/通常从左到右触发/,'the usual trigger order is explained');assert.match(expanded.text,/上桌试牌[\s\S]*看看第二张/,'the player can continue shopping or play with one card');
+    const expanded=await shot('09-owned-open');assert.match(expanded.text,/(五|5)\s*(个)?\s*槽/,'five slots are explained');assert.match(expanded.text,/通常从左到右触发/,'the usual trigger order is explained');assert.match(expanded.text,/上桌试牌[\s\S]*挑第二张练换位/,'the player can continue shopping or play with one card');
     await page.waitForTimeout(1400);await shot('09b-owned-settled');
     row.rackOverlay=await page.evaluate(()=>{const g=window.__harness.game,s=g.scene.getScene('shop'),canvas=g.canvas.getBoundingClientRect(),l=s.view.layout,walk=items=>items.flatMap(o=>[o,...(o.list?walk(o.list):[])]);const region={left:canvas.left+60*canvas.width/l.width,right:canvas.left+170*canvas.width/l.width,top:canvas.top+390*canvas.height/l.height,bottom:canvas.top+430*canvas.height/l.height};return{region,canvas:walk(s.children.list).flatMap(o=>{if(!o.active||!o.visible||!o.getBounds)return[];const b=o.getBounds(),r={left:canvas.left+b.x*canvas.width/l.width,right:canvas.left+(b.x+b.width)*canvas.width/l.width,top:canvas.top+b.y*canvas.height/l.height,bottom:canvas.top+(b.y+b.height)*canvas.height/l.height};return r.left<region.right&&r.right>region.left&&r.top<region.bottom&&r.bottom>region.top?[{name:o.name,type:o.type,text:o.text,rect:r}]:[];}),dom:[...document.querySelectorAll('body *')].flatMap(el=>{const b=el.getBoundingClientRect();return b.width&&b.height&&b.left<region.right&&b.right>region.left&&b.top<region.bottom&&b.bottom>region.top&&getComputedStyle(el).visibility!=='hidden'?[{tag:el.tagName,className:String(el.className),text:el.innerText?.slice(0,100),rect:{left:b.left,right:b.right,top:b.top,bottom:b.bottom}}]:[];})};});
     const rack=await page.evaluate(()=>{const s=window.__harness.game.scene.getScene('shop'),g=s.geometry();return{collapsed:g.inventoryCollapsed,slots:g.slots,owned:s.run.jokers.map(j=>j.instanceId)};});assert.equal(rack.collapsed,false);assert.equal(rack.slots.length,5);assert.equal(rack.owned.length,1);
@@ -261,7 +261,11 @@ async function scenario(spec){
     row.checks.push('first real purchase explains the expanded five-slot rack and usual trigger order; expanded state resumes after refresh');
 
     if(process.env.NOVICE_LESSON_PAYOFF_ONLY==='1'){
-      await tap('shop','action/start-stage');await waitScene(page,'game');await ready();await cue('心有灵犀');
+      await tap('shop','action/start-stage');await waitScene(page,'game');await ready();await cue('长按这张唐宋牌');
+      const beforeLift=await saved(),held=await point(page,'game','joker/'+beforeLift.state.jokers[0].instanceId);
+      await page.locator('[data-novice-gesture][data-mode="hold"]:visible').waitFor();
+      await down(held);await cue('牌已浮起');await up();await cue('心有灵犀');
+      assert.deepEqual(await saved(),beforeLift,'a stationary lift teaches the gesture without changing any game state');
       const payoff=await shot('11-payoff-instruction');assert.match(payoff.body,/同点/);assert.equal(await page.locator('.blind-select-dialog[open]').count(),0);
       const current=await state(),groups=new Map();for(const id of current.handOrder){const rank=current.deckInstances.find(card=>card.id===id).rank;groups.set(rank,[...(groups.get(rank)??[]),id]);}
       const pair=[...groups.values()].find(ids=>ids.length>=2)?.slice(0,2);assert.ok(pair,'the actual dealt hand has the recommended pair');await select(pair);await expectSelected(pair,'select a real pair');await shot('12-payoff-pair');
@@ -308,16 +312,35 @@ async function scenario(spec){
     const secondGuide=await shot('11a-second-card-guide');assert.match(secondGuide.body,/查看效果和价格/);assert.match(secondGuide.body,/可选别的或进入牌桌/);
     await page.waitForFunction(()=>document.querySelectorAll('[data-novice-guide-highlight]').length>0);
     const secondPurchase=await buy('c03');assert.equal(secondPurchase.state.jokers.length,2);
-    if(spec.touch){await cue('展开已拥有牌');await shot('12a-two-cards-folded');await tap('shop','action/toggle-owned');}
+    assert.equal(await page.evaluate(()=>window.__harness.game.scene.getScene('shop').geometry().inventoryCollapsed),false,'the second card reveals the rail immediately');
     await cue('试试调整顺序');assert.match((await guideView()).body,spec.touch?/按住.*拖/:/鼠标左键.*拖/,'reordering instructions describe the actual input device');await shot('12-two-cards');
-    const dragBefore=await saved(),idsOwned=dragBefore.state.jokers.map(j=>j.instanceId),from=await point(page,'shop','joker/'+idsOwned[0]),to=await point(page,'shop','joker/'+idsOwned[1]);
+    const shopBefore=await saved(),idsOwned=shopBefore.state.jokers.map(j=>j.instanceId);
+    let from=await point(page,'shop','joker/'+idsOwned[0]),to=await point(page,'shop','joker/'+idsOwned[1]);
     await sampleDemo('hold-drag',from,to);await sampleMotionSwitches('hold-drag',from,to);
     await tap('shop','joker/'+idsOwned[0]);dialog=page.locator('.detail-dialog[open]').last();await dialog.waitFor();await noDemo('opening an owned-card detail');assert.ok(await dialog.getByRole('button',{name:'出售',exact:true}).isVisible());await click(dialog.getByRole('button',{name:'关闭',exact:true}));
-    await cue('试试调整顺序');await page.locator('[data-novice-gesture][data-mode="hold-drag"]:visible').waitFor();assert.deepEqual(await saved(),dragBefore,'inspecting during the demonstration submits nothing');
+    await cue('试试调整顺序');await page.locator('[data-novice-gesture][data-mode="hold-drag"]:visible').waitFor();assert.deepEqual(await saved(),shopBefore,'inspecting during the demonstration submits nothing');
+    const dragScene=spec.name==='short320'?'game':'shop';
+    if(dragScene==='game'){
+      await tap('shop','action/start-stage');await waitScene(page,'game');await ready();await cue('试试调整顺序');
+      await page.locator('[data-novice-gesture][data-mode="hold-drag"]:visible').waitFor();
+      from=await point(page,'game','joker/'+idsOwned[0]);to=await point(page,'game','joker/'+idsOwned[1]);
+    }
+    const dragBefore=await saved();
+    if(spec.touch){
+      await down(from);await move(to);await up();await cue('先按住别滑');
+      await page.locator('[data-novice-gesture][data-mode="hold-drag"]:visible').waitFor();
+      assert.deepEqual(await saved(),dragBefore,'swiping before the card floats keeps its place and offers another demonstration');
+    }
     await down(from);assert.equal(await page.locator('[data-novice-gesture]').count(),0,'real owned-card press immediately dismisses the drag demonstration');await page.waitForTimeout(430);await move(to);await noDemo('during real owned-card drag');await shot('13-drag-held');assert.deepEqual(await saved(),dragBefore,'drag preview does not save');await up();
-    await page.waitForFunction(seq=>{const c=window.__harness.game.registry.get('runController');return c.status==='idle'&&c.state.commandSeq>seq;},dragBefore.state.commandSeq);await shopReady();const dragged=await saved();
+    await page.waitForFunction(seq=>{const c=window.__harness.game.registry.get('runController');return c.status==='idle'&&c.state.commandSeq>seq;},dragBefore.state.commandSeq);const dragged=await saved();
     assert.deepEqual(dragged.state.jokers.map(j=>j.instanceId),[idsOwned[1],idsOwned[0]]);assert.equal(dragged.state.gold,dragBefore.state.gold);assert.equal(dragged.journal.at(-1).action.type,'ReorderJokers');assert.equal(await page.locator('.detail-dialog[open]').count(),0,'drag does not open sale or detail');await cue('顺序已保存');await noDemo('after saved reorder');await shot('14-drag-saved');
-    await restore('shop');assert.deepEqual((await state()).jokers.map(j=>j.instanceId),[idsOwned[1],idsOwned[0]]);await cue('顺序已保存');await noDemo('refresh after completed reorder');
+    assert.match((await guideView()).body,/6 倍.*5 倍/);
+    await restore(dragScene);assert.deepEqual((await state()).jokers.map(j=>j.instanceId),[idsOwned[1],idsOwned[0]]);await cue('顺序已保存');await noDemo('refresh after completed reorder');
+    if(dragScene==='game'){
+      await select([dragged.state.handOrder[0]]);await tap('game','action/play');await settleCommand(dragged);
+      assert.deepEqual((await state()).lastTrace.sourceJokers.map(j=>j.instanceId),[idsOwned[1],idsOwned[0]]);
+      assert.deepEqual(row.errors,[]);row.checks.push('table teaches the missed shop swap and the next real score uses its saved order');row.status='PASS';return;
+    }
     const beforeSale=await saved();await tap('shop','joker/'+held);dialog=page.locator('.detail-dialog[open]').last();await dialog.waitFor();await click(dialog.getByRole('button',{name:'出售',exact:true}));dialog=page.locator('.detail-dialog[open]').last();await click(dialog.getByRole('button',{name:'确认出售',exact:true}));
     await page.waitForFunction(seq=>{const c=window.__harness.game.registry.get('runController');return c.status==='idle'&&c.state.commandSeq>seq;},beforeSale.state.commandSeq);await shopReady();const sold=await saved();
     assert.equal(sold.journal.at(-1).action.type,'SellJoker');assert.equal(sold.journal.at(-1).action.instanceId,held);assert.equal(sold.state.jokers.length,1);assert.ok(sold.state.gold>beforeSale.state.gold);await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent!=='顺序已保存');await shot('15-sold');

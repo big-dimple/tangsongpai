@@ -33,7 +33,7 @@ import {paperSceneStart} from './PaperFlow';
 import {bindNoviceGuide} from './NoviceGuideBinding';
 import {mountNoviceGestureDemo,type NoviceGestureDemoHandle} from './NoviceGestureDemo';
 import {noviceGuide,type NoviceGuideHint} from './NoviceGuide';
-import {advanceNoviceSecondOffer,armNoviceOwnedLesson,attemptNoviceOwnedReorder,closeNoviceOwnedLesson,noviceOwnedLesson,noviceOwnedLessonPcAvoid,openNoviceOwnedLesson,presentNoviceOwnedLesson} from './NoviceOwnedLesson';
+import {advanceNoviceSecondOffer,armNoviceOwnedLesson,attemptNoviceOwnedReorder,closeNoviceOwnedLesson,noviceOwnedLesson,noviceOwnedLessonPcAvoid,openNoviceOwnedLesson,presentNoviceOwnedLesson,recordNoviceOwnedLift} from './NoviceOwnedLesson';
 import {needsGuidedPractice} from './GuidedTutorial';
 import {noviceGuideCanvasBox,placeNoviceGuide} from './NoviceGuideView';
 import {requestTutorialReplay} from './TutorialEntry';
@@ -228,13 +228,14 @@ export class ShopScene extends Phaser.Scene {
   private ownedLessonPresentation(hint:NoviceGuideHint,p=this.geometry()){
     const owner=runController(this),lesson=owner&&!owner.guidedOpeningSuppressed?noviceOwnedLesson(this.run,owner.journal,hint):undefined;
     if(lesson&&this.ownedDrag){
-      const {cue,body}=this.ownedDragFeedback(this.ownedDrag);
+      const {cue,body}=this.ownedDrag.feedback;
       return {hint:{...hint,cue,body,gesture:undefined},focus:'none' as const};
     }
     const expanded=lesson&&p.inventoryCollapsed?this.geometry(false):p;
     const second=lesson?.secondPrompt&&this.run.jokers.length===1?this.noviceSecondOffer(p):undefined;
     return presentNoviceOwnedLesson(hint,lesson,{collapsed:p.inventoryCollapsed,canExpand:!expanded.inventoryCollapsed&&expanded.slots.length===5,count:this.run.jokers.length,
-      finePointer:typeof window!=='undefined'&&window.matchMedia('(pointer: fine)').matches,...second});
+      finePointer:window.matchMedia('(pointer: fine)').matches,reverse:ownedOrderReversed(this.run),swipedBeforeLift:this.ownedInput?.swipedBeforeLift,
+      names:lesson?.reordered?this.run.jokers.map(j=>this.jokerDefinition(j.definitionId).name):undefined,...second});
   }
   create(data:{targetLockCommandId?:string}={}):void {
     this.hapticLife?.abort();this.hapticLife=new AbortController();
@@ -318,21 +319,20 @@ export class ShopScene extends Phaser.Scene {
     let ownedGesture:NoviceGestureDemoHandle|undefined,gestureKey='',dismissedGestureKey='';
     const stopOwnedGesture=()=>{ownedGesture?.destroy();ownedGesture=undefined;gestureKey='';};
     const updateOwnedGesture=(hint:NoviceGuideHint|undefined)=>{
-      if(hint?.gesture!=='hold-drag'){stopOwnedGesture();dismissedGestureKey='';return;}
-      if(this.run.jokers.length<2){stopOwnedGesture();return;}
-      const p=this.geometry(),ids=this.run.jokers.slice(0,2).map(j=>j.instanceId),key=JSON.stringify([this.run.runId,...ids]);
-      if(p.inventoryCollapsed||p.slots.length<2){stopOwnedGesture();return;}
+      if(!hint||(hint.gesture!=='hold'&&hint.gesture!=='hold-drag')){stopOwnedGesture();dismissedGestureKey='';return;}
+      const mode=hint.gesture;
+      const count=mode==='hold'?1:2,p=this.geometry(),ids=this.run.jokers.slice(0,count).map(j=>j.instanceId),key=JSON.stringify([this.run.runId,mode,hint.cue,...ids]);
+      if(p.inventoryCollapsed||ids.length<count||p.slots.length<count){stopOwnedGesture();return;}
       if(ownedGesture&&gestureKey===key)return;
       stopOwnedGesture();if(dismissedGestureKey===key)return;
       gestureKey=key;
-      ownedGesture=mountNoviceGestureDemo({mode:'hold-drag',reducedMotion:()=>gameSession().reducedMotion,
+      ownedGesture=mountNoviceGestureDemo({mode,reducedMotion:()=>gameSession().reducedMotion,
         points:()=>{
-          if(!this.scene.isActive()||!this.ready||this.ownedDrag||this.run.jokers.length<2||
-            this.run.jokers[0].instanceId!==ids[0]||this.run.jokers[1].instanceId!==ids[1])return;
-          const current=this.geometry();if(current.inventoryCollapsed||current.slots.length<2)return;
+          if(!this.scene.isActive()||!this.ready||this.ownedDrag||ids.some((id,index)=>this.run.jokers[index]?.instanceId!==id))return;
+          const current=this.geometry();if(current.inventoryCollapsed||current.slots.length<count)return;
           const canvas=this.game.canvas.getBoundingClientRect(),l=this.view.layout;
           const points:{x:number;y:number}[]=[];
-          for(const slot of current.slots.slice(0,2)){
+          for(const slot of current.slots.slice(0,count)){
             const box=noviceGuideCanvasBox(slot,canvas,l);
             // In the portrait rail the name sits below the artwork, so keep the
             // small hand entirely above it. If scaling leaves no room, hide it.
@@ -363,10 +363,15 @@ export class ShopScene extends Phaser.Scene {
       onChoice:id=>{
         const owner=runController(this),hint=owner&&noviceGuide(this.run,owner.journal);
         if(!owner||owner.guidedOpeningSuppressed||!hint)return;
-        if(id==='novice-try-card'&&hint.step==='payoff'&&this.run.phase==='shop'){
+        if(id==='novice-try-card'&&this.run.phase==='shop'){
           void this.send({type:'LeaveShop'},this.run.commandSeq);return;
         }
         if(id!=='novice-second-card')return;
+        if(this.geometry().inventoryCollapsed&&!this.geometry(false).inventoryCollapsed){
+          this.ownedCollapsed=false;
+          openNoviceOwnedLesson(this.run,owner.journal,hint);
+          this.render();
+        }
         advanceNoviceSecondOffer(this.run,owner.journal,hint);
         const offer=this.noviceSecondOffer().secondOffer,host=this.mobileOffers?.host;
         if(offer&&host){
@@ -395,7 +400,7 @@ export class ShopScene extends Phaser.Scene {
         else if(focus==='shelf')highlights.push(map({...p.tabs,x:p.tabs.x+Math.max(0,p.tabs.width-44),width:Math.min(44,p.tabs.width)}));
         else if(focus==='toggle'&&'ownedToggle' in p&&p.ownedToggle)highlights.push(map(p.ownedToggle));
         else if(focus==='slots'&&p.slots.length===5){
-          const first=p.slots[0],last=p.slots[4];highlights.push(map({x:first.x,y:first.y,width:last.x+last.width-first.x,height:first.height}));
+          const first=p.slots[0],last=p.slots[hint.gesture==='hold'?0:hint.gesture==='hold-drag'?1:4];highlights.push(map({x:first.x,y:first.y,width:last.x+last.width-first.x,height:first.height}));
         }
         const owner=runController(this),lesson=owner&&!owner.guidedOpeningSuppressed&&noviceOwnedLesson(this.run,owner.journal,hint);
         const protectedOffers=lesson&&!p.portrait?(p.pc?noviceOwnedLessonPcAvoid(p):p.shelf.map(b=>shopOfferCopy(p,b,true).tile)):[];
@@ -1371,9 +1376,6 @@ export class ShopScene extends Phaser.Scene {
     const ids=reorderJokerIds(current,current[from],to);if(ids===current)return false;
     return this.send({type:'ReorderJokers',ids},expectedSeq);
   }
-  private ownedDragFeedback(drag:OwnedJokerDragVisual){
-    return this.run.jokers.length<2&&!drag.saving?{cue:'当前只有一张',body:'持有多张后可换序。'}:drag.feedback;
-  }
   /** Keep the status in the existing lesson, or reserve a separate non-interactive
    * row. Never put text on a moving face or overwrite the visible rail heading. */
   private syncOwnedDragStatus():void {
@@ -1401,7 +1403,7 @@ export class ShopScene extends Phaser.Scene {
     const reserve=p.portrait&&!inline&&!!layout?32:0;
     if(layout&&layout.inset!==reserve){layout.inset=reserve;layout.resize();}
     if(inline){status.hidden=true;return;}
-    const {cue,body}=this.ownedDragFeedback(drag),text=cue+' · '+body;
+    const {cue,body}=drag.feedback,text=cue+' · '+body;
     if(status.textContent!==text)status.textContent=text;
     let box:Box|undefined;
     if(p.portrait&&layout){
@@ -1430,6 +1432,8 @@ export class ShopScene extends Phaser.Scene {
     if(!this.ready)return;this.hideHoverPicture();
     for(const art of this.ownedArts.values())this.tweens.killTweensOf(art);
     this.ownedDrag=new OwnedJokerDragVisual(this,id,this.run.commandSeq,{x,y},()=>({root:this.view.root,arts:this.ownedArts,slots:this.geometry().slots,ids:this.run.jokers.map(j=>j.instanceId),hint:this.ownedHint,externalFeedback:true}),()=>this.resultReduced);
+    const owner=runController(this);
+    if(this.run.mode==='tutorial'&&owner&&!owner.guidedOpeningSuppressed)recordNoviceOwnedLift(this.run,owner.journal,noviceGuide(this.run,owner.journal));
     const status=document.createElement('div');status.dataset.ownedDragStatus='';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
     Object.assign(status.style,{position:'fixed',zIndex:'6',boxSizing:'border-box',padding:'3px 6px',border:'1px solid #a77b47',borderRadius:'6px',background:'#fff7e7',color:'#193940',font:'bold 14px/1.25 "Microsoft YaHei", "PingFang SC", system-ui, sans-serif',textAlign:'center',pointerEvents:'none'});
     document.body.append(status);this.ownedDragStatus=status;this.syncOwnedDragStatus();
@@ -1530,7 +1534,10 @@ export class ShopScene extends Phaser.Scene {
       if(!result.duplicate&&transactions.length){this.pendingTransactions=transactions;this.lastTransactionNotes=transactions.map(event=>{const growth=transactionGrowthChange(previous,this.run,event);if(growth)this.transactionGrowthLines.set(event,transactionGrowthChange(previous,this.run,event,true)!);return growth??r2TransactionText(event,this.jokerDefinition(event.definitionId));});}
       if(action.type==='BuyOffer'&&purchase&&!result.duplicate){
         const {kind,offer}=purchase,name=kind==='jokers'?this.jokerDefinition(offer.definitionId).name:kind==='tools'?toolInfo(offer.definitionId,this.run).name:itemInfo(offer.definitionId).name;this.audio.purchase();
-        if(kind==='jokers')this.ownedCollapsed=true;
+        if(kind==='jokers'){
+          const lesson=tutorialOwner&&!tutorialOwner.guidedOpeningSuppressed&&noviceOwnedLesson(this.run,tutorialOwner.journal,noviceGuide(this.run,tutorialOwner.journal));
+          this.ownedCollapsed=!lesson||!lesson.expanded;
+        }
         this.lastPurchaseReceipt=shopPurchaseReceipt(previous,this.run,kind,offer);
         this.pendingPayment=`已购 ${name} · 实付 ${r2PurchasePrice(previous,offer)} 金 · 已保存`+(this.lastPurchaseReceipt?.payment?.saved?` · ${this.lastPurchaseReceipt.payment.summary}`:'');
         this.notice=(kind==='jokers'?`已入第 ${this.run.jokers.length} 槽`:kind==='tools'?'已入道具箱，未使用':'已持有长期道具')+' · 点购物结果查看';

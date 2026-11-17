@@ -40,7 +40,11 @@ export class OwnedJokerDragVisual {
   private pointer:{x:number;y:number};
   private target=-1;
   saving=false;
-  get feedback(){return ownedDragFeedback(this.surface().ids.indexOf(this.id),this.target,this.saving);}
+  get feedback(){
+    const ids=this.surface().ids;
+    if(ids.length===1&&!this.saving)return {cue:'牌已浮起',body:'松手放回。拿到第二张后，就能拖动换位。'};
+    return ownedDragFeedback(ids.indexOf(this.id),this.target,this.saving);
+  }
   constructor(private readonly scene:Phaser.Scene,readonly id:string,readonly seq:number,
     private readonly start:{x:number;y:number},private readonly surface:()=>Surface,private readonly reduced:()=>boolean){
     this.pointer=start;this.preview(start.x,start.y);
@@ -86,7 +90,7 @@ export class OwnedJokerDragVisual {
     }
     if(this.label)s.root.bringToTop(this.label);
     const feedback=this.feedback;
-    s.hint?.setText(s.externalFeedback?feedback.cue+' · '+feedback.body:
+    s.hint?.setText(s.externalFeedback||s.ids.length===1?feedback.cue+' · '+feedback.body:
       this.saving?'正在保存顺序…':to<0?'移回持牌区 · 松手取消':'松手放第 '+(to+1)+' 位 · 移出取消');
     if(s.externalFeedback)s.hint?.setVisible(false);
   }

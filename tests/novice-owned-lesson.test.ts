@@ -9,7 +9,7 @@ import {intersects} from '../src/game/layout';
 import {placeNoviceGuide} from '../src/game/NoviceGuideView';
 import {guidedTutorialRunId,newRunIdentity} from '../src/game/RunLaunch';
 import {dismissNoviceGuide,enrollNoviceGuide,markNoviceStart,noviceGuide} from '../src/game/NoviceGuide';
-import {advanceNoviceSecondOffer,armNoviceOwnedLesson,attemptNoviceOwnedReorder,closeNoviceOwnedLesson,noviceOwnedLesson,noviceOwnedLessonPcAvoid,openNoviceOwnedLesson,presentNoviceOwnedLesson} from '../src/game/NoviceOwnedLesson';
+import {advanceNoviceSecondOffer,armNoviceOwnedLesson,attemptNoviceOwnedReorder,closeNoviceOwnedLesson,noviceOwnedLesson,noviceOwnedLessonPcAvoid,noviceOwnedPractice,noviceOwnedSaved,openNoviceOwnedLesson,presentNoviceOwnedLesson,recordNoviceOwnedLift} from '../src/game/NoviceOwnedLesson';
 
 class Store implements SaveStore {
  slots:SaveSlots={revision:0,current:null,previous:null};fail=false;
@@ -61,9 +61,9 @@ describe('owned-card lesson follows saved, real actions',()=>{
   restored=SavedRun.restore(store,await store.read());expect(lesson(restored)).toMatchObject({opened:true,expanded:true});
   const shown=presentNoviceOwnedLesson(guide(restored)!,lesson(restored),{collapsed:false,canExpand:true,count:1});
   expect(shown).toMatchObject({focus:'slots',hint:{cue:'这里有五个槽'}});
-  expect(shown.hint.body).toContain(guide(restored)!.payoffAction);expect(shown.hint.body).toContain('通常从左到右触发');
-  expect(shown.hint.choices?.map(choice=>choice.label)).toEqual(['上桌试牌','看看第二张']);
-  expect(shown.hint.body).not.toMatch(/第 2 张|拖|按住/);expect(shown.hint.gesture).toBeUndefined();
+  expect(shown.hint.details).toContain(guide(restored)!.payoffAction);expect(shown.hint.body).toContain('通常从左到右触发');
+  expect(shown.hint.choices?.map(choice=>choice.label)).toEqual(['上桌试牌','挑第二张练换位']);
+  expect(shown.hint.body).toMatch(/长按不动.*浮起.*有两张/);expect(shown.hint.gesture).toBe('hold');
   expect(ownedJokerDropIndex(expanded.slots,1,expanded.slots[1].x+1,expanded.slots[1].y+1)).toBe(-1);
   closeNoviceOwnedLesson(restored.state,restored.journal,guide(restored));
   restored=SavedRun.restore(store,await store.read());expect(lesson(restored)).toMatchObject({opened:true,expanded:false});
@@ -74,7 +74,7 @@ describe('owned-card lesson follows saved, real actions',()=>{
   advanceNoviceSecondOffer(run.state,run.journal,guide(run));expect(lesson(run)).toBeUndefined();
   await purchaseFirst(run);openNoviceOwnedLesson(run.state,run.journal,guide(run));
   const before=JSON.stringify(run.state),first=presentNoviceOwnedLesson(guide(run)!,lesson(run),{collapsed:false,canExpand:true,count:1});
-  expect(first.focus).toBe('slots');expect(first.hint.choices).toEqual([{id:'novice-try-card',label:'上桌试牌',cardIds:[]},{id:'novice-second-card',label:'看看第二张',cardIds:[]}]);
+  expect(first.focus).toBe('slots');expect(first.hint.choices).toEqual([{id:'novice-try-card',label:'上桌试牌',cardIds:[]},{id:'novice-second-card',label:'挑第二张练换位',cardIds:[]}]);
   advanceNoviceSecondOffer(run.state,run.journal,guide(run));
   const restored=SavedRun.restore(store,await store.read()),continued=lesson(restored);
   expect(continued?.secondPrompt).toBe(true);expect(JSON.stringify(run.state)).toBe(before);
@@ -98,7 +98,9 @@ describe('owned-card lesson follows saved, real actions',()=>{
   expect(offer).toBeDefined();store.fail=true;
   expect(await run.dispatch({type:'BuyOffer',offerId:offer.offerId})).toMatchObject({ok:false,code:'save-failed'});
   expect(lesson(run)?.expanded).toBe(true);store.fail=false;expect((await run.retry()).ok).toBe(true);expect(run.state.jokers).toHaveLength(2);
-  expect(lesson(run)?.expanded).toBe(false);openNoviceOwnedLesson(run.state,run.journal,guide(run));expect(lesson(run)?.expanded).toBe(true);
+  expect(lesson(run)?.expanded).toBe(true);
+  closeNoviceOwnedLesson(run.state,run.journal,guide(run));expect(lesson(SavedRun.restore(store,await store.read()))?.expanded).toBe(false);
+  openNoviceOwnedLesson(run.state,run.journal,guide(run));expect(lesson(run)?.expanded).toBe(true);
   const before=SavedRun.restore(store,await store.read()),ids=run.state.jokers.map(j=>j.instanceId).reverse();
   const shown=presentNoviceOwnedLesson(guide(run)!,lesson(run),{collapsed:false,canExpand:true,count:2});
   expect(shown).toMatchObject({focus:'slots',hint:{cue:'试试调整顺序'}});
@@ -111,6 +113,31 @@ describe('owned-card lesson follows saved, real actions',()=>{
   expect(lesson(run)?.reordered).toBe(true);expect(lesson(before)?.reordered).toBe(false);
   const restored=SavedRun.restore(store,await store.read());expect(lesson(restored)?.reordered).toBe(true);
   expect(presentNoviceOwnedLesson(guide(restored)!,lesson(restored),{collapsed:false,canExpand:true,count:2}).hint.cue).toBe('顺序已保存');
+ });
+
+ it('teaches a real first lift on the table even when the player went straight from purchase to play',async()=>{
+  const {run,store}=await firstShop('109');await purchaseFirst(run);
+  await send(run,{type:'LeaveShop'});await send(run,{type:'EnterStage'});
+  const before=structuredClone(run.state);
+  expect(lesson(run)).toMatchObject({opened:false,reordered:false});
+  expect(noviceOwnedPractice(guide(run)!,{count:1})).toMatchObject({gesture:'hold',cue:'长按这张唐宋牌'});
+  recordNoviceOwnedLift(run.state,run.journal,guide(run));
+  expect(lesson(SavedRun.restore(store,await store.read()))).toMatchObject({lifted:true,reordered:false});
+  expect(run.state).toEqual(before);
+ });
+
+ it('accepts a table swap only on save and explains the current slots separately from an example multiplier',async()=>{
+  const {run,store}=await firstShop('110');await purchaseFirst(run);
+  const offer=run.state.shop!.offers.find(o=>!o.consumed&&r2PurchasePrice(run.state,o)<=run.state.gold)!;
+  await send(run,{type:'BuyOffer',offerId:offer.offerId});await send(run,{type:'LeaveShop'});await send(run,{type:'EnterStage'});
+  const ids=run.state.jokers.map(j=>j.instanceId).reverse(),prior=SavedRun.restore(store,await store.read());
+  expect(noviceOwnedPractice(guide(run)!,{count:2,reverse:true}).beat).toContain('整手效果从右到左');
+  attemptNoviceOwnedReorder(run.state,run.journal,guide(run),ids);
+  expect(lesson(run)?.reordered).toBe(false);await send(run,{type:'ReorderJokers',ids});
+  expect(lesson(SavedRun.restore(store,await store.read()))?.reordered).toBe(true);expect(lesson(prior)?.reordered).toBe(false);
+  const names=run.state.jokers.map(j=>j.definitionId);
+  expect(noviceOwnedSaved(guide(run)!,{count:2,names}).body).toContain(names.join('、'));
+  expect(noviceOwnedSaved(guide(run)!,{count:2,names}).body).toMatch(/例如.*6 倍.*5 倍/);
  });
 
  it('does not infer the lesson from an old run, muted guide, missing journal, a different run or a sold first card',async()=>{

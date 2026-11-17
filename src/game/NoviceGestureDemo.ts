@@ -1,6 +1,6 @@
 import './NoviceGestureDemo.css';
 
-export type NoviceGestureMode='hold-drag'|'sweep';
+export type NoviceGestureMode='hold'|'hold-drag'|'sweep';
 export type NoviceGesturePoint={x:number;y:number};
 export interface NoviceGestureDemoOptions {
  mode:NoviceGestureMode;
@@ -22,9 +22,9 @@ export const NOVICE_GESTURE_TIMING={
  'sweep':{press:90,hold:90,maxMoveDuration:560,releaseDuration:350,restDuration:400},
 } as const;
 
-function validPoints(points:readonly NoviceGesturePoint[]|undefined):points is readonly NoviceGesturePoint[] {
- return !!points&&points.length>=2&&points.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y))&&
-  points.some(p=>Math.hypot(p.x-points[0].x,p.y-points[0].y)>1);
+function validPoints(mode:NoviceGestureMode,points:readonly NoviceGesturePoint[]|undefined):points is readonly NoviceGesturePoint[] {
+ return !!points&&points.length>0&&points.every(p=>Number.isFinite(p.x)&&Number.isFinite(p.y))&&
+  (mode==='hold'?points.length===1:points.some(p=>Math.hypot(p.x-points[0].x,p.y-points[0].y)>1));
 }
 /** Interpolate along the actual path, at constant speed rather than inventing a slot. */
 function pointAt(points:readonly NoviceGesturePoint[],progress:number):NoviceGesturePoint {
@@ -39,6 +39,11 @@ function pointAt(points:readonly NoviceGesturePoint[],progress:number):NoviceGes
 }
 
 export function sampleNoviceGesture(mode:NoviceGestureMode,elapsed:number,points:readonly NoviceGesturePoint[],sweepThresholdPx=10){
+ if(mode==='hold'){
+  const at=elapsed%2000;
+  const phase:NoviceGesturePhase=at<250?'press':at<1050?'hold':at<1450?'release':'rest';
+  return {phase,point:points[0]};
+ }
  const sweep=NOVICE_GESTURE_TIMING.sweep;
  const distance=points.slice(1).reduce((sum,p,i)=>sum+Math.hypot(p.x-points[i].x,p.y-points[i].y),0);
  // Reach the real movement threshold about 140 ms after the press, even when
@@ -66,17 +71,19 @@ export function mountNoviceGestureDemo(options:NoviceGestureDemoOptions):NoviceG
  let stopped=false,frame=0,start=performance.now(),hadPoints=false;
  const render=()=>{
   if(stopped)return;
-  const points=options.points();if(!validPoints(points)){root.hidden=true;hadPoints=false;frame=requestAnimationFrame(render);return;}
+  const points=options.points();if(!validPoints(options.mode,points)){root.hidden=true;hadPoints=false;frame=requestAnimationFrame(render);return;}
   if(!hadPoints){start=performance.now();hadPoints=true;}
   root.hidden=false;const reduced=options.reducedMotion()||!!media?.matches;
   const sample=reduced?{phase:'static' as const,point:points[0]}:sampleNoviceGesture(options.mode,performance.now()-start,points,options.sweepThresholdPx?.());
   const {x,y}=sample.point;root.dataset.phase=sample.phase;root.dataset.reduced=String(reduced);root.dataset.x=x.toFixed(2);root.dataset.y=y.toFixed(2);
   const compactSweep=options.mode==='sweep'&&window.innerWidth<=380;
-  hand.style.transform=`translate(${x-14}px,${y-(options.mode==='hold-drag'?7.5:compactSweep?6:2.4)}px)`;contact.style.transform=`translate(${x}px,${y}px) translate(-50%,-50%)`;
+  hand.style.transform=`translate(${x-14}px,${y-(options.mode!=='sweep'?7.5:compactSweep?6:2.4)}px)`;contact.style.transform=`translate(${x}px,${y}px) translate(-50%,-50%)`;
   line.setAttribute('points',points.map(p=>`${p.x},${p.y}`).join(' '));
-  const end=points[points.length-1],previous=[...points].reverse().find(p=>Math.hypot(p.x-end.x,p.y-end.y)>1)!;
-  const angle=Math.atan2(end.y-previous.y,end.x-previous.x),a=angle+Math.PI*.83,b=angle-Math.PI*.83;
-  arrow.setAttribute('d',`M ${end.x+8*Math.cos(a)} ${end.y+8*Math.sin(a)} L ${end.x} ${end.y} L ${end.x+8*Math.cos(b)} ${end.y+8*Math.sin(b)}`);
+  const end=points[points.length-1],previous=[...points].reverse().find(p=>Math.hypot(p.x-end.x,p.y-end.y)>1);
+  if(previous){
+   const angle=Math.atan2(end.y-previous.y,end.x-previous.x),a=angle+Math.PI*.83,b=angle-Math.PI*.83;
+   arrow.setAttribute('d',`M ${end.x+8*Math.cos(a)} ${end.y+8*Math.sin(a)} L ${end.x} ${end.y} L ${end.x+8*Math.cos(b)} ${end.y+8*Math.sin(b)}`);
+  }
   frame=requestAnimationFrame(render);
  };
  const destroy=()=>{

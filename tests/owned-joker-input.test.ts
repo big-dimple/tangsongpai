@@ -34,13 +34,23 @@ it('cleared or destroyed rails cannot be revived by a queued canvas observation'
  f.input.destroy();f.input.destroy();f.settle();expect(f.disconnect).toHaveBeenCalledOnce();expect(f.surface.remove).toHaveBeenCalledOnce();expect(f.surface.style).toEqual(before);
 });
 
-function nativePointer(type:string,timeStamp:number,pointerType='mouse'){const e=new Event(type,{cancelable:true});Object.defineProperties(e,Object.fromEntries(Object.entries({pointerId:1,pointerType,isPrimary:true,button:0,buttons:type==='pointerup'?0:1,clientX:50,clientY:50,timeStamp}).map(([k,v])=>[k,{value:v}])));return e;}
+function nativePointer(type:string,timeStamp:number,pointerType='mouse',clientX=50){const e=new Event(type,{cancelable:true});Object.defineProperties(e,Object.fromEntries(Object.entries({pointerId:1,pointerType,isPrimary:true,button:0,buttons:type==='pointerup'?0:1,clientX,clientY:50,timeStamp}).map(([k,v])=>[k,{value:v}])));return e;}
 function pressOwned(f:ReturnType<typeof setup>,stamp:number,pointerType='mouse'){f.options.cards=()=>[{id:'owned/1',x:0,y:0,width:740,height:320}];const e=nativePointer('pointerdown',stamp,pointerType);window.dispatchEvent(e);f.surface.dispatchEvent(e);}
 it('opens a genuinely short owned-card click even when the release callback is delayed by a busy frame',()=>{
  const f=setup(),clock=vi.spyOn(performance,'now').mockReturnValue(1000);try{pressOwned(f,100);clock.mockReturnValue(1800);window.dispatchEvent(nativePointer('pointerup',180));expect(f.options.tap).toHaveBeenCalledExactlyOnceWith('owned/1');expect(f.options.lift).not.toHaveBeenCalled();expect(f.options.drop).not.toHaveBeenCalled();}finally{f.input.destroy();}
 });
 it('a genuine held owned card cannot become a tap when queued native events run close together',()=>{
  const f=setup(),clock=vi.spyOn(performance,'now').mockReturnValue(1000);try{pressOwned(f,100);clock.mockReturnValue(1010);window.dispatchEvent(nativePointer('pointerup',600));expect(f.options.tap).not.toHaveBeenCalled();expect(f.options.drop).not.toHaveBeenCalled();}finally{f.input.destroy();}
+});
+it('offers a stationary retry after an early touch swipe and clears it on a real lift',()=>{
+ vi.useFakeTimers();const f=setup();
+ try{
+  pressOwned(f,0,'touch');window.dispatchEvent(nativePointer('pointermove',60,'touch',100));
+  expect(f.input.swipedBeforeLift).toBe(false);window.dispatchEvent(nativePointer('pointerup',90,'touch',100));
+  expect(f.input.swipedBeforeLift).toBe(true);expect(f.options.tap).not.toHaveBeenCalled();expect(f.options.drop).not.toHaveBeenCalled();
+  pressOwned(f,100,'touch');vi.advanceTimersByTime(355);
+  expect(f.options.lift).toHaveBeenCalledOnce();expect(f.input.swipedBeforeLift).toBe(false);
+ }finally{f.input.destroy();}
 });
 it('an activated touch hold uses the shared pickup beat and pointercancel actively stops it without a save beat',()=>{
  vi.useFakeTimers();const f=setup(),vibrate=vi.fn(()=>true);vi.stubGlobal('navigator',{vibrate,userActivation:{hasBeenActive:true}});

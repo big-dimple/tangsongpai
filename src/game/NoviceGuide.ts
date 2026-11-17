@@ -52,7 +52,7 @@ export interface NoviceGuideHint {
  choices?:{id:string;label:string;cardIds:string[];selected?:boolean}[];
  offerIds?:string[];
  focus?:'play'|'discard'|'play-or-discard'|'hand'|'hero'|'sort-rank'|'sort-suit'|'hand-previous'|'hand-next';
- gesture?:'sweep'|'hold-drag';
+ gesture?:'sweep'|'hold'|'hold-drag';
  /** Explicit gesture path; unlike highlights this may contain intermediate cards. */
  gestureCardIds?:string[];
  /** The current hand really supports the optional three-heart example. */
