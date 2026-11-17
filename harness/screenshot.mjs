@@ -1,7 +1,7 @@
 /** Short player path in a compiled bundle. Observers are read-only; inputs are real. */
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
-import {access,mkdir,writeFile} from 'node:fs/promises';
+import {access,mkdir,mkdtemp,rm,writeFile} from 'node:fs/promises';
 import path from 'node:path';
 import {chromium,firefox,webkit} from 'playwright';
 import {preview} from 'vite';
@@ -10,7 +10,7 @@ import {armResourcePulse,waitResourcePulse} from './resource-pulse.mjs';
 import {currentNewRunIdentity} from './fixtures/current-new-run-identity.mjs';
 import {enterCurrentStage} from './stage-entry.mjs';
 import {handIndexOcclusion} from './hand-index-occlusion.mjs';
-const root=process.cwd(),port=Number(process.env.SHOT_PORT||5199),outDir=path.join(root,'shots/smoke-build'),verify=process.argv.includes('--verify-smoke');
+const root=process.cwd(),port=Number(process.env.SHOT_PORT||5199),verify=process.argv.includes('--verify-smoke');
 const saveScreens=!verify||process.env.SMOKE_SHOTS==='1';
 const engines={chromium,firefox,webkit},selected=(process.env.SMOKE_BROWSERS||'chromium').split(',');
 const checkC00=['1','only','rescue'].includes(process.env.SMOKE_C00),checkFeedback=['1','only'].includes(process.env.SMOKE_FEEDBACK);
@@ -52,6 +52,10 @@ const revealCard=async(page,id)=>{
 };
 const dom=async(page,name,touch)=>{const b=page.getByRole('button',{name,exact:true});if(touch)await b.tap();else await b.click();};
 await mkdir('shots',{recursive:true});
+const temporaryBuild=verify&&process.env.SMOKE_REUSE_BUILD!=='1'?await mkdtemp(path.join(root,'shots','smoke-build-')):undefined;
+const outDir=temporaryBuild??path.join(root,'shots/smoke-build');
+let browser,activePage,server;
+try {
 if(process.env.SMOKE_REUSE_BUILD==='1'){
   await access(path.join(outDir,'index.html'));report.build='existing shots/smoke-build (SMOKE_REUSE_BUILD=1)';
 }else{
@@ -59,9 +63,8 @@ if(process.env.SMOKE_REUSE_BUILD==='1'){
   // released before the browser engines run on the small deployment host.
   execFileSync(process.execPath,[path.join(root,'node_modules/vite/bin/vite.js'),'build','--mode','e2e','--outDir',outDir,'--emptyOutDir','--logLevel','warn'],{cwd:root,stdio:'inherit'});
 }
-const server=await preview({build:{outDir},preview:{port,strictPort:true,host:'127.0.0.1'}}),base=`http://127.0.0.1:${port}/?harness=1&seed=p00-core-ui`;
-let browser,activePage;
-try {
+server=await preview({build:{outDir},preview:{port,strictPort:true,host:'127.0.0.1'}});
+const base=`http://127.0.0.1:${port}/?harness=1&seed=p00-core-ui`;
   for(const engine of selected){
   browser=await engines[engine].launch(engine==='chromium'&&process.env.SMOKE_CHROMIUM_EXECUTABLE_PATH?{executablePath:process.env.SMOKE_CHROMIUM_EXECUTABLE_PATH}:engine==='chromium'&&process.env.SMOKE_CHROMIUM_CHANNEL?{channel:process.env.SMOKE_CHROMIUM_CHANNEL}:{});
   for(const name of process.env.SMOKE_FEEDBACK==='only'||['only','rescue'].includes(process.env.SMOKE_C00)?[]:selectedProfiles){
@@ -139,12 +142,24 @@ try {
       assert.deepEqual(await state(page),initial,'selection order cannot spend resources or advance RNG');
       await tapUI(page,'game','card/'+chosen,true);
     }
-    const selection=await page.evaluate(id=>{const s=window.__harness.game.scene.getScene('game'),c=s.cardViews.find(c=>c.card.id===id),f=s.selectionPreview();return {selected:s.selectedIds.has(id)&&c.container.getData('selected'),caption:s.resultText.visible&&!!f&&s.resultText.text.endsWith(' · 已选'+f.playedIds.length+'张'),pcPlaceholders:!!s.view.layout.pc&&!s.bossSuitRescueButton,readouts:[s.scoreHeat,s.scoreMult,s.scoreTotal].map(t=>({visible:t.visible,text:t.text,fullText:t.getData('fullText')}))};},chosen);
-    assert.ok(selection.selected&&selection.caption,'selection immediately changes both card and hand-type preview');
-    for(const value of selection.readouts){
-      if(selection.pcPlaceholders)assert.deepEqual(value,{visible:true,text:'—',fullText:'—'},'PC selection shows only a neutral placeholder, never a guessed score');
-      else{assert.equal(value.visible,false,'existing non-PC selection hides score readouts');assert.equal(value.text,'');assert.ok(!value.fullText);}
+    const selection=await page.evaluate(id=>{
+      const s=window.__harness.game.scene.getScene('game'),card=s.cardViews.find(c=>c.card.id===id),panel=s.view.root.getByName('selection/draft-panel');
+      const forecast=panel.getByName('selection/forecast'),roles=panel.getByName('selection/base');
+      return {selected:s.selectedIds.has(id)&&card.container.getData('selected'),scoring:card.container.getData('activeScoring'),caption:s.resultText.text,
+        roles:s.resultText.text+' '+roles.text,shown:panel.visible&&forecast.visible&&s.resultText.visible,forecast:forecast.text,
+        creditedReadouts:[s.scoreHeat,s.scoreMult,s.scoreTotal].map(t=>t.visible)};
+    },chosen);
+    assert.ok(selection.selected&&selection.scoring&&selection.shown,'one tap marks the scoring card and shows the draft');
+    assert.match(selection.caption,/高牌/);assert.match(selection.roles,/1计分/);assert.match(selection.forecast,/预计 [\d,–]+分/);
+    assert.deepEqual(selection.creditedReadouts,[false,false,false],'draft estimates and credited results occupy separate states');
+    await tapUI(page,'game','action/clear-hand',touch);
+    const idle=await page.evaluate(()=>{const s=window.__harness.game.scene.getScene('game');return {selected:s.selectedIds.size,pc:!!s.view.layout.pc,readouts:[s.scoreHeat,s.scoreMult,s.scoreTotal].map(t=>({visible:t.visible,text:t.text,fullText:t.getData('fullText')}))};});
+    assert.equal(idle.selected,0);assert.deepEqual(await state(page),initial,'preview and undo preserve the full saved run');
+    for(const value of idle.readouts){
+      if(idle.pc)assert.deepEqual(value,{visible:true,text:'—',fullText:'—'},'empty PC draft shows neutral formula placeholders');
+      else{assert.equal(value.visible,false);assert.equal(value.text,'');assert.ok(!value.fullText);}
     }
+    await tapUI(page,'game','card/'+chosen,touch);
     await openRunMenu(page,touch);
     if(saveScreens&&touch&&engine===selected[0])await page.screenshot({path:`shots/${name}-menu.png`});
     await dom(page,'继续游戏',touch);
@@ -164,7 +179,7 @@ try {
     const tableNames=await page.evaluate(()=>{
       const scene=window.__harness.game.scene.getScene('game'),names=[],walk=list=>{for(const object of list){if(object.input?.enabled&&object.name.startsWith('action/'))names.push(object.name);if(object.list)walk(object.list);}};walk(scene.children.list);return names;
     });
-    assert.deepEqual(tableNames.filter(name=>!name.startsWith('action/hand-')).sort(),['action/discard','action/play','action/sort-rank','action/sort-suit','action/tool-inventory'],'only approved common actions and the direct tool bag occupy the table');
+    assert.deepEqual(tableNames.filter(name=>!name.startsWith('action/hand-')).sort(),['action/clear-hand','action/discard','action/play','action/sort-rank','action/sort-suit','action/tool-inventory'],'draft undo, hand actions and the direct tool bag are reachable');
     await tapUI(page,'game','action/tool-inventory',touch);
     await page.getByRole('dialog',{name:'道具箱',exact:true}).waitFor();await dom(page,'关闭',touch);
     assert.deepEqual(await state(page),beforeInspect,'opening / closing the direct tool bag cannot spend resources or RNG');
@@ -194,11 +209,14 @@ try {
     assert.equal(discarded.stage.discardsLeft,beforeDiscard.stage.discardsLeft-1);assert.equal(discarded.stage.handsLeft,beforeDiscard.stage.handsLeft);assert.equal(discarded.drawPile.length,beforeDiscard.drawPile.length-1);
     await tapUI(page,'game','card/'+discarded.handOrder[0],touch);
     await page.waitForFunction(id=>window.__harness.game.scene.getScene('game').selectedIds.has(id),discarded.handOrder[0]);
+    const forecast=await page.evaluate(()=>window.__harness.game.scene.getScene('game').draftEstimate.estimate.scoreRange);
     if(saveScreens&&engine===selected[0])await page.screenshot({path:`shots/${name}-game.png`});
     await page.evaluate(armResourcePulse,{kind:'play',seq:discarded.commandSeq+1,remaining:discarded.stage.handsLeft-1});
     await tapUI(page,'game','action/play',touch);await next(page,discarded.commandSeq);
     const playFeedback=await waitResourcePulse(page,'play');
     await ready(page);const played=await state(page);
+    const actual=BigInt(played.lastTrace.finalScore);
+    assert.ok(actual>=BigInt(forecast.minimum)&&actual<=BigInt(forecast.maximum),'the committed hand lands within its displayed forecast');
     assert.equal(played.stage.handsLeft,discarded.stage.handsLeft-1);assert.equal(played.stage.discardsLeft,discarded.stage.discardsLeft);assert.ok(BigInt(played.stage.heat)>BigInt(discarded.stage.heat));assert.ok(played.lastTrace);
     await page.reload();await waitScene(page,'title');await waitPersistentStorage(page,touch);assert.deepEqual(await state(page),played,'refresh restores the full determined result');
     await tapUI(page,'title','action/title-continue',touch);await waitScene(page,'game');await ready(page);assert.deepEqual(await state(page),played,'continue never re-scores');
@@ -362,5 +380,9 @@ try {
     console.error(JSON.stringify(report.failureContext));await writeFile('shots/smoke-failure-dom.html',await activePage.content());await activePage.screenshot({path:'shots/smoke-failure.png'});
   }catch{/* Keep the original failure even if the failed page cannot be read. */}
   throw error;
-}finally{await browser?.close();await new Promise(resolve=>server.httpServer.close(resolve));await writeFile('shots/smoke-result.json',JSON.stringify(report,null,2)+'\n');}
+}finally{
+  await browser?.close();if(server)await new Promise(resolve=>server.httpServer.close(resolve));
+  if(temporaryBuild)await rm(temporaryBuild,{recursive:true,force:true});
+  await writeFile('shots/smoke-result.json',JSON.stringify(report,null,2)+'\n');
+}
 console.log(verify?'smoke: ok':'shots saved to shots/');
