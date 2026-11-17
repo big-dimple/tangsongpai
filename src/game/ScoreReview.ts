@@ -26,10 +26,12 @@ import {savedBossImpact} from './SavedBossImpact';
 const familyNames={G:'成组',S:'顺子',F:'同花'} as const;
 const familyHands={G:'对子、三条等牌型',S:'顺子',F:'同花'} as const;
 const laterPhases=new Set(['afterHand','beforeFailure','onStageClear']);
+export interface ScoreReviewStep {source:string;effect:string;after:string}
 export interface ScoreReview {
   title:string;
   summary:string;
   cards:ExperienceCard[];
+  timeline:ScoreReviewStep[];
   diagnostics:string;
 }
 /** Display only. Keep the saved integer receipt separate from rounded H and M. */
@@ -113,6 +115,17 @@ export function formatScoreReview(run:R2RunState,trace:ScoreTrace):ScoreReview {
     trace.assist?savedAssistCopy(trace):'',impact,
     savedAmoExileFormula(trace)??'≈ 表示近似值；实际得分按精确计算取整。',
   ].filter(Boolean).join('\n');
+  const timeline:ScoreReviewStep[]=[];
+  for(const event of trace.events){
+    const base=event.operation==='base',final=event.phase==='finalScore';
+    if(event.operation==='route-factor'&&BigInt(event.value.n)===BigInt(event.value.d))continue;
+    const origin=event.sourceType==='card'?cardName(trace,event.targetCardId??event.sourceInstanceId)+' · ':'';
+    const source=base?HAND_LABELS[trace.handType]+' · 牌型底分':final?'本手入账':origin+sourceName(run,trace,event);
+    const effect=base?'起算':final?'+'+reviewScoreText(trace.finalScore)+' 分':reviewOperationText(run,event);
+    const changed=event.before.H.n!==event.after.H.n||event.before.H.d!==event.after.H.d||event.before.M.n!==event.after.M.n||event.before.M.d!==event.after.M.d;
+    const after=changed||base||final?displayFraction(event.after.H)+' × '+displayFraction(event.after.M):timing(event);
+    timeline.push({source,effect,after});
+  }
   const groups=new Map<string,{title:string;url?:string;cardSource:boolean;rows:Map<string,{event:ScoreEvent;count:number}>}>();
   for(const event of trace.events){
     if(event.phase==='base'||event.phase==='finalScore')continue;
@@ -132,5 +145,5 @@ export function formatScoreReview(run:R2RunState,trace:ScoreTrace):ScoreReview {
     '原始事件（保存顺序，含事件键、精确分数及前后值）',
     ...trace.events.map(event=>JSON.stringify(event)),
   ].join('\n\n');
-  return {title:'上手已入账 · '+HAND_LABELS[trace.handType]+' +'+reviewScoreText(trace.finalScore),summary,cards,diagnostics};
+  return {title:'上手已入账 · '+HAND_LABELS[trace.handType]+' +'+reviewScoreText(trace.finalScore),summary,cards,timeline,diagnostics};
 }

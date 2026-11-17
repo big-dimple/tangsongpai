@@ -188,6 +188,10 @@ export function installRunMenu(game:Phaser.Game,getActions:()=>RunMenuActions|un
   const skip=button('跳过教程，开始普通游戏',async()=>{if(await skipTutorialToNormal(game))close(true);else status.textContent=session.notice||'请先完成或重试保存，再跳过教程。';},primary);skip.dataset.menuAction='skip-tutorial';
   const speedLabel=document.createElement('label'),speed=document.createElement('select');speedLabel.textContent='计分速度 ';
   for(const value of [1,2,4]){const option=document.createElement('option');option.value=String(value);option.textContent=`${value}×`;speed.append(option);}speed.value=String(session.speed);speedLabel.append(speed);settings.append(speedLabel);
+  const motionLabel=document.createElement('label'),motion=document.createElement('select');motionLabel.textContent='演出动效 ';
+  for(const [value,label] of [['system','跟随系统'],['reduce','减少动效']]){const option=document.createElement('option');option.value=value;option.textContent=label;motion.append(option);}
+  motion.value=session.reducedMotion?'reduce':'system';motionLabel.append(motion);settings.append(motionLabel);
+  motion.onchange=()=>session.preferences(session.speed,motion.value==='reduce');
   const sizeLabel=document.createElement('label'),size=document.createElement('select');sizeLabel.textContent='画面大小 ';
   for(const [value,label] of [['auto','跟随浏览器字号'],['standard','标准'],['large','较大（最多1.2倍）']] as const){const option=document.createElement('option');option.value=value;option.textContent=label;size.append(option);}
   size.value=selectedCanvasSize();sizeLabel.append(size);settings.append(sizeLabel);

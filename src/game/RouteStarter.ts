@@ -15,6 +15,7 @@ export function starterShopCue(s:R2RunState){
  const owned=s.jokers.find(j=>j.instanceId===s.routeStarter?.instanceId);
  if(owned)return owned.definitionId==='c06'?("已收入"+cardDisplayName('c06')+"：凑同花后存成长，下手起加倍率。"):'已收入'+cardDefinitionName(r2JokerDefinitionFor(s,owned.definitionId))+'：到牌桌点怎么凑牌，满足条件后自己出牌。';
  const offer=s.shop?.offers.find(o=>starterOffer(s,o));if(offer){const fact=starterOffer(s,offer)!;return fact.label+' · '+fact.name+' '+fact.price+'金'+(fact.price<=s.gold?'可买；不买也可入场。':'，还差'+(fact.price-s.gold)+'金；可留金入场。');}
+ if(s.shop?.rerollCount)return;
  const config=r2RunModeConfig(s),price=s.openingRoute==='flush'?6:4;
  if(config.initialGold<price)return '此模式起始'+config.initialGold+'金，不保障'+STARTER_ROUTE_LABEL[s.openingRoute]+'起手牌；保留原模式经济。';
 }

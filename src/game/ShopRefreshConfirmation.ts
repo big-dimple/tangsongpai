@@ -1,5 +1,6 @@
 import type {R2RunState} from '../domain/run';
-import {r2PaidRerollPrice} from '../domain/r2Shop';
+import {minimumRestockPrice,r2PaidRerollPrice,usesPaidRestock} from '../domain/r2Shop';
+import {cashDecision} from './BuildJourney';
 import {DetailDialog} from './DetailDialog';
 export function shopRefreshQuote(run:R2RunState){
  const cost=run.shop?.freeRerolls?0:r2PaidRerollPrice(run);
@@ -11,12 +12,15 @@ export function sameShopRefreshQuote(run:R2RunState,q:ReturnType<typeof shopRefr
 /** The local quote owns a one-shot submit latch; cancellation never reaches the command adapter. */
 export function showShopRefreshConfirmation(dialog:DetailDialog,run:R2RunState,current:()=>R2RunState,ready:()=>boolean,submit:(seq:number)=>Promise<boolean>):HTMLDialogElement {
  const q=shopRefreshQuote(run);let submitted=false,saving=false;
+ const cash=cashDecision(run,q.cost),floor=q.cost&&usesPaidRestock(run)?minimumRestockPrice(run):undefined;
+ const stock=floor===undefined?'':cash.after<floor?'换后余额买不到唐宋牌，新货最低 '+floor+' 金。':'优先换入不同唐宋牌，至少一张在换后预算内。';
+ const money=['金币 '+q.gold+' → '+cash.after,'普通利息档 '+cash.beforeTier+' → '+cash.afterTier+' 金（过关时按届时余额结算）',stock].filter(Boolean).join('\n');
  const d=dialog.open('花钱换货',`只更新唐宋牌与消耗工具；长期物品不变，自选做牌次数不恢复。`,[{label:q.cost?`确认换货 · ${q.cost}金币`:'确认免费换货',primary:true,run:async()=>{
   if(submitted||!dialog.active(d)||!ready())return;
   if(!sameShopRefreshQuote(current(),q)){const status=d.querySelector<HTMLElement>('.dialog-status')!;status.textContent='现货或费用已变化，请取消后重新查看。';status.hidden=false;return;}
   submitted=true;saving=true;const close=d.querySelector<HTMLButtonElement>('.dialog-close')!;close.disabled=true;
   try{if(await submit(q.seq))dialog.close(d);}finally{saving=false;if(dialog.active(d))close.disabled=false;}
- }}],{closeLabel:'取消',effectBody:q.cost?`换货费用 ${q.cost}金币`:'本次免费换货',summaryBody:`金币 ${q.gold} → ${q.gold-q.cost}\n确认后才更新现货；取消不扣款。`});
+ }}],{closeLabel:'取消',effectBody:q.cost?`换货费用 ${q.cost}金币`:'本次免费换货',summaryBody:money});
  d.classList.add('shop-refresh-confirmation');
  d.addEventListener('cancel',e=>{if(saving){e.preventDefault();e.stopImmediatePropagation();}},{capture:true});return d;
 }

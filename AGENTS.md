@@ -46,7 +46,7 @@
 | 桌面/手机结算与过场 | `src/game/StageScoreMeter.ts`、`src/game/PcSettlementPresentation.ts`、`src/game/MobileSettlementPresentation.ts`、`src/game/IntermissionLayout.ts`、`src/game/IntermissionScene.ts`、`src/game/IntermissionScroll.ts` |
 | 领域命令入口 | `src/domain/run.ts` |
 | 对局与商店 | `src/domain/r2Run.ts`、`src/domain/r2Shop.ts` |
-| 计分 | `src/domain/scoreR2.ts`、`src/scoring/` |
+| 计分、选牌预估与上手明细 | `src/domain/scoreR2.ts`、`src/scoring/`、`src/game/HandDraftPanel.ts`、`src/game/ScoreReview.ts` |
 | 章节与 Boss | `src/domain/r2Chapter.ts` |
 | 模式、难度、挑战、节目单 | `src/content/r2Modes.ts` |
 | 工具、道具、增强与版次 | `src/content/r2Tools.ts` |

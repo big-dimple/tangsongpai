@@ -3,7 +3,8 @@ import {usesErxiangGroup} from '../domain/r2ErxiangHandoff';
 import {usesLaohuanFind,laohuanFindGroups} from '../domain/r2LaohuanFind';
 import {pcHeroKey,PC_HERO_COMPOSITION} from './PcHeroArt';
 import {beginPcSettlementCut} from './PcSettlementPresentation';
-import {previewR2Hand} from '../domain/scoreR2';
+import {previewR2Hand,type ScorePreview} from '../domain/scoreR2';
+import {HandDraftPanel,handForecastCopy} from './HandDraftPanel';
 import {usesBossSuitRescue,bossSuitRescueQualified,bossSuitRescueActive,bossSuitDisabledCards} from '../domain/r2BossSuitRescue';
 import {bossSuitRescueLabel,showBossSuitRescue} from './BossSuitRescue';
 import {playHeroSkillStage} from './HeroSkillStage';
@@ -268,7 +269,9 @@ export class GameScene extends Phaser.Scene {
   private assistIds:string[]=[];
   private assistPage=0;
   private readonly assistRecommendations=new AssistRecommendationCache();
-  private assistGestureStart?:string[];
+  private assistGestureStart?:{assistIds:string[];skill:ChosenHeroDraft};
+  private draftPanel?:HandDraftPanel;
+  private draftEstimate?:{run:RunState;key:string;estimate?:ScorePreview;plain?:ScorePreview;unavailable?:string};
   private readonly candidates=new R2HandCandidateCache();
   private readonly aiCandidates=new AiHandCandidateCache();
   private aiCursor?:AiHandCursor;
@@ -507,7 +510,7 @@ export class GameScene extends Phaser.Scene {
       cancelCanvas:()=>this.view.cancelInteraction(),
       pointerCard:id=>{const index=this.hand.findIndex(card=>card.id===id);if(index>=0)this.focusIndex=index;},
       ready:()=>this.ready&&!this.refillHidden,selectionLimit:()=>this.selectionLimit,cards:()=>this.hand.map((card,i)=>({id:card.id,...this.view.layout.cards[i].hit,visible:this.view.layout.cards[i].visible})),selected:()=>this.selectedIds,
-      update:update=>{this.observeNoviceHandGesture(update);this.applyHandSelection(update);},detail:id=>this.inspectCard(id),hover:id=>{
+      update:update=>{this.sweepHint.observe(update);this.observeNoviceHandGesture(update);this.applyHandSelection(update);},detail:id=>this.inspectCard(id),hover:id=>{
         if(this.hoveredCardId===id)return;
         const previous=this.hoveredCardId;if(previous)this.hoverCard(previous,false);if(id)this.hoverCard(id,true);
       },
@@ -564,10 +567,7 @@ export class GameScene extends Phaser.Scene {
         this.focusIndex=(Math.max(0,index)+(action==='left'?this.hand.length-1:1))%this.hand.length;
         this.showFocusedCard();return 'card/'+this.hand[this.focusIndex].id;
       }
-      if(action==='back'){
-        if(this.selectedIds.size||this.assistIds.length){this.selectedIds.clear();this.assistIds=[];this.laohuanFindRank=null;this.erxiangTargetId=null;this.azaoRelease=false;this.xiemuBurn=0;this.amoExile=false;this.refreshSelection();return true;}
-        return false;
-      }
+      if(action==='back')return this.clearHandDraft();
       if((action==='previous'||action==='next')&&this.ready){
         const delta=action==='previous'?-1:1;
         if(targetId?.startsWith('card/')){void this.moveHandCard(targetId.slice(5),delta);return true;}
@@ -863,10 +863,19 @@ export class GameScene extends Phaser.Scene {
 
   private readonly keyboard=(event:KeyboardEvent)=>{
     if(!this.scene.isActive())return;
+    if(this.presentation&&!event.repeat&&(event.key===' '||event.key==='Escape')&&!document.querySelector('dialog[open]')&&!document.activeElement?.matches('button,input,textarea,select,summary')){
+      event.preventDefault();this.fastForward();return;
+    }
     if(event.key==='Escape'&&this.xinRefillSequence?.active){event.preventDefault();this.fastForward();return;}
     if(event.key==='Tab'){this.keyboardFocus=true;this.game.canvas.setAttribute('data-hand-input','keyboard');this.hoveredCardId=undefined;this.stopHandHint();this.focusFeedback();return;}
     if(this.handInput?.active){if(event.key==='Escape'){event.preventDefault();this.handInput.cancel('escape');}return;}
     if(this.playing||document.querySelector('dialog[open]')||!this.scene.isActive()||document.activeElement?.matches('input,select,textarea,button'))return;
+    if(event.repeat&&[' ','Enter','Escape'].includes(event.key)){event.preventDefault();return;}
+    if(event.key==='Escape'&&this.clearHandDraft()){event.preventDefault();return;}
+    if(event.key==='Enter'&&(event.ctrlKey||event.metaKey)){
+      if(this.ready&&this.selectedIds.size&&!event.repeat){event.preventDefault();void this.playSelected();}
+      return;
+    }
     if(['ArrowRight','ArrowLeft',' ','Enter'].includes(event.key)){this.keyboardFocus=true;this.game.canvas.setAttribute('data-hand-input','keyboard');this.hoveredCardId=undefined;this.stopHandHint();this.game.canvas.focus({preventScroll:true});this.focusFeedback();}
     if((event.key==='ArrowRight'||event.key==='ArrowLeft')&&this.hand.length){event.preventDefault();this.focusIndex=(this.focusIndex+(event.key==='ArrowRight'?1:this.hand.length-1))%this.hand.length;this.showFocusedCard();this.refreshSelection();}
     else if(event.key===' '&&this.hand[this.focusIndex]){event.preventDefault();this.toggleCard(this.hand[this.focusIndex].id);}
@@ -909,7 +918,7 @@ export class GameScene extends Phaser.Scene {
     this.playAuraPulse?.remove();this.playAuraPulse=undefined;this.playAura=undefined;
     if(this.progressBar)this.tweens.killTweensOf(this.progressBar);this.progressTarget=Number.NaN;
     const h=l.hud,c=getCharacter(this.characterId),portrait=l.mode==='portrait',short=l.mode==='landscape',heroRoom=portrait?Math.min(108,Math.max(74,h.width-252)):108,sidebar=l.pc?.heroRows??heroSidebarRows(h);
-    this.game.canvas.setAttribute('aria-label',GAME_NAME+' · '+c.name+'牌桌；方向键聚焦手牌，空格选牌，Enter查看详情。');
+    this.game.canvas.setAttribute('aria-label',GAME_NAME+' · '+c.name+'牌桌；方向键聚焦手牌，空格选牌，Enter看详情，Esc撤选，Ctrl或⌘加Enter出牌。');
     if(!portrait&&!l.pc)v.add(this.add.graphics().lineStyle(1,T.jade,.22).lineBetween(h.x+h.width+8,h.y,h.x+h.width+8,h.y+h.height));
 
     const avatarSize=portrait?30:44,avatarY=h.y+(portrait?6:short?34:42);
@@ -938,6 +947,15 @@ export class GameScene extends Phaser.Scene {
       const hitWidth=portrait?h.x+h.width-56-this.roleText.x:sidebar.status.width,hitHeight=portrait?44:sidebar.status.height;
       const hit=v.add(this.add.rectangle(this.roleText.x+hitWidth/2,this.roleText.y+(portrait?9:hitHeight/2),hitWidth,hitHeight,0,0));v.target(hit,usesErxiangHandoff(this.run)?'hero/erxiang-handoff-label':usesTouyeWager(this.run)?'hero/touye-wager-label':usesLaohuanRefill(this.run)?'hero/laohuan-trick-label':usesXiemuBurn(this.run)?'hero/xiemu-burn-label':this.assistProfile?'hero/amo-assist-label':'hero/azao-charge-label',{tap:()=>this.inspectHeroExplanation(),detail:()=>this.inspectHeroExplanation()});
     }
+    if(l.mode==='portrait'){
+      const rack=v.add(this.add.graphics().lineStyle(1,T.divider,.46)),slots=l.slots.slice(0,r2JokerCapacity(this.run));
+      for(const b of slots)rack.strokeRoundedRect(b.x+1,b.y+1,b.width-2,b.height-2,5);
+      if(!this.run.jokers.length&&slots.length){
+        const b=l.jokers,w=Math.min(b.width-16,218);
+        v.button({x:b.x+(b.width-w)/2,y:b.y+(b.height-44)/2,width:w,height:44},
+          '唐宋牌 0/'+slots.length+' · 看培养路线','action/empty-build',()=>{if(this.ready&&!this.presentation)this.inspectJourney();},this.ready);
+      }
+    }
     this.renderJokerRack();
     const s=l.scoreBoard;
     this.resultText=v.text(s.x+8,s.y+6,l.pc?'本手计分 · 等待选牌':'选牌，准备出牌',17,C.ink).setName('score/source');
@@ -953,6 +971,7 @@ export class GameScene extends Phaser.Scene {
     this.scoreMult=v.text(0,0,'—',26,C.red).setOrigin(.5,0).setName('score/multiplier');
     this.scoreTotal=v.text(0,0,'—',44,C.ink).setOrigin(.5,0).setName('score/total');
     this.breakdownText=v.text(0,0,'',14,C.mutedInk).setVisible(false);
+    this.draftPanel=new HandDraftPanel(v,s,!!this.bossSuitRescueButton,()=>this.clearHandDraft());
     this.fitScoreReadouts();
     const p=playedFootprint(toolInventoryPlayedArea(l),portrait);
     v.rect(p,T.paperLight).setFillStyle(0,0).setStrokeStyle().setName('table/played-workplane');
@@ -981,7 +1000,7 @@ export class GameScene extends Phaser.Scene {
       const status=this.add.text(centerX,32,'',{fontFamily:UI_FONT,fontSize:'11px',color:C.mutedInk}).setOrigin(.5).setName('hero/skill-status');art.add(status);this.heroActionButton.setData('skillStatus',status);
     }
     this.discardButton=v.button(discardBox,'弃牌','action/discard',()=>void this.discardSelected(),this.ready&&this.selectedIds.size>0&&this.run.stage!.discardsLeft>=r2DiscardCost(this.run),false,'discard');
-    this.playButton=v.button(l.tableActions.play,'出牌','action/play',()=>void this.playSelected(),this.ready&&this.selectedIds.size>0&&this.handsLeft>0,true,'play');
+    this.playButton=v.button(l.tableActions.play,'出牌','action/play',()=>{if(this.presentation)this.fastForward();else void this.playSelected();},this.ready&&this.selectedIds.size>0&&this.handsLeft>0,true,'play');
     if(l.pc)for(const button of [this.discardButton,this.playButton,this.heroActionButton])if(button)mountPcActionArt(this,button);
     this.resourceCounts={} as Record<'play'|'discard',Phaser.GameObjects.Text>;
     for(const kind of ['play','discard'] as const){
@@ -1535,7 +1554,7 @@ export class GameScene extends Phaser.Scene {
       const note=this.add.text(score.x+10,score.y+28,'原保留：'+held,{fontFamily:UI_FONT,fontSize:'14px',color:C.mutedInk,wordWrap:{width:score.width-20,useAdvancedWrap:true}}).setName('refill/held').setVisible(!this.xinRefillSequence?.active);this.previewCards.add(note);return;}
     if(!this.previewCards?.active||!this.previewCards.getData('cardViews')){
       this.previewCards?.destroy();this.previewCards=this.view.add(this.add.container(0,0)).setData('cardViews',new Map<string,CardView>());
-      this.renderSelectionQuickButtons(this.view.layout.scoreBoard);
+      this.renderSelectionQuickButtons();
     }
     const views=this.previewCards.getData('cardViews') as Map<string,CardView>;
     const cards=preview?this.hand.filter(card=>this.selectedIds.has(card.id)):[],boxes=this.landingBoxes(cards.length);
@@ -1570,7 +1589,6 @@ export class GameScene extends Phaser.Scene {
     this.statusMessage=this.assistIds.length?'助攻已选 ×'+facts.assistMultiplier:'助攻已取消，主手保持';this.refreshSelection();
   }
   private heroActionLabel():string {return heroSkillName(this.characterId);}
-  private selectionQuickInScore(_score:Box):boolean {return false;}
   private tableHelpBox():Box {
     const l=this.view.layout;
     if(l.pc)return l.pc.utilities.help;
@@ -1579,7 +1597,7 @@ export class GameScene extends Phaser.Scene {
     if(l.helpEntry)return l.helpEntry;
     return {x:l.playedArea.x,y:l.playedArea.y,width:44,height:44};
   }
-  private renderSelectionQuickButtons(_score:Box):void {
+  private renderSelectionQuickButtons():void {
     const area=this.tableHelpBox(),first=this.view.root.length;
     const button=this.view.button(area,this.view.layout.mode==='desktop'?'本场与选牌帮助':'条件\n帮助','selection/source-benefits',()=>this.inspectTableHelp(),this.ready);
     (button.getData('label') as Phaser.GameObjects.Text).setFontSize(14);
@@ -1587,7 +1605,7 @@ export class GameScene extends Phaser.Scene {
   }
   private inspectTableHelp():void {
     const identity=stageIdentity(this.stage.index,this.run.stage!.boss,this.run.tourMode,this.run.difficulty)!,notice=stageNotice(this.run),preview=this.selectionPreview();
-    this.dialog.open('本场与选牌帮助',identity.stageName+' · 目标 '+heatText(this.stage.targetHeat)+(notice?'\n'+notice.title+'：'+notice.description:'')+'\n选1–5张，按全部所选判型。点击来源卡查看实际条件；长按可调序。\n手牌横滑可连续选择；再点已选牌可取消，长按看详情。',[
+    this.dialog.open('本场与选牌帮助',identity.stageName+' · 目标 '+heatText(this.stage.targetHeat)+(notice?'\n'+notice.title+'：'+notice.description:'')+'\n选1–5张，按全部所选判型。点击来源卡查看实际条件；长按可调序。\n从未选牌划过可连选，从已选牌划过可连撤。点「撤选」或按 Esc 清空；Ctrl／⌘ + Enter 出牌。长按看详情。',[
       {label:preview?'所选来源条件':'持有来源条件',primary:true,run:()=>preview?this.inspectSelection(preview):this.inspectHeldConditions()},
       {label:this.candidateEntry(),run:()=>this.inspectCandidates()},
       ...(this.assistProfile?[{label:'选择主手与助攻',run:()=>this.inspectHeroAction()}]:[]),
@@ -1686,6 +1704,11 @@ export class GameScene extends Phaser.Scene {
     this.resourceCounts.play.setVisible(!this.pendingRefill);this.resourceCounts.discard.setVisible(!this.pendingRefill);
     if(this.pendingRefill){this.view.setEnabled(this.aiButton,false);this.view.setEnabled(this.playButton,this.ready&&!this.refillHidden&&this.selectedIds.size===this.pendingRefill.required);(this.playButton.getData('label') as Phaser.GameObjects.Text).setText('确认留'+this.pendingRefill.required);this.view.setEnabled(this.discardButton,this.ready);(this.discardButton.getData('label') as Phaser.GameObjects.Text).setText(this.refillHidden?'继续选牌':'收起候选');}
     if(dragHint)this.statusText.setText(dragHint);
+    this.playButton.setName(this.presentation?'action/skip-score':'action/play');
+    if(this.presentation){
+      this.view.setEnabled(this.playButton,true);
+      (this.playButton.getData('label') as Phaser.GameObjects.Text).setText('快进');
+    }
     if(this.view.layout.pc)for(const button of [this.discardButton,this.playButton,this.heroActionButton])refreshPcActionArt(button);
     this.pcKeyboardActions?.update();
     // Balatro-style call-to-action: the playable state breathes a warm aura.
@@ -1721,7 +1744,7 @@ export class GameScene extends Phaser.Scene {
       this.liueSkillPayoff?.refresh();
     }
     this.pcKeyboardActions?.update();
-    this.game?.canvas?.setAttribute('aria-label',GAME_NAME+' · '+getCharacter(this.characterId).name+'牌桌；方向键聚焦手牌，空格选牌，Enter查看详情。'+(heroCue?' '+heroCue.ariaLabel:''));
+    this.game?.canvas?.setAttribute('aria-label',GAME_NAME+' · '+getCharacter(this.characterId).name+'牌桌；方向键聚焦手牌，空格选牌，Enter看详情，Esc撤选，Ctrl或⌘加Enter出牌。'+(heroCue?' '+heroCue.ariaLabel:''));
     this.roleText.setColor(heroCue?.state==='passive'?C.ink:heroAvailable?C.jade:C.mutedInk).setData('abilityAvailable',heroAvailable);
     this.roleFrame.setStrokeStyle(heroOpportunity||heroChosen?2:1,heroAvailable||heroChosen?T.jade:T.brass,heroOpportunity||heroChosen?1:.6);
     this.fitMobileHeroCaption();
@@ -2159,38 +2182,56 @@ export class GameScene extends Phaser.Scene {
   }
 
   private applyHandSelection(update:HandSelectionUpdate):void {
-    this.sweepHint.observe(update);
-    if(update.phase==='pending'&&!this.assistGestureStart)this.assistGestureStart=[...this.assistIds];
-    if(update.phase==='cancelled'&&this.assistGestureStart)this.assistIds=[...this.assistGestureStart];
+    if(update.phase==='pending'&&!this.assistGestureStart)this.assistGestureStart={assistIds:[...this.assistIds],skill:this.chosenHeroDraft()};
+    const restore=update.phase==='cancelled'?this.assistGestureStart:undefined;
+    if(restore){this.assistIds=restore.assistIds;Object.assign(this,restore.skill);}
     if(['committed','interrupted','cancelled'].includes(update.phase))this.assistGestureStart=undefined;
     const previous=this.selectedIds,next=new Set(update.selectedIds),changed=previous.size!==next.size||[...previous].some(id=>!next.has(id));
-    this.statusMessage=update.limitReached?'每手最多选择 5 张牌':'';
+    this.statusMessage=update.limitReached?'最多选 '+this.selectionLimit+' 张':'';
     if(!changed){if(update.limitReached)this.updateControls();return;}
-    const endedUndo=!!this.candidateUndo;this.aiCursor=undefined;this.candidateUndo=undefined;this.candidateGhost=undefined;this.azaoRelease=false;this.xiemuBurn=0;this.amoExile=false;this.selectedIds=next;this.validateAssistSelection();if(endedUndo&&!update.limitReached&&this.statusMessage!=='主手或可用条件已变化，助攻已取消')this.statusMessage='已手动改选，换组撤销已结束';
+    const endedUndo=!!this.candidateUndo;this.aiCursor=undefined;this.candidateUndo=undefined;this.candidateGhost=undefined;
+    if(!restore){this.laohuanFindRank=null;this.erxiangTargetId=null;this.azaoRelease=false;this.xiemuBurn=0;this.amoExile=false;}
+    this.selectedIds=next;this.validateAssistSelection();if(endedUndo&&!update.limitReached&&this.statusMessage!=='主手或可用条件已变化，助攻已取消')this.statusMessage='已手动改选，换组撤销已结束';
     const changedViews=this.cardViews.filter(view=>previous.has(view.card.id)!==next.has(view.card.id));changedViews.forEach(view=>this.revealCard(view));
     if(update.phase!=='cancelled'){if(update.mode==='select')this.audio.select();else this.audio.deselect();}
     // Batch a fast crossing into one preview; no rules command, RNG or save is touched.
     this.refreshSelection(update.phase==='committed'&&changedViews.length===1?changedViews[0].card.id:undefined);
   }
 
-  private toggleCard(id: string): void {
-    if (!this.ready||this.refillHidden) return;
+  private clearHandDraft():boolean {
+    if(!this.ready||this.presentation||(!this.selectedIds.size&&!this.assistIds.length))return false;
+    this.aiCursor=undefined;this.candidateUndo=undefined;this.candidateGhost=undefined;
+    this.assistIds=[];this.assistPage=0;this.selectedIds.clear();
     this.laohuanFindRank=null;this.erxiangTargetId=null;this.azaoRelease=false;this.xiemuBurn=0;this.amoExile=false;
-    const view=this.cardViews.find(view=>view.card.id===id);if(view)this.revealCard(view);
-    this.statusMessage='';
-    if(!this.selectedIds.has(id)&&this.selectedIds.size>=this.selectionLimit){this.statusMessage='每手最多选择 5 张牌';this.audio.invalid();if(view)this.wiggleCard(view,this.cardViews.indexOf(view));this.updateControls();return;}
-    if(this.candidateUndo)this.statusMessage='已手动改选，换组撤销已结束';this.aiCursor=undefined;this.candidateUndo=undefined;this.candidateGhost=undefined;
-    if (this.selectedIds.has(id)) {
-      this.selectedIds.delete(id);this.audio.deselect();
-    } else {
-      if (this.selectedIds.size >= this.selectionLimit) {this.statusMessage='每手最多选择 5 张牌';this.audio.invalid();if(view)this.wiggleCard(view,this.cardViews.indexOf(view));this.updateControls();return;}
-      this.selectedIds.add(id);this.audio.select();
+    this.statusMessage='已撤选';this.audio.deselect();this.refreshSelection();return true;
+  }
+  private toggleCard(id:string):void {
+    if(!this.ready||this.refillHidden)return;
+    const selected=new Set(this.selectedIds),removing=selected.delete(id);
+    if(!removing&&selected.size>=this.selectionLimit){
+      this.statusMessage='最多选 '+this.selectionLimit+' 张';this.audio.invalid();
+      const index=this.cardViews.findIndex(v=>v.card.id===id);if(index>=0)this.wiggleCard(this.cardViews[index],index);
+      this.updateControls();return;
     }
-    this.selectedIds=new Set(this.hand.filter(card=>this.selectedIds.has(card.id)).map(card=>card.id));
-    this.validateAssistSelection();this.refreshSelection(id);
+    if(!removing)selected.add(id);
+    this.applyHandSelection({phase:'committed',pointerId:-1,mode:removing?'deselect':'select',
+      selectedIds:this.hand.filter(c=>selected.has(c.id)).map(c=>c.id),visitedIds:[id],limitReached:false});
   }
 
   private alive(lifecycle:number,intent:number):boolean {return lifecycle===this.lifecycle&&intent===this.intent&&this.scene.isActive();}
+  private waitHeroSubject(context:EffectContext):Promise<void>{
+    return new Promise(resolve=>{
+      let start:number|undefined;
+      const finish=()=>{this.events.off('update',tick);context.signal.removeEventListener('abort',finish);resolve();};
+      const tick=()=>{
+        const now=performance.now();
+        if(start===undefined){start=now;this.heroClimax?.group.setData('subjectVisibleAt',now);}
+        else if(now-start>=1000){this.heroClimax?.group.setData('subjectHoldMs',now-start);finish();}
+      };
+      if(context.signal.aborted){resolve();return;}
+      this.events.on('update',tick);context.signal.addEventListener('abort',finish,{once:true});
+    });
+  }
 
   private wait(ms:number,context:EffectContext):Promise<void> {
     if(ms<=0||context.signal.aborted)return Promise.resolve();
@@ -2198,7 +2239,6 @@ export class GameScene extends Phaser.Scene {
     return this.animate({targets:{t:0},t:1,duration:ms},context);
   }
 
-  private waitHeroSubject(context:EffectContext):Promise<void> {return new Promise(resolve=>{let start:number|undefined;const finish=()=>{this.events.off('update',tick);context.signal.removeEventListener('abort',finish);resolve();};const tick=()=>{const now=performance.now();if(start===undefined){start=now;this.heroClimax?.group.setData('subjectVisibleAt',now);}else if(now-start>=1000){this.heroClimax?.group.setData('subjectHoldMs',now-start);finish();}};if(context.signal.aborted){resolve();return;}this.events.on('update',tick);context.signal.addEventListener('abort',finish,{once:true});});}
   private animate(config:Phaser.Types.Tweens.TweenBuilderConfig,context:EffectContext):Promise<void> {
     return new Promise(resolve=>{
       if(context.signal.aborted){resolve();return;}
@@ -2269,31 +2309,46 @@ export class GameScene extends Phaser.Scene {
     this.view.root.list.filter(o=>o.name.startsWith('score/formula-')).forEach(o=>(o as Phaser.GameObjects.Text).setVisible(false));
     [this.scoreHeat,this.scoreMult,this.scoreTotal].forEach(text=>text.setText('').setData('fullText','').setData('eventId',undefined).setData('eventPhase',undefined).setVisible(false));
     (this.view.root.list.find(o=>o.name==='score/total-pedestal') as Phaser.GameObjects.Graphics|undefined)?.setVisible(false);
-    const score=this.view.layout.scoreBoard;
-    if(this.bossSuitRescueButton)this.resultText.setData('scoreSourceProcess',undefined).setData('fullText',undefined).setData('fittedText',undefined);
+    const l=this.view.layout,score=l.scoreBoard;
+    this.draftPanel?.hide();
+    this.resultText.setData('scoreSourceProcess',undefined).setData('fullText',undefined).setData('fittedText',undefined);
     const challenge=opponentChallenge(this.run,preview?.type);
-    this.resultText.setVisible(true).setText(preview?(challenge?.selection??selectionCopy(preview).title):challenge?'回音墙 · 目标 '+heatText(challenge.target):this.stage.name).setData('opponentSelection',challenge);
-    fitScoreLine(this.resultText,{x:score.x+10,y:score.y+(score.height<90?4:7),width:score.width-20-(this.bossSuitRescueButton?154:this.selectionQuickInScore(score)?104:0),height:score.height<90?18:30},score.height<90?18:24);
-    // PC keeps the scoring lanes legible before a hand is committed. Dashes
-    // are deliberate: no guessed score is presented as a saved result.
-    if(this.view.layout.pc&&!this.bossSuitRescueButton){
+    this.resultText.setVisible(true).setData('opponentSelection',challenge);
+    if(preview&&this.draftPanel){
+      const ids=[...this.selectedIds],key=JSON.stringify([ids,this.assistIds,this.chosenHeroDraft()]);
+      if(this.draftEstimate?.run!==this.run||this.draftEstimate.key!==key){
+        const input=this.aiInput();
+        try{
+          const estimate=previewR2Hand(aiHandScoreInput(input,ids));
+          const plain=usesErxiangGroup(this.run)&&this.erxiangTargetId
+            ?previewR2Hand(aiHandScoreInput({...input,score:aiScoreContext(input.score,{erxiangTargetId:null})},ids)):undefined;
+          this.draftEstimate={run:this.run,key,estimate,plain};
+        }catch(error){
+          const reason=error instanceof Error?error.message:'';
+          const unavailable=['numeric-length-limit','event-limit','resource-overflow'].includes(reason)?'本手预览超出计分上限':'请调整选牌或技能后查看预计得分';
+          this.draftEstimate={run:this.run,key,unavailable};
+        }
+      }
+      const {estimate,plain,unavailable}=this.draftEstimate,copy=estimate&&handForecastCopy(estimate,this.heat,this.stage.targetHeat);
+      const off=preview.scoringIds.length-preview.activeScoringIds.length;
+      const roles=preview.activeScoringIds.length+'计分'+(preview.accompanyingIds.length?' · '+preview.accompanyingIds.length+'随出':'')+(off?' · '+off+'失效':'');
+      const title=challenge?.selection??HAND_LABELS[preview.type];
+      const prefix=bossSuitRescueActive(this.run.stage)?'解封本手预计 ':plain?'预计转后 ':'预计 ';
+      const forecast=copy?prefix+copy.range+'分'+(plain?' · 不转 '+handForecastCopy(plain,this.heat,this.stage.targetHeat).range:'')+' · '+copy.result:unavailable!;
+      this.draftPanel.show(this.resultText,title,roles,forecast,copy?.base??'',idlePlayedArea(l).y,this.ready,this.bossSuitRescuePreview);
+      return;
+    }
+    const remaining=BigInt(this.stage.targetHeat)-BigInt(this.heat),hands=BigInt(Math.max(1,this.handsLeft));
+    const pace=remaining>0n?(remaining+hands-1n)/hands:0n;
+    this.resultText.setText(challenge?'回音墙 · 目标 '+heatText(challenge.target):this.handsLeft===1?'最后一手 · 还需 '+heatText(String(pace))+' 分':'每手约需 '+heatText(String(pace))+' 分');
+    fitScoreLine(this.resultText,{x:score.x+10,y:score.y+(score.height<90?4:7),width:score.width-20-(this.bossSuitRescueButton?154:0),height:score.height<90?18:30},score.height<90?18:24);
+    if(l.pc&&!this.bossSuitRescueButton){
       this.scoreLabels.forEach((label,i)=>label.setText(['筹码','倍率','本手得分'][i]).setVisible(true));
       [this.scoreHeat,this.scoreMult,this.scoreTotal].forEach(text=>text.setText('—').setData('fullText','—').setVisible(true));
       this.view.root.list.filter(o=>o.name.startsWith('score/formula-')).forEach(o=>(o as Phaser.GameObjects.Text).setVisible(true));
-      if(!preview)this.resultText.setText('选择手牌 · 出牌后计分');
       this.fitScoreReadouts();
     }
-    if(preview&&usesErxiangGroup(this.run)&&this.erxiangTargetId&&!this.playing&&!this.presentation){
-      try{const input=this.aiInput(),ids=[...this.selectedIds],chosen=previewR2Hand(aiHandScoreInput(input,ids)),plain=previewR2Hand(aiHandScoreInput({...input,score:aiScoreContext(input.score,{erxiangTargetId:null})},ids));
-        const range=(p:typeof chosen)=>p.scoreRange.minimum===p.scoreRange.maximum?p.scoreRange.minimum:p.scoreRange.minimum+'–'+p.scoreRange.maximum;
-        this.resultText.setText('预计转后 '+range(chosen)+' · 不转 '+range(plain));fitScoreLine(this.resultText,{x:score.x+10,y:score.y+(score.height<90?4:7),width:score.width-20-(this.bossSuitRescueButton?154:this.selectionQuickInScore(score)?104:0),height:score.height<90?18:30},score.height<90?18:24);
-      }catch{this.resultText.setText('当前选择不能预览，请调整选牌');}
-    }
-    if(this.bossSuitRescuePreview){
-      let text='选牌后查看本手预计得分';
-      if(preview){try{const p=previewR2Hand(aiHandScoreInput(this.aiInput(),[...this.selectedIds]));text=(bossSuitRescueActive(this.run.stage)?'解封本手':'本手')+'预计 '+(p.scoreRange.minimum===p.scoreRange.maximum?p.scoreRange.minimum:p.scoreRange.minimum+'–'+p.scoreRange.maximum)+'分 · 目标不变';}catch{text='所选能力暂不可用 · 调整后查看预计得分';}}
-      this.bossSuitRescuePreview.setText(text).setVisible(!this.playing&&!this.presentation);
-    }
+    this.bossSuitRescuePreview?.setText('选牌后查看本手预计得分').setVisible(!this.playing&&!this.presentation);
   }
   /** Reflow real text bounds inside the reserved score/body/fire lanes. */
   private fitScoreReadouts():void {
@@ -2682,6 +2737,7 @@ export class GameScene extends Phaser.Scene {
     const strike=heroStrike??(strikeCue&&marker?prepareJokerScoreStrike(this,this.view.root,marker,strikeCue,{...shared,onStep:undefined,onDispose:undefined,textureKey:jokerArtKey(event.sourceDefinitionId)??'',artBounds:marker.getData('scoreArtBounds')??{x:-32,y:-45,width:64,height:90},liftRoom:ownedJokerLiftRoom(marker,this.view.layout.mode==='portrait'?this.view.layout.hud.y+this.view.layout.hud.height+2:4)}):undefined);
     if((plainExile&&!heroStrike||heroAction&&!heroStrike)&&timing.phrase)timing.phrase={...timing.phrase,paired:false};
     const sourceEffects:Promise<void>[]=[];
+    if(restoreKey?.hero&&timing.phrase?.role==='accent'&&!this.reducedMotion&&gameSession().speed===1)sourceEffects.push(this.waitHeroSubject(context));
     if(event.sourceType==='character'&&number)this.consumeScorePerformance(event,'activate',timing,context,number);
     // All source reactions wait for the actual packet arrival, including slow frames.
     let arrive!:()=>void;
@@ -2949,6 +3005,7 @@ export class GameScene extends Phaser.Scene {
 
   private async presentTrace(score:ScoreTrace,state:RunState,views:readonly CardView[],lifecycle:number,intent:number,beforeHeat=this.heat,replay=false,previousTrace:ScoreTrace|null=this.run.lastTrace,beforeHands?:number,beforeGold?:number,gifts:readonly SavedStageGift[]=[],heroReceipt?:{before:RunState;result:CommandResult<RunState>}):Promise<void> {
     this.effects.clear();this.highMultiplierAuraDispose?.();this.highMultiplierAuraDispose=undefined;const generation=this.effects.generation;
+    this.draftPanel?.hide();
     const originHeat=replay?(BigInt(beforeHeat)>BigInt(score.finalScore)?BigInt(beforeHeat)-BigInt(score.finalScore):0n).toString():beforeHeat;
     const retainedIds=replay?[]:[...new Set([...(this.appliedRefill?.ids??[]),...(score.laohuanFind?.batchIds??[])])],orderedEvents=remainingScoreEvents(score).filter(event=>!isNeutralScoreReceipt(event)),phrase=scorePhrase(orderedEvents,this.stage.targetHeat,gameSession().speed,score,retainedIds);
     const auraEventId=firstScoreHighMultiplierCue({...score,events:orderedEvents.filter(event=>!gifts.some(gift=>gift.eventId===event.eventId))},replay)?.eventId;
@@ -3082,7 +3139,7 @@ export class GameScene extends Phaser.Scene {
   private inspectLastTrace():void {
     const score=this.run.lastTrace;if(!score)return;
     const review=formatScoreReview(this.run,score);
-    this.dialog.open(review.title,review.diagnostics,[{label:'继续培养',primary:true,disabled:!this.ready,run:()=>this.inspectJourney()},...(this.run.consumables.length?[{label:'打开道具箱',disabled:!this.ready,primary:true,run:()=>showConsumables(this.dialog,this.run,this.ready&&!this.pendingRefill&&!this.pendingTouye,(a,seq)=>this.command(a,seq))}]:[]),{label:'回看演出',disabled:!this.ready,run:()=>{this.dialog.close();this.replayLastTrace();}}],{cards:review.cards,effectBody:review.summary,collapseRules:true,rulesLabel:'诊断：精确分数与原始事件'});
+    this.dialog.open(review.title,review.diagnostics,[{label:'继续培养',primary:true,disabled:!this.ready,run:()=>this.inspectJourney()},...(this.run.consumables.length?[{label:'打开道具箱',disabled:!this.ready,primary:true,run:()=>showConsumables(this.dialog,this.run,this.ready&&!this.pendingRefill&&!this.pendingTouye,(a,seq)=>this.command(a,seq))}]:[]),{label:'回看演出',disabled:!this.ready,run:()=>{this.dialog.close();this.replayLastTrace();}}],{cards:review.cards,scoreTimeline:review.timeline,effectBody:review.summary,collapseRules:true,rulesLabel:'诊断：精确分数与原始事件'});
     attachFirstChapterGuide(this.run,()=>this.render());
   }
 

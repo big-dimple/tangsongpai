@@ -61,7 +61,7 @@ import {R2_TARGETS,R2_AVAILABLE_CHAPTERS,R2_ENDLESS_MAX_CHAPTER,R2_ENDLESS_CONTR
 export {R2_TARGETS} from './r2Chapter';
 import { scoreR2Hand, ScoreFault, SCORE_LIMITS, R2_BASE_SCORES, type ScoreTrace, type ScoreEvent } from './scoreR2';
 import type { Command, DomainEvent, RunState, StageState } from './run';
-import {drawR2BasicTool,r2ToolShelfCapacity,drawR2Shelf,drawR2Edition,drawR2Tool,drawR2Items,R2_ECONOMY,r2Price,r2ToolPrice,r2ItemPrice,r2ToolAcquisitionPool,r2Pool,r2PaidRerollPrice,salePrice,r2PurchasePrice,type R2ShopState} from './r2Shop';
+import {drawR2BasicTool,r2ToolShelfCapacity,drawR2Shelf,shelfOffers,paidRestockOffers,usesPaidRestock,drawR2Tool,drawR2Items,R2_ECONOMY,r2Price,r2ShelfPrice,r2ToolPrice,r2ItemPrice,r2ToolAcquisitionPool,r2Pool,r2PaidRerollPrice,salePrice,r2PurchasePrice,type R2ShopState} from './r2Shop';
 
 const R2_JOKERS=R2_PUBLISHED_JOKERS;
 export const R2_STARTING_HAND_LEVELS:Partial<Record<CharacterId,Partial<Record<R2HandType,number>>>> = R2_PUBLISHED_CONTENT.snapshot.startingHandLevels;
@@ -326,7 +326,7 @@ export function assertR2Invariants(state:R2RunState):void {
     check(!isR2BasicChoice(state)||s.toolOffers.length<=1&&s.toolOffers.every(o=>o.offerId.endsWith('/tool/0')),'basic choice random shelf');
     check(typeof s.soldJoker==='boolean','shop sales qualification');
     check(integer(s.rerollCount)&&integer(s.purchases)&&integer(s.visitIndex)&&s.visitIndex===state.stageIndex&&s.offers.length<=4&&s.toolOffers.length<=r2ToolShelfCapacity(state)&&s.itemOffers.length<=2&&new Set(offers.map(o=>o.offerId)).size===offers.length&&offers.every(o=>!!o.offerId&&typeof o.consumed==='boolean'),'shelf references/capacity');
-    check(s.offers.every(o=>R2_JOKERS.some(d=>d.id===o.definitionId&&supportsR2Joker(d))&&(o.edition===undefined||EDITIONS.includes(o.edition))&&o.price===r2Price(o.definitionId,o.edition,state)),'joker shelf prices/edition');
+    check(s.offers.every(o=>R2_JOKERS.some(d=>d.id===o.definitionId&&supportsR2Joker(d))&&(o.edition===undefined||EDITIONS.includes(o.edition))&&o.price===r2ShelfPrice(o.definitionId,o.edition,state,s.visitIndex,s.rerollCount)),'joker shelf prices/edition');
     check(!isR2ToolSupply(state)||new Set(s.toolOffers.map(o=>o.definitionId)).size===s.toolOffers.length,'distinct tool shelf');
     check(s.toolOffers.every(o=>r2ToolSupported(o.definitionId)&&r2ToolAllowed(state,o.definitionId)&&R2_TOOLS.some(t=>t.id===o.definitionId&&t.shopWeight>0)&&o.edition===undefined&&o.price===r2ToolPrice(o.definitionId,state)),'tool shelf prices');
     check([0,1].includes(s.freeRerolls)&&(!s.freeRerolls||config.reroll.allowed),'shop program coupon');
@@ -453,19 +453,20 @@ function clearStageEffects(state:R2RunState):void {
   if(hasR2ComboGrowthContract(state))for(const joker of state.jokers)if(joker.definitionId==='f10')joker.counters={rescueArmed:false};
   for(const joker of state.jokers)if(joker.definitionId==='c05')joker.growth.pendingHeat={n:'0',d:'1'};
 }
-export function makeR2Shop(state:R2RunState,reset:boolean):void {
+export function makeR2Shop(state:R2RunState,reset:boolean,paidRefresh=false):void {
   const rng=reset?new SeededRng(`${state.seed}/r2/shop/${state.stageIndex}`):SeededRng.restore(state.rng.shop);
   const count=reset?0:state.shop!.rerollCount+1;
   const initial=reset&&state.stageIndex===0;
-  const ids=drawR2Shelf(rng,r2Pool(state.jokers.map(j=>j.definitionId),state.safetyNetUsed?['f07']:[],state),initial?state.gold:undefined,R2_ECONOMY.shelfSlots+itemAmount(state,'joker-offer-count'));
-  const prefix=`${state.runId}/shop/${state.stageIndex}/${count}`;
-  const offers=ids.map((id,slot)=>{const edition=drawR2Edition(rng);return {offerId:`${prefix}/joker/${slot}`,definitionId:id,price:r2Price(id,edition,state),edition,consumed:false};});
+  const pool=r2Pool(state.jokers.map(j=>j.definitionId),state.safetyNetUsed?['f07']:[],state);
+  const slots=R2_ECONOMY.shelfSlots+itemAmount(state,'joker-offer-count'),prefix=`${state.runId}/shop/${state.stageIndex}/${count}`;
+  const offers=paidRefresh&&usesPaidRestock(state)?paidRestockOffers(state,rng,pool,slots,prefix)
+    :shelfOffers(rng,drawR2Shelf(rng,pool,initial?state.gold:undefined,slots),prefix,state);
   if(initial&&offers.length&&!offers.some(offer=>offer.price<=state.gold&&offer.edition==='none')){
     const ordinary=offers.find(offer=>r2Price(offer.definitionId,undefined,state)<=state.gold);if(ordinary){ordinary.edition='none';ordinary.price=r2Price(ordinary.definitionId,undefined,state);}
   }
-  if(initial&&isR2RouteStarter(state)&&state.openingRoute&&r2Price(R2_ROUTE_STARTERS[state.openingRoute],undefined,state)<=state.gold){
+  if(initial&&isR2RouteStarter(state)&&state.openingRoute&&r2ShelfPrice(R2_ROUTE_STARTERS[state.openingRoute],undefined,state,0,0)<=state.gold){
     const definitionId=R2_ROUTE_STARTERS[state.openingRoute],existing=offers.find(o=>o.definitionId===definitionId),offer=existing??offers.at(-1);
-    if(offer){offer.definitionId=definitionId;offer.edition='none';offer.price=r2Price(definitionId,undefined,state);}
+    if(offer){offer.definitionId=definitionId;offer.edition='none';offer.price=r2ShelfPrice(definitionId,undefined,state,0,0);}
   }
   const toolId=drawR2Tool(rng,r2ToolAcquisitionPool(state));
   const toolOffers=toolId?[{offerId:`${prefix}/tool/0`,definitionId:toolId,price:r2ToolPrice(toolId,state),consumed:false}]:[];
@@ -730,7 +731,7 @@ export function transactR2(input:R2RunState|null,command:Command):Transaction {
           if(!R2_JOKERS.some(d=>d.id===offer.definitionId&&supportsR2Joker(d))||state.safetyNetUsed&&offer.definitionId==='f07')return fail('joker-unavailable');
           if(state.jokers.length>=r2JokerCapacity(state))return fail('slots-full');
           if(state.jokers.some(j=>j.definitionId===offer.definitionId))return fail('already-owned');
-          if(offer.edition!==undefined&&!EDITIONS.includes(offer.edition)||offer.price!==r2Price(offer.definitionId,offer.edition,state))return fail('invalid-offer');
+          if(offer.edition!==undefined&&!EDITIONS.includes(offer.edition)||offer.price!==r2ShelfPrice(offer.definitionId,offer.edition,state,state.shop.visitIndex,state.shop.rerollCount))return fail('invalid-offer');
         }else if(shelf==='toolOffers'){
           if(!r2ToolAllowed(state,offer.definitionId))return fail('tool-disabled-in-mode');
           if(offer.edition!==undefined||!r2ToolAcquisitionPool(state).some(t=>t.id===offer.definitionId)||offer.price!==r2ToolPrice(offer.definitionId,state))return fail('invalid-offer');
@@ -763,7 +764,7 @@ export function transactR2(input:R2RunState|null,command:Command):Transaction {
         if(!r2Pool(state.jokers.map(j=>j.definitionId),state.safetyNetUsed?['f07']:[],state).length)return fail('no-reroll-candidates');
         const cost=state.shop.freeRerolls?0:r2PaidRerollPrice(state);if(state.gold<cost)return fail('not-enough-gold');
         if(state.shop.freeRerolls)state.shop.freeRerolls--;
-        state.gold-=cost;makeR2Shop(state,false);if(cost>0)economicHooks(state,'onReroll',events);break;
+        state.gold-=cost;makeR2Shop(state,false,cost>0);if(cost>0)economicHooks(state,'onReroll',events);break;
       }
       case 'ChooseProgram':{
         if(!state.program)return fail('programs-disabled');

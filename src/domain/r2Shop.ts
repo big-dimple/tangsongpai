@@ -1,12 +1,12 @@
-import {r2HouseProfile,isR2BoundedClear,isR2CoreBuild} from './r2GroupUpgrade';
+import {r2HouseProfile,isR2BoundedClear,isR2CoreBuild,isR2FreshRestock,R2_ROUTE_STARTERS,type R2OpeningRoute} from './r2GroupUpgrade';
 import {isR2VoiceChoice,isR2ToolSupply,isR2BasicChoice,isR2SuitChoice,r2BasicChoiceIds,R2_BASIC_TOOL_IDS} from './r2GroupUpgrade';
 import {r2JokerDefinitionsForContext,type R2ContentIdentity} from './r2ContentProfiles';
 import {R2_JOKERS,readR2Modifiers,supportsR2Joker,type R2JokerDefinition,type R2JokerInstance} from '../content/r2Schema';
 import {R2_EDITIONS,R2_LONG_TERM_ITEMS,R2_TOOLS,R2_TOOL_CATALOG,type R2Edition,type R2ToolDefinition} from '../content/r2Tools';
 import type {SeededRng} from '../core/SeededRng';
 import type {R2RunState} from './r2Run';
-import {r2RunModeConfig,type R2ModeSelection} from '../content/r2Modes';
-import {r2ConsumableCapacity,r2HandLimit,r2HandsBudget,r2JokerCapacity} from './r2Resources';
+import {r2RunModeConfig,R2_MODE_CATALOG,type R2ModeSelection} from '../content/r2Modes';
+import {r2ConsumableCapacity,r2HandLimit,r2HandsBudget,r2ItemAmount,r2JokerCapacity} from './r2Resources';
 import {r2ItemSupported,r2ToolAllowed} from './r2ToolRuntime';
 import {r2StageSpec} from './r2Chapter';
 import {r2S04Issue} from './r2S04';
@@ -20,6 +20,13 @@ export function getR2Joker(id:string,identity:R2ContentIdentity={}):R2JokerDefin
   const definition=r2JokerDefinitionsForContext(identity).find(d=>d.id===id);if(!definition)throw new Error(`unknown-joker: ${id}`);return definition;
 }
 export const r2Price=(id:string,edition:R2Edition='none',identity:R2ContentIdentity={}):number=>R2_ECONOMY.prices[getR2Joker(id,identity).rarity]+(id==='a11'&&r2HouseProfile(identity)?1:0)+R2_EDITIONS.find(row=>row.id===edition)!.priceDelta;
+/** The first shelf's ordinary chosen starter is the one price anchored to the opening purse. */
+export function r2ShelfPrice(id:string,edition:R2Edition|undefined,state:R2ContentIdentity&{mode?:unknown;difficulty?:unknown;openingRoute?:unknown},visit:number,rerolls:number):number {
+ const normal=r2Price(id,edition,state);
+ if(visit!==0||rerolls!==0||(edition??'none')!=='none'||state.mode!=='standard'||!isR2FreshRestock(state))return normal;
+ if(typeof state.openingRoute!=='string'||!Object.hasOwn(R2_ROUTE_STARTERS,state.openingRoute)||R2_ROUTE_STARTERS[state.openingRoute as R2OpeningRoute]!==id)return normal;
+ return Math.min(normal,R2_MODE_CATALOG.difficulties.find(d=>d.id===state.difficulty)?.initialGold??normal);
+}
 export const r2ToolPrice=(id:string,identity:R2ContentIdentity={}):number=>isR2ToolSupply(identity)&&R2_BASIC_TOOL_IDS.includes(id)?2:R2_TOOLS.find(row=>row.id===id)!.price;
 export const r2ToolShelfCapacity=(identity:R2ContentIdentity):number=>isR2ToolSupply(identity)?2:1;
 export const r2ItemPrice=(id:string):number=>R2_LONG_TERM_ITEMS.find(row=>row.id===id)!.price;
@@ -47,6 +54,39 @@ export function drawR2Shelf(rng:SeededRng,pool:readonly R2JokerDefinition[],init
   return shelf.map(d=>d.id);
 }
 export const drawR2Edition=(rng:SeededRng):R2Edition=>pick(rng,R2_EDITIONS,row=>row.shopWeight).id;
+export const usesPaidRestock=(state:R2RunState):boolean=>state.mode==='standard'&&isR2FreshRestock(state);
+function newStock(state:R2RunState,pool:readonly R2JokerDefinition[]){
+  const seen=new Set(state.shop?.offers.map(o=>o.definitionId));
+  return pool.filter(d=>!seen.has(d.id));
+}
+export function minimumRestockPrice(state:R2RunState):number|undefined{
+  const pool=r2Pool(state.jokers.map(j=>j.definitionId),state.safetyNetUsed?['f07']:[],state);
+  const slots=R2_ECONOMY.shelfSlots+r2ItemAmount(state,'joker-offer-count');
+  const fresh=newStock(state,pool),eligible=fresh.length>=slots?fresh:pool,discount=r2PurchaseDiscount(state);
+  if(eligible.length)return Math.max(1,Math.min(...eligible.map(d=>r2Price(d.id,undefined,state)))-discount);
+}
+export function shelfOffers(rng:SeededRng,ids:readonly string[],prefix:string,state:R2RunState):R2Offer[]{
+  return ids.map((id,slot)=>{const edition=drawR2Edition(rng);return {offerId:prefix+'/joker/'+slot,definitionId:id,price:r2Price(id,edition,state),edition,consumed:false};});
+}
+export function paidRestockOffers(state:R2RunState,rng:SeededRng,pool:readonly R2JokerDefinition[],slots:number,prefix:string):R2Offer[]{
+  const fresh=newStock(state,pool),ids=drawR2Shelf(rng,fresh,undefined,slots);
+  if(ids.length<slots){
+    const used=new Set(ids);ids.push(...drawR2Shelf(rng,pool.filter(d=>!used.has(d.id)),undefined,slots-ids.length));
+  }
+  const offers=shelfOffers(rng,ids,prefix,state);
+  if(!offers.length||offers.some(o=>r2PurchasePrice(state,o)<=state.gold))return offers;
+
+  // Preserve every natural edition unless it prices the whole shelf out of reach.
+  const discount=r2PurchaseDiscount(state),affordable=(id:string)=>Math.max(1,r2Price(id,undefined,state)-discount)<=state.gold;
+  let slot=offers.find(o=>affordable(o.definitionId));
+  if(!slot){
+    const eligible=(fresh.length>=slots?fresh:pool).filter(d=>affordable(d.id));
+    if(!eligible.length)return offers;
+    slot=offers[offers.length-1];slot.definitionId=pick(rng,eligible,d=>R2_ECONOMY.weights[d.rarity]).id;
+  }
+  slot.edition='none';slot.price=r2Price(slot.definitionId,undefined,state);
+  return offers;
+}
 /** Acquisition checks use public persistent targets. Buying a tool never applies its additional use cost. */
 export function r2ToolAcquisitionPool(state:R2RunState):R2ToolDefinition[] {
   const live=state.deckInstances.filter(card=>!state.destroyedIds.includes(card.id)),limits=R2_TOOL_CATALOG.limits;

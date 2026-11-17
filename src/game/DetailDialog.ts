@@ -31,7 +31,7 @@ interface DialogAction {label:string;run:()=>void|Promise<void>;disabled?:boolea
 type ArtLoadStatus='unregistered'|'idle'|'loading'|'loaded'|'failed';
 /** These vertical paintings place their principal figure away from the default crop centre. */
 const backgroundArtPosition:Readonly<Record<string,string>>={c04:'50% 85%',f09:'50% 0%'};
-interface DialogOptions {artBackground?:{position?:string};heroRun?:R2RunState;guideSteps?:{labels:readonly string[];current:number};choices?:readonly (DialogAction&{detail?:string})[];secondaryActions?:readonly DialogAction[];keepsake?:BuildKeepsake;keepsakeCompact?:boolean;shopContext?:'purchase'|'held'|'compare'|'sale';cards?:readonly ExperienceCard[];onClose?:()=>void;summaryBody?:string;effectBody?:string;editionBody?:string;ability?:CardAbilityCopy;collapseRules?:boolean;rulesLabel?:string;f09?:{inactive:boolean;bodyInactive?:boolean;alignedLayers?:boolean;reduced:boolean;reason?:string};closeLabel?:string;rarity?:JokerRarity;artLoad?:{status:ArtLoadStatus;readStatus?:()=>ArtLoadStatus;retry?:()=>Promise<boolean>};portrait?:{url:string;thumbnailUrl?:string;fallbackUrl?:string;alt:string;layout?:'card';caption?:string}}
+interface DialogOptions {scoreTimeline?:readonly import('./ScoreReview').ScoreReviewStep[];artBackground?:{position?:string};heroRun?:R2RunState;guideSteps?:{labels:readonly string[];current:number};choices?:readonly (DialogAction&{detail?:string})[];secondaryActions?:readonly DialogAction[];keepsake?:BuildKeepsake;keepsakeCompact?:boolean;shopContext?:'purchase'|'held'|'compare'|'sale';cards?:readonly ExperienceCard[];onClose?:()=>void;summaryBody?:string;effectBody?:string;editionBody?:string;ability?:CardAbilityCopy;collapseRules?:boolean;rulesLabel?:string;f09?:{inactive:boolean;bodyInactive?:boolean;alignedLayers?:boolean;reduced:boolean;reason?:string};closeLabel?:string;rarity?:JokerRarity;artLoad?:{status:ArtLoadStatus;readStatus?:()=>ArtLoadStatus;retry?:()=>Promise<boolean>};portrait?:{url:string;thumbnailUrl?:string;fallbackUrl?:string;alt:string;layout?:'card';caption?:string}}
 export class DetailDialog {
   private dialog?:HTMLDialogElement;
   private lastPointer?:{x:number;y:number};
@@ -192,6 +192,16 @@ export class DetailDialog {
     const heroDialog=options.heroRun?new DetailDialog():undefined;if(heroDialog)cleanups.push(()=>heroDialog.close());
     const inspectHero=heroDialog?()=>showHeroExplanation(heroDialog,options.heroRun!.characterId,{run:options.heroRun,closeLabel:'返回手记'}):undefined;
     if(options.keepsake&&!options.keepsakeCompact)intro.prepend(buildKeepsakeView(options.keepsake,cleanups,inspectHero));
+    if(options.scoreTimeline?.length){
+      const section=document.createElement('section'),heading=document.createElement('h3'),steps=document.createElement('ol');
+      section.className='score-timeline';heading.textContent='触发顺序';steps.setAttribute('aria-label','按入账顺序逐项计分');
+      for(const step of options.scoreTimeline){
+        const li=document.createElement('li'),detail=document.createElement('div'),source=document.createElement('strong'),effect=document.createElement('span'),after=document.createElement('span');
+        source.textContent=playerText(step.source);effect.textContent=playerText(step.effect);after.textContent=step.after;after.className='score-step-after';
+        detail.append(source,effect,after);li.append(detail);steps.append(li);
+      }
+      section.append(heading,steps);intro.append(section);
+    }
     if(options.cards?.length){
       const gallery=document.createElement('section');gallery.className='experience-cards';gallery.setAttribute('aria-label','来源与下一步');
       for(const card of options.cards){
@@ -201,7 +211,11 @@ export class DetailDialog {
         if(card.action){const b=document.createElement('button');b.type='button';b.textContent=card.action.label;b.disabled=!!card.action.disabled;b.onclick=card.action.run;copy.append(b);cleanups.push(wholeActionSurface(item,b));}
         if(card.details){const details=document.createElement('details'),label=document.createElement('summary'),text=document.createElement('p');details.className='card-rules';label.textContent='条件、配合与完整损失';text.textContent=playerText(card.details);details.append(label,text);copy.append(details);}
         item.append(copy);gallery.append(item);
-      }intro.append(gallery);
+      }
+      if(options.scoreTimeline?.length){
+        const details=document.createElement('details'),summary=document.createElement('summary');
+        details.className='score-source-summary';summary.textContent='按来源汇总';details.append(summary,gallery);intro.append(details);
+      }else intro.append(gallery);
     }
     if(options.guideSteps){const steps=document.createElement('ol');steps.className='operation-guide';steps.setAttribute('aria-label','操作步骤');options.guideSteps.labels.forEach((label,index)=>{const item=document.createElement('li');item.textContent=label;if(index===options.guideSteps!.current){item.className='is-current';item.setAttribute('aria-current','step');}steps.append(item);});intro.prepend(steps);}
     if(options.choices?.length){

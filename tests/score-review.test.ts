@@ -9,8 +9,16 @@ import {scoreR2Hand,type ScoreInput} from '../src/domain/scoreR2';
 import {SeededRng} from '../src/core/SeededRng';
 import type {PlayingCard} from '../src/cards/types';
 import {formatScoreReview,reviewOperationText,reviewScoreText} from '../src/game/ScoreReview';
+import {handForecastCopy} from '../src/game/HandDraftPanel';
 import {exactFractionText} from '../src/game/scoreText';
 const run=(old=false)=>{const current=newRunIdentity('xiemu','straight');return createRun({seed:'review-only',runId:'review-only',characterId:'xiemu',rulesVersion:'r2',r2Identity:old?r2TargetedValueBase(current) as {contentVersion:string;contentHash:string}:current,openingRoute:'straight',modeConfig:{mode:'standard',difficulty:0,challengeId:null,programsEnabled:false}});};
+it('compares both public score bounds against the exact remaining target',()=>{
+ const base={H:{n:'20',d:'1'},M:{n:'3',d:'2'}},preview={base,scoreRange:{minimum:'10',maximum:'18'}};
+ const total='90071992547409930001',target=(gap:number)=>String(BigInt(total)+BigInt(gap));
+ expect(handForecastCopy(preview,total,target(10)).result).toBe('本手可过关');
+ expect(handForecastCopy(preview,total,target(18)).result).toBe('有机会过关');
+ expect(handForecastCopy(preview,total,target(20))).toMatchObject({range:'10–18',result:'还差 2–10'});
+});
 function fixture(extra:Partial<ScoreInput>={},old=false){
  const state=run(old),hand:PlayingCard[]=[3,4,5,6,7].map((rank,i)=>({id:'p/'+i,rank:rank as PlayingCard['rank'],suit:'hearts',enhancement:'multiplier-paper'}));
  const input:ScoreInput={rulesVersion:'r2',runId:state.runId,rootId:'saved-review',characterId:'neutral',hand,selectedIds:hand.map(c=>c.id),disabledIds:[],jokers:[],definitions:r2JokerDefinitionsFor(state),handLevels:{},playIndex:1,handsBeforePlay:4,previousHandType:null,wager:false,rng:new SeededRng('review-only').snapshot(),amoScoreTiming:'assist-v1',routeGrowth:{clears:21,G:0,S:21,F:21},...extra};
@@ -49,6 +57,10 @@ describe('saved score review display only',()=>{
   const gain=trace.events.find(e=>e.operation==='add-growth')!,before=structuredClone(gain);
   expect(reviewOperationText(state,gain)).toContain('下手生效');expect(gain).toEqual(before);
   const review=formatScoreReview(state,trace);expect(review.cards.find(c=>c.title.includes('结算后记录'))?.body).toContain('实际记录 1 次');
+  expect(review.timeline[0].source).toContain('牌型底分');
+  const credited=review.timeline.findIndex(step=>step.source==='本手入账');
+  expect(credited).toBeGreaterThan(0);
+  expect(review.timeline.slice(credited+1).some(step=>step.after==='结算后记录'&&step.effect.includes('下手生效'))).toBe(true);
   const check={...trace.events[1],operation:'lucky-multiplier-check',value:{n:'0',d:'1'}};
   const changed={...trace,events:[trace.events[0],check,trace.events.at(-1)!]};
   const card=formatScoreReview(state,changed).cards.find(c=>c.body.includes('实际检查'))!;expect(card.body).toContain('未命中');expect(card.body).toContain('实际检查 1 次');expect(card.body).not.toContain('实际触发');

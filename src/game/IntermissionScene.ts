@@ -317,7 +317,7 @@ export class IntermissionScene extends Phaser.Scene {
   private inspectLastHand():void {
     const run=runController(this)!.state,trace=stageOutcome(run.stage!,run.lastTrace).last;if(!trace)return;
     const review=formatScoreReview(run,trace);
-    this.dialog.open('最后一手 · 已保存的结算',review.diagnostics,run.phase==='stage-cleared'?[{label:'查看培养路线',disabled:!this.ready,run:()=>this.inspectJourney()},{label:'前往筹备商店继续培养',primary:true,disabled:!this.ready,run:()=>this.next()}]:run.phase==='run-lost'?[{label:'返回再战建议',run:()=>this.inspectFailure()}]:[],{cards:review.cards,effectBody:review.summary,collapseRules:true,rulesLabel:'诊断：精确分数与原始事件'});
+    this.dialog.open('最后一手 · 已保存的结算',review.diagnostics,run.phase==='stage-cleared'?[{label:'查看培养路线',disabled:!this.ready,run:()=>this.inspectJourney()},{label:'前往筹备商店继续培养',primary:true,disabled:!this.ready,run:()=>this.next()}]:run.phase==='run-lost'?[{label:'返回再战建议',run:()=>this.inspectFailure()}]:[],{cards:review.cards,scoreTimeline:review.timeline,effectBody:review.summary,collapseRules:true,rulesLabel:'诊断：精确分数与原始事件'});
   }
   private returnToSelect():void {
     if(this.busy)return;this.exitResult('character-select',{freshSeed:true});

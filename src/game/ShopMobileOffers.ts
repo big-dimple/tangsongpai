@@ -6,7 +6,7 @@ import {mountForgetTechniqueAttentionElement} from './ForgetTechniqueAttention';
 import './ShopMobileOffers.css';
 
 export interface MobileShopOffer {
- id:string;definitionId:string;name:string;identity:string;summary:string;extra?:string;price:number;gold:number;reason?:string;consumed:boolean;edition?:Edition;
+ id:string;definitionId:string;name:string;identity:string;summary:string;extra?:string;budget?:string;price:number;gold:number;reason?:string;consumed:boolean;edition?:Edition;
  thumbnailUrl?:string;detailUrl?:string;fallbackUrl?:string;
 }
 function offerState(row:MobileShopOffer):'available'|'insufficient'|'full'|'duplicate'|'unavailable'|'owned' {
@@ -40,7 +40,7 @@ export function mountShopMobileOffers(host:HTMLElement,rows:readonly MobileShopO
   if(row.extra){const extra=document.createElement('span');extra.className='shop-mobile-offer-extra';extra.textContent=row.extra;copy.append(extra);}
   price.className='shop-mobile-offer-price';price.textContent=row.consumed?'已收入':row.price+' 金';
   if(!row.consumed&&!row.reason){
-   const balance=document.createElement('small');balance.textContent='购后余 '+(row.gold-row.price)+' 金';price.append(balance);
+   const balance=document.createElement('small');balance.textContent='购后余 '+(row.gold-row.price)+' 金'+(row.budget?' · '+row.budget:'');price.append(balance);
   }
   copy.append(price);
   if(row.reason&&!row.consumed){const reason=document.createElement('span');reason.className='shop-mobile-offer-reason';reason.textContent=row.reason;copy.append(reason);}

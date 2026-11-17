@@ -44,7 +44,7 @@ import {r2OrdinarySuppression,r2DisabledCards,R2_AVAILABLE_CHAPTERS,R2_ENDLESS_M
 import {EDITIONS,ENHANCEMENTS,RANKS,SUITS,type PlayingCard} from '../cards/types';
 import {R2_TOOL_CATALOG,type R2LongTermOperation} from '../content/r2Tools';
 import {R2_IMPLEMENTED_TOOL_FEATURES,r2CardSpecialsSupported,r2EditionSupported,r2ItemSupported,r2ToolSupported} from '../domain/r2ToolRuntime';
-import {r2Price,r2ToolPrice,r2ItemPrice} from '../domain/r2Shop';
+import {r2ShelfPrice,r2ToolPrice,r2ItemPrice} from '../domain/r2Shop';
 import {resolveR2ModeConfig,r2ModeSeedAllowed,r2ModeStorageKey,type R2ModeConfig} from '../content/r2Modes';
 import {r2ProgramStateValid,r2ProgramQualified,type R2ProgramState} from '../domain/r2Programs';
 import {r2HandsBudget,r2DiscardBudget} from '../domain/r2Resources';
@@ -134,7 +134,7 @@ function shop(value:unknown,commandSeq:number,stageMaximum:number,config:R2ModeC
       const definition=R2_JOKERS.find(joker=>joker.id===definitionId);
       if(!definition||!supportsR2Joker(definition))fail('save-joker-offer-not-enabled');
       if(offer.edition!==undefined){oneOf(offer.edition,EDITIONS);if(!r2EditionSupported(offer.edition as typeof EDITIONS[number]))fail('save-offer-edition-not-enabled');}
-      if(offer.price!==r2Price(definitionId,offer.edition as typeof EDITIONS[number]|undefined,identity))fail('invalid-save-offer-price');
+      if(offer.price!==r2ShelfPrice(definitionId,offer.edition as typeof EDITIONS[number]|undefined,identity,s.visitIndex as number,s.rerollCount as number))fail('invalid-save-offer-price');
     }else if(name==='toolOffers'){
       const definition=R2_TOOL_CATALOG.tools.find(tool=>tool.id===definitionId);
       if(!definition||!r2ToolSupported(definitionId)||!definition.shopWeight)fail('save-tool-offer-not-enabled');

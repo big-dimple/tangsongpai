@@ -46,7 +46,7 @@ export class GameSession {
   constructor(){
     this.storage.canWrite=()=>this.lease.writable;
     this.lease.onChange=()=>{if(!this.lease.writable){this.run?.setReadOnly();this.replacement?.setReadOnly();}this.changed();};
-    try {const s=JSON.parse(localStorage.getItem('tangsongpai-presentation-v1')??'null');if(s&&[1,2,4].includes(s.speed))this.speed=s.speed;}catch{/* Optional preferences cannot block a run. */}
+    try {const s=JSON.parse(localStorage.getItem('tangsongpai-presentation-v1')??'null');if(s&&[1,2,4].includes(s.speed))this.speed=s.speed;this.reducedMotion=s?.reducedMotion===true;}catch{/* Optional preferences cannot block a run. */}
     document.addEventListener('visibilitychange',()=>{if(document.hidden){void this.run?.flush();void this.replacement?.flush();}});
   }
   get temporaryRun():boolean {return this.saveStore!==this.storage&&!!this.run;}
@@ -256,9 +256,9 @@ export class GameSession {
     }
     finally {this.working=false;this.changed();}
   }
-  preferences(speed:1|2|4):void {
-    this.speed=speed;
-    try {localStorage.setItem('tangsongpai-presentation-v1',JSON.stringify({speed}));}catch{/* Playback remains usable when preferences cannot persist. */}
+  preferences(speed:1|2|4,reducedMotion=this.reducedMotion):void {
+    this.speed=speed;this.reducedMotion=reducedMotion;
+    try {localStorage.setItem('tangsongpai-presentation-v1',JSON.stringify({speed,reducedMotion}));}catch{/* Playback remains usable when preferences cannot persist. */}
     window.dispatchEvent(new Event('tangsongpai-presentation'));this.changed();
   }
   async retry():Promise<boolean> {
