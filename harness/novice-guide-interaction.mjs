@@ -68,7 +68,7 @@ try {for(const spec of cases){
   }
   await tapUI(page,'game','card/clubs-5',spec.touch);await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='再选另一张');await page.waitForTimeout(220);
   let one=await capture('01-one-selected');assert.equal(one.rings.length,1);const remaining=one.cards.find(c=>c.id==='hearts-5'),ring=one.rings[0];assert.ok(remaining&&Math.abs(ring.x-remaining.x)<2&&Math.abs(ring.y-remaining.y)<2,`one cue follows the other card: ${JSON.stringify({ring,remaining})}`);
-  await tapUI(page,'game','card/clubs-5',spec.touch);await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='先找一对');
+  await tapUI(page,'game','card/clubs-5',spec.touch);await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='先去理牌区');
   await tapUI(page,'game','card/clubs-4',spec.touch);await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='再选另一张');assert.match(await page.locator('.novice-guide-body').innerText(),/4/);await capture('02-other-pair');await tapUI(page,'game','card/clubs-4',spec.touch);
   await tapUI(page,'game','action/sort-rank',spec.touch);await waitReady();
   for(let i=0;i<10;i++){const sample=await measure();if(sample.cards.slice(0,1).every(card=>sample.rings.some(r=>Math.abs(r.x-card.x)<2&&Math.abs(r.y-card.y)<2)))break;await page.waitForTimeout(20);}
@@ -76,13 +76,13 @@ try {for(const spec of cases){
   await select(['clubs-5','hearts-5']);await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='对子选好了');assert.match(await page.locator('.novice-guide-progress').innerText(),/对子 90 分 → 两对 166 分/);await capture('03-pair-ready');
   let before=await state();await tapUI(page,'game','action/play',spec.touch);await settleAfterAction(before);let current=await state();assert.equal(current.lastTrace.handType,'pair');assert.equal(current.lastTrace.finalScore,'90');await guide('discard');await capture('03b-pair-score');
   assert.equal(await page.locator('.novice-guide-progress').innerText(),'对子入账 +'+current.lastTrace.finalScore+' 分');
-  await click(page.locator('[data-novice-guide-details-toggle]'));const breakdown=page.locator('dialog[open]').last();assert.ok((await breakdown.innerText()).includes(current.stage.heat+'/'+current.stage.targetHeat),'score details show the saved total and target');await click(breakdown.getByRole('button',{name:'返回练习'}));
   const saved={runId:current.runId,seq:current.commandSeq};await page.reload();await waitScene(page,'title');await tapUI(page,'title','action/title-continue',spec.touch);await waitScene(page,'game');await waitReady();await guide('discard');current=await state();assert.equal(current.runId,saved.runId);assert.equal(current.commandSeq,saved.seq);await capture('03c-restored');
   await click(page.locator('[data-novice-guide-choice="flush-draw"]'));
+  await click(page.locator('[data-novice-guide-details-toggle]'));const breakdown=page.locator('dialog[open]').last();assert.ok((await breakdown.innerText()).includes(current.stage.heat+'/'+current.stage.targetHeat),'score details show the saved total and target');await click(breakdown.getByRole('button',{name:'返回练习'}));
   await discard(['clubs-4','diamonds-4']);await waitReady();await guide('independent');
-  await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='先理牌');await capture('04b-sort-instruction');
+  await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='试试横滑选牌');await capture('04b-rank-swipe');
   before=await state();await tapUI(page,'game','action/sort-suit',spec.touch);await waitReady();
-  await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='试试滑动选牌');current=await state();
+  await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='试试横滑选牌');current=await state();
   assert.ok(current.commandSeq>before.commandSeq,'suit sorting saves a command');assert.equal((await journal()).at(-1).action.type,'ReorderHand');
   await capture('04c-swipe-instruction');const swipeView=await observeSweep();
   const sameBox=(a,b)=>Math.abs(a.x-b.x)<2&&Math.abs(a.y-b.y)<2&&Math.abs(a.width-b.width)<2&&Math.abs(a.height-b.height)<2;
@@ -95,11 +95,11 @@ try {for(const spec of cases){
   const start=await point(page,'game','card/'+swept[0]),end=await point(page,'game','card/'+swept.at(-1));
   if(spec.touch){
    const touch=(type,points)=>cdp.send('Input.dispatchTouchEvent',{type,touchPoints:points.map(({x,y})=>({x,y,id:1,radiusX:2,radiusY:2,force:1}))});
-   await touch('touchStart',[start]);await touch('touchMove',[end]);assert.equal(await page.locator('.novice-guide-title').textContent(),'试试滑动选牌','the lesson waits for release');await touch('touchEnd',[]);
+   await touch('touchStart',[start]);await touch('touchMove',[end]);assert.equal(await page.locator('.novice-guide-title').textContent(),'试试横滑选牌','the lesson waits for release');await touch('touchEnd',[]);
   }else{
-   await page.mouse.move(start.x,start.y);await page.mouse.down();await page.mouse.move(end.x,end.y);assert.equal(await page.locator('.novice-guide-title').textContent(),'试试滑动选牌','the lesson waits for release');await page.mouse.up();
+   await page.mouse.move(start.x,start.y);await page.mouse.down();await page.mouse.move(end.x,end.y);assert.equal(await page.locator('.novice-guide-title').textContent(),'试试横滑选牌','the lesson waits for release');await page.mouse.up();
   }
-  await waitReady();await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent!=='试试滑动选牌');await waitSelection(swept);await capture('04d-swipe-complete');
+  await waitReady();await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent!=='试试横滑选牌');await waitSelection(swept);await capture('04d-swipe-complete');
   await select(swept);await waitSelection([]);await waitReady();row.sweep=swept;
   const independent=await capture('05-independent');assert.equal(independent.rings.length,0,'independent play does not choose a card for the player');
   const flush=page.locator('[data-novice-guide-choice="flush"]');await flush.waitFor({state:'visible'});const hearts=JSON.parse(await flush.getAttribute('data-card-ids'));current=await state();assert.equal(hearts.length,5);assert.ok(hearts.every(id=>current.handOrder.includes(id)&&id.startsWith('hearts-')),'the suggested flush uses five hearts in the real hand');await click(flush);await capture('05b-flush-choice');current=await play(hearts);assert.equal(current.lastTrace.handType,'flush');assert.equal(current.phase,'stage-cleared');await waitScene(page,'intermission');await guide('shop');await capture('06-win',false);

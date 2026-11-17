@@ -51,7 +51,7 @@ export interface NoviceGuideHint {
  recommendedCardIds?:string[];
  choices?:{id:string;label:string;cardIds:string[];selected?:boolean}[];
  offerIds?:string[];
- focus?:'play'|'discard'|'play-or-discard'|'hand'|'hero'|'sort-suit'|'hand-previous'|'hand-next';
+ focus?:'play'|'discard'|'play-or-discard'|'hand'|'hero'|'sort-rank'|'sort-suit'|'hand-previous'|'hand-next';
  gesture?:'sweep'|'hold-drag';
  /** Explicit gesture path; unlike highlights this may contain intermediate cards. */
  gestureCardIds?:string[];

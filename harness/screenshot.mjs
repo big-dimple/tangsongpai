@@ -233,6 +233,46 @@ const base=`http://127.0.0.1:${port}/?harness=1&seed=p00-core-ui`;
     }
     assert.deepEqual(errors,[]);report.checks.push({engine,browserVersion:browser.version(),profile:name,viewport,deviceScaleFactor,framebufferDensity:density,fullscreen,resourceFeedback:{discard:discardFeedback,play:playFeedback},status:'PASS',input:touch?'touchscreen.tap / DOM tap':'mouse.click / DOM click',covered:['select-confirm-cancel','buy-cancel','rank/suit-sort','discard-refill','live-discard-count-pulse','live-play-count-pulse','play-preview-feedback','reload-continue','fixed-menu-anchor','menu-preserves-selection',...(touch?['high-DPR','left/right-selected-rank-visible','rotation-preserves-state']:[])]});console.log(JSON.stringify({observation:'resource-pulse',engine,profile:name,discard:discardFeedback,play:playFeedback}));const video=page.video();await context.close();if(recordVideo)await video.saveAs('shots/p00-play.webm');console.log(`${engine}/${name}: ok`);
   }
+  if(engine==='chromium'&&selectedProfiles.includes('mobile')&&!['only','rescue'].includes(process.env.SMOKE_C00)&&process.env.SMOKE_FEEDBACK!=='only'){
+    const context=await browser.newContext({viewport:{width:320,height:568},hasTouch:true,isMobile:true}),page=await context.newPage();
+    const touch=await context.newCDPSession(page);activePage=page;
+    try{
+      await page.goto(base);await waitScene(page,'title');await tapUI(page,'title','action/title-start',true);await waitScene(page,'game');
+      await page.getByText('先去理牌区',{exact:true}).waitFor();
+      const at=await point(page,'game','action/sort-rank');
+      await page.waitForFunction(({x,y})=>[...document.querySelectorAll('[data-novice-guide-highlight]')].some(el=>{
+        const box=el.getBoundingClientRect();return x>=box.left&&x<=box.right&&y>=box.top&&y<=box.bottom;
+      }),at);
+      const dealt=await state(page);await tapUI(page,'game','action/sort-rank',true);await next(page,dealt.commandSeq);
+      await page.getByText('试试横滑选牌',{exact:true}).waitFor();await page.locator('[data-novice-gesture][data-mode="sweep"]:visible').waitFor();
+      const arranged=await state(page),fours=['clubs-4','diamonds-4'];
+      assert.equal(arranged.handOrder.indexOf(fours[1]),arranged.handOrder.indexOf(fours[0])+1,'rank sorting groups both fours');
+      assert.equal(arranged.stage.handsLeft,dealt.stage.handsLeft);assert.equal(arranged.stage.discardsLeft,dealt.stage.discardsLeft);
+      const from=await point(page,'game','card/'+fours[0]),to=await point(page,'game','card/'+fours[1]);
+      const swipe=async(start,end,expected)=>{
+        for(const [type,p] of [['touchStart',start],['touchMove',end],['touchEnd',null]]){
+          await touch.send('Input.dispatchTouchEvent',{type,touchPoints:p?[{id:1,x:p.x,y:p.y}]:[]});
+        }
+        await page.waitForFunction(ids=>{const selected=[...window.__harness.game.scene.getScene('game').selectedIds].sort();return JSON.stringify(selected)===JSON.stringify(ids);},[...expected].sort());
+      };
+      // The demonstration points at the fives. A swipe of the player's own fours must count as well.
+      await swipe(from,to,fours);await page.getByText('对子选好了',{exact:true}).waitFor();assert.match(await page.locator('.novice-guide-progress').innerText(),/对子 86 分/);
+      const selectedFrom=await point(page,'game','card/'+fours[1]),selectedTo=await point(page,'game','card/'+fours[0]);
+      await swipe(selectedFrom,selectedTo,[]);await page.getByText('先找一对',{exact:true}).waitFor();
+      assert.equal(await page.locator('[data-novice-gesture]').count(),0);
+      assert.deepEqual(await state(page),arranged,'both gestures only change the draft');
+      const card=arranged.handOrder[2],hold=await point(page,'game','card/'+card);
+      await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{id:1,x:hold.x,y:hold.y}]});
+      const detail=page.locator('.poker-detail-dialog[open]');await detail.waitFor();
+      await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+      await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+      assert.deepEqual(await state(page),arranged,'lifting over the detail dialog does not move a card');
+      await detail.getByRole('button',{name:'左移',exact:true}).tap();await next(page,arranged.commandSeq);
+      const moved=await state(page);
+      assert.equal(moved.commandSeq,arranged.commandSeq+1);assert.equal(moved.handOrder[1],card,'one deliberate tap moves the held card once');
+      report.checks.push({engine,profile:'novice-mobile',status:'PASS',covered:['opening-sort-target','guided-sweep','custom-touch-select','reverse-touch-deselect','hold-to-inspect','manual-reorder']});
+    }finally{await context.close();}
+  }
   if(checkFeedback&&engine===selected[0]){
     const viewport={width:390,height:740},context=await browser.newContext({viewport,hasTouch:true,deviceScaleFactor:3}),page=await context.newPage(),errors=[];activePage=page;
     page.on('pageerror',e=>errors.push(String(e)));await page.goto(`http://127.0.0.1:${port}/?harness=1&seed=p04-golden-02`);await waitScene(page,'title');

@@ -2,58 +2,98 @@ import type {PlayingCard} from '../cards/types';
 import {stableHash} from '../domain/hash';
 import type {Command} from '../domain/run';
 import type {HandSelectionUpdate} from './HandSelectionGesture';
+import type {NoviceGuideHint} from './NoviceGuide';
 
 const PREFIX='tangsongpai-novice-hand-interaction-v1:';
 export type FlushPlan='draw'|'score';
-type Lesson={sortId?:string;sortHash?:string;swept:boolean;flushPlan?:FlushPlan;flushSortedSeen?:boolean};
+export type HandSort='rank'|'suit';
+type Lesson={sortId?:string;sortHash?:string;sortMode?:HandSort;sweepId?:string;sweepHash?:string;flushPlan?:FlushPlan;flushSortedSeen?:boolean};
+type Seat={visible:boolean;hit:{y:number}};
 
-/** The longest consecutive same-suit run, as it is actually arranged on the table. */
-export function consecutiveSuitCards(hand:readonly PlayingCard[]):string[] {
- let best:PlayingCard[]=[],current:PlayingCard[]=[];
- for(const card of hand){
-  current=current.length&&current[0].suit===card.suit?[...current,card]:[card];
-  if(current.length>best.length)best=current;
+/** Only trace uninterrupted cards in one visible row. Prefer the player's example. */
+export function noviceSwipePath(hand:readonly PlayingCard[],seats:readonly Seat[],mode:HandSort,preferred:readonly string[]=[],disabled:readonly string[]=[]):string[] {
+ const wanted=new Set(preferred),blocked=new Set(disabled);
+ let best:string[]=[],current:string[]=[],rowStart:string[]=[],fallback:string[]=[];
+ let previous:PlayingCard|undefined,previousY:number|undefined;
+ for(const [index,card] of hand.entries()){
+  const seat=seats[index];
+  if(!seat?.visible||blocked.has(card.id)){previous=undefined;previousY=undefined;current=[];rowStart=[];continue;}
+  const sameRow=previousY!==undefined&&Math.abs(previousY-seat.hit.y)<=2;
+  if(!sameRow){current=[];rowStart=[];}
+  if(rowStart.length<2)rowStart.push(card.id);
+  if(!fallback.length&&rowStart.length===2)fallback=[...rowStart];
+  if(!sameRow||previous?.[mode]!==card[mode])current=[];
+  if(wanted.size&&!wanted.has(card.id))current=[];
+  else {
+   if(current.length<5)current.push(card.id);
+   if(current.length>=2&&current.length>best.length)best=[...current];
+  }
+  previous=card;previousY=seat.hit.y;
  }
- return best.length>=2?best.slice(0,5).map(card=>card.id):[];
+ return best.length||wanted.size?best:fallback;
 }
 
-/** UI lesson progress; the associated sort must still exist in the saved journal. */
+/** Offer a real table action. The underlying hand, choices and resource counts stay player-owned. */
+export function handControlHint(hint:NoviceGuideHint,options:{mode:HandSort;needsSort:boolean;path:readonly string[];coarse:boolean;heartCount?:number}):NoviceGuideHint {
+ const flush=options.heartCount?`手里有${options.heartCount}张红桃。`:'';
+ if(options.needsSort){
+  const rank=options.mode==='rank';
+  return {...hint,cue:'先去理牌区',body:flush?flush+'点「花色」把它们排在一起。':rank?'点「点数」把对子排在一起。「花色」适合找同花。':'点「花色」把同花色排在一起。「点数」适合找对子。',
+   recommendedCardIds:[],gesture:undefined,gestureCardIds:undefined,focus:rank?'sort-rank':'sort-suit'};
+ }
+ const path=options.path;
+ if(path.length<2)return hint;
+ const how=options.coarse?'沿亮线横滑连选，松手看预估。从已选牌起滑可连撤。':'按住鼠标左键沿亮线拖动，松开看预估。从已选牌起拖可连撤。';
+ return {...hint,cue:'试试横滑选牌',body:flush+how,
+  focus:undefined,recommendedCardIds:[path[0],path[path.length-1]],gesture:'sweep',gestureCardIds:[...path]};
+}
+
+/** Sort and swipe are independent skills, each backed by the published checkpoint where it happened. */
 export class NoviceHandLesson {
- private value:Lesson={swept:false};
+ private value:Lesson={};
  revision=0;
  private readonly key:string;
  constructor(readonly runId:string){
   this.key=PREFIX+runId;
   try{
    const data=JSON.parse(localStorage.getItem(this.key)??'null');
-   if(data&&typeof data.swept==='boolean')this.value={swept:data.swept,
-    ...(typeof data.sortId==='string'&&typeof data.sortHash==='string'?{sortId:data.sortId,sortHash:data.sortHash}:{}),
-    flushPlan:data.flushPlan==='score'?'score':data.flushPlan==='draw'||data.flushIntroSeen===true?'draw':undefined,flushSortedSeen:data.flushSortedSeen===true};
-  }catch{/* The lesson remains usable in memory if optional local storage is unavailable. */}
+   if(!data)return;
+   if(typeof data.sortId==='string'&&typeof data.sortHash==='string'){
+    this.value.sortId=data.sortId;this.value.sortHash=data.sortHash;
+    this.value.sortMode=data.sortMode==='rank'?'rank':'suit'; // Older lessons only recorded suit sorting.
+   }
+   if(typeof data.sweepId==='string'&&typeof data.sweepHash==='string'){
+    this.value.sweepId=data.sweepId;this.value.sweepHash=data.sweepHash;
+   }else if(data.swept===true){this.value.sweepId=this.value.sortId;this.value.sweepHash=this.value.sortHash;}
+   this.value.flushPlan=data.flushPlan==='score'?'score':data.flushPlan==='draw'||data.flushIntroSeen===true?'draw':undefined;
+   this.value.flushSortedSeen=data.flushSortedSeen===true;
+  }catch{/* Optional storage can be unavailable. Keep the lesson playable in memory. */}
  }
- private save():void {this.revision++;try{localStorage.setItem(this.key,JSON.stringify(this.value));}catch{/* Preferences must never block the game. */}}
- sorted(journal:readonly Command[]):boolean {
-  const valid=!!this.value.sortId&&!!this.value.sortHash&&journal.some(command=>command.runId===this.runId&&command.commandId===this.value.sortId&&command.action.type==='ReorderHand'&&stableHash(command)===this.value.sortHash);
-  if(!valid&&this.value.sortId){this.value={swept:false,flushPlan:this.value.flushPlan};this.save();}
-  return valid;
+ private save():void {this.revision++;try{localStorage.setItem(this.key,JSON.stringify(this.value));}catch{/* UI preferences must not block play. */}}
+ private receipt(journal:readonly Command[],id?:string,hash?:string):Command|undefined {
+  if(!id||!hash)return;
+  const command=journal.find(c=>c.runId===this.runId&&c.commandId===id);
+  return command&&stableHash(command)===hash?command:undefined;
  }
- swept(journal:readonly Command[]):boolean {return this.sorted(journal)&&this.value.swept;}
+ sortMode(journal:readonly Command[]):HandSort|undefined {
+  return this.receipt(journal,this.value.sortId,this.value.sortHash)?.action.type==='ReorderHand'?this.value.sortMode:undefined;
+ }
+ swept(journal:readonly Command[]):boolean {return !!this.receipt(journal,this.value.sweepId,this.value.sweepHash);}
  flushPlan():FlushPlan|undefined {return this.value.flushPlan;}
- flushSortedSeen(journal:readonly Command[]):boolean {return this.sorted(journal)&&this.value.flushSortedSeen===true;}
- chooseFlushPlan(plan:FlushPlan):void {this.value={...this.value,flushPlan:plan};this.save();}
- acknowledgeFlushSorted(journal:readonly Command[]):void {if(this.sorted(journal)){this.value={...this.value,flushSortedSeen:true};this.save();}}
- recordSort(command:Command,journal?:readonly Command[]):void {
+ flushSortedSeen(journal:readonly Command[]):boolean {return !!this.sortMode(journal)&&this.value.flushSortedSeen===true;}
+ chooseFlushPlan(plan:FlushPlan):void {this.value.flushPlan=plan;this.save();}
+ recordSort(mode:HandSort,command:Command,journal:readonly Command[],flushDraw=false):void {
   if(command.runId!==this.runId||command.action.type!=='ReorderHand')return;
-  // A later successful sort must not erase a confirmed lesson. Only transfer
-  // the acknowledgement when its original sort is still in this journal.
-  const reviewed=!!journal&&this.sorted(journal)&&this.value.flushSortedSeen===true;
-  const hash=stableHash(command),same=this.value.sortId===command.commandId&&this.value.sortHash===hash;
-  this.value={sortId:command.commandId,sortHash:hash,swept:same&&this.value.swept,flushPlan:this.value.flushPlan,flushSortedSeen:reviewed||same&&this.value.flushSortedSeen};this.save();
+  const reviewed=flushDraw&&mode==='suit'||this.flushSortedSeen(journal);
+  this.value={...this.value,sortId:command.commandId,sortHash:stableHash(command),sortMode:mode,flushSortedSeen:reviewed};this.save();
  }
- recordSweep(update:HandSelectionUpdate,targetIds:readonly string[],initialIds:readonly string[]):boolean {
-  const target=new Set(targetIds),selected=new Set(update.selectedIds),visited=new Set(update.visitedIds),initial=new Set(initialIds);
-  if(!this.value.sortId||target.size<2||update.phase!=='committed'||update.mode!=='select'||update.limitReached||
-    [...target].some(id=>!visited.has(id)||!selected.has(id))||[...target].filter(id=>!initial.has(id)&&selected.has(id)).length<2)return false;
-  this.value={...this.value,swept:true};this.save();return true;
+ recordSweep(update:HandSelectionUpdate,initialIds:readonly string[],journal:readonly Command[]):boolean {
+  const command=journal.at(-1);
+  if(!command||command.runId!==this.runId||update.phase!=='committed'||update.limitReached)return false;
+  const initial=new Set(initialIds),selected=new Set(update.selectedIds);
+  const changed=[...new Set(update.visitedIds)].filter(id=>update.mode==='select'?!initial.has(id)&&selected.has(id):initial.has(id)&&!selected.has(id));
+  if(changed.length<2)return false;
+  if(!this.swept(journal)){this.value.sweepId=command.commandId;this.value.sweepHash=stableHash(command);this.save();}
+  return true;
  }
 }

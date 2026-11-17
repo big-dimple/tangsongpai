@@ -153,6 +153,14 @@ describe('hand native contact lifecycle',()=>{
     expect(f.updates).toHaveLength(count);expect(f.detail).toHaveBeenCalledTimes(1);expect(f.surface.captures.size).toBe(0);expect(f.scene.input.enabled).toBe(true);
   });
 
+  it('cancels only the touch release that opened card details, leaving the next tap available',()=>{
+    const f=setup(),release=()=>f.surface.dispatchEvent(new Event('touchend',{cancelable:true}));
+    f.send('pointerdown',{pointerType:'touch'});vi.advanceTimersByTime(355);expect(f.detail).toHaveBeenCalledWith('b');
+    f.send('pointerup',{pointerType:'touch'});expect(release()).toBe(false);
+    f.send('pointerdown',{pointerType:'touch'});f.send('pointerup',{pointerType:'touch'});expect(release()).toBe(true);
+    expect(f.selection()).toEqual(['b','h']);
+  });
+
   it('an outside first contact followed by a nonprimary hand contact clears the earlier Canvas press',()=>{
     const f=setup();f.send('pointerdown',{pointerType:'touch',clientX:350},false);f.pressCanvas();
     f.send('pointerdown',{pointerId:2,pointerType:'touch',isPrimary:false});expect(f.canvasPressed()).toBe(false);expect(f.selection()).toEqual(['h']);

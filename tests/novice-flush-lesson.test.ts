@@ -78,9 +78,9 @@ describe('goal-directed first discard',()=>{
  it('keeps acknowledgement locally but ties sorted review to an actual saved sorting command',()=>{
   const id='flush-run',command={runId:id,commandId:id+'/6',expectedSeq:5,action:{type:'ReorderHand' as const,ids:sorted.map(card=>card.id)}};
   values.set('tangsongpai-novice-hand-interaction-v1:'+id,JSON.stringify({swept:false,flushIntroSeen:true}));
-  const lesson=new NoviceHandLesson(id);expect(lesson.flushPlan()).toBe('draw');lesson.acknowledgeFlushSorted([]);
+  const lesson=new NoviceHandLesson(id);expect(lesson.flushPlan()).toBe('draw');
   expect(lesson.flushSortedSeen([])).toBe(false);
-  lesson.recordSort(command);lesson.acknowledgeFlushSorted([command]);
+  lesson.recordSort('suit',command,[command],true);
   const restored=new NoviceHandLesson(id);expect(restored.flushSortedSeen([command])).toBe(true);
   expect(restored.flushSortedSeen([])).toBe(false);expect(restored.flushPlan()).toBe('draw');
   restored.chooseFlushPlan('score');expect(new NoviceHandLesson(id).flushPlan()).toBe('score');

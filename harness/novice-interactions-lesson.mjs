@@ -196,7 +196,7 @@ async function scenario(spec){
 
   try{
     await page.goto(`http://127.0.0.1:${port}/?harness=1`);await waitScene(page,'title');
-    await tap('title','action/title-start');await waitScene(page,'game');await ready();await cue('先找一对');
+    await tap('title','action/title-start');await waitScene(page,'game');await ready();await cue('先去理牌区');
     await shot('01-pair');await select(['clubs-5','hearts-5']);await expectSelected(['clubs-5','hearts-5'],'select first pair');
     let before=await saved();await tap('game','action/play');await settleCommand(before);await ready();await page.waitForFunction(()=>document.querySelector('[data-novice-guide]')?.dataset.noviceGuideStep==='discard');
     await cue('下一手，你来拿主意');await shot('flush-01-see-three-hearts');

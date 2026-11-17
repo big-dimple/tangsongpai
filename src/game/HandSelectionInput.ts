@@ -31,6 +31,7 @@ export class HandSelectionInput {
   private destroyed=false;
   private haptic?:HapticScope;
   private touch=false;
+  private detailTouch?:number;
   private readonly canvasResize?:ResizeObserver;
   constructor(private readonly scene:Phaser.Scene,private readonly options:HandInputOptions){
     this.surface.className='hand-input-surface';this.surface.setAttribute('aria-hidden','true');
@@ -42,6 +43,11 @@ export class HandSelectionInput {
     // Phaser also listens for legacy starts on window; this surface owns hand input.
     this.surface.addEventListener('mousedown',event=>event.stopPropagation());
     this.surface.addEventListener('touchstart',event=>event.stopPropagation(),{passive:true});
+    // The finger still belongs to the hand when the detail dialog opens above it.
+    // Cancel that contact's synthesized click so lifting cannot activate a dialog button.
+    this.surface.addEventListener('touchend',event=>{
+      if(this.detailTouch!==undefined&&!this.pointers.has(this.detailTouch)){this.detailTouch=undefined;event.preventDefault();}
+    },{passive:false});
     window.addEventListener('pointerdown',this.otherDown,true);
     window.addEventListener('pointermove',this.move,true);
     window.addEventListener('pointerout',this.viewportLeave,true);
@@ -73,7 +79,7 @@ export class HandSelectionInput {
     const press={pointerId:event.pointerId,startedAt:event.timeStamp,phase:event.type,trusted:event.isTrusted};
     if(event.button!==0||this.active||!this.options.ready()||modalBlocksCanvas(event.clientX,event.clientY,undefined,press))return;
     const {x,y}=this.coordinates(event),card=this.cardAt(x,y);if(!card)return;
-    this.haptic?.cancel();this.haptic=Haptics.shared.createScope();this.touch=event.pointerType==='touch';
+    this.haptic?.cancel();this.haptic=Haptics.shared.createScope();this.touch=event.pointerType==='touch';this.detailTouch=undefined;
     this.options.cancelCanvas();
     this.options.pointerCard?.(card.id);
     this.owner=event.pointerId;this.press=press;this.pointers.add(event.pointerId);this.savedInput=this.scene.input.enabled;this.scene.input.enabled=false;
@@ -81,7 +87,14 @@ export class HandSelectionInput {
     try {this.surface.setPointerCapture(event.pointerId);}catch {/* Window events still own this contact. */}
     this.apply(this.gesture.begin(event.pointerId,x,y,card.id,this.options.selected(),this.options.cards(),this.options.selectionLimit?.()??5,this.allowVertical));
     // Stationary hold still inspects. A moved pointer clears this timer before it can open.
-    this.timer=setTimeout(()=>{if(this.gesture.state?.phase==='pending'){this.cancel('hold');if(this.options.ready()&&!document.querySelector('dialog[open]'))this.options.detail(card.id);}},355);
+    this.timer=setTimeout(()=>{
+      if(this.gesture.state?.phase!=='pending')return;
+      this.cancel('hold');
+      if(this.options.ready()&&!document.querySelector('dialog[open]')){
+        if(this.touch)this.detailTouch=event.pointerId;
+        this.options.detail(card.id);
+      }
+    },355);
     if(event.pointerType==='mouse')event.preventDefault();
   };
   /** A new primary press of the same type, or a zero-button hover, proves an old release was missed. */
@@ -125,7 +138,7 @@ export class HandSelectionInput {
     }
     this.release(event.pointerId);
   };
-  private readonly cancelPointer=(event:PointerEvent)=>{this.contacts.delete(event.pointerId);if(this.pointers.has(event.pointerId)){event.preventDefault();event.stopPropagation();this.cancel('pointercancel');this.release(event.pointerId);}};
+  private readonly cancelPointer=(event:PointerEvent)=>{this.contacts.delete(event.pointerId);if(this.pointers.has(event.pointerId)){if(event.pointerId===this.detailTouch)this.detailTouch=undefined;event.preventDefault();event.stopPropagation();this.cancel('pointercancel');this.release(event.pointerId);}};
   private readonly lostCapture=(event:PointerEvent)=>{if(this.pointers.has(event.pointerId))this.cancel('capture');};
   private release(pointerId:number):void {
     if(!this.pointers.delete(pointerId))return;
