@@ -98,7 +98,7 @@ async function scenario(spec){
     const map=b=>({x:c.left+b.x*sx,y:c.top+b.y*sy,width:b.width*sx,height:b.height*sy});
     const cards=s.hand.flatMap((card,i)=>{const v=s.cardViews[i],seat=l.cards[i];if(!v?.container.active||!v.container.visible||!seat?.visible)return[];const w=Number(v.container.getData('width')),h=Number(v.container.getData('height')),m=v.container.getWorldTransformMatrix(),a=m.transformPoint(-w/2,-h/2),b=m.transformPoint(w/2,h/2);return[{id:card.id,...map({x:a.x,y:a.y,width:Math.min(b.x-a.x,seat.hit.width),height:b.y-a.y})}];});
     const rings=[...document.querySelectorAll('[data-novice-guide-highlight]')].map(el=>{const r=el.getBoundingClientRect();return{x:r.x,y:r.y,width:r.width,height:r.height};});
-    return {cards,rings,order:[...s.run.handOrder],status:s.statusText.text};
+    return {cards,rings,order:[...s.run.handOrder],status:s.statusText.text,statusVisible:s.statusText.visible};
   });
   const noDemo=async label=>{
     await page.waitForFunction(()=>!document.querySelector('[data-novice-gesture]'),null,{timeout:1500});
@@ -241,7 +241,7 @@ async function scenario(spec){
     assert.match((await guideView()).body,/出牌.*换牌|换牌.*出牌/,'free choice explains both options');await shot('06a-free-actions');
     await tap('game','card/'+ids[2]);await expectSelected([],'second tap cancels');
     await route([ids[0],ids[7]]);await expectSelected(firstFive,'sweep stops at five');await tap('game','card/'+ids[7]);await expectSelected(firstFive,'sixth tap is rejected');
-    assert.match((await observeHand()).status,/最多选择\s*5/,'limit feedback is visible');await shot('06-selection-limit');await clear();
+    const limit=await observeHand();assert.equal(limit.statusVisible,true);assert.equal(limit.status,'最多选 5 张','limit feedback is visible');await shot('06-selection-limit');await clear();
     await route([ids[7],ids[0]]);await expectSelected(ids.slice(3),'reverse full-row sweep selects the first five encountered');await clear();
     const start=await point(page,'game','card/'+ids[0]),end=await point(page,'game','card/'+ids[3]);await down(start);await move(end);const applied=await selected();
     if(spec.touch)await touchEvent('touchCancel',[]);else{await page.keyboard.press('Escape');await page.mouse.up();}await ready();await expectSelected(spec.touch?applied:[],'system touch cancel retains applied selection; Escape restores original selection');await clear();

@@ -45,7 +45,7 @@ async function touchWorkflow(){
     await tapUI(page,'game','card/'+ids[0],true);await views.dispose();
     report.checks.push({name:'touch/selection-preserves-stage-and-card-views',status:'PASS'});
     for(const id of ids.slice(0,6))await tapUI(page,'game','card/'+id,true);
-    assert.equal((await read(page)).selected.length,5);assert.ok(await page.evaluate(()=>window.__harness.game.scene.getScene('game').statusMessage.includes('最多选择 5')));
+    assert.equal((await read(page)).selected.length,5);assert.equal(await page.evaluate(()=>window.__harness.game.scene.getScene('game').statusMessage),'最多选 5 张');
     assert.deepEqual((await read(page)).state,state);let selection=(await read(page)).selected;
     await gesture(page,'game','card/'+ids[6],{cancel:true});assert.deepEqual((await read(page)).selected,selection,'pointercancel leaves selection/resources');
     await gesture(page,'game','card/'+ids[0],{hold:410});await page.getByRole('dialog').waitFor();assert.deepEqual((await read(page)).selected,selection,'long press does not toggle');await page.getByRole('button',{name:'关闭',exact:true}).tap();

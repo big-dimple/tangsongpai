@@ -130,7 +130,7 @@ async function scenario(spec){
     // Starting selected fixes this whole gesture to deselection, including crossed gaps.
     await clear();for(const id of [ids[0],ids[2],ids[4]])await tap(id);await route([ids[4],ids[0],ids[4]]);await assertSelected(page,[],'selected-start sweep removes selected cards without selecting gaps');await invariant('selected-start-deselect-and-reverse');
     await route([ids[0],ids[7]]);await assertSelected(page,ids.slice(0,5),'fast full-row sweep fills only first five');await invariant('fast-sweep-max-five-left');
-    await tap(ids[7]);await assertSelected(page,ids.slice(0,5),'sixth tap is rejected');assert.match((await observation(page)).status,/最多选择 5/);await invariant('sixth-tap-feedback');
+    await tap(ids[7]);await assertSelected(page,ids.slice(0,5),'sixth tap is rejected');assert.match((await observation(page)).status,/最多选 5 张/);await invariant('sixth-tap-feedback');
     await clear();await route([ids[7],ids[0]]);await assertSelected(page,ids.slice(3),'reverse full-row sweep fills first five encountered');await invariant('fast-sweep-max-five-right');
 
     // Check both visible rank/suit samples against higher card faces, then use that strip.
