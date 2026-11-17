@@ -35,8 +35,6 @@ import {getR2Stage} from '../domain/r2Run';
 import type {R2RunState} from '../domain/r2Run';
 import {r2JokerDefinitionFor} from '../domain/r2ContentProfiles';
 import {r2BossText} from '../domain/r2Chapter';
-import {HAND_LABELS} from '../content/handLabels';
-import type {ScoreTrace} from '../domain/scoreR2';
 import {heatText} from './scoreText';
 import {runController,dispatchRun,startRun} from './runAdapter';
 import {gameSession} from './session';
@@ -59,7 +57,7 @@ import {SceneView} from './SceneView';
 import {DetailDialog} from './DetailDialog';
 import {SKIP_ITEM_LABELS} from './ConsumableDialog';
 import type {Box} from './layout';
-import {PAPER_CSS,PAPER_THEME as T} from './theme';
+import {assetUrl,PAPER_CSS,PAPER_THEME as T} from './theme';
 import {resultLayout} from './IntermissionLayout';
 import {drawPcSettlementArt} from './PcSettlementArt';
 import {mountResultViewport} from './IntermissionScroll';
@@ -71,7 +69,6 @@ export class IntermissionScene extends Phaser.Scene {
   private view!:SceneView;
   private lifecycle=0;
   private sourceArtRequest?:AbortController;
-  private sourceArtLayer?:Phaser.GameObjects.Container;
   private paintSourceArt?:()=>void;
   private busy=false;
   private notice='';
@@ -95,9 +92,9 @@ export class IntermissionScene extends Phaser.Scene {
   private requestSourceArt():void {
     // Optional transport belongs to a mounted result view, independent of ending audio.
     if(!this.paintSourceArt)return;
-    const controller=runController(this),run=controller?.state;if(!controller||!run?.stage||(run.stage.skipResult&&!pcResultViewport(this.view.layout.width,this.view.layout.height)&&!mobileResultViewport(this.view.layout.width,this.view.layout.height)))return;
+    const {width,height,safe}=this.view.layout,pc=pcResultViewport(width,height,safe)||mobileResultViewport(width,height);
+    const controller=runController(this),run=controller?.state;if(!controller||!run?.stage||(run.stage.skipResult&&!pc))return;
     const facts=settlementFacts(run,this.result.cleared,!!run.stage.skipResult),source=facts.card;
-    const pc=pcResultViewport(this.view.layout.width,this.view.layout.height)||mobileResultViewport(this.view.layout.width,this.view.layout.height);
     // The PC spread renders only the transparent hero; source and review-book art belong to the legacy view.
     const candidates=[{key:pc?pcHeroKey(run.characterId):selectionPortraitKey(run.characterId),url:pc?pcHeroURL(run.characterId):selectionPortraitURL(run.characterId)},...(!pc&&source?[{key:jokerArtKey(source.id),url:jokerArtPreviewUrl(source.id)}]:[]),...(!pc&&facts.reviewBook?[{key:goodsArtKey('U09'),url:itemInfo('U09').artUrl}]:[])].filter((item):item is {key:string;url:string}=>!!item.key&&!!item.url&&!this.textures.exists(item.key));
     if(!candidates.length)return;
@@ -118,7 +115,7 @@ export class IntermissionScene extends Phaser.Scene {
     motion?.addEventListener('change',preference);
     if(typeof window!=='undefined')window.addEventListener('blur',suspend);
     if(typeof document!=='undefined')document.addEventListener('visibilitychange',visibility);
-    const retire=()=>{if(typeof window!=='undefined'){window.removeEventListener('tangsongpai-presentation',preference);window.removeEventListener('blur',suspend);}if(typeof document!=='undefined')document.removeEventListener('visibilitychange',visibility);motion?.removeEventListener('change',preference);this.events.off('shutdown',retire);this.events.off('destroy',retire);this.releaseViewport?.();this.releaseViewport=undefined;this.lifecycle++;this.stopSourceArt();this.paintSourceArt=undefined;this.sourceArtLayer=undefined;this.dialog.close();this.stopCelebration();};
+    const retire=()=>{if(typeof window!=='undefined'){window.removeEventListener('tangsongpai-presentation',preference);window.removeEventListener('blur',suspend);}if(typeof document!=='undefined')document.removeEventListener('visibilitychange',visibility);motion?.removeEventListener('change',preference);this.events.off('shutdown',retire);this.events.off('destroy',retire);this.releaseViewport?.();this.releaseViewport=undefined;this.lifecycle++;this.stopSourceArt();this.paintSourceArt=undefined;this.dialog.close();this.stopCelebration();};
     this.events.once('shutdown',retire);this.events.once('destroy',retire);
     const run=runController(this)?.state;if(!run?.stage){this.scene.start('character-select');return;}
     this.cameras.main.setBackgroundColor('#F3EADB');
@@ -150,15 +147,15 @@ export class IntermissionScene extends Phaser.Scene {
   }
   private render():void {
     if(this.busy)this.stopSourceArt();
-    const v=this.view,l=v.layout,bottom=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-bottom'))||0;
+    const v=this.view,l=v.layout,bottom=l.safe.bottom;
     const run=runController(this)!.state,resultFacts=settlementFacts(run,this.result.cleared,!!run.stage?.skipResult),stage={...getR2Stage(this.result.stageIndex,run.tourMode,run.difficulty,run)!,targetHeat:run.stage!.targetHeat},character=getCharacter(run.characterId);
     const mobile=mobileResultViewport(l.width,l.height),preferred=mobile?Math.max(200,Math.min(342,l.height-350)):settlementContentHeight(l.width,!!resultFacts.hero,resultFacts.tier>=2);
-    const pc=pcResultViewport(l.width,l.height);
-    let p=resultLayout(l.width,l.height,0,preferred,pc);
+    const pc=pcResultViewport(l.width,l.height,l.safe);
+    let p=resultLayout(l.width,l.height,0,preferred,pc,l.safe.left,l.safe.right);
     const nextStage=this.result.cleared&&run.phase==='stage-cleared'?nextStagePreview(run):undefined,skipped=run.phase==='run-lost'?null:run.stage?.skipResult,won=run.phase==='run-won',capped=this.result.cleared&&run.phase==='stage-cleared'&&!nextStage,lost=!this.result.cleared&&!skipped&&!won;
     const owner=runController(this)!,guidedPractice=!!nextStage&&needsGuidedPractice(owner),rollback=lost&&owner.rollbackAvailable;
     const animateIn=this.firstRender&&!gameSession().reducedMotion&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    this.releaseViewport?.();this.releaseViewport=undefined;this.stopCelebration();v.clear();this.paintSourceArt=undefined;this.sourceArtLayer=undefined;v.paperBackground();if(pc)drawPcSettlementArt(this,v);const backgroundCount=v.root.length;
+    this.releaseViewport?.();this.releaseViewport=undefined;this.stopCelebration();v.clear();this.paintSourceArt=undefined;v.paperBackground();if(pc)drawPcSettlementArt(this,v);const backgroundCount=v.root.length;
     const content=this.resultContent=this.add.container(0,0).setName('result/content');
     const identity=stageIdentity(stage.index,run.stage!.boss,run.tourMode,run.difficulty,run)!;
     const stageLabel=v.text(p.x,p.top,(run.tourMode==='endless'?'无尽 · ':'')+stage.name+' · '+character.name,14,identity.isBoss?PAPER_CSS.red:PAPER_CSS.jade,p.w-116).setName('stage-identity/result');
@@ -174,7 +171,7 @@ export class IntermissionScene extends Phaser.Scene {
       titlePlate!.lineStyle(2,tone,.55).lineBetween(center-42,y,center+42,y);
     }
     const paperHeight=this.drawResultHero(p.score,!!skipped,lost,animateIn);
-    p=resultLayout(l.width,l.height,0,paperHeight,pc);
+    p=resultLayout(l.width,l.height,0,paperHeight,pc,l.safe.left,l.safe.right);
     const trace=run.lastTrace;
     const n=p.pc?{...p.nextText,y:Math.max(p.nextText.y,this.resultReceiptBottom+4)}:p.nextText;
     let heading='下一步',body='';
@@ -236,22 +233,18 @@ export class IntermissionScene extends Phaser.Scene {
     const discovery=this.ready&&!this.notice&&!lost&&!skipped?savedGrowthDiscovery(run):undefined,gift=this.ready&&!this.notice&&!lost&&!skipped?stageGiftReceipt(run):undefined;
     v.text(p.short||p.wide?p.next.x:p.x,p.noticeY,this.busy?'正在保存…':this.notice||(!this.ready?'当前进度未保存或只读，请查看菜单。':capped?'已达数值上限，进度已保存':won?run.mode==='standard'?'八章通关已保存，继续无尽由你决定。':'本模式结果已保存，可重试或返回选角。':nextStage?gift?'':discovery?.full||'':lost?rollback?'回到本场开始；右上角菜单可开始新局。':'缺少本场起点，无法重试；原进度保留，可在菜单开始新局。':''),14,this.notice?'#ffd0b1':'#3F606B',p.short||p.wide?p.next.width:p.w).setName(discovery&&!gift&&nextStage?'growth/discovery':'result/notice');
     content.add(v.root.list.slice(backgroundCount));v.add(content);
-    const safeTop=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-top'))||0;
+    const safeTop=l.safe.top;
     const hint=noviceGuide(run,runController(this)!.journal),reserve=hint?(hint.step==='complete'||hint.step==='replay'?128:86):0;
     this.releaseViewport=mountResultViewport(this,v,content,Math.max(l.hud.y,safeTop+60)+reserve,l.height-bottom-16,this.resultScroll,offset=>{this.resultScroll=offset;});
     this.firstRender=false;if(pc||mobile)this.requestSourceArt();
   }
   private auxiliary(b:Box,label:string,name:string,action:()=>void,enabled=true):void {
-    const v=this.view,text=v.text(b.x+b.width/2,b.y+b.height/2,label,pcResultViewport(v.layout.width,v.layout.height)?18:14,enabled?PAPER_CSS.jade:PAPER_CSS.disabledInk,b.width-4).setOrigin(.5);
+    const v=this.view,text=v.text(b.x+b.width/2,b.y+b.height/2,label,pcResultViewport(v.layout.width,v.layout.height,v.layout.safe)?18:14,enabled?PAPER_CSS.jade:PAPER_CSS.disabledInk,b.width-4).setOrigin(.5);
     const hit=v.rect(b).setFillStyle(0,0).setStrokeStyle().setData('label',text);
     v.target(hit,name,{tap:()=>{if(enabled){this.audio.select();action();}}});
     if(!enabled)hit.disableInteractive();
   }
   private jokerDefinition(id:string){return r2JokerDefinitionFor(runController(this)!.state,id);}
-  private traceSources(trace:ScoreTrace):string[] {
-    const character=getCharacter(runController(this)!.state.characterId);
-    return [...new Set(trace.events.filter(e=>(e.sourceType==='joker'||e.sourceType==='character')&&e.phase!=='afterHand'&&(e.before.H.n!==e.after.H.n||e.before.H.d!==e.after.H.d||e.before.M.n!==e.after.M.n||e.before.M.d!==e.after.M.d||e.operation==='retrigger-card'&&BigInt(e.value.n)>0n)).map(e=>e.sourceType==='character'?(savedTouyeWager(trace,runController(this)!.state)||character.name):cardDefinitionName(this.jokerDefinition(e.sourceDefinitionId))))];
-  }
   private stopCelebration():void {
     this.outcomeMotion?.dispose();this.outcomeMotion=undefined;
     this.reviewBookMotion?.dispose();this.reviewBookMotion=undefined;
@@ -359,7 +352,16 @@ export class IntermissionScene extends Phaser.Scene {
           if(lifecycle===this.lifecycle&&this.scene.isActive()){this.notice='接续未保存，胜利进度仍保留；请在菜单重试保存。';this.dialog.close(dialog);this.audio.invalid();}
         }finally {if(lifecycle===this.lifecycle&&this.scene.isActive()){this.busy=false;this.render();}}
       }},
-    ],{closeLabel:'取消'});
+    ],{closeLabel:'留在胜利页'});
+    dialog.classList.add('endless-passage');
+    const cover=document.createElement('div');cover.className='endless-cover';
+    const image=document.createElement('img');image.alt='';image.src=assetUrl('assets/p00/river-market.webp');
+    const ledger=document.createElement('dl');ledger.className='mode-resources';ledger.setAttribute('aria-label','接续至第九章的构筑');
+    for(const [label,value] of [['金币',run.gold+' 金'],['唐宋牌',run.jokers.length+' 张'],['长期道具',run.longTermItems.length+' 件']]){
+      const cell=document.createElement('div'),term=document.createElement('dt'),amount=document.createElement('dd');
+      term.textContent=label;amount.textContent=value;cell.append(term,amount);ledger.append(cell);
+    }
+    cover.append(image,ledger);dialog.querySelector('.dialog-copy')?.prepend(cover);
   }
   private async rollbackLoss():Promise<void> {
     if(!this.ready)return;const owner=runController(this)!,lifecycle=this.lifecycle;this.busy=true;this.notice='';this.render();

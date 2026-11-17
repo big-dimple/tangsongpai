@@ -4,7 +4,7 @@ import {chromium} from 'playwright';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
 import {tapUI,waitScene,openSelector,confirmHeroRoute} from './ui.mjs';
-const out=process.env.HERO_COPY_OUT??'docs/production/evidence/hero-text-adoption-2026-10-15/browser';await mkdir(out,{recursive:true});
+const out=process.env.HERO_COPY_OUT??'shots/hero-text-adoption/browser';await mkdir(out,{recursive:true});
 const server=await createServer({mode:'e2e',cacheDir:'.vite/hero-text-adoption',server:{host:'127.0.0.1',port:5595,strictPort:true},logLevel:'error'});await server.listen();console.log('Hero copy: local server ready');
 const {createRun,applyCommand}=await server.ssrLoadModule('/src/domain/run.ts'),{newRunIdentity}=await server.ssrLoadModule('/src/game/RunLaunch.ts'),{makeCheckpoint,readCheckpoint}=await server.ssrLoadModule('/src/application/checkpoint.ts'),{heroTextSpec}=await server.ssrLoadModule('/src/game/HeroText.ts'),{characterForRun}=await server.ssrLoadModule('/src/game/CharacterRunCopy.ts');
 console.log('Hero copy: rule modules ready');

@@ -9,7 +9,7 @@ import {build} from 'vite';
 import {chromium} from 'playwright';
 import {tapUI,waitScene} from './ui.mjs';
 
-const base='e2e64946f6fabe6fc0e8b369a6b3b52c5bda9d29',out='docs/production/evidence/hero-skill-status-density-2026-10-17',bundle='.vite/hero-skill-status-density-build',entry='.vite/hero-skill-status-density-entry.html';
+const base='e2e64946f6fabe6fc0e8b369a6b3b52c5bda9d29',out='shots/hero-skill-status-density',bundle='.vite/hero-skill-status-density-build',entry='.vite/hero-skill-status-density-entry.html';
 await mkdir(out,{recursive:true});await mkdir('.vite',{recursive:true});
 const normalize=text=>text.replaceAll('\r\n','\n'),hash=text=>createHash('sha256').update(normalize(text)).digest('hex');
 const gameSource=await readFile('src/game/GameScene.ts','utf8');assert.equal(normalize(gameSource),normalize(execFileSync('git',['show',base+':src/game/GameScene.ts'],{encoding:'utf8'})),'never overwrite the continuous-score scene');

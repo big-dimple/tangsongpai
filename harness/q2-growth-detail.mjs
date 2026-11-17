@@ -8,7 +8,7 @@ import {execFileSync} from 'node:child_process';
 import {tmpdir} from 'node:os';
 import path from 'node:path';
 import {waitScene,tapUI} from './ui.mjs';
-const out='docs/production/evidence/q2-growth-2026-10-21/ui-detail';await mkdir(out,{recursive:true});
+const out='shots/q2-growth/ui-detail';await mkdir(out,{recursive:true});
 const cache=await mkdtemp(path.join(tmpdir(),'q2-detail-vite-'));
 const server=await createServer({mode:'e2e',cacheDir:cache,server:{host:'127.0.0.1',port:5745,strictPort:true},logLevel:'error'});await server.listen();
 const {createRun,applyCommand}=await server.ssrLoadModule('/src/domain/run.ts');

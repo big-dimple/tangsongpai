@@ -2,6 +2,20 @@ import {expect,it} from 'vitest';
 import {pcResultSidebar,resultLayout,resultPlacement} from '../src/game/IntermissionLayout';
 import {pcLandscapeFrame} from '../src/game/PcLandscapeFrame';
 
+it('keeps every result action inside asymmetric cutouts, including short landscape',()=>{
+ for(const [width,height,pc] of [[320,568,false],[740,320,false],[2560,1080,true]] as const){
+  const left=32,right=12,p=resultLayout(width,height,0,340,pc,left,right);
+  for(const b of [p.score,p.next,p.left,p.right,p.primary]){
+   expect(b.x).toBeGreaterThanOrEqual(left+12);
+   expect(b.x+b.width).toBeLessThanOrEqual(width-right-12);
+  }
+  if(pc){
+   const side=pcResultSidebar(width,height,left,right),grid=pcLandscapeFrame(width,height,0,0,left,right);
+   expect(grid.frame.width).toBe(1600);
+   expect((p.x-grid.gap-side.width+p.x+p.w)/2).toBe((width+left-right)/2);
+  }
+ }
+});
 it.each([[1366,768],[1440,900],[1920,1080]])('centers the actual complete result inside the usable %sx%s viewport',(width,height)=>{
  const p=resultLayout(width,height,0,301),content={y:0,height:381},placed=resultPlacement(60,height-16,content);
  expect(placed.overflow).toBe(0);expect(placed.y+content.height/2).toBe((60+height-16)/2);

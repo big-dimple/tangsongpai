@@ -1,3 +1,4 @@
+import {stageScoreBands} from './StageScoreMeter';
 import {usesErxiangGroup} from '../domain/r2ErxiangHandoff';
 import {usesLaohuanFind,laohuanFindGroups} from '../domain/r2LaohuanFind';
 import {pcHeroKey,PC_HERO_COMPOSITION} from './PcHeroArt';
@@ -345,6 +346,7 @@ export class GameScene extends Phaser.Scene {
   private handCountText!:Phaser.GameObjects.Text;
   private pileText!:Phaser.GameObjects.Text;
   private progressBar!:Phaser.GameObjects.Rectangle;
+  private handPrompt?:Phaser.GameObjects.Text;
   private roleFrame!:Phaser.GameObjects.Rectangle;
   private roleAvatar!:Phaser.GameObjects.Container;
   private previewCards?:Phaser.GameObjects.Container;
@@ -925,12 +927,11 @@ export class GameScene extends Phaser.Scene {
     this.heatText=v.text(h.x+12,portrait?h.y+27:l.shortLandscape?h.y+94:short?h.y+108:sidebar.heat.y,'',portrait?20:short?28:l.pc?36:24,C.paper,h.width-24).setFontStyle('bold');
     const goldY=portrait?h.y+31:l.shortLandscape?h.y+11:l.mode==='desktop'?sidebar.gold.y:h.y+180;
     this.goldText=l.shortLandscape?v.text(h.x+h.width-12,goldY,'',14,C.brass).setOrigin(1,0):v.text(h.x+12,goldY,'',14,l.pc?C.mutedInk:C.brass,h.width-24);
-    if(!portrait){
-
-      v.text(h.x+12,l.mode==='desktop'?sidebar.target.y:h.y+(l.shortLandscape?130:146),'目标分数 '+heatText(this.stage.targetHeat),l.pc?24:14,C.jade,h.width-24).setName('hud/target');
-      const progressY=toolInventoryProgressY(l,l.mode==='desktop'?sidebar.progress.y:h.y+(l.shortLandscape?152:168));v.rect({x:h.x+12,y:progressY,width:h.width-24,height:5},0x45595b).setStrokeStyle();
-      this.progressBar=v.rect({x:h.x+12,y:progressY,width:1,height:5},T.jade).setOrigin(0,.5).setPosition(h.x+12,progressY+2.5).setStrokeStyle();
-    }
+    if(!portrait)v.text(h.x+12,l.mode==='desktop'?sidebar.target.y:h.y+(l.shortLandscape?130:146),'目标分数 '+heatText(this.stage.targetHeat),l.pc?24:14,C.jade,h.width-24).setName('hud/target');
+    const progressY=portrait?h.y+h.height-5:toolInventoryProgressY(l,l.mode==='desktop'?sidebar.progress.y:h.y+(l.shortLandscape?152:168));
+    const progressHeight=portrait?3:5;
+    v.rect({x:h.x+12,y:progressY,width:h.width-24,height:progressHeight},0xc9bca5).setStrokeStyle().setName('hud/goal-track');
+    this.progressBar=v.rect({x:h.x+12,y:progressY,width:1,height:progressHeight},0x47746a).setOrigin(0,.5).setPosition(h.x+12,progressY+progressHeight/2).setStrokeStyle().setName('hud/goal-fill');
     if(portrait){this.mobileHeroName=v.text(h.x+64,h.y+6,c.name,14,C.ink).setName('hero/display-name');this.roleText.setVisible(true).setPosition(h.x+64+this.mobileHeroName.width+8,h.y+6).setFontSize(13).setWordWrapWidth(0);this.goldText.setFontSize(12).setOrigin(0,0).setPosition(h.x+64,h.y+28);this.heatText.setPosition(h.x+128,h.y+28).setFontSize(14).setWordWrapWidth(0);skillEntry.setPosition(this.roleText.x,this.roleText.y).setSize(h.x+h.width-56-this.roleText.x,20);}
     if(short){this.roleText.setVisible(false);skillEntry.setVisible(false);}
     if(!short&&(this.assistProfile||usesErxiangHandoff(this.run)||usesAzaoCharge(this.run)||usesXiemuBurn(this.run)||usesLaohuanRefill(this.run)||usesTouyeWager(this.run))){
@@ -956,6 +957,11 @@ export class GameScene extends Phaser.Scene {
     const p=playedFootprint(toolInventoryPlayedArea(l),portrait);
     v.rect(p,T.paperLight).setFillStyle(0,0).setStrokeStyle().setName('table/played-workplane');
     const caption=playedCaptionBox(l,p);if(caption&&!this.bossSuitRescueButton)v.text(caption.x,caption.y,'待出牌',14,C.jade).setName('table/played-label');
+    this.handPrompt=undefined;
+    if((l.pc||portrait)&&l.playedArea.height>=60&&this.run.mode!=='tutorial'){
+      const mat=l.playedArea,x=mat.x+mat.width*(portrait?.34:.5);
+      this.handPrompt=v.text(x,mat.y+mat.height*.53,'从手牌选 1–5 张',portrait?15:20).setOrigin(.5).setColor('#f4e7cb').setFontFamily('Georgia, "Songti SC", SimSun, serif').setName('table/hand-prompt').setVisible(false);
+    }
     this.previousHandText=v.text(portrait?p.x+10:h.x+12,portrait?p.y+p.height-20:h.y+(short?301:510),'',14,portrait?'#eddfbf':C.brass,portrait?p.width-20:h.width-24).setVisible(false);
     this.handCountText=v.text(l.handLabel.x,l.handLabel.y,'',14,'#f0e6cb').setVisible(!portrait&&l.labelHeight>0);
     this.pileText=v.text(l.piles.x+l.piles.width,l.piles.y,'',14,'#c8d4c7').setOrigin(1,0).setVisible(!portrait&&l.labelHeight>0);
@@ -1501,6 +1507,7 @@ export class GameScene extends Phaser.Scene {
       if(v.hit)v.hit.input!.enabled=this.ready&&!this.refillHidden&&this.view.layout.cards[i].visible;
     });
     this.orderSelectedCards();
+    this.handPrompt?.setVisible(!this.playing&&!this.presentation&&!this.pendingRefill&&!this.pendingTouye&&this.run.phase==='await-input'&&this.selectedIds.size===0);
     if(!this.presentation){this.refreshJokerLabels(preview);this.previewSelection(preview);this.renderSelectedCards(preview);}
     this.updateControls();
     this.syncHeroTargetAttachment();
@@ -1670,7 +1677,7 @@ export class GameScene extends Phaser.Scene {
     if(azao&&!this.presentation&&!this.playing&&!discovery&&!sweepReminder&&!selectedReminder&&!guideCue&&!reminders&&!entryReminder&&!benefitReminder&&!memoryReminder)this.statusText.setText(azao.compact+' · '+(this.azaoRelease?'本手释放，消耗全部层':azao.hold)).setName('hero/azao-charge-status');
     }
     if(usesTouyeWager(this.run)){const copy=touyeChoice(this.run,[...this.selectedIds]);this.roleText.setText(copy.compact);if(!criticalStatus&&!this.playing&&!this.presentation&&copy.status)this.statusText.setText(copy.status);if(this.pendingTouye)this.view.setEnabled(this.discardButton,false);if(portrait&&copy.pending&&copy.previewShort&&!criticalStatus&&!this.playing&&!this.presentation){const score=this.view.layout.scoreBoard;this.resultText.setText(copy.previewShort);fitScoreLine(this.resultText,{x:score.x+10,y:score.y+(score.height<90?4:7),width:score.width-20-(this.bossSuitRescueButton?154:0),height:score.height<90?18:30},score.height<90?18:24);}}
-    const safeBottom=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-bottom'))||0;
+    const safeBottom=handWindow.safe.bottom;
     if(portrait){this.statusText.setVisible(!!criticalStatus);if(criticalStatus)this.resultText.setVisible(false);}
     fitStatusSummary(this.statusText,{...handWindow.status,height:Math.max(0,Math.min(Math.max(warning?20:0,handWindow.status.height+(handWindow.mode==='landscape'?12:0)),handWindow.height-safeBottom-handWindow.status.y))},!criticalStatus&&selectedReminder?'点所选条件':undefined);
     if(usesLaohuanRefill(this.run))this.roleText.setText(this.roleCaption());
@@ -3153,16 +3160,17 @@ export class GameScene extends Phaser.Scene {
       if(l.pc)this.goldText.setOrigin(0,0).setPosition(sidebar.gold.x,sidebar.gold.y);
       const progressY=Math.max(sidebar.progress.y,this.goldText.getBounds().bottom+4);
       this.progressBar.setY(progressY+2.5);
+      (this.view.root.getByName('hud/goal-track') as Phaser.GameObjects.Rectangle)?.setY(progressY+2.5);
     }
     this.updateHandCount();
     this.pileText.setText('抽牌 '+this.deck.length+' · 已打 '+this.run.playedPile.length+' · 已弃 '+this.run.discardPile.length);
     const last=this.presentation?(this.presentation.credited?this.presentation.score:this.presentation.previousTrace):this.run.lastTrace;
     this.previousHandText.setText(last?'上手已入账：'+HAND_LABELS[last.handType]+' +'+heatText(last.finalScore):'上手记录：本场第一手');
-    if(l.mode!=='portrait'&&this.progressBar?.active){
+    if(this.progressBar?.active){
       // During resize, the new layout can be read before its controls are rebuilt.
-      const filled=BigInt(displayHeat)>=BigInt(this.stage.targetHeat)?1000n:BigInt(displayHeat)*1000n/BigInt(this.stage.targetHeat);
-      const widthPx=Math.max(.5,(l.hud.width-24)*Number(filled)/1000);
-      if(this.reducedMotion||this.rollingHeat){this.tweens.killTweensOf(this.progressBar);this.progressBar.setDisplaySize(widthPx,5);this.progressTarget=widthPx;}
+      const filled=stageScoreBands(displayHeat,this.stage.targetHeat).filled;
+      const widthPx=Math.max(.01,(l.hud.width-24)*filled);
+      if(this.reducedMotion||this.rollingHeat){this.tweens.killTweensOf(this.progressBar);this.progressBar.setDisplaySize(widthPx,this.progressBar.height);this.progressTarget=widthPx;}
       else if(this.progressTarget!==widthPx){this.progressTarget=widthPx;this.tweens.killTweensOf(this.progressBar);this.tweens.add({targets:this.progressBar,displayWidth:widthPx,duration:340,ease:'Cubic.easeOut'});}
     }
     this.fitHudReadouts();

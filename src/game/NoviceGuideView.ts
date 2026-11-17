@@ -112,9 +112,9 @@ function safeViewport():Box {
 }
 
 const stepProgress:Readonly<Record<string,string>>={
-  pair:'新手首战 · 认识牌型',discard:'新手首战 · 换牌（可选）',independent:'新手首战 · 自主出牌',
-  shop:'新手首战 · 商店构筑',payoff:'新手首战 · 唐宋牌生效',skill:'新手首战 · 英雄技能',
-  'skill-practice':'新手首战 · 自主实战',
+  pair:'一、认牌 · 找对子',discard:'一、认牌 · 换牌可选',independent:'一、认牌 · 自己打一手',
+  shop:'二、构筑 · 去商店',payoff:'二、构筑 · 看牌效',skill:'三、用将 · 英雄技能',
+  'skill-practice':'三、用将 · 自己打一手',
   complete:'新手首战 · 已完成',replay:'新手首战 · 再练一次',
 };
 function emphasis(step:NoviceGuideStep):'score'|'reward'|'action' {

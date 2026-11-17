@@ -3,6 +3,7 @@ import {SeededRng} from '../src/core/SeededRng';
 import {drawR2Shelf,rerollPrice} from '../src/domain/r2Shop';
 import {R2_JOKERS} from '../src/content/r2Schema';
 import {publicR2View,chooseR2Action} from '../src/testing/r2Bot';
+import {newRunIdentity} from '../src/game/RunLaunch';
 import {applyCommand,createRun,assertRunInvariants,type R2RunState} from '../src/domain/run';
 describe('r2 shelves and public policy',()=>{
   it('draws weighted slots without replacement, handles short/empty pools and ensures affordability',()=>{
@@ -15,8 +16,9 @@ describe('r2 shelves and public policy',()=>{
     }
     expect([0,1,2,8,9,100].map(rerollPrice)).toEqual([2,3,4,10,10,10]);
   });
-  it('exposes only public information; policy previews never change the checkpoint',()=>{
-    let run=createRun({seed:'policy',characterId:'erxiang',runId:'policy',rulesVersion:'r2'});
+  it.each(['default','current'])('%s policy uses public information and leaves the checkpoint intact',profile=>{
+    const route=profile==='current'?{openingRoute:'group' as const,r2Identity:newRunIdentity('erxiang','group')}:{};
+    let run=createRun({seed:'policy',characterId:'erxiang',runId:'policy',rulesVersion:'r2',...route});
     for(let i=0;i<15;i++){
       const view=publicR2View(run),before=JSON.stringify(run);
       for(const key of ['rng','drawPile','deckInstances'])expect(view).not.toHaveProperty(key);

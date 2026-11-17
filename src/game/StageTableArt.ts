@@ -1,3 +1,4 @@
+import {drawRiverScroll} from './RiverScroll';
 import {whenTextureReady} from './LateTextureArt';
 import type Phaser from 'phaser';
 import {playedFootprint,intersects,type Box,type TableLayout} from './layout';
@@ -29,6 +30,14 @@ export function stageTableArtPlan(l:TableLayout):StageTableArtPlan {
 /** Existing paper/character art; an optional hero entry owns only its portrait bounds. */
 export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:CharacterId,inspectHero?:()=>void,legacyPortrait=true):void {
  const plan=stageTableArtPlan(view.layout);
+ const playMat=(g:Phaser.GameObjects.Graphics,b:Box)=>{
+  g.fillStyle(0x224940).fillRoundedRect(b.x,b.y,b.width,b.height,7);
+  g.lineStyle(1,0xc9ac79,.75).strokeRoundedRect(b.x+.5,b.y+.5,b.width-1,b.height-1,7);
+  const inset=5,arm=Math.max(4,Math.min(19,b.height*.16));
+  for(const [x,y,dx,dy] of [[b.x+inset,b.y+inset,1,1],[b.x+b.width-inset,b.y+inset,-1,1],[b.x+inset,b.y+b.height-inset,1,-1],[b.x+b.width-inset,b.y+b.height-inset,-1,-1]]){
+   g.lineStyle(1,0xceaf79,.65).beginPath().moveTo(x+dx*arm,y).lineTo(x,y).lineTo(x,y+dy*arm).strokePath();
+  }
+ };
  // Paper and trays are unchanged until SceneView rebuilds the layout. Rasterize
  // them once instead of triangulating their rounded paths on every game frame.
  const addPaper=(graphics:Phaser.GameObjects.Graphics)=>{
@@ -52,9 +61,7 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
   g.fillStyle(0xe1d3bc).fillRoundedRect(build.x,build.y-4,build.width,build.height+8,9);
   g.lineStyle(1,0xb4a083,.8).strokeRoundedRect(build.x+.5,build.y-3.5,build.width-1,build.height+7,9);
   const stage=l.playedArea;
-  g.fillStyle(0xc6d7cf).fillRoundedRect(stage.x,stage.y,stage.width,stage.height,10);
-  g.lineStyle(2,0x718f88,.7).strokeRoundedRect(stage.x+1,stage.y+1,stage.width-2,stage.height-2,9);
-  g.lineStyle(1,0xf6f1e5,.6).strokeRoundedRect(stage.x+5,stage.y+5,stage.width-10,stage.height-10,6);
+  playMat(g,stage);
   g.fillStyle(0x26313a,.12).fillRoundedRect(l.scoreBoard.x,l.scoreBoard.y+3,l.scoreBoard.width,l.scoreBoard.height,9);
   g.fillStyle(0xfff9ee).fillRoundedRect(l.scoreBoard.x,l.scoreBoard.y,l.scoreBoard.width,l.scoreBoard.height,9);
   g.lineStyle(1,0xb4a083).strokeRoundedRect(l.scoreBoard.x+.5,l.scoreBoard.y+.5,l.scoreBoard.width-1,l.scoreBoard.height-1,9);
@@ -62,6 +69,7 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
   g.lineStyle(1,0xc4b397,.8).strokeRoundedRect(main.x+.5,l.hand.y-7.5,main.width-1,l.actions.y+l.actions.height-l.hand.y+15,9);
   g.lineStyle(3,T.red,.8).lineBetween(main.x+12,frame.y-9,main.x+64,frame.y-9);
   addPaper(g);
+  drawRiverScroll(scene,view,{x:stage.x+7,y:stage.y+7,width:stage.width-14,height:stage.height-14},.72,.16);
   return;
  }
  function sheet(name:string,b:Box,color:number,edge:number,shadow=false):void {
@@ -80,21 +88,22 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
   accent.fillStyle(T.ink,.9).fillRect(plan.program.x,plan.program.y,plan.program.width,plan.program.height);
   accent.fillStyle(T.jadeSoft,.5).fillRoundedRect(l.scoreBoard.x,l.scoreBoard.y,l.scoreBoard.width,l.scoreBoard.height,10);
   accent.lineStyle(1,T.jade,.42).strokeRoundedRect(l.scoreBoard.x+.5,l.scoreBoard.y+.5,l.scoreBoard.width-1,l.scoreBoard.height-1,10);
-  accent.fillStyle(T.paperLight,.98).fillRoundedRect(l.playedArea.x,l.playedArea.y,l.playedArea.width,l.playedArea.height,12);
-  accent.lineStyle(1,T.red,.42).strokeRoundedRect(l.playedArea.x+.5,l.playedArea.y+.5,l.playedArea.width-1,l.playedArea.height-1,12);
+  const mat={...l.playedArea,height:Math.max(l.playedArea.height,l.heroAction.y-5-l.playedArea.y)};
+  playMat(accent,mat);
   accent.fillStyle(T.paperLight,.99).fillRect(l.hand.x-4,l.hand.y-8,l.hand.width+8,l.actions.y-l.hand.y+8);
   accent.lineStyle(2,T.ink,.16).lineBetween(l.hand.x,l.hand.y-8,l.hand.x+l.hand.width,l.hand.y-8);
   accent.lineStyle(2,T.red,.48).lineBetween(l.actions.x,l.actions.y+l.actions.height,l.actions.x+l.actions.width,l.actions.y+l.actions.height);
   addPaper(accent);
+  drawRiverScroll(scene,view,{x:mat.x+6,y:mat.y+6,width:mat.width-12,height:mat.height-12},.72,.15);
   // The supplied full-frame hero art is part of the table's atmosphere on
   // phones too. It sits behind the landing lane with a soft alpha so sleeves,
   // hair and weapons dissolve into the paper while the live cards stay crisp.
   const holder=view.add(scene.add.container(0,0).setName('table-art/mobile-hero-layer'));
   whenTextureReady(scene,holder,pcHeroKey(characterId),()=>{
    const key=pcHeroKey(characterId),source=scene.textures.get(key).getSourceImage() as HTMLImageElement;
-   const area=l.playedArea,composition=PC_HERO_COMPOSITION[characterId],width=area.width*.56,height=area.height*.96;
+   const area=mat,composition=PC_HERO_COMPOSITION[characterId],width=area.width*.56,height=area.height*.96;
    const scale=Math.min(width/source.width,height/source.height)*composition.scale;
-   const image=scene.add.image(area.x+area.width*.78,area.y+area.height*.56,key).setScale(scale).setAlpha(.3).setName('table-art/mobile-hero');
+   const image=scene.add.image(area.x+area.width*.78,area.y+area.height*.56,key).setScale(scale).setAlpha(.56).setName('table-art/mobile-hero');
    image.setData('assetId',characterId+'.pc').setData('bounds',{x:image.x-image.displayWidth/2,y:image.y-image.displayHeight/2,width:image.displayWidth,height:image.displayHeight});holder.add(image);
   });
  } else sheet('surface',plan.surface,T.jadeSoft,T.jade,true);

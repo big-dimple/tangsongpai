@@ -7,7 +7,7 @@ import {execFileSync} from 'node:child_process';
 import {build} from 'vite';
 import {chromium} from 'playwright';
 import {waitScene,openRunMenu,tapUI} from './ui.mjs';
-const baseline=process.argv.includes('--baseline'),out='docs/production/evidence/shop-purpose-2026-10-17',entry='.vite/shop-purpose-entry.html',bundle='.vite/shop-purpose-build';
+const baseline=process.argv.includes('--baseline'),out='shots/shop-purpose',entry='.vite/shop-purpose-entry.html',bundle='.vite/shop-purpose-build';
 await mkdir(out,{recursive:true});await mkdir('.vite',{recursive:true});
 const probe=`<script type="module">import {workshopLayoutFixture} from '/harness/fixtures/workshop-layout.ts';import {makeCheckpoint} from '/src/application/checkpoint.ts';import {gameSession} from '/src/game/session.ts';import {applyCommand} from '/src/domain/run.ts';window.purposeProbe={fixture(n){const s=structuredClone(workshopLayoutFixture(n).state);s.consumables=[{instanceId:'purpose/tool',definitionId:'T03'}];return makeCheckpoint(s,[]);},async snap(){const c=window.__harness.game.registry.get('runController');return {state:c.state,journal:c.journal,storage:await gameSession().storage.read()};},expected(s,commands){for(const c of commands){const r=applyCommand(s,c);if(!r.ok)throw Error(r.code);s=r.state;}return s;}};</script>`;
 await writeFile(entry,(await readFile('index.html','utf8')).replace('</body>',probe+'</body>'));

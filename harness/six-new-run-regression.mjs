@@ -15,7 +15,22 @@ const server=await preview({build:{outDir:out+'/build'},preview:{host:'127.0.0.1
 const snap=p=>p.evaluate(async()=>{const c=window.__harness.game.registry.get('runController');return{state:c.state,journal:c.journal,storage:await c.store.read()};});
 const ui=p=>p.evaluate(()=>{const s=window.__harness.game.scene.getScene('game');return {phase:s.run.phase,hand:s.hand.map(c=>c.id),views:s.cardViews.map(v=>v.card.id),layout:s.view.layout.cards.length,selected:[...s.selectedIds],amoExile:s.amoExile,assist:s.assistIds,target:s.erxiangTargetId,burn:s.xiemuBurn,release:s.azaoRelease,pending:!!s.pendingRefill,play:s.playButton.getData('label').text,playEnabled:s.playButton.input.enabled,skill:s.heroActionButton?.getData('abilityState')};});
 async function settle(p){await p.waitForFunction(()=>{const g=window.__harness.game,s=g.scene.getScene('game');return g.scene.isActive('intermission')||g.scene.isActive('game')&&s.ready&&!s.playing&&!s.presentation&&s.cardViews.every(v=>!v.dealing);});}
-function canonical(before,after,expected){const added=after.journal.slice(before.journal.length);assert.equal(added.length,expected.length);let state=before.state;for(let i=0;i<added.length;i++){assert.deepEqual(added[i].action,prepareBossSuitRescueAction(state,expected[i]));const r=applyCommand(state,added[i]);assert.ok(r.ok,r.code);assert.equal(r.duplicate,false);state=r.state;}assert.deepEqual(after.state,state);assert.deepEqual(after.storage.current,makeCheckpoint(after.state,after.journal));return added;}
+function canonical(before,after,expected){
+  const added=after.journal.slice(before.journal.length);
+  assert.equal(added.length,expected.length);
+  let state=before.state,stageEntry=before.storage.current.stageEntry;
+  for(const [i,command] of added.entries()){
+    assert.deepEqual(command.action,prepareBossSuitRescueAction(state,expected[i]));
+    const result=applyCommand(state,command);
+    assert.ok(result.ok,result.code);assert.equal(result.duplicate,false);
+    state=result.state;
+    if(command.action.type==='EnterStage')stageEntry=makeCheckpoint(state,after.journal.slice(0,before.journal.length+i+1));
+    if(!['await-input','pending-refill','run-lost'].includes(state.phase))stageEntry=undefined;
+  }
+  assert.deepEqual(after.state,state);
+  assert.deepEqual(after.storage.current,makeCheckpoint(state,after.journal,stageEntry));
+  return added;
+}
 try{
   for(const plan of plans.filter(p=>!heroes||heroes.includes(p.hero))){
     const dir=out+'/'+plan.hero;await mkdir(dir,{recursive:true});const viewport={width:Number(process.env.SIX_HERO_WIDTH??(plan.hero==='amo'?1366:390)),height:Number(process.env.SIX_HERO_HEIGHT??(plan.hero==='amo'?900:844))};

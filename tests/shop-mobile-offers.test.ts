@@ -21,12 +21,12 @@ class Element {
 }
 afterEach(()=>{vi.unstubAllGlobals();vi.clearAllMocks();});
 function mount(consumed=false,patch:Partial<MobileShopOffer>={}){
- vi.stubGlobal('document',{createElement:(tag:string)=>new Element(tag)});const host=new Element('section'),open=vi.fn(),gate={active:true},row:MobileShopOffer={id:'offer/mobile',definitionId:'b07',name:'测试唐宋牌',identity:'珍奇·多彩',summary:'当前实际效果',extra:'倍率×1.5',price:7,consumed,thumbnailUrl:'/preview.webp',...patch};
+ vi.stubGlobal('document',{createElement:(tag:string)=>new Element(tag)});const host=new Element('section'),open=vi.fn(),gate={active:true},row:MobileShopOffer={id:'offer/mobile',definitionId:'b07',name:'测试唐宋牌',identity:'珍奇·多彩',summary:'当前实际效果',extra:'倍率×1.5',price:7,gold:10,consumed,thumbnailUrl:'/preview.webp',...patch};
  const stop=mountShopMobileOffers(host as unknown as HTMLElement,[row],()=>gate.active,open);return {host,open,gate,stop,main:host.findClass('shop-mobile-offer-main')!,zoom:host.findClass('shop-mobile-offer-zoom')!};
 }
 it('image, name, rarity and real price open the same single quote path, while appreciation is independent',()=>{
  const ui=mount();expect(ui.main.dataset.ui).toBe('shop/offer/offer/mobile');for(const node of [ui.host.find('img')!,ui.host.find('strong')!,ui.host.findClass('shop-mobile-offer-identity')!,ui.host.findClass('shop-mobile-offer-price')!])node.click();
- expect(ui.open.mock.calls).toEqual(Array.from({length:4},()=>['offer/mobile']));expect(ui.main.focus).toHaveBeenCalledWith({preventScroll:true});expect(ui.host.findClass('shop-mobile-offer-price')!.textContent).toBe('7 金 · 详情 ›');expect(ui.host.findClass('shop-mobile-offer-identity')!.textContent).toBe('珍奇·多彩');expect(ui.host.scrollTop).toBe(184);
+ expect(ui.open.mock.calls).toEqual(Array.from({length:4},()=>['offer/mobile']));expect(ui.main.focus).toHaveBeenCalledWith({preventScroll:true});expect(ui.host.findClass('shop-mobile-offer-price')!.textContent).toBe('7 金');expect(ui.host.find('small')?.textContent).toBe('购后余 3 金');expect(ui.host.findClass('shop-mobile-offer-identity')!.textContent).toBe('珍奇·多彩');expect(ui.host.scrollTop).toBe(184);
  ui.zoom.click();expect(openCardArtZoom).toHaveBeenCalledOnce();expect(ui.open).toHaveBeenCalledTimes(4);ui.stop();
 });
 it('disabled, inactive and disposed rows cannot open quotes, including retained callbacks',()=>{

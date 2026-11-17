@@ -1,20 +1,17 @@
+import {drawRiverScroll} from './RiverScroll';
 import type Phaser from 'phaser';
 import type {Box} from './layout';
 import type {SceneView} from './SceneView';
 import type {shopLayout} from './ShopLayout';
-import type {CharacterId} from './characters';
 import {PAPER_THEME as T} from './theme';
 
-/** The same dark ink header leads into a cool paper shop, without recoloring card art. */
-export function drawShopBackdrop(scene:Phaser.Scene,view:SceneView,p:ReturnType<typeof shopLayout>,_hero?:CharacterId):void {
- if(p.pc){
-  const edge=p.top+54;
-  view.add(scene.add.graphics().fillStyle(0x203f3b).fillRect(0,0,view.layout.width,edge).lineStyle(1,0xc2a773,.85).lineBetween(0,edge,view.layout.width,edge).setName('shop-art/pc-header'));
-  return;
- }
- if(!p.portrait)view.add(scene.add.rectangle(0,0,view.layout.width,view.layout.height,0xefeee5).setOrigin(0).setName('shop-art/backdrop'));
- const edge=p.top+(p.portrait?48+(p.headerRows-1)*44:42),y=Math.max(0,p.top-8);
- view.add(scene.add.graphics().fillStyle(0x203f3b,1).fillRect(0,y,view.layout.width,edge-y).lineStyle(1,0xb7a36d,.8).lineBetween(p.x,edge,p.x+p.w,edge).setName('shop-art/ink-header'));
+/** Crop the riverfront along the shop sign. Product art and quotes have their own paper. */
+export function drawShopBackdrop(scene:Phaser.Scene,view:SceneView,p:ReturnType<typeof shopLayout>):void {
+ const width=view.layout.width;
+ if(!p.pc&&!p.portrait)view.add(scene.add.rectangle(0,0,width,view.layout.height,0xefeee5).setOrigin(0).setName('shop-art/backdrop'));
+ const y=p.pc?0:Math.max(0,p.top-8),bottom=p.top+(p.pc?54:p.portrait?48+(p.headerRows-1)*44:42);
+ view.add(scene.add.graphics().fillStyle(0x193d35).fillRect(0,y,width,bottom-y).lineStyle(2,0xb79e6c,.9).lineBetween(0,bottom,width,bottom).setName(p.pc?'shop-art/pc-header':'shop-art/ink-header'));
+ drawRiverScroll(scene,view,{x:0,y,width,height:bottom-y-1},.68,.26);
 }
 
 /** Quiet sheets follow published shop rectangles; decoration owns no input. */
@@ -36,7 +33,7 @@ export function drawShopArt(scene:Phaser.Scene,view:SceneView,p:ReturnType<typeo
        .fillStyle(fill).fillRoundedRect(b.x,b.y,b.width,b.height,8)
        .lineStyle(1,0xb7a484,.8).strokeRoundedRect(b.x+.5,b.y+.5,b.width-1,b.height-1,8);
     };
-    panel(pc.left,0xe6dcc8);panel(pc.ownedRail,0xf5eddd);panel(pc.shopPanel,0xe7dcc7);
+    panel(pc.left,0xdccdba);panel(pc.ownedRail,0xf4eddb);panel(pc.shopPanel,0xd9c9a9);
     g.lineStyle(1,0xb7a484,.7).lineBetween(pc.shopPanel.x+12,p.play.y-12,pc.shopPanel.x+pc.shopPanel.width-12,p.play.y-12);
     view.add(g);
   }else if(p.short){

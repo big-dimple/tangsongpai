@@ -7,7 +7,7 @@ import {createServer} from 'vite';
 import {chromium} from 'playwright';
 import {tapUI,waitScene,openSelector,confirmHeroRoute} from './ui.mjs';
 import {enterCurrentStage} from './stage-entry.mjs';
-const out=process.env.BATCH_OUT??'docs/production/evidence/batch-214-217-integration-2026-10-21';
+const out=process.env.BATCH_OUT??'shots/batch-214-217-integration';
 await mkdir(out,{recursive:true});
 const digest=x=>createHash('sha256').update(JSON.stringify(x)).digest('hex');
 const report={candidate:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),status:'RUNNING',source:{},steps:[],errors:[],scope:'Software Chromium touch simulation. Natural selector/shop/table followed by validated controlled Su Shi and U09 saves; no physical device, hearing, full hero matrix or user aesthetic acceptance.'};

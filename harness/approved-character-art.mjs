@@ -5,7 +5,7 @@ import {mkdir,writeFile} from 'node:fs/promises';
 import {gzipSync} from 'node:zlib';
 import {execFileSync} from 'node:child_process';
 import {tapUI,waitScene,openSelector,confirmHeroRoute} from './ui.mjs';
-const out=process.env.ART_OUTPUT??'docs/production/evidence/approved-character-art-2026-10-15/art-browser';await mkdir(out,{recursive:true});
+const out=process.env.ART_OUTPUT??'shots/approved-character-art/art-browser';await mkdir(out,{recursive:true});
 const server=await createServer({mode:'e2e',cacheDir:'/tmp/approved-character-art-vite',optimizeDeps:{noDiscovery:true,include:['phaser']},server:{host:'127.0.0.1',port:5573,strictPort:true},logLevel:'error'});await server.listen();
 const {createRun,applyCommand}=await server.ssrLoadModule('/src/domain/run.ts'),{newRunIdentity}=await server.ssrLoadModule('/src/game/RunLaunch.ts'),{makeCheckpoint,readCheckpoint}=await server.ssrLoadModule('/src/application/checkpoint.ts'),{HERO_CAST}=await server.ssrLoadModule('/src/game/HeroIdentity.ts');
 const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--disable-gpu','--disable-software-rasterizer']});

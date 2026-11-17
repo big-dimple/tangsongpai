@@ -5,7 +5,7 @@ import {mkdir,writeFile,readFile} from 'node:fs/promises';
 import {gzipSync} from 'node:zlib';
 import {execFileSync} from 'node:child_process';
 import {tapUI,waitScene,openSelector,confirmHeroRoute,tapMenuAction,openMenuSection} from './ui.mjs';
-const out=process.env.HERO_ART_OUT??'docs/production/evidence/hero-art-contract-2026-10-15';await mkdir(out,{recursive:true});
+const out=process.env.HERO_ART_OUT??'shots/hero-art-contract';await mkdir(out,{recursive:true});
 const port=Number(process.env.HERO_ART_PORT??5587);
 const server=await createServer({mode:'e2e',server:{host:'127.0.0.1',port,strictPort:true,hmr:false},logLevel:'error'});await server.listen();
 const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox','--disable-gpu','--disable-software-rasterizer']});

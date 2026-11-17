@@ -2,14 +2,15 @@ import {GAME_NAME} from './Brand';
 import './HomePage.css';
 
 // Capture the existing loading artwork before its dialog leaves the document.
-// The same inline SVG, suit drawings and shared .load-* styles remain the visual source.
+// Reuse the already decoded scroll when the player reaches the title.
 const sceneTemplate=typeof document==='undefined'?undefined:document.querySelector<HTMLElement>('#resource-loading .load-scene')?.cloneNode(true) as HTMLElement|undefined;
 const mastheadTemplate=typeof document==='undefined'?undefined:document.querySelector<HTMLElement>('#resource-loading .load-top')?.cloneNode(true) as HTMLElement|undefined;
-export interface HomePageModel {summary?:readonly string[];canContinue:boolean;canStart:boolean;canTutorial:boolean;notice:boolean;message?:string;reduced:boolean;showTutorialSkip?:boolean;canSkipTutorial?:boolean;checkingHistory?:boolean;firstPlayer?:boolean}
+export interface HomePageModel {summary?:readonly string[];canContinue:boolean;canStart:boolean;canTutorial:boolean;notice:boolean;message?:string;showTutorialSkip?:boolean;canSkipTutorial?:boolean;checkingHistory?:boolean;firstPlayer?:boolean}
 
 /** Native actions sit with the paper artwork; selection, persistence and routing stay in TitleScene. */
 export class HomePage {
  readonly root=document.createElement('main');
+ private heading=document.createElement('h2');
  private summary=document.createElement('p');
  private start=document.createElement('button');
  private tutorial=document.createElement('button');
@@ -18,7 +19,6 @@ export class HomePage {
  private hint=document.createElement('p');
  private notice=document.createElement('p');
  private busy=false;
- private visibility=()=>this.root.toggleAttribute('data-home-paused',document.hidden);
  constructor(actions:{start:()=>void;tutorial:()=>void;resume:()=>void;skipTutorial:()=>void}){
   this.root.className='title-home';this.root.setAttribute('aria-label',GAME_NAME+'首页');
   const sheet=document.createElement('div');sheet.className='home-sheet';
@@ -27,7 +27,7 @@ export class HomePage {
   const art=sceneTemplate?.cloneNode(true) as HTMLElement|undefined;
   if(art){
    art.classList.add('home-hero');art.removeAttribute('aria-hidden');
-   for(const ornament of art.querySelectorAll('.load-world,.load-side,.load-fan'))ornament.setAttribute('aria-hidden','true');
+   for(const ornament of art.querySelectorAll('.load-world,.load-fan'))ornament.setAttribute('aria-hidden','true');
    for(const card of art.querySelectorAll('.load-card-seat'))card.classList.add('is-inked');
    sheet.append(art);
   }else {const heading=document.createElement('h1');heading.textContent=GAME_NAME;sheet.append(heading);}
@@ -41,20 +41,19 @@ export class HomePage {
   buttons.append(this.resume,this.start,this.tutorial,this.skip);
   this.hint.className='home-hint';
   this.notice.className='home-notice';this.notice.textContent='存档提示请查看右上菜单。';this.notice.setAttribute('role','status');
-  entry.append(this.summary,buttons,this.hint,this.notice);sheet.append(entry);
-  const footer=document.createElement('p');footer.className='home-footer';footer.textContent='一纸纳山河 · 六位群英同席';sheet.append(footer);
-  this.root.append(sheet);document.body.append(this.root);this.visibility();document.addEventListener('visibilitychange',this.visibility);
+  entry.append(this.heading,this.summary,buttons,this.hint,this.notice);sheet.append(entry);
+  this.root.append(sheet);document.body.append(this.root);
  }
  update(model:HomePageModel):void {
-  this.root.dataset.homeMotion=model.reduced?'reduce':'full';this.root.dataset.hasSave=String(!!model.summary);
+  this.heading.textContent=model.summary?'续上这局':model.firstPlayer?'从第一手开始':'开一局';
   this.summary.hidden=!model.summary;this.summary.replaceChildren(...(model.summary??[]).map(text=>{const span=document.createElement('span');span.textContent=text;return span;}));
   this.resume.hidden=!model.summary;this.resume.disabled=this.busy||!model.canContinue;this.start.disabled=this.busy||!model.canStart;this.tutorial.disabled=this.busy||!model.canTutorial;
   this.start.textContent=model.firstPlayer?'新手首战':'普通新局';this.tutorial.hidden=!!model.firstPlayer;
   this.skip.hidden=!model.showTutorialSkip;this.skip.disabled=this.busy||!model.canSkipTutorial;this.skip.className='home-text-action';
-  this.hint.textContent=model.firstPlayer?(model.checkingHistory?'正在准备新手首战，也可以直接选角。':'一手牌一场实战，边玩边学会计分、构筑与英雄技能。'):'新手首战可随时重玩；普通新局从选英雄开始。';
+  this.hint.textContent=model.firstPlayer?(model.checkingHistory?'正在准备新手首战，也可以直接选角。':'跟刘娥打一场，从一对牌学会计分。'):model.summary?'继续会回到上一次落笔的地方。':'先选英雄和路线，在集市备好第一手牌。';
   this.notice.textContent=model.message||'存档提示请查看右上菜单。';
-  this.resume.className='home-primary';this.start.className=model.summary||!model.firstPlayer?'home-secondary':'home-primary';this.tutorial.className=model.summary?'home-secondary':'home-primary';this.notice.hidden=!model.notice;
+  this.resume.className='home-primary';this.start.className=model.summary?'home-secondary':'home-primary';this.tutorial.className='home-secondary';this.notice.hidden=!model.notice;
  }
  confirm():void {this.busy=true;this.resume.disabled=this.start.disabled=this.tutorial.disabled=this.skip.disabled=true;this.root.setAttribute('aria-busy','true');}
- destroy():void {document.removeEventListener('visibilitychange',this.visibility);this.resume.onclick=this.start.onclick=this.tutorial.onclick=this.skip.onclick=null;this.root.remove();}
+ destroy():void {this.resume.onclick=this.start.onclick=this.tutorial.onclick=this.skip.onclick=null;this.root.remove();}
 }

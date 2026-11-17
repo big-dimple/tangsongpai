@@ -4,7 +4,7 @@ import {chromium} from 'playwright';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
 import {waitScene,openSelector,tapUI,confirmHeroRoute} from './ui.mjs';
-const out=process.env.ART_RECOVERY_OUTPUT??'docs/production/evidence/approved-character-art-2026-10-15/recovery';await mkdir(out,{recursive:true});
+const out=process.env.ART_RECOVERY_OUTPUT??'shots/approved-character-art/recovery';await mkdir(out,{recursive:true});
 const server=await createServer({mode:'e2e',cacheDir:'/tmp/approved-art-recovery-vite',optimizeDeps:{noDiscovery:true,include:['phaser']},server:{host:'127.0.0.1',port:5579,strictPort:true},logLevel:'error'});await server.listen();
 const {sceneResources}=await server.ssrLoadModule('/src/game/SceneResources.ts');
 const report={head:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),scope:'Native startup avatar failure/retry and text fallback, optional head/portrait retry, DOM portrait recovery, cold persisted-run restoration. Controlled software browser.',startup:sceneResources('title',undefined,true),cases:[]};

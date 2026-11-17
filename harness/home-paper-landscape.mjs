@@ -1,55 +1,70 @@
 import assert from 'node:assert/strict';
-import {build,preview} from 'vite';
 import {chromium} from 'playwright';
-import {mkdir,readFile,writeFile} from 'node:fs/promises';
-import {createHash} from 'node:crypto';
-import {execFileSync} from 'node:child_process';
-import {tapUI,waitScene,confirmHeroRoute} from './ui.mjs';
-const out=process.env.HOME_OUT??'shots/home-paper-landscape';await mkdir(out,{recursive:true});
-const baseline='fa5b30ee1ebf28d4ee71d676b231eab260172033',oldTitle=execFileSync('git',['show',baseline+':src/game/TitleScene.ts'],{encoding:'utf8'});
-const report={base:baseline,head:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),baselineTitleBlob:execFileSync('git',['rev-parse',baseline+':src/game/TitleScene.ts'],{encoding:'utf8'}).trim(),sourceHashes:{},cases:[],errors:[]};
-for(const path of ['src/game/TitleScene.ts','src/game/HomePage.ts','src/game/HomePage.css'])report.sourceHashes[path]=createHash('sha256').update(await readFile(path)).digest('hex');
-const browser=await chromium.launch({...process.env.HOME_BROWSER?{executablePath:process.env.HOME_BROWSER}:{channel:process.platform==='win32'?'msedge':undefined},args:['--disable-gpu']});report.browser=browser.version();report.platform=process.platform;
-let server;
-const specs=[[320,740],[390,844],[1366,768]];
-async function serve(before=false){
- await build({mode:'e2e',plugins:before?[{name:'read-only-baseline-title',enforce:'pre',transform(_code,id){if(id.split('?')[0].replaceAll('\\','/').endsWith('/src/game/TitleScene.ts'))return {code:oldTitle,map:null};}}]:[],build:{outDir:before?'shots/home-before-build':'shots/home-after-build',emptyOutDir:true},logLevel:'error'});
- server=await preview({build:{outDir:before?'shots/home-before-build':'shots/home-after-build'},preview:{host:'127.0.0.1',port:5586,strictPort:true},logLevel:'error'});
+import {createServer} from 'vite';
+import {chooseCharacter,confirmHeroRoute,enterOpeningShop,tapUI,waitScene} from './ui.mjs';
+
+const server=process.env.HOME_URL?undefined:await createServer({mode:'e2e',server:{host:'127.0.0.1',port:0,hmr:false},logLevel:'error'});
+if(server)await server.listen();
+const url=process.env.HOME_URL??('http://127.0.0.1:'+server.httpServer.address().port);
+const browser=await chromium.launch({executablePath:process.env.HOME_BROWSER??process.env.CHROMIUM_PATH});
+const saved=page=>page.evaluate(async()=>{
+  const run=window.__harness.game.registry.get('runController');
+  return run?{state:run.state,journal:run.journal,storage:await run.store.read()}:null;
+});
+
+async function checkHome(page) {
+  const home=page.locator('.title-home');
+  assert.equal(await home.getByRole('heading',{name:'唐宋牌',exact:true}).count(),1);
+  await home.locator('.load-world img').evaluate(img=>img.decode());
+  const layout=await home.evaluate(el=>{
+    const rect=e=>{const b=e.getBoundingClientRect();return {x:b.x,y:b.y,right:b.right,bottom:b.bottom,height:b.height};};
+    return {overflow:el.scrollWidth-el.clientWidth,heading:rect(el.querySelector('h1')),width:innerWidth,
+      art:el.querySelector('.load-world img').naturalWidth,fan:el.querySelectorAll('.load-card').length,
+      stamp:rect(el.querySelector('.load-seal')),menu:rect(document.querySelector('.run-menu-toggle')),
+      actions:[...el.querySelectorAll('button:not([hidden])')].map(rect)};
+  });
+  assert.equal(layout.art,1440);assert.equal(layout.fan,3);assert.ok(layout.overflow<=1);
+  assert.ok(layout.stamp.right<=layout.menu.x-4||layout.stamp.y>=layout.menu.bottom+4);
+  for(const box of [layout.heading,...layout.actions])assert.ok(box.x>=-1&&box.right<=layout.width+1,JSON.stringify(layout));
+  for(const box of layout.actions)assert.ok(box.height>=44);
 }
-async function stop(){server.httpServer.closeAllConnections();await new Promise(resolve=>server.httpServer.close(resolve));server=undefined;}
-const snapshot=page=>page.evaluate(async()=>{const c=window.__harness.game.registry.get('runController');return c?{state:c.state,journal:c.journal,storage:await c.store.read()}:null;});
-const shot=(page,name)=>page.screenshot({path:out+'/'+name+'.png',scale:'css'});
-async function check(page,label){
- await page.waitForTimeout(950);const info=await page.evaluate(()=>{const root=document.querySelector('.title-home'),menu=document.querySelector('.run-menu-toggle'),box=e=>{const b=e.getBoundingClientRect();return {text:e.textContent.trim(),x:b.x,y:b.y,width:b.width,height:b.height};};return {root:{scrollWidth:root.scrollWidth,clientWidth:root.clientWidth,scrollHeight:root.scrollHeight,clientHeight:root.clientHeight},width:innerWidth,height:innerHeight,heading:box(root.querySelector('h1')),copy:[...root.querySelectorAll('.home-save span,.home-hint,.home-notice:not([hidden])')].map(box),buttons:[...root.querySelectorAll('button:not([hidden])')].map(e=>({...box(e),disabled:e.disabled})),stamp:box(root.querySelector('.load-seal')),menu:box(menu),landscape:root.querySelectorAll('.load-landscape path').length,suits:root.querySelectorAll('.load-card svg').length,text:root.innerText};});
- await shot(page,label);assert.ok(info.root.scrollWidth<=info.root.clientWidth+1,label+' root horizontal overflow '+JSON.stringify(info));assert.equal(info.suits,3);assert.ok(info.landscape>5);assert.ok(!/D[0-9]/.test(info.text),label+' no developer mode codes');
- for(const b of [info.heading,...info.copy,...info.buttons])assert.ok(b.x>=-1&&b.x+b.width<=info.width+1,label+' bounds '+JSON.stringify(b));
- for(const b of info.buttons)assert.ok(b.height>=44,label+' accessible target '+JSON.stringify(b));
- const sideTitles=await page.locator('.title-home .load-side:visible').evaluateAll(elements=>elements.map(e=>{const b=e.getBoundingClientRect();return {x:b.x,y:b.y,width:b.width,height:b.height};}));
- for(const b of sideTitles)assert.ok(!(b.x<info.heading.x+info.heading.width&&b.x+b.width>info.heading.x&&b.y<info.heading.y+info.heading.height&&b.y+b.height>info.heading.y),label+' decorative side title overlaps heading');
- assert.ok(info.stamp.x+info.stamp.width<=info.menu.x-4||info.stamp.y>=info.menu.y+info.menu.height+4,label+' seal avoids menu');
- report.cases.push({label,...info});return info;
-}
-try{
- if(!process.env.HOME_SKIP_BEFORE){await serve(true);for(const [width,height] of specs){const c=await browser.newContext({viewport:{width,height},hasTouch:width<640,reducedMotion:'reduce'}),p=await c.newPage();await p.goto('http://127.0.0.1:5586/?harness=1',{waitUntil:'domcontentloaded'});await waitScene(p,'title');await p.waitForTimeout(300);await shot(p,width+'-before');await c.close();}await stop();}
- await serve(false);
- for(const [width,height] of specs){
-  const c=await browser.newContext({viewport:{width,height},hasTouch:width<640,reducedMotion:width===390?'reduce':'no-preference'}),p=await c.newPage();p.on('pageerror',e=>report.errors.push(String(e)));
-  await p.goto('http://127.0.0.1:5586/?harness=1&seed=home-evidence',{waitUntil:'domcontentloaded'});await waitScene(p,'title');await p.waitForTimeout(1000);
-  const empty=await check(p,width+'-no-save');assert.equal(empty.buttons.length,1);assert.equal(await p.getByRole('heading',{name:'唐宋牌',exact:true}).count(),1);assert.equal(await snapshot(p),null);
-  await tapUI(p,'title','action/title-start',width<640);await waitScene(p,'character-select');assert.equal(await p.locator('.title-home').count(),0);
-  await tapUI(p,'character-select','character/amo',width<640);await confirmHeroRoute(p,width<640);await waitScene(p,'shop');await p.waitForFunction(()=>window.__harness.game.scene.getScene('shop').ready);const saved=await snapshot(p);
-  await p.reload({waitUntil:'domcontentloaded'});await waitScene(p,'title');assert.deepEqual(await snapshot(p),saved);const home=await check(p,width+'-saved');assert.equal(home.buttons.length,2);assert.ok(home.text.includes('普通模式'));
-  // A display-only long-number fixture never writes the real run or its journal/storage.
-  await p.evaluate(()=>window.__harness.game.scene.getScene('title').home.update({summary:['文成公主','普通模式','第 9,007,199,254,740,991 章','金币 9,007,199,254,740,991'],canContinue:true,canStart:true,notice:true,reduced:true}));await check(p,width+'-long-values');assert.deepEqual(await snapshot(p),saved);
-  for(const zoom of [1.25,2]){await p.evaluate(zoom=>{document.documentElement.style.zoom=String(zoom);document.querySelector('.title-home').scrollTop=0;},zoom);await check(p,width+'-zoom-'+zoom);for(const button of await p.locator('.home-actions button').all()){await button.scrollIntoViewIfNeeded();assert.ok(await button.isVisible());}}
-  await p.evaluate(()=>{document.documentElement.style.zoom='1';window.__harness.game.scene.getScene('title').render();document.querySelector('.title-home').scrollTop=0;});
-  const resume=p.getByRole('button',{name:'继续本局',exact:true});await resume.focus();assert.equal(await resume.evaluate(e=>document.activeElement===e),true);
-  if(width===1366)await p.keyboard.press('Enter');else await resume.tap();await waitScene(p,'shop');await p.waitForFunction(()=>window.__harness.game.scene.getScene('shop').ready);assert.deepEqual(await snapshot(p),saved);
-  // New-game selection and its existing replacement confirmation remain read-only until confirmation.
-  await p.reload({waitUntil:'domcontentloaded'});await waitScene(p,'title');await p.getByRole('button',{name:'开始新局',exact:true}).click();await waitScene(p,'character-select');await tapUI(p,'character-select','character/azao',width<640);await tapUI(p,'character-select','action/confirm-character',width<640);await tapUI(p,'character-select','route/group',width<640);await tapUI(p,'character-select','action/confirm-character',width<640);await p.getByRole('button',{name:'确认开始新局',exact:true}).waitFor();assert.deepEqual(await snapshot(p),saved);await p.getByRole('button',{name:'取消',exact:true}).click();assert.deepEqual(await snapshot(p),saved);
-  await p.waitForTimeout(380);await tapUI(p,'character-select','action/confirm-character',width<640);await p.getByRole('button',{name:'确认开始新局',exact:true}).click();await waitScene(p,'shop');await p.waitForFunction(()=>window.__harness.game.scene.getScene('shop').ready);const replaced=await snapshot(p);assert.notEqual(replaced.state.runId,saved.state.runId);assert.equal(replaced.state.characterId,'azao');assert.deepEqual(replaced.storage.previous.state,saved.state);
-  await p.reload({waitUntil:'domcontentloaded'});await waitScene(p,'title');assert.deepEqual(await snapshot(p),replaced);await check(p,width+'-replacement-restored');report.cases.push({label:width+'-native-flow',entireSavedTupleColdRestored:true,continuePreservedEntireTuple:true,cancelReplacementUnchanged:true,confirmedReplacementBackupEqual:true});await c.close();console.log('PASS',width,height);
- }
- assert.deepEqual(report.errors,[]);report.status='PASS';
-}catch(error){report.status='FAIL';report.error=error.stack??String(error);process.exitCode=1;}
-finally{await writeFile(out+'/report.json',JSON.stringify(report,null,2));console.log(report.status,report.error??'');await browser.close();if(server)await stop();}
+
+try {
+  for(const [width,height] of [[320,568],[390,844],[1366,768]]){
+    const touch=width<640,context=await browser.newContext({viewport:{width,height},hasTouch:touch,reducedMotion:'reduce'});
+    const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+    await page.goto(url+'/?harness=1&seed=home-replay');await waitScene(page,'title');await checkHome(page);
+    assert.equal(await saved(page),null);
+    await chooseCharacter(page,'amo',touch);
+    const baseline=await saved(page);assert.ok(baseline);
+    await page.reload();await waitScene(page,'title');await checkHome(page);
+    assert.deepEqual(await saved(page),baseline);
+    await page.evaluate(()=>window.__harness.game.scene.getScene('title').home.update({summary:['文成公主','普通模式','第 9,007,199,254,740,991 章','金币 9,007,199,254,740,991'],canContinue:true,canStart:true,canTutorial:true,notice:true}));
+    for(const zoom of [1.25,2]){
+      await page.evaluate(z=>{document.documentElement.style.zoom=String(z);},zoom);
+      await checkHome(page);
+      for(const button of await page.locator('.home-actions button:visible').all())await button.scrollIntoViewIfNeeded();
+    }
+    await page.evaluate(()=>{document.documentElement.style.zoom='1';window.__harness.game.scene.getScene('title').render();});
+    const resume=page.getByRole('button',{name:'继续本局',exact:true});await resume.focus();
+    if(touch)await resume.tap();else await page.keyboard.press('Enter');
+    await waitScene(page,'shop');assert.deepEqual(await saved(page),baseline);
+    await page.reload();await waitScene(page,'title');await tapUI(page,'title','action/title-start',touch);
+    await waitScene(page,'character-select');await tapUI(page,'character-select','character/azao',touch);
+    await tapUI(page,'character-select','action/confirm-character',touch);
+    await tapUI(page,'character-select','route/group',touch);
+    assert.deepEqual(await saved(page),baseline);
+    await tapUI(page,'character-select','action/cancel-character',touch);
+    assert.deepEqual(await saved(page),baseline,'returning from a proposed route preserves the whole save');
+    await confirmHeroRoute(page,touch);await enterOpeningShop(page,touch);
+    const next=await saved(page);assert.equal(next.state.characterId,'azao');assert.notEqual(next.state.runId,baseline.state.runId);
+    const oldSlot=await page.evaluate(async state=>{
+      const {gameSession}=await import('/src/game/session.ts');
+      return gameSession().storage.readPartition(state);
+    },baseline.state);
+    const previous=oldSlot.current.state.runId===baseline.state.runId?oldSlot.current:oldSlot.previous;
+    assert.deepEqual(previous.state,baseline.state,'the previous campaign remains in its saved ruleset partition');
+    await page.reload();await waitScene(page,'title');assert.deepEqual(await saved(page),next);assert.deepEqual(errors,[]);
+    await context.close();console.log('PASS title, zoom, continue and replace',width,height);
+  }
+}finally {await browser.close();await server?.close();}

@@ -8,7 +8,7 @@ import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import path from 'node:path';
 import {openSelector,tapUI,confirmHeroRoute,waitScene,point,tapMenuAction} from './ui.mjs';
-const out=process.env.DELIVERY_OUTPUT??'docs/production/evidence/tangsong-delivery-integration-2026-10-15/native';await mkdir(out,{recursive:true});
+const out=process.env.DELIVERY_OUTPUT??'shots/tangsong-delivery-integration/native';await mkdir(out,{recursive:true});
 const paths=['src/game/SceneView.ts','harness/tangsong-delivery-integration.mjs','index.html','src/game/LoadingScreen.ts','src/game/PaperFlow.ts','src/game/GameScene.ts','src/game/ShopScene.ts','src/game/ToolCarryIntent.ts','src/game/CharacterArt.ts','src/game/SceneResources.ts','src/game/HeroClimax.ts','src/game/HeroClimaxCaption.ts','src/game/HeroClimaxLayout.ts'];
 const hash=async()=>Object.fromEntries(await Promise.all(paths.map(async p=>[p,createHash('sha256').update(await readFile(p)).digest('hex')])));
 const report={head:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),sourceHashes:await hash(),scope:'Native fresh standard run with ordinary starting gold, real hero/route selection and public tool choice. Actual PlayHand settlement, next shop, deliberate weak-hand loss and same-seed retry included; duplicate native inputs and exact command replay. No imported state, stock overrides, domain replacements or natural full-tour acceptance. PC alone evicts one already-loaded display texture to exercise delayed scene-data handoff.',cases:[]};

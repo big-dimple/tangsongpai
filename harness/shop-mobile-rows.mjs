@@ -8,7 +8,7 @@ import {build} from 'vite';
 import {chromium} from 'playwright';
 import {waitScene,openRunMenu,tapUI} from './ui.mjs';
 if(process.platform==='win32')throw Error('Local browser verification is paused by user request; root coordinates remote Dot validation.');
-const baseline=process.argv.includes('--baseline'),out='docs/production/evidence/shop-mobile-rows-2026-10-17',entry='.vite/shop-mobile-rows-entry.html',bundle='.vite/shop-mobile-rows-build';
+const baseline=process.argv.includes('--baseline'),out='shots/shop-mobile-rows',entry='.vite/shop-mobile-rows-entry.html',bundle='.vite/shop-mobile-rows-build';
 await mkdir(out,{recursive:true});await mkdir('.vite',{recursive:true});
 const probe=`<script type="module">import {workshopLayoutFixture} from '/harness/fixtures/workshop-layout.ts';import {makeCheckpoint} from '/src/application/checkpoint.ts';import {gameSession} from '/src/game/session.ts';import {applyCommand} from '/src/domain/run.ts';window.purposeProbe={fixture(n){const s=structuredClone(workshopLayoutFixture(n).state);s.consumables=[{instanceId:'purpose/tool',definitionId:'T03'}];if(innerWidth<700)s.shop.offers[0].edition='polychrome';return makeCheckpoint(s,[]);},async snap(){const c=window.__harness.game.registry.get('runController');return {state:c.state,journal:c.journal,storage:await gameSession().storage.read()};},expected(s,commands){for(const c of commands){const r=applyCommand(s,c);if(!r.ok)throw Error(r.code);s=r.state;}return s;}};</script>`;
 await writeFile(entry,(await readFile('index.html','utf8')).replace('</body>',probe+'</body>'));

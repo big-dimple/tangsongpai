@@ -5,6 +5,24 @@ import {gameToolInventoryBox,toolInventoryPlayedArea} from '../src/game/ToolInve
 
 const sizes=[[320,568],[360,640],[390,740],[390,844],[430,932],[844,300],[844,360],[844,390],[1024,768],[1280,720],[1920,1080],[768,1024]];
 const inside=(b:Box,w:number,h:number)=>b.x>=0&&b.y>=0&&b.x+b.width<=w+.01&&b.y+b.height<=h+.01;
+it.each([8,9,14])('fits a readable, fully reachable %i-card hand between phone safe areas',count=>{
+  const safe={top:44,right:0,bottom:34,left:0},seen=new Set<number>();
+  for(let start=0;start<count;start++){
+    const l=layout({width:320,height:568},safe,undefined,{count,start});
+    expect(l.playedArea.height).toBeGreaterThanOrEqual(48-1e-6);
+    expect(l.slots.every(b=>b.width>=44)).toBe(true);
+    expect(l.tableActions.play.y+l.tableActions.play.height).toBeLessThanOrEqual(568-safe.bottom);
+    for(const [i,card] of l.cards.entries()){
+      if(!card.visible)continue;
+      seen.add(i);
+      expect(card.visual.width).toBeGreaterThanOrEqual(52-1e-6);
+      expect(card.visual.y+card.visual.height).toBeLessThanOrEqual(l.actions.y);
+      expect(intersects(card.hit,l.heroAction)).toBe(false);
+      expect(intersects(card.hit,l.actions)).toBe(false);
+    }
+  }
+  expect(seen.size).toBe(count);
+});
 describe('CSS layout contract',()=>{
   it('spends spare score height while preserving full five-card previews and existing hand budgets',()=>{
     for(const width of [360,390])for(const count of [9,10,14]){

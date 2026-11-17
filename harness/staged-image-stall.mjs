@@ -1,9 +1,10 @@
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
-import {writeFile} from 'node:fs/promises';
+import {mkdir,writeFile} from 'node:fs/promises';
 import {chromium} from 'playwright';
 import {waitScene,tapUI} from './ui.mjs';
-const out='docs/production/evidence/staged-image-warmup-2026-10-13',browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});
+const out='shots/staged-image-warmup',browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']});
+await mkdir(out,{recursive:true});
 const context=await browser.newContext({viewport:{width:320,height:740},hasTouch:true}),page=await context.newPage(),requests=[],failures=[],errors=[];
 page.on('request',r=>{if(/characters\/amo\./.test(r.url()))requests.push({url:r.url(),at:Date.now()});});page.on('requestfailed',r=>{if(/characters\/amo\./.test(r.url()))failures.push({url:r.url(),at:Date.now(),error:r.failure()});});page.on('pageerror',e=>errors.push(String(e)));
 await page.route('**/assets/handdrawn-p08/characters/amo.*.webp',()=>{});

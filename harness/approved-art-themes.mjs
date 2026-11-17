@@ -4,7 +4,7 @@ import {chromium} from 'playwright';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
 import {tapUI,waitScene,openSelector} from './ui.mjs';
-const out='docs/production/evidence/approved-character-art-2026-10-15';
+const out='shots/approved-character-art';
 await mkdir(out,{recursive:true});
 const git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
 const report={head:git('rev-parse','HEAD'),diff:git('diff','--','src/game/HeroIdentity.ts','src/game/HeroExplanation.ts','src/game/HeroClimax.ts'),scope:'Native selection/details for six approved themes only. Attachment pixel inspection, artwork, avatar, preload and climax visual acceptance blocked by download proxy HTTP403.',cases:[]};

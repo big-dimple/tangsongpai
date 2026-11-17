@@ -74,8 +74,7 @@ export function presentStageSelection(dialog: DetailDialog, run: R2RunState, sce
     d.dataset.currentStage = String(currentInChapter);
     d.dataset.context = inShop ? 'shop' : 'entrance';
     const header = d.querySelector('.dialog-header');
-    header?.append(element('span', 'blind-chapter-caption', '三场对峙'),
-      element('span', 'blind-wallet', `${character.name} · ${run.gold} 金`));
+    header?.append(element('span', 'blind-wallet', `${character.name} · ${run.gold} 金`));
 
     const wrap = element('div', 'blind-dialog-inner');
     const status = element('p', 'blind-operation-status');
@@ -123,18 +122,27 @@ export function presentStageSelection(dialog: DetailDialog, run: R2RunState, sce
 
     const grid = element('section', 'blind-confrontation');
     grid.setAttribute('aria-label', '本章三场，按暖场、正场、压轴递进');
+    const itinerary=element('nav','blind-itinerary');
+    itinerary.setAttribute('aria-label','查看本章场次');
     for (const [index, stage] of [stage0, stage1, stage2].entries()) {
       const active = index === currentInChapter;
       const cleared = index < currentInChapter;
       const bossStage = index === 2;
       const card = element('article', 'blind-card' + (active ? ' is-active' : '') + (bossStage ? ' is-boss' : '') + (cleared ? ' is-cleared' : ''));
-      card.setAttribute('aria-label', `${stageNames[index]} · ${active ? '当前场' : cleared ? '已过关' : '后续场'}`);
+      card.setAttribute('aria-label', `${stageNames[index]} · ${active ? '当前场' : cleared ? '已结束' : '后续场'}`);
       if (active) card.setAttribute('aria-current', 'step');
+      card.tabIndex=-1;
+      const stop=element('button','blind-stop',stageNames[index]);
+      stop.type='button';stop.dataset.state=active?'current':cleared?'past':'future';
+      stop.setAttribute('aria-label','查看'+stageNames[index]+(active?'，当前场':''));
+      if(active)stop.setAttribute('aria-current','step');
+      stop.onclick=()=>{card.focus({preventScroll:true});card.scrollIntoView({block:'nearest'});};
+      itinerary.append(stop);
       const heading = element('header', 'blind-stage-heading');
       const number = element('span', 'blind-stage-number', ['壹', '贰', '叁'][index]);
       number.setAttribute('aria-hidden', 'true');
       const identity = element('div', 'blind-stage-identity');
-      identity.append(element('p', 'blind-stage-state', active ? (inShop ? '当前场 · 正在商店筹备' : '当前可战') : cleared ? '已过关' : '后续对局'),
+      identity.append(element('p', 'blind-stage-state', active ? (inShop ? '当前场 · 正在商店筹备' : '当前可战') : cleared ? '已结束' : '后续对局'),
         element('h3', 'blind-card-title', bossStage ? bossDef.name : stageNames[index]));
       heading.append(number, identity);
       if (bossStage) identity.append(element('span', 'blind-boss-label', '压轴 · 不可跳过'));
@@ -178,7 +186,7 @@ export function presentStageSelection(dialog: DetailDialog, run: R2RunState, sce
       grid.append(card);
     }
 
-    wrap.append(grid, status);
+    wrap.append(itinerary, grid, status);
     const targetContainer = d.querySelector('.dialog-intro') ?? d.querySelector('.dialog-copy');
     targetContainer?.replaceChildren(wrap);
     // One start action lives in the persistent footer; preview cards never duplicate it.

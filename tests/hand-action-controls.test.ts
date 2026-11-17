@@ -10,10 +10,18 @@ const profiles=[[390,740,0,0],[320,568,0,0],[844,300,12,12],[844,300,12,34]];
 const layouts=()=>profiles.map(([width,height,top,bottom])=>layout({width,height},{top,bottom,left:0,right:0},undefined,{count:9}));
 describe('sorting caption above three controls beside equal primary actions',()=>{
  it('locks the approved larger rack while preserving every hand seat and score height',()=>{
-  // Short-landscape status only gives its former spare right gutter to AI.
-  const fixed=layouts().map(l=>{const {buttons,tableActions,tools,toolsInHud,actions,...rest}=l;return {...rest,status:l.mode==='landscape'?{...rest.status,width:l.hud.width}:rest.status};});
-  // 043e536f enlarges the rack using spare space; the exact-source audit keeps the old baseline.
-  // Hand seats and score heights retain their previous hash, independently of the rack snapshot.
+  // Serialize the approved geometry in the fixture's field order. The original portrait
+  // snapshot included the inventory target twice. Safe insets are inputs to these boxes.
+  const fixed=layouts().map(l=>({
+    mode:l.mode,compact:l.compact,shortLandscape:l.shortLandscape,width:l.width,height:l.height,
+    hud:l.hud,jokers:l.jokers,preview:l.preview,scoreBoard:l.scoreBoard,playedArea:l.playedArea,
+    handLabel:l.handLabel,piles:l.piles,hand:l.hand,
+    status:l.mode==='landscape'?{...l.status,width:l.hud.width}:l.status,
+    scoreFire:l.scoreFire,labelHeight:l.labelHeight,cards:l.cards,handRows:l.handRows,handOverflow:l.handOverflow,
+    handStart:l.handStart,visibleCardCount:l.visibleCardCount,handNavigation:l.handNavigation,
+    slots:l.slots,jokerLabels:l.jokerLabels,heroAction:l.heroAction,helpEntry:l.helpEntry,
+    inventory:l.inventoryEntry,heroPortraitSlot:l.heroPortraitSlot,inventoryEntry:l.inventoryEntry,scoreEyes:l.scoreEyes,pc:l.pc,
+  }));
   const protectedGeometry=layouts().map(l=>({hud:l.hud,hand:l.hand,handRows:l.handRows,handOverflow:l.handOverflow,handStart:l.handStart,visibleCardCount:l.visibleCardCount,cards:l.cards,handNavigation:l.handNavigation,scoreHeight:l.scoreBoard.height}));
   expect(createHash('sha256').update(JSON.stringify(protectedGeometry)).digest('hex')).toBe(approvedLayout.protectedHandAndScoreSha256);
   // Geometry only, without aesthetic or device acceptance.

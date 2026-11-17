@@ -1,9 +1,9 @@
 import type {Box,LayoutMode} from './layout';
 interface ScoreTableInput {mode:LayoutMode;playedArea:Box;scoreBoard:Box;hud:Box;heroAction?:Box;pc?:unknown;scoreEyes?:Box}
 
-/** Idle cards use the hidden readout band. Saved scoring restores the separate landing lane. */
+/** Roomy screens keep the hand preview on the mat. A short phone borrows the idle readout band. */
 export function idlePlayedArea(l:ScoreTableInput):Box {
- if(l.mode!=='portrait')return l.playedArea;
+ if(l.mode!=='portrait'||l.playedArea.height>=112)return l.playedArea;
  const y=l.scoreBoard.y+60,bottom=l.heroAction?.y??l.playedArea.y+l.playedArea.height;
  return {x:l.playedArea.x,y,width:l.playedArea.width,height:Math.min(112,Math.max(24,bottom-y-8))};
 }

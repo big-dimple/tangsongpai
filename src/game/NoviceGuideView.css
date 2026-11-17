@@ -12,18 +12,21 @@
 /* Native modal focus belongs to the actionable button itself. */
 .detail-dialog button.novice-focus-action { outline:3px solid #d39c41;outline-offset:2px;box-shadow:0 0 10px #e0b05b80; }
 .novice-guide-panel,.novice-guide-reopen { position:fixed;box-sizing:border-box;pointer-events:auto;touch-action:manipulation; }
-.novice-guide-panel { overflow:visible;padding:7px 11px 8px;border:1px solid #a88a5d;border-top:3px solid #a94436;border-radius:10px;background:linear-gradient(135deg,#fffdf5,#f4ead4);color:#193940;box-shadow:0 10px 32px #102b3673,inset 0 0 0 2px #fffdf3;animation:novice-guide-arrive .22s ease-out; }
+.novice-guide-panel { overflow:visible;padding:7px 11px 8px;border:1px solid #a88a5d;border-top:3px solid #a94436;border-radius:2px;background:#f9efdb;color:#193940;box-shadow:0 10px 32px #102b3673,inset 0 0 0 2px #fffdf3;animation:novice-guide-arrive .22s ease-out; }
 @keyframes novice-guide-arrive { from { opacity:.35; } to { opacity:1; } }
 .novice-guide-panel[data-emphasis=score] { border-color:#b89252;border-top-color:#b8473a;background:linear-gradient(135deg,#fffdf2,#f3e2bc);box-shadow:0 12px 38px #102b3680,0 0 28px #e5b75b45,inset 0 0 0 2px #fffdf3; }
 .novice-guide-panel[data-emphasis=reward] { border-color:#829a78;border-top-color:#397166;background:linear-gradient(135deg,#fbfff7,#e2edda);box-shadow:0 12px 38px #102b3680,0 0 28px #80b79b45,inset 0 0 0 2px #fffdf3; }
 .novice-guide-panel[data-novice-drag-obscured] { visibility:hidden!important;pointer-events:none; }
-.novice-guide-panel::before { content:'';position:absolute;top:13px;left:4px;width:3px;height:16px;background:#a43d31; }
+.novice-guide-panel::before { content:'';position:absolute;top:0;left:0;width:var(--lesson-progress,0);height:3px;background:#305c50; }
+.novice-guide:is([data-novice-guide-step=pair],[data-novice-guide-step=discard],[data-novice-guide-step=independent]){--lesson-progress:33.33%}
+.novice-guide:is([data-novice-guide-step=shop],[data-novice-guide-step=payoff]){--lesson-progress:66.67%}
+.novice-guide:is([data-novice-guide-step=skill],[data-novice-guide-step=skill-practice],[data-novice-guide-step=complete]){--lesson-progress:100%}
 .novice-guide-header { display:flex;align-items:center;gap:4px; }
-.novice-guide-portrait { width:42px;height:42px;flex:0 0 42px;object-fit:cover;border:2px solid #c79958;border-radius:50%;background:#e9d8ba;box-shadow:0 2px 7px #263b3d40; }
+.novice-guide-portrait { width:42px;height:42px;flex:0 0 42px;object-fit:cover;border:2px solid #c79958;border-radius:3px;background:#e9d8ba;box-shadow:0 2px 7px #263b3d40; }
 .novice-guide-speaker { display:block;color:#7a4935;font-size:11px;font-weight:700;letter-spacing:.04em;line-height:1.2; }
 .novice-guide-heading { min-width:0;flex:1; }
 .novice-guide-controls { display:flex;flex:0 0 auto;align-items:center; }
-.novice-guide-announcement { position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0; }
+.novice-guide-announcement { position:absolute;top:0;left:0;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0; }
 .novice-guide-progress { display:block;margin-bottom:2px;color:#916a36;font-size:11px;font-weight:700;line-height:1.25;letter-spacing:.08em; }
 .novice-guide-title { display:block;color:#173b3c;font-size:max(16px,1rem);line-height:1.3; }
 .novice-guide-panel[data-emphasis=score] .novice-guide-title { color:#913b30;font-size:max(17px,1.06rem); }
@@ -60,6 +63,9 @@
 /* Tight phone bands cannot spare an extra vertical padding row. The text
    line-height and every button's 44px target remain unchanged. */
 @media (max-width:520px) { .novice-guide-panel.is-compact { padding-top:0;padding-bottom:0; } }
+@media (max-width:520px) and (max-height:650px) {
+ .novice-guide-panel.is-compact.has-choices { border-top-width:1px;line-height:1.2; }
+}
 @media (prefers-reduced-motion:reduce) { .novice-guide * { animation:none!important;transition:none!important; } }
 .detail-dialog.novice-hero-dialog[open] { width:min(440px,calc(100vw - 24px));height:fit-content;display:flex;flex-direction:column; }
 .detail-dialog.novice-hero-dialog > .dialog-content { flex:0 1 auto;overflow:auto; }

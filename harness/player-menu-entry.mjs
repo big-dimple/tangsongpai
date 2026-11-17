@@ -16,9 +16,15 @@ const state=p=>p.evaluate(async()=>{const c=window.__harness.game.registry.get('
 const saved=p=>p.evaluate(async()=>{const db=await new Promise((resolve,reject)=>{const r=indexedDB.open('tangsongpai-checkpoints',1);r.onsuccess=()=>resolve(r.result);r.onerror=()=>reject(r.error);});try{return await new Promise((resolve,reject)=>{const tx=db.transaction('saves','readonly'),s=tx.objectStore('saves'),m=s.get('meta');let result={meta:null,slots:null};m.onsuccess=()=>{result.meta=m.result??null;if(m.result){const q=s.get(m.result.slotKey);q.onsuccess=()=>result.slots=q.result;}};tx.oncomplete=()=>resolve(result);tx.onerror=()=>reject(tx.error);});}finally{db.close();}});
 const shot=(p,name)=>p.screenshot({path:out+'/'+name+'.png'});
 const boot=async(context)=>{const p=await context.newPage();p.setDefaultTimeout(15000);p.on('pageerror',e=>{report.pageErrors??=[];report.pageErrors.push(String(e));});await p.goto(url);await waitScene(p,'title');return p;};
-const menu=async p=>{await openRunMenu(p,true);await p.locator('#run-menu-modal').waitFor({state:'visible'});assert.doesNotMatch(await p.locator('.run-menu-panel').innerText(),forbidden);};
+const menu=async p=>{
+ await openRunMenu(p,true);
+ const panel=p.locator('#run-menu-modal');await panel.waitFor({state:'visible'});
+ assert.doesNotMatch(await panel.locator('.run-menu-primary').innerText(),forbidden);
+ const saveTools=panel.locator('.run-menu-save-tools');
+ for(const name of ['导出存档','导入存档'])assert.ok(await saveTools.getByRole('button',{name,exact:true}).isVisible());
+};
 const close=p=>p.locator('.run-menu-toggle').tap();
-const metrics=async p=>{const m=await p.evaluate(()=>{const panel=document.querySelector('.run-menu-panel'),b=panel.getBoundingClientRect(),buttons=[...panel.querySelectorAll('button')].filter(x=>!x.hidden&&x.getBoundingClientRect().width).map(x=>{const r=x.getBoundingClientRect();return {text:x.textContent,x:r.x,width:r.width,height:r.height};});return {viewport:{width:innerWidth,height:innerHeight},panel:{x:b.x,y:b.y,width:b.width,height:b.height,clientWidth:panel.clientWidth,scrollWidth:panel.scrollWidth},buttons};});assert.ok(m.panel.scrollWidth<=m.panel.clientWidth+1);for(const b of m.buttons){assert.ok(b.x>=m.panel.x-1&&b.x+b.width<=m.panel.x+m.panel.width+1,b.text);assert.ok(b.height>=44,b.text);}const primary=m.buttons.filter(b=>['继续游戏','在这里继续','新开一局'].includes(b.text));assert.ok(primary.every(b=>Math.abs(b.width-primary[0].width)<1));return m;};
+const metrics=async p=>{const m=await p.evaluate(()=>{const panel=document.querySelector('.run-menu-panel'),b=panel.getBoundingClientRect(),buttons=[...panel.querySelectorAll('button')].filter(x=>!x.hidden&&x.getBoundingClientRect().width).map(x=>{const r=x.getBoundingClientRect();return {text:x.textContent,x:r.x,width:r.width,height:r.height};});return {viewport:{width:innerWidth,height:innerHeight},panel:{x:b.x,y:b.y,width:b.width,height:b.height,clientWidth:panel.clientWidth,scrollWidth:panel.scrollWidth},buttons};});assert.ok(m.panel.scrollWidth<=m.panel.clientWidth+1);for(const b of m.buttons){assert.ok(b.x>=m.panel.x-1&&b.x+b.width<=m.panel.x+m.panel.width+1,b.text);assert.ok(b.height>=44,b.text);}const primary=m.buttons.filter(b=>['继续游戏','在这里继续','开始新局'].includes(b.text));assert.ok(primary.every(b=>Math.abs(b.width-primary[0].width)<1));return m;};
 async function run(name,action){if(only&&!only.includes(name))return;console.log(name);const row={name};report.cases.push(row);try{await action(row);row.status='PASS';console.log(name,'PASS');}catch(e){row.status='FAIL';row.error=String(e.stack??e);throw e;}finally{fs.writeFileSync(out+'/report.json',JSON.stringify(report,null,2));}}
 try{
  await run('empty-and-concurrent',async row=>{
@@ -31,8 +37,13 @@ try{
   await tapUI(b,'shop','action/start-stage',true);assert.deepEqual((await state(d)).slots,first.slots);row.oldPageProtected=true;
   const home=await boot(c);assert.equal((await state(home)).status,'readonly');await tapUI(home,'title','action/title-continue',true);await waitScene(home,'shop');assert.deepEqual((await state(home)).slots,first.slots);row.homeContinueOneAction=true;await home.close();await d.close();
   const e=await boot(c);assert.equal((await state(e)).status,'idle');assert.deepEqual((await state(e)).slots,first.slots);row.closedOwnerRecovered=true;
-  await menu(e);row.withRun=await metrics(e);await shot(e,'saved-pc');await e.getByRole('button',{name:'新开一局',exact:true}).tap();await waitScene(e,'character-select');
-  await tapUI(e,'character-select','character/erxiang',true);await confirmHeroRoute(e,true);await e.getByRole('button',{name:'确认开始新局',exact:true}).waitFor();assert.deepEqual(await saved(e),await saved(b));await e.getByRole('button',{name:'取消',exact:true}).tap();assert.deepEqual((await state(e)).slots,first.slots);row.newRunCancelPreserves=true;await shot(e,'new-run-confirm-cancelled');
+  await menu(e);row.withRun=await metrics(e);await shot(e,'saved-pc');await e.getByRole('button',{name:'开始新局',exact:true}).tap();await waitScene(e,'character-select');
+  await tapUI(e,'character-select','character/erxiang',true);
+  await tapUI(e,'character-select','action/confirm-character',true);
+  await tapUI(e,'character-select','route/group',true);
+  assert.deepEqual(await saved(e),await saved(b));
+  await tapUI(e,'character-select','action/cancel-character',true);
+  assert.deepEqual((await state(e)).slots,first.slots);row.newRunCancelPreserves=true;await shot(e,'new-run-route-cancelled');
   await c.close();
  });
  for(const [width,height] of [[390,844],[320,640]])await run('menu-'+width,async row=>{

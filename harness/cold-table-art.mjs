@@ -3,7 +3,7 @@ import {mkdir,writeFile} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
 import {chromium} from 'playwright';
 import {waitScene,tapUI,confirmHeroRoute} from './ui.mjs';
-const gap=process.argv.includes('--expect-gap'),out='docs/production/evidence/staged-image-warmup-2026-10-13/'+(gap?'original-failures/cold-table-late':'cold-table-late');await mkdir(out,{recursive:true});
+const gap=process.argv.includes('--expect-gap'),out='shots/staged-image-warmup/'+(gap?'original-failures/cold-table-late':'cold-table-late');await mkdir(out,{recursive:true});
 const browser=await chromium.launch({executablePath:'/usr/bin/chromium',args:['--no-sandbox']}),base=process.env.WARMUP_URL??'http://127.0.0.1:5175';
 const report={head:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),build:await (await fetch(base+'/build-info.json')).json(),scope:'Native first-shop fast entry and cold saved-table continue; no scoring; assets held until table and selection exist.',cases:[]};
 const snapshot=p=>p.evaluate(async()=>{const c=window.__harness.game.registry.get('runController');return {state:c.state,journal:c.journal,checkpoint:JSON.parse(c.exportJSON()),slots:await c.store.read(),local:Object.fromEntries(Object.keys(localStorage).filter(k=>!k.includes('lease')).map(k=>[k,localStorage.getItem(k)]))};});

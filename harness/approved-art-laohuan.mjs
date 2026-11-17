@@ -5,7 +5,7 @@ import {mkdir,writeFile} from 'node:fs/promises';
 import {gzipSync} from 'node:zlib';
 import {execFileSync} from 'node:child_process';
 import {tapUI,waitScene} from './ui.mjs';
-const out=process.env.HERO_CAPTION_LAOHUAN_OUT??'docs/production/evidence/approved-character-art-2026-10-15/laohuan-climax',port=Number(process.env.HERO_CAPTION_LAOHUAN_PORT??5577);await mkdir(out,{recursive:true});
+const out=process.env.HERO_CAPTION_LAOHUAN_OUT??'shots/approved-character-art/laohuan-climax',port=Number(process.env.HERO_CAPTION_LAOHUAN_PORT??5577);await mkdir(out,{recursive:true});
 const server=await createServer({mode:'e2e',server:{host:'127.0.0.1',port,strictPort:true},logLevel:'error'});await server.listen();
 const {createRun,applyCommand}=await server.ssrLoadModule('/src/domain/run.ts'),{newRunIdentity}=await server.ssrLoadModule('/src/game/RunLaunch.ts'),{makeCheckpoint,readCheckpoint}=await server.ssrLoadModule('/src/application/checkpoint.ts'),{characterForRun}=await server.ssrLoadModule('/src/game/CharacterRunCopy.ts');
 const git=args=>execFileSync('git',args,{encoding:'utf8'}).trim();

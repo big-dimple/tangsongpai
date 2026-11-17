@@ -4,7 +4,6 @@ import {type WorkshopIntent,type WorkshopTab} from './WorkshopModel';
 import {shopBossPreparation,currentShopNotice} from './ShopBossPreparation';
 import {syncBossAtmosphere} from './BossAtmosphere';
 import {canCarryTool,type ToolCarryIntent} from './ToolCarryIntent';
-import {heroText} from './HeroIdentity';
 import {showShopComparison,type ShopComparisonView} from './ShopComparisonDialog';
 import {createShopOfferValue,createShopIdentityTags,styleShopMobileOfferInk} from './ShopJokerPresentation';
 import {warmTableImages} from './StageImageWarmup';
@@ -24,7 +23,7 @@ import {mountWorkshopGoals} from './WorkshopGoals';
 import './ShopToolbar.css';
 import {HAND_LABELS} from '../content/handLabels';
 import {routeFrame} from './RouteFrame';
-import {routeFitCue,markRouteDetail,toolPurpose} from './RouteFitCue';
+import {routeFitCue,markRouteDetail} from './RouteFitCue';
 import {toolPermanentValue} from './ToolPermanentValue';
 import {showMakeCards,type MakeCardsView} from './MakeCardsDialog';
 import {inventoryFeedback} from './InventoryFeedback';
@@ -46,12 +45,12 @@ import {firstChapterGuide,firstChapterShopPrompt,dismissFirstChapterGuide,attach
 import {shopRouteRelation,shopOfferRelation,shopSaleConsequences,shopPurchaseConditionLosses} from './ShopRouteRelations';
 import {buildGrowthProgress} from './BuildGrowthProgress';
 import {shopInvestment} from './ShopInvestment';
-import {currentBuildFocus,BUILD_LABEL,toolSupportsFocus,cashDecision} from './BuildJourney';
+import {currentBuildFocus,BUILD_LABEL,cashDecision} from './BuildJourney';
 import {showBuildJourney} from './BuildJourneyDialog';
 import {groupGrowthCausality,savedGrowthDiscovery} from './JokerGrowthCausality';
 import {purchaseDiscountStatus} from './PurchasePaymentFacts';
 import {shopPurchaseReceipt,shopPurchaseReceiptExists,type ShopPurchaseReceipt} from './ShopPurchaseReceipt';
-import {shopOfferGeometry,pcShopOfferGeometry,shopHeldGeometry,shopIdentityText,shopShelfIdentityText,shopOfferSynopsis} from './ShopOfferLayout';
+import {pcShopOfferGeometry,shopHeldGeometry,shopIdentityText,shopShelfIdentityText,shopOfferSynopsis} from './ShopOfferLayout';
 import {mountPolychromeCardIridescence,mountForgetTechniqueAttention} from './PolychromeCardIridescence';
 import {shopAnchoredTip} from './ShopAnchoredTip';
 import {shopToolContinuation} from './ShopPurchaseFlow';
@@ -66,13 +65,13 @@ import {ShopResultFeedback,shopResultBox,shopResultPages,type ShopResultLine} fr
 import {requestJokerArt,jokerArtLoadState,retryJokerArt} from './JokerArtLoading';
 import {requestShopGalleryArt,shopJokerPictureKey,shopGoodsPictureKey} from './ShopJokerGalleryArt';
 import {mountShopMobileOffers,type MobileShopOffer} from './ShopMobileOffers';
-import {JOKER_RARITY,createJokerRarityBadge,type JokerRarity} from './JokerRarity';
+import {createJokerRarityBadge,type JokerRarity} from './JokerRarity';
 import {findShopSynergy,shopCandidateTradeoff} from './ShopSynergy';
 import {ShopSynergyPreview} from './ShopSynergyPreview';
 import {cardDisplayName} from './tangsongCardNames';
 import Phaser from 'phaser';
 import {r2JokerCapacity} from '../domain/r2Resources';
-import {r2RunModeConfig,R2_MODE_CATALOG} from '../content/r2Modes';
+import {r2RunModeConfig} from '../content/r2Modes';
 import {programEntryLabel,programStatus,showPrograms} from './ProgramDialog';
 import {AudioEngine} from '../audio/AudioEngine';
 import {r2PaidRerollPrice,salePrice,r2Pool,r2PurchasePrice,r2PurchaseDiscount,r2ToolAcquisitionPool,type R2Offer} from '../domain/r2Shop';
@@ -85,7 +84,7 @@ import {reorderJokerIds,ownedJokerDropIndex} from './JokerReorder';
 import {OwnedJokerInput} from './OwnedJokerInput';
 import {OwnedJokerDragVisual,ownedOrderReversed} from './OwnedJokerDragVisual';
 import {heatText,fractionText} from './scoreText';
-import {toolInfo,itemInfo,goodsArtPortrait,jokerExtraBonusCopy,toolFamilyLabel} from './r2ToolInfo';
+import {toolInfo,itemInfo,goodsArtPortrait,jokerExtraBonusCopy} from './r2ToolInfo';
 import {SceneView} from './SceneView';
 import {getCharacter} from './characters';
 import {avatarKey} from './portraits';
@@ -93,8 +92,7 @@ import {DetailDialog} from './DetailDialog';
 import {showDeckInspection} from './DeckInspector';
 import type {RunMenuActions} from './RunMenu';
 import {gameSession} from './session';
-import {r2BossText} from '../domain/r2Chapter';
-import {SKIP_ITEM_LABELS,showConsumables} from './ConsumableDialog';
+import {showConsumables} from './ConsumableDialog';
 import {presentStageSelection} from './BlindSelectPresentation';
 import {shopToolInventoryRow} from './ToolInventoryEntry';
 import type {IntermissionResult} from './IntermissionScene';
@@ -102,7 +100,6 @@ import type {Box} from './layout';
 import {jokerArtKey,jokerArtUrl,jokerArtPreviewUrl} from './jokerArt';
 import {animateJokerImage} from './JokerArtPlayback';
 import {UI_FONT,PAPER_THEME,PAPER_CSS} from './theme';
-import {fitJokerLabel} from './JokerLabel';
 import {drawJokerMotif} from './JokerMotif';
 import {r2MechanismBadge as mechanismBadge,r2JokerStateText,r2JokerExtraHelp,r2TransactionText} from './r2Help';
 
@@ -153,7 +150,6 @@ export class ShopScene extends Phaser.Scene {
   private offerArts:Phaser.GameObjects.Container[]=[];
   private hoverPreview?:Phaser.GameObjects.Container;
   private hoverDelay?:Phaser.Time.TimerEvent;
-  private goldText?:Phaser.GameObjects.Text;
   private pendingTransactions:Extract<DomainEvent,{type:'joker-transaction'}>[]=[];
   private lastTransactionNotes:string[]=[];
   private transactionGrowthLines=new WeakMap<Extract<DomainEvent,{type:'joker-transaction'}>,string>();
@@ -170,7 +166,6 @@ export class ShopScene extends Phaser.Scene {
   private resultPlate?:Phaser.GameObjects.Graphics;
   private resultLayer?:Phaser.GameObjects.Container;
   private noticeLabel?:Phaser.GameObjects.Text;
-  private starterMarkers:Phaser.GameObjects.Graphics[]=[];
   private resultKey?:string;
   private readonly dialog=new DetailDialog();
   private pendingDynamicTarget?:string;
@@ -209,17 +204,17 @@ export class ShopScene extends Phaser.Scene {
   entryDiagnosticSnapshot(){const session=gameSession(),controller=runController(this);return{ready:this.ready,busy:this.busy,inputEnabled:this.input?.enabled,phase:this.run?.phase,seq:this.run?.commandSeq,controller:controller?.status,controllerSeq:controller?.state.commandSeq,controllerPhase:controller?.state.phase,sessionWorking:session.working,pendingRun:!!session.pendingRun,leaseWritable:session.lease.writable,notice:this.notice,sessionNotice:session.notice,dialog:this.dialog.current?{open:this.dialog.current.open,className:this.dialog.current.className}:undefined,ownedInput:this.ownedInput?.diagnosticState()};}
   private shelfOffers(kind=this.shelfKind):R2Offer[]{return this.run.shop![SHELF_FIELDS[kind]];}
   private get pageSize():number{
-    const l=this.view.layout,style=getComputedStyle(document.documentElement),width=l.width-(parseFloat(style.getPropertyValue('--safe-left'))||0)-(parseFloat(style.getPropertyValue('--safe-right'))||0);
+    const l=this.view.layout,width=l.width-l.safe.left-l.safe.right;
     return l.height<500&&width<640?2:3;
   }
   private visibleOffers():R2Offer[]{return this.shelfOffers().slice(this.shelfPage*this.pageSize,(this.shelfPage+1)*this.pageSize);}
   private geometry(ownedCollapsed=this.ownedCollapsed){
-    const l=this.view.layout,style=getComputedStyle(document.documentElement),inset=(side:string)=>parseFloat(style.getPropertyValue('--safe-'+side))||0;
+    const l=this.view.layout;
     const cols=this.shelfKind==='jokers'?this.pageSize:Math.max(1,Math.min(2,this.shelfOffers().length));
     const menu=document.querySelector('.run-menu-dock,.run-menu-toggle')?.getBoundingClientRect(),app=document.getElementById('app')!.getBoundingClientRect();
     const menuBox=menu&&menu.width&&menu.height?{x:(menu.x-app.x)*l.width/app.width,y:(menu.y-app.y)*l.height/app.height,width:menu.width*l.width/app.width,height:menu.height*l.height/app.height}:undefined;
     // Decoration never changes the functional shop bounds.
-    return shopLayout(l.width,l.height,l.hud.y,inset('bottom'),cols,this.run.jokers.some(j=>!!this.jokerCopy(j.definitionId)),!!firstChapterShopPrompt(this.run)&&this.ready,inset('left'),inset('right'),this.run.jokers.length,menuBox,ownedCollapsed,typeof window!=='undefined'&&!window.matchMedia('(pointer: coarse)').matches);
+    return shopLayout(l.width,l.height,l.hud.y,l.safe.bottom,cols,this.run.jokers.some(j=>!!this.jokerCopy(j.definitionId)),!!firstChapterShopPrompt(this.run)&&this.ready,l.safe.left,l.safe.right,this.run.jokers.length,menuBox,ownedCollapsed,typeof window!=='undefined'&&!window.matchMedia('(pointer: coarse)').matches);
   }
   private noviceSecondOffer(p=this.geometry()):{secondOffer?:{id:string;name:string};secondLocation:'tab'|'more'|'none'} {
     const available=this.shelfOffers('jokers').filter(o=>!o.consumed&&!this.purchaseReason(o,true));
@@ -451,7 +446,7 @@ export class ShopScene extends Phaser.Scene {
     const selectedIndex=this.shelfOffers().findIndex(offer=>offer.offerId===this.selectedOfferId);if(selectedIndex>=0)this.shelfPage=Math.floor(selectedIndex/this.pageSize);
     this.shelfPage=Math.min(this.shelfPage,Math.max(0,Math.ceil(this.shelfOffers().length/this.pageSize)-1));
     requestShopGalleryArt(this,this.geometry().pc&&!this.workshopSelected?this.visibleOffers().map(o=>o.definitionId):[],()=>{this.refreshJokerPictures();for(const key of this.artTargets.keys())this.paintGoodsArt(key);});
-    const v=this.view,p=this.geometry(),stage=getR2Stage(this.run.stageIndex,this.run.tourMode,this.run.difficulty,this.run)!;this.hideHoverPicture();this.ownedInput?.setBounds(undefined);this.ownedArts.clear();this.ownedHint=undefined;v.clear();v.paperBackground();drawShopBackdrop(this,v,p,this.run.characterId);this.offerArts=[];this.artTargets.clear();this.jokerArtTargets.clear();
+    const v=this.view,p=this.geometry(),stage=getR2Stage(this.run.stageIndex,this.run.tourMode,this.run.difficulty,this.run)!;this.hideHoverPicture();this.ownedInput?.setBounds(undefined);this.ownedArts.clear();this.ownedHint=undefined;v.clear();v.paperBackground();drawShopBackdrop(this,v,p);this.offerArts=[];this.artTargets.clear();this.jokerArtTargets.clear();
     const isBossNext=!!shopBossPreparation(this.run);
     if(this.run.phase==='shop')this.audio.setScene('shop');
     this.audio.preloadSceneMusic(isBossNext?'boss':'table');
@@ -479,46 +474,41 @@ export class ShopScene extends Phaser.Scene {
       v.text(inline?p.x:p.slots[0].x,inline?p.top+27:p.slots[0].y-20,ownedLabel,14,'#26313A',p.slots[4].x+p.slots[4].width-p.slots[0].x).setName('shop/owned-heading');
     }
     this.drawOwned(p);
-    if(!p.portrait&&!p.short)v.button(p.chapter,p.portrait?(this.run.program&&!this.run.program.choiceMade?'接节目单':'本章'):'本章节目','action/chapter',()=>this.inspectChapter());
+    if(!p.portrait&&!p.short)v.button(p.chapter,'本章节目','action/chapter',()=>this.inspectChapter());
     if(!p.portrait&&!p.short)v.button(p.items,`道具箱 ${this.run.consumables.length}/${r2ConsumableCapacity(this.run)}`,'action/items',()=>showConsumables(this.dialog,this.run,this.ready,(a,seq)=>this.send(a,seq)));
     const inventoryRow=shopToolInventoryRow(p.tabs);
     this.drawShelfTabs(p.portrait||desktopHeader?p.tabs:inventoryRow.shelves);
     this.drawInventoryBag(portraitHeader?.inventory??desktopHeader?.inventory??inventoryRow.inventory);
     const workshop=shopSharedContent(p,this.run.jokers.length);if(this.workshopSelected&&workshop)this.drawInlineWorkshop(workshop);
     if(p.portrait&&!this.workshopSelected&&workshop)this.drawMobileOffers(workshop);
-    const offers=this.workshopSelected||p.portrait?[]:this.visibleOffers(),stockExtra=this.shelfKind==='jokers'&&offers.some(o=>(o.edition??'none')!=='none'),extraRows=offers.some(o=>(o.edition??'none')!=='none'&&this.run.chapterDisabledJokerId===o.definitionId)?2:1,phoneSummaryHeight=p.portrait?this.measureShopTextBox('同点\n顺子').height:0;
+    const offers=this.workshopSelected||p.portrait?[]:this.visibleOffers(),stockExtra=this.shelfKind==='jokers'&&offers.some(o=>(o.edition??'none')!=='none'),extraRows=offers.some(o=>(o.edition??'none')!=='none'&&this.run.chapterDisabledJokerId===o.definitionId)?2:1;
     offers.forEach((o,i)=>{
-      if(this.shelfKind!=='jokers'){this.drawGoodsOffer(o,p.shelf[i],p.short,p.portrait);return;}
+      if(this.shelfKind!=='jokers'){this.drawGoodsOffer(o,p.shelf[i]);return;}
       const selected=this.selectedOfferId===o.offerId,b=p.shelf[i],d=this.jokerDefinition(o.definitionId),ability=this.jokerCopy(o.definitionId),first=v.root.length;
-      this.drawOfferCard(b,d.rarity,selected,o.consumed,p.short).setData('offerId',o.offerId);
-      this.drawJokerPicture(o.definitionId,p.portrait?b:{x:b.x+4,y:b.y+4,width:b.width-8,height:b.height-8},o.consumed?.35:1);
+      this.drawOfferCard(b,selected).setData('offerId',o.offerId);
+      const artBox={x:b.x+4,y:b.y+4,width:b.width-8,height:b.height-8};
+      this.drawJokerPicture(o.definitionId,artBox,o.consumed?.35:1);
       const copy=shopOfferCopy(p,b,true),copyX=copy.x,copyY=copy.y,copyWidth=copy.width;
       const name=v.text(copyX,copyY+4,d.name,15,'#26313A').setFontStyle('bold').setName('shop/offer-name').setData('offerId',o.offerId);this.ellipsis(name,copyWidth);
       const plain=ability?.plain,full=plain?.line??ability?.summary??d.description;
       const decision=shopOfferGuidance(this.run,o).decision,purposeCopy=ability?.minimal?full:shopCandidateTradeoff(this.run,d.id)?'不弃牌可用；弃牌技停用':shopOfferSynopsis(decision.now,decision.later);
-      const purpose=v.text(copyX,copyY+(p.portrait&&p.copyBeside?28:23),p.portrait&&p.copyBeside?purposeCopy.replaceAll('\n',' · '):purposeCopy,14,'#3F606B',copyWidth).setStyle({maxLines:0}).setName('shop/offer-purpose').setData('offerId',o.offerId).setData('definitionId',d.id).setData('fullText',full);
-      purpose.setWordWrapWidth(copyWidth,true);
-      if(p.portrait&&!p.copyBeside)purpose.setWordWrapWidth(0).setText(shopSummaryWrap(purposeCopy,copyWidth,s=>this.measureShopText(s)));
-      if(purpose.height>(p.desktop?76:54))this.twoLines(purpose,copyWidth);
-
-      const identity=v.text(copyX,copyY+24,p.portrait?shopShelfIdentityText(d.rarity,o.edition):shopIdentityText(d.rarity,o.edition),14,'#596B69',copyWidth).setName('shop/offer-identity').setData('offerId',o.offerId);
-      purpose.setY(copyY+43).setWordWrapWidth(0).setText(shopOfferSummary(purposeCopy,copyWidth,s=>this.measureShopText(s)));
-      if(p.portrait){identity.setY(name.y+name.height+4);purpose.setY(identity.y+identity.height+4);}
-      const extraY=purpose.y+Math.max(purpose.height,phoneSummaryHeight)+4;
+      const identity=v.text(copyX,copyY+24,shopIdentityText(d.rarity,o.edition),14,'#596B69',copyWidth).setName('shop/offer-identity').setData('offerId',o.offerId);
+      const purpose=v.text(copyX,copyY+43,shopOfferSummary(purposeCopy,copyWidth,s=>this.measureShopText(s)),14,'#3F606B')
+        .setName('shop/offer-purpose').setData('offerId',o.offerId).setData('definitionId',d.id).setData('fullText',full);
+      const extraY=purpose.y+purpose.height+4;
       this.drawOfferExtra(o,{x:copyX,y:extraY,width:copyWidth,height:20});
       // The mid-width legacy shelf has no separate guidance rail. Stack its transaction
       // after the measured identity/purpose rows instead of drawing priceY-54 over them.
-      const stackedGuidance=!p.portrait&&!p.short&&!p.pc&&!p.copyBeside&&!stockExtra;
+      const stackedGuidance=!p.short&&!p.copyBeside&&!stockExtra;
       const guidanceY=Math.max(identity.y+identity.height,purpose.y+purpose.height)+4;
       const guidance=stackedGuidance?this.drawOfferGuidance(o,{x:copyX,y:guidanceY,width:copyWidth,height:20}):undefined;
       const guidanceHeight=guidance?.height??0;
-      const price=r2PurchasePrice(this.run,o),priceY=stackedGuidance?Math.max(copy.priceY,guidanceY+guidanceHeight+6):stockExtra?Math.max(copy.priceY,extraY+this.measureShopTextBox('倍率×1.5').height*extraRows+6):p.portrait?Math.max(copy.priceY,purpose.y+Math.max(purpose.height,phoneSummaryHeight)+6):copy.priceY;
+      const price=r2PurchasePrice(this.run,o),priceY=stackedGuidance?Math.max(copy.priceY,guidanceY+guidanceHeight+6):stockExtra?Math.max(copy.priceY,extraY+this.measureShopTextBox('倍率×1.5').height*extraRows+6):copy.priceY;
       const priceInk=this.offerPricePlate(o,{x:copyX-2,y:priceY-2,width:copyWidth+2,height:24});
       const priceText=v.text(copyX,priceY,o.consumed?'已收入':price+'金 · '+(price>this.run.gold?'差'+(price-this.run.gold):'详情'),16,priceInk).setFontStyle('bold').setName('shop/offer-price').setData('offerId',o.offerId);
-      if(!stackedGuidance&&!p.portrait&&!headerTabs&&!stockExtra)this.drawOfferGuidance(o,{x:copyX,y:copy.priceY-(p.copyBeside?36:54),width:copyWidth,height:p.copyBeside?34:52});
+      if(!stackedGuidance&&!headerTabs&&!stockExtra)this.drawOfferGuidance(o,{x:copyX,y:copy.priceY-(p.copyBeside?36:54),width:copyWidth,height:p.copyBeside?34:52});
       this.markBuildOffer(o,'jokers',b);
-      const tile=p.portrait||stockExtra||stackedGuidance?{...copy.tile,height:Math.max(copy.tile.height,priceY+priceText.height+4-copy.tile.y)}:copy.tile,hover=this.hoverCard(first,tile,o.definitionId,o.offerId),r=v.rect(tile).setFillStyle(0,0).setStrokeStyle().setData('selected',selected);
-      const artBox=p.portrait?b:{x:b.x+4,y:b.y+4,width:b.width-8,height:b.height-8};
+      const tile=stockExtra||stackedGuidance?{...copy.tile,height:Math.max(copy.tile.height,priceY+priceText.height+4-copy.tile.y)}:copy.tile,hover=this.hoverCard(first,tile,o.definitionId,o.offerId),r=v.rect(tile).setFillStyle(0,0).setStrokeStyle().setData('selected',selected);
       mountPolychromeCardIridescence(this,hover.art,{...artBox,x:artBox.x-hover.art.x,y:artBox.y-hover.art.y},o.edition);
       this.offerArts.push(hover.art);v.target(r,`offer/${o.offerId}`,{tap:()=>this.selectOffer(o.offerId),detail:()=>this.inspectOffer(o.offerId),...hover});
 
@@ -528,7 +518,7 @@ export class ShopScene extends Phaser.Scene {
     this.drawRefresh(portraitHeader?.reroll??p.reroll);
     const entry=this.shopButton(p.play,'进入牌桌','action/start-stage',()=>void this.send({type:'LeaveShop'}),this.ready,true);
     this.drawOwnedToggle(p,entry);
-    if(!p.portrait) this.shopButton(p.build,this.lastPurchaseReceipt?'购物结果':p.portrait&&p.copyBeside?'培养':p.inventoryCollapsed?`培养 ${this.run.jokers.length}/${r2JokerCapacity(this.run)}`:this.buildLabel(),'action/build',()=>this.lastPurchaseReceipt?this.openPurchaseReceipt():this.inspectJourney());
+    if(!p.portrait) this.shopButton(p.build,this.lastPurchaseReceipt?'购物结果':p.inventoryCollapsed?`培养 ${this.run.jokers.length}/${r2JokerCapacity(this.run)}`:this.buildLabel(),'action/build',()=>this.lastPurchaseReceipt?this.openPurchaseReceipt():this.inspectJourney());
     const reason=!this.ready?'当前进度未保存或只读，请查看菜单。':allowed&&this.run.gold<cost?`换牌还差 ${cost-this.run.gold} 金。可直接入场。`:this.shelfKind==='jokers'&&this.run.jokers.length===r2JokerCapacity(this.run)?`${r2JokerCapacity(this.run)}槽已满，点随身牌出售后再买。`:this.shelfKind==='tools'?'购买后收入库存；查看详情，再确认使用。':this.shelfKind==='items'?'道具本局生效；换牌不重抽道具货架。':p.portrait?'点商品直接看详情；确认后才扣款。':'点卡牌不会扣钱；点随身牌可出售或左移、右移。';
     const discovery=this.ready&&!this.notice?savedGrowthDiscovery(this.run,'shop'):undefined;
     const noticeArea=shopNoticeArea(p);
@@ -722,13 +712,18 @@ export class ShopScene extends Phaser.Scene {
     const flow=pcShopOfferGeometry(tile,!!g.extra,this.run.chapterDisabledJokerId===o.definitionId?2:1,purpose.height)??g;
     if(flow.extra)this.drawOfferExtra(o,flow.extra);
     const reason=o.consumed?'':this.purchaseReason(o,true);
-    if(reason){const note=v.text(flow.reason.x,flow.reason.y,reason,14,PAPER_CSS.red).setName('shop/offer-reason').setData('offerId',o.offerId);this.ellipsis(note,flow.reason.width);}
+    const price=r2PurchasePrice(this.run,o);
+    if(!o.consumed){
+      const quote=reason||'购后余 '+(this.run.gold-price)+' 金';
+      const note=v.text(flow.reason.x,flow.reason.y,quote,14,reason?PAPER_CSS.red:PAPER_CSS.jade).setName(reason?'shop/offer-reason':'shop/offer-balance').setData('offerId',o.offerId);
+      this.ellipsis(note,flow.reason.width);
+    }
     const hover=this.hoverCard(first,tile,d?.id,o.offerId),hit=v.rect(tile).setFillStyle(0,0).setStrokeStyle().setData('selected',this.selectedOfferId===o.offerId);
     const artBox={...g.art,x:g.art.x-hover.art.x,y:g.art.y-hover.art.y};
     if(d)mountPolychromeCardIridescence(this,hover.art,artBox,o.edition);
     else if(kind==='tools')mountForgetTechniqueAttention(this,hover.art,artBox,o.definitionId);
     this.pcOfferBoxes.set(o.offerId,tile);this.offerArts.push(hover.art);v.target(hit,'offer/'+o.offerId,{tap:()=>this.selectOffer(o.offerId),detail:()=>this.inspectOffer(o.offerId),...hover});
-    const purchase=this.shopButton(flow.price,o.consumed?'已收入':`购买 · ${r2PurchasePrice(this.run,o)} 金`,'action/buy-offer/'+o.offerId,()=>this.inspectOffer(o.offerId),!o.consumed&&!this.busy);
+    const purchase=this.shopButton(flow.price,o.consumed?'已收入':reason?`查看 · ${price} 金`:`购买 · ${price} 金`,'action/buy-offer/'+o.offerId,()=>this.inspectOffer(o.offerId),!o.consumed&&!this.busy);
     (purchase.getData('label') as Phaser.GameObjects.Text).setFontSize(tile.width>=400?19:16).setName('shop/offer-price').setData('offerId',o.offerId);
     purchase.setData('availability',o.consumed?'owned':reason?'unavailable':'available');
     const purchaseArt=purchase.getData('buttonArt') as Phaser.GameObjects.Container;
@@ -748,7 +743,7 @@ export class ShopScene extends Phaser.Scene {
     const result=this.resultFeedback.snapshot(performance.now(),this.resultReduced);this.resultKey=result?.key;
     this.resultLayer?.destroy(true);this.resultLayer=undefined;this.resultNote=undefined;this.resultPlate=undefined;
     this.noticeLabel?.setVisible(!result);if(!result)return;
-    const p=this.geometry();if(p.portrait)return;const bottom=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-bottom'))||0,b=shopResultBox(p,this.view.layout.height,bottom);
+    const p=this.geometry();if(p.portrait)return;const bottom=this.view.layout.safe.bottom,b=shopResultBox(p,this.view.layout.height,bottom);
     const layer=this.add.container(0,0).setName('shop/result-layer');this.resultLayer=layer;
     // Keep the feedback slot quiet, but let the transaction state read at a glance
     // even when reduced motion is enabled or the player never opens the receipt.
@@ -827,12 +822,6 @@ export class ShopScene extends Phaser.Scene {
   }
 
   private ellipsis(text:Phaser.GameObjects.Text,width:number):void {text.setData('fullText',text.text);let copy=text.text;while(text.width>width&&copy.length){copy=copy.slice(0,-1);text.setText(copy+'…');}}
-  private twoLines(text:Phaser.GameObjects.Text,width:number):void {
-    const full=text.text;let line='',lines:string[]=[];text.setWordWrapWidth(0);
-    for(const char of full.replaceAll('\n',' ')){text.setText(line+char);if(text.width>width&&line){lines.push(line);line=char;if(lines.length===2)break;}else line+=char;}
-    if(lines.length<2)lines.push(line);else{let last=lines[1];text.setText(last+'…');while(text.width>width&&last.length){last=last.slice(0,-1);text.setText(last+'…');}lines[1]=last+'…';}
-    text.setText(lines.join('\n')).setData('fullText',full);
-  }
   private openWorkshop(goal?:WorkshopTab):void {this.makeCardsView.workshopTab=goal??(pokerEncounterView(this.run)?'upgrade':undefined);this.makeCardsView.intent=undefined;this.inspectMakeCards();}
   private inspectPokerEncounter(restored=false):void {showPokerEncounter(this.dialog,{read:()=>this.run,ready:()=>this.ready,reducedMotion:()=>this.resultReduced,send:(action,seq)=>this.send(action,seq)},{restored});}
   private workshopServices(){return [...pokerEncounterServices(this.run,()=>this.inspectPokerEncounter()),...shopPracticeServices(this.run,q=>this.confirmPractice(q))];}
@@ -879,7 +868,7 @@ export class ShopScene extends Phaser.Scene {
     this.reserveOwnedLessonSpace(host);
     const active=()=>this.scene.isActive()&&!this.busy&&this.run===run&&this.shelfKind===kind&&!this.workshopSelected;
     const rows:MobileShopOffer[]=this.shelfOffers().map(o=>{const d=kind==='jokers'?this.jokerDefinition(o.definitionId):undefined,info=kind==='tools'?toolInfo(o.definitionId,run):kind==='items'?itemInfo(o.definitionId):undefined,decision=d?shopOfferGuidance(run,o).decision:undefined;
-      return {id:o.offerId,definitionId:o.definitionId,name:d?.name??info!.name,identity:d?shopShelfIdentityText(d.rarity,o.edition):kind==='tools'?'消耗工具':'本局持续生效',summary:d?(shopCandidateTradeoff(run,d.id)??shopOfferSynopsis(decision!.now,decision!.later)):info!.summary,extra:d&&(o.edition??'none')!=='none'?jokerExtraBonusCopy(o.edition,{definitionId:d.id,chapterDisabled:run.chapterDisabledJokerId===d.id}).shelf:undefined,price:r2PurchasePrice(run,o),reason:this.purchaseReason(o,true),consumed:o.consumed,edition:o.edition,thumbnailUrl:d?jokerArtPreviewUrl(d.id):info!.artUrl,detailUrl:d?jokerArtUrl(d.id):info!.detailArtUrl,fallbackUrl:info?.fallbackArtUrl};
+      return {id:o.offerId,definitionId:o.definitionId,name:d?.name??info!.name,identity:d?shopShelfIdentityText(d.rarity,o.edition):kind==='tools'?'消耗工具':'本局持续生效',summary:d?(shopCandidateTradeoff(run,d.id)??shopOfferSynopsis(decision!.now,decision!.later)):info!.summary,extra:d&&(o.edition??'none')!=='none'?jokerExtraBonusCopy(o.edition,{definitionId:d.id,chapterDisabled:run.chapterDisabledJokerId===d.id}).shelf:undefined,price:r2PurchasePrice(run,o),gold:run.gold,reason:this.purchaseReason(o,true),consumed:o.consumed,edition:o.edition,thumbnailUrl:d?jokerArtPreviewUrl(d.id):info!.artUrl,detailUrl:d?jokerArtUrl(d.id):info!.detailArtUrl,fallbackUrl:info?.fallbackArtUrl};
     });
     if(!rows.length)host.textContent=kind==='items'?'本店暂无长期物品。':'本货架暂无商品。';
     const nativeDown=()=>{if(active())this.view.noteNativeInteraction();};host.addEventListener('pointerdown',nativeDown,{capture:true});
@@ -916,7 +905,7 @@ export class ShopScene extends Phaser.Scene {
   private drawBalance(b:Box,onInk:boolean,font=16,compact=onInk):void {
     const ink=onInk?0xe7cc8c:0x916738;shopToolbarGlyph(this,this.view.root,'coin',b.x+2,b.y+(b.height-18)/2,ink,18);
     const gold=this.view.text(b.x+26,b.y+b.height/2,(compact?'余额 ':'金币余额 ')+this.run.gold,font).setColor(onInk?'#f2db9f':'#26313A').setOrigin(0,.5).setFontStyle('bold').setName('shop/gold');
-    for(let size=font;gold.width>b.width-26&&size>14;)gold.setFontSize(--size);this.goldText=gold;
+    for(let size=font;gold.width>b.width-26&&size>14;)gold.setFontSize(--size);
   }
   private drawBuildEntry(p:ReturnType<typeof shopLayout>):void {
     const focus=currentBuildFocus(this.run,this.run.openingRoute),label=focus?{group:'同点建议 ›',straight:'顺子建议 ›',flush:'同花建议 ›'}[focus]:'选牌建议 ›';
@@ -926,7 +915,7 @@ export class ShopScene extends Phaser.Scene {
   }
   private drawInventoryBag(b:Box):void {
     const portrait=this.geometry().portrait,compact=b.width<100,onInk=!!this.geometry().pc||portrait||!!this.geometry().desktopHeader&&this.geometry().short,count=this.run.consumables.length+'/'+r2ConsumableCapacity(this.run),button=this.shopButton(b,compact?'道具箱\n'+count:'道具箱 '+count,'action/tool-inventory',()=>showConsumables(this.dialog,this.run,this.ready,(a,seq)=>this.send(a,seq)),!this.busy);
-    if(pcResultViewport(this.view.layout.width,this.view.layout.height)){inventoryFeedback(this,button,this.run,this.ready,this.resultReduced,true);return;}
+    if(pcResultViewport(this.view.layout.width,this.view.layout.height,this.view.layout.safe)){inventoryFeedback(this,button,this.run,this.ready,this.resultReduced,true);return;}
     button.setData('chest',true);inventoryFeedback(this,button,this.run,this.ready,this.resultReduced);
     const art=button.getData('buttonArt') as Phaser.GameObjects.Container;(art.list[0] as Phaser.GameObjects.Graphics).clear();(art.list[1] as Phaser.GameObjects.Graphics).clear();shopToolbarGlyph(this,art,'bag',compact?2:14,14,onInk?0xe7cc8c:0x42665d,compact?18:24);
     const state=portrait&&this.busy?'处理中':count;
@@ -1070,14 +1059,14 @@ export class ShopScene extends Phaser.Scene {
     markRouteDetail(dialog,routeFitCue(this.run,'tools',definitionId));
     if(makeCards)this.makeCardsReturn(dialog,'返回自选做牌');
   }
-  private drawGoodsOffer(o:R2Offer,raw:Box,short:boolean,portrait:boolean):void {
+  private drawGoodsOffer(o:R2Offer,raw:Box):void {
     const v=this.view,selected=this.selectedOfferId===o.offerId,b=raw,isTool=this.shelfKind==='tools',info=isTool?toolInfo(o.definitionId,this.run):itemInfo(o.definitionId),first=v.root.length;
     const p=this.geometry(),copy={...shopOfferCopy(p,b)},summary=info.summary,probe=v.text(0,0,'',14,'#3F606B');
     const wrapped=shopSummaryWrap(summary,copy.width,text=>{probe.setText(text);return probe.width;},2);probe.setText(wrapped);const purposeHeight=probe.height;probe.destroy();
     if(!p.copyBeside)copy.y=Math.min(copy.y,copy.priceY-27-purposeHeight);
     else copy.priceY=Math.min(b.y+b.height-24,Math.max(copy.priceY,copy.y+27+purposeHeight));
     const copyX=copy.x,copyY=copy.y,copyWidth=copy.width,artHeight=p.copyBeside?b.height-10:Math.max(36,copyY-b.y-8);
-    const artBox={...b,height:artHeight+10};this.drawOfferCard(artBox,isTool?'uncommon':'common',selected,o.consumed,short);this.markBuildOffer(o,this.shelfKind,artBox);
+    const artBox={...b,height:artHeight+10};this.drawOfferCard(artBox,selected);this.markBuildOffer(o,this.shelfKind,artBox);
     this.drawGoodsArt(o.definitionId,info.artUrl,{x:b.x+5,y:b.y+5,width:b.width-10,height:artHeight},o.consumed?.55:1,info.fallbackArtUrl);
     const name=v.text(copyX,copyY+4,info.name,14,'#26313A');this.ellipsis(name,copyWidth);
     v.text(copyX,copyY+23,wrapped,14,'#3F606B').setName('shop/offer-purpose').setData('offerId',o.offerId).setData('fullText',summary);
@@ -1146,12 +1135,6 @@ export class ShopScene extends Phaser.Scene {
     const knownBoss=this.run.stageIndex%3===2?this.run.boss:null,limited=r2ScoringDisabledJokerIds(knownBoss,inventory,this.jokerDefinitions,[],this.run.chapterDisabledJokerId).includes(subject.instanceId);
     return jokerAbilityCopyForRun(this.run,definitionId,instance,publicJokerMemoryContext(this.run,{hand:[],scoringLimited:limited,deckSize:this.run.deckInstances.length-this.run.destroyedIds.length,jokerSlots:r2JokerCapacity(this.run),jokerCount:this.run.jokers.length}));
   }
-  private jokerAbilityLine(definitionId:string,surface:'offer'|'owned',x:number,y:number,width:number,copy:string,compact:string):Phaser.GameObjects.Text {
-    const label=this.view.text(x,y,copy,14,'#f4e5bc').setName('joker-ability').setData('definitionId',definitionId).setData('surface',surface);
-    const fits=(text:string)=>{label.setText(text);return label.width<=width;};
-    label.setData('fullText',copy).setText(fitJokerLabel([copy,compact],fits));
-    return label;
-  }
   private jokerEditionSummary(edition:R2Offer['edition'],definitionId:string):string {
     return jokerExtraBonusCopy(edition,{definitionId,chapterDisabled:this.run.chapterDisabledJokerId===definitionId}).detail;
   }
@@ -1213,7 +1196,7 @@ export class ShopScene extends Phaser.Scene {
     v.add(g.setAlpha(alpha));
     holder.add(v.root.list.slice(first));
   }
-  private drawOfferCard(b:Box,rarity:JokerRarity,selected:boolean,consumed:boolean,short:boolean,headerHeight=64,footerHeight=short?44:64):Phaser.GameObjects.Graphics {
+  private drawOfferCard(b:Box,selected:boolean):Phaser.GameObjects.Graphics {
     const frame=this.view.add(this.add.graphics());
     if(selected)frame.fillStyle(0x6d998c,.12).fillRoundedRect(b.x-3,b.y-3,b.width+6,b.height+6,7);
     return frame;
@@ -1280,7 +1263,10 @@ export class ShopScene extends Phaser.Scene {
     if(id===basicChoiceSeat(this.run)?.offerId){this.inspectBasicChoice();return;}
     const found=this.findOffer(id);if(!found||found.offer.consumed||this.busy)return;const {kind,offer:o}=found,seq=this.run.commandSeq;
     if(kind==='jokers')this.pcPages.jokers=Math.floor(this.run.shop!.offers.findIndex(o=>o.offerId===id)/3);
-    if(kind==='tools'||kind==='items'){const pc=this.geometry().pc,group=kind==='tools'?pc?.toolOffers:pc?.itemOffers,capacity=pc?this.pcGroupCapacity(kind,this.geometry()):1;this.pcPages[kind]=Math.floor(this.shelfOffers(kind).findIndex(o=>o.offerId===id)/capacity);}
+    if(kind==='tools'||kind==='items'){
+      const geometry=this.geometry(),capacity=geometry.pc?this.pcGroupCapacity(kind,geometry):1;
+      this.pcPages[kind]=Math.floor(this.shelfOffers(kind).findIndex(o=>o.offerId===id)/capacity);
+    }
     this.selectedOfferId=id;this.notice='';this.audio.select();if(!this.geometry().portrait)this.render();
     else if(this.mobileOffers)styleShopMobileOfferInk(this.mobileOffers.host,id);
     const price=r2PurchasePrice(this.run,o),after=this.run.gold-price,reason=this.purchaseReason(o),d=kind==='jokers'?this.jokerDefinition(o.definitionId):undefined,info=kind==='tools'?toolInfo(o.definitionId,this.run):kind==='items'?itemInfo(o.definitionId):undefined;
@@ -1478,7 +1464,7 @@ export class ShopScene extends Phaser.Scene {
       lines.push({name:'transaction/'+event.instanceId,text:this.transactionGrowthLines.get(event)??r2TransactionText(event,this.jokerDefinition(event.definitionId))});
     }this.pendingTransactions=[];
     if(lines.length){
-      const p=this.geometry(),bottom=parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--safe-bottom'))||0,box=shopResultBox(p,this.view.layout.height,bottom),probe=this.view.text(0,0,'',14,PAPER_CSS.ink).setVisible(false);
+      const p=this.geometry(),bottom=this.view.layout.safe.bottom,box=shopResultBox(p,this.view.layout.height,bottom),probe=this.view.text(0,0,'',14,PAPER_CSS.ink).setVisible(false);
       const pages=lines.flatMap(line=>shopResultPages(line.text,text=>{probe.setText(shopSummaryWrap(text,box.width-12,s=>{probe.setText(s);return probe.width;}));return probe.width<=box.width-12&&probe.height<=box.height-2;}).map(text=>({...line,text})));probe.destroy();
       if(this.resultFeedback.enqueue(this.run.commandSeq,pages,performance.now()))this.drawResultCue();
     }

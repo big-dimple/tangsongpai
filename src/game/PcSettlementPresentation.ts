@@ -1,11 +1,14 @@
+import {drawScoreLedger} from './StageScoreMeter';
+import {drawRiverScroll} from './RiverScroll';
+import {stageOutcome} from './stageOutcome';
 import type Phaser from 'phaser';
 import type {R2RunState} from '../domain/r2Run';
 import type {SceneView} from './SceneView';
-import type {Box} from './layout';
+import type {Box,Insets} from './layout';
 import type {settlementFacts} from './SettlementPresentation';
 import {getCharacter} from './characters';
 import {pcHeroKey} from './PcHeroArt';
-import {heatText,readableFractionText} from './scoreText';
+import {heatText} from './scoreText';
 import {rankLabel,SUIT_SYMBOL} from '../cards/types';
 import {enhancementText} from './CardSpecialLabels';
 import {pcLandscapeFrame} from './PcLandscapeFrame';
@@ -13,17 +16,18 @@ import {HAND_LABELS} from '../content/handLabels';
 import {settlementHandCards,settlementSuitInk} from './SettlementHand';
 import {failureSummary} from './FailureSummary';
 import {PAPER_THEME as T,PAPER_CSS as C,SCORE_FONT} from './theme';
-import {pcResultSidebar,resultLayout} from './IntermissionLayout';
+import {pcResultSidebar} from './IntermissionLayout';
 
 /** A geometry gate plus the primary pointer: touch tablets retain their existing view. */
-export function pcResultViewport(width:number,height:number){
- return width>=1180&&height>=640&&width>height&&!(typeof window!=='undefined'&&window.matchMedia('(pointer: coarse)').matches);
+export function pcResultViewport(width:number,height:number,safe?:Insets){
+ const usableWidth=width-(safe?.left??0)-(safe?.right??0),usableHeight=height-(safe?.top??0)-(safe?.bottom??0);
+ return usableWidth>=1180&&usableHeight>=640&&usableWidth>usableHeight&&!(typeof window!=='undefined'&&window.matchMedia('(pointer: coarse)').matches);
 }
 
 /** Existing saved facts only. No commands, thresholds, reward issuance or timers. */
 export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2RunState,cleared:boolean,skipped:boolean,facts:ReturnType<typeof settlementFacts>,formulaOverride?:string,rewardLabel?:string){
- const l=resultLayout(view.layout.width,view.layout.height,0,b.height,true),lost=!cleared&&!skipped;
- const grid=pcLandscapeFrame(view.layout.width,view.layout.height),compact=grid.compact,cx=b.x+b.width/2;
+ const {width,height,safe}=view.layout,lost=!cleared&&!skipped;
+ const grid=pcLandscapeFrame(width,height,safe.top,safe.bottom,safe.left,safe.right),compact=grid.compact,cx=b.x+b.width/2;
  // Even the minimum PC width has room for two readable receipt columns;
  // keeping them parallel leaves the next action visible on short screens.
  const ceremony=b.width>=600,columnWidth=ceremony?b.width*.47:b.width;
@@ -36,9 +40,11 @@ export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2R
  };
  const centered=(y:number,copy:string,size:number,width:number,color=C.ink,name='')=>text(columnX,y,copy,size,Math.min(width,columnWidth),color,name).setOrigin(.5,0).setAlign('center');
  const paper=view.add(scene.add.graphics().setName('result-art/stage').setData('bounds',b));
- const side={...pcResultSidebar(view.layout.width,view.layout.height),x:b.x-grid.gap-pcResultSidebar(view.layout.width,view.layout.height).width};
+ const side=pcResultSidebar(width,height,safe.left,safe.right);
+ side.x=b.x-grid.gap-side.width;
  const heroHeight=Math.min(compact?390:520,Math.max(240,view.layout.height-b.y-176));
  const heroBox={x:side.x,y:b.y+4,width:side.width,height:heroHeight};
+ drawRiverScroll(scene,view,heroBox,.68,.27);
  const halo=view.add(scene.add.graphics().setName('result-art/hero-halo'));
  const haloRadius=Math.min(side.width*.43,heroBox.height*.36),haloX=side.x+side.width/2,haloY=heroBox.y+heroBox.height*.4;
  halo.fillStyle(0xc7d8cf,.18).fillCircle(haloX,haloY,haloRadius).lineStyle(1,0xc7b89d,.42).strokeCircle(haloX,haloY,haloRadius+5);
@@ -65,7 +71,9 @@ export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2R
  if(score.width>columnWidth)score.setScale(columnWidth/score.width);
  const formula=formulaOverride??(lost?'目标 '+heatText(run.stage!.targetHeat)+' · 差 '+heatText((BigInt(run.stage!.targetHeat)-BigInt(facts.stageTotal)).toString()):skipped?'没有本场计分':'目标 '+heatText(run.stage!.targetHeat)+' · 已过关');
  const target=centered(score.y+score.displayHeight+3,formula,16,b.width,C.jade,'result/formula');
- let bottom=target.y+target.height;
+ const previousStage=run.outcome?.reason==='abandoned'&&run.outcome.stageIndex!==run.stage!.index;
+ const last=skipped||previousStage?null:stageOutcome(run.stage!,run.lastTrace).last;
+ let bottom=skipped?target.y+target.height:drawScoreLedger(scene,view,columnX-columnWidth*.43,target.y+target.height+8,columnWidth*.86,exactScore,run.stage!.targetHeat,last?.finalScore);
  const reward={x:columnX-columnWidth/2,y:bottom+6,width:columnWidth,height:28};
  let rewardText:Phaser.GameObjects.Text|undefined;
  if(cleared&&!skipped&&rewardLabel){
@@ -109,9 +117,7 @@ export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2R
   });
   const combo=centered(cardsY+cardHeight+4,'实际打出 '+cards.length+' 张 · '+trace.sets.activeScoringIds.length+' 张有效计分',14,b.width,C.jade,'result/hand-combo').setData('fullText',facts.handCards);
   const explanation=centered(combo.y+combo.height+6,facts.scoreExplanation!,18,b.width,C.ink,'result/score-explanation');
-  const previous=(BigInt(facts.stageTotal)-BigInt(trace.finalScore)).toString();
-  const credit=centered(explanation.y+explanation.height+3,'此前累计 '+heatText(previous)+' + 本手 '+heatText(trace.finalScore)+' = 本场 '+heatText(facts.stageTotal),14,b.width,C.jade,'result/stage-credit');
-  bottom=credit.y+credit.height;
+  bottom=explanation.y+explanation.height;
   const attribution=[facts.card?facts.card.name+' · '+facts.cardCopy?.replaceAll('\n','；'):undefined,facts.hero?(facts.heroSkill??getCharacter(run.characterId).name)+' · '+facts.heroCopy:undefined,facts.routeCopy].filter(Boolean).join('　／　');
   if(attribution){const source=centered(bottom+3,'关键来源 · '+attribution,14,b.width,C.jade,'result/source-continuity').setData('fullText',attribution);if(source.height>36)source.setText('关键来源 · '+(facts.card?.name??facts.heroSkill??'本局资历')+' · 完整顺序见本场详情');bottom=source.y+source.height;}
  }else{

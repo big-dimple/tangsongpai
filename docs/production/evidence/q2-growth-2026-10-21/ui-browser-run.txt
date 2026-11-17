@@ -1,4 +1,0 @@
-PASS 390-c04-shop
-PASS 390-c06-table
-PASS 390-no-history
-PASS

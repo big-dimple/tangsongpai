@@ -221,7 +221,9 @@ describe('three-stage confrontation presentation', () => {
 
     expect(mockScene.audio.select).toHaveBeenCalled();
     expect(host.querySelector('.dialog-header')?.textContent).toContain('第 1 章');
-    expect(host.querySelector('.blind-chapter-caption')?.textContent).toBe('三场对峙');
+    const itinerary=host.querySelector('.blind-itinerary')!;
+    expect(itinerary.querySelectorAll('button').map(stop=>stop.textContent)).toEqual(['暖场','正场','压轴']);
+    expect(itinerary.querySelector('[aria-current="step"]')?.textContent).toBe('暖场');
     expect(host.querySelectorAll('.dialog-primary')).toHaveLength(1);
 
     // Cards

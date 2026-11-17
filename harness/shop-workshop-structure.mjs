@@ -7,7 +7,7 @@ import {build} from 'vite';
 import {chromium} from 'playwright';
 import {tapUI,waitScene} from './ui.mjs';
 import {createHash} from 'node:crypto';
-const out='docs/production/evidence/shop-workshop-structure-2026-10-17',entry='.vite/workshop-entry.html',bundle='.vite/workshop-build';await mkdir(out,{recursive:true});
+const out='shots/shop-workshop-structure',entry='.vite/workshop-entry.html',bundle='.vite/workshop-build';await mkdir(out,{recursive:true});
 const layoutOnly=process.argv.includes('--layout-only'),expandedOnly=process.argv.includes('--expanded-only'),bossOnly=process.argv.includes('--boss-only'),extraOnly=process.argv.includes('--extra-only');
 const probe=`<script type="module">
 import {AudioEngine} from '/src/audio/AudioEngine.ts';import {workshopLayoutFixture,workshopBossTransition,workshopExtraFixture} from '/harness/fixtures/workshop-layout.ts';import {createRun,applyCommand} from '/src/domain/run.ts';import {newRunIdentity} from '/src/game/RunLaunch.ts';import {r2ToolPrice} from '/src/domain/r2Shop.ts';import {r2CreateJoker,makeR2Shop} from '/src/domain/r2Run.ts';import {r2JokerDefinitionsFor} from '/src/domain/r2ContentProfiles.ts';import {makeCheckpoint,readCheckpoint} from '/src/application/checkpoint.ts';import {gameSession} from '/src/game/session.ts';

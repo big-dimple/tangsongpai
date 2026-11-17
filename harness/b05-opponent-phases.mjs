@@ -7,7 +7,7 @@ import {execFileSync} from 'node:child_process';
 import {createHash} from 'node:crypto';
 import {gzipSync} from 'node:zlib';
 import {point,tapUI,waitScene,tapMenuAction} from './ui.mjs';
-const out=process.env.B05_PHASE_OUTPUT??'docs/production/evidence/b05-opponent-phases-2026-10-15';
+const out=process.env.B05_PHASE_OUTPUT??'shots/b05-opponent-phases';
 await mkdir(out,{recursive:true});
 const git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
 const paths=git('ls-files','src','tests/fixtures/b05-encounter.ts','harness/ui.mjs').split('\n');

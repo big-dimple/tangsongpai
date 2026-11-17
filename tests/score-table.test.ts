@@ -1,3 +1,4 @@
+import {stageScoreBands} from '../src/game/StageScoreMeter';
 import {expect,it,vi} from 'vitest';
 import {layout,intersects} from '../src/game/layout';
 import {tableScoreCells,localHeroEyeSlot,idlePlayedArea} from '../src/game/ScoreTableLayout';
@@ -19,10 +20,12 @@ it('distinguishes actual chips, added multiplier, multiplied multiplier and fina
  expect(cues.some(c=>c!.kind==='heat'&&c!.label.startsWith('+'))).toBe(true);expect(cues.some(c=>c!.kind==='mult-add'&&c!.label.startsWith('+'))).toBe(true);expect(cues.some(c=>c!.kind==='mult-multiply'&&c!.label.startsWith('×'))).toBe(true);expect(cues.some(c=>c!.kind==='total')).toBe(true);
  expect(new Set(['heat','mult-add','mult-multiply'].map(k=>SCORE_CHANNEL[k as keyof typeof SCORE_CHANNEL].color)).size).toBe(3);expect(JSON.stringify(saved)).toBe(before);
 });
-it('phone hero closeups stay in their skill band and idle cards reuse only hidden readout space',()=>{
+it('phone hero closeups stay in the skill band and hand previews stay clear of controls',()=>{
  const l=layout({width:390,height:740},{top:0,right:0,bottom:0,left:0}),before=JSON.stringify(l),area=toolInventoryPlayedArea(l);
  for(const occupied of [0,1,4,5]){const eyes=localHeroEyeSlot(l,area,occupied)!;expect(eyes).toBeDefined();expect(intersects(eyes,l.scoreBoard)).toBe(false);expect(intersects(eyes,l.hand)).toBe(false);expect(eyes.y).toBeGreaterThanOrEqual(l.heroAction.y);expect(eyes.y+eyes.height).toBeLessThanOrEqual(l.heroAction.y+l.heroAction.height);}
- const idle=idlePlayedArea(l);expect(idle.y).toBeGreaterThanOrEqual(l.scoreBoard.y+60);expect(idle.y).toBeLessThan(area.y);expect(intersects(idle,l.heroAction)).toBe(false);expect(intersects(idle,l.hand)).toBe(false);expect(l.scoreBoard.height).toBeGreaterThanOrEqual(108);
+ const idle=idlePlayedArea(l);expect(idle.y).toBeGreaterThanOrEqual(l.scoreBoard.y+60);expect(idle).toEqual(area);
+ const small=layout({width:320,height:568},{top:44,right:0,bottom:34,left:0}),shortPreview=idlePlayedArea(small);
+ expect(shortPreview.y).toBeLessThan(small.playedArea.y);expect(shortPreview.y).toBeGreaterThanOrEqual(small.scoreBoard.y+60);expect(intersects(shortPreview,small.heroAction)).toBe(false);expect(intersects(idle,l.heroAction)).toBe(false);expect(intersects(idle,l.hand)).toBe(false);expect(l.scoreBoard.height).toBeGreaterThanOrEqual(108);
  expect(JSON.stringify(l)).toBe(before);
 });
 it('an aborted visual cannot create nodes or notify a device adapter',async()=>{
@@ -42,4 +45,11 @@ it('a live source badge is destroyed once on abort and a late animation update c
  const scene:any={scale:{zoom:1},add:{container:()=>group,text:()=>label}},event=saved.lastTrace!.events.find(e=>scoreArrival(e)?.kind==='heat')!;
  const animation=presentScoreSource(scene,{add:vi.fn()} as any,{event,source:{x:60,y:200,width:60,height:80},target:{x:100,y:100,width:100,height:60},viewport:{x:0,y:0,width:390,height:844},duration:150,reduced:false,context:{generation:1,signal:controller.signal},animate:config=>{update=config.onUpdate as ()=>void;return new Promise<void>(resolve=>finish=resolve);}});
  controller.abort();expect(destroy).toHaveBeenCalledOnce();const before=writes.mock.calls.length;update?.();expect(writes).toHaveBeenCalledTimes(before);finish();await animation;expect(destroy).toHaveBeenCalledOnce();
+});
+
+it('splits saved points at both the last hand and the target even beyond JS numeric precision',()=>{
+ const base=10n**85n;
+ expect(stageScoreBands(String(5n*base),String(4n*base),String(3n*base))).toEqual({prior:.4,filled:1,goal:.8,before:String(2n*base),gap:'0'});
+ expect(stageScoreBands('25','100')).toEqual({prior:.25,filled:.25,goal:1,before:'25',gap:'75'});
+ expect(stageScoreBands('0','100','0')).toEqual({prior:0,filled:0,goal:1,before:'0',gap:'100'});
 });

@@ -5,9 +5,10 @@ import {pcResultSidebar,resultLayout} from './IntermissionLayout';
 
 /** A PC-only lacquer surround and portrait alcove, with no input or game state. */
 export function drawPcSettlementArt(scene:Phaser.Scene,view:SceneView):void {
- const {width,height}=view.layout,grid=pcLandscapeFrame(width,height),layout=resultLayout(width,height,0,0,true),side=pcResultSidebar(width,height);
+ const {width,height,safe}=view.layout,grid=pcLandscapeFrame(width,height,0,0,safe.left,safe.right);
+ const layout=resultLayout(width,height,0,0,true,safe.left,safe.right),side=pcResultSidebar(width,height,safe.left,safe.right);
  const sideX=layout.x-grid.gap-side.width,groupRight=layout.x+layout.w;
- const x=Math.max(grid.frame.x-12,sideX-20),right=Math.min(width-grid.margin+12,groupRight+20);
+ const x=Math.max(grid.frame.x-12,sideX-20),right=Math.min(grid.frame.x+grid.frame.width+12,groupRight+20);
  const g=scene.add.graphics().setName('result-art/pc-stage');
  g.fillStyle(0x253e40).fillRect(0,0,width,height);
  g.fillStyle(0x142b2e,.7).fillRoundedRect(x,45,right-x,height-56,18);

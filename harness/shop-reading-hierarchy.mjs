@@ -10,7 +10,7 @@ import {chooseCharacter,tapUI,waitScene,point} from './ui.mjs';
 
 const label=process.env.SHOP_REVIEW_LABEL??'before';
 assert.ok(/^[a-z0-9-]+$/.test(label));
-const out='docs/production/evidence/shop-reading-hierarchy-2026-10-21/'+label;
+const out='shots/shop-reading-hierarchy/'+label;
 await mkdir(out,{recursive:true});
 const report={label,head:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),dirty:execFileSync('git',['status','--short'],{encoding:'utf8'}).trim(),seed:'group-natural-17',scope:'Local Chromium, real mouse/touch input, natural new game; software rendering only. Normal motion continuous videos, no animation claim from screenshots.',cases:[],status:'RUNNING'};
 const server=await createServer({mode:'e2e',cacheDir:'/tmp/shop-reading-vite',server:{host:'127.0.0.1',port:5754,strictPort:true,hmr:false},logLevel:'error'});await server.listen();

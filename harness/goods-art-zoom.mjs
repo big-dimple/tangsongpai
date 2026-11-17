@@ -8,7 +8,7 @@ import {build} from 'vite';
 import {chromium} from 'playwright';
 
 const smallTrigger=process.argv.includes('--small-trigger');
-const out=smallTrigger?'docs/production/evidence/art-zoom-small-image-2026-10-17':'docs/production/evidence/common-art-zoom-2026-10-17',bundle='.vite/goods-art-zoom-build',entry='.vite/goods-art-zoom-entry.html';
+const out=smallTrigger?'shots/art-zoom-small-image':'shots/common-art-zoom',bundle='.vite/goods-art-zoom-build',entry='.vite/goods-art-zoom-entry.html';
 await mkdir(out,{recursive:true});await mkdir('.vite',{recursive:true});
 const sourceFiles=['src/game/CardArtSource.ts','src/game/CardArtZoomModal.ts','src/game/DetailDialog.ts','src/game/DetailDialog.css'];
 const sourceHashes=Object.fromEntries(await Promise.all(sourceFiles.map(async path=>[path,createHash('sha256').update(await readFile(path)).digest('hex')])));

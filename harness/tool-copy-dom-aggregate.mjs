@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {createServer} from 'vite';
 import {chromium} from 'playwright';
 import {mkdir,writeFile,unlink} from 'node:fs/promises';
-const out='docs/production/evidence/tool-copy-boundary-audit-2026-10-17';await mkdir(out,{recursive:true});
+const out='shots/tool-copy-boundary-audit';await mkdir(out,{recursive:true});
 const entry='shots/tool-copy-dom-aggregate.html';await writeFile(entry,`<!doctype html><html lang="zh"><meta charset="utf-8"><body><button id="catalog">查询</button><div id="items"></div><script type="module">
 import '/src/style.css';import {DetailDialog} from '/src/game/DetailDialog.ts';import {observePlayerText} from '/src/game/PlayerFacingText.ts';import {showCatalog} from '/src/game/CatalogDialog.ts';import {catalogFacts} from '/src/game/Catalog.ts';import {R2_LONG_TERM_ITEMS} from '/src/content/r2Tools.ts';import {R2_JOKERS} from '/src/content/r2Schema.ts';import {itemInfo,goodsArtPortrait} from '/src/game/r2ToolInfo.ts';
 observePlayerText(document.body);const owner=new DetailDialog();document.querySelector('#catalog').onclick=()=>showCatalog(owner,undefined,()=>true);for(const item of R2_LONG_TERM_ITEMS){const b=document.createElement('button');b.id='item-'+item.id;b.textContent=item.name;b.onclick=()=>{const info=itemInfo(item.id);owner.open(info.name,info.description,[],{effectBody:info.summary,portrait:goodsArtPortrait(info),collapseRules:true});};document.querySelector('#items').append(b);}

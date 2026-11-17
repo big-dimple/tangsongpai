@@ -1,3 +1,4 @@
+import {registerRiverScroll} from './RiverScroll';
 import {LoadingScreen,prepareDestinationBackground} from './LoadingScreen';
 import Phaser from 'phaser';
 import {AudioEngine,type OpeningSoundProgress} from '../audio/AudioEngine';
@@ -50,6 +51,7 @@ export class BootScene extends Phaser.Scene {
 
   create(): void {
     const generation=this.generation,loading=this.loading;
+    registerRiverScroll(this.game,loading?.host.querySelector<HTMLImageElement>('.load-world img')??null);
     void gameSession().initialize().catch(error=>console.warn('[boot] 存档恢复将在后台重试',error));
     void (async()=>{
       await this.opening;

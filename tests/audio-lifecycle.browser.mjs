@@ -7,7 +7,7 @@ import {existsSync} from 'node:fs';
 import path from 'node:path';
 import {build, preview} from 'vite';
 import {chromium} from 'playwright';
-import {waitScene, openSelector, confirmHeroRoute, tapUI} from '../harness/ui.mjs';
+import {waitScene, chooseCharacter, tapUI} from '../harness/ui.mjs';
 
 const out = process.env.AUDIO_OUT ?? 'shots/audio-lifecycle/after';
 const port = Number(process.env.AUDIO_PORT ?? 5607);
@@ -42,12 +42,7 @@ const playing = p => p.waitForFunction(() => {
   return e?.musicElement && !e.musicElement.paused && e.musicElement.currentTime > .05;
 }, null, {timeout: 6000});
 const choose = async (p, touch = false, hero = 'laohuan') => {
-  await openSelector(p, touch);
-  await tapUI(p, 'character-select', 'character/' + hero, touch);
-  await confirmHeroRoute(p, touch, 'group');
-  const confirm = p.getByRole('button', {name: '确认开始新局', exact: true});
-  if (await confirm.count()) { if (touch) await confirm.tap(); else await confirm.click(); }
-  await waitScene(p, 'shop');
+  await chooseCharacter(p, hero, touch);
   await p.waitForFunction(() => window.__harness.game.scene.getScene('shop').ready);
 };
 const restart = async (p, touch = false) => {
@@ -62,7 +57,7 @@ const restart = async (p, touch = false) => {
 const table = async (p, touch = false) => {
   await tapUI(p, 'shop', 'action/start-stage', touch);
   await waitScene(p, 'game');
-  const enter = p.locator('dialog.blind-select-dialog[open]').getByRole('button', {name: /^进入第/});
+  const enter = p.locator('dialog.blind-select-dialog[open]').getByRole('button', {name: /^进入暖场/});
   if (touch) await enter.tap(); else await enter.click();
   await p.waitForFunction(() => {const s = window.__harness.game.scene.getScene('game'); return s.ready && !s.playing && s.cardViews.length > 0 && s.cardViews.every(v => !v.dealing);});
 };
@@ -114,8 +109,9 @@ try {
         const added = [...this.voices].filter(v => !voices.has(v));
         const event = args[0]?.score?.events?.find(e => e.eventId === args[1]);
         const cardIndex = args[0]?.score?.sets?.activeScoringIds?.indexOf(event?.targetCardId) ?? -1;
+        const names = added.map(v => [...this.scoreSamples].find(([, buffer]) => buffer === v.source.buffer)?.[0]);
         window.__newRunCues.push({eventId: args[1], kind: args[2], cardIndex, added: added.length,
-          rates: added.map(v => v.source.playbackRate.value)});
+          pulse: args[5]?.pulse ?? cardIndex, paired: !!args[5]?.paired, names, rates: added.map(v => v.source.playbackRate.value)});
         return result;
       };
     });
@@ -132,8 +128,10 @@ try {
     const cards = row.actualNewRunCues.filter(e => e.cardIndex >= 0 && ['add', 'key'].includes(e.kind));
     assert.ok(cards.length >= 2, 'actual committed hand has at least two scoring-card landings');
     for (const cue of cards) {
-      const step = [1, 1.12, 1.25, 1.35, 1.5, 1.68, 1.88, 2][Math.min(7, cue.cardIndex)];
-      const expected = cue.kind === 'add' ? [step] : [.76 * step, 1.1 * step, .9 * step, .84 * step];
+      const notes = ['gong','shang','jiao','zhi','yu'], note = cue.pulse % notes.length;
+      assert.equal(cue.names[0], 'sfx-penta-'+(note+1)+'-'+notes[note], 'the decoded recording follows the committed pulse');
+      const expected = cue.paired ? (cue.kind==='add' ? [.75,.82] : [.75,.82,1])
+        : cue.kind==='add' && cue.pulse%3===0 ? [.75,1] : [.75,.8,1];
       assert.equal(cue.rates.length, expected.length);
       expected.forEach((rate, i) => assert.ok(Math.abs(cue.rates[i] - rate) < 1e-6,
         `actual ${cue.kind} sample rate ${cue.rates[i]} should be ${rate} at scoring-card ${cue.cardIndex}`));
@@ -213,7 +211,8 @@ try {
     });
     await playing(p); await p.waitForTimeout(350);
     row.afterSwitches = await snapshot(p);
-    assert.match(row.afterSwitches.src, /moon-shop/);
+    assert.equal(row.afterSwitches.scene, 'table');
+    assert.match(row.afterSwitches.src, /go-cake/);
     assert.ok(row.afterSwitches.slots <= 2, 'at most two reusable music elements');
     await p.evaluate(() => {
       const e = window.__audioAudit;

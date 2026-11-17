@@ -19,7 +19,7 @@ vi.mock('../src/game/runAdapter',()=>({
 }));
 vi.mock('../src/game/DetailDialog',()=>({DetailDialog:class {
   active=()=>true;close=()=>{};
-  open(_title:string,_body:string,actions:{run:()=>Promise<void>}[]){fixture.confirm=actions[0].run;return {};}
+  open(_title:string,_body:string,actions:{run:()=>Promise<void>}[]){fixture.confirm=actions[0].run;return {classList:{add:vi.fn()},querySelector:()=>({prepend:vi.fn()})};}
 }}));
 
 import {createRun} from '../src/domain/run';
@@ -47,7 +47,7 @@ function resultScene(phase:'run-lost'|'stage-cleared'|'run-won'){
 
 describe('result page exits while Phaser queues the next scene',()=>{
   beforeEach(()=>{vi.clearAllMocks();fixture.confirm=null;fixture.session.notice='';vi.spyOn(AudioEngine.shared,'select').mockImplementation(()=>{});vi.spyOn(AudioEngine.shared,'invalid').mockImplementation(()=>{});});
-  afterEach(()=>vi.restoreAllMocks());
+  afterEach(()=>{vi.restoreAllMocks();vi.unstubAllGlobals();});
 
   it('same-seed retry never repaints the old result against a fresh run without a stage',async()=>{
     const {actions,state,rendered}=resultScene('run-won');
@@ -70,6 +70,7 @@ describe('result page exits while Phaser queues the next scene',()=>{
   });
 
   it('confirmed endless continuation does not redraw the normal victory after switching modes',async()=>{
+    vi.stubGlobal('document',{createElement:()=>({setAttribute:vi.fn(),append:vi.fn()})});
     const {actions,state,rendered}=resultScene('run-won');
     fixture.dispatch.mockImplementation(async()=>{fixture.controller.state={...state,phase:'shop',tourMode:'endless'};return {ok:true,state:fixture.controller.state};});
     actions.confirmEndless();await fixture.confirm!();expect(fixture.sceneStart).toHaveBeenCalledWith('shop');expect(rendered).toEqual(['400']);

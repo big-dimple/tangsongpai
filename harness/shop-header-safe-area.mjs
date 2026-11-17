@@ -7,7 +7,7 @@ import {execFileSync} from 'node:child_process';
 import {build} from 'vite';
 import {chromium} from 'playwright';
 import {waitScene} from './ui.mjs';
-const out='docs/production/evidence/shop-header-safe-area-2026-10-17',entry='.vite/header-entry.html',bundle='.vite/header-build';
+const out='shots/shop-header-safe-area',entry='.vite/header-entry.html',bundle='.vite/header-build';
 await mkdir(out,{recursive:true});
 const probe=`<script type="module">
 import {workshopLayoutFixture} from '/harness/fixtures/workshop-layout.ts';import {applyCommand} from '/src/domain/run.ts';import {gameSession} from '/src/game/session.ts';

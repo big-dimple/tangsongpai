@@ -6,7 +6,7 @@ import {PointerIntent} from './PointerIntent';
 import {pointerReleaseTime,releasePointerIntent} from './PointerReleaseTime';
 import {modalBlocksCanvas,type ModalCanvasPress} from './DetailDialog';
 import {PAPER_THEME,PAPER_CSS,UI_FONT} from './theme';
-import {alignViewportCamera,cssViewport} from '../platform/Viewport';
+import {alignViewportCamera,cssViewport,viewportSafeInsets} from '../platform/Viewport';
 import {crispText} from './TextRaster';
 import {drawHandActionGlyph,type HandButtonSkin} from './HandActionArt';
 import {attachHandSortVisual,isHandSortControl} from './HandSortButtonVisual';
@@ -109,9 +109,11 @@ export class SceneView {
     return result;
   }
   get layout():TableLayout {
-    const style=getComputedStyle(document.documentElement),n=(key:string)=>parseFloat(style.getPropertyValue(key))||0;
+    const viewport=cssViewport(this.scene),insets=viewportSafeInsets(),bounds=this.scene.scale.canvasBounds;
+    const sx=bounds?.width?viewport.width/bounds.width:1,sy=bounds?.height?viewport.height/bounds.height:1;
+    const safe={left:insets.left*sx,right:insets.right*sx,top:insets.top*sy,bottom:insets.bottom*sy};
     const pc=this.scene.sys.settings.key==='game'&&!window.matchMedia('(pointer: coarse)').matches;
-    return layout(cssViewport(this.scene),{top:n('--safe-top'),right:n('--safe-right'),bottom:n('--safe-bottom'),left:n('--safe-left')},undefined,this.handWindow?.(),{pc});
+    return layout(viewport,safe,undefined,this.handWindow?.(),{pc});
   }
   clear():void {this.cancel();this.gestures.clear();this.root.removeAll(true);}
   add<T extends Phaser.GameObjects.GameObject>(object:T):T {this.root.add(object);return object;}

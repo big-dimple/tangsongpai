@@ -32,7 +32,11 @@ export function settlementReady(kind:'ordinary'|'chain'|'million'|'billion'|'lon
  if(kind==='long'){state.jokers[3].growth.coefficient={n:'1000000',d:'1'};}
  if(isR2CoreBuild(state))state.chapterTargetPlan=lockR2ChapterTargets(state.chapter,state.tourMode,state.difficulty,state.boss);
  state=energySend(state,{type:'EnterStage'});
- if(kind==='boss-loss'){while(state.stage!.handsLeft>1)state=energySend(state,{type:'PlayHand',selectedIds:[state.handOrder[0]]});return {state,action:{type:'PlayHand' as const,selectedIds:[state.handOrder[0]]}};}
+ if(kind==='boss-loss'){
+  const stageEntry=state;
+  while(state.stage!.handsLeft>1)state=energySend(state,{type:'PlayHand',selectedIds:[state.handOrder[0]]});
+  return {state,stageEntry,action:{type:'PlayHand' as const,selectedIds:[state.handOrder[0]]}};
+ }
  // A controlled public hand before discard; the real command owns both zone movement and rescue.
  const hand=state.handOrder.map(id=>state.deckInstances.find(c=>c.id===id)!);
  hand.forEach((card,index)=>{card.rank=([8,9,10,11,12,13,2,3][index]) as typeof card.rank;card.suit=index%2?'hearts':'spades';});

@@ -1,3 +1,4 @@
+import {handSeats} from './HandSeats';
 import type {Box,Insets,HandWindow} from './layout';
 import {pcLandscapeFrame} from './PcLandscapeFrame';
 
@@ -19,11 +20,7 @@ export function pcJokerTextArea(rack:Box,slot:Box):{x:number;width:number} {
 export function pcTableAreas(viewport:{width:number;height:number},safe:Insets,handWindow:HandWindow,enabled=false){
  const width=viewport.width-safe.left-safe.right,height=viewport.height-safe.top-safe.bottom;
  if(!enabled||width<1180||height<640||width<=height)return;
- const grid=pcLandscapeFrame(viewport.width,viewport.height,safe.top,safe.bottom,safe.left,safe.right),{compact}=grid;
- // Keep a broad monitor from stretching the table and its card rack apart.
- const frame={...grid.frame,width:Math.min(1600,grid.frame.width)};
- frame.x=grid.frame.x+(grid.frame.width-frame.width)/2;
- const hud={...grid.sidebar,x:frame.x},main={...grid.main,x:frame.x+hud.width+grid.gap,width:frame.width-hud.width-grid.gap};
+ const {frame,sidebar:hud,main,compact}=pcLandscapeFrame(viewport.width,viewport.height,safe.top,safe.bottom,safe.left,safe.right);
  const rail=box(viewport.width-safe.right-76,safe.top+8,64,44);
  const count=Number.isSafeInteger(handWindow.count)&&handWindow.count>=0?handWindow.count:8;
  const status=box(main.x,frame.y+frame.height-20,main.width,20);
@@ -62,24 +59,12 @@ export function pcTableAreas(viewport:{width:number;height:number},safe:Insets,h
  const scoreBoard=box(main.x,middleY+(middleHeight-scoreHeight)/2,scoreWidth,scoreHeight);
  const playedArea=box(main.x+scoreWidth+24,middleY,main.width-scoreWidth-24,middleHeight);
  const preview=box(main.x,middleY,main.width,middleHeight);
- const handOverflow=count>Math.floor((hand.width-cardWidth)/36)+1;
- const cardArea=handOverflow?box(hand.x+48,hand.y,hand.width-96,hand.height):hand;
- const visibleCardCount=Math.min(count,Math.max(1,Math.floor((cardArea.width-cardWidth)/36)+1));
- const handStart=Math.max(0,Math.min(count-visibleCardCount,Number.isSafeInteger(handWindow.start)?handWindow.start!:0));
- const bandWidth=Math.min(cardArea.width,cardWidth*visibleCardCount+8*Math.max(0,visibleCardCount-1));
- const bandX=cardArea.x+(cardArea.width-bandWidth)/2,pitch=visibleCardCount>1?(bandWidth-cardWidth)/(visibleCardCount-1):0;
- const cards=Array.from({length:count},(_,i)=>{
-  const col=i-handStart,x=bandX+(visibleCardCount===1?(bandWidth-cardWidth)/2:col*pitch),last=col===visibleCardCount-1;
-  return {visible:i>=handStart&&i<handStart+visibleCardCount,visual:box(x,hand.y+22,cardWidth,cardWidth*1.4),hit:box(x,hand.y,last?cardWidth:Math.min(cardWidth,pitch),handHeight)};
- });
-
  const row=(offset:number,tall:number)=>box(hud.x+12,hud.y+offset,hud.width-24,tall);
  const heroRows={status:row(94,34),stage:row(138,26),target:row(204,32),heat:row(252,54),gold:row(314,48),progress:row(366,5)};
  const utilities={inventory:box(hud.x+12,frame.y+frame.height-104,hud.width-24,44),help:box(hud.x+12,frame.y+frame.height-52,hud.width-24,44)};
  const heroPortrait=box(hud.x-8,hud.y+386,hud.width+16,Math.max(48,utilities.inventory.y-hud.y-398));
  const eyeWidth=Math.min(188,heroPortrait.width),scoreEyes=box(heroPortrait.x+(heroPortrait.width-eyeWidth)/2,heroPortrait.y+(heroPortrait.height-eyeWidth*3/8)/2,eyeWidth,eyeWidth*3/8);
  const scoreFire=box(scoreBoard.x+8,scoreBoard.y+scoreBoard.height-24,scoreBoard.width-16,20);
- return {hud,jokers,slots,jokerLabels:slots,preview,scoreBoard,playedArea,scoreEyes,scoreFire,hand,handLabel,piles,status,heroAction,cards,handRows:1,handOverflow,visibleCardCount,handStart,labelHeight:18,inventoryEntry:utilities.inventory,helpEntry:utilities.help,...footer,
-  handNavigation:{previous:box(hand.x,hand.y+(hand.height-44)/2,44,44),next:box(hand.x+hand.width-44,hand.y+(hand.height-44)/2,44,44)},
+ return {hud,jokers,slots,jokerLabels:slots,preview,scoreBoard,playedArea,scoreEyes,scoreFire,hand,handLabel,piles,status,heroAction,...handSeats(hand,{...handWindow,count},cardWidth,1,36,true),labelHeight:18,inventoryEntry:utilities.inventory,helpEntry:utilities.help,...footer,
   pc:{frame,main,rail,heroPortrait,heroRows,utilities,compact,short,stage:playedArea,build:jokers,entry:box(main.x,main.y,main.width,34)}};
 }

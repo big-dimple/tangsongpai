@@ -1,7 +1,7 @@
 import type {Box} from './layout';
 /** Reserve the choice rail and one primary action before composing the hero stage. */
 export function selectionLayout(width:number,height:number,top:number,bottom:number,step:'hero'|'route'='hero',left=0,right=0){
- const portrait=width<640&&height>width,short=height<500;
+ const usableWidth=width-left-right,portrait=usableWidth<700&&height>width,short=height-top-bottom<500&&!portrait;
  const w=Math.min(1320,width-left-right-24),x=left+(width-left-right-w)/2,header=Math.max(12,top);
  const cancel={x,y:header,width:64,height:44};
  if(short&&!portrait){
@@ -13,7 +13,17 @@ export function selectionLayout(width:number,height:number,top:number,bottom:num
   const routes=Array.from({length:3},(_,i)=>({x:railX+i%routeCols*(railWidth+6)/routeCols,y:contentY+Math.floor(i/routeCols)*(railHeight+6)/routeRows,width:(railWidth-6*(routeCols-1))/routeCols,height:(railHeight-6*(routeRows-1))/routeRows}));
   return {x,w,top:header,short,portrait,hero,cards,routes,summary:hero,cancel,details:{x:railX,y:footerY,width:64,height:44},confirm:{x:railX+72,y:footerY,width:railWidth-72,height:44},noticeY:footerY+48};
  }
- const contentY=header+60,footerY=height-bottom-(portrait?84:76),railHeight=portrait?96:88,railY=footerY-railHeight-12;
+ if(step==='route'&&usableWidth>=1180&&height-top-bottom>=600&&width>height){
+  const contentY=header+60,footerY=height-bottom-84;
+  const railWidth=Math.min(400,Math.floor(w*.30)),railX=x+w-railWidth;
+  const hero={x,y:contentY,width:w-railWidth-28,height:footerY+56-contentY};
+  const rowHeight=Math.min(112,Math.floor((footerY-contentY-36)/3));
+  const startY=contentY+(footerY-contentY-3*rowHeight-36)/2;
+  const routes=Array.from({length:3},(_,i)=>({x:railX,y:startY+i*(rowHeight+12),width:railWidth,height:rowHeight}));
+  return {x,w,top:header,short,portrait,hero,cards:[],routes,summary:hero,cancel,
+    details:{x:railX,y:footerY+6,width:80,height:44},confirm:{x:railX+88,y:footerY,width:railWidth-88,height:56},noticeY:footerY+60};
+ }
+ const contentY=header+60,footerY=height-bottom-84,railHeight=portrait?(step==='route'&&height-top-bottom<600?84:96):88,railY=footerY-railHeight-12;
  const hero:Box={x,y:contentY,width:w,height:Math.max(1,railY-contentY-12)};
  const gap=portrait?8:12,cols=portrait?3:6,rows=6/cols;
  const cardWidth=(w-gap*(cols-1))/cols,cardHeight=(railHeight-gap*(rows-1))/rows;

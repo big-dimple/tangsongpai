@@ -1,3 +1,5 @@
+import {whenTextureReady} from './LateTextureArt';
+import {openingRouteDemo,ROUTE_EXAMPLE_HANDS} from './OpeningRouteDemo';
 import {GAME_NAME} from './Brand';
 import {heroText,HERO_CAST} from './HeroIdentity';
 import {warmOpeningImages,warmHeroImage} from './StageImageWarmup';
@@ -103,25 +105,34 @@ export class CharacterSelectScene extends Phaser.Scene {
   private render():void {
     this.entryArt=undefined;
     this.portraitTargets.clear();
-    const v=this.view,l=v.layout,style=getComputedStyle(document.documentElement),bottom=parseFloat(style.getPropertyValue('--safe-bottom'))||0;
-    const p=selectionLayout(l.width,l.height,l.hud.y,bottom,this.step,parseFloat(style.getPropertyValue('--safe-left'))||0,parseFloat(style.getPropertyValue('--safe-right'))||0),config=r2RunModeConfig(this.modeConfig);v.clear();
+    const v=this.view,l=v.layout,safe=l.safe;
+    const p=selectionLayout(l.width,l.height,l.hud.y,safe.bottom,this.step,safe.left,safe.right),config=r2RunModeConfig(this.modeConfig);v.clear();
     const routeStatus=this.step==='route'?(this.selectedRoute?' · 已选'+OPENING_ROUTES[this.selectedRoute].title+'，可改选':' · 请点选一条路线'):(this.selectedId?' · 当前'+getCharacter(this.selectedId).name:'');
     this.game.canvas.setAttribute('aria-label',GAME_NAME+' · '+(this.step==='route'?'选择路线':'选择人物')+routeStatus+(this.confirming?'。已选定，Enter 直接入场。':'。方向键切换，Enter 确认，Escape 返回。'));
     selectionStageBackground(this,v,l.width,l.height);
     const modeLabel=selectionModeName(this.modeConfig);
-    const modeWidth=p.portrait?96:112,controlsRight=Math.max(12,parseFloat(style.getPropertyValue('--safe-right'))||0),menuWidth=l.width<=700?44:64,modeX=Math.min(p.x+p.w-modeWidth,l.width-controlsRight-menuWidth-8-modeWidth);
+    const modeWidth=p.portrait?96:112,controlsRight=safe.right+12,menuWidth=l.width<=700?44:64,modeX=Math.min(p.x+p.w-modeWidth,l.width-controlsRight-menuWidth-8-modeWidth);
     const headingWidth=modeX-p.x-84;
     if((!p.portrait||this.step==='route')&&headingWidth>=28){const heading=this.step==='hero'?'英雄登场':headingWidth<70?'点选路线':'点一条路线';this.singleLine(p.x+80,p.top+10,heading,p.short?20:p.portrait?16:28,SELECTION_INK.light,headingWidth,14,true).setColor(SELECTION_INK.light).setFontFamily('Georgia, "Noto Serif SC", SimSun, serif').setName(this.step==='route'?'opening/route-heading':'opening/hero-heading');}
-    selectionQuietButton(v,{x:modeX,y:(parseFloat(style.getPropertyValue('--safe-top'))||0)+12,width:modeWidth,height:44},'模式 · '+modeLabel,'action/select-mode',()=>this.selectMode(),!this.choosing);
+    selectionQuietButton(v,{x:modeX,y:safe.top+12,width:modeWidth,height:44},'模式 · '+modeLabel,'action/select-mode',()=>this.selectMode(),!this.choosing);
     this.showHero(p,config.characterAbilityEnabled);
     if(this.step==='hero')CHARACTERS.forEach((character,i)=>{
       const b=p.cards[i],selected=character.id===this.selectedId,first=v.root.length,compact=p.portrait||p.short;
       const accent=HERO_OPENING[character.id].accent;
       v.add(this.add.graphics().fillStyle(selected?SELECTION_INK.paper:SELECTION_INK.raised).fillRoundedRect(b.x,b.y,b.width,b.height,3).lineStyle(selected?2:1,selected?0xb8473a:0x87988c,selected?1:.4).strokeRoundedRect(b.x+.5,b.y+.5,b.width-1,b.height-1,3));
-      const picture={x:b.x+6,y:b.y+5,width:Math.min(48,b.width*.3),height:b.height-10};
-      if(character.portrait&&!compact)this.drawPortrait(character.id,picture);
-      const tx=compact?b.x+b.width/2:b.x+picture.width+14,tw=compact?b.width-8:b.x+b.width-tx-6;
-      this.singleLine(tx,b.y+(compact?(b.height-19)/2:18),character.name,compact?16:20,selected?accent:SELECTION_INK.light,tw,14,true).setColor(selected?accent:SELECTION_INK.light).setOrigin(compact?.5:0,0).setName('opening/seat-name');
+      const nameWidth=character.name.length*(compact?15:20);
+      const faceWidth=Math.min(compact?34:50,b.height-10,b.width-nameWidth-16);
+      const hasFace=!!character.portrait&&faceWidth>=21;
+      if(hasFace){
+        const picture={x:b.x+5,y:b.y+(b.height-faceWidth)/2,width:faceWidth,height:faceWidth};
+        if(compact){
+          const face=v.add(this.add.container(picture.x+faceWidth/2,picture.y+faceWidth/2));
+          const paint=()=>{face.removeAll(true);addAvatar(this,face,character,0,0,faceWidth);};
+          paint();if(!this.textures.exists(avatarKey(character.id)))whenTextureReady(this,face,avatarKey(character.id),paint);
+        }else this.drawPortrait(character.id,picture);
+      }
+      const tx=hasFace?b.x+faceWidth+10:b.x+b.width/2,tw=hasFace?b.x+b.width-tx-4:b.width-6;
+      this.singleLine(tx,b.y+(compact?(b.height-20)/2:16),character.name,compact?15:20,selected?accent:SELECTION_INK.light,tw,14,true).setColor(selected?accent:SELECTION_INK.light).setOrigin(hasFace?0:.5,0).setName('opening/seat-name');
       if(!compact)this.singleLine(tx,b.y+49,SELECTION_PRESENTATION[character.id].tag,14,selected?'#3F606B':SELECTION_INK.muted,tw).setColor(selected?'#3F606B':SELECTION_INK.muted).setName('opening/seat-tag');
       if(selected)v.add(this.add.graphics().fillStyle(0xb8473a).fillRect(b.x+5,b.y+b.height-4,b.width-10,3));
       const wrap=this.wrapCard(first,b),hit=v.rect(b).setFillStyle(0,0).setStrokeStyle().setData('selected',selected);
@@ -132,16 +143,24 @@ export class CharacterSelectScene extends Phaser.Scene {
       v.material(b,selected?0xe2e8e5:0xfff9ee,0xfff9ee,3);
       v.add(this.add.graphics().lineStyle(selected?3:1,selected?0xb8473a:0xc7b89d).strokeRoundedRect(b.x+1,b.y+1,b.width-2,b.height-2,3));
       if(selected)v.add(this.add.graphics().fillStyle(0xb8473a).fillRect(b.x+5,b.y+b.height-4,b.width-10,3));
-      if(p.portrait||p.short){
-        this.singleLine(b.x+b.width/2,b.y+(b.height<60?14:10),copy.title,16,selected?'#B8473A':'#26313A',b.width-8).setOrigin(.5,0).setFontStyle('bold').setName('opening/route-name');
-        if(b.height>=84)this.singleLine(b.x+b.width/2,b.y+37,copy.example.replaceAll(' → ','·').replaceAll(' · ','·'),14,'#3F606B',b.width-8).setOrigin(.5,0).setName('opening/route-example');
-        if(b.height>=60)this.singleLine(b.x+b.width/2,b.y+b.height-22,selected?'已选 · 可改':'轻点选择',14,selected?'#B8473A':'#3F606B',b.width-8).setOrigin(.5,0).setFontStyle('bold').setName('opening/route-action');
-      }else{
-        v.text(b.x+14,b.y+8,copy.title,22,selected?'#B8473A':'#26313A').setFontStyle('bold').setName('opening/route-name');
-        v.text(b.x+b.width-14,b.y+12,selected?'已选 · 可改':'点击选择',14,selected?'#B8473A':'#3F606B').setOrigin(1,0).setFontStyle('bold').setName('opening/route-action');
-        v.text(b.x+14,b.y+38,copy.example,16,'#386D65',b.width-28).setName('opening/route-example');
-        v.text(b.x+14,b.y+62,copy.play,14,'#26313A',b.width-28).setName('opening/route-play');
+      const compact=p.portrait||p.short,colors=selected?'#933e30':'#25443b';
+      const title=this.singleLine(compact?b.x+b.width/2:b.x+12,b.y+5,copy.title,compact?16:21,colors,b.width-8,14,true);
+      title.setOrigin(compact?.5:0,0).setColor(colors).setName('opening/route-name');
+      if(b.height>=64){
+        const cards=ROUTE_EXAMPLE_HANDS[focus],gap=2,cardW=Math.min(compact?22:31,(b.width-12-gap*(cards.length-1))/cards.length);
+        const rowW=cardW*cards.length+gap*(cards.length-1),x=compact?b.x+(b.width-rowW)/2:b.x+13;
+        const y=title.y+title.height+3,cardH=Math.min(compact?31:36,b.y+b.height-y-(b.height>=82?20:4));
+        const paper=v.add(this.add.graphics().setName('opening/route-example').setData('cards',cards));
+        cards.forEach((card,index)=>{
+          const left=x+index*(cardW+gap),ink=/[♥♦]$/.test(card)?'#a13d30':'#263d38';
+          paper.fillStyle(0xfffcf3).fillRoundedRect(left,y,cardW,cardH,2).lineStyle(1,0xb09c79).strokeRoundedRect(left+.5,y+.5,cardW-1,cardH-1,2);
+          const label=v.text(left+cardW/2,y+cardH/2,card,14,ink).setColor(ink).setOrigin(.5).setFontFamily('Georgia, serif').setFontStyle('bold');
+          label.setScale(Math.min(1,(cardW-2)/label.width,(cardH-2)/label.height));
+        });
       }
+      if(!compact&&b.height>=80)v.text(b.x+13,b.y+b.height-23,copy.play,14,'#304a40',b.width-26).setName('opening/route-play');
+      if(!compact)this.singleLine(b.x+b.width-10,b.y+9,selected?'已选':'选择',14,colors,68).setOrigin(1,0).setName('opening/route-action');
+      else if(b.height>=82)this.singleLine(b.x+b.width/2,b.y+b.height-21,selected?'已选':'选择',14,colors,b.width-6).setOrigin(.5,0).setName('opening/route-action');
       const wrap=this.wrapCard(first,b),hit=v.rect(b).setFillStyle(0,0).setStrokeStyle().setData('selected',selected);
       v.target(hit,'route/'+focus,{tap:()=>this.selectRoute(focus),enter:wrap.enter,leave:wrap.leave,press:wrap.press,release:wrap.release});
     });
@@ -152,7 +171,9 @@ export class CharacterSelectScene extends Phaser.Scene {
     const confirm=this.step==='hero'?(p.short?'选路线':'选路线 →'):this.selectedRoute?(p.short?'开始':'开始对局'):'先选路线';
     const confirmButton=v.button(p.confirm,this.confirming?'直接入场 →':this.choosing?'正在开始…':confirm,'action/confirm-character',()=>void this.confirmChoice(),this.confirming||!this.choosing&&!!this.selectedId&&(this.step==='hero'||!!this.selectedRoute),true);
     const status=this.step==='route'?(this.selectedRoute?'已选'+OPENING_ROUTES[this.selectedRoute].title+' · 可改选':'点一条路线，再点开始对局'):this.selectedId?getCharacter(this.selectedId).name+(this.modeConfig.mode==='tutorial'?' · 教程固定角色':' · 下一步选路线'):'点一位英雄，决定谁来对局。';
-    v.text(p.x+p.w/2,p.noticeY,this.notice||(this.confirming?'已选定 · '+getCharacter(this.selectedId!).name+' · 可直接入场':status),14,undefined,p.w).setColor(this.notice?'#ECA79A':SELECTION_INK.muted).setOrigin(.5,0).setName('opening/status');
+    const noticeX=this.step==='route'&&p.confirm.x>p.hero.x+p.hero.width?p.details.x:p.x;
+    const noticeWidth=p.x+p.w-noticeX;
+    v.text(noticeX+noticeWidth/2,p.noticeY,this.notice||(this.confirming?'已选定 · '+getCharacter(this.selectedId!).name+' · 可直接入场':status),14,undefined,noticeWidth).setColor(this.notice?'#ECA79A':SELECTION_INK.muted).setOrigin(.5,0).setName('opening/status');
     this.entryParticles?.mount(v.root,this.entryArt,ENTRY_HERO_TINTS[this.selectedId??'amo'],this.confirming?confirmButton:undefined,this.step==='route'&&!this.selectedRoute?p.routes:undefined);
   }
   private showHero(p:ReturnType<typeof selectionLayout>,abilityEnabled:boolean):void {
@@ -175,14 +196,17 @@ export class CharacterSelectScene extends Phaser.Scene {
     if(q.identity.height>=170)v.text(ix,iy+q.identity.height-18,'轻点人物看原画',14,undefined,iw).setColor(SELECTION_INK.muted).setName('opening/portrait-hint');
     const paper=v.add(this.add.graphics());
     const x=q.copy.x,w=q.copy.width;
-    const skill=this.singleLine(x,q.copy.y,c.passiveName,compact?16:24,copy.accent,w,14,true).setName('opening/skill-tag');
-    const effect=v.text(x,skill.y+skill.height+5,abilityEnabled?c.quickEffect:'此挑战关闭角色能力',compact?14:18,'#26313A',w).setName('opening/skill-hook');
+    const route=this.step==='route'&&this.selectedRoute?openingRouteDemo(this.selectedRoute,c.id):undefined;
+    const skill=this.singleLine(x,q.copy.y,route?'首店 · '+route.starter:c.passiveName,compact?16:24,copy.accent,w,14,true).setName('opening/skill-tag');
+    const effect=v.text(x,skill.y+skill.height+5,route?route.method:abilityEnabled?c.quickEffect:'此挑战关闭角色能力',compact?14:18,'#26313A',w).setName('opening/skill-hook');
     let next=effect.y+effect.height+6;
-    if(abilityEnabled&&c.skillTags.length){
+    if(route){
+      const payoff=v.text(x,next,route.payoff,compact?14:18,'#315d51',w).setName('opening/route-payoff');next=payoff.y+payoff.height+5;
+    }else if(abilityEnabled&&c.skillTags.length){
       const visibleTags=compact&&b.height<300?c.skillTags.slice(0,2):c.skillTags;
       const tags=v.text(x,next,visibleTags.join(' · '),14,'#3F606B',w).setName('opening/skill-conditions');next=tags.y+tags.height+(compact?4:16);
     }
-    if(!compact&&abilityEnabled){
+    if(!compact&&abilityEnabled&&!route){
       const when=v.text(x,next,'出手 · '+facts.when,16,'#3F606B',w).setName('opening/when');
       const cost=v.text(x,when.y+when.height+18,'取舍 · '+facts.cost,16,'#26313A',w).setName('opening/cost');next=cost.y+cost.height;
     }
@@ -190,7 +214,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     const panel={x:q.copy.x-8,y:q.copy.y-8,width:q.copy.width+16,height:demo.y+demo.height-q.copy.y+8};
     paper.fillStyle(0x0d1e22,.28).fillRoundedRect(panel.x+4,panel.y+5,panel.width,panel.height,4).fillStyle(SELECTION_INK.paper).fillRoundedRect(panel.x,panel.y,panel.width,panel.height,4).lineStyle(1,0x9f9987,.35).strokeRoundedRect(panel.x+3,panel.y+3,panel.width-6,panel.height-6,3);
     selectionQuietButton(v,{...demo,width:half},'故事 · 技能','opening/hero-details',()=>this.inspect(c.id),!this.choosing,false);
-    selectionQuietButton(v,{...demo,x:demo.x+half+8,width:half},this.step==='hero'?'技能例子':this.selectedRoute?'路线例子':'先选路线','action/opening-sample',()=>{this.audio.select();showSelectionSample(this.dialog,c.name+' · '+(this.step==='hero'?'技能例子':'路线例子'),this.step==='hero'?heroPlaySample(c.id):routePlaySample(this.selectedRoute!,c.id));},!this.choosing&&abilityEnabled&&(this.step==='hero'||!!this.selectedRoute),false);
+    selectionQuietButton(v,{...demo,x:demo.x+half+8,width:half},this.step==='hero'?'技能例子':this.selectedRoute?'路线例子':'先选路线','action/opening-sample',()=>{this.audio.select();showSelectionSample(this.dialog,c.name+' · '+(this.step==='hero'?'技能例子':'路线例子'),this.step==='hero'?heroPlaySample(c.id):routePlaySample(this.selectedRoute!,c.id));},!this.choosing&&(this.step==='hero'?abilityEnabled:!!this.selectedRoute),false);
     if(this.animateChoice&&!this.reducedMotion()){
       for(const text of [name,quote]){text.setAlpha(.65);this.trackOpening(text,()=>text.active&&text.setAlpha(1));this.tweens.add({targets:text,alpha:1,duration:180,ease:inkSettlingEase(.24)});}
     }

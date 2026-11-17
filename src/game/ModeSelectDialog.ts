@@ -22,11 +22,10 @@ export class ModeSelectDialog {
   close():void {this.detail.close();}
   open(options:ModeDialogOptions):void {
     const initial=options.initial??{modeConfig:DEFAULT_MODE_SELECTION},form=document.createElement('div');
-    form.style.display='grid';form.style.gap='12px';form.style.minWidth='0';
+    form.className='mode-fields';
     const field=(caption:string,control:HTMLElement)=>{
       const label=document.createElement('label'),text=document.createElement('span');text.textContent=caption;
-      label.style.display='grid';label.style.gap='6px';label.style.margin='0';label.style.minWidth='0';
-      control.style.width='100%';control.style.boxSizing='border-box';control.style.minWidth='0';
+      label.className='mode-field';
       label.append(text,control);form.append(label);return label;
     };
     const mode=document.createElement('select'),difficulty=document.createElement('select'),challenge=document.createElement('select');
@@ -49,6 +48,7 @@ export class ModeSelectDialog {
     const programsLabel=document.createElement('label');programsLabel.append(programs,document.createTextNode('开启章节节目单'));form.append(programsLabel);
     const progressLine=document.createElement('p');progressLine.style.margin='0';progressLine.style.fontSize='14px';progressLine.style.lineHeight='1.7';
     progressLine.setAttribute('role','status');form.append(progressLine);
+    const stats=document.createElement('dl');stats.className='mode-resources';stats.setAttribute('aria-label','本模式开局资源');
     let busy=false;
     const selection=():R2ModeSelection=>({mode:mode.value as R2ModeId,difficulty:mode.value==='standard'?Number(difficulty.value) as R2Difficulty:0,
       challengeId:mode.value==='challenge'?challenge.value as R2ChallengeId:null,programsEnabled:mode.value==='tutorial'?false:programsPreference});
@@ -80,7 +80,7 @@ export class ModeSelectDialog {
     }};
     const dialog=this.detail.open('对局模式','',[chooseAction,resumeAction],{closeLabel:'取消'});
     dialog.dataset.dialogKind='mode-select';dialog.querySelector('.dialog-eyebrow')!.textContent='选择这一次对局';
-    const copy=dialog.querySelector('.dialog-copy')!;copy.prepend(form);
+    const copy=dialog.querySelector('.dialog-copy')!;copy.prepend(form);form.after(stats);
     const body=dialog.querySelector<HTMLParagraphElement>('.dialog-body')!;body.style.marginTop='16px';body.style.overflowWrap='anywhere';
     const buttons=dialog.querySelectorAll<HTMLButtonElement>('.dialog-actions button');buttons[0].dataset.modeAction='choose';buttons[1].dataset.modeAction='resume';
     const refresh=()=>{
@@ -102,7 +102,13 @@ export class ModeSelectDialog {
         '解锁记录读取失败，普通模式与教程仍可新开；现有模式存档可继续。';
       const rules=selected.mode==='challenge'?heroText(R2_MODE_CATALOG.challenges.find(row=>row.id===selected.challengeId)!.description):
         selected.mode==='tutorial'?heroText('固定刘娥，从首战重练；可随时跳过，节目单关闭。'):`${DIFFICULTY_NAMES[selected.difficulty]} · ${['标准目标，6金开局，每场可弃牌3次。','目标比普通高20%，开局资源不变。','目标比普通高20%，每场弃牌减少为2次。','目标比普通高20%，每场弃牌2次，4金开局，刷新起价3金。'][selected.difficulty]}`;
-      body.textContent=`${rules}\n\n手牌 ${config.baseHandSize} · 每场出牌 ${config.baseHands} · 弃牌 ${config.baseDiscards}\n开局 ${config.initialGold} 金 · 唐宋牌 ${config.jokerSlots} 槽 · 基础利息上限 ${config.baseInterestCap}\n${config.reroll.allowed?`付费刷新 ${config.reroll.start}–${config.reroll.cap} 金`:'付费与免费刷新均关闭'}\n\n${config.programsEnabled?'章节节目单开启，可选择一项或不选。':'章节节目单关闭。'}${selected.mode==='tutorial'?'重玩保存后直接进入首战。':'确认角色并保存成功后才建立新局。'}继续会使用此模式上次保存的种子与进度。`;
+      const resources=[['手牌',config.baseHandSize+' 张'],['每场出牌',config.baseHands+' 次'],['每场弃牌',config.baseDiscards+' 次'],['开局金币',config.initialGold+' 金'],['唐宋牌',config.jokerSlots+' 槽'],['基础利息上限',config.baseInterestCap+' 金']];
+      stats.replaceChildren(...resources.map(([key,value])=>{
+        const cell=document.createElement('div'),term=document.createElement('dt'),amount=document.createElement('dd');
+        term.textContent=key;amount.textContent=value;cell.append(term,amount);return cell;
+      }));
+      const refreshCost=config.reroll.allowed?'换货 '+config.reroll.start+'–'+config.reroll.cap+' 金。':'本模式关闭换货。';
+      body.textContent=[rules,refreshCost+(config.programsEnabled?'章节节目单开启，可自选。':'章节节目单关闭。'),'继续此模式会读取上次保存的种子与进度。'].join('\n');
       chooseAction.disabled=busy||!r2ModeUnlocked(progress,selected);resumeAction.disabled=busy||gameSession().working||!!gameSession().pendingRun;
       buttons[0].textContent=selected.mode==='tutorial'?'重玩教程':options.chooseLabel??'进入选角';
       buttons[0].disabled=chooseAction.disabled;buttons[1].disabled=resumeAction.disabled;

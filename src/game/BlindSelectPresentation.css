@@ -39,7 +39,6 @@
   letter-spacing: .08em;
   text-shadow: none;
 }
-.blind-select-dialog .blind-chapter-caption { font-size: 14px; letter-spacing: .15em; color: #6e5540; }
 .blind-select-dialog .blind-wallet { margin-left: auto; font-size: 14px; color: var(--blind-muted); }
 .blind-select-dialog > .dialog-content {
   display: block;
@@ -52,6 +51,12 @@
 .blind-select-dialog .dialog-copy { overflow: visible; display: block; padding: 0; }
 .blind-select-dialog .dialog-body:empty,
 .blind-select-dialog .dialog-status:empty { display: none; }
+.blind-select-dialog .blind-itinerary{display:flex;gap:0;border-block:1px solid #bdac8b;margin:0 0 12px}
+.blind-select-dialog .blind-stop{position:relative;flex:1;min-height:44px;padding:6px 4px;border:0;border-radius:0;background:transparent;color:#475b4d;font:600 15px/1.4 "Songti SC",SimSun,serif;cursor:pointer}
+.blind-select-dialog .blind-stop + .blind-stop{border-inline-start:1px solid #c9baa0}
+.blind-select-dialog .blind-stop[data-state=current]{background:#294c40;color:#fff5d8;box-shadow:inset 0 -3px #c79b62}
+.blind-select-dialog .blind-stop[data-state=past]::before{content:"✓ ";color:#3f6051}
+.blind-select-dialog .blind-card:focus-visible,.blind-select-dialog .blind-stop:focus-visible{outline:2px solid #923b2d;outline-offset:-2px}
 .blind-select-dialog .blind-confrontation {
   display: grid;
   grid-template-columns: minmax(0, 1.65fr) minmax(270px, 1fr);
@@ -166,7 +171,6 @@
   .detail-dialog.blind-select-dialog[open] { width: calc(100vw - var(--safe-left, 0px) - var(--safe-right, 0px) - 16px); max-height: calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 16px); }
   .blind-select-dialog > .dialog-header { gap: 10px; padding: 14px 16px 8px; flex-wrap: wrap; }
   .blind-select-dialog > .dialog-header h2 { font-size: 21px; }
-  .blind-select-dialog .blind-chapter-caption { font-size: 13px; }
   .blind-select-dialog .blind-wallet { margin-left: auto; font-size: 12px; }
   .blind-select-dialog > .dialog-content { padding: 8px 14px 18px; }
   .blind-select-dialog .blind-confrontation { grid-template-columns: minmax(0, 1fr); gap: 13px; }

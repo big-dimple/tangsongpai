@@ -3,7 +3,7 @@ import {readFile,writeFile,mkdir,readdir} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import ts from 'typescript';
-const out='docs/production/evidence/tool-copy-boundary-audit-2026-10-17';await mkdir(out,{recursive:true});
+const out='shots/tool-copy-boundary-audit';await mkdir(out,{recursive:true});
 const sha=data=>createHash('sha256').update(data).digest('hex'),files=[];
 async function walk(dir){for(const entry of await readdir(dir,{withFileTypes:true})){const p=dir+'/'+entry.name;if(entry.isDirectory())await walk(p);else if(/\.(ts|json|html|svg)$/.test(p)){const s=await readFile(p,'utf8'),lines=s.split('\n'),hits=lines.flatMap((line,i)=>/唐宋/.test(line)?[{line:i+1,text:line.trim()}]:[]);if(hits.length)files.push({file:p,sha256:sha(s),hits});}}}
 await walk('src');await walk('public');

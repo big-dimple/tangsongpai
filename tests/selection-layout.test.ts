@@ -1,6 +1,13 @@
 import {it,expect} from 'vitest';
 import {selectionLayout} from '../src/game/SelectionLayout';
 import {intersects} from '../src/game/layout';
+it('keeps route choices and confirmation together beside the hero on a wide screen',()=>{
+ const p=selectionLayout(1366,768,12,0,'route');
+ for(const b of p.routes)expect(b.x).toBeGreaterThan(p.hero.x+p.hero.width);
+ expect(p.routes[2].y+p.routes[2].height).toBeLessThan(p.confirm.y);
+ expect(p.confirm.x+p.confirm.width).toBe(p.routes[0].x+p.routes[0].width);
+ expect(p.noticeY+20).toBeLessThanOrEqual(768);
+});
 it('six discoverable seats in3x2, a distinct hero and reachable actions',()=>{
  for(const width of [320,360,390,430])for(const height of [640,740])for(const bottom of [0,34]){
   const p=selectionLayout(width,height,12,bottom);expect(p.cards).toHaveLength(6);

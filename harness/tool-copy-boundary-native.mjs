@@ -6,7 +6,7 @@ import {mkdir,writeFile,unlink,readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {waitScene,tapUI} from './ui.mjs';
-const out='docs/production/evidence/tool-copy-boundary-audit-2026-10-17';await mkdir(out,{recursive:true});await mkdir('shots',{recursive:true});
+const out='shots/tool-copy-boundary-audit';await mkdir(out,{recursive:true});await mkdir('shots',{recursive:true});
 const server=await createServer({mode:'e2e',cacheDir:'shots/.vite-tool-boundary',server:{host:'127.0.0.1',port:5599,strictPort:true},logLevel:'error'});
 const {createRun,applyCommand}=await server.ssrLoadModule('/src/domain/run.ts'),{newRunIdentity}=await server.ssrLoadModule('/src/game/RunLaunch.ts');
 const {r2CreateJoker,R2_RULESETS}=await server.ssrLoadModule('/src/domain/r2Run.ts'),{R2_ASSIST_VERSION}=await server.ssrLoadModule('/src/domain/r2AssistIdentity.ts');

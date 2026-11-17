@@ -8,7 +8,7 @@ import {execFileSync} from 'node:child_process';
 import {waitScene,tapUI} from './ui.mjs';
 
 const before=process.argv.includes('--before'),stage=before?'before':'after';
-const out='docs/production/evidence/tool-player-copy-2026-10-17';await mkdir(out,{recursive:true});
+const out='shots/tool-player-copy';await mkdir(out,{recursive:true});
 const baseline=execFileSync('git',['show','179e17414aa9dbae67dfa33dc991c2a298895223:src/game/r2ToolInfo.ts'],{encoding:'utf8'});
 const server=await createServer({mode:'e2e',cacheDir:'shots/.vite-tool-copy-'+stage,plugins:before?[{name:'baseline-tool-info',enforce:'pre',load(id){if(id.replaceAll('\\','/').endsWith('/src/game/r2ToolInfo.ts'))return baseline;}}]:[],server:{host:'127.0.0.1',port:5598,strictPort:true},logLevel:'error'});
 const {createRun,applyCommand}=await server.ssrLoadModule('/src/domain/run.ts');

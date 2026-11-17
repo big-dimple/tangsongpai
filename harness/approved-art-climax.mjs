@@ -6,7 +6,7 @@ import {gzipSync} from 'node:zlib';
 import {execFileSync} from 'node:child_process';
 import {tapUI,waitScene,tapMenuAction} from './ui.mjs';
 const port=Number(process.env.HERO_TITLE_PORT??5575),dpr=Number(process.env.HERO_TITLE_DPR??1);
-const out=process.env.HERO_TITLE_OUT??'docs/production/evidence/approved-character-art-2026-10-15/climax';await mkdir(out,{recursive:true});
+const out=process.env.HERO_TITLE_OUT??'shots/approved-character-art/climax';await mkdir(out,{recursive:true});
 const v=await createServer({root:process.env.HERO_TITLE_ROOT??process.cwd(),cacheDir:process.env.HERO_TITLE_ROOT?process.env.HERO_TITLE_ROOT+'/.vite-cache':undefined,mode:'e2e',server:{host:'127.0.0.1',port,strictPort:true},logLevel:'error'});await v.listen();
 const helperLoader=await createServer({logLevel:'error'}),{savedSkillName}=await helperLoader.ssrLoadModule('/src/game/SettlementHighlights.ts'),{heroClimaxValue}=await helperLoader.ssrLoadModule('/src/game/HeroClimax.ts');await helperLoader.close();
 const {createRun,applyCommand}=await v.ssrLoadModule('/src/domain/run.ts'),{newRunIdentity}=await v.ssrLoadModule('/src/game/RunLaunch.ts'),{makeCheckpoint,readCheckpoint}=await v.ssrLoadModule('/src/application/checkpoint.ts'),{r2CreateJoker}=await v.ssrLoadModule('/src/domain/r2Run.ts'),{touyeChoice}=await v.ssrLoadModule('/src/game/TouyeWagerCopy.ts'),{heroPayoffs}=await v.ssrLoadModule('/src/game/HeroPayoff.ts'),{getCharacter}=await v.ssrLoadModule('/src/game/characters.ts'),{supportSettlementReady}=await v.ssrLoadModule('/harness/fixtures/settlement.ts');

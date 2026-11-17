@@ -3,7 +3,7 @@ import {mkdir,writeFile} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
 import {chromium} from 'playwright';
 import {waitScene,tapUI,confirmHeroRoute} from './ui.mjs';
-const output='docs/production/evidence/staged-image-warmup-2026-10-13';await mkdir(output,{recursive:true});
+const output='shots/staged-image-warmup';await mkdir(output,{recursive:true});
 const browser=await chromium.launch({executablePath:process.env.CHROMIUM_PATH??'/usr/bin/chromium',args:['--no-sandbox']});
 const report={head:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),dirty:execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim(),browser:browser.version(),scope:'Local UI only: title, selector, first shop, entry and save reload; no scoring or complete run.',cases:[]};
 const base=process.env.WARMUP_URL??'http://127.0.0.1:5173';

@@ -9,7 +9,7 @@ import {gzipSync} from 'node:zlib';
 import {tapUI,waitScene,tapMenuAction} from './ui.mjs';
 
 const capture=process.env.B05_DENSITY_CAPTURE==='1',captureResize=process.env.B05_DENSITY_CAPTURE_RESIZE==='1';
-const out=process.env.B05_DENSITY_OUTPUT??'docs/production/evidence/b05-opponent-density-2026-10-15/final';
+const out=process.env.B05_DENSITY_OUTPUT??'shots/b05-opponent-density/final';
 await mkdir(out,{recursive:true});
 const git=(...args)=>execFileSync('git',args,{encoding:'utf8'}).trim();
 const paths=[...git('ls-files','src','tests/fixtures/b05-encounter.ts','harness/ui.mjs').split('\n'),'harness/b05-opponent-density.mjs'];

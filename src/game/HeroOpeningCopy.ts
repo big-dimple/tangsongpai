@@ -11,8 +11,8 @@ export const HERO_OPENING:Record<CharacterId,{story:string;taunt:string;accent:s
  azao:{story:HERO_CAST.azao.intro,taunt:HERO_CAST.azao.quote,accent:'#386D65'},
  xiemu:{story:HERO_CAST.xiemu.intro,taunt:HERO_CAST.xiemu.quote,accent:'#26313A'},
 };
-export const OPENING_ROUTES:Record<BuildFocus,{title:string;example:string;play:string}>={
- group:{title:'同点成组',example:'7 · 7 ＋ Q · Q',play:'留同点，凑两对或三条。'},
- straight:{title:'顺子接续',example:'3 → 4 → 5 → 6 → 7',play:'留不同点数，接成连续牌。'},
- flush:{title:'同花集中',example:'集中一种花色',play:'留同花色，慢慢集中牌组。'},
+export const OPENING_ROUTES:Record<BuildFocus,{title:string;play:string}>={
+ group:{title:'同点成组',play:'留同点，凑两对或三条。'},
+ straight:{title:'顺子接续',play:'留不同点数，接成连续牌。'},
+ flush:{title:'同花集中',play:'留同花色，慢慢集中牌组。'},
 };

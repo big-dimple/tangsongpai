@@ -8,7 +8,7 @@ import path from 'node:path';
 import {gzipSync} from 'node:zlib';
 import {execFileSync} from 'node:child_process';
 import {chooseCharacter,tapUI,point,waitScene,openRunMenu} from './ui.mjs';
-const out=process.env.Q3_OUT??'docs/production/evidence/q3-interaction-2026-10-21/review-01';
+const out=process.env.Q3_OUT??'shots/q3-interaction/review';
 await mkdir(out,{recursive:true});
 const sourceHash=async()=>{const h=createHash('sha256');for(const f of [...execFileSync('git',['ls-files','-z','src'],{encoding:'utf8'}).split('\0').filter(Boolean),'harness/q3-interaction.mjs']){h.update(f+'\0');h.update(await readFile(f));}return h.digest('hex');};
 const beforeHash=await sourceHash();

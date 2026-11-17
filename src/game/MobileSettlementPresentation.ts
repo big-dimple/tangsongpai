@@ -1,3 +1,7 @@
+import {drawScoreLedger,stageScoreBands} from './StageScoreMeter';
+import {stageOutcome} from './stageOutcome';
+import {drawRiverScroll} from './RiverScroll';
+import {HAND_LABELS} from '../content/handLabels';
 import type Phaser from 'phaser';
 import type {R2RunState} from '../domain/r2Run';
 import type {SceneView} from './SceneView';
@@ -11,7 +15,7 @@ import {drawSettlementHand} from './SettlementHand';
 export const mobileResultViewport=(width:number,height:number)=>width<700&&height>width;
 /** A vertical result: hero/score masthead, full-width hand receipt, then destination and actions. */
 export function drawMobileSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2RunState,cleared:boolean,skipped:boolean,facts:ReturnType<typeof settlementFacts>,formulaOverride?:string,rewardLabel?:string){
- const lost=!cleared&&!skipped,compact=view.layout.height<700,headerHeight=compact?184:216,textWidth=b.width*.56,textX=b.x+b.width-textWidth;
+ const lost=!cleared&&!skipped,usableHeight=view.layout.height-view.layout.safe.top-view.layout.safe.bottom,compact=usableHeight<700,headerHeight=compact?Math.max(120,Math.min(184,Math.round(usableHeight*.26))):216,textWidth=b.width*.56,textX=b.x+b.width-textWidth;
  const fit=(x:number,y:number,copy:string,size:number,width:number,color=C.ink,name='')=>{
   const t=view.text(x,y,copy,size,color).setName(name);for(let n=size;t.width>width&&n>14;)t.setFontSize(--n);
   if(t.width>width)t.setWordWrapWidth(width,true);return t;
@@ -19,23 +23,31 @@ export function drawMobileSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run
  const paper=view.add(scene.add.graphics().setName('result-art/stage').setData('bounds',b));
  // The masthead carries only the result. The played hand gets its own full-width
  // receipt below, rather than competing with the number in a narrow right rail.
+ const heroPanel={x:b.x,y:b.y+8,width:textX-b.x-10,height:headerHeight-4};
+ paper.fillStyle(0x21473d).fillRect(heroPanel.x,heroPanel.y,heroPanel.width,heroPanel.height);
+ drawRiverScroll(scene,view,heroPanel,.73,.35);
  const tag=fit(textX,b.y+18,skipped?'本场跳过':'本场总得分',14,textWidth-12,C.jade,'result/hand');
  const score=fit(textX,tag.y+tag.height+8,heatText(facts.stageTotal),compact?38:50,textWidth-12,lost?C.ink:facts.tier>=2?C.red:C.ink,'result/score').setFontFamily(SCORE_FONT).setFontStyle('bold').setData('exactScore',facts.stageTotal).setData('mobilePoster',true);
  if(score.width>textWidth-12)score.setScale((textWidth-12)/score.width);
- const formula=formulaOverride?.split(' · ')[0]??(skipped?'没有本场计分':lost?'目标 '+heatText(run.stage!.targetHeat):'目标 '+heatText(run.stage!.targetHeat)+'\n已过关');
+ const previousStage=run.outcome?.reason==='abandoned'&&run.outcome.stageIndex!==run.stage!.index;
+ const last=skipped||previousStage?null:stageOutcome(run.stage!,run.lastTrace).last;
+ const targetHeat=run.stage!.targetHeat;
+ const formula=formulaOverride??(lost?'目标 '+heatText(targetHeat)+' · 差 '+heatText(stageScoreBands(facts.stageTotal,targetHeat).gap):skipped?'没有本场计分':'目标 '+heatText(targetHeat)+' · 已过关');
  const target=fit(textX,score.y+score.displayHeight+10,formula,14,textWidth-12,C.jade,'result/formula');
  const artBottom=b.y+headerHeight;
  let contentBottom=Math.max(artBottom,target.y+target.height);
- if(facts.handLabel){
-  const hand=fit(b.x,artBottom+12,(lost?'末手牌型 · ':'致胜牌型 · ')+facts.handLabel,16,b.width,C.ink,'result/hand-type').setFontStyle('bold');
-  const combo=drawSettlementHand(view,facts.trace!,b.x,hand.y+hand.height+6,b.width,14);
-  const explanation=fit(b.x,combo.bottom+5,'得分解释 · '+facts.scoreExplanation,14,b.width,C.jade,'result/score-explanation');
-  contentBottom=explanation.y+explanation.height;
+ if(!skipped)contentBottom=drawScoreLedger(scene,view,b.x+5,contentBottom+8,b.width-10,facts.stageTotal,targetHeat,last?.finalScore);
+ const handTop=contentBottom;
+ if(last){
+  const hand=fit(b.x+5,handTop+9,(lost?'末手牌型 · ':'致胜牌型 · ')+HAND_LABELS[last.handType],16,b.width,C.ink,'result/hand-type').setFontStyle('bold');
+  const combo=drawSettlementHand(view,last,b.x+5,hand.y+hand.height+6,b.width-10,14);
+  contentBottom=combo.bottom;
+  if(facts.scoreExplanation){const explanation=fit(b.x+5,combo.bottom+5,'得分解释 · '+facts.scoreExplanation,14,b.width-10,C.jade,'result/score-explanation');contentBottom=explanation.y+explanation.height;}
  }
  const artLayer=view.add(scene.add.container(0,0).setName('result-art/source-layer'));
  const paint=()=>{
   artLayer.removeAll(true);const key=pcHeroKey(run.characterId);if(!scene.textures.exists(key))return;
-  const box={x:0,y:b.y,width:textX-10,height:headerHeight+12};
+  const box={x:b.x,y:b.y,width:textX-b.x-10,height:headerHeight+12};
   const hero=scene.add.image(0,0,key).setName('result-art/hero').setData('assetId',run.characterId+'.pc');
   hero.setScale(Math.min(1,box.width/hero.width,box.height/hero.height));
   hero.setPosition(box.x+box.width/2,box.y+box.height-hero.displayHeight/2);
@@ -54,8 +66,8 @@ export function drawMobileSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run
  paper.fillStyle(T.ink,.045).fillRoundedRect(textX-8,b.y+11,textWidth+8,headerHeight-13,10);
  paper.fillStyle(T.paperLight,.88).fillRoundedRect(textX-8,b.y+8,textWidth+8,headerHeight-16,10).lineStyle(1,T.divider,.7).strokeRoundedRect(textX-7.5,b.y+8.5,textWidth+7,headerHeight-17,10);
  paper.fillStyle(lost?T.jade:T.red,.82).fillRect(textX+4,b.y+8,42,3);
- if(facts.handLabel){
-  const y=artBottom+4,height=contentBottom-artBottom+4;
+ if(last){
+  const y=handTop+4,height=contentBottom-handTop+4;
   paper.fillStyle(T.paperLight,.72).fillRoundedRect(b.x,y,b.width,height,10).lineStyle(1,T.divider,.55).strokeRoundedRect(b.x+.5,y+.5,b.width-1,height-1,10);
  }
  const height=(reviewBookBand?reviewBookBand.y+reviewBookBand.height:reward.y+reward.height)-b.y;

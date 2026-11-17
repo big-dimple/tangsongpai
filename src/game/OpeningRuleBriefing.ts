@@ -101,7 +101,7 @@ function enableHandScroll(scroll:HTMLElement):()=>void {
  return ()=>{stop();controller.abort();};
 }
 
-/** One visible action; native cancel follows the same guarded shop transition. */
+/** Filtering is local to this view. Entry and native cancel share one guarded transition. */
 export function showOpeningRuleBriefing(dialog:DetailDialog,run:R2RunState,onEnterShop:()=>void):HTMLDialogElement{
  const model=openingRuleBriefing(run);let finished=false,stopScroll:(()=>void)|undefined;
  const finish=()=>{if(finished)return;finished=true;stopScroll?.();dialog.close();onEnterShop();};
@@ -115,6 +115,19 @@ export function showOpeningRuleBriefing(dialog:DetailDialog,run:R2RunState,onEnt
  if(scroll)stopScroll=enableHandScroll(scroll);
  element.querySelector('.experience-cards')?.setAttribute('aria-label','主要牌型，按强度从高到低');
  const items=[...element.querySelectorAll<HTMLElement>('.experience-card')];
+ const header=element.querySelector<HTMLElement>('.dialog-header');
+ if(header){
+  const filter=header.ownerDocument.createElement('button');
+  filter.type='button';filter.className='opening-route-filter';filter.textContent='只看本路线';
+  filter.setAttribute('aria-pressed','false');
+  filter.onclick=()=>{
+   const filtered=filter.getAttribute('aria-pressed')!=='true';
+   filter.setAttribute('aria-pressed',String(filtered));
+   for(const [index,item] of items.entries())item.hidden=filtered&&!model.cards[index].selected;
+   if(scroll)scroll.scrollTop=0;
+  };
+  header.append(filter);
+ }
  for(const [index,item] of items.entries()){
   const card=model.cards[index];if(!card)continue;
   if(card.selected)item.dataset.routeSelected='true';

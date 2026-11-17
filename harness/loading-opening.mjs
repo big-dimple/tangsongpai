@@ -3,7 +3,7 @@ import {createServer} from 'vite';
 import {chromium} from 'playwright';
 import {mkdir,writeFile} from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
-const out=process.env.LOADING_ART_OUTPUT??'docs/production/evidence/loading-opening-2026-10-15';
+const out=process.env.LOADING_ART_OUTPUT??'shots/loading-opening';
 await mkdir(out,{recursive:true});
 const server=await createServer({mode:'e2e',cacheDir:'/tmp/loading-opening-vite',server:{host:'127.0.0.1',port:5593,strictPort:true},logLevel:'error'});await server.listen();
 const {sceneResources}=await server.ssrLoadModule('/src/game/SceneResources.ts');const startupTotal=sceneResources('title',undefined,true).length;assert.equal(startupTotal,146);

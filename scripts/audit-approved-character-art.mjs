@@ -1,6 +1,6 @@
 import sharp from 'sharp';
 import assert from 'node:assert/strict';
-import {readFile,writeFile} from 'node:fs/promises';
+import {mkdir,readFile,writeFile} from 'node:fs/promises';
 import {originalPath} from './source-originals.mjs';
 import {createHash} from 'node:crypto';
 import {createServer} from 'vite';
@@ -12,5 +12,5 @@ for(const s of sources.entries){const b=await readFile(originalPath(sourceDir+'/
  files.push({id:s.heroId,sourceSHA256:s.sha256,sourceBytes:s.bytes,sourceDimensions:[s.width,s.height],outputs});}
 const server=await createServer({mode:'e2e',server:{middlewareMode:true},logLevel:'silent'});
 try {const {sceneResources,PRELOAD_PIXEL_BUDGET}=await server.ssrLoadModule('/src/game/SceneResources.ts');const startup=sceneResources('title',undefined,true),pixels=startup.reduce((n,a)=>n+a.pixels,0);assert.equal(startup.length,146);assert.equal(startup.filter(a=>a.key.startsWith('goods-art/')).length,51);assert.equal(startup.filter(a=>a.key.startsWith('p08-joker-')).length,72);assert.ok(pixels<=PRELOAD_PIXEL_BUDGET);assert.equal(startup.filter(a=>/opening-portrait-|portrait-focus-/.test(a.key)).length,0);
- const report={status:'PASS',sourceCommit:runtime.sourceCommit,sourceBytesUnchanged:true,files,startup:{items:startup.length,pixels,decodedRGBABytes:pixels*4,budgetPixels:PRELOAD_PIXEL_BUDGET,budgetRGBABytes:PRELOAD_PIXEL_BUDGET*4,heroPixels:runtime.decodedPixels.startup,optionalPortraitAndFocusPixels:runtime.decodedPixels.all-runtime.decodedPixels.startup},allHeroDecodedPixels:runtime.decodedPixels.all,allHeroRGBABytes:runtime.decodedPixels.all*4,optionalPerSelectedHero:files.map(f=>({id:f.id,pixels:f.outputs.filter(a=>['portrait','focus'].includes(a.purpose)).reduce((n,a)=>n+a.width*a.height,0)}))};await writeFile('docs/production/evidence/approved-character-art-2026-10-15/art-audit.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({status:report.status,startup:report.startup}));
+ const report={status:'PASS',sourceCommit:runtime.sourceCommit,sourceBytesUnchanged:true,files,startup:{items:startup.length,pixels,decodedRGBABytes:pixels*4,budgetPixels:PRELOAD_PIXEL_BUDGET,budgetRGBABytes:PRELOAD_PIXEL_BUDGET*4,heroPixels:runtime.decodedPixels.startup,optionalPortraitAndFocusPixels:runtime.decodedPixels.all-runtime.decodedPixels.startup},allHeroDecodedPixels:runtime.decodedPixels.all,allHeroRGBABytes:runtime.decodedPixels.all*4,optionalPerSelectedHero:files.map(f=>({id:f.id,pixels:f.outputs.filter(a=>['portrait','focus'].includes(a.purpose)).reduce((n,a)=>n+a.width*a.height,0)}))};await mkdir('shots/approved-character-art',{recursive:true});await writeFile('shots/approved-character-art/art-audit.json',JSON.stringify(report,null,2)+'\n');console.log(JSON.stringify({status:report.status,startup:report.startup}));
 }finally{await server.close();}

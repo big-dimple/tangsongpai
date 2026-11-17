@@ -38,11 +38,12 @@
 
 | 要查什么 | 优先位置 |
 | --- | --- |
-| 游戏启动与场景 | `src/main.ts`、`src/game/*Scene.ts` |
-| PC/移动牌桌布局与装饰 | `src/game/PcLandscapeFrame.ts`、`src/game/PcTableLayout.ts`、`src/game/layout.ts`、`src/game/ScoreTableLayout.ts`、`src/game/StageTableArt.ts` |
+| 开场、选将与选路 | `index.html`、`src/game/HomePage.ts`、`src/game/CharacterSelectScene.ts`、`src/game/OpeningRouteDemo.ts` |
+| 场景启动与河市画卷 | `src/main.ts`、`src/game/*Scene.ts`、`src/game/RiverScroll.ts` |
+| PC/移动牌桌布局与装饰 | `src/game/PcLandscapeFrame.ts`、`src/game/PcTableLayout.ts`、`src/game/layout.ts`、`src/game/HandSeats.ts`、`src/game/ScoreTableLayout.ts`、`src/game/StageTableArt.ts` |
 | PC/手机商店布局与表现 | `src/game/ShopLayout.ts`、`src/game/ShopScene.ts`、`src/game/ShopArt.ts`、`src/game/ShopMobileOffers.ts`、`src/game/ShopMobileOffers.css` |
 | 透明人物资产（牌桌、商店、桌面/手机结算） | `src/game/PcHeroArt.ts`、`src/game/CharacterArt.ts`、`public/assets/tangsong-pc-heroes/manifest.json`、`tools/build-pc-hero-art.mjs` |
-| 桌面/手机结算与过场 | `src/game/PcSettlementPresentation.ts`、`src/game/MobileSettlementPresentation.ts`、`src/game/IntermissionLayout.ts`、`src/game/IntermissionScene.ts`、`src/game/IntermissionScroll.ts` |
+| 桌面/手机结算与过场 | `src/game/StageScoreMeter.ts`、`src/game/PcSettlementPresentation.ts`、`src/game/MobileSettlementPresentation.ts`、`src/game/IntermissionLayout.ts`、`src/game/IntermissionScene.ts`、`src/game/IntermissionScroll.ts` |
 | 领域命令入口 | `src/domain/run.ts` |
 | 对局与商店 | `src/domain/r2Run.ts`、`src/domain/r2Shop.ts` |
 | 计分 | `src/domain/scoreR2.ts`、`src/scoring/` |
@@ -77,8 +78,7 @@
 ## 5. 当前工作与文档纪律
 
 - 当前工作以用户本次要求为准；[TODO](TODO.md) 记录待办，不能据此自行启动其他产品任务，完成后删除对应条目。
-- 三条视觉重做线已整合到同一实现入口：牌桌、商店和结算共用真实布局、命中、焦点与动画锚点；六张 `pc` 透明立绘是窄侧栏辅助视觉，不替换存档身份或玩法规则。
-- 当前产品任务以用户要求和 TODO 为准；自动检查不能写成审美或听感验收。
+- 审美、听感和实体设备体验由实际试玩验收。
 - 规则、架构、测试或发布变化直接更新 [ENGINEERING](ENGINEERING.md)。
 - 项目知识或代码入口变化直接更新本文件。
 - 不新增 ROADMAP、plan.json、DELIVERY_PLAN、WORK_PACKAGES、INDEX、GDD、SCOPE、handoff、review 或证据 README。

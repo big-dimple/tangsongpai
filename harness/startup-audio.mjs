@@ -52,7 +52,7 @@ async function cold(width,height){
   assert.ok(row.before.frames.some(f=>f.loading&&f.total>=20&&f.value<1));
   await page.screenshot({path:`${out}/${name}-ensemble.png`});
   if(width===390){await page.waitForTimeout(1050);await page.screenshot({path:`${out}/${name}-ensemble-cast.png`});}
-  const start=page.getByRole('button',{name:'开始新局',exact:true});const box=await start.boundingBox();assert.ok(box);
+  const start=page.getByRole('button',{name:'新手首战',exact:true});const box=await start.boundingBox();assert.ok(box);
   if(touch){await page.touchscreen.tap(box.x+box.width/2,box.y+box.height/2);await page.touchscreen.tap(box.x+box.width/2,box.y+box.height/2);}else await page.mouse.dblclick(box.x+box.width/2,box.y+box.height/2,{delay:30});
   await page.waitForFunction(()=>!document.querySelector('.qiyu-ensemble-burst-canvas'));await waitScene(page,'game');
   await page.waitForFunction(()=>{const g=window.__harness.game.scene.getScene('game');return g.ready&&g.cardViews.length>0&&g.cardViews.every(v=>!v.dealing);},null,{timeout:20000});
@@ -111,7 +111,7 @@ async function mutedCase(){
  await context.addInitScript(()=>localStorage.setItem('tangsongpai-audio-v2',JSON.stringify({version:2,music:0,sfx:0})));
  page.on('request',r=>{if(/\/assets\/audio\/.*\.(ogg|mp3)(\?|$)/.test(r.url()))row.audioRequests.push(r.url());});
  try{
-  await page.goto(url);await ready(page);await page.getByRole('button',{name:'开始新局',exact:true}).tap();await waitScene(page,'game');await page.waitForTimeout(500);
+  await page.goto(url);await ready(page);await page.getByRole('button',{name:'新手首战',exact:true}).tap();await waitScene(page,'game');await page.waitForTimeout(500);
   row.state=await inspect(page);assert.equal(row.audioRequests.length,0);assert.equal(row.state.events.filter(e=>e.type==='sfx-start').length,0);assert.equal(row.state.events.filter(e=>e.type==='media-play-call').length,0);
   assert.deepEqual(row.errors,[]);row.status='PASS';console.log('PASS',row.name);
  }finally{await context.close();}

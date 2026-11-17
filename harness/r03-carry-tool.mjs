@@ -8,7 +8,7 @@ import path from 'node:path';
 import {gzipSync} from 'node:zlib';
 import {execFileSync} from 'node:child_process';
 import {tapUI,waitScene} from './ui.mjs';
-const out=process.env.R03_OUTPUT??'docs/production/evidence/r03-carry-tool-2026-10-15';
+const out=process.env.R03_OUTPUT??'shots/r03-carry-tool';
 await mkdir(out,{recursive:true});
 const paths=['src/game/SceneView.ts','harness/r03-carry-tool.mjs','src/game/ShopScene.ts','src/game/GameScene.ts','src/game/ToolCarryIntent.ts'];
 const hashes=async()=>Object.fromEntries(await Promise.all(paths.map(async p=>[p,createHash('sha256').update(await readFile(p)).digest('hex')])));

@@ -7,7 +7,7 @@ import {execFileSync} from 'node:child_process';
 import {build} from 'vite';
 import {chromium} from 'playwright';
 import {point,tapUI,waitScene,openRunMenu} from './ui.mjs';
-const out='docs/production/evidence/shop-header-refresh-groups-2026-10-17',entry='.vite/shop-refine-entry.html',bundle='.vite/shop-refine-build';await mkdir(out,{recursive:true});
+const out='shots/shop-header-refresh-groups',entry='.vite/shop-refine-entry.html',bundle='.vite/shop-refine-build';await mkdir(out,{recursive:true});
 const probe=`<script type="module">
 import {workshopLayoutFixture} from '/harness/fixtures/workshop-layout.ts';import {makeCheckpoint} from '/src/application/checkpoint.ts';import {applyCommand} from '/src/domain/run.ts';import {gameSession} from '/src/game/session.ts';
 window.refineProbe={fixture(n,free=false){const s=structuredClone(workshopLayoutFixture(n,false,false,free).state);if(free)s.shop.freeRerolls=1;return makeCheckpoint(s,[]);},async snap(){const c=window.__harness.game.registry.get('runController');return {state:c.state,journal:c.journal,storage:await gameSession().storage.read()};},expected(state,command){const r=applyCommand(state,command);if(!r.ok)throw Error(r.code);return r.state;},hold(){const s=gameSession();window.refineCommit=s.storage.commit.bind(s.storage);s.storage.commit=(...args)=>new Promise((resolve,reject)=>{if(window.refineRelease)throw Error('duplicate commit');window.refineRelease=()=>window.refineCommit(...args).then(resolve,reject);});},release(){gameSession().storage.commit=window.refineCommit;window.refineRelease();window.refineRelease=undefined;}};

@@ -5,7 +5,7 @@ import {chromium} from 'playwright';
 import {waitScene} from './ui.mjs';
 import {tapUI} from './ui.mjs';
 
-const out='shots/dynamic-endless';await mkdir(out,{recursive:true});
+const out=process.env.ENDLESS_OUT??'shots/dynamic-endless';await mkdir(out,{recursive:true});
 const server=await createServer({mode:'e2e',server:{host:'127.0.0.1',port:5598,strictPort:true},logLevel:'error'});await server.listen();
 const {createRun,applyCommand}=await server.ssrLoadModule('/src/domain/run.ts');
 const {newRunIdentity}=await server.ssrLoadModule('/src/game/RunLaunch.ts');

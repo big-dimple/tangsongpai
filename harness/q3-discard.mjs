@@ -9,7 +9,7 @@ import {execFileSync} from 'node:child_process';
 import path from 'node:path';
 import {point,tapUI,waitScene} from './ui.mjs';
 
-const out=process.env.Q3_DISCARD_OUT??'docs/production/evidence/q3-interaction-2026-10-21/discard-01';
+const out=process.env.Q3_DISCARD_OUT??'shots/q3-interaction/discard';
 const inputPath='docs/production/evidence/q3-interaction-2026-10-21/final/full-state.json.gz';
 await mkdir(out,{recursive:true});
 const inputBytes=await readFile(inputPath),journey=JSON.parse(gunzipSync(inputBytes));

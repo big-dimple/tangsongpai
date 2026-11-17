@@ -91,7 +91,7 @@ function fit(view:SceneView,x:number,y:number,text:string,size:number,width:numb
 /** Read only: every caption comes from the saved trace; optional art never moves a fact. */
 export function drawSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2RunState,cleared:boolean,skipped:boolean,formulaOverride?:string,rewardLabel?:string){
  const facts=settlementFacts(run,cleared,skipped);
- if(pcResultViewport(view.layout.width,view.layout.height))return drawPcSettlement(scene,view,b,run,cleared,skipped,facts,formulaOverride,rewardLabel);
+ if(pcResultViewport(view.layout.width,view.layout.height,view.layout.safe))return drawPcSettlement(scene,view,b,run,cleared,skipped,facts,formulaOverride,rewardLabel);
  if(mobileResultViewport(view.layout.width,view.layout.height))return drawMobileSettlement(scene,view,b,run,cleared,skipped,facts,formulaOverride,rewardLabel);
  const lost=!cleared&&!skipped,p=settlementPlan(b,view.layout.height<500);
  const paper=scene.add.graphics().setName('result-art/stage').setData('bounds',b);

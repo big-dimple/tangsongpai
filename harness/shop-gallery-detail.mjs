@@ -7,7 +7,7 @@ import {execFileSync} from 'node:child_process';
 import {build} from 'vite';
 import {chromium} from 'playwright';
 import {waitScene,openRunMenu,tapUI} from './ui.mjs';
-const baseline=process.argv.includes('--baseline'),out='docs/production/evidence/shop-gallery-detail-2026-10-17',entry='.vite/shop-gallery-entry.html',bundle='.vite/shop-gallery-build';
+const baseline=process.argv.includes('--baseline'),out='shots/shop-gallery-detail',entry='.vite/shop-gallery-entry.html',bundle='.vite/shop-gallery-build';
 await mkdir(out,{recursive:true});
 const probe=`<script type="module">import {workshopLayoutFixture} from '/harness/fixtures/workshop-layout.ts';import {makeCheckpoint} from '/src/application/checkpoint.ts';import {gameSession} from '/src/game/session.ts';window.galleryProbe={fixture:()=>makeCheckpoint(workshopLayoutFixture(5).state,[]),async snap(){const c=window.__harness.game.registry.get('runController');return {state:c.state,journal:c.journal,storage:await gameSession().storage.read()};}};</script>`;
 // Only the captured baseline may reuse its already-built original product bundle.

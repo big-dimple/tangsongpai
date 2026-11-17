@@ -1,33 +1,20 @@
 # 唐宋牌（Tangsongpai）
 
-唐宋历史人物题材的扑克构筑 H5 游戏，使用 TypeScript、Phaser 和 Vite，在浏览器本地运行与存档。
+唐宋历史人物题材的扑克构筑 H5 游戏。选择六位英雄之一，通过出牌、技能和商店构筑完成八章，可继续挑战无尽。支持手机竖屏、PC 横屏、键盘、触控和标准手柄。对局保存在浏览器本地。
 
-六位英雄、八章标准对局、商店与牌组改造、唐宋牌与道具组合、难度挑战、无尽模式和扑克奇遇均已接入。适配桌面横屏、手机竖屏、键盘与触控。
+## 本地运行
 
-## 运行
-
-建议使用 Node.js 22 和 npm：
-
-以下命令供开发机使用。main 的 GitHub Actions 负责 CI 和 Release；服务器消费契约及实际安装核验见 [ENGINEERING](ENGINEERING.md)。
+在项目根目录用 Node.js 22 安装依赖并启动开发服务器。
 
 ```bash
 npm ci
 npm run dev
 ```
 
-生产构建与预览：
+`npm run build` 生成静态生产包，`npm run preview` 预览该包。正式运行资源位于 `public/assets/`，原始素材另存于私有仓库。[素材仓库](https://github.com/big-dimple/tangsongpai-assets)
 
-```bash
-npm run build
-npm run preview
-```
+## 项目文档
 
-正式运行资源保存在 `public/assets/`。原始素材已完整备份至私有仓库 [tangsongpai-assets](https://github.com/big-dimple/tangsongpai-assets)，来源清单与校验方法见 [ENGINEERING](ENGINEERING.md)。
-
-## 文档
-
-- [TODO](TODO.md)：当前待办，完成后直接移除。
-- [ENGINEERING](ENGINEERING.md)：规则、架构、存档、测试与发布。
-- [AGENTS](AGENTS.md)：项目知识库、代码导航与协作约定。
-
-除此之外不再维护路线图、阶段计划、任务交接或逐次评审报告。代码、游戏内说明和配置是详细实现的最终依据。
+- [AGENTS](AGENTS.md) 提供项目知识、代码导航和协作约定。
+- [ENGINEERING](ENGINEERING.md) 记录规则、存档、资源校验、测试与发布。
+- [TODO](TODO.md) 列出待试玩、待评估的项目。
