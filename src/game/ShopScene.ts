@@ -361,9 +361,12 @@ export class ShopScene extends Phaser.Scene {
       },
       presentHint:hint=>this.ownedLessonPresentation(hint).hint,
       onChoice:id=>{
-        if(id!=='novice-second-card')return;
         const owner=runController(this),hint=owner&&noviceGuide(this.run,owner.journal);
         if(!owner||owner.guidedOpeningSuppressed||!hint)return;
+        if(id==='novice-try-card'&&hint.step==='payoff'&&this.run.phase==='shop'){
+          void this.send({type:'LeaveShop'},this.run.commandSeq);return;
+        }
+        if(id!=='novice-second-card')return;
         advanceNoviceSecondOffer(this.run,owner.journal,hint);
         const offer=this.noviceSecondOffer().secondOffer,host=this.mobileOffers?.host;
         if(offer&&host){

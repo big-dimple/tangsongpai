@@ -64,7 +64,7 @@ import {drawStageTableArt,playedCaptionBox} from './StageTableArt';
 import {paperSceneStart} from './PaperFlow';
 import {bindNoviceGuide} from './NoviceGuideBinding';
 import {liveNoviceGuide,noviceFreeActions,noviceGuide,noviceGuideEnrolled} from './NoviceGuide';
-import {firstStageOptions,type FirstStageOption} from './NoviceFirstStage';
+import {firstStageOptions,openingDeal,openingDealHint,type OpeningDeal,type FirstStageOption} from './NoviceFirstStage';
 import {consecutiveSuitCards,NoviceHandLesson} from './NoviceHandLesson';
 import {flushDiscardHint,flushRefillHint,noviceHandPageFocus} from './NoviceFlushLesson';
 import {noviceHandDefinition,noviceSameSuitFeedback} from './NoviceSuitLesson';
@@ -584,6 +584,8 @@ export class GameScene extends Phaser.Scene {
     this.render();
     let guideChoiceKey='',guideChoice:ReturnType<typeof erxiangChoice>|undefined;
     let firstStage:{key:string;optionKey?:string;options:FirstStageOption[];target?:FirstStageOption}|undefined;
+    let opening:{run:RunState;deal?:OpeningDeal}|undefined;
+    const tutorialPointer=window.matchMedia('(pointer: coarse)');
     let swipeDemo:NoviceGestureDemoHandle|undefined,swipeDemoKey='',dismissedSwipeKey='';
     const clearSwipeDemo=()=>{swipeDemo?.destroy();swipeDemo=undefined;swipeDemoKey='';};
     this.events.once('shutdown',clearSwipeDemo);
@@ -591,29 +593,36 @@ export class GameScene extends Phaser.Scene {
       [...this.run.handOrder].sort(),this.chosenHeroDraft(),this.assistIds]);
     const unmountNoviceGuide=bindNoviceGuide(this,{
       kind:'game',
-      presentationInputs:()=>[[...this.selectedIds].join('|'),this.erxiangTargetId,this.handInput?.active,this.aiCandidates.result,firstStage?.target?.id],
+      presentationInputs:()=>[[...this.selectedIds].join('|'),this.erxiangTargetId,this.handInput?.active,this.aiCandidates.result,firstStage?.target?.id,
+        this.handStart,this.cardViews,this.noviceHandLesson?.revision,tutorialPointer.matches,window.innerWidth,window.innerHeight],
       onDetails:hint=>{if(hint.details)this.dialog.open('计分与规则',hint.details,[],{closeLabel:'返回练习'});},
       presentHint:hint=>{
         const selected=[...this.selectedIds];
+        const layout=this.view.layout;
         // A selected preview and a phone lesson share a small vertical budget.
         // Keep score details in the unselected state and on desktop.
-        if(selected.length&&this.run.stage?.index===0&&this.view.layout.mode==='portrait'&&this.view.layout.width<=520&&['discard','independent'].includes(hint.step))hint={...hint,details:undefined};
+        if(selected.length&&this.run.stage?.index===0&&layout.mode==='portrait'&&layout.width<=520&&['discard','independent'].includes(hint.step))hint={...hint,details:undefined};
         const owner=runController(this),lesson=this.activeNoviceHandLesson();
-        const visibleIds=this.hand.filter((_,index)=>this.view.layout.cards[index]?.visible).map(card=>card.id),visibleSet=new Set(visibleIds);
+        const visibleIds=this.hand.filter((_,index)=>layout.cards[index]?.visible).map(card=>card.id),visibleSet=new Set(visibleIds);
+        // Keep swipe instructions stable until the gesture commits its selection.
+        const beforeGesture=this.handInput?.active&&this.noviceHandStart?this.noviceHandStart:selected;
+        if(hint.step==='pair'&&this.run.stage?.playIndex===0&&!this.erxiangTargetId&&!this.assistIds.length){
+          if(opening?.run!==this.run)opening={run:this.run,deal:openingDeal(this.aiInput(),hint.recommendedCardIds??[])};
+          const range=this.draftEstimate?.run===this.run?this.draftEstimate.estimate?.scoreRange:undefined;
+          const comparison=opening.deal&&openingDealHint(hint,opening.deal,this.hand,selected,visibleIds,range&&range.minimum===range.maximum?range.minimum:undefined);
+          if(comparison)return comparison;
+        }
         if(hint.step==='discard'&&owner&&lesson&&this.run.stage?.index===0&&!this.run.stage.disabledIds.length){
-          // During a drag, keep the instruction stable until release.
-          const selection=this.handInput?.active&&this.noviceHandStart?this.noviceHandStart:selected;
-          const flush=flushDiscardHint(hint,this.hand,selection,{introSeen:lesson.flushIntroSeen(),sorted:lesson.sorted(owner.journal),
-            sortedSeen:lesson.flushSortedSeen(owner.journal),coarse:window.matchMedia('(pointer: coarse)').matches,visibleIds});
+          const flush=flushDiscardHint(hint,this.hand,beforeGesture,{plan:lesson.flushPlan(),sorted:lesson.sorted(owner.journal),
+            coarse:tutorialPointer.matches,visibleIds});
           if(flush)return flush;
         }
         if(hint.step==='independent'&&this.run.stage){
-          if(owner&&lesson&&this.run.stage.index===0&&!lesson.swept(owner.journal)&&!lesson.flushSortedSeen(owner.journal)){
-            if(!lesson.sorted(owner.journal))return {...hint,cue:'先理牌',body:selected.length?'理牌会清空已选；点「花色」整理。':'点「花色」，把同花色的牌排在一起。',focus:'sort-suit'};
+          if(owner&&lesson?.flushPlan()==='draw'&&this.run.stage.index===0&&!beforeGesture.length&&!lesson.swept(owner.journal)&&!lesson.flushSortedSeen(owner.journal)){
+            if(!lesson.sorted(owner.journal))return {...hint,cue:'先理牌',body:'点「花色」，把同花色的牌排在一起。',focus:'sort-suit'};
             const targets=this.noviceHandTargets();
             if(targets.length<2)return {...hint,cue:'试试滑动选牌',body:'切换手牌页，找到相邻的同花色牌。'};
-            if(selected.length&&!this.handInput?.active)return {...hint,cue:'再试一次',body:'先取消已选牌，再从亮牌滑动。',recommendedCardIds:selected};
-            return {...hint,cue:'试试滑动选牌',body:window.matchMedia('(pointer: coarse)').matches?'按下左侧亮牌，立即滑到右侧再松手。':'按住鼠标左键，立即从左侧亮牌拖到右侧再松开。',recommendedCardIds:[targets[0],targets[targets.length-1]],gesture:'sweep'};
+            return {...hint,cue:'试试滑动选牌',body:tutorialPointer.matches?'按下左侧亮牌，立即滑到右侧再松手。':'按住鼠标左键，立即从左侧亮牌拖到右侧再松开。',recommendedCardIds:[targets[0],targets[targets.length-1]],gesture:'sweep'};
           }
           const key=firstStageKey();
           if(firstStage?.key!==key)firstStage={key,options:[]};
@@ -625,7 +634,7 @@ export class GameScene extends Phaser.Scene {
             if(firstStage.target){const index=options.findIndex(row=>row.id===firstStage!.target!.id);if(index>=0)options[index]=firstStage.target;else if(options.length)options[0]=firstStage.target;}
             firstStage.options=options;firstStage.optionKey=result.key;
           }
-          const stage=this.run.stage,target=firstStage.target,narrow=this.view.layout.width<=360;
+          const stage=this.run.stage,target=firstStage.target,narrow=layout.width<=360;
           const postFlush=!!owner&&!!lesson&&stage.index===0&&stage.playIndex===1&&lesson.flushSortedSeen(owner.journal);
           const refill=postFlush?flushRefillHint(this.hand):undefined;
           const canDiscard=stage.discardsLeft>=r2DiscardCost(this.run)&&this.run.drawPile.length>0&&this.run.gold>=(stageNotice(this.run)?.discardGoldCost??0);
@@ -668,8 +677,7 @@ export class GameScene extends Phaser.Scene {
       onChoice:id=>{
         const owner=runController(this),lesson=this.activeNoviceHandLesson();
         if(owner&&lesson&&noviceGuide(this.run,owner.journal)?.step==='discard'){
-          if(id==='flush-intro'){lesson.acknowledgeFlushIntro();unmountNoviceGuide.refresh();return;}
-          if(id==='flush-sorted'){lesson.acknowledgeFlushSorted(owner.journal);unmountNoviceGuide.refresh();return;}
+          if(id==='flush-draw'||id==='flush-score'){lesson.chooseFlushPlan(id==='flush-draw'?'draw':'score');unmountNoviceGuide.refresh();return;}
         }
         if(firstStage?.key!==firstStageKey())return;
         const choice=firstStage.options.find(row=>row.id===id);if(!choice)return;
@@ -718,10 +726,9 @@ export class GameScene extends Phaser.Scene {
         const l=this.view.layout,canvas=this.game.canvas.getBoundingClientRect();
         const map=(box:import('./layout').Box)=>noviceGuideCanvasBox(box,canvas,l);
         const hero=heroActionShortcut(l.tableActions.discard,l.heroAction);
-        const targetText=this.view.root.getByName('hud/target') as Phaser.GameObjects.Text|undefined;
         const visibleSeats=l.cards.filter(card=>card.visible).map(card=>card.hit);
         const handFocus=visibleSeats.length?{x:Math.min(...visibleSeats.map(b=>b.x)),y:Math.min(...visibleSeats.map(b=>b.y)),width:Math.max(...visibleSeats.map(b=>b.x+b.width))-Math.min(...visibleSeats.map(b=>b.x)),height:Math.max(...visibleSeats.map(b=>b.y+b.height))-Math.min(...visibleSeats.map(b=>b.y))}:undefined;
-        const focus=hint.focus==='play'?l.tableActions.play:hint.focus==='discard'?hero.discard:hint.focus==='hand'?handFocus:hint.focus==='hero'?hero.shortcut:hint.focus==='sort-suit'?l.buttons.suit:hint.focus==='hand-previous'?l.handNavigation.previous:hint.focus==='hand-next'?l.handNavigation.next:hint.focus==='score'?this.heatText.getBounds():hint.focus==='goal'?(targetText?.getBounds()??this.heatText.getBounds()):undefined;
+        const focus=hint.focus==='play'?l.tableActions.play:hint.focus==='discard'?hero.discard:hint.focus==='hand'?handFocus:hint.focus==='hero'?hero.shortcut:hint.focus==='sort-suit'?l.buttons.suit:hint.focus==='hand-previous'?l.handNavigation.previous:hint.focus==='hand-next'?l.handNavigation.next:undefined;
         const cardBox=(id:string)=>{
           const index=this.hand.findIndex(card=>card.id===id),seat=l.cards[index],card=this.cardViews[index];
           if(!seat?.visible||!card?.container.active||!card.container.visible)return [];
@@ -745,11 +752,11 @@ export class GameScene extends Phaser.Scene {
         }):[];
         const playedCaption=this.view.root.getByName('table/played-label') as Phaser.GameObjects.Text|undefined;
         const caption=playedCaption?.active&&playedCaption.visible&&playedCaption.text?[map(playedCaption.getBounds())]:[];
-        const cards=hint.focus==='score'||hint.focus==='goal'?[]:hint.recommendedCardIds??[];
+        const cards=hint.recommendedCardIds??[];
         const joker=hint.step==='payoff'&&!focus&&hint.fact?.purchaseInstanceId?this.jokerViews.get(hint.fact.purchaseInstanceId):undefined;
         const jokerFrame=joker?.getData('frame') as Phaser.GameObjects.Rectangle|undefined;
         const ownedHighlight=joker?.active&&joker.visible&&jokerFrame?.active?[map(jokerFrame.getBounds())]:[];
-        const highlightedCards=hint.step==='discard'||hint.step==='independent'?cards:focus?[]:cards;
+        const highlightedCards=hint.step==='pair'||hint.step==='discard'||hint.step==='independent'?cards:focus?[]:cards;
         const highlights=[...(hint.focus==='play-or-discard'?[map(hero.discard),map(l.tableActions.play)]:focus?[map(focus)]:ownedHighlight),...highlightedCards.flatMap(cardBox)];
         // The hint must not intercept the optional skill or utility buttons:
         // tapping through to the skip control would unexpectedly leave the run.
@@ -762,7 +769,8 @@ export class GameScene extends Phaser.Scene {
         // The idle presentation area can hold the full lesson; hand and action
         // targets stay protected. Reserving this empty region forced scrolling.
         const controls=[l.hud,l.scoreBoard,l.hand,l.actions,...Object.values(l.buttons),l.heroAction,l.inventoryEntry,l.helpEntry,...owned];
-        return {highlights,avoid:[...controls.filter((box):box is import('./layout').Box=>!!box).map(map),...previewBoxes,...previewControls,...caption]};
+        return {highlights,anchor:l.mode==='portrait'&&!owned.length&&this.run.stageIndex===0?map(l.jokers):undefined,
+          avoid:[...controls.filter((box):box is import('./layout').Box=>!!box).map(map),...previewBoxes,...previewControls,...caption]};
       },
       visible:()=>!this.presentation&&!this.playing&&!document.querySelector('dialog[open]'),
       onReplay:()=>requestTutorialReplay(),
@@ -774,7 +782,9 @@ export class GameScene extends Phaser.Scene {
     this.events.once('shutdown',unsubscribeInventory);
     if(enteredStage)this.revealDrawnCards([]);
     const notice=stageNotice(this.run);
-    const introduceBoss=!!this.run.stage.boss&&!bossRulesSeen(this.run)&&!document.querySelector('dialog[open]');
+    const guideOwner=runController(this);
+    const coachedBoss=this.run.mode==='tutorial'&&this.run.stage.boss?.definitionId==='B01'&&guideOwner&&!guideOwner.guidedOpeningSuppressed&&noviceGuide(this.run,guideOwner.journal)?.step==='skill-practice';
+    const introduceBoss=!!this.run.stage.boss&&!coachedBoss&&!bossRulesSeen(this.run)&&!document.querySelector('dialog[open]');
     if(introduceBoss&&this.run.stage.boss?.definitionId==='B05')inspectOpponent();
     else if((introduceBoss||enteredStage&&!this.run.stage.boss)&&notice?.warning){
       const identity=stageIdentity(this.run.stage.index,this.run.stage.boss,this.run.tourMode,this.run.difficulty)!;
@@ -950,7 +960,9 @@ export class GameScene extends Phaser.Scene {
     if(l.mode==='portrait'){
       const rack=v.add(this.add.graphics().lineStyle(1,T.divider,.46)),slots=l.slots.slice(0,r2JokerCapacity(this.run));
       for(const b of slots)rack.strokeRoundedRect(b.x+1,b.y+1,b.width-2,b.height-2,5);
-      if(!this.run.jokers.length&&slots.length){
+      const owner=runController(this);
+      const firstLesson=this.run.mode==='tutorial'&&this.run.stageIndex===0&&owner&&!owner.guidedOpeningSuppressed&&noviceGuide(this.run,owner.journal);
+      if(!this.run.jokers.length&&slots.length&&!firstLesson){
         const b=l.jokers,w=Math.min(b.width-16,218);
         v.button({x:b.x+(b.width-w)/2,y:b.y+(b.height-44)/2,width:w,height:44},
           '唐宋牌 0/'+slots.length+' · 看培养路线','action/empty-build',()=>{if(this.ready&&!this.presentation)this.inspectJourney();},this.ready);
@@ -1987,9 +1999,19 @@ export class GameScene extends Phaser.Scene {
     ];
     const owner=runController(this);
     if(owner&&noviceGuide(this.run,owner.journal)?.step==='skill'&&choice.candidates.length){
-      const choices=actions.slice(0,choice.candidates.length).map(action=>({label:action.label,disabled:action.disabled,run:action.run}));
-      const cancel=actions.find(action=>action.label==='取消本手选牌');if(cancel)choices.push({label:'取消技能',disabled:false,run:cancel.run});
-      const dialog=this.dialog.open('刘娥技能','',[],{effectBody:'同点牌的点数从筹码改加倍率，可能降低得分。选一张牌试试。',choices,closeLabel:'返回选牌'});
+      const input=this.aiInput(),selected=[...this.selectedIds];
+      const projected=(target:string|null)=>{
+        try{
+          const preview=previewR2Hand(aiHandScoreInput({...input,score:aiScoreContext(input.score,{erxiangTargetId:target})},selected));
+          return handForecastCopy(preview,this.heat,this.stage.targetHeat).range+' 分';
+        }catch{return undefined;}
+      };
+      const plain=projected(null),choices=choice.candidates.map(({card,detail},index)=>{
+        const action=actions[index],forecast=projected(card.id);
+        return {label:action.label,disabled:action.disabled,run:action.run,detail:forecast?'转后预计 '+forecast:detail};
+      });
+      const cancel=actions.find(action=>action.label==='取消本手选牌');if(cancel)choices.push({label:'取消技能',disabled:false,run:cancel.run,detail:plain?'不转预计 '+plain:'按原手牌计分'});
+      const dialog=this.dialog.open('刘娥技能','',[],{effectBody:(plain?'不转预计 '+plain+'。':'')+(usesErxiangGroup(this.run)?'选一张，同点计分牌的点数一起改加倍率。':'选一张，把它的普通点数改加倍率。')+'回桌后确认出牌。',choices,closeLabel:'返回选牌'});
       dialog.classList.add('novice-hero-dialog');dialog.querySelector<HTMLButtonElement>('.dialog-choice-actions button:not(:disabled)')?.classList.add('novice-focus-action');return;
     }
     const dialog=this.dialog.open(characterForRun(this.run).name+' · '+characterForRun(this.run).passiveName,characterForRun(this.run).passiveDescription,[],{guideSteps:heroOperationSteps(this.run,guide,!!this.erxiangTargetId),summaryBody:guide.step,effectBody:choice.sentence,collapseRules:true,rulesLabel:'计分牌转换细则',closeLabel:'返回选牌',choices:actions.filter(a=>a.label!=='上一手详情'),secondaryActions:actions.filter(a=>a.label==='上一手详情')});mountHeroSkillGuide(dialog,this.run);
@@ -2133,7 +2155,11 @@ export class GameScene extends Phaser.Scene {
     await this.sortHand('suit');
     if(!owner||owner!==runController(this)||lifecycle!==this.lifecycle||!this.scene.isActive()||this.run.runId!==runId)return;
     const lesson=this.activeNoviceHandLesson(),command=owner.journal.find(c=>c.runId===runId&&c.expectedSeq===seq&&c.action.type==='ReorderHand'&&JSON.stringify(c.action.ids)===JSON.stringify(expected));
-    if(lesson&&command&&this.run.stage?.index===0&&['discard','independent'].includes(noviceGuide(this.run,owner.journal)?.step??'')&&!lesson.swept(owner.journal))lesson.recordSort(command,owner.journal);
+    const step=lesson&&noviceGuide(this.run,owner.journal)?.step;
+    if(lesson&&command&&this.run.stage?.index===0&&(step==='discard'||step==='independent')&&!lesson.swept(owner.journal)){
+      lesson.recordSort(command,owner.journal);
+      if(step==='discard'&&lesson.flushPlan()==='draw')lesson.acknowledgeFlushSorted(owner.journal);
+    }
   }
   private async sortHand(mode:'rank'|'suit'):Promise<void> {
     if(!this.ready||this.presentation||this.run.phase!=='await-input')return;

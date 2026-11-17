@@ -67,6 +67,8 @@
  .novice-guide-panel.is-compact.has-choices { border-top-width:1px;line-height:1.2; }
 }
 @media (prefers-reduced-motion:reduce) { .novice-guide * { animation:none!important;transition:none!important; } }
+.novice-guide .novice-guide-panel .novice-guide-progress.is-score { display:block;margin:0 0 2px;color:#8d382d;font-size:14px;letter-spacing:0;line-height:1.2;font-variant-numeric:tabular-nums; }
+.novice-guide .novice-guide-panel.is-compact .novice-guide-progress.is-score { font-size:12px;margin:0; }
 .detail-dialog.novice-hero-dialog[open] { width:min(440px,calc(100vw - 24px));height:fit-content;display:flex;flex-direction:column; }
 .detail-dialog.novice-hero-dialog > .dialog-content { flex:0 1 auto;overflow:auto; }
 .detail-dialog.novice-hero-dialog .dialog-scroll { height:auto;overflow:visible; }

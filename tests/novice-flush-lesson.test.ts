@@ -15,22 +15,23 @@ const hint:NoviceGuideHint={step:'discard',cue:'换牌',body:''};
 const make=(id:string,suit:PlayingCard['suit'],rank:PlayingCard['rank']):PlayingCard=>({id,suit,rank});
 const unsorted=[make('clubs-4','clubs',4),make('spades-14','spades',14),make('diamonds-4','diamonds',4),make('clubs-7','clubs',7),make('spades-11','spades',11),make('hearts-10','hearts',10),make('hearts-3','hearts',3),make('hearts-6','hearts',6)];
 const sorted=[unsorted[1],unsorted[4],unsorted[5],unsorted[7],unsorted[6],unsorted[3],unsorted[0],unsorted[2]];
-const flags:Parameters<typeof flushDiscardHint>[3]={introSeen:false,sorted:false,sortedSeen:false,coarse:false};
+const flags:Parameters<typeof flushDiscardHint>[3]={sorted:false,coarse:false};
 const view=(hand:PlayingCard[],selected:string[]=[],opts:Parameters<typeof flushDiscardHint>[3]=flags)=>flushDiscardHint(hint,hand,selected,opts)!;
 
 describe('goal-directed first discard',()=>{
- it('shows and waits for the real three hearts before requesting suit sort',()=>{
+ it('offers both the held pair and the uncertain flush draw without selecting any cards',()=>{
   expect(flushLessonGroups(unsorted)?.hearts).toEqual(['hearts-10','hearts-3','hearts-6']);
-  expect(view(unsorted)).toMatchObject({cue:'先看看三张红桃',recommendedCardIds:['hearts-10','hearts-3','hearts-6'],choices:[{id:'flush-intro'}]});
-  expect(view(unsorted).body).toContain('未必');
-  expect(view(unsorted,[],{...flags,introSeen:true})).toMatchObject({focus:'sort-suit',cue:'让同花色排在一起'});
+  expect(view(unsorted)).toMatchObject({cue:'下一手，你来拿主意',recommendedCardIds:['hearts-10','hearts-3','hearts-6'],choices:[{id:'flush-score'},{id:'flush-draw'}]});
+  expect(view(unsorted).body).toContain('落空');
+  expect(view(unsorted,[],{...flags,plan:'score'}).recommendedCardIds).toEqual(['clubs-4','diamonds-4']);
+  expect(view(unsorted,['clubs-4'],{...flags,plan:'score'}).recommendedCardIds).toEqual(['diamonds-4']);
+  expect(view(unsorted,['clubs-4','diamonds-4'],{...flags,plan:'score'}).focus).toBe('play-or-discard');
+  expect(view(unsorted,[],{...flags,plan:'draw'})).toMatchObject({focus:'sort-suit',cue:'让同花色排在一起'});
   expect(flushDiscardHint(hint,unsorted.slice(0,7),[],flags)).toBeUndefined();
  });
  it('shows the sorted hearts, then recommends two independent mouse or touch sweeps',()=>{
   expect(flushLessonGroups(sorted)).toEqual({hearts:['hearts-10','hearts-6','hearts-3'],left:['spades-14','spades-11'],right:['clubs-7','clubs-4','diamonds-4'],grouped:true});
-  const reviewed={...flags,introSeen:true,sorted:true};
-  expect(view(sorted,[],reviewed)).toMatchObject({cue:'三张红桃排在一起了',recommendedCardIds:['hearts-10','hearts-6','hearts-3'],choices:[{id:'flush-sorted'}]});
-  const active={...reviewed,sortedSeen:true};
+  const active={...flags,plan:'draw' as const,sorted:true};
   expect(view(sorted,[],active)).toMatchObject({cue:'选左侧其他花色',gesture:'sweep',gestureCardIds:['spades-14','spades-11']});
   expect(view(sorted,['spades-14'],active)).toMatchObject({recommendedCardIds:['spades-11']});
   expect(view(sorted,['spades-14','spades-11'],{...active,coarse:true})).toMatchObject({cue:'选右侧其他花色',gesture:'sweep',gestureCardIds:['clubs-7','clubs-4','diamonds-4']});
@@ -41,17 +42,16 @@ describe('goal-directed first discard',()=>{
  });
  it('describes cards on just one side without claiming the hearts are in the middle',()=>{
   const oneSide=[...sorted.slice(2,5),make('clubs-14','clubs',14),make('clubs-7','clubs',7),make('clubs-4','clubs',4),make('diamonds-9','diamonds',9),make('diamonds-4','diamonds',4)];
-  const opts={...flags,introSeen:true,sorted:true};const overview=view(oneSide,[],opts);
+  const opts={...flags,plan:'draw' as const,sorted:true};const overview=view(oneSide,[],opts);
   expect(flushLessonGroups(oneSide)).toMatchObject({left:[],right:['clubs-14','clubs-7','clubs-4','diamonds-9','diamonds-4'],grouped:true});
-  expect(overview.body).toContain('旁边');expect(overview.body).not.toMatch(/中间|两侧/);
-  expect(view(oneSide,[],{...opts,sortedSeen:true}).cue).toBe('选右侧其他花色');
+  expect(overview.cue).toBe('选右侧其他花色');expect(overview.gestureCardIds).toEqual(flushLessonGroups(oneSide)?.right);
  });
  it('only highlights or demonstrates visible cards and points to the needed hand page',()=>{
   const firstPage=sorted.slice(0,4).map(card=>card.id),lastPage=sorted.slice(4).map(card=>card.id),middle=sorted.slice(2,6).map(card=>card.id);
   const intro=view(sorted,[],{...flags,visibleIds:firstPage});
-  expect(intro).toMatchObject({cue:'翻页看看三张红桃',focus:'hand-next',recommendedCardIds:['hearts-10','hearts-6']});
-  expect(intro.choices?.[0].id).toBe('flush-intro');
-  const active={...flags,introSeen:true,sorted:true,sortedSeen:true};
+  expect(intro).toMatchObject({cue:'下一手，你来拿主意',focus:'hand-next',recommendedCardIds:['hearts-10','hearts-6']});
+  expect(intro.choices?.map(row=>row.id)).toEqual(['flush-score','flush-draw']);
+  const active={...flags,plan:'draw' as const,sorted:true};
   expect(view(sorted,[],{...active,visibleIds:firstPage})).toMatchObject({cue:'选左侧其他花色',gestureCardIds:['spades-14','spades-11']});
   const rightHidden=view(sorted,['spades-14','spades-11'],{...active,visibleIds:firstPage});
   expect(rightHidden).toMatchObject({cue:'翻页找右侧其他花色',focus:'hand-next',recommendedCardIds:[]});expect(rightHidden.gesture).toBeUndefined();
@@ -67,13 +67,23 @@ describe('goal-directed first discard',()=>{
   const six=[...unsorted,make('hearts-11','hearts',11),make('hearts-7','hearts',7),make('hearts-12','hearts',12)];
   expect(flushRefillHint(six)).toMatchObject({body:expect.stringContaining('有6张红桃，任选5张'),heartIds:expect.arrayContaining(['hearts-11','hearts-7','hearts-12'])});
  });
+ it('recognizes a flush already dealt after two pair and follows the cards across pages',()=>{
+  const hand=[unsorted[1],unsorted[3],unsorted[4],...unsorted.slice(5),make('hearts-11','hearts',11),make('hearts-7','hearts',7)];
+  const hearts=hand.filter(card=>card.suit==='hearts').map(card=>card.id);
+  expect(view(hand)).toMatchObject({cue:'红桃已经成花',recommendedCardIds:hearts});
+  expect(view(hand,hearts.slice(0,2),{...flags,visibleIds:hand.slice(0,5).map(card=>card.id)})).toMatchObject({focus:'hand-next',recommendedCardIds:[]});
+  expect(view(hand,hearts)).toMatchObject({cue:'五张同花，出牌',focus:'play'});
+  expect(view(hand,[hand[0].id]).focus).toBe('play-or-discard');
+ });
  it('keeps acknowledgement locally but ties sorted review to an actual saved sorting command',()=>{
   const id='flush-run',command={runId:id,commandId:id+'/6',expectedSeq:5,action:{type:'ReorderHand' as const,ids:sorted.map(card=>card.id)}};
-  const lesson=new NoviceHandLesson(id);lesson.acknowledgeFlushIntro();lesson.acknowledgeFlushSorted([]);
-  expect(new NoviceHandLesson(id).flushIntroSeen()).toBe(true);expect(lesson.flushSortedSeen([])).toBe(false);
+  values.set('tangsongpai-novice-hand-interaction-v1:'+id,JSON.stringify({swept:false,flushIntroSeen:true}));
+  const lesson=new NoviceHandLesson(id);expect(lesson.flushPlan()).toBe('draw');lesson.acknowledgeFlushSorted([]);
+  expect(lesson.flushSortedSeen([])).toBe(false);
   lesson.recordSort(command);lesson.acknowledgeFlushSorted([command]);
   const restored=new NoviceHandLesson(id);expect(restored.flushSortedSeen([command])).toBe(true);
-  expect(restored.flushSortedSeen([])).toBe(false);expect(restored.flushIntroSeen()).toBe(true);
+  expect(restored.flushSortedSeen([])).toBe(false);expect(restored.flushPlan()).toBe('draw');
+  restored.chooseFlushPlan('score');expect(new NoviceHandLesson(id).flushPlan()).toBe('score');
  });
 });
 

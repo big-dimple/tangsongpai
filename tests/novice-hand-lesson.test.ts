@@ -94,7 +94,7 @@ describe('tutorial hand lesson evidence',()=>{
   });
 
   it('keeps the acknowledged flush lesson through another published sort, but not a rolled-back source sort',()=>{
-    const current=new NoviceHandLesson(runId);current.acknowledgeFlushIntro();current.recordSort(sort);current.acknowledgeFlushSorted([sort]);
+    const current=new NoviceHandLesson(runId);current.chooseFlushPlan('draw');current.recordSort(sort);current.acknowledgeFlushSorted([sort]);
     const later:Command={runId,commandId:`${runId}/command/8`,expectedSeq:7,action:{type:'ReorderHand',ids:['d','c','b','a']}};
     current.recordSort(later,[sort,next,later]);expect(current.flushSortedSeen([sort,next,later])).toBe(true);
     expect(new NoviceHandLesson(runId).flushSortedSeen([sort,next,later])).toBe(true);

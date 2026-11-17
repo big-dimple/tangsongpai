@@ -5,7 +5,7 @@ import {r2JokerDefinitionsFor} from '../src/domain/r2ContentProfiles';
 import {previewR2Hand} from '../src/domain/scoreR2';
 import {guidedTutorialRunId,newRunIdentity} from '../src/game/RunLaunch';
 import {aiHandScoreInput,aiScoreContext,rankAiHandCandidates,type AiHandInput} from '../src/game/AiHandCandidates';
-import {firstStageOptions} from '../src/game/NoviceFirstStage';
+import {firstStageOptions,openingDeal,openingDealHint} from '../src/game/NoviceFirstStage';
 import {SUITS} from '../src/cards/types';
 
 function send(state:R2RunState,action:Action):R2RunState {
@@ -15,12 +15,14 @@ function send(state:R2RunState,action:Action):R2RunState {
  return result.state;
 }
 
-function afterPair():R2RunState {
+function opening():R2RunState {
  let state=createRun({seed:'r2/tutorial/core-v1',runId:guidedTutorialRunId('00000000-0000-4000-8000-000000000001'),
   characterId:'erxiang',rulesVersion:'r2',r2Identity:newRunIdentity('erxiang'),openingRoute:'group',
   modeConfig:{mode:'tutorial',difficulty:0,challengeId:null,programsEnabled:false}});
- state=send(state,{type:'LeaveShop'});state=send(state,{type:'EnterStage'});
- state=send(state,{type:'PlayHand',selectedIds:['clubs-5','hearts-5']});
+ return send(send(state,{type:'LeaveShop'}),{type:'EnterStage'});
+}
+function afterPair():R2RunState {
+ const state=send(opening(),{type:'PlayHand',selectedIds:['clubs-5','hearts-5']});
  expect(state.stage?.heat).toBe('90');expect(state.stage?.targetHeat).toBe('400');
  return state;
 }
@@ -38,6 +40,19 @@ function inputFor(state:R2RunState):AiHandInput {
 }
 
 describe('first-stage choice feedback',()=>{
+ it('quotes both real alternatives from public cards, permits either first pair and follows an off-screen match',()=>{
+  const state=opening(),input=inputFor(state),fives=['hearts-5','clubs-5'],fours=['clubs-4','diamonds-4'];
+  const deal=openingDeal(input,fives)!;
+  expect(deal.pairs.map(pair=>pair.score)).toEqual([fives,fours].map(selectedIds=>send(state,{type:'PlayHand',selectedIds}).lastTrace!.finalScore));
+  expect(deal.both).toBe(send(state,{type:'PlayHand',selectedIds:[...fives,...fours]}).lastTrace!.finalScore);
+  const hint={step:'pair' as const,cue:'先找一对',body:''};
+  const one=openingDealHint(hint,deal,input.hand,[fours[0]],state.handOrder,'24');
+  expect(one).toMatchObject({beat:'单张 24 分 → 对子 '+deal.pairs[1].score+' 分',recommendedCardIds:[fours[1]]});
+  expect(openingDealHint(hint,deal,input.hand,[fours[0]],state.handOrder.slice(0,3))).toMatchObject({focus:'hand-next',recommendedCardIds:[]});
+  expect(openingDealHint(hint,deal,input.hand,[...fours,...fives],state.handOrder)).toMatchObject({cue:'两对都齐了',focus:'play'});
+  expect(openingDealHint(hint,deal,input.hand,['spades-14'],state.handOrder)).toBeUndefined();
+  expect(openingDeal({...input,disabledIds:[fours[0]]},fives)).toBeUndefined();
+ });
  it.each([
   {name:'one club',discard:['clubs-4']},
   {name:'one diamond',discard:['diamonds-4']},

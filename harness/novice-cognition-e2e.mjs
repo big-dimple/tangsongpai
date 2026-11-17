@@ -287,7 +287,7 @@ async function scenario(spec){
       await tap('title','action/title-start');await waitScene(page,'game');await ready();await guide('pair');let first=await shot('01-pair');
       const initial=await state(),pair=['clubs-5','hearts-5'];assert.ok(pair.every(id=>initial.handOrder.includes(id)),'actual tutorial hand has the opening pair');
       if(edgeCases){
-        const wrong=initial.handOrder.find(id=>!pair.includes(id));await choose([wrong]);const mistaken=await shot('02-wrong-pair');assert.match(mistaken.text,/取消|去掉|选错/,'mistake is correctable');await clear();
+        const wrong=initial.handOrder.find(id=>!pair.includes(id)&&!id.endsWith('-4'));await choose([wrong]);const mistaken=await shot('02-wrong-pair');assert.match(mistaken.text,/取消|去掉|选错/,'mistake is correctable');await clear();
       }
       await choose([pair[0]]);let selectedView=await shot('03-one-five');
       const other=selectedView.cards.find(c=>c.id===pair[1]);assert.ok(other&&selectedView.rings.some(r=>sameBox(r,other)),'highlight points to the other actual five');
@@ -297,16 +297,25 @@ async function scenario(spec){
       const trace=current.lastTrace;assert.ok(fractionsEqual(trace.accumulator.H,trace.accumulator.M,trace.finalScore),'opening displayed product is backed by exact saved score');
       const base=trace.events.find(e=>e.phase==='base'&&e.operation==='base'),ordinary=trace.events.filter(e=>e.phase==='onCardScore'&&e.sourceType==='card'&&e.sourceDefinitionId.startsWith('rank-')&&e.operation==='add-heat');
       assert.ok(base&&ordinary.length===trace.sets.activeScoringIds.length,'the saved opening score has a complete base and card-event chain');
-      await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='先看看三张红桃');
-      const discardView=await shot('05-three-hearts');assert.match(discardView.text,/3张红桃/);assert.match(discardView.text,/5张同花色/);assert.match(discardView.text,/未必/,'the next draw is not promised');
+      await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='下一手，你来拿主意');
+      const discardView=await shot('05-three-hearts');assert.match(discardView.text,/3张红桃/);assert.match(discardView.text,/5张同花色/);assert.match(discardView.text,/落空/,'the next draw is not promised');
       const openingHearts=['hearts-10','hearts-6','hearts-3'];
-      for(const id of openingHearts){const card=discardView.cards.find(c=>c.id===id);assert.ok(card&&discardView.rings.some(r=>sameBox(r,card)),`actual ${id} is highlighted before sorting`);}
+      assert.deepEqual(sorted(current.handOrder.filter(id=>id.startsWith('hearts-'))),sorted(openingHearts));
+      const firstVisible=current.handOrder.indexOf(discardView.cards[0].id);
+      for(const id of openingHearts){
+        const card=discardView.cards.find(c=>c.id===id);
+        if(card)assert.ok(discardView.rings.some(r=>sameBox(r,card)),`visible ${id} is highlighted before sorting`);
+        else {
+          const nav=await point(page,'game',current.handOrder.indexOf(id)<firstVisible?'action/hand-previous':'action/hand-next');
+          assert.ok(nav.enabled&&discardView.rings.some(r=>nav.x>=r.x&&nav.x<=r.x+r.width&&nav.y>=r.y&&nav.y<=r.y+r.height),`the highlighted page arrow leads to ${id}`);
+        }
+      }
       if(spec.width===320&&!diagnostic){
         await page.waitForTimeout(10000);const lasting=await shot('05b-three-hearts-after-ten-seconds');
         assert.equal(lasting.title,discardView.title,'the player controls when to proceed');assert.equal(lasting.body,discardView.body,'the goal and caveat remain readable');
       }
       if(spec.restart){await restore('game');await guide('discard');await shot('06-intro-restored');}
-      await click(page.locator('[data-novice-guide-choice="flush-intro"]'));await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='让同花色排在一起');
+      await click(page.locator('[data-novice-guide-choice="flush-draw"]'));await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='让同花色排在一起');
       const sortPrompt=await shot('07-sort-prompt'),sortPoint=await point(page,'game','action/sort-suit');
       assert.match(sortPrompt.text,/花色/);assert.ok(sortPrompt.rings.some(r=>sortPoint.x>=r.x-2&&sortPoint.x<=r.x+r.width+2&&sortPoint.y>=r.y-2&&sortPoint.y<=r.y+r.height+2),'sorting highlight frames the actual suit control');
       if(spec.width===320){const label=await page.evaluate(()=>window.__harness.game.scene.getScene('game').suitButton?.getData('label')?.text??'');assert.match(label,/点.*花色/);}
@@ -323,9 +332,9 @@ async function scenario(spec){
       assert.equal((await saved()).journal.at(-1).action.type,'ReorderHand');assert.ok(current.commandSeq>before.state.commandSeq);
       const left=['spades-14','spades-11'],hearts=['hearts-10','hearts-6','hearts-3'],right=['clubs-7','clubs-4','diamonds-4'];
       assert.deepEqual(current.handOrder,[...left,...hearts,...right],'actual suit sort groups two left, three hearts, three right');
-      await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='三张红桃排在一起了');const sortedView=await shot('08-sorted-hearts');
-      for(const id of hearts){const card=sortedView.cards.find(c=>c.id===id);assert.ok(card&&sortedView.rings.some(r=>sameBox(r,card)),`sorted ${id} remains highlighted`);}
-      await click(page.locator('[data-novice-guide-choice="flush-sorted"]'));await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='选左侧其他花色');
+      await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='选左侧其他花色');const sortedView=await shot('08-sorted-hearts');
+      for(const id of left){const card=sortedView.cards.find(c=>c.id===id);assert.ok(card&&sortedView.rings.some(r=>sameBox(r,card)),`sortable run immediately highlights the discard target ${id}`);}
+      assert.equal(await page.locator('[data-novice-guide-choice]').count(),0);
       await page.locator('[data-novice-gesture][data-mode="sweep"]:visible').waitFor({timeout:45000});await shot('09-left-sweep');
       if(edgeCases){
         await captureGesture('sweep','09b-left-demo');
@@ -402,7 +411,7 @@ async function scenario(spec){
       let rack=await page.evaluate(()=>{const s=window.__harness.game.scene.getScene('shop'),p=s.geometry();return {collapsed:p.inventoryCollapsed,slots:p.slots.length,ids:s.run.jokers.map(j=>j.instanceId)};});
       if(rack.collapsed){await tap('shop','action/toggle-owned');await page.waitForFunction(()=>!window.__harness.game.scene.getScene('shop').geometry().inventoryCollapsed);}
       rack=await page.evaluate(()=>{const s=window.__harness.game.scene.getScene('shop'),p=s.geometry();return {collapsed:p.inventoryCollapsed,slots:p.slots.length,ids:s.run.jokers.map(j=>j.instanceId)};});
-      assert.equal(rack.slots,5);assert.equal(rack.ids.length,1);const firstRack=await shot('23-five-slots-one-owned');assert.match(firstRack.text,/(五|5).*槽/,'five slots are explained');assert.match(firstRack.text,/左.*右/,'the usual left-to-right order is explained');assert.match(firstRack.text,/继续买|继续购买|进入牌桌|下一场/,'one-card explanation gives a feasible next action');
+      assert.equal(rack.slots,5);assert.equal(rack.ids.length,1);const firstRack=await shot('23-five-slots-one-owned');assert.match(firstRack.text,/(五|5).*槽/,'five slots are explained');assert.match(firstRack.text,/左.*右/,'the usual left-to-right order is explained');assert.deepEqual(await page.locator('[data-novice-guide-choice]').allTextContents(),['上桌试牌','看看第二张'],'a purchase offers both real next actions');
       if(edgeCases){
         const oneBefore=await saved(),position=await point(page,'shop','joker/'+rack.ids[0]);await down(position);await page.waitForTimeout(450);const holding=await recordDrag('23b-one-card-hold');
         assert.match([holding.panel?.text,holding.status?.text].filter(Boolean).join(' '),/多张|两张|2张/,'single-card long hold explains that reordering needs more cards');

@@ -199,19 +199,21 @@ async function scenario(spec){
     await tap('title','action/title-start');await waitScene(page,'game');await ready();await cue('先找一对');
     await shot('01-pair');await select(['clubs-5','hearts-5']);await expectSelected(['clubs-5','hearts-5'],'select first pair');
     let before=await saved();await tap('game','action/play');await settleCommand(before);await ready();await page.waitForFunction(()=>document.querySelector('[data-novice-guide]')?.dataset.noviceGuideStep==='discard');
-    await cue('先看看三张红桃');await shot('flush-01-see-three-hearts');
+    await cue('下一手，你来拿主意');await shot('flush-01-see-three-hearts');
     let hand=await observeHand(),ringed=hand.cards.filter(card=>hand.rings.some(ring=>sameBox(card,ring))).map(card=>card.id);
-    assert.deepEqual(sorted(ringed),sorted(['hearts-10','hearts-6','hearts-3']),'three real hearts are highlighted before sorting');
-    assert.match((await guideView()).body,/未必/,'replacement is not promised');
-    await restore('game');await cue('先看看三张红桃');await click(page.locator('[data-novice-guide-choice="flush-intro"]'));await cue('让同花色排在一起');await shot('flush-02-sort-suit');
+    const heartsBefore=hand.order.filter(id=>id.startsWith('hearts-'));
+    assert.deepEqual(sorted(heartsBefore),sorted(['hearts-10','hearts-6','hearts-3']));
+    assert.deepEqual(sorted(ringed),sorted(hand.cards.filter(card=>heartsBefore.includes(card.id)).map(card=>card.id)),'all hearts on this page are highlighted before sorting');
+    assert.match((await guideView()).body,/落空/,'replacement is not promised');
+    await restore('game');await cue('下一手，你来拿主意');await click(page.locator('[data-novice-guide-choice="flush-draw"]'));await cue('让同花色排在一起');await shot('flush-02-sort-suit');
     await select(['spades-14']);assert.equal((await point(page,'game','action/play')).enabled,true,'legal play remains available');assert.equal((await point(page,'game','action/discard')).enabled,true,'legal discard remains available');await clear();
     before=await saved();await tap('game','action/sort-rank');await ready();await cue('让同花色排在一起');
-    before=await saved();await tap('game','action/sort-suit');await ready();await cue('三张红桃排在一起了');
+    before=await saved();await tap('game','action/sort-suit');await ready();await cue('选左侧其他花色');
     const suitSaved=await saved();assert.equal(suitSaved.journal.at(-1).action.type,'ReorderHand');assert.ok(suitSaved.state.commandSeq>before.state.commandSeq);
     assert.deepEqual(suitSaved.state.handOrder,['spades-14','spades-11','hearts-10','hearts-6','hearts-3','clubs-7','clubs-4','diamonds-4'],'two left, three hearts, three right');
     await shot('flush-03-sorted-hearts');hand=await observeHand();ringed=hand.cards.filter(card=>hand.rings.some(ring=>sameBox(card,ring))).map(card=>card.id);
-    assert.deepEqual(sorted(ringed),sorted(['hearts-10','hearts-6','hearts-3']),'the grouped hearts are highlighted until acknowledged');
-    await click(page.locator('[data-novice-guide-choice="flush-sorted"]'));await cue('选左侧其他花色');await shot('flush-04-left-sweep');
+    assert.deepEqual(sorted(ringed),sorted(['spades-14','spades-11']),'the committed sort immediately frames the first swipe');
+    assert.equal(await page.locator('[data-novice-guide-choice]').count(),0);
     await restore('game');await cue('选左侧其他花色');
     const left=['spades-14','spades-11'],right=['clubs-7','clubs-4','diamonds-4'];
     const leftFrom=await point(page,'game','card/'+left[0]),leftTo=await point(page,'game','card/'+left.at(-1));
@@ -224,7 +226,7 @@ async function scenario(spec){
     assert.equal(exchanged.state.stage.discardsLeft,before.state.stage.discardsLeft-1);assert.equal(exchanged.state.stage.handsLeft,before.state.stage.handsLeft);
     assert.deepEqual(sorted(exchanged.state.handOrder.filter(id=>id.startsWith('hearts-'))),sorted(['hearts-10','hearts-6','hearts-3','hearts-11','hearts-7','hearts-12']));
     await page.locator('[data-novice-guide-choice="flush"]').waitFor({state:'visible'});assert.match((await guideView()).body,/6张红桃/);await shot('flush-07-real-refill');
-    row.checks.push('three hearts and suit sort are explicitly acknowledged; two genuine input sweeps select five non-hearts, one discard refills five cards and displays the actual flush');
+    row.checks.push('the player chooses a flush draw and the real sort opens its swipe directly; two genuine input sweeps select five non-hearts, one discard refills five cards and displays the actual flush');
 
     const ids=(await state()).handOrder;assert.equal(ids.length,8);const stable=await saved(),firstFive=ids.slice(0,5);
     await route([ids[0],ids[4],ids[0]]);await expectSelected(firstFive,'reverse sweep does not retoggle visited cards');
@@ -251,7 +253,7 @@ async function scenario(spec){
     await continueResult();await shopReady();await page.locator('.qiyu-entrance-burst-canvas').waitFor({state:'detached'});const firstPurchase=await buy('b02');await cue(spec.touch?'展开已拥有牌':'这里有五个槽');
     const firstView=await shot('08-first-purchase');
     if(spec.touch){assert.match(firstView.title,/展开/,'phone explains how to open owned cards');await tap('shop','action/toggle-owned');await cue('这里有五个槽');}
-    const expanded=await shot('09-owned-open');assert.match(expanded.text,/(五|5)\s*(个)?\s*槽/,'five slots are explained');assert.match(expanded.text,/通常从左到右触发/,'the usual trigger order is explained');assert.match(expanded.text,/继续买.*进入牌桌/,'the player can continue shopping or play with one card');
+    const expanded=await shot('09-owned-open');assert.match(expanded.text,/(五|5)\s*(个)?\s*槽/,'five slots are explained');assert.match(expanded.text,/通常从左到右触发/,'the usual trigger order is explained');assert.match(expanded.text,/上桌试牌[\s\S]*看看第二张/,'the player can continue shopping or play with one card');
     await page.waitForTimeout(1400);await shot('09b-owned-settled');
     row.rackOverlay=await page.evaluate(()=>{const g=window.__harness.game,s=g.scene.getScene('shop'),canvas=g.canvas.getBoundingClientRect(),l=s.view.layout,walk=items=>items.flatMap(o=>[o,...(o.list?walk(o.list):[])]);const region={left:canvas.left+60*canvas.width/l.width,right:canvas.left+170*canvas.width/l.width,top:canvas.top+390*canvas.height/l.height,bottom:canvas.top+430*canvas.height/l.height};return{region,canvas:walk(s.children.list).flatMap(o=>{if(!o.active||!o.visible||!o.getBounds)return[];const b=o.getBounds(),r={left:canvas.left+b.x*canvas.width/l.width,right:canvas.left+(b.x+b.width)*canvas.width/l.width,top:canvas.top+b.y*canvas.height/l.height,bottom:canvas.top+(b.y+b.height)*canvas.height/l.height};return r.left<region.right&&r.right>region.left&&r.top<region.bottom&&r.bottom>region.top?[{name:o.name,type:o.type,text:o.text,rect:r}]:[];}),dom:[...document.querySelectorAll('body *')].flatMap(el=>{const b=el.getBoundingClientRect();return b.width&&b.height&&b.left<region.right&&b.right>region.left&&b.top<region.bottom&&b.bottom>region.top&&getComputedStyle(el).visibility!=='hidden'?[{tag:el.tagName,className:String(el.className),text:el.innerText?.slice(0,100),rect:{left:b.left,right:b.right,top:b.top,bottom:b.bottom}}]:[];})};});
     const rack=await page.evaluate(()=>{const s=window.__harness.game.scene.getScene('shop'),g=s.geometry();return{collapsed:g.inventoryCollapsed,slots:g.slots,owned:s.run.jokers.map(j=>j.instanceId)};});assert.equal(rack.collapsed,false);assert.equal(rack.slots.length,5);assert.equal(rack.owned.length,1);
@@ -337,10 +339,10 @@ async function returningScenarios(){
     await page.goto(`http://127.0.0.1:${port}/?harness=1`);await waitScene(page,'title');await tapUI(page,'title','action/title-start',true);await waitScene(page,'game');
     const waitReady=()=>page.waitForFunction(()=>{const s=window.__harness.game.scene.getScene('game');return s.scene.isActive()&&s.ready&&!s.playing&&!s.presentation&&s.cardViews.length&&s.cardViews.every(v=>!v.dealing&&!s.tweens.isTweening(v.container));});
     const command=async(name,ids)=>{await waitReady();for(const id of ids)await tapUI(page,'game','card/'+id,true);const seq=await page.evaluate(()=>window.__harness.game.registry.get('runController').state.commandSeq);await tapUI(page,'game','action/'+name,true);await page.waitForFunction(seq=>window.__harness.game.registry.get('runController').state.commandSeq>seq,seq);await waitReady();};
-    await command('play',['clubs-5','hearts-5']);await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='先看看三张红桃');
-    await page.locator('[data-novice-guide-choice="flush-intro"]').tap();await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='让同花色排在一起');
-    await tapUI(page,'game','action/sort-suit',true);await waitReady();await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='三张红桃排在一起了');
-    await page.locator('[data-novice-guide-choice="flush-sorted"]').tap();await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='选左侧其他花色');await page.locator('[data-novice-gesture][data-mode="sweep"]:visible').waitFor();
+    await command('play',['clubs-5','hearts-5']);await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='下一手，你来拿主意');
+    await page.locator('[data-novice-guide-choice="flush-draw"]').tap();await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='让同花色排在一起');
+    await tapUI(page,'game','action/sort-suit',true);await waitReady();await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='选左侧其他花色');
+    assert.equal(await page.locator('[data-novice-guide-choice]').count(),0);await page.locator('[data-novice-gesture][data-mode="sweep"]:visible').waitFor();
     const before=await page.evaluate(()=>window.__harness.game.registry.get('runController').state);await page.locator('[data-novice-guide-skip]').tap();await waitScene(page,'character-select');
     assert.equal(await page.locator('[data-novice-gesture]').count(),0,'skip removes the active swipe demonstration');assert.equal(await page.evaluate(()=>window.__harness.game.registry.get('runController').state.runId),before.runId,'skip preserves the tutorial save');
     assert.equal(await page.evaluate(()=>window.__harness.game.registry.get('runController').state.commandSeq),before.commandSeq,'skip submits no game command');

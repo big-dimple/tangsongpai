@@ -19,6 +19,7 @@ export class HomePage {
  private hint=document.createElement('p');
  private notice=document.createElement('p');
  private busy=false;
+ private readonly openingCards:HTMLElement[]=[];
  constructor(actions:{start:()=>void;tutorial:()=>void;resume:()=>void;skipTutorial:()=>void}){
   this.root.className='title-home';this.root.setAttribute('aria-label',GAME_NAME+'首页');
   const sheet=document.createElement('div');sheet.className='home-sheet';
@@ -28,7 +29,14 @@ export class HomePage {
   if(art){
    art.classList.add('home-hero');art.removeAttribute('aria-hidden');
    for(const ornament of art.querySelectorAll('.load-world,.load-fan'))ornament.setAttribute('aria-hidden','true');
-   for(const card of art.querySelectorAll('.load-card-seat'))card.classList.add('is-inked');
+   for(const seat of art.querySelectorAll('.load-card-seat'))seat.classList.add('is-inked');
+   const openingFaces=[['5','♣'],['5','♥'],['4','♦']];
+   for(const [index,card] of [...art.querySelectorAll<HTMLElement>('.load-card')].entries()){
+    const example=document.createElement('span');example.className='home-example-face';example.setAttribute('aria-hidden','true');
+    const face=openingFaces[index];if(!face)continue;
+    const rank=document.createElement('b'),suit=document.createElement('span');[rank.textContent,suit.textContent]=face;
+    example.append(rank,suit);card.append(example);this.openingCards.push(card);
+   }
    sheet.append(art);
   }else {const heading=document.createElement('h1');heading.textContent=GAME_NAME;sheet.append(heading);}
   const entry=document.createElement('section');entry.className='home-entry';entry.setAttribute('aria-label','开始或继续');
@@ -45,12 +53,13 @@ export class HomePage {
   this.root.append(sheet);document.body.append(this.root);
  }
  update(model:HomePageModel):void {
-  this.heading.textContent=model.summary?'续上这局':model.firstPlayer?'从第一手开始':'开一局';
+  this.heading.textContent=model.summary?'续上这局':model.firstPlayer?'两张 5，能打多少分？':'开一局';
+  for(const card of this.openingCards)card.classList.toggle('shows-first-deal',!!model.firstPlayer);
   this.summary.hidden=!model.summary;this.summary.replaceChildren(...(model.summary??[]).map(text=>{const span=document.createElement('span');span.textContent=text;return span;}));
   this.resume.hidden=!model.summary;this.resume.disabled=this.busy||!model.canContinue;this.start.disabled=this.busy||!model.canStart;this.tutorial.disabled=this.busy||!model.canTutorial;
   this.start.textContent=model.firstPlayer?'新手首战':'普通新局';this.tutorial.hidden=!!model.firstPlayer;
   this.skip.hidden=!model.showTutorialSkip;this.skip.disabled=this.busy||!model.canSkipTutorial;this.skip.className='home-text-action';
-  this.hint.textContent=model.firstPlayer?(model.checkingHistory?'正在准备新手首战，也可以直接选角。':'跟刘娥打一场，从一对牌学会计分。'):model.summary?'继续会回到上一次落笔的地方。':'先选英雄和路线，在集市备好第一手牌。';
+  this.hint.textContent=model.firstPlayer?(model.checkingHistory?'正在准备牌桌，也可以直接选角。':'刘娥已发好牌。打出这一对，还是再添一对，由你开牌。'):model.summary?'继续会回到上一次落笔的地方。':'先选英雄和路线，在集市备好第一手牌。';
   this.notice.textContent=model.message||'存档提示请查看右上菜单。';
   this.resume.className='home-primary';this.start.className=model.summary?'home-secondary':'home-primary';this.tutorial.className='home-secondary';this.notice.hidden=!model.notice;
  }

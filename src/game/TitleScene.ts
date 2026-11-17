@@ -36,7 +36,7 @@ export class TitleScene extends Phaser.Scene {
     this.home?.destroy();this.home=new HomePage({start:()=>void this.enterNew(),tutorial:()=>void this.enterTutorial(),resume:()=>void this.continueRun(),skipTutorial:()=>this.skipTutorial()});
     const removeTitleNewGame=installTitleNewGameHandler(()=>void this.enterNew());this.render();warmOpeningImages(this);
     this.entranceDispose?.();
-    this.entranceDispose=mountTangSongEnsembleBurst(document.body,{reducedMotion:this.reducedMotion()});
+    this.entranceDispose=mountTangSongEnsembleBurst(this.home.root.querySelector<HTMLElement>('.home-hero'),{reducedMotion:this.reducedMotion()});
     const dismissEntrance=()=>{this.entranceDispose?.();this.entranceDispose=undefined;};
     const interaction=(event:Event)=>{if(event.isTrusted)dismissEntrance();};
     const visibility=()=>{if(document.hidden)dismissEntrance();};

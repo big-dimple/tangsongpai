@@ -89,7 +89,7 @@ function fixedEffectAction(definition:R2JokerDefinition,joker:R2JokerInstance|un
  if(operation.kind!=='add-heat'&&operation.kind!=='add-multiplier'||Rational.fromJSON(operation.value).compare(new Rational(0n))<=0)return;
  const effect=`+${fractionText(operation.value)}${operation.kind==='add-heat'?'筹码':'倍率'}`,condition=hook.condition;
  if(hook.phase==='onCardScore')switch(condition.kind){
-  case 'paired-rank':return `出≥${condition.minimum}张同点牌，有效计分各${effect}`;
+  case 'paired-rank':return `至少打出${condition.minimum}张同点牌，每张计分时 ${effect}。`;
   case 'suit-in':return `出${condition.values.map(s=>SUIT_SYMBOL[s]).join('或')}，有效计分各${effect}`;
   case 'rank-in':return `出${ranks(condition.values)}，有效计分各${effect}`;
   default:return;

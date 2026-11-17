@@ -53,6 +53,10 @@ async function cold(width,height){
   await page.screenshot({path:`${out}/${name}-ensemble.png`});
   if(width===390){await page.waitForTimeout(1050);await page.screenshot({path:`${out}/${name}-ensemble-cast.png`});}
   const start=page.getByRole('button',{name:'新手首战',exact:true});const box=await start.boundingBox();assert.ok(box);
+  const art=await page.locator('.title-home .home-hero').boundingBox();assert.ok(art);
+  const cast=await page.evaluate(()=>document.querySelector('.qiyu-ensemble-burst-canvas')?.getBoundingClientRect().toJSON());
+  assert.ok(!cast||cast.x>=art.x-1&&cast.y>=art.y-1&&cast.right<=art.x+art.width+1&&cast.bottom<=art.y+art.height+1,'the cast stays in the artwork and leaves the first move visible');
+  assert.ok(art.y+art.height<=box.y||art.x+art.width<=box.x,'the opening artwork and first action have separate space');
   if(touch){await page.touchscreen.tap(box.x+box.width/2,box.y+box.height/2);await page.touchscreen.tap(box.x+box.width/2,box.y+box.height/2);}else await page.mouse.dblclick(box.x+box.width/2,box.y+box.height/2,{delay:30});
   await page.waitForFunction(()=>!document.querySelector('.qiyu-ensemble-burst-canvas'));await waitScene(page,'game');
   await page.waitForFunction(()=>{const g=window.__harness.game.scene.getScene('game');return g.ready&&g.cardViews.length>0&&g.cardViews.every(v=>!v.dealing);},null,{timeout:20000});

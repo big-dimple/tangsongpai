@@ -54,6 +54,15 @@ async function findPairWithRealDiscards(run:SavedRun):Promise<string[]> {
 }
 
 describe('guided first match from saved commands',()=>{
+ it('credits a discovered two pair, including after a reload, without asking for the pair again',async()=>{
+  const {run,store}=await start();await enter(run);
+  await send(run,{type:'PlayHand',selectedIds:['clubs-4','diamonds-4','clubs-5','hearts-5']});
+  const actual=run.state.lastTrace!;
+  expect(actual.handType).toBe('two-pair');
+  for(const saved of [run,SavedRun.restore(store,await store.read())]){
+   expect(guide(saved)).toMatchObject({step:'discard',beat:'两对入账 +'+actual.finalScore+' 分',fact:{pairScore:actual.finalScore}});
+  }
+ });
  it('never prints an untrue equality when the committed score was rounded down',()=>{
   const accumulator={H:{n:'5',d:'2'},M:{n:'1',d:'1'}};
   expect(novicePairResultCue({accumulator,finalScore:'2'})).toBe('对子得 2 分');

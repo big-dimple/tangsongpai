@@ -34,7 +34,7 @@ describe('purchased-card lesson uses saved scoring instances and phases',()=>{
   }
   const s=state(),pairPurchase:NovicePurchase={instanceId:'bought/pair',definitionId:'b02',stageIndex:1};
   s.jokers=[r2CreateJoker('b02',pairPurchase.instanceId,4,undefined,s)];
-  expect(novicePurchaseAdvice(s,{purchase:pairPurchase,status:'ready'}).action).toBe('出≥2张同点牌，有效计分各+0.25倍率');
+  expect(novicePurchaseAdvice(s,{purchase:pairPurchase,status:'ready'}).action).toBe('至少打出2张同点牌，每张计分时 +0.25倍率。');
  });
  it('does not present one number as the complete effect for growth, multiple operations, chance or an edition',()=>{
   const s=state();

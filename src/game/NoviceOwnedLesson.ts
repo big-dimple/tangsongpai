@@ -106,12 +106,14 @@ export function noviceOwnedLessonPcAvoid(p:ReturnType<typeof shopLayout>):Box[] 
 /** The caller supplies actual layout visibility; no hint asks for an impossible move. */
 export function presentNoviceOwnedLesson(hint:NoviceGuideHint,lesson:{reordered:boolean;secondPrompt?:boolean}|undefined,layout:{collapsed:boolean;canExpand:boolean;count:number;finePointer?:boolean;secondOffer?:{id:string;name:string};secondLocation?:'tab'|'more'|'none'}):{hint:NoviceGuideHint;focus:NoviceOwnedFocus} {
  if(!lesson)return {hint,focus:hint.step==='payoff'?'play':'none'};
+ const tryCard={id:'novice-try-card',label:'上桌试牌',cardIds:[]};
+ const acquired=hint.fact?.purchaseDefinitionId?'已入手 · '+hint.cue:undefined;
  if(layout.collapsed){
-  if(layout.canExpand)return {hint:{...hint,cue:'展开已拥有牌',body:'点上箭头，展开已拥有牌区域。'},focus:'toggle'};
-  return {hint:{...hint,cue:'查看已拥有牌',body:'当前屏幕空间不足以展开牌列；调整窗口大小后可查看。'},focus:'none'};
+  if(layout.canExpand)return {hint:{...hint,beat:acquired,cue:'展开已拥有牌',body:hint.payoffAction??'点上箭头看持牌，或上桌试一手。',choices:[tryCard]},focus:'toggle'};
+  return {hint:{...hint,beat:acquired,cue:'下一手试试新牌',body:hint.payoffAction??'进牌桌，看它在哪一步加分。',choices:[tryCard]},focus:'play'};
  }
  if(layout.count===1){
-  if(!lesson.secondPrompt)return {hint:{...hint,cue:'这里有五个槽',body:'最多放五张唐宋牌，通常从左到右触发。可继续买，或进入牌桌。',gesture:undefined,choices:[{id:'novice-second-card',label:'看看第二张',cardIds:[]}]},focus:'slots'};
+  if(!lesson.secondPrompt)return {hint:{...hint,beat:acquired,cue:'这里有五个槽',body:(hint.payoffAction?hint.payoffAction.replace(/。$/,'')+'。':'')+'唐宋牌通常从左到右触发。',gesture:undefined,choices:[tryCard,{id:'novice-second-card',label:'看看第二张',cardIds:[]}]},focus:'slots'};
   if(layout.secondOffer)return {hint:{...hint,cue:'再看看一张牌',body:`点亮的「${layout.secondOffer.name}」可查看效果和价格，也可选别的或进入牌桌。`,gesture:undefined,choices:undefined,offerIds:[layout.secondOffer.id]},focus:'offer'};
   if(layout.secondLocation==='tab')return {hint:{...hint,cue:'再看看唐宋牌',body:'点「唐宋牌」看看其他牌，也可直接进入牌桌。',gesture:undefined,choices:undefined,offerIds:[]},focus:'tab'};
   if(layout.secondLocation==='more')return {hint:{...hint,cue:'再看看唐宋牌',body:'翻页或下滑看看其他牌，也可直接进入牌桌。',gesture:undefined,choices:undefined,offerIds:[]},focus:'shelf'};

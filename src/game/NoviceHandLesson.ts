@@ -4,7 +4,8 @@ import type {Command} from '../domain/run';
 import type {HandSelectionUpdate} from './HandSelectionGesture';
 
 const PREFIX='tangsongpai-novice-hand-interaction-v1:';
-type Lesson={sortId?:string;sortHash?:string;swept:boolean;flushIntroSeen?:boolean;flushSortedSeen?:boolean};
+export type FlushPlan='draw'|'score';
+type Lesson={sortId?:string;sortHash?:string;swept:boolean;flushPlan?:FlushPlan;flushSortedSeen?:boolean};
 
 /** The longest consecutive same-suit run, as it is actually arranged on the table. */
 export function consecutiveSuitCards(hand:readonly PlayingCard[]):string[] {
@@ -19,6 +20,7 @@ export function consecutiveSuitCards(hand:readonly PlayingCard[]):string[] {
 /** UI lesson progress; the associated sort must still exist in the saved journal. */
 export class NoviceHandLesson {
  private value:Lesson={swept:false};
+ revision=0;
  private readonly key:string;
  constructor(readonly runId:string){
   this.key=PREFIX+runId;
@@ -26,19 +28,19 @@ export class NoviceHandLesson {
    const data=JSON.parse(localStorage.getItem(this.key)??'null');
    if(data&&typeof data.swept==='boolean')this.value={swept:data.swept,
     ...(typeof data.sortId==='string'&&typeof data.sortHash==='string'?{sortId:data.sortId,sortHash:data.sortHash}:{}),
-    flushIntroSeen:data.flushIntroSeen===true,flushSortedSeen:data.flushSortedSeen===true};
+    flushPlan:data.flushPlan==='score'?'score':data.flushPlan==='draw'||data.flushIntroSeen===true?'draw':undefined,flushSortedSeen:data.flushSortedSeen===true};
   }catch{/* The lesson remains usable in memory if optional local storage is unavailable. */}
  }
- private save():void {try{localStorage.setItem(this.key,JSON.stringify(this.value));}catch{/* Preferences must never block the game. */}}
+ private save():void {this.revision++;try{localStorage.setItem(this.key,JSON.stringify(this.value));}catch{/* Preferences must never block the game. */}}
  sorted(journal:readonly Command[]):boolean {
   const valid=!!this.value.sortId&&!!this.value.sortHash&&journal.some(command=>command.runId===this.runId&&command.commandId===this.value.sortId&&command.action.type==='ReorderHand'&&stableHash(command)===this.value.sortHash);
-  if(!valid&&this.value.sortId){this.value={swept:false,flushIntroSeen:this.value.flushIntroSeen};this.save();}
+  if(!valid&&this.value.sortId){this.value={swept:false,flushPlan:this.value.flushPlan};this.save();}
   return valid;
  }
  swept(journal:readonly Command[]):boolean {return this.sorted(journal)&&this.value.swept;}
- flushIntroSeen():boolean {return this.value.flushIntroSeen===true;}
+ flushPlan():FlushPlan|undefined {return this.value.flushPlan;}
  flushSortedSeen(journal:readonly Command[]):boolean {return this.sorted(journal)&&this.value.flushSortedSeen===true;}
- acknowledgeFlushIntro():void {this.value={...this.value,flushIntroSeen:true};this.save();}
+ chooseFlushPlan(plan:FlushPlan):void {this.value={...this.value,flushPlan:plan};this.save();}
  acknowledgeFlushSorted(journal:readonly Command[]):void {if(this.sorted(journal)){this.value={...this.value,flushSortedSeen:true};this.save();}}
  recordSort(command:Command,journal?:readonly Command[]):void {
   if(command.runId!==this.runId||command.action.type!=='ReorderHand')return;
@@ -46,7 +48,7 @@ export class NoviceHandLesson {
   // the acknowledgement when its original sort is still in this journal.
   const reviewed=!!journal&&this.sorted(journal)&&this.value.flushSortedSeen===true;
   const hash=stableHash(command),same=this.value.sortId===command.commandId&&this.value.sortHash===hash;
-  this.value={sortId:command.commandId,sortHash:hash,swept:same&&this.value.swept,flushIntroSeen:this.value.flushIntroSeen,flushSortedSeen:reviewed||same&&this.value.flushSortedSeen};this.save();
+  this.value={sortId:command.commandId,sortHash:hash,swept:same&&this.value.swept,flushPlan:this.value.flushPlan,flushSortedSeen:reviewed||same&&this.value.flushSortedSeen};this.save();
  }
  recordSweep(update:HandSelectionUpdate,targetIds:readonly string[],initialIds:readonly string[]):boolean {
   const target=new Set(targetIds),selected=new Set(update.selectedIds),visited=new Set(update.visitedIds),initial=new Set(initialIds);

@@ -61,8 +61,8 @@ describe('owned-card lesson follows saved, real actions',()=>{
   restored=SavedRun.restore(store,await store.read());expect(lesson(restored)).toMatchObject({opened:true,expanded:true});
   const shown=presentNoviceOwnedLesson(guide(restored)!,lesson(restored),{collapsed:false,canExpand:true,count:1});
   expect(shown).toMatchObject({focus:'slots',hint:{cue:'这里有五个槽'}});
-  expect(shown.hint.body).toContain('最多放五张');expect(shown.hint.body).toContain('通常从左到右触发');
-  expect(shown.hint.body).toContain('继续买');expect(shown.hint.body).toContain('进入牌桌');
+  expect(shown.hint.body).toContain(guide(restored)!.payoffAction);expect(shown.hint.body).toContain('通常从左到右触发');
+  expect(shown.hint.choices?.map(choice=>choice.label)).toEqual(['上桌试牌','看看第二张']);
   expect(shown.hint.body).not.toMatch(/第 2 张|拖|按住/);expect(shown.hint.gesture).toBeUndefined();
   expect(ownedJokerDropIndex(expanded.slots,1,expanded.slots[1].x+1,expanded.slots[1].y+1)).toBe(-1);
   closeNoviceOwnedLesson(restored.state,restored.journal,guide(restored));
@@ -74,7 +74,7 @@ describe('owned-card lesson follows saved, real actions',()=>{
   advanceNoviceSecondOffer(run.state,run.journal,guide(run));expect(lesson(run)).toBeUndefined();
   await purchaseFirst(run);openNoviceOwnedLesson(run.state,run.journal,guide(run));
   const before=JSON.stringify(run.state),first=presentNoviceOwnedLesson(guide(run)!,lesson(run),{collapsed:false,canExpand:true,count:1});
-  expect(first.focus).toBe('slots');expect(first.hint.choices).toEqual([{id:'novice-second-card',label:'看看第二张',cardIds:[]}]);
+  expect(first.focus).toBe('slots');expect(first.hint.choices).toEqual([{id:'novice-try-card',label:'上桌试牌',cardIds:[]},{id:'novice-second-card',label:'看看第二张',cardIds:[]}]);
   advanceNoviceSecondOffer(run.state,run.journal,guide(run));
   const restored=SavedRun.restore(store,await store.read()),continued=lesson(restored);
   expect(continued?.secondPrompt).toBe(true);expect(JSON.stringify(run.state)).toBe(before);
@@ -126,7 +126,7 @@ describe('owned-card lesson follows saved, real actions',()=>{
  it('does not ask for an impossible arrow action when the actual layout cannot reveal slots',async()=>{
   const {run}=await firstShop('106');await purchaseFirst(run);
   const result=presentNoviceOwnedLesson(guide(run)!,lesson(run),{collapsed:true,canExpand:false,count:1});
-  expect(result.focus).toBe('none');expect(result.hint.body).toContain('调整窗口大小');expect(result.hint.body).not.toContain('点上箭头');
+  expect(result.focus).toBe('play');expect(result.hint.choices?.[0].id).toBe('novice-try-card');expect(result.hint.body).not.toContain('点上箭头');
  });
 
  it('places the PC lesson outside the whole owned rail, merchandise and sidebar controls',()=>{

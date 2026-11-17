@@ -5,6 +5,8 @@ import './NoviceGuideView.css';
 /** All geometry is in browser viewport CSS pixels, not framebuffer pixels. */
 export interface NoviceGuideGeometry {
   highlights?:readonly Box[];
+  /** The first portrait table can seat its coach in the still-empty joker rack. */
+  anchor?:Box;
   /** Live input areas that neither the hint nor its reopen button may cover. */
   avoid?:readonly Box[];
 }
@@ -12,6 +14,7 @@ export interface NoviceGuideStep {
   id:string;
   title:string;
   body:string;
+  beat?:string;
   progress?:string;
   /** Optional explanation, initially collapsed and opened by the player. */
   details?:string;
@@ -132,7 +135,7 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
   const portrait=document.createElement('img'),speaker=document.createElement('span');
   const body=document.createElement('p'),choiceRow=document.createElement('div'),choices=document.createElement('div'),footer=document.createElement('div'),skipButton=document.createElement('button'),detailsButton=document.createElement('button'),actionButton=document.createElement('button'),reopenButton=document.createElement('button');
   root.className='novice-guide';root.dataset.noviceGuide='';root.dataset.reducedMotion=String(!!options.reducedMotion);
-  focus.classList.add('novice-guide-focus');focus.setAttribute('aria-hidden','true');focusPath.setAttribute('fill','#142e31');focusPath.setAttribute('fill-opacity','.3');focusPath.setAttribute('fill-rule','evenodd');focus.append(focusPath);
+  focus.classList.add('novice-guide-focus');focus.setAttribute('aria-hidden','true');focusPath.setAttribute('fill','#142e31');focusPath.setAttribute('fill-opacity','.14');focusPath.setAttribute('fill-rule','evenodd');focus.append(focusPath);
   rings.className='novice-guide-rings';rings.setAttribute('aria-hidden','true');
   panel.className='novice-guide-panel';panel.setAttribute('aria-label','新手引导');panel.dataset.noviceGuidePanel='';
   header.className='novice-guide-header';heading.className='novice-guide-heading';
@@ -157,14 +160,15 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
   const ringNodes:HTMLDivElement[]=[];
   const renderStep=()=>{
     contentRevision++;
-    const label=step.progress??stepProgress[step.id]??'';
+    const label=step.beat??step.progress??stepProgress[step.id]??'';
+    progress.classList.toggle('is-score',!!step.beat);
     root.dataset.noviceGuideStep=step.id;panel.dataset.emphasis=emphasis(step);progress.textContent=label;progress.hidden=!label;title.textContent=step.title;body.textContent=step.body;
     const message=[label,step.title,step.body].filter(Boolean).join('。');
     if(announcement.textContent!==message)announcement.textContent=message;
     if(!step.action&&document.activeElement===actionButton)closeButton.focus({preventScroll:true});
     actionButton.hidden=!step.action;actionButton.textContent=step.action?.label??'';
     const rows=step.choices??[],ids=JSON.stringify(rows.map(choice=>choice.id));
-    choices.setAttribute('aria-label',step.id==='payoff'||step.id==='discard'?'新手引导下一步':'选择要尝试的牌型');
+    choices.setAttribute('aria-label',step.id==='discard'?'选择下一手的打法':step.id==='payoff'?'新手引导下一步':'选择要尝试的牌型');
     if(ids!==choiceIds){
       choiceIds=ids;choices.replaceChildren(...rows.map(choice=>{
         const button=document.createElement('button');button.type='button';button.dataset.noviceGuideChoice=choice.id;
@@ -177,8 +181,8 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
     rows.forEach((choice,index)=>{
       const button=choices.children[index] as HTMLButtonElement;
       button.textContent=choice.label;button.dataset.cardIds=JSON.stringify(choice.cardIds);
-      if(choice.id==='flush-intro'||choice.id==='flush-sorted')button.removeAttribute('aria-pressed');
-      else button.setAttribute('aria-pressed',String(!!choice.selected));
+      if(choice.selected===undefined)button.removeAttribute('aria-pressed');
+      else button.setAttribute('aria-pressed',String(choice.selected));
     });
     const skipFocused=document.activeElement===skipButton;
     skipButton.hidden=!options.onSkip||step.id==='complete';
@@ -200,7 +204,8 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
   };
   const position=()=>{
     if(disposed)return;
-    const {highlights=[],avoid=[]}=options.getGeometry(),bounds=safeViewport(),visibleHighlights=highlights.filter(valid);
+    const {highlights=[],avoid=[],anchor}=options.getGeometry(),bounds=safeViewport(),visibleHighlights=highlights.filter(valid);
+    const seat=anchor??visibleHighlights[0];
     const inline=options.getInlineHost?.();
     if(inline?.isConnected){if(root.parentElement!==inline)inline.prepend(root);root.classList.add('is-inline');}
     else {const host=options.host??document.body;if(root.parentElement!==host)host.append(root);root.classList.remove('is-inline');}
@@ -222,7 +227,7 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
       Object.assign(ring.style,{left:'0',top:'0',transform:`translate3d(${b.x}px,${b.y}px,0)`,width:b.width+'px',height:b.height+'px'});
     }
     const quantize=(b:Box)=>[Math.round(b.x/8),Math.round(b.y/8),Math.round(b.width/8),Math.round(b.height/8)];
-    const positionKey=JSON.stringify([revision,closed,!!inline?.isConnected,bounds,avoid.map(quantize),visibleHighlights.map(quantize)]);
+    const positionKey=JSON.stringify([revision,closed,!!inline?.isConnected,bounds,avoid.map(quantize),visibleHighlights.map(quantize),anchor&&quantize(anchor)]);
     if(positionKey===lastPositionKey)return;
     const now=performance.now();if(revision===lastPositionRevision&&now-lastLayout<100)return;
     lastPositionKey=positionKey;lastLayout=now;lastPositionRevision=revision;
@@ -248,7 +253,7 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
     setCompact(startCompact);panel.classList.remove('is-scrollable');panel.removeAttribute('tabindex');panel.setAttribute('aria-label','新手引导');
     element.style.maxHeight='none';element.style.width=closed?'auto':fullWidth+'px';
     let rect=element.getBoundingClientRect();
-    const findFit=()=>placeNoviceGuide(bounds,protectedAreas,{width:closed?Math.max(88,rect.width):rect.width,height:Math.max(44,rect.height)},visibleHighlights[0],{requireFit:true});
+    const findFit=()=>placeNoviceGuide(bounds,protectedAreas,{width:closed?Math.max(88,rect.width):rect.width,height:Math.max(44,rect.height)},seat,{requireFit:true});
     let placement=findFit();
     if(!placement&&!closed&&!startCompact){
       // Compact at full width first: on short phones the 89px band above the
@@ -267,8 +272,8 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
       // panel spill over protected gameplay. Prefer a readable width.
       element.style.width=closed?'auto':fullWidth+'px';rect=element.getBoundingClientRect();
       const desired={width:closed?Math.max(88,rect.width):rect.width,height:Math.max(44,rect.height)};
-      placement=placeNoviceGuide(bounds,protectedAreas,desired,visibleHighlights[0],{minWidth:closed?44:minReadableWidth})??
-        placeNoviceGuide(bounds,protectedAreas,desired,visibleHighlights[0]);
+      placement=placeNoviceGuide(bounds,protectedAreas,desired,seat,{minWidth:closed?44:minReadableWidth})??
+        placeNoviceGuide(bounds,protectedAreas,desired,seat);
       if(placement&&!closed){panel.classList.add('is-scrollable');panel.setAttribute('tabindex','0');panel.setAttribute('aria-label','新手引导，可滚动查看');}
     }
     // If no 44px target can fit, do not place an invisible blocker on top of gameplay.

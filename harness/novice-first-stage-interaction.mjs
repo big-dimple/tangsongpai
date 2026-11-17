@@ -132,7 +132,7 @@ try {for(const spec of cases){
     await page.goto(`http://127.0.0.1:${port}/?harness=1`);await waitScene(page,'title');
     await tapUI(page,'title','action/title-start',spec.touch);await waitScene(page,'game');await waitReady();await guide('pair');
     await capture('01-pair-start');
-    const initial=await state(),wrong=initial.handOrder.find(id=>id!=='clubs-5'&&id!=='hearts-5');assert.ok(wrong);
+    const initial=await state(),wrong=initial.handOrder.find(id=>!id.endsWith('-5')&&!id.endsWith('-4'));assert.ok(wrong);
     await select(wrong);await waitSelection([wrong]);await capture('02-wrong-pair');
     await select(wrong);await waitSelection([]);
     await tapUI(page,'game','action/sort-rank',spec.touch);await waitReady();await capture('03-sorted');
@@ -170,14 +170,14 @@ try {for(const spec of cases){
     }
 
     // A shorter, legal exchange remains possible at every step of the example.
-    await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='先看看三张红桃');
+    await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='下一手，你来拿主意');
     await capture('09-three-hearts');
-    const intro=page.locator('[data-novice-guide-choice="flush-intro"]');if(spec.touch)await intro.tap();else await intro.click();
+    const intro=page.locator('[data-novice-guide-choice="flush-draw"]');if(spec.touch)await intro.tap();else await intro.click();
     await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='让同花色排在一起');await capture('09a-sort-instruction');
     before=await state();await tapUI(page,'game','action/sort-suit',spec.touch);await waitReady();
-    await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='三张红桃排在一起了');current=await state();
+    await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='选左侧其他花色');current=await state();
     assert.ok(current.commandSeq>before.commandSeq);assert.equal((await journal()).at(-1).action.type,'ReorderHand');await capture('09b-sorted-hearts');
-    const ack=page.locator('[data-novice-guide-choice="flush-sorted"]');if(spec.touch)await ack.tap();else await ack.click();
+    assert.equal(await page.locator('[data-novice-guide-choice]').count(),0,'the real sort goes straight to the swipe');
     await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='选左侧其他花色');
     await select('hearts-10');await waitSelection(['hearts-10']);const warning=await capture('10-heart-selected');
     assert.match(warning.body,/取消/);assert.equal((await point(page,'game','action/discard')).enabled,true,'even the alternative heart discard remains legal');

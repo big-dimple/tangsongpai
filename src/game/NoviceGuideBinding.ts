@@ -110,6 +110,7 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
   const makeGeometryKey=(value:NoviceGuideGeometry)=>JSON.stringify([
     (value.highlights??[]).map(b=>[b.x,b.y,b.width,b.height]),
     (value.avoid??[]).map(b=>[b.x,b.y,b.width,b.height]),
+    value.anchor,
   ]);
   const measure=(current:NoviceGuideHint,force:boolean)=>{
     const now=performance.now();
@@ -139,7 +140,7 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
     try {Promise.resolve(action()).then(finish,()=>finish(false));} catch {finish(false);}
   };
   const makeStep=(run:SavedRun,current:NoviceGuideHint):NoviceGuideStep=>({
-    id:current.step,title:current.cue,body:current.body+(actionError?'\n'+actionError:''),
+    id:current.step,title:current.cue,beat:current.beat,body:current.body+(actionError?'\n'+actionError:''),
     ...(current.details?{details:current.details}:{}),
     ...(current.choices?{choices:current.choices.map(choice=>({...choice,run:()=>{if(stillCurrent(run,current))options.onChoice?.(choice.id);}}))}:{}),
     ...(current.step==='replay'?{action:{label:'重新练习',run:()=>{if(stillCurrent(run,current))invoke(run,options.onReplay);}}}:{}),
@@ -158,14 +159,15 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
     lastRender=now;
     const run=activeRun();
     if(!run){removeView();return;}
-    const prefs=presentation(run);let current=hint?(options.presentHint?.(hint)??hint):undefined;
+    const prefs=presentation(run);
+    const current=hint?(shownHint&&!forceGeometry&&!inputChanged?shownHint:options.presentHint?.(hint)??hint):undefined;
     if(!current||!canShow(run,current)){removeView();return;}
     const stepChanged=prefs.step!==current.step;
     if(stepChanged){prefs.step=current.step;prefs.closed=false;}
     // The saved hint already contains the score and goal. Keep it available
     // until the player's selection changes the prompt, rather than replacing
     // it with a timed sequence that can expire while the scene is obscured.
-    const currentKey=JSON.stringify([current.step,current.cue,current.body,current.details,current.recommendedCardIds,current.offerIds,current.focus,current.choices,current.gesture,current.gestureCardIds]);
+    const currentKey=JSON.stringify([current.step,current.cue,current.beat,current.body,current.details,current.recommendedCardIds,current.offerIds,current.focus,current.choices,current.gesture,current.gestureCardIds]);
     const hintChanged=shownHintKey!==currentKey;
     if(shownHint&&(shownHint.step!==current.step||shownHint.gesture!==current.gesture))clearPresented();
     const nextInlineHost=options.getInlineHost?.(),hostChanged=nextInlineHost!==inlineHost;inlineHost=nextInlineHost;

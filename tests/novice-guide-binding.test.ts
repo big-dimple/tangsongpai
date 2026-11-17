@@ -192,6 +192,18 @@ describe('novice guide scene binding',()=>{
   expect(JSON.stringify(run.state)).toBe(before);unmount();
  });
 
+ it('tracks moving outlines without recomputing the same hand lesson on idle frames',async()=>{
+  const {run}=await start('idle-lesson');session.run=run;await enter(run);const owner=scene(run);
+  let now=0,page=0;
+  const clock=vi.spyOn(performance,'now').mockImplementation(()=>now),presentHint=vi.fn(hint=>hint);
+  const unmount=bindNoviceGuide(owner.value,{kind:'game',getGeometry:geometry,presentHint,presentationInputs:()=>[page],
+   onReplay:()=>false,onSkip:()=>false,onComplete:()=>false});
+  for(let i=0;i<120;i++){now+=17;owner.events.emit('postupdate');}
+  expect(presentHint).toHaveBeenCalledTimes(1);
+  page++;owner.events.emit('postupdate');expect(presentHint).toHaveBeenCalledTimes(2);
+  unmount();clock.mockRestore();
+ });
+
  it('keeps the saved score explanation until the player starts choosing a discard',async()=>{
   const {run}=await start('score-feedback');session.run=run;await enter(run);const owner=scene(run);let selected:string[]=[];
   let now=0;const clock=vi.spyOn(performance,'now').mockImplementation(()=>now);
