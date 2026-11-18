@@ -3,6 +3,7 @@
 import importlib.util
 import json
 from pathlib import Path, PurePosixPath
+import shutil
 import sys
 import tarfile
 
@@ -12,7 +13,7 @@ prepare = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(prepare)
 
 
-def verify(directory, revision):
+def verify(directory, revision, destination=None):
     require = prepare.require
     require(prepare.SHA.fullmatch(revision), 'invalid revision')
     manifest = json.loads((directory / 'manifest.json').read_text(encoding='utf-8'))
@@ -29,6 +30,8 @@ def verify(directory, revision):
     prepare.check_build(manifest.get('buildInfo'), revision)
     names, total, info, has_index = set(), 0, None, False
     require((directory / 'dist.tar.gz').stat().st_size <= 256 * 1024 * 1024, 'archive too large')
+    if destination is not None:
+        destination.mkdir()
     with tarfile.open(directory / 'dist.tar.gz', 'r|gz') as archive:
         for item in archive:
             name = item.name
@@ -37,7 +40,7 @@ def verify(directory, revision):
             if name in ('', '.') and item.isdir():
                 continue
             path = PurePosixPath(name)
-            require(name and '\\' not in name and not path.is_absolute() and
+            require(name and '\\' not in name and ':' not in name and not path.is_absolute() and
                     all(part not in ('', '.', '..') for part in path.parts), 'unsafe archive path')
             require(item.isdir() or item.isfile(), 'archive contains links or special files')
             key = path.as_posix()
@@ -50,7 +53,20 @@ def verify(directory, revision):
                 has_index = item.isfile()
             if key == 'build-info.json':
                 require(item.isfile() and item.size <= 256 * 1024, 'invalid build-info')
-                info = json.load(archive.extractfile(item))
+                raw = archive.extractfile(item).read()
+                info = json.loads(raw)
+            if destination is not None:
+                target = destination.joinpath(*path.parts)
+                if item.isdir():
+                    target.mkdir(parents=True, exist_ok=True)
+                else:
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    with target.open('xb') as out:
+                        if key == 'build-info.json':
+                            out.write(raw)
+                        else:
+                            with archive.extractfile(item) as stream:
+                                shutil.copyfileobj(stream, out)
     require(has_index and info == manifest['buildInfo'], 'archive contents do not match manifest')
     print('Verified release candidate for', revision, 'SHA256', expected)
 

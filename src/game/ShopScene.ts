@@ -257,9 +257,9 @@ export class ShopScene extends Phaser.Scene {
     this.events.once('shutdown',()=>{this.lifecycle++;this.clearSynergyHighlights();this.hideHoverPicture();this.dialog.close();for(const [key,listener] of this.artRefreshListeners)this.textures.off('addtexture-'+key,listener);this.artRefreshListeners.clear();this.artTargets.clear();this.jokerArtTargets.clear();});
     this.events.once('shutdown',()=>{if(this.registry.get('runMenuActions')===this.menuActions)this.registry.remove('runMenuActions');this.menuActions=undefined;});
     const owner=runController(this),run=owner?.state;if(!owner||!run||run.phase!=='shop'){this.scene.start('character-select');return;}this.run=run;
-    if(run.stageIndex>=2&&needsGuidedPractice(owner)){
-      // The purchase lesson has already happened. Continue the real saved
-      // OpenShop → LeaveShop sequence without introducing another shop or Boss preview.
+    if(run.stageIndex>=2&&run.shop?.purchases===0&&needsGuidedPractice(owner)){
+      // Only pass through a fresh shop. A player who already bought a replacement
+      // should return to that same shop when restoring the run.
       this.cameras.main.setBackgroundColor('#F3EADB');
       const previousLabel=this.game.canvas.getAttribute('aria-label');this.game.canvas.setAttribute('aria-label','继续教学练习');
       this.events.once('shutdown',()=>{if(previousLabel===null)this.game.canvas.removeAttribute('aria-label');else this.game.canvas.setAttribute('aria-label',previousLabel);});
@@ -396,6 +396,7 @@ export class ShopScene extends Phaser.Scene {
           return right>x&&bottom>y?[{x,y,width:right-x,height:bottom-y}]:[];
         });
         if(focus==='play')highlights.push(map(p.play));
+        else if(focus==='reroll')highlights.push(map(p.reroll));
         else if(focus==='tab')highlights.push(map({...p.tabs,width:p.tabs.width/4}));
         else if(focus==='shelf')highlights.push(map({...p.tabs,x:p.tabs.x+Math.max(0,p.tabs.width-44),width:Math.min(44,p.tabs.width)}));
         else if(focus==='toggle'&&'ownedToggle' in p&&p.ownedToggle)highlights.push(map(p.ownedToggle));

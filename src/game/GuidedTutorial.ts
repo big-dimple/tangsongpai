@@ -7,8 +7,8 @@ import type {GameSession} from './session';
 /** Continue only an enrolled, unfinished lesson whose facts are in the saved journal. */
 export function needsGuidedPractice(run:Pick<SavedRun,'state'|'journal'|'guidedOpeningSuppressed'>):boolean {
   if(run.guidedOpeningSuppressed)return false;
-  const step=noviceGuide(run.state,run.journal)?.step;
-  return step==='payoff'||step==='skill'||step==='skill-practice';
+  const hint=noviceGuide(run.state,run.journal);
+  return hint?.step==='skill'||hint?.step==='skill-practice'||hint?.step==='payoff'&&hint.fact?.purchaseStatus==='ready';
 }
 
 /** Continue only the two saved setup commands of a new guided tutorial. */

@@ -930,13 +930,13 @@
     "No new visual or rights approval. Decoded RGBA sizes are estimates, not measured GPU memory."
   ],
   "totals": {
-    "files": 460,
-    "bytes": 58938483,
+    "files": 459,
+    "bytes": 58745863,
     "decodedRgbaBytes": 346272024,
     "groups": {
       "audio": {
-        "count": 48,
-        "bytes": 10964570,
+        "count": 47,
+        "bytes": 10771950,
         "decodedRgbaBytes": 0
       },
       "boss": {
@@ -1231,11 +1231,6 @@
       "path": "public/assets/audio/high-multiplier/low-fire-v2.mp3",
       "bytes": 192620,
       "sha256": "77b7e1efd9e4aa24276cbb067a44f2a6c35cdd1a0c4ec62d361c7cbedf147664"
-    },
-    {
-      "path": "public/assets/audio/high-multiplier/low-fire.mp3",
-      "bytes": 192620,
-      "sha256": "33b729722ceb07c7632eb7b10f33aa08c96074586fa5ac18f4acaf9bc8122826"
     },
     {
       "path": "public/assets/audio/score-impact/License.txt",

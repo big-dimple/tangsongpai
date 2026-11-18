@@ -49,7 +49,10 @@ class CandidateTest(unittest.TestCase):
 
     def test_valid_package(self):
         self.package()
-        verifier.verify(self.root, self.revision)
+        dest = self.root / 'installed'
+        verifier.verify(self.root, self.revision, destination=dest)
+        self.assertEqual((dest / 'index.html').read_bytes(), b'game')
+        self.assertEqual(json.loads((dest / 'build-info.json').read_text()), self.info)
 
     def test_rejects_corrupted_archive(self):
         self.package()
@@ -62,8 +65,10 @@ class CandidateTest(unittest.TestCase):
         entry = tarfile.TarInfo('../outside')
         entry.size = 1
         self.package(entry)
+        dest = self.root / 'installed'
         with self.assertRaisesRegex(ValueError, 'unsafe archive path'):
-            verifier.verify(self.root, self.revision)
+            verifier.verify(self.root, self.revision, destination=dest)
+        self.assertFalse((self.root / 'outside').exists())
 
     def test_rejects_symlink(self):
         entry = tarfile.TarInfo('outside')

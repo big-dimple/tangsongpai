@@ -1,19 +1,20 @@
 import {rankLabel} from '../cards/types';
 import {HAND_LABELS} from '../content/handLabels';
+import {r2RunModeConfig} from '../content/r2Modes';
 import {stableHash} from '../domain/hash';
 import {Rational} from '../domain/rational';
 import {applyCommand,type Command,type R2RunState} from '../domain/run';
 import {r2DiscardCost} from '../domain/r2Run';
 import {routeStarterStartCommand} from '../domain/r2RouteStarter';
 import type {ScoreEvent,ScoreTrace} from '../domain/scoreR2';
-import {r2PurchasePrice} from '../domain/r2Shop';
+import {minimumRestockPrice,r2PaidRerollPrice,r2PurchasePrice} from '../domain/r2Shop';
 import {r2JokerCapacity} from '../domain/r2Resources';
 import {prepareBossSuitRescueAction} from '../domain/r2BossSuitRescue';
 import {GUIDED_TUTORIAL_SEED,isGuidedTutorialRunId} from './RunLaunch';
 import {cardDisplayName} from './tangsongCardNames';
 import {fractionText,heatText} from './scoreText';
 import {stageNotice} from './stageNotice';
-import {noviceContributionPrefix,novicePurchaseAdvice,novicePurchasedContribution,novicePurchaseTarget,type NovicePurchase} from './NovicePurchaseGuide';
+import {noviceContributionPrefix,novicePurchaseAdvice,novicePurchaseCanScore,novicePurchasedContribution,novicePurchaseTarget,type NovicePurchase,type NovicePurchaseTarget} from './NovicePurchaseGuide';
 
 /** Optional presentation preferences only. Game progress always comes from the saved run. */
 export const NOVICE_GUIDE_KEY='tangsongpai-novice-guide-v1';
@@ -33,6 +34,7 @@ export interface NoviceGuideFact {
  pairRemaining?:string;
  purchaseInstanceId?:string;
  purchaseDefinitionId?:string;
+ purchaseStatus?:NovicePurchaseTarget['status'];
  eventId?:string;
  finalScore?:string;
  contribution?:string;
@@ -51,7 +53,7 @@ export interface NoviceGuideHint {
  recommendedCardIds?:string[];
  choices?:{id:string;label:string;cardIds:string[];selected?:boolean}[];
  offerIds?:string[];
- focus?:'play'|'discard'|'play-or-discard'|'hand'|'hero'|'sort-rank'|'sort-suit'|'hand-previous'|'hand-next';
+ focus?:'play'|'discard'|'play-or-discard'|'hand'|'hero'|'sort-rank'|'sort-suit'|'hand-previous'|'hand-next'|'reroll';
  gesture?:'sweep'|'hold'|'hold-drag';
  /** Explicit gesture path; unlike highlights this may contain intermediate cards. */
  gestureCardIds?:string[];
@@ -154,7 +156,7 @@ export function dismissNoviceGuide(s:R2RunState,scope:'step'|'run'|'forever',jou
 }
 
 type Facts={pair?:ScoreTrace;pairTarget?:string;pairStageHeat?:string;discarded:boolean;independent:boolean;cleared:boolean;
- purchase?:NovicePurchase;purchaseStatus?:'ready'|'disabled'|'no-scoring'|'sold';attempt?:{trace:ScoreTrace;playIndex:number};event?:ScoreEvent;payoff?:ScoreTrace;payoffEvents?:ScoreEvent[];
+ purchase?:NovicePurchase;purchaseStatus?:NovicePurchaseTarget['status'];attempt?:{trace:ScoreTrace;playIndex:number};event?:ScoreEvent;payoff?:ScoreTrace;payoffEvents?:ScoreEvent[];
  skill?:ScoreTrace;skillPractice?:boolean};
 const factCache=new WeakMap<R2RunState,{journal:readonly Command[];facts:Facts}>();
 const fraction=(v:{n:string;d:string})=>v.d==='1'?v.n:`${v.n}/${v.d}`;
@@ -280,10 +282,17 @@ function briefContribution(events:readonly ScoreEvent[]):string {
  if(event.operation==='retrigger-card')return '计分牌再次计分';
  return '已参与计分';
 }
-function offers(s:R2RunState):string[] {
- if(s.phase!=='shop'||s.stageIndex<1||!s.shop||s.jokers.length>=r2JokerCapacity(s))return [];
- return s.shop.offers.filter(o=>!o.consumed&&easyIds.includes(o.definitionId)&&!s.jokers.some(j=>j.definitionId===o.definitionId)&&r2PurchasePrice(s,o)<=s.gold)
-  .sort((a,b)=>easyIds.indexOf(a.definitionId)-easyIds.indexOf(b.definitionId)).map(o=>o.offerId);
+function shopPurchaseHint(s:R2RunState):Pick<NoviceGuideHint,'body'|'focus'|'offerIds'> {
+ if(!s.shop)return {body:'看看商店里的唐宋牌，或继续游戏。'};
+ if(s.jokers.length>=r2JokerCapacity(s))return {body:'持牌栏已满。可以腾出一格，或者先继续下一场。'};
+ const rank=(id:string)=>easyIds.includes(id)?easyIds.indexOf(id):easyIds.length;
+ const offers=s.shop.offers.filter(o=>!o.consumed&&!s.jokers.some(j=>j.definitionId===o.definitionId)&&r2PurchasePrice(s,o)<=s.gold&&novicePurchaseCanScore(s,o))
+  .sort((a,b)=>rank(a.definitionId)-rank(b.definitionId));
+ if(offers[0])return {body:`点「${cardDisplayName(offers[0].definitionId)}」查看效果和价格。也可以挑其他能参与计分的牌。`,offerIds:offers.map(o=>o.offerId)};
+ const cost=s.shop.freeRerolls?0:r2PaidRerollPrice(s),minPrice=minimumRestockPrice(s);
+ if(r2RunModeConfig(s).reroll.allowed&&minPrice!==undefined&&s.gold>=cost+minPrice)
+  return {body:`本店没有合适的计分牌。可${cost?`花 ${cost} 金`:'免费'}换一批，也可以继续下一场。`,focus:'reroll'};
+ return {body:'本店没有合适的计分牌。可以先继续下一场，再到下一间商店看看。'};
 }
 /** Discard is an option, never a prerequisite imposed by the guide. */
 function discardAvailable(s:R2RunState):boolean {
@@ -305,6 +314,7 @@ function deriveHint(s:R2RunState,journal?:readonly Command[]):NoviceGuideHint {
    pairCardHeat:fractionText(cardHeat!.toJSON()),pairCardHeats:cardHeats,
    ...(facts.pairTarget&&facts.pairStageHeat?{pairTarget:facts.pairTarget,pairStageHeat:facts.pairStageHeat,pairRemaining:String(remaining!>0n?remaining:0n)}:{})}:{}),
   ...(facts.purchase?{purchaseInstanceId:facts.purchase.instanceId,purchaseDefinitionId:facts.purchase.definitionId}:{}),
+  ...(facts.purchaseStatus?{purchaseStatus:facts.purchaseStatus}:{}),
   ...(facts.event?{eventId:facts.event.eventId,finalScore:facts.payoff!.finalScore,contribution:noviceContributionPrefix(facts.event)+contribution(facts.payoffEvents!),briefContribution:noviceContributionPrefix(facts.event)+briefContribution(facts.payoffEvents!)}:{}),
   ...(facts.skill?{skillEventId:facts.skill.events.find(e=>e.reasonKey==='erxiang.handoff')?.eventId,
     skillContribution:fractionText(facts.skill.events.filter(e=>e.reasonKey==='erxiang.handoff').reduce((sum,e)=>{const before=Rational.fromJSON(e.before.M),after=Rational.fromJSON(e.after.M);return sum.add(after.add(new Rational(-before.n,before.d)));},new Rational(0n)).toJSON())}:{})};
@@ -343,12 +353,14 @@ function deriveHint(s:R2RunState,journal?:readonly Command[]):NoviceGuideHint {
  }
  if(!openingDone)return {step:'independent',cue:`累计 ${s.stage?.heat??'0'} / ${s.stage?.targetHeat??'目标'} 分`,body:'自己选1–5张牌出牌；也可参考牌型示例，想换牌时再用弃牌。',details:fact.pairScore?novicePairBreakdownCue(facts.pair!):undefined,fact};
  if(!facts.purchase){
-  const ids=offers(s),offer=s.shop?.offers.find(o=>o.offerId===ids[0]);
   if(s.phase==='await-input'||s.phase==='pending-refill'||s.phase==='stage-ready')return {step:'shop',cue:'先完成当前牌局',body:'本场照常选牌出牌，想换牌时再弃牌。过关后到商店购买唐宋牌，再看它如何增加得分。',fact};
-  return {step:'shop',cue:'过关了',body:s.phase==='shop'?(offer?`点「${cardDisplayName(offer.definitionId)}」看效果和价格。`:'看看商店里的唐宋牌，或继续游戏。'):'去商店看看唐宋牌。',offerIds:ids,fact};
+  return {step:'shop',cue:'过关了',...(s.phase==='shop'?shopPurchaseHint(s):{body:'去商店看看唐宋牌。'}),fact};
  }
  const target={purchase:facts.purchase,status:facts.purchaseStatus??'ready'} as const;
  const advice=novicePurchaseAdvice(s,target,facts.attempt),name=cardDisplayName(facts.purchase.definitionId);
+ if(s.phase==='shop'&&target.status!=='ready'){
+  return {step:'payoff',cue:'再买一张计分唐宋牌',beat:advice.action.replace(/。$/,''),...shopPurchaseHint(s),recommendedCardIds:[],fact};
+ }
  const inShop=s.phase==='shop'||s.phase==='stage-ready'||s.phase==='stage-cleared';
  const body=advice.cause?`${advice.cause}${advice.action}`:inShop&&target.status==='ready'?`下一场：${advice.action}`:advice.action;
  return {step:'payoff',cue:advice.cause?`${name} · 未加成`:name,body,payoffAction:advice.action,recommendedCardIds:!inShop&&target.status==='ready'&&advice.pair?pairIds(s):[],fact};

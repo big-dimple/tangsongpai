@@ -93,6 +93,7 @@ tools/          离线素材工具
 - 首次玩家从首页进入刘娥的固定开局。群像演出只占首页画幅。首手可留一对或打两对，对照分来自公开手牌预估，入账分取已保存的计分事件。下一手可用现牌拿分或保留红桃换牌，已成同花时直接提示出牌。打法偏好只记在本局引导，理牌、换牌、购买、上桌试牌和技能都走正常命令。刘娥技能按目标预估转点前后得分，自主练习遇到贵宾场时在牌桌内说明弃牌代价。已有对局须确认切换，教程进度独立于普通局。
 - `GuidedTutorial` 提交游戏命令，`NoviceGuide` 用已保存的命令和计分事件恢复进度。首手在理牌区教「点数」「花色」，在当前可见的一排手牌上示范横滑。`NoviceHandLesson` 分别记录玩家实际理牌和连选／连撤时对应的命令，退出示例会保留选牌。手机发布冒烟覆盖自由滑选、连撤和长按后手动调序。`harness/novice-interactions-lesson.mjs` 和 `harness/novice-cognition-e2e.mjs` 覆盖完整教学。
 - `NoviceOwnedLesson` 在商店和牌桌共用唐宋牌操作进度。首张可长按练悬浮，第二张购入后展开持牌栏并示范拖动换位。悬浮只记在本局教学偏好里，换位要等真实的 `ReorderJokers` 命令保存成功。教学区分当前牌序、整手倒序规则和加乘算例。
+- 学习唐宋牌加成前，若已购牌售出或当前没有可计分的已购牌，保留下一个商店并提示查看可负担的计分牌。现货没有合适牌时，按真实费用提示可选的换货操作。补买之后继续原教学进度。
 - 扑克奇遇按独立随机流，在符合身份的标准局前八章每 7–9 次有效过场触发。可支付 18 金为一张仍存活、无版次的持久扑克赋予多彩。它与本店培养／改牌共用一次机会，扣款、赋予、消耗和回执在同一事务保存。返回商店保留当次机会，确认跳过或离店后失效。
 
 ## 5. 命令、随机与不变量
@@ -156,7 +157,7 @@ tools/          离线素材工具
 
 ## 8. CI、Release 与服务器部署
 
-开发侧按改动执行检查；完整门禁为 `npm ci` 后运行 `npm run verify:ci -- --scope=all`，包含单元测试、独立串行的 `test:deployment` 部署脚本校验、内容校验、类型检查、生产构建及 Chromium 桌面／手机冒烟。日常 `npm test` 不运行部署 shell 夹具；完整门禁和 Release candidate 仍必须执行全部部署场景，不得省略。手柄相关改动另运行 `npm run test:gamepad:browser`。自动检查不等于人工美术、听感或实体设备验收。
+开发侧按改动执行检查。完整门禁为 `npm ci` 后运行 `npm run verify:ci -- --scope=all`，包含单元测试、`test:deployment` 的 Python 3 接收器测试、内容校验、类型检查、生产构建及 Chromium 桌面／手机冒烟。手柄相关改动另运行 `npm run test:gamepad:browser`。美术、听感和实体设备由实际试玩验收。
 
 `.github/workflows/release-candidate.yml`（GitHub Actions 名称 **CI and release**）在 main push 时触发，也支持手动运行。只读的 candidate job 执行上述门禁并生成生产包；通过后，只有 main 的 publish job 使用内置 `GITHUB_TOKEN` 的 `contents: write` 创建并验证 Release。候选包使用本次上传返回的 artifact ID 下载并复验，查找或下载暂时失败时最多重试两次，仍失败则阻断发布；artifact 名称包含运行及重试编号以避免重跑冲突。工作流和账号是否可运行，以实际 Actions 结果为准。
 
@@ -166,7 +167,7 @@ tools/          离线素材工具
 
 1. 读取远端 main 的完整 SHA，查找已发布、非预发布且 `manifest.json` 的 `sourceRevision` 和标签提交均等于该 SHA 的 Release。main 更新到新 Release 完成之间有时间差；无匹配包、缺件或校验失败时保留旧版本并稍后重试，不能把旧 latest 当成新版本。
 2. 下载上述三个文件，核对摘要及归档内 `build-info.json`，安全解压后使用现有部署工具发布；服务器不运行 `npm ci`、测试或构建。部署后以公网 `https://pai.hp666.cc/build-info.json` 的 revision 确认实际版本。提交、CI、Release 和公网部署分别报告。
-3. **先核对实际安装**：仓库当前的 `scripts/tangsongpai-autodeploy.sh` 是会在服务器执行 `npm ci` 和 Vite 构建的旧脚本，不代表上述接收契约。`fix/tangsongpai-release-20261031083117` 分支另有按 manifest 匹配提交的接收器实现；服务器 AI 应检查实际 cron 入口和已安装脚本，判断是否满足本契约，若不满足再按授权处理。不得假定服务器已经兼容，也不因本次发布擅自修改服务器。
+3. 仓库入口为 `scripts/tangsongpai-autodeploy.sh`，由 `tangsongpai-artifact-deploy.py` 复用 Release 校验器并调用 Pages 上传脚本。维护服务器时，核对 cron 和已安装脚本，将入口、接收器、`prepare-release-artifact.py`、`verify-release-artifact.py` 及两个 Cloudflare 辅助脚本放在同一安装目录。接收器要求完整的通过报告，在公网确认后记录已部署版本。服务器安装按独立授权执行。
 
 ## 9. 文档维护
 

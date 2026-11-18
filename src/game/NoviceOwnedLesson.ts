@@ -30,10 +30,10 @@ function write(s:R2RunState,p:Record):void {
  try{localStorage.setItem(k,JSON.stringify(p));unpersisted.delete(k);}catch{unpersisted.add(k);}
 }
 
-/** Arm only while the enrolled guide asks for the first purchase. An attempt is
+/** Arm when the enrolled guide asks to acquire a playable first card. An attempt is
  * harmless until its exact command appears in the published saved journal. */
 export function armNoviceOwnedLesson(s:R2RunState,hint:NoviceGuideHint|undefined,offerId:string):void {
- if(s.phase!=='shop'||s.jokers.length!==0||hint?.step!=='shop')return;
+ if(s.phase!=='shop'||s.jokers.length!==0||!(hint?.step==='shop'||hint?.step==='payoff'&&hint.fact?.purchaseStatus==='sold'))return;
  write(s,{identity:identity(s),offerId,purchaseSeq:s.commandSeq+1,stageIndex:s.stageIndex,opened:false,expanded:false,openSeq:s.commandSeq,secondPrompt:false});
 }
 
@@ -97,7 +97,7 @@ export function attemptNoviceOwnedReorder(s:R2RunState,journal:readonly Command[
  write(s,{...p,reorder:{seq:s.commandSeq+1,stageIndex:s.stageIndex,ids:[...ids]}});
 }
 
-export type NoviceOwnedFocus='toggle'|'slots'|'offer'|'tab'|'shelf'|'play'|'none';
+export type NoviceOwnedFocus='toggle'|'slots'|'offer'|'tab'|'shelf'|'play'|'reroll'|'none';
 type Rail={count:number;finePointer?:boolean;reverse?:boolean;names?:string[];swipedBeforeLift?:boolean};
 const orderRule=(reverse?:boolean)=>reverse?'本关的整手效果从右到左结算':'同阶段的唐宋牌通常从左到右触发';
 const orderExample='假设同一阶段有两张牌生效，一张加 1 倍率，一张把倍率乘 2。从 2 倍起，先加后乘是 6 倍，先乘后加是 5 倍。';
@@ -127,6 +127,8 @@ export function noviceOwnedLessonPcAvoid(p:ReturnType<typeof shopLayout>):Box[] 
 }
 /** The caller supplies actual layout visibility; no hint asks for an impossible move. */
 export function presentNoviceOwnedLesson(hint:NoviceGuideHint,lesson:{reordered:boolean;lifted?:boolean;secondPrompt?:boolean}|undefined,layout:Rail & {collapsed:boolean;canExpand:boolean;secondOffer?:{id:string;name:string};secondLocation?:'tab'|'more'|'none'}):{hint:NoviceGuideHint;focus:NoviceOwnedFocus} {
+ if(hint.focus==='reroll')return {hint,focus:'reroll'};
+ if(hint.offerIds?.length&&hint.step==='payoff'&&hint.fact?.purchaseStatus!=='ready')return {hint,focus:'offer'};
  if(!lesson)return {hint,focus:hint.step==='payoff'?'play':'none'};
  const tryCard={id:'novice-try-card',label:'上桌试牌',cardIds:[]};
  const secondCard={id:'novice-second-card',label:'挑第二张练换位',cardIds:[]};

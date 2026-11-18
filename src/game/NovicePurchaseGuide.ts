@@ -39,6 +39,9 @@ export function noviceContributionPrefix(event:ScoreEvent):string {
 function scoreHooks(definition:R2JokerDefinition) {
  return definition.hooks.filter(h=>['onCardScore','onHeldCard','jokerScore'].includes(h.phase));
 }
+export function novicePurchaseCanScore(s:R2RunState,card:{definitionId:string;edition?:Edition}):boolean {
+ return scoreHooks(r2JokerDefinitionFor(s,card.definitionId)).length>0||!!card.edition&&card.edition!=='none';
+}
 function disabledIds(s:R2RunState):string[] {
  const stage=s.stage?.index===s.stageIndex?s.stage:null;
  return r2ScoringDisabledJokerIds(stage?.boss,s.jokers,r2JokerDefinitionsFor(s),stage?.sealedJokerIds,stage?.challengeDisabledJokerId);
@@ -49,10 +52,7 @@ function disabledIds(s:R2RunState):string[] {
 export function novicePurchaseTarget(s:R2RunState,purchases:readonly NovicePurchase[]):NovicePurchaseTarget|undefined {
  const disabled=new Set(disabledIds(s));
  const held=purchases.filter(p=>s.jokers.some(j=>j.instanceId===p.instanceId&&j.definitionId===p.definitionId));
- const scoring=held.filter(p=>{
-  const joker=s.jokers.find(j=>j.instanceId===p.instanceId)!;
-  return scoreHooks(r2JokerDefinitionFor(s,p.definitionId)).length>0||!!joker.edition&&joker.edition!=='none';
- });
+ const scoring=held.filter(p=>novicePurchaseCanScore(s,s.jokers.find(j=>j.instanceId===p.instanceId)!));
  const enabled=scoring.find(p=>!disabled.has(p.instanceId));
  if(enabled)return {purchase:enabled,status:'ready'};
  if(scoring.length)return {purchase:scoring[0],status:'disabled'};

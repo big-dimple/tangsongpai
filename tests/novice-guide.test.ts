@@ -3,6 +3,7 @@ import {SavedRun,type SaveSlots,type SaveStore} from '../src/application/SavedRu
 import type {Checkpoint} from '../src/application/checkpoint';
 import {createRun,type Action} from '../src/domain/run';
 import {r2PurchasePrice} from '../src/domain/r2Shop';
+import {needsGuidedPractice} from '../src/game/GuidedTutorial';
 import {guidedTutorialRunId,newRunIdentity} from '../src/game/RunLaunch';
 import {cardDisplayName} from '../src/game/tangsongCardNames';
 import {clearPendingNoviceStart,dismissNoviceGuide,enrollNoviceGuide,liveNoviceGuide,markNoviceStart,mayResumeNoviceOpening,noviceGuide,noviceGuideDisabled,noviceGuideEnrolled,novicePairBreakdownCue,novicePairResultCue,NOVICE_GUIDE_KEY,NOVICE_GUIDE_PENDING_PREFIX,restoreNoviceGuide,stopNoviceGuide,suppressImportedNovice} from '../src/game/NoviceGuide';
@@ -201,8 +202,22 @@ describe('guided first match from saved commands',()=>{
   expect(guide(run)!.cue).toContain(cardDisplayName(secondBought.definitionId));
   expect(guide(SavedRun.restore(store,await store.read()))?.fact?.purchaseInstanceId).toBe(secondBought.instanceId);
   await send(run,{type:'SellJoker',instanceId:secondBought.instanceId});
-  expect(guide(run)?.body).toContain('不在持有牌中');
-  expect(guide(run)!.recommendedCardIds).toEqual([]);
+  expect(guide(run)).toMatchObject({step:'payoff',cue:'再买一张计分唐宋牌',recommendedCardIds:[],fact:{purchaseStatus:'sold'}});
+  expect(guide(run)?.beat).toContain('不在持有牌中');
+  expect(needsGuidedPractice(run)).toBe(false);
+  expect(needsGuidedPractice(SavedRun.restore(store,await store.read()))).toBe(false);
+  await enter(run);
+  await send(run,{type:'PlayHand',selectedIds:['clubs-6','spades-6']});
+  await send(run,{type:'DiscardHand',selectedIds:run.state.handOrder.filter(id=>!id.startsWith('hearts-')).slice(0,5)});
+  const pair=await findPairWithRealDiscards(run);
+  await send(run,{type:'PlayHand',selectedIds:pair,erxiangTargetId:pair[0]});
+  expect(run.state.phase).toBe('stage-cleared');
+  await send(run,{type:'OpenShop'});
+  expect(guide(run)).toMatchObject({step:'payoff',focus:'reroll',fact:{purchaseStatus:'sold'}});
+  await send(run,{type:'RerollShop'});
+  const replacement=guide(run)?.offerIds?.[0];expect(replacement).toBeTruthy();
+  await send(run,{type:'BuyOffer',offerId:replacement!});
+  expect(guide(run)?.fact?.purchaseStatus).toBe('ready');
  });
 
  it('updates prompts from live selections without treating them as saved progress',async()=>{
