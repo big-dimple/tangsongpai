@@ -3,37 +3,37 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-    <meta name="theme-color" content="#f3eadb" />
+    <meta name="theme-color" content="#102b2d" />
     <meta name="description" content="唐宋牌 · 唐宋人物题材的牌组构筑游戏" />
     <title>唐宋牌</title>
     <style>
-      #resource-loading{position:fixed;inset:0;box-sizing:border-box;width:100%;height:100dvh;max-width:none;max-height:none;margin:0;border:0;padding:max(14px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));background:#efe5d1;color:#243832;font:16px/1.5 "PingFang SC","Microsoft YaHei",sans-serif;overflow:auto}
-      #resource-loading::backdrop{background:#efe5d1}#resource-loading:not([open]){display:none}
-      .load-wrap{max-width:980px;min-height:100%;margin:auto;display:flex;flex-direction:column;justify-content:center}
-      .load-top{display:flex;align-items:center;justify-content:space-between;padding:0 0 8px;border-bottom:1px solid #a59272;color:#495b54;font:13px/1.2 "Songti SC",SimSun,serif;letter-spacing:.14em}
-      .load-seal{border:1px solid #9c4435;color:#8c382b;padding:4px 7px;letter-spacing:.12em}
-      .load-scene{isolation:isolate;position:relative;height:clamp(194px,41dvh,430px);flex-shrink:0;overflow:hidden;border-block:3px double #967b50;background:#d5c29b}
-      .load-world,.load-world img{position:absolute;inset:0;width:100%;height:100%;z-index:-1}.load-world img{object-fit:cover;object-position:45% 66%}
-      .load-brand{position:absolute;top:6%;right:4%;text-align:right;color:#25372f}
-      .load-brand h1{display:flex;gap:.035em;margin:0;font:700 clamp(48px,7vw,100px)/1.12 "STKaiti","KaiTi","Noto Serif CJK SC",SimSun,serif;letter-spacing:.025em;text-shadow:0 1px 3px #f6e4bd}
+      #resource-loading{position:fixed;inset:0;box-sizing:border-box;width:100%;height:100dvh;max-width:none;max-height:none;margin:0;border:0;padding:max(14px,env(safe-area-inset-top)) max(18px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));background:#102b2d;color:#fff4d9;font:16px/1.5 "PingFang SC","Microsoft YaHei",sans-serif;overflow:auto}
+      #resource-loading::backdrop{background:#102b2d}#resource-loading:not([open]){display:none}
+      .load-wrap{max-width:1120px;min-height:100%;margin:auto;display:flex;flex-direction:column;justify-content:center}
+      .load-top{display:flex;align-items:center;justify-content:space-between;padding:0 0 8px;color:#e3d3af;font:13px/1.2 "Songti SC",SimSun,serif;letter-spacing:.14em}
+      .load-seal{border:1px solid #d49a75;color:#fff1cb;background:#a24533;padding:4px 7px;letter-spacing:.12em}
+      .load-scene{isolation:isolate;position:relative;height:clamp(194px,44dvh,460px);flex-shrink:0;overflow:hidden;border-block:1px solid #a18b61;background:#193c40}
+      .load-world,.load-world img{position:absolute;inset:0;width:100%;height:100%;z-index:-1}.load-world img{object-fit:cover;object-position:60% 46%}
+      .load-scene::before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,#102d389c,transparent 72%),linear-gradient(0deg,#09272b8c,transparent 52%)}
+      .load-brand{position:absolute;bottom:10%;left:5%;color:#fff4d9}
+      .load-brand h1{display:flex;gap:.035em;margin:0;font:700 clamp(48px,7vw,100px)/1.12 "STKaiti","KaiTi","Noto Serif CJK SC",SimSun,serif;letter-spacing:.025em;text-shadow:0 3px 16px #102b2d}
       .load-brand p{margin:6px 0 0;font:600 12px/1.4 "Songti SC",SimSun,serif;letter-spacing:.16em}
       .load-fan{position:absolute;right:5%;bottom:5%;display:flex;isolation:isolate;padding:5px}
       .load-card-seat{--angle:-10deg;display:block;position:relative;margin-left:-5px;transform:rotate(var(--angle));transform-origin:50% 95%;animation:load-deal .6s ease-out both}
       .load-card-seat:nth-child(2){--angle:0deg;z-index:1}.load-card-seat:nth-child(3){--angle:10deg}
       .load-card{display:grid;grid-template-rows:auto 1fr;justify-items:center;box-sizing:border-box;width:clamp(30px,4vw,52px);aspect-ratio:5/7;padding:2px 4px 6px;background:#faf1df;border:1px solid #ac956f;border-radius:3px;color:#667167;box-shadow:1px 2px 4px #283a2d33}
       .load-card b{justify-self:start;font:bold clamp(12px,1.4vw,19px)/1 Georgia,serif}.load-card svg{align-self:center;width:48%;height:auto}
-      .load-card-seat.is-inked .load-card{color:#243b35}.load-card-seat.is-inked:nth-child(2) .load-card{color:#a14232}
+      .load-card-seat.is-inked .load-card{color:#243b35}.load-card-seat.is-inked:nth-child(n+2) .load-card{color:#a14232}
       .load-card-echo{position:absolute;inset:-4px;border:1px solid #a08355;opacity:0;pointer-events:none}
       .load-copy{max-width:600px;width:100%;margin:32px auto 0}.load-copy h2{margin:0 0 16px;font:500 18px/1.6 "Noto Serif CJK SC",SimSun,serif;text-align:center;letter-spacing:.08em}
-      .load-progress-line{display:flex;justify-content:space-between;gap:14px;align-items:center;font-size:12px;color:#3f606b}.load-progress-line [data-load-counter]{font-variant-numeric:tabular-nums;flex-shrink:0}
-      .load-track{position:relative;margin:16px 0 14px}.load-copy progress{display:block;width:100%;height:4px;accent-color:#b8473a;border:0;border-radius:4px;overflow:hidden;background:#d8ccba}.load-copy progress::-webkit-progress-bar{background:#d8ccba}.load-copy progress::-webkit-progress-value{background:linear-gradient(90deg,#3f606b,#c43f2e);transition:width .15s ease-out}.load-copy progress::-moz-progress-bar{background:#c43f2e}
-      .load-chapters{display:flex;justify-content:space-between;color:#7b7365;font:11px/1.5 "Noto Serif CJK SC",SimSun,serif;letter-spacing:.13em}.load-chapters span::before{content:"◇";margin-right:6px;color:#9c8c70}.load-chapters .is-inked{color:#3f606b}.load-chapters .is-inked::before{content:"◆";color:#b8473a}
-      .load-note{text-align:center;font-size:12px;color:#59646a;margin:18px 0}.load-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}.load-actions button{min-height:44px;padding:10px 20px;border:1px solid #3f606b;border-radius:3px;color:#3f606b;background:#fff9ee;font:14px sans-serif;cursor:pointer}.load-actions button[hidden]{display:none}.load-actions button:focus-visible{outline:2px solid #b8473a;outline-offset:4px}
+      .load-progress-line{display:flex;justify-content:space-between;gap:14px;align-items:center;font-size:12px;color:#e1d5b7}.load-progress-line [data-load-counter]{font-variant-numeric:tabular-nums;flex-shrink:0}
+      .load-track{position:relative;margin:16px 0 14px}.load-copy progress{display:block;width:100%;height:4px;accent-color:#ebbe7e;border:0;border-radius:4px;overflow:hidden;background:#385153}.load-copy progress::-webkit-progress-bar{background:#385153}.load-copy progress::-webkit-progress-value{background:linear-gradient(90deg,#b9654c,#ebbe7e);transition:width .15s ease-out}.load-copy progress::-moz-progress-bar{background:#ebbe7e}
+      .load-chapters{display:flex;justify-content:space-between;color:#c4c6b5;font:11px/1.5 "Noto Serif CJK SC",SimSun,serif;letter-spacing:.13em}.load-chapters span::before{content:"◇";margin-right:6px;color:#aa9a7c}.load-chapters .is-inked{color:#f0d6a6}.load-chapters .is-inked::before{content:"◆";color:#edbb7c}
+      .load-note{text-align:center;font-size:12px;color:#c4d0c8;margin:18px 0}.load-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}.load-actions button{min-height:44px;padding:10px 20px;border:1px solid #8f9c8f;border-radius:3px;color:#fff4d9;background:#193a3c;font:14px sans-serif;cursor:pointer}.load-actions button[hidden]{display:none}.load-actions button:focus-visible{outline:2px solid #f3d18b;outline-offset:4px}
       @keyframes load-deal{from{opacity:0;transform:translateY(10px) rotate(0)}to{opacity:1;transform:rotate(var(--angle))}}
       #resource-loading[data-load-paused] *,#resource-loading[data-load-paused] *::before,#resource-loading[data-load-paused] *::after{animation-play-state:paused!important}
       @media(max-height:640px){.load-copy{margin-top:10px}.load-copy h2,.load-note{margin:6px 0}.load-top{padding-bottom:4px}.load-scene{height:clamp(130px,31dvh,194px)}}
       @media(max-height:470px){.load-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-content:center;gap:8px 20px}.load-top{grid-column:1/-1}.load-scene{height:48dvh}.load-copy{align-self:center;margin:0}}
-      @media(prefers-reduced-motion:reduce){#resource-loading *,#resource-loading *::before,#resource-loading *::after{animation:none!important;transition:none!important}}
       #resource-loading :is(.load-progress-line,.load-note){font-size:max(12px,.75rem)}
       #resource-loading .load-copy h2{font-size:max(18px,1.125rem)}
       #resource-loading .load-actions button{font-size:max(14px,.875rem)}
@@ -52,9 +52,9 @@
           <div class="load-world"><img src="%BASE_URL%assets/p00/river-market.webp" width="1440" height="960" alt="" fetchpriority="high"></div>
           <div class="load-brand"><h1 aria-label="唐宋牌"><span>唐</span><span>宋</span><span>牌</span></h1><p>八章 · 二十四场</p></div>
           <div class="load-fan">
-            <span class="load-card-seat"><i class="load-card-echo"></i><span class="load-card"><b>7</b><svg viewBox="0 0 32 36"><path d="M16 2C11 9 2 13 2 21c0 7 8 9 13 4-1 5-3 7-6 9h14c-3-2-5-4-6-9 5 5 13 3 13-4C30 13 21 9 16 2Z" fill="currentColor"/></svg></span></span>
-            <span class="load-card-seat"><i class="load-card-echo"></i><span class="load-card"><b>7</b><svg viewBox="0 0 32 36"><path d="M16 32C12 27 2 20 2 12 2 2 13 1 16 8 19 1 30 2 30 12c0 8-10 15-14 20Z" fill="currentColor"/></svg></span></span>
-            <span class="load-card-seat"><i class="load-card-echo"></i><span class="load-card"><b>7</b><svg viewBox="0 0 32 36"><path d="M16 2a8 8 0 0 0-7 12C0 11-3 28 8 28c3 0 5-2 7-4-1 5-3 8-6 10h14c-3-2-5-5-6-10 2 2 4 4 7 4 11 0 8-17-1-14A8 8 0 0 0 16 2Z" fill="currentColor"/></svg></span></span>
+            <span class="load-card-seat"><i class="load-card-echo"></i><span class="load-card"><b>5</b><svg viewBox="0 0 32 36"><path d="M16 2a8 8 0 0 0-7 12C0 11-3 28 8 28c3 0 5-2 7-4-1 5-3 8-6 10h14c-3-2-5-5-6-10 2 2 4 4 7 4 11 0 8-17-1-14A8 8 0 0 0 16 2Z" fill="currentColor"/></svg></span></span>
+            <span class="load-card-seat"><i class="load-card-echo"></i><span class="load-card"><b>5</b><svg viewBox="0 0 32 36"><path d="M16 32C12 27 2 20 2 12 2 2 13 1 16 8 19 1 30 2 30 12c0 8-10 15-14 20Z" fill="currentColor"/></svg></span></span>
+            <span class="load-card-seat"><i class="load-card-echo"></i><span class="load-card"><b>4</b><svg viewBox="0 0 32 36"><path d="m16 2 13 16-13 16L3 18Z" fill="currentColor"/></svg></span></span>
           </div>
         </div>
         <section class="load-copy"><h2 data-load-title>为你铺开这一局</h2><div class="load-progress-line"><span data-load-caption>正在打开牌局…</span><span data-load-counter aria-live="polite"></span></div><div class="load-track"><progress aria-label="资源准备进度"></progress></div><div class="load-chapters" aria-hidden="true"><span>纸上初逢</span><span>山河入局</span><span>好戏将启</span></div><p id="load-notice" class="load-note">正在准备开场画面与常用声音。</p><div class="load-actions"><button data-load-next hidden type="button">暂停加载</button></div></section>

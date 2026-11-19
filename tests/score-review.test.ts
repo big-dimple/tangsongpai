@@ -13,11 +13,15 @@ import {handForecastCopy} from '../src/game/HandDraftPanel';
 import {exactFractionText} from '../src/game/scoreText';
 const run=(old=false)=>{const current=newRunIdentity('xiemu','straight');return createRun({seed:'review-only',runId:'review-only',characterId:'xiemu',rulesVersion:'r2',r2Identity:old?r2TargetedValueBase(current) as {contentVersion:string;contentHash:string}:current,openingRoute:'straight',modeConfig:{mode:'standard',difficulty:0,challengeId:null,programsEnabled:false}});};
 it('compares both public score bounds against the exact remaining target',()=>{
- const base={H:{n:'20',d:'1'},M:{n:'3',d:'2'}},preview={base,scoreRange:{minimum:'10',maximum:'18'}};
+ const minimum={H:{n:'5',d:'1'},M:{n:'2',d:'1'}},maximum={H:{n:'9',d:'1'},M:{n:'2',d:'1'}};
+ const preview={breakdown:{minimum,maximum,events:[]},scoreRange:{minimum:'10',maximum:'18'}};
  const total='90071992547409930001',target=(gap:number)=>String(BigInt(total)+BigInt(gap));
  expect(handForecastCopy(preview,total,target(10)).result).toBe('本手可过关');
  expect(handForecastCopy(preview,total,target(18)).result).toBe('有机会过关');
- expect(handForecastCopy(preview,total,target(20))).toMatchObject({range:'10–18',result:'还差 2–10'});
+ expect(handForecastCopy(preview,total,target(20))).toMatchObject({range:'10–18',result:'还差 2–10',factors:'保底 筹码 5 × 倍率 2'});
+ expect(handForecastCopy(preview,'85','100').projection).toEqual({banked:.85,minimum:.95,maximum:1});
+ const huge=10n**400n;
+ expect(handForecastCopy({...preview,scoreRange:{minimum:String(huge),maximum:String(2n*huge)}},String(huge),String(4n*huge)).projection).toEqual({banked:.25,minimum:.5,maximum:.75});
 });
 function fixture(extra:Partial<ScoreInput>={},old=false){
  const state=run(old),hand:PlayingCard[]=[3,4,5,6,7].map((rank,i)=>({id:'p/'+i,rank:rank as PlayingCard['rank'],suit:'hearts',enhancement:'multiplier-paper'}));

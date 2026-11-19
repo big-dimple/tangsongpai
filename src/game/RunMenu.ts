@@ -34,7 +34,7 @@ export async function prepareSavedTutorial(run:SavedRun):Promise<boolean> {
   if(!needsGuidedOpening(run))return true;
   return resumeGuidedTutorialOpening(run);
 }
-export async function routeSavedRun(game:Phaser.Game):Promise<boolean> {
+export async function routeSavedRun(game:Phaser.Game,openingPick?:{runId:string;cardId:string}):Promise<boolean> {
   const session=gameSession(),run=session.run;if(!run||session.pendingRun||session.working)return false;
   if(needsGuidedOpening(run)&&!await prepareSavedTutorial(run))return false;
   if(session.run!==run||session.pendingRun||session.working)return false;
@@ -42,7 +42,11 @@ export async function routeSavedRun(game:Phaser.Game):Promise<boolean> {
   const state=run.state;
   const target=state.phase==='shop'?'shop':['stage-ready','await-input','pending-refill'].includes(state.phase)?'game':state.stage?'intermission':'character-select';
   for(const key of ['title','character-select','shop','game','intermission'])game.scene.stop(key);
-  void prepareDestination(game,target).then(prepared=>{if(!prepared)return;game.scene.start(target,target==='intermission'?{cleared:state.phase==='stage-cleared'||state.phase==='run-won',stageIndex:state.stage!.index,stageHeat:state.stage!.heat,handsLeft:state.stage!.handsLeft,goldEarned:state.stage!.goldEarned}:undefined);});
+  const data=target==='intermission'?{cleared:state.phase==='stage-cleared'||state.phase==='run-won',stageIndex:state.stage!.index,stageHeat:state.stage!.heat,handsLeft:state.stage!.handsLeft,goldEarned:state.stage!.goldEarned}
+    :target==='game'?{openingPick}:undefined;
+  void prepareDestination(game,target).then(prepared=>{
+    if(prepared&&session.run===run)game.scene.start(target,data);
+  });
   return true;
 }
 

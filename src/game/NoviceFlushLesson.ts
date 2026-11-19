@@ -47,7 +47,7 @@ export function flushDiscardHint(hint:NoviceGuideHint,hand:readonly PlayingCard[
  const choices=[{id:'flush-score',label:first?'打手里的对子':'先打手牌',cardIds:[],selected:options.plan==='score'},
   {id:'flush-draw',label:'留红桃追同花',cardIds:[],selected:options.plan==='draw'}];
  if(!options.plan&&!selected.size)return {...hint,cue:'下一手，你来拿主意',
-  body:'手里有'+hearts.length+'张红桃，5张同花色就是同花。还差'+(5-hearts.length)+'张，换牌可能落空。',recommendedCardIds:heartsOnPage,...(heartsSplit?{focus:pageFocus(hearts)}:{}),choices};
+  body:'已有'+hearts.length+'张红桃。5张同花色成花，还差'+(5-hearts.length)+'张，换牌可能落空。',recommendedCardIds:heartsOnPage,...(heartsSplit?{focus:pageFocus(hearts)}:{}),choices};
  if(options.plan==='score'||!options.plan){
   const missing=pair.filter(card=>!selected.has(card.id)).map(card=>card.id),shown=onPage(missing);
   if(options.plan==='score'&&missing.length&&selectedIds.every(id=>pair.some(card=>card.id===id)))return {...hint,cue:'先拿手里的分',

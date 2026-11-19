@@ -1,68 +1,170 @@
+import {SUIT_SYMBOL, type Suit} from '../cards/types';
 import {GAME_NAME} from './Brand';
+import {assetUrl} from './theme';
 import './HomePage.css';
 
-// Capture the existing loading artwork before its dialog leaves the document.
-// Reuse the already decoded scroll when the player reaches the title.
-const sceneTemplate=typeof document==='undefined'?undefined:document.querySelector<HTMLElement>('#resource-loading .load-scene')?.cloneNode(true) as HTMLElement|undefined;
-const mastheadTemplate=typeof document==='undefined'?undefined:document.querySelector<HTMLElement>('#resource-loading .load-top')?.cloneNode(true) as HTMLElement|undefined;
-export interface HomePageModel {summary?:readonly string[];canContinue:boolean;canStart:boolean;canTutorial:boolean;notice:boolean;message?:string;showTutorialSkip?:boolean;canSkipTutorial?:boolean;checkingHistory?:boolean;firstPlayer?:boolean}
+export interface HomePageModel {
+  summary?:readonly string[];
+  canContinue:boolean;
+  canStart:boolean;
+  canTutorial:boolean;
+  notice:boolean;
+  message?:string;
+  showTutorialSkip?:boolean;
+  canSkipTutorial?:boolean;
+  checkingHistory?:boolean;
+  firstPlayer?:boolean;
+  reducedMotion?:boolean;
+}
 
-/** Native actions sit with the paper artwork; selection, persistence and routing stay in TitleScene. */
+interface HomeActions {
+  start:(cardId?:string)=>void;
+  tutorial:()=>void;
+  resume:()=>void;
+  skipTutorial:()=>void;
+}
+
+const openingFaces = [
+  {suit:'clubs', rank:5, name:'梅花'},
+  {suit:'hearts', rank:5, name:'红桃'},
+  {suit:'diamonds', rank:4, name:'方片'},
+] as const;
+
+function element<K extends keyof HTMLElementTagNameMap>(tag:K,className:string,copy?:string):HTMLElementTagNameMap[K] {
+  const el=document.createElement(tag);
+  el.className=className;
+  if(copy)el.textContent=copy;
+  return el;
+}
+
+function action(id:string,label:string,run:()=>void):HTMLButtonElement {
+  const button=element('button','',label);
+  button.type='button';
+  button.dataset.ui='title/action/'+id;
+  button.onclick=run;
+  return button;
+}
+
+function openingCard(suit:Suit,rank:number,name:string,start:HomeActions['start']) {
+  const id=suit+'-'+rank,symbol=SUIT_SYMBOL[suit];
+  const seat=element('span','load-card-seat');
+  const face=element('span','load-card home-playing-card');
+  face.setAttribute('aria-hidden','true');
+  face.dataset.suit=suit;
+  const index=element('span','home-card-index');
+  index.append(element('b','',String(rank)),element('i','',symbol));
+  const pips=element('span','home-pips');
+  for(let i=0;i<rank;i++)pips.append(element('i','',symbol));
+  face.append(index,pips,index.cloneNode(true));
+  const pick=action('pick-'+id,'',()=>start(id));
+  pick.className='home-pick';
+  pick.setAttribute('aria-label','拿起'+name+rank+'，开始新手首战');
+  pick.hidden=true;
+  seat.append(face,pick);
+  return {seat,pick};
+}
+
 export class HomePage {
- readonly root=document.createElement('main');
- private heading=document.createElement('h2');
- private summary=document.createElement('p');
- private start=document.createElement('button');
- private tutorial=document.createElement('button');
- private resume=document.createElement('button');
- private skip=document.createElement('button');
- private hint=document.createElement('p');
- private notice=document.createElement('p');
- private busy=false;
- private readonly openingCards:HTMLElement[]=[];
- constructor(actions:{start:()=>void;tutorial:()=>void;resume:()=>void;skipTutorial:()=>void}){
-  this.root.className='title-home';this.root.setAttribute('aria-label',GAME_NAME+'首页');
-  const sheet=document.createElement('div');sheet.className='home-sheet';
-  const masthead=mastheadTemplate?.cloneNode(true) as HTMLElement|undefined;
-  if(masthead){masthead.classList.add('home-masthead');masthead.setAttribute('aria-hidden','true');sheet.append(masthead);}
-  const art=sceneTemplate?.cloneNode(true) as HTMLElement|undefined;
-  if(art){
-   art.classList.add('home-hero');art.removeAttribute('aria-hidden');
-   for(const ornament of art.querySelectorAll('.load-world,.load-fan'))ornament.setAttribute('aria-hidden','true');
-   for(const seat of art.querySelectorAll('.load-card-seat'))seat.classList.add('is-inked');
-   const openingFaces=[['5','♣'],['5','♥'],['4','♦']];
-   for(const [index,card] of [...art.querySelectorAll<HTMLElement>('.load-card')].entries()){
-    const example=document.createElement('span');example.className='home-example-face';example.setAttribute('aria-hidden','true');
-    const face=openingFaces[index];if(!face)continue;
-    const rank=document.createElement('b'),suit=document.createElement('span');[rank.textContent,suit.textContent]=face;
-    example.append(rank,suit);card.append(example);this.openingCards.push(card);
-   }
-   sheet.append(art);
-  }else {const heading=document.createElement('h1');heading.textContent=GAME_NAME;sheet.append(heading);}
-  const entry=document.createElement('section');entry.className='home-entry';entry.setAttribute('aria-label','开始或继续');
-  this.summary.className='home-save';this.summary.setAttribute('aria-label','当前存档');
-  const buttons=document.createElement('div');buttons.className='home-actions';
-  this.resume.type=this.start.type=this.tutorial.type=this.skip.type='button';
-  this.resume.textContent='继续本局';this.start.textContent='开始新局';this.tutorial.textContent='新手首战';this.skip.textContent='跳过教程，直接选角';
-  this.resume.dataset.ui='title/action/title-continue';this.start.dataset.ui='title/action/title-start';this.tutorial.dataset.ui='title/action/tutorial-start';this.skip.dataset.ui='title/action/skip-tutorial';
-  this.resume.onclick=actions.resume;this.start.onclick=actions.start;this.tutorial.onclick=actions.tutorial;this.skip.onclick=actions.skipTutorial;
-  buttons.append(this.resume,this.start,this.tutorial,this.skip);
-  this.hint.className='home-hint';
-  this.notice.className='home-notice';this.notice.textContent='存档提示请查看右上菜单。';this.notice.setAttribute('role','status');
-  entry.append(this.heading,this.summary,buttons,this.hint,this.notice);sheet.append(entry);
-  this.root.append(sheet);document.body.append(this.root);
- }
- update(model:HomePageModel):void {
-  this.heading.textContent=model.summary?'续上这局':model.firstPlayer?'两张 5，能打多少分？':'开一局';
-  for(const card of this.openingCards)card.classList.toggle('shows-first-deal',!!model.firstPlayer);
-  this.summary.hidden=!model.summary;this.summary.replaceChildren(...(model.summary??[]).map(text=>{const span=document.createElement('span');span.textContent=text;return span;}));
-  this.resume.hidden=!model.summary;this.resume.disabled=this.busy||!model.canContinue;this.start.disabled=this.busy||!model.canStart;this.tutorial.disabled=this.busy||!model.canTutorial;
-  this.start.textContent=model.firstPlayer?'新手首战':'普通新局';this.tutorial.hidden=!!model.firstPlayer;
-  this.skip.hidden=!model.showTutorialSkip;this.skip.disabled=this.busy||!model.canSkipTutorial;this.skip.className='home-text-action';
-  this.hint.textContent=model.firstPlayer?(model.checkingHistory?'正在准备牌桌，也可以直接选角。':'刘娥已发好牌。打出这一对，还是再添一对，由你开牌。'):model.summary?'继续会回到上一次落笔的地方。':'先选英雄和路线，在集市备好第一手牌。';
-  this.notice.textContent=model.message||'存档提示请查看右上菜单。';
-  this.resume.className='home-primary';this.start.className=model.summary?'home-secondary':'home-primary';this.tutorial.className='home-secondary';this.notice.hidden=!model.notice;
- }
- confirm():void {this.busy=true;this.resume.disabled=this.start.disabled=this.tutorial.disabled=this.skip.disabled=true;this.root.setAttribute('aria-busy','true');}
- destroy():void {this.resume.onclick=this.start.onclick=this.tutorial.onclick=this.skip.onclick=null;this.root.remove();}
+  readonly root=element('main','title-home');
+  private readonly heading=element('h2','');
+  private readonly summary=element('p','home-save');
+  private readonly hint=element('p','home-hint');
+  private readonly notice=element('p','home-notice');
+  private readonly pickHint=element('figcaption','home-pick-hint','点一张牌，带入首战');
+  private readonly picks:HTMLButtonElement[]=[];
+  private readonly start:HTMLButtonElement;
+  private readonly tutorial:HTMLButtonElement;
+  private readonly resume:HTMLButtonElement;
+  private readonly skip:HTMLButtonElement;
+  private busy=false;
+
+  constructor(actions:HomeActions) {
+    this.root.setAttribute('aria-label',GAME_NAME+'首页');
+    const sheet=element('div','home-sheet');
+    const art=element('section','home-hero');
+    art.setAttribute('aria-label','开场画卷');
+    const world=element('div','load-world');
+    const river=element('img','');
+    river.alt='';
+    river.src=assetUrl('assets/p00/river-market.webp');
+    world.append(river);
+    const masthead=element('header','home-masthead');
+    const genre=element('span','home-genre','唐宋人物 · 扑克构筑');
+    const sound=element('div','home-sound');
+    masthead.append(genre,sound);
+    const brand=element('div','home-brand');
+    const title=element('h1','',GAME_NAME);
+    const seal=element('span','load-seal','开卷');
+    seal.setAttribute('aria-hidden','true');
+    const imprint=element('div','home-wordmark');
+    imprint.append(title,seal);
+    brand.append(imprint,element('p','home-chapters','八章 · 二十四场'));
+    const deck=element('figure','home-deck');
+    const fan=element('div','home-fan');
+    for(const {suit,rank,name} of openingFaces){
+      const card=openingCard(suit,rank,name,actions.start);
+      fan.append(card.seat);
+      this.picks.push(card.pick);
+    }
+    deck.append(fan,this.pickHint);
+    const cast=element('div','home-cast');
+    cast.setAttribute('aria-hidden','true');
+    art.append(world,masthead,brand,deck,cast);
+
+    const entry=element('section','home-entry');
+    entry.setAttribute('aria-label','开始或继续');
+    this.summary.setAttribute('aria-label','当前存档');
+    this.notice.setAttribute('role','status');
+    const copy=element('div','home-copy');
+    copy.append(this.heading,this.hint,this.summary,this.notice);
+    this.resume=action('title-continue','继续本局',actions.resume);
+    this.start=action('title-start','开始新局',()=>actions.start());
+    this.tutorial=action('tutorial-start','新手首战',actions.tutorial);
+    this.skip=action('skip-tutorial','跳过教程，直接选角',actions.skipTutorial);
+    const buttons=element('div','home-actions');
+    buttons.append(this.resume,this.start,this.tutorial,this.skip);
+    entry.append(copy,buttons);
+    sheet.append(art,entry);
+    this.root.append(sheet);
+    document.body.append(this.root);
+  }
+
+  update(model:HomePageModel):void {
+    this.root.dataset.reducedMotion=String(!!model.reducedMotion);
+    this.heading.textContent=model.summary?'续上这局':model.firstPlayer?'从一对牌起手':'选一位英雄入局';
+    this.hint.hidden=!!model.summary;
+    this.hint.textContent=model.firstPlayer
+      ?'跟刘娥挑两张同点数的牌，看看能得几分。'
+      :'挑选英雄与起手路线，去河市备牌。';
+    if(model.checkingHistory)this.hint.textContent='正在准备牌桌，也可以直接选角。';
+    this.summary.hidden=!model.summary;
+    this.summary.replaceChildren(...(model.summary??[]).map(copy=>element('span','',copy)));
+    this.notice.hidden=!model.notice;
+    this.notice.textContent=model.message||'存档提示请查看右上菜单。';
+    this.resume.hidden=!model.summary;
+    this.resume.disabled=this.busy||!model.canContinue;
+    this.resume.className='home-primary';
+    this.start.textContent=model.firstPlayer?'新手首战':'普通新局';
+    this.start.disabled=this.busy||!model.canStart;
+    this.start.className=model.summary?'home-secondary':'home-primary';
+    this.tutorial.hidden=!!model.firstPlayer;
+    this.tutorial.disabled=this.busy||!model.canTutorial;
+    this.tutorial.className='home-secondary';
+    this.skip.hidden=!model.showTutorialSkip;
+    this.skip.disabled=this.busy||!model.canSkipTutorial;
+    this.skip.className='home-secondary';
+    this.pickHint.hidden=!model.firstPlayer;
+    for(const pick of this.picks){
+      pick.hidden=!model.firstPlayer;
+      pick.disabled=this.busy||!model.canStart;
+    }
+  }
+
+  confirm():void {
+    this.busy=true;
+    for(const button of [this.start,this.tutorial,this.resume,this.skip,...this.picks])button.disabled=true;
+    this.root.setAttribute('aria-busy','true');
+  }
+
+  destroy():void {this.root.remove();}
 }

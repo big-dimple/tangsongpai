@@ -69,7 +69,7 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
   g.lineStyle(1,0xc4b397,.8).strokeRoundedRect(main.x+.5,l.hand.y-7.5,main.width-1,l.actions.y+l.actions.height-l.hand.y+15,9);
   g.lineStyle(3,T.red,.8).lineBetween(main.x+12,frame.y-9,main.x+64,frame.y-9);
   addPaper(g);
-  drawRiverScroll(scene,view,{x:stage.x+7,y:stage.y+7,width:stage.width-14,height:stage.height-14},.72,.16);
+  drawRiverScroll(scene,view,{x:stage.x+7,y:stage.y+7,width:stage.width-14,height:stage.height-14},.6,.52);
   return;
  }
  function sheet(name:string,b:Box,color:number,edge:number,shadow=false):void {
@@ -94,7 +94,7 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
   accent.lineStyle(2,T.ink,.16).lineBetween(l.hand.x,l.hand.y-8,l.hand.x+l.hand.width,l.hand.y-8);
   accent.lineStyle(2,T.red,.48).lineBetween(l.actions.x,l.actions.y+l.actions.height,l.actions.x+l.actions.width,l.actions.y+l.actions.height);
   addPaper(accent);
-  drawRiverScroll(scene,view,{x:mat.x+6,y:mat.y+6,width:mat.width-12,height:mat.height-12},.72,.15);
+  drawRiverScroll(scene,view,{x:mat.x+6,y:mat.y+6,width:mat.width-12,height:mat.height-12},.62,.41);
   // The supplied full-frame hero art is part of the table's atmosphere on
   // phones too. It sits behind the landing lane with a soft alpha so sleeves,
   // hair and weapons dissolve into the paper while the live cards stay crisp.

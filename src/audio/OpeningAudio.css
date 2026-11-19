@@ -1,3 +1,4 @@
 .opening-audio-hint{display:block;margin:12px 0 0;padding:8px 14px;min-height:44px;border:0;border-radius:6px;background:#3f606b12;color:#3f606b;font:14px/1.5 "Microsoft YaHei","PingFang SC",sans-serif;cursor:pointer}
 .opening-audio-hint[hidden]{display:none}
+#resource-loading .opening-audio-hint{color:#ead6af;background:#234345}
 .opening-audio-hint:focus-visible{outline:2px solid #3f606b;outline-offset:3px}

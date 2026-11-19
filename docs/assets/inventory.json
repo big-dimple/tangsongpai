@@ -73,6 +73,10 @@
       "expression": "assets/handdrawn-p08/"
     },
     {
+      "source": "src/game/HomePage.ts",
+      "expression": "assets/p00/river-market.webp"
+    },
+    {
       "source": "src/game/IntermissionScene.ts",
       "expression": "assets/p00/river-market.webp"
     },
@@ -931,7 +935,7 @@
   ],
   "totals": {
     "files": 459,
-    "bytes": 58745863,
+    "bytes": 58744679,
     "decodedRgbaBytes": 346272024,
     "groups": {
       "audio": {
@@ -981,7 +985,7 @@
       },
       "p00": {
         "count": 6,
-        "bytes": 223321,
+        "bytes": 222137,
         "decodedRgbaBytes": 5529600
       },
       "tangsong-eyes": {
@@ -5462,8 +5466,8 @@
     },
     {
       "path": "public/assets/p00/river-market.webp",
-      "bytes": 215842,
-      "sha256": "4606cf2426456e953850e26863ce0affa724e6b599c002c2512b1e3778597fb3",
+      "bytes": 214658,
+      "sha256": "c2636cce5c630f120b441af91148bb4f284425fca8a0c0f7b4348b14897f7c08",
       "width": 1440,
       "height": 960,
       "alpha": false,

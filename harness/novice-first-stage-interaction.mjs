@@ -114,7 +114,8 @@ try {for(const spec of cases){
       for(const choice of info.choices){
         assert.ok(choice.box.width>=43&&choice.box.height>=43,`${name}: choice has an undersized hit area: ${JSON.stringify(choice)}`);
         assert.ok(choice.scrollWidth<=choice.clientWidth+1&&choice.scrollHeight<=choice.clientHeight+1,`${name}: choice text overflows: ${JSON.stringify(choice)}`);
-        if(!choice.id.startsWith('flush-'))assert.match(choice.text,/预计\s*\d+(?:\s*[–~-]\s*\d+)?\s*分/,`${name}: complete score estimate is visible`);
+        if(info.step==='pair')assert.match(info.text,/对子\s*\d+\s*分 → 两对\s*\d+\s*分/,`${name}: both opening alternatives show their scores`);
+        else if(!choice.id.startsWith('flush-'))assert.match(choice.text,/预计\s*\d+(?:\s*[–~-]\s*\d+)?\s*分/,`${name}: complete score estimate is visible`);
         for(const b of choice.textBoxes)assert.ok(b.x>=choice.box.x-1&&b.y>=choice.box.y-1&&b.x+b.width<=choice.box.x+choice.box.width+1&&b.y+b.height<=choice.box.y+choice.box.height+1,`${name}: choice text leaves its button: ${JSON.stringify(choice)}`);
       }
     }

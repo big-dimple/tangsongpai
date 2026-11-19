@@ -33,10 +33,10 @@ export class TitleScene extends Phaser.Scene {
   init(data?:{seed?:string;onReady?:()=>void}):void {this.seed=data?.seed??new URLSearchParams(location.search).get('seed')??undefined;this.openingReady=data?.onReady;}
   create():void {
     this.leaving=false;this.entering=false;this.launchingTutorial=false;this.firstPlayer='unknown';this.checkingFirstPlayer=false;this.checkedFirstPlayer=false;this.entryMessage='';this.entryGeneration++;this.audio.setScene('menu');this.cameras.main.setBackgroundColor('#F3EADB');
-    this.home?.destroy();this.home=new HomePage({start:()=>void this.enterNew(),tutorial:()=>void this.enterTutorial(),resume:()=>void this.continueRun(),skipTutorial:()=>this.skipTutorial()});
+    this.home?.destroy();this.home=new HomePage({start:cardId=>void this.enterNew(cardId),tutorial:()=>void this.enterTutorial(),resume:()=>void this.continueRun(),skipTutorial:()=>this.skipTutorial()});
     const removeTitleNewGame=installTitleNewGameHandler(()=>void this.enterNew());this.render();warmOpeningImages(this);
     this.entranceDispose?.();
-    this.entranceDispose=mountTangSongEnsembleBurst(this.home.root.querySelector<HTMLElement>('.home-hero'),{reducedMotion:this.reducedMotion()});
+    this.entranceDispose=mountTangSongEnsembleBurst(this.home.root.querySelector<HTMLElement>('.home-cast'),{reducedMotion:this.reducedMotion()});
     const dismissEntrance=()=>{this.entranceDispose?.();this.entranceDispose=undefined;};
     const interaction=(event:Event)=>{if(event.isTrusted)dismissEntrance();};
     const visibility=()=>{if(document.hidden)dismissEntrance();};
@@ -66,13 +66,15 @@ export class TitleScene extends Phaser.Scene {
   private render():void {
     if(this.leaving)return;
     const session=gameSession(),saved=session.run;
+    // The opening checkpoints arrive before the scene cut. Keep the chosen entrance visible.
+    if(this.launchingTutorial&&this.entering&&saved)return;
     if(saved)this.firstPlayer='returning';
     else if(session.persistentReady&&!this.checkingFirstPlayer&&!this.checkedFirstPlayer&&this.firstPlayer==='unknown'){
       this.checkingFirstPlayer=true;const generation=this.entryGeneration;
       void firstPlayerStatus(session).then(status=>{if(generation!==this.entryGeneration||this.leaving)return;this.firstPlayer=status;this.checkingFirstPlayer=false;this.checkedFirstPlayer=true;this.render();});
     }
     const showTutorialSkip=!saved&&this.firstPlayer!=='returning',firstPlayer=!saved&&this.firstPlayer==='first';
-    this.home?.update({summary:saved?[characterForRun(saved.state).name,selectionModeName(saved.state)+'模式',...(saved.state.tourMode==='endless'?['无尽']:[]),'第 '+saved.state.chapter.toLocaleString('zh-CN')+' 章','金币 '+saved.state.gold.toLocaleString('zh-CN')]:undefined,canContinue:!!saved&&['idle','readonly'].includes(saved.status)&&!this.entering,canStart:!session.working&&!this.entering,canTutorial:!session.working&&!this.entering&&session.persistentReady&&(!saved||session.lease.writable),showTutorialSkip,canSkipTutorial:!session.working&&!this.launchingTutorial,checkingHistory:this.entering&&!this.launchingTutorial,firstPlayer,notice:!!session.notice||!!this.entryMessage,message:this.entryMessage||session.notice||undefined});
+    this.home?.update({summary:saved?[characterForRun(saved.state).name,selectionModeName(saved.state)+'模式',...(saved.state.tourMode==='endless'?['无尽']:[]),'第 '+saved.state.chapter.toLocaleString('zh-CN')+' 章','金币 '+saved.state.gold.toLocaleString('zh-CN')]:undefined,canContinue:!!saved&&['idle','readonly'].includes(saved.status)&&!this.entering,canStart:!session.working&&!this.entering,canTutorial:!session.working&&!this.entering&&session.persistentReady&&(!saved||session.lease.writable),showTutorialSkip,canSkipTutorial:!session.working&&!this.launchingTutorial,checkingHistory:this.entering&&!this.launchingTutorial,firstPlayer,reducedMotion:session.reducedMotion,notice:!!session.notice||!!this.entryMessage,message:this.entryMessage||session.notice||undefined});
   }
   private ordinaryNew():void {
     this.confirmTitle(()=>{this.audio.curtainOpen();paperSceneStart(this,'character-select',{seed:this.seed},true);});
@@ -81,7 +83,7 @@ export class TitleScene extends Phaser.Scene {
     if(this.leaving||this.launchingTutorial||gameSession().working)return;
     this.entryGeneration++;this.entering=false;this.ordinaryNew();
   }
-  private async enterNew():Promise<void> {
+  private async enterNew(openingCardId?:string):Promise<void> {
     const session=gameSession();if(this.leaving||this.entering||session.working)return;
     const generation=++this.entryGeneration;this.checkingFirstPlayer=false;this.entering=true;this.entryMessage='';this.render();
     try {
@@ -97,14 +99,20 @@ export class TitleScene extends Phaser.Scene {
       if(generation!==this.entryGeneration||this.leaving)return;
       const status=await Promise.race([firstPlayerStatus(session),new Promise<FirstPlayerStatus>(resolve=>setTimeout(()=>resolve('unknown'),2000))]);
       if(generation!==this.entryGeneration||this.leaving)return;
-      if(status!=='first'){this.ordinaryNew();return;}
+      if(status!=='first'){
+        if(openingCardId){
+          this.firstPlayer=status;this.checkedFirstPlayer=status!=='unknown';
+          this.entryMessage='首战牌面已更新，请重新选择入口。';return;
+        }
+        this.ordinaryNew();return;
+      }
       this.launchingTutorial=true;this.render();
       const run=await startGuidedTutorial(session,{requireEmptyHistory:true});
       if(generation!==this.entryGeneration||this.leaving)return;
       if(!run||session.run!==run||run.status!=='idle'){
         this.entryMessage=session.notice||'教程尚未开始。请在菜单中重试保存，或直接选择普通游戏。';return;
       }
-      this.confirmTitle(()=>{this.audio.curtainOpen();routeSavedRun(this.game);});
+      this.confirmTitle(()=>{this.audio.curtainOpen();routeSavedRun(this.game,openingCardId?{runId:run.state.runId,cardId:openingCardId}:undefined);});
     }finally {
       if(generation===this.entryGeneration&&!this.leaving){this.entering=false;this.launchingTutorial=false;this.render();}
     }

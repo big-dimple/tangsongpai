@@ -50,6 +50,12 @@ describe('first-stage choice feedback',()=>{
   expect(one).toMatchObject({beat:'单张 24 分 → 对子 '+deal.pairs[1].score+' 分',recommendedCardIds:[fours[1]]});
   expect(openingDealHint(hint,deal,input.hand,[fours[0]],state.handOrder.slice(0,3))).toMatchObject({focus:'hand-next',recommendedCardIds:[]});
   expect(openingDealHint(hint,deal,input.hand,[...fours,...fives],state.handOrder)).toMatchObject({cue:'两对都齐了',focus:'play'});
+  const keep=openingDealHint(hint,deal,input.hand,fours,state.handOrder,undefined,'keep-pair');
+  expect(keep).toMatchObject({focus:'play',recommendedCardIds:[],choices:[{selected:true},{selected:false}]});
+  const build=openingDealHint(hint,deal,input.hand,fours,state.handOrder,undefined,'build-two-pair');
+  expect(build).toMatchObject({recommendedCardIds:expect.arrayContaining(fives),choices:[{selected:false},{selected:true}]});
+  expect(openingDealHint(hint,deal,input.hand,[...fours,fives[0]],state.handOrder)?.recommendedCardIds).toEqual([fives[1]]);
+  expect(openingDealHint(hint,deal,input.hand,['spades-14'],state.handOrder,'31')).toMatchObject({beat:'高牌 31 分',recommendedCardIds:['spades-14']});
   expect(openingDealHint(hint,deal,input.hand,['spades-14'],state.handOrder)).toBeUndefined();
   expect(openingDeal({...input,disabledIds:[fours[0]]},fives)).toBeUndefined();
  });

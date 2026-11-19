@@ -5,7 +5,7 @@ import './NoviceGuideView.css';
 /** All geometry is in browser viewport CSS pixels, not framebuffer pixels. */
 export interface NoviceGuideGeometry {
   highlights?:readonly Box[];
-  /** The first portrait table can seat its coach in the still-empty joker rack. */
+  /** A table can seat its coach in the unoccupied part of the joker rack. */
   anchor?:Box;
   /** Live input areas that neither the hint nor its reopen button may cover. */
   avoid?:readonly Box[];
@@ -135,7 +135,7 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
   const portrait=document.createElement('img'),speaker=document.createElement('span');
   const body=document.createElement('p'),choiceRow=document.createElement('div'),choices=document.createElement('div'),footer=document.createElement('div'),skipButton=document.createElement('button'),detailsButton=document.createElement('button'),actionButton=document.createElement('button'),reopenButton=document.createElement('button');
   root.className='novice-guide';root.dataset.noviceGuide='';root.dataset.reducedMotion=String(!!options.reducedMotion);
-  focus.classList.add('novice-guide-focus');focus.setAttribute('aria-hidden','true');focusPath.setAttribute('fill','#142e31');focusPath.setAttribute('fill-opacity','.14');focusPath.setAttribute('fill-rule','evenodd');focus.append(focusPath);
+  focus.classList.add('novice-guide-focus');focus.setAttribute('aria-hidden','true');focusPath.setAttribute('fill','#142e31');focusPath.setAttribute('fill-opacity','.08');focusPath.setAttribute('fill-rule','evenodd');focus.append(focusPath);
   rings.className='novice-guide-rings';rings.setAttribute('aria-hidden','true');
   panel.className='novice-guide-panel';panel.setAttribute('aria-label','新手引导');panel.dataset.noviceGuidePanel='';
   header.className='novice-guide-header';heading.className='novice-guide-heading';
@@ -168,7 +168,7 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
     if(!step.action&&document.activeElement===actionButton)closeButton.focus({preventScroll:true});
     actionButton.hidden=!step.action;actionButton.textContent=step.action?.label??'';
     const rows=step.choices??[],ids=JSON.stringify(rows.map(choice=>choice.id));
-    choices.setAttribute('aria-label',step.id==='discard'?'选择下一手的打法':step.id==='payoff'?'新手引导下一步':'选择要尝试的牌型');
+    choices.setAttribute('aria-label',step.id==='pair'?'选择首手练法':step.id==='discard'?'选择下一手的打法':step.id==='payoff'?'新手引导下一步':'选择要尝试的牌型');
     if(ids!==choiceIds){
       choiceIds=ids;choices.replaceChildren(...rows.map(choice=>{
         const button=document.createElement('button');button.type='button';button.dataset.noviceGuideChoice=choice.id;
@@ -241,18 +241,22 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
     // clipped, narrow candidate first makes the text wrap and can make the
     // real panel taller than the very region it was meant to fit in.
     const desiredWidth=emphasis(step)==='action'?360:420;
-    const fullWidth=Math.min(desiredWidth,bounds.width);
     // A short prompt with just skip/close can remain legible in the open
     // column beside owned cards. Additional controls need a wider panel.
     const minReadableWidth=Math.min(panel.classList.contains('has-details')||panel.classList.contains('has-choices')||!!step.action?240:168,bounds.width);
+    const fullWidth=anchor&&bounds.width<520?Math.min(bounds.width,Math.max(minReadableWidth,anchor.width+4)):Math.min(desiredWidth,bounds.width);
     const detailsFocused=document.activeElement===detailsButton;
     // Keep the current compact layout during ordinary moving-card updates:
     // repeatedly moving the rules button would also discard keyboard focus.
-    const startCompact=!closed&&panel.classList.contains('is-compact')&&(detailsFocused||
+    let startCompact=!closed&&panel.classList.contains('is-compact')&&(detailsFocused||
       contentRevision===lastCompactContent&&fullWidth===lastCompactWidth&&bounds.height===lastCompactHeight);
     setCompact(startCompact);panel.classList.remove('is-scrollable');panel.removeAttribute('tabindex');panel.setAttribute('aria-label','新手引导');
     element.style.maxHeight='none';element.style.width=closed?'auto':fullWidth+'px';
     let rect=element.getBoundingClientRect();
+    if(!closed&&!startCompact&&anchor&&bounds.width<520&&rect.height>anchor.height){
+      // Keep mobile lessons beside the same empty rack as the player changes their hand.
+      startCompact=true;setCompact(true);rect=element.getBoundingClientRect();
+    }
     const findFit=()=>placeNoviceGuide(bounds,protectedAreas,{width:closed?Math.max(88,rect.width):rect.width,height:Math.max(44,rect.height)},seat,{requireFit:true});
     let placement=findFit();
     if(!placement&&!closed&&!startCompact){

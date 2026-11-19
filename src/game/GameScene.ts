@@ -64,7 +64,7 @@ import {drawStageTableArt,playedCaptionBox} from './StageTableArt';
 import {paperSceneStart} from './PaperFlow';
 import {bindNoviceGuide} from './NoviceGuideBinding';
 import {liveNoviceGuide,noviceFreeActions,noviceGuide,noviceGuideEnrolled,type NoviceGuideHint} from './NoviceGuide';
-import {firstStageOptions,openingDeal,openingDealHint,type OpeningDeal,type FirstStageOption} from './NoviceFirstStage';
+import {firstStageOptions,openingDeal,openingDealHint,type OpeningDeal,type OpeningPlan,type FirstStageOption} from './NoviceFirstStage';
 import {handControlHint,noviceSwipePath,NoviceHandLesson,type HandSort} from './NoviceHandLesson';
 import {attemptNoviceOwnedReorder,noviceOwnedLesson,noviceOwnedPractice,noviceOwnedSaved,recordNoviceOwnedLift} from './NoviceOwnedLesson';
 import {flushDiscardHint,flushRefillHint,noviceHandPageFocus} from './NoviceFlushLesson';
@@ -406,7 +406,7 @@ export class GameScene extends Phaser.Scene {
   }
 
   private carriedTool?:ToolCarryIntent;
-  async create(data?:{carriedTool?:ToolCarryIntent;preparedBossOwner?:object}): Promise<void> {
+  async create(data?:{carriedTool?:ToolCarryIntent;preparedBossOwner?:object;openingPick?:{runId:string;cardId:string}}): Promise<void> {
     this.noviceHandLesson=undefined;this.noviceHandStart=undefined;
     // The controller hint can occupy the top rail only while this PC table is active.
     // Read the outer viewport so connecting a controller cannot itself push the
@@ -503,6 +503,13 @@ export class GameScene extends Phaser.Scene {
     this.run=controller.state;
     if(enteredStage&&carriedToolAtHand(this.run,carried))this.carriedTool=carried;
     if(!['await-input','pending-refill'].includes(this.run.phase)||!this.run.stage){this.scene.start('character-select');return;}
+    // A cover pick belongs to this freshly saved deal only. Resuming starts with a clean draft.
+    const pick=data?.openingPick;
+    if(pick?.runId===this.run.runId&&this.run.mode==='tutorial'&&this.run.phase==='await-input'&&
+       this.run.stage.index===0&&this.run.stage.playIndex===0&&this.run.handOrder.includes(pick.cardId)){
+      this.selectedIds.add(pick.cardId);
+      this.focusIndex=this.run.handOrder.indexOf(pick.cardId);
+    }
     // Restoring an already-critical stage keeps the warning, without replaying its entrance highlight.
     this.lastPlayWarningTracker.seed(this.run);
     this.stage=getStage(this.run.stage.index,this.run.tourMode,this.run.difficulty,this.run)!;this.characterId=this.run.characterId;settings();this.audio.setScene(this.stage.index%3===2?'boss':'table');
@@ -583,9 +590,10 @@ export class GameScene extends Phaser.Scene {
     window.addEventListener('pointerdown',this.pointerFocus,true);document.addEventListener('focusin',this.focusFeedback);document.addEventListener('focusout',this.focusFeedback);window.addEventListener('blur',this.stopHandHint);document.addEventListener('visibilitychange',this.hintVisibility);
     if(this.run.stage.boss?.definitionId==='B05')this.statusMessage=opponentSavedStatus(this.run.lastTrace);
     this.render();
+    if(pick&&this.selectedIds.has(pick.cardId))this.showFocusedCard();
     let guideChoiceKey='',guideChoice:ReturnType<typeof erxiangChoice>|undefined;
     let firstStage:{key:string;optionKey?:string;options:FirstStageOption[];target?:FirstStageOption}|undefined;
-    let opening:{run:RunState;deal?:OpeningDeal}|undefined;
+    let opening:{run:RunState;deal?:OpeningDeal;plan?:OpeningPlan}|undefined;
     const tutorialPointer=window.matchMedia('(pointer: coarse)');
     let gestureDemo:NoviceGestureDemoHandle|undefined,demoKey='',dismissedKey='';
     const clearDemo=()=>{gestureDemo?.destroy();gestureDemo=undefined;demoKey='';};
@@ -611,7 +619,8 @@ export class GameScene extends Phaser.Scene {
             if(this.ownedDrag){
               return {...hint,...this.ownedDrag.feedback,focus:undefined,recommendedCardIds:[]};
             }
-            if(!owned.reordered&&(count>=2||!owned.lifted)){
+            // Once the purchase has scored, its receipt and the next hero lesson take precedence.
+            if(hint.step==='payoff'&&!owned.reordered&&(count>=2||!owned.lifted)){
               return {...noviceOwnedPractice(hint,rail),gestureCardIds:this.run.jokers.slice(0,2).map(j=>j.instanceId)};
             }
             if(owned.reordered&&owner.journal.at(-1)?.action.type==='ReorderJokers'){
@@ -638,9 +647,10 @@ export class GameScene extends Phaser.Scene {
         if(hint.step==='pair'&&this.run.stage?.playIndex===0&&!this.erxiangTargetId&&!this.assistIds.length){
           if(opening?.run!==this.run)opening={run:this.run,deal:openingDeal(this.aiInput(),hint.recommendedCardIds??[])};
           const range=this.draftEstimate?.run===this.run?this.draftEstimate.estimate?.scoreRange:undefined;
-          const comparison=opening.deal&&openingDealHint(hint,opening.deal,this.hand,beforeGesture,visibleIds,!this.handInput?.active&&range&&range.minimum===range.maximum?range.minimum:undefined);
+          if(!beforeGesture.length)opening.plan=undefined;
+          const comparison=opening.deal&&openingDealHint(hint,opening.deal,this.hand,beforeGesture,visibleIds,!this.handInput?.active&&range&&range.minimum===range.maximum?range.minimum:undefined,opening.plan);
           if(comparison){
-            if(selected.length>=2&&lesson&&owner&&lesson.swept(owner.journal))return {...comparison,body:comparison.body+' 从已选牌起滑可连撤。'};
+            if(!comparison.choices&&selected.length>=2&&lesson&&owner&&lesson.swept(owner.journal))return {...comparison,body:comparison.body+' 从已选牌起滑可连撤。'};
             return practice(comparison,'rank',hint.recommendedCardIds,true);
           }
         }
@@ -677,10 +687,12 @@ export class GameScene extends Phaser.Scene {
             const short=stage.handsLeft===1&&!firstStage.options.some(option=>option.canClear);
             const suitFeedback=selected.length?noviceSameSuitFeedback(this.hand,selected,handRules):undefined;
             const free=noviceFreeActions({...hint,cue,body:'选1–5张牌，或选一个牌型参考。'},selected,{canDiscard,skillChosen:!!this.erxiangTargetId});
+            // After a real sweep the player knows where the hand is. Leave the free choice unlit.
+            if(!selected.length&&owner&&lesson?.swept(owner.journal))free.focus=undefined;
             const flushResult=postFlush&&!selected.length;
             const heartIds=refill?.heartIds??[],visibleHearts=heartIds.filter(id=>visibleSet.has(id)),hiddenHearts=visibleHearts.length<heartIds.length;
             const flushText=(refill?.body??'')+(hiddenHearts?'翻页可查看其余红桃。':'');
-            const independent={...free,body:this.erxiangTargetId?free.body:short?(canDiscard?'暂无可过关的牌，可先弃牌或出牌。':'这手不足目标，请继续出牌。'):suitFeedback?`${suitFeedback}${narrow?'':canDiscard?'可出牌，也可换牌。':'可继续选牌或出牌。'}`:selected.length?free.body:flushResult?flushText:'自己横滑选1–5张。想调整牌序，长按一张手牌，再点「左移」或「右移」。',
+            const independent={...free,body:this.erxiangTargetId?free.body:short?(canDiscard?'暂无可过关的牌，可先弃牌或出牌。':'这手不足目标，请继续出牌。'):suitFeedback?`${suitFeedback}${narrow?'':canDiscard?'可出牌，也可换牌。':'可继续选牌或出牌。'}`:selected.length?free.body:flushResult?flushText:'横滑选1–5张。长按手牌，可左移或右移。',
               ...(flushResult&&heartIds.length>=5?{focus:hiddenHearts?noviceHandPageFocus(this.hand,heartIds,visibleIds):undefined,recommendedCardIds:visibleHearts}:{}),choices};
             return practice(independent,'suit',heartIds.length>=5?heartIds:[],heartIds.length<5);
           }
@@ -707,6 +719,11 @@ export class GameScene extends Phaser.Scene {
           enabled:!!choice?.enabled&&!choice?.used&&this.run.phase==='await-input',canDiscard:!!this.run.stage&&this.run.stage.discardsLeft>=r2DiscardCost(this.run)&&this.run.drawPile.length>0&&this.run.gold>=(stageNotice(this.run)?.discardGoldCost??0),discardCost:r2DiscardCost(this.run),discardGoldCost:stageNotice(this.run)?.discardGoldCost??0});
       },
       onChoice:id=>{
+        if(opening?.run===this.run&&(id==='keep-pair'||id==='build-two-pair')){
+          opening.plan=opening.plan===id?undefined:id;
+          unmountNoviceGuide.refresh();
+          return;
+        }
         const owner=runController(this),lesson=this.activeNoviceHandLesson();
         if(owner&&lesson&&noviceGuide(this.run,owner.journal)?.step==='discard'){
           if(id==='flush-draw'||id==='flush-score'){lesson.chooseFlushPlan(id==='flush-draw'?'draw':'score');unmountNoviceGuide.refresh();return;}
@@ -808,10 +825,12 @@ export class GameScene extends Phaser.Scene {
           const slot=l.slots[index];if(!slot||!l.pc)return slot;
           return {...slot,width:Math.min(l.jokers.width/5,l.jokers.x+l.jokers.width-slot.x)};
         });
+        const empty=l.slots[owned.length];
+        const rack=empty&&{x:empty.x,y:l.jokers.y,width:l.jokers.x+l.jokers.width-empty.x,height:l.jokers.height};
         // The idle presentation area can hold the full lesson; hand and action
         // targets stay protected. Reserving this empty region forced scrolling.
         const controls=[l.hud,l.scoreBoard,l.hand,l.actions,...Object.values(l.buttons),l.heroAction,l.inventoryEntry,l.helpEntry,...owned];
-        return {highlights,anchor:l.mode==='portrait'&&!owned.length&&this.run.stageIndex===0?map(l.jokers):undefined,
+        return {highlights,anchor:rack&&rack.width>=168&&(l.pc||l.mode==='portrait')?map(rack):undefined,
           avoid:[...controls.filter((box):box is import('./layout').Box=>!!box).map(map),...previewBoxes,...previewControls,...caption]};
       },
       visible:()=>!this.presentation&&!this.playing&&!document.querySelector('dialog[open]'),
@@ -1565,12 +1584,15 @@ export class GameScene extends Phaser.Scene {
     if(usesErxiangHandoff(this.run)&&!this.presentation&&!this.playing&&this.erxiangTargetId&&!erxiangChoice(this.run,preview,this.erxiangTargetId).selected)this.erxiangTargetId=null;
     const active=this.presentation?.score.sets.activeScoringIds??preview?.activeScoringIds??[];
     const pressureInput=this.bossPressureContext(),disabledIds=bossSuitDisabledCards(pressureInput.boss,pressureInput.stageIndex,pressureInput.hand,!!pressureInput.bossSuitRescue),suppressed=this.presentation?.score.events.filter(e=>e.operation==='ordinary-points-suppressed').map(e=>e.targetCardId)??r2ScoreContext(this.run,this.hand,[...this.selectedIds]).ordinaryPointsSuppressedIds;
+    const teachRoles=this.run.mode==='tutorial'&&this.run.stage?.index===0&&!this.presentation&&!this.pendingRefill&&preview;
+    const mainMark=this.assistProfile||usesAmoExile(this.run)||usesErxiangHandoff(this.run)?'主':'✓';
     this.cardViews.forEach((v,i)=>{
       const selected=this.selectedIds.has(v.card.id),scoring=active.includes(v.card.id);
       v.container.setData('selected',selected).setData('activeScoring',scoring);
       const assisted=(this.presentation?.score.sets.assistConsumedIds??this.assistIds).includes(v.card.id);
       const sacrificed=(this.presentation?.score.sets.discardedIds??(this.amoExile?amoExileChoice(this.run,[...this.selectedIds]).discardedIds:[])).includes(v.card.id);
-      v.selectionMark?.setText(sacrificed?'弃':assisted?'助':this.assistProfile||usesAmoExile(this.run)||usesErxiangHandoff(this.run)?'主':'✓').setVisible((selected||assisted||sacrificed)&&this.erxiangTargetId!==v.card.id);
+      const role=teachRoles?(scoring?'计':teachRoles.disabledIds.includes(v.card.id)?'封':'随'):mainMark;
+      v.selectionMark?.setText(sacrificed?'弃':assisted?'助':role).setVisible((selected||assisted||sacrificed)&&this.erxiangTargetId!==v.card.id);
       if(this.assistProfile&&v.selectionMark)v.selectionMark.setPosition(-Number(v.container.getData('width'))/2+12,Number(v.container.getData('height'))/2+10).setBackgroundColor(assisted?C.paperLight:C.jadeSoft).setName('selection/draft-role').setData('cardId',v.card.id);
       const disabled=disabledIds.includes(v.card.id),pointsZero=suppressed.includes(v.card.id);v.background.setFillStyle(disabled?0xd2d0cb:T.paper);
       this.refreshCardPressure(v);
@@ -1595,8 +1617,10 @@ export class GameScene extends Phaser.Scene {
   private placePlayedCaption(presenting:boolean):void {
     const l=this.view.layout;if(l.mode!=='portrait')return;
     const label=this.view.root.list.find(o=>o.name==='table/played-label') as Phaser.GameObjects.Text|undefined;if(!label)return;
-    const area=presenting||this.pendingRefill?toolInventoryPlayedArea(l):idlePlayedArea(l),plane=playedFootprint(area,true);
-    label.setPosition(plane.x,plane.y-18).setVisible(presenting||!!this.pendingRefill||this.selectedIds.size>0);
+    const area=presenting||this.pendingRefill?toolInventoryPlayedArea(l):idlePlayedArea(l);
+    const caption=playedCaptionBox(l,playedFootprint(area,true));
+    if(caption)label.setPosition(caption.x,caption.y);
+    label.setVisible(!!caption&&(presenting||!!this.pendingRefill||this.selectedIds.size>0));
   }
   private renderSelectedCards(preview?:HandPreview):void {
     this.resultText.setVisible(true);(this.view.root.list.find(o=>o.name==='table/played-label') as Phaser.GameObjects.Text|undefined)?.setText('待出牌');const p=toolInventoryPlayedArea(this.view.layout);
@@ -2395,8 +2419,8 @@ export class GameScene extends Phaser.Scene {
       const roles=preview.activeScoringIds.length+'计分'+(preview.accompanyingIds.length?' · '+preview.accompanyingIds.length+'随出':'')+(off?' · '+off+'失效':'');
       const title=challenge?.selection??HAND_LABELS[preview.type];
       const prefix=bossSuitRescueActive(this.run.stage)?'解封本手预计 ':plain?'预计转后 ':'预计 ';
-      const forecast=copy?prefix+copy.range+'分'+(plain?' · 不转 '+handForecastCopy(plain,this.heat,this.stage.targetHeat).range:'')+' · '+copy.result:unavailable!;
-      this.draftPanel.show(this.resultText,title,roles,forecast,copy?.base??'',idlePlayedArea(l).y,this.ready,this.bossSuitRescuePreview);
+      const amount=copy?prefix+copy.range+'分'+(plain?' · 不转 '+handForecastCopy(plain,this.heat,this.stage.targetHeat).range:''):unavailable!;
+      this.draftPanel.show(this.resultText,{name:title,roles,amount,forecast:copy,landingTop:idlePlayedArea(l).y,ready:this.ready,rescueLabel:this.bossSuitRescuePreview});
       return;
     }
     const remaining=BigInt(this.stage.targetHeat)-BigInt(this.heat),hands=BigInt(Math.max(1,this.handsLeft));

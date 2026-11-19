@@ -7,6 +7,7 @@ import {noviceHandPageFocus} from './NoviceFlushLesson';
 
 type OpeningPair={rank:string;ids:string[];score:string};
 export interface OpeningDeal {pairs:OpeningPair[];both:string}
+export type OpeningPlan='keep-pair'|'build-two-pair';
 const rangeText=({minimum,maximum}:{minimum:string;maximum:string})=>minimum===maximum?minimum:minimum+'–'+maximum;
 
 /** Compare only the two pairs visible in this deal, using the table's public score rules. */
@@ -26,10 +27,14 @@ export function openingDeal(input:AiHandInput,preferred:readonly string[]):Openi
  }catch{return;} // A different active skill can make a hypothetical selection illegal.
 }
 
-export function openingDealHint(hint:NoviceGuideHint,deal:OpeningDeal,hand:AiHandInput['hand'],selected:readonly string[],visible:string[],draftScore?:string):NoviceGuideHint|undefined {
+export function openingDealHint(hint:NoviceGuideHint,deal:OpeningDeal,hand:AiHandInput['hand'],selected:readonly string[],visible:string[],draftScore?:string,plan?:OpeningPlan):NoviceGuideHint|undefined {
  const [first,other]=deal.pairs;
  const chosen=new Set(selected);
- if(selected.some(id=>!deal.pairs.some(pair=>pair.ids.includes(id))))return;
+ if(selected.some(id=>!deal.pairs.some(pair=>pair.ids.includes(id)))){
+  const card=selected.length===1&&hand.find(card=>card.id===selected[0]);
+  if(card&&draftScore)return {...hint,cue:'这张也能单出',beat:'高牌 '+draftScore+' 分',body:'想凑对子，点这张 '+rankLabel(card.rank)+' 取消，再找两张同点数的牌。',recommendedCardIds:visible.includes(card.id)?[card.id]:[],focus:undefined};
+  return;
+ }
  const picked=(pair:OpeningPair)=>pair.ids.filter(id=>chosen.has(id)).length;
  const [main,side]=picked(other)>picked(first)?[other,first]:[first,other];
  const mainCount=picked(main),sideCount=picked(side);
@@ -39,7 +44,16 @@ export function openingDealHint(hint:NoviceGuideHint,deal:OpeningDeal,hand:AiHan
  };
  if(!selected.length)return {...hint,body:'先点一张 '+main.rank+'，再找同点数的牌。花色可以不同。',...pointTo(main.ids)};
  if(mainCount===2&&sideCount===2)return {...hint,cue:'两对都齐了',beat:'两对预计 '+deal.both+' 分',body:'这四张一起出。想留一对，就点那两张收回。',...pointTo([],true)};
- if(mainCount===2&&sideCount===0)return {...hint,cue:'对子选好了',beat:'对子 '+main.score+' 分 → 两对 '+deal.both+' 分',body:'现在出牌能留下两张 '+side.rank+'；也可以把它们一起打。',...pointTo(side.ids,true)};
+ if(mainCount===2&&sideCount===0){
+  const choices=[
+   {id:'keep-pair',label:'留住两张 '+side.rank,cardIds:main.ids,selected:plan==='keep-pair'},
+   {id:'build-two-pair',label:'试着凑两对',cardIds:[...main.ids,...side.ids],selected:plan==='build-two-pair'},
+  ];
+  const body=plan==='keep-pair'?'点「出牌」，手中留一对 '+side.rank+'。'
+   :plan==='build-two-pair'?'再点两张 '+side.rank+'，看看分数。':'可出牌，也可再添一对。';
+  return {...hint,cue:'对子选好了',beat:'对子 '+main.score+' 分 → 两对 '+deal.both+' 分',body,choices,
+   ...pointTo(plan==='build-two-pair'?side.ids:[],plan!=='build-two-pair')};
+ }
  if(mainCount===2)return {...hint,cue:'再添一张就是两对',beat:'两对预计 '+deal.both+' 分',body:'再点另一张 '+side.rank+'，两对都能计分。',...pointTo(side.ids.filter(id=>!chosen.has(id)))};
  const missing=main.ids.filter(id=>!chosen.has(id));
  return {...hint,cue:sideCount?'两边各差一张':'再选另一张',beat:!sideCount&&draftScore?'单张 '+draftScore+' 分 → 对子 '+main.score+' 分':undefined,

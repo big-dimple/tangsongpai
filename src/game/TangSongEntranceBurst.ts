@@ -747,8 +747,8 @@ export function mountTangSongEnsembleBurst(
   host.append(hostNode);
 
   const theme = {
-    veilCenter: 'rgba(243, 234, 219, 0.96)',
-    veilEdge: 'rgba(243, 234, 219, 0.82)',
+    veilCenter: 'rgba(18, 48, 49, 0.62)',
+    veilEdge: 'rgba(18, 48, 49, 0.18)',
     scrollTop: '#fdf8ee',
     scrollBottom: '#f4ead6',
     mount: TEAL,
@@ -839,7 +839,7 @@ export function mountTangSongEnsembleBurst(
     const shakeX = shakeAmp ? Math.sin(elapsed * 0.095) * shakeAmp : 0;
     const shakeY = shakeAmp ? Math.cos(elapsed * 0.115) * shakeAmp * 0.6 : 0;
 
-    // 1. Full-bleed paper wash.
+    // Shade the river behind the scroll; keep the painted banks visible at its edges.
     const veil = ctx.createRadialGradient(s.vw / 2, s.vh / 2, 0, s.vw / 2, s.vh / 2, Math.max(s.vw, s.vh) * 0.75);
     veil.addColorStop(0, theme.veilCenter);
     veil.addColorStop(1, theme.veilEdge);

@@ -7,7 +7,7 @@ export function installOpeningAudio(audio:OpeningAudio,doc=document,target:Windo
  const hint=doc.createElement('button');hint.type='button';hint.className='opening-audio-hint';
  hint.textContent='轻点画面启音';hint.setAttribute('aria-label','轻点画面启音，也可按 Enter');
  const refresh=()=>{
-  const slot=doc.querySelector('#resource-loading .load-copy, .title-home .home-entry')
+  const slot=doc.querySelector('#resource-loading .load-copy, .title-home .home-sound')
     ??doc.querySelector('.run-menu-settings .audio-controls');
   const parent=slot??doc.body;
   if(hint.parentElement!==parent)parent.append(hint);

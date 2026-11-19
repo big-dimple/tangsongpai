@@ -29,7 +29,40 @@ async function checkHome(page) {
   for(const box of layout.actions)assert.ok(box.height>=44);
 }
 
+async function checkCoverPick(width,height,cardId,input) {
+  const touch=input==='touch',page=await browser.newPage({viewport:{width,height},hasTouch:touch,reducedMotion:'reduce'});
+  const readSelection=()=>page.evaluate(()=>[...window.__harness.game.scene.getScene('game').selectedIds]);
+  const use=async button=>{
+    if(touch)await button.tap();
+    else if(input==='keyboard'){await button.focus();await page.keyboard.press('Enter');}
+    else await button.click();
+  };
+  try {
+    await page.goto(url+'/?harness=1');await waitScene(page,'title');
+    await use(page.locator('[data-ui="title/action/pick-'+cardId+'"]'));
+    await waitScene(page,'game');await page.locator('[data-novice-guide-step="pair"] .novice-guide-title').waitFor();
+    const first=await saved(page);
+    assert.deepEqual(await readSelection(),[cardId]);assert.equal(first.state.stage.heat,'0');assert.equal(first.state.stage.handsLeft,4);
+    const match=first.state.handOrder.find(id=>id!==cardId&&id.split('-')[1]===cardId.split('-')[1]);
+    await tapUI(page,'game','card/'+match,touch);
+    for(const id of ['build-two-pair','keep-pair']){
+      const choice=page.locator('[data-novice-guide-choice="'+id+'"]');await use(choice);
+      await page.waitForFunction(id=>document.querySelector('[data-novice-guide-choice="'+id+'"]')?.getAttribute('aria-pressed')==='true',id);
+      assert.deepEqual((await readSelection()).sort(),[cardId,match].sort());
+      assert.deepEqual(await saved(page),first,'a rehearsal changes neither the journal nor the checkpoint');
+    }
+    await page.reload();await waitScene(page,'title');
+    assert.equal(await page.locator('.home-pick:visible').count(),0);
+    await use(page.getByRole('button',{name:'继续本局',exact:true}));await waitScene(page,'game');
+    assert.deepEqual(await readSelection(),[]);assert.deepEqual(await saved(page),first);
+    console.log('PASS cover pick, both choices and clean resume',width,input,cardId);
+  }finally {await page.close();}
+}
+
 try {
+  await checkCoverPick(390,844,'hearts-5','touch');
+  await checkCoverPick(320,568,'diamonds-4','keyboard');
+  await checkCoverPick(1366,768,'clubs-5','mouse');
   for(const [width,height] of [[320,568],[390,844],[1366,768]]){
     const touch=width<640,context=await browser.newContext({viewport:{width,height},hasTouch:touch,reducedMotion:'reduce'});
     const page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
@@ -41,7 +74,10 @@ try {
     assert.deepEqual(await saved(page),baseline);
     await page.evaluate(()=>window.__harness.game.scene.getScene('title').home.update({summary:['文成公主','普通模式','第 9,007,199,254,740,991 章','金币 9,007,199,254,740,991'],canContinue:true,canStart:true,canTutorial:true,notice:true}));
     for(const zoom of [1.25,2]){
-      await page.evaluate(z=>{document.documentElement.style.zoom=String(z);},zoom);
+      await page.evaluate(z=>{
+        document.documentElement.style.zoom=String(z);
+        document.querySelector('.title-home').scrollTop=0;
+      },zoom);
       await checkHome(page);
       for(const button of await page.locator('.home-actions button:visible').all())await button.scrollIntoViewIfNeeded();
     }
