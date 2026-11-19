@@ -13,6 +13,7 @@ import {mountF09Detail} from './F09Art';
 import {createJokerRarityElement,type JokerRarity} from './JokerRarity';
 import {openCardArtZoom} from './CardArtZoomModal';
 import {portraitCardArt} from './CardArtSource';
+import {pairPracticeView} from './PairPractice';
 import './DetailDialog.css';
 import {wholeActionSurface} from './WholeActionSurface';
 import './DetailArtBackground.css';
@@ -30,7 +31,7 @@ export function modalBlocksCanvas(x:number,y:number,observe?:(gate:{blocked:bool
 interface DialogAction {label:string;run:()=>void|Promise<void>;disabled?:boolean;primary?:boolean}
 type ArtLoadStatus='unregistered'|'idle'|'loading'|'loaded'|'failed';
 /** These vertical paintings place their principal figure away from the default crop centre. */
-const backgroundArtPosition:Readonly<Record<string,string>>={c04:'50% 85%',f09:'50% 0%'};
+const backgroundArtPosition:Readonly<Record<string,string>>={b02:'65% 25%',c04:'50% 85%',f09:'50% 0%'};
 interface DialogOptions {scoreTimeline?:readonly import('./ScoreReview').ScoreReviewStep[];artBackground?:{position?:string};heroRun?:R2RunState;guideSteps?:{labels:readonly string[];current:number};choices?:readonly (DialogAction&{detail?:string})[];secondaryActions?:readonly DialogAction[];keepsake?:BuildKeepsake;keepsakeCompact?:boolean;shopContext?:'purchase'|'held'|'compare'|'sale';cards?:readonly ExperienceCard[];onClose?:()=>void;summaryBody?:string;effectBody?:string;editionBody?:string;ability?:CardAbilityCopy;collapseRules?:boolean;rulesLabel?:string;f09?:{inactive:boolean;bodyInactive?:boolean;alignedLayers?:boolean;reduced:boolean;reason?:string};closeLabel?:string;rarity?:JokerRarity;artLoad?:{status:ArtLoadStatus;readStatus?:()=>ArtLoadStatus;retry?:()=>Promise<boolean>};portrait?:{url:string;thumbnailUrl?:string;fallbackUrl?:string;alt:string;layout?:'card';caption?:string}}
 export class DetailDialog {
   private dialog?:HTMLDialogElement;
@@ -80,6 +81,8 @@ export class DetailDialog {
     const dialog=retained??document.createElement('dialog'),header=document.createElement('header'),heading=document.createElement('h2'),content=document.createElement('p'),layout=document.createElement('div'),copy=document.createElement('div'),row=document.createElement('div'),status=document.createElement('p');
     if(options.shopContext)dialog.dataset.shopContext=options.shopContext;
     dialog.className='detail-dialog'+(options.ability?.plain?' detail-dialog--plain-joker':'');dialog.setAttribute('aria-label',title);heading.textContent=title;content.textContent=body;content.className='dialog-body';row.className='dialog-actions';
+    const practicePurchase=!!options.ability?.pairPractice&&options.shopContext==='purchase';
+    if(practicePurchase){dialog.classList.add('detail-dialog--pair-purchase');heading.textContent=title.split(' · ')[0];}
     status.className='dialog-status';status.setAttribute('role','status');status.hidden=true;
     header.className='dialog-header';layout.className='dialog-content';copy.className='dialog-copy';const intro=document.createElement('div');intro.className='dialog-intro';
     const eyebrow=document.createElement('span');eyebrow.className='dialog-eyebrow';eyebrow.textContent=options.portrait?'卡牌图鉴':'牌桌手记';eyebrow.textContent=options.shopContext==='purchase'?'现货 · 确认后付款':options.shopContext==='sale'?'已持 · 确认后出售':options.shopContext==='held'?'当前持有':options.shopContext==='compare'?'现货与已持':eyebrow.textContent;header.append(eyebrow,heading);
@@ -182,7 +185,9 @@ export class DetailDialog {
         for(const step of options.ability.plain.steps.steps){const item=document.createElement('li'),when=document.createElement('p'),effect=document.createElement('strong');when.className='ability-when';when.textContent=step.when;effect.textContent=step.effect;if(step.when)item.append(when);item.append(effect);steps.append(item);}ability.append(steps);
         const limits=document.createElement('ul');limits.className='ability-limits ability-step-limits';limits.setAttribute('aria-label','关键限制');for(const text of options.ability.plain.steps.limits){const item=document.createElement('li');item.textContent=text;limits.append(item);}if(limits.childElementCount)ability.append(limits);
       }else if(options.ability.playerCopy){ability.classList.add('is-player-copy');value.textContent=options.ability.plain?.effectLine??options.ability.plain?.line??options.ability.condition;condition.textContent=options.ability.plain?[options.ability.plain.timingLine,options.ability.plain.essential].filter(Boolean).join('\n'):options.ability.value;value.className='ability-main';condition.className='ability-limits';ability.append(value);if(condition.textContent)ability.append(condition);}else ability.append(condition,value);
-      if(options.ability.state){state.textContent=(options.ability.plain?.steps?'现在：':'')+(options.ability.plain?.status??options.ability.state);ability.append(state);}intro.append(ability);
+      if(practicePurchase&&options.ability.plain?.timingLine)condition.textContent=options.ability.plain.timingLine;
+      if(options.ability.state&&!practicePurchase){state.textContent=(options.ability.plain?.steps?'现在：':'')+(options.ability.plain?.status??options.ability.state);ability.append(state);}intro.append(ability);
+      if(options.ability.pairPractice)intro.append(pairPracticeView(options.ability.pairPractice));
       if(options.ability.flavor.trim()&&!options.shopContext){const flavor=document.createElement('p');flavor.className='card-flavor';flavor.textContent=options.ability.flavor;copy.append(flavor);}
     }
     if(options.effectBody&&!options.ability){const effect=document.createElement('p');effect.className='dialog-effect';effect.textContent=playerText(options.effectBody);intro.append(effect);}

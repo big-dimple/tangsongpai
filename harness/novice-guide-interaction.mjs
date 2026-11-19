@@ -68,7 +68,7 @@ try {for(const spec of cases){
   }
   await tapUI(page,'game','card/clubs-5',spec.touch);await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='再选另一张');await page.waitForTimeout(220);
   let one=await capture('01-one-selected');assert.equal(one.rings.length,1);const remaining=one.cards.find(c=>c.id==='hearts-5'),ring=one.rings[0];assert.ok(remaining&&Math.abs(ring.x-remaining.x)<2&&Math.abs(ring.y-remaining.y)<2,`one cue follows the other card: ${JSON.stringify({ring,remaining})}`);
-  await tapUI(page,'game','card/clubs-5',spec.touch);await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='先去理牌区');
+  await tapUI(page,'game','card/clubs-5',spec.touch);await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='先找一对');
   await tapUI(page,'game','card/clubs-4',spec.touch);await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='再选另一张');assert.match(await page.locator('.novice-guide-body').innerText(),/4/);await capture('02-other-pair');await tapUI(page,'game','card/clubs-4',spec.touch);
   await tapUI(page,'game','action/sort-rank',spec.touch);await waitReady();
   for(let i=0;i<10;i++){const sample=await measure();if(sample.cards.slice(0,1).every(card=>sample.rings.some(r=>Math.abs(r.x-card.x)<2&&Math.abs(r.y-card.y)<2)))break;await page.waitForTimeout(20);}
@@ -77,37 +77,59 @@ try {for(const spec of cases){
   let before=await state();await tapUI(page,'game','action/play',spec.touch);await settleAfterAction(before);let current=await state();assert.equal(current.lastTrace.handType,'pair');assert.equal(current.lastTrace.finalScore,'90');await guide('discard');await capture('03b-pair-score');
   assert.equal(await page.locator('.novice-guide-progress').innerText(),'对子入账 +'+current.lastTrace.finalScore+' 分');
   const saved={runId:current.runId,seq:current.commandSeq};await page.reload();await waitScene(page,'title');await tapUI(page,'title','action/title-continue',spec.touch);await waitScene(page,'game');await waitReady();await guide('discard');current=await state();assert.equal(current.runId,saved.runId);assert.equal(current.commandSeq,saved.seq);await capture('03c-restored');
-  await click(page.locator('[data-novice-guide-choice="flush-draw"]'));
-  await click(page.locator('[data-novice-guide-details-toggle]'));const breakdown=page.locator('dialog[open]').last();assert.ok((await breakdown.innerText()).includes(current.stage.heat+'/'+current.stage.targetHeat),'score details show the saved total and target');await click(breakdown.getByRole('button',{name:'返回练习'}));
-  await discard(['clubs-4','diamonds-4']);await waitReady();await guide('independent');
-  await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='试试横滑选牌');await capture('04b-rank-swipe');
-  before=await state();await tapUI(page,'game','action/sort-suit',spec.touch);await waitReady();
-  await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='试试横滑选牌');current=await state();
-  assert.ok(current.commandSeq>before.commandSeq,'suit sorting saves a command');assert.equal((await journal()).at(-1).action.type,'ReorderHand');
-  await capture('04c-swipe-instruction');const swipeView=await observeSweep();
   const sameBox=(a,b)=>Math.abs(a.x-b.x)<2&&Math.abs(a.y-b.y)<2&&Math.abs(a.width-b.width)<2&&Math.abs(a.height-b.height)<2;
-  const endpoints=swipeView.cards.filter(card=>swipeView.rings.some(ring=>sameBox(ring,card)));
-  assert.ok(endpoints.length>=2,`the swipe endpoints are highlighted: ${JSON.stringify(swipeView)}`);
-  const positions=endpoints.map(card=>current.handOrder.indexOf(card.id)).sort((a,b)=>a-b),swept=current.handOrder.slice(positions[0],positions.at(-1)+1);
-  assert.ok(swept.length>=2&&swept.length<=5,`the highlighted span contains 2–5 cards: ${JSON.stringify({endpoints,swept})}`);
-  const sweepCards=swept.map(id=>swipeView.cards.find(card=>card.id===id));assert.ok(sweepCards.every(card=>card&&card.suit===sweepCards[0].suit),'the whole visible span has one suit');
-  assert.deepEqual(await selected(),[],'the sort leaves no selected cards');
-  const start=await point(page,'game','card/'+swept[0]),end=await point(page,'game','card/'+swept.at(-1));
-  if(spec.touch){
-   const touch=(type,points)=>cdp.send('Input.dispatchTouchEvent',{type,touchPoints:points.map(({x,y})=>({x,y,id:1,radiusX:2,radiusY:2,force:1}))});
-   await touch('touchStart',[start]);await touch('touchMove',[end]);assert.equal(await page.locator('.novice-guide-title').textContent(),'试试横滑选牌','the lesson waits for release');await touch('touchEnd',[]);
-  }else{
-   await page.mouse.move(start.x,start.y);await page.mouse.down();await page.mouse.move(end.x,end.y);assert.equal(await page.locator('.novice-guide-title').textContent(),'试试横滑选牌','the lesson waits for release');await page.mouse.up();
-  }
-  await waitReady();await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent!=='试试横滑选牌');await waitSelection(swept);await capture('04d-swipe-complete');
-  await select(swept);await waitSelection([]);await waitReady();row.sweep=swept;
-  const independent=await capture('05-independent');assert.equal(independent.rings.length,0,'independent play does not choose a card for the player');
-  const flush=page.locator('[data-novice-guide-choice="flush"]');await flush.waitFor({state:'visible'});const hearts=JSON.parse(await flush.getAttribute('data-card-ids'));current=await state();assert.equal(hearts.length,5);assert.ok(hearts.every(id=>current.handOrder.includes(id)&&id.startsWith('hearts-')),'the suggested flush uses five hearts in the real hand');await click(flush);await capture('05b-flush-choice');current=await play(hearts);assert.equal(current.lastTrace.handType,'flush');assert.equal(current.phase,'stage-cleared');await waitScene(page,'intermission');await guide('shop');await capture('06-win',false);
+  const ringedCards=async()=>{const {cards,rings}=await observeSweep();return cards.filter(c=>rings.some(r=>sameBox(c,r))).map(c=>c.id);};
+  const held=current.handOrder.filter(id=>current.deckInstances.find(c=>c.id===id).suit==='hearts');
+  assert.equal(held.length,3);assert.equal(await page.locator('.novice-guide-keep').count(),3);
+  const visibleTargets=await ringedCards();assert.ok(visibleTargets.length&&visibleTargets.every(id=>!held.includes(id)),'only exchangeable cards invite the first tap');
+  await select([visibleTargets[0]]);await waitSelection([visibleTargets[0]]);await waitReady();
+  assert.match(await page.locator('.novice-guide-body').innerText(),/已选1张待换/,'a direct tap enters the exchange without a menu');
+  await select([visibleTargets[0]]);await waitSelection([]);
+  await select(held);await waitSelection(held);await waitReady();await page.getByText('红桃先留在手里',{exact:true}).waitFor();
+  assert.deepEqual(new Set(await ringedCards()),new Set(held));assert.equal((await observeSweep()).rings.length,3,'a mistake points back to cards, never to play or discard');
+  assert.equal(await page.locator('.novice-guide-keep').count(),0);await capture('04a-return-hearts');
+  await select(held);await waitSelection([]);await page.getByText('留红桃，选杂牌',{exact:true}).waitFor();
+  before=await state();await tapUI(page,'game','action/sort-suit',spec.touch);await waitReady();
+  await page.getByText('选左侧其他花色',{exact:true}).waitFor();current=await state();
+  assert.ok(current.commandSeq>before.commandSeq);assert.equal((await journal()).at(-1).action.type,'ReorderHand');
+  await click(page.locator('[data-novice-guide-details-toggle]'));const breakdown=page.locator('dialog[open]').last();assert.ok((await breakdown.innerText()).includes(current.stage.heat+'/'+current.stage.targetHeat));await click(breakdown.getByRole('button',{name:'返回练习'}));await guide('discard');await page.getByText('选左侧其他花色',{exact:true}).waitFor();
+  const sweep=async ids=>{
+   const title=await page.locator('.novice-guide-title').innerText(),from=await point(page,'game','card/'+ids[0]),to=await point(page,'game','card/'+ids.at(-1));
+   assert.deepEqual(await ringedCards(),ids);
+   if(spec.touch){
+    const touch=(type,points)=>cdp.send('Input.dispatchTouchEvent',{type,touchPoints:points.map(({x,y})=>({x,y,id:1,radiusX:2,radiusY:2,force:1}))});
+    await touch('touchStart',[from]);await touch('touchMove',[to]);assert.equal(await page.locator('.novice-guide-title').innerText(),title);await touch('touchEnd',[]);
+   }else{
+    await page.mouse.move(from.x,from.y);await page.mouse.down();await page.mouse.move(to.x,to.y);assert.equal(await page.locator('.novice-guide-title').innerText(),title);await page.mouse.up();
+   }
+   await waitReady();
+  };
+  const left=['spades-14','spades-11'],right=['clubs-7','clubs-4','diamonds-4'],others=[...left,...right];
+  await capture('04b-leave-three-hearts');await sweep(left);await waitSelection(left);await page.getByText('选右侧其他花色',{exact:true}).waitFor();
+  await capture('04c-select-other-side');await sweep(right);await waitSelection(others);await page.getByText('选好了，试试换牌',{exact:true}).waitFor();
+  const exchangePreview=await page.evaluate(()=>{const s=window.__harness.game.scene.getScene('game');return {caption:s.view.root.getByName('table/played-label')?.text,amount:s.draftPanel.amount.text,play:s.playButton.getData('buttonPrimary'),discard:s.discardButton.getData('buttonPrimary')};});
+  assert.match(exchangePreview.amount,/待换 5 张.*留住 3 张红桃/);assert.equal(exchangePreview.discard,true);assert.equal(exchangePreview.play,false);if(exchangePreview.caption)assert.equal(exchangePreview.caption,'待换牌');
+  const discardPoint=await point(page,'game','action/discard'),finalRings=(await observeSweep()).rings;
+  assert.equal(finalRings.length,1);assert.ok(finalRings.some(r=>discardPoint.x>=r.x&&discardPoint.x<=r.x+r.width&&discardPoint.y>=r.y&&discardPoint.y<=r.y+r.height));await capture('04d-exchange-ready');
+  before=await state();await tapUI(page,'game','action/discard',spec.touch);await settleAfterAction(before);await waitReady();await guide('independent');current=await state();
+  assert.deepEqual(new Set((await journal()).at(-1).action.selectedIds),new Set(others));assert.equal(current.stage.discardsLeft,before.stage.discardsLeft-1);assert.equal(current.stage.handsLeft,before.stage.handsLeft);
+  const hearts=current.handOrder.filter(id=>current.deckInstances.find(c=>c.id===id).suit==='hearts');assert.equal(hearts.length,6);assert.ok(held.every(id=>hearts.includes(id)));
+  await page.getByText('红桃已经成花',{exact:true}).waitFor();assert.deepEqual(new Set(await ringedCards()),new Set(hearts));assert.equal(await page.locator('.novice-guide-keep').count(),0);await capture('05-real-refill');
+  await select(hearts.slice(0,5));await waitSelection(hearts.slice(0,5));await page.getByText('五张同花，出牌',{exact:true}).waitFor();await capture('05b-flush-ready');
+  before=await state();await tapUI(page,'game','action/play',spec.touch);await settleAfterAction(before);current=await state();assert.equal(current.lastTrace.handType,'flush');assert.equal(current.lastTrace.finalScore,'704');assert.equal(current.phase,'stage-cleared');row.exchange={held,discarded:others,hearts,score:current.lastTrace.finalScore};
+  await waitScene(page,'intermission');await guide('shop');await capture('06-win',false);
   await tapResult('action/continue-stage');await waitScene(page,'shop');await page.waitForFunction(()=>window.__harness.game.scene.getScene('shop').ready);await guide('shop');await page.locator('.qiyu-entrance-burst-canvas').waitFor({state:'detached'});await capture('07-shop',false);
   const growthCopy=await page.evaluate(()=>{const s=window.__harness.game.scene.getScene('shop'),walk=list=>list.flatMap(o=>[o,...(o.list?walk(o.list):[])]),offer=s.run.shop.offers.find(o=>o.definitionId==='f11'),text=walk(s.children.list).find(o=>o.name==='shop/offer-purpose'&&o.getData('offerId')===offer?.offerId),mobile=[...document.querySelectorAll('.shop-mobile-offer')].find(e=>e.innerText.includes('越战越勇'));return {text:text?.text,full:text?.getData('fullText'),mobile:mobile?.innerText,aria:window.__harness.game.canvas.getAttribute('aria-label')};});
   for(const copy of Object.values(growthCopy).filter(Boolean))assert.ok(!copy.includes('热度'),`visible/cached shop copy contains legacy term: ${JSON.stringify(growthCopy)}`);
   assert.ok(Object.values(growthCopy).some(copy=>copy?.includes('筹码')),'growth offer uses chips');row.growthCopy=growthCopy;
-  current=await state();const offer=current.shop.offers.find(x=>x.definitionId==='b02'&&!x.consumed);assert.ok(offer);await tapUI(page,'shop','offer/'+offer.offerId,spec.touch);let dialog=page.locator('dialog[open]').last();await dialog.waitFor();assert.equal(await dialog.locator('.novice-focus-action').count(),1,'purchase confirmation has one visual cue');await click(dialog.getByRole('button',{name:'购买 · 4 金',exact:true}));await guide('payoff');await capture('08-bought',false);
+  current=await state();const offer=current.shop.offers.find(x=>x.definitionId==='b02'&&!x.consumed);assert.ok(offer);await tapUI(page,'shop','offer/'+offer.offerId,spec.touch);let dialog=page.locator('dialog[open]').last();await dialog.waitFor();assert.equal(await dialog.locator('.novice-focus-action').count(),1,'purchase confirmation has one visual cue');
+  const sample=dialog.getByRole('region',{name:'点牌试算'}),output=sample.locator('output');
+  assert.match(await output.innerText(),/倍率 \+0\.5/);
+  await click(sample.getByRole('button',{name:'梅花 9'}));assert.match(await output.innerText(),/对子 · 2 张获得加成/);
+  await click(sample.getByRole('button',{name:'方块 9'}));assert.match(await output.innerText(),/倍率 \+1/);assert.match(await output.innerText(),/两对 · 4 张获得加成/);
+  assert.deepEqual(await state(),current,'try-on never buys a card or changes the run');
+  row.pairPractice=await output.innerText();await page.screenshot({path:join(dir,'07b-pair-practice.png')});
+  await click(dialog.getByRole('button',{name:'购买 · 4 金',exact:true}));await guide('payoff');await capture('08-bought',false);
   const rack=await page.evaluate(()=>{const s=window.__harness.game.scene.getScene('shop'),g=s.geometry();return{collapsed:g.inventoryCollapsed,slots:g.slots.length,owned:s.run.jokers.length};});
   assert.equal(rack.owned,1,'the real purchase added the first owned card');
   if(rack.collapsed){
@@ -118,7 +140,8 @@ try {for(const spec of cases){
   }
   await page.waitForFunction(()=>{const g=window.__harness.game.scene.getScene('shop').geometry();return !g.inventoryCollapsed&&g.slots.length===5;});
   await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='这里有五个槽');await capture('08b-owned-open',false);
-  await tapUI(page,'shop','action/start-stage',spec.touch);await waitScene(page,'game');await waitReady();assert.equal(await page.locator('.blind-select-dialog[open]').count(),0,'guided entry skips unrelated chapter selection');await guide('payoff');await capture('09-payoff-hand');
+  await tapUI(page,'shop','action/start-stage',spec.touch);await waitScene(page,'game');await waitReady();assert.equal(await page.locator('.blind-select-dialog[open]').count(),0,'guided entry skips unrelated chapter selection');await guide('payoff');await page.getByText('双鲤同游',{exact:true}).first().waitFor();await capture('09-payoff-hand');assert.equal(await page.locator('[data-novice-gesture][data-mode="hold"]').count(),0,'first show how the purchase scores');
+  if(spec.width===320){await click(page.locator('[data-novice-guide-choice="owned-hold"]'));await page.getByText('长按这张唐宋牌',{exact:true}).waitFor();await capture('09b-optional-hold');}
   let payoffPair;for(let attempt=0;attempt<4;attempt++){
    current=await state();payoffPair=findPair(current);if(payoffPair)break;assert.ok(current.stage.discardsLeft>0);await discard(current.handOrder.slice(0,5),'09a-payoff-discard');await guide('payoff');
   }assert.ok(payoffPair,'the real next-stage hand or replacement has a pair');
@@ -136,6 +159,7 @@ try {for(const spec of cases){
    current=await state();if(current.stage?.boss?.definitionId==='B01')assert.ok((await page.locator('.novice-guide-body').innerText()).includes('弃牌要用 2 次'),'the real first-hand discard cost remains visible');
   }
   current=await state();await play([current.handOrder[0]]);await guide('complete');await capture('15-complete',(await state()).phase==='await-input');assert.ok(await page.getByRole('button',{name:'开始普通游戏',exact:true}).isVisible());
+  if(spec.width===320){const end=await state();await click(page.getByRole('button',{name:'继续本局',exact:true}));await page.locator('[data-novice-guide-reopen]').waitFor();assert.equal((await state()).commandSeq,end.commandSeq);await click(page.locator('[data-novice-guide-reopen]'));await guide('complete');}
   if(spec.touch&&spec.width===390){await page.setViewportSize({width:390,height:660});await page.waitForTimeout(250);await capture('16-shorter-viewport',(await state()).phase==='await-input');await page.setViewportSize({width:390,height:740});}
   current=await state();row.completed={runId:current.runId,commandSeq:current.commandSeq,journalLength:(await journal()).length};
   await click(page.getByRole('button',{name:'开始普通游戏',exact:true}));await waitScene(page,'character-select');assert.equal((await state()).runId,current.runId);

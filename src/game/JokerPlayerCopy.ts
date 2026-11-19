@@ -173,5 +173,6 @@ export function jokerPlayerCopy(definition:R2JokerDefinition,instance:R2JokerIns
  if(saved)plain.status=plain.growthDecision?(instance&&ctx.scoringLimited?'当前计分暂停；':'')+saved.status.join('\n'):[...saved.status,plain.status].filter(Boolean).join('\n');
  if(temporary&&!events)plain.status=[plain.status,'直接热度／倍率加成只在当次计分生效，不保存、不跨手累计'].filter(Boolean).join('\n');
  if(plain.steps)plain.steps.status=plain.status;
- return{plain,condition:main,value:limits.join('\n'),state:state.join('\n'),rules:rules.join('\n'),flavor:'',summary:main,compact:memory.short,narrow:memory.short,benefit:'条件与效果',bodyActive,editionActive,playerCopy:true};
+ const pairPractice=!events&&definition.id==='b02'&&definition.hooks[0]?.condition.kind==='paired-rank'?definition:undefined;
+ return{plain,condition:main,value:limits.join('\n'),state:state.join('\n'),rules:rules.join('\n'),flavor:'',summary:main,compact:memory.short,narrow:memory.short,benefit:'条件与效果',bodyActive,editionActive,playerCopy:true,...(pairPractice?{pairPractice}:{})};
 }

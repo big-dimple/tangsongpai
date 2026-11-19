@@ -20,7 +20,7 @@ describe('player-led sorting and swiping',()=>{
   const lesson=new NoviceHandLesson(id);
   expect(lesson.recordSweep(update(),[],[enter])).toBe(true);
   expect(lesson.swept([enter])).toBe(true);expect(lesson.sortMode([enter])).toBeUndefined();
-  lesson.recordSort('rank',sort,[enter,sort]);lesson.recordSort('suit',later,[enter,sort,later]);
+  lesson.recordSort('rank',sort);lesson.recordSort('suit',later);
   const restored=new NoviceHandLesson(id);
   expect(restored.swept([enter,sort,later])).toBe(true);expect(restored.sortMode([enter,sort,later])).toBe('suit');
   expect(restored.swept([enter])).toBe(true);expect(restored.sortMode([enter])).toBeUndefined();
@@ -28,9 +28,9 @@ describe('player-led sorting and swiping',()=>{
  });
  it('rejects a foreign, missing or changed source command, even when the ID is reused',()=>{
   const lesson=new NoviceHandLesson(id),foreign={...sort,runId:'other'};
-  lesson.recordSort('suit',foreign,[foreign]);lesson.recordSort('rank',enter,[enter]);expect(lesson.sortMode([foreign,enter])).toBeUndefined();
+  lesson.recordSort('suit',foreign);lesson.recordSort('rank',enter);expect(lesson.sortMode([foreign,enter])).toBeUndefined();
   expect(lesson.recordSweep(update(),[],[foreign])).toBe(false);expect(lesson.recordSweep(update(),[],[])).toBe(false);
-  lesson.recordSort('rank',sort,[sort]);lesson.recordSweep(update(),[],[sort]);
+  lesson.recordSort('rank',sort);lesson.recordSweep(update(),[],[sort]);
   for(const receipt of [foreign,{...sort,expectedSeq:1},{...sort,action:later.action},{...sort,action:enter.action}]){
    expect(lesson.sortMode([receipt])).toBeUndefined();expect(lesson.swept([receipt])).toBe(false);
   }
@@ -55,14 +55,13 @@ describe('player-led sorting and swiping',()=>{
    values.set(key,JSON.stringify({sortId:sort.commandId,sortHash:stableHash(sort),swept,flushIntroSeen:true,flushSortedSeen:true}));
    const lesson=new NoviceHandLesson(id);
    expect(lesson.sortMode([sort])).toBe('suit');expect(lesson.flushPlan()).toBe('draw');expect(lesson.swept([sort])).toBe(swept);
-   expect(lesson.flushSortedSeen([sort])).toBe(true);lesson.recordSort('rank',later,[sort,later]);
-   expect(lesson.flushSortedSeen([sort,later])).toBe(true);expect(lesson.flushSortedSeen([])).toBe(false);
+   lesson.recordSort('rank',later);expect(lesson.sortMode([sort,later])).toBe('rank');expect(lesson.sortMode([])).toBeUndefined();
    expect(lesson.swept([later])).toBe(false);
   }
  });
  it('remains usable in memory when preference storage is unavailable',()=>{
   vi.stubGlobal('localStorage',{getItem:()=>{throw Error();},setItem:()=>{throw Error();}});
-  const lesson=new NoviceHandLesson(id);lesson.recordSort('suit',sort,[sort]);lesson.recordSweep(update(),[],[sort]);
+  const lesson=new NoviceHandLesson(id);lesson.recordSort('suit',sort);lesson.recordSweep(update(),[],[sort]);
   expect(lesson.sortMode([sort])).toBe('suit');expect(lesson.swept([sort])).toBe(true);
  });
 });

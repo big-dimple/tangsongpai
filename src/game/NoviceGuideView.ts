@@ -5,6 +5,7 @@ import './NoviceGuideView.css';
 /** All geometry is in browser viewport CSS pixels, not framebuffer pixels. */
 export interface NoviceGuideGeometry {
   highlights?:readonly Box[];
+  keptCards?:readonly Box[];
   /** A table can seat its coach in the unoccupied part of the joker rack. */
   anchor?:Box;
   /** Live input areas that neither the hint nor its reopen button may cover. */
@@ -16,6 +17,7 @@ export interface NoviceGuideStep {
   body:string;
   beat?:string;
   progress?:string;
+  closeLabel?:string;
   /** Optional explanation, initially collapsed and opened by the player. */
   details?:string;
   action?:{label:string;run:()=>void};
@@ -142,7 +144,7 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
   portrait.className='novice-guide-portrait';portrait.alt='';portrait.src=characterArt('erxiang','avatar')?.url??'';speaker.className='novice-guide-speaker';speaker.textContent='刘娥 · 陪你入局';
   announcement.className='novice-guide-announcement';announcement.setAttribute('role','status');announcement.setAttribute('aria-live','polite');announcement.setAttribute('aria-atomic','true');
   progress.className='novice-guide-progress';title.className='novice-guide-title';body.className='novice-guide-body';heading.append(speaker,progress,title);
-  closeButton.type='button';closeButton.className='novice-guide-close';closeButton.textContent='×';closeButton.setAttribute('aria-label','收起引导');closeButton.title='收起引导';closeButton.dataset.noviceGuideClose='';
+  closeButton.type='button';closeButton.className='novice-guide-close';closeButton.dataset.noviceGuideClose='';
   choiceRow.className='novice-guide-choice-row';choices.className='novice-guide-choices';choices.setAttribute('aria-label','选择要尝试的牌型');choiceRow.append(choices);
   footer.className='novice-guide-actions';
   skipButton.type='button';skipButton.className='novice-guide-skip';skipButton.textContent='跳过';skipButton.setAttribute('aria-label','跳过教学并开始普通游戏，之后可在菜单重看');skipButton.title='跳过教学并开始普通游戏，之后可在菜单重看';skipButton.dataset.noviceGuideSkip='';skipButton.hidden=!options.onSkip;
@@ -157,12 +159,14 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
   let step=options.step,closed=false,disposed=false,frame=0,choiceIds='';
   let revision=0,lastPositionRevision=-1,lastPositionKey='',lastLayout=-Infinity,positionedVisible=false,lastFocusPath='';
   let contentRevision=0,lastCompactContent=-1,lastCompactWidth=-1,lastCompactHeight=-1;
-  const ringNodes:HTMLDivElement[]=[];
+  const ringNodes:HTMLDivElement[]=[],keepNodes:HTMLSpanElement[]=[];
   const renderStep=()=>{
     contentRevision++;
     const label=step.beat??step.progress??stepProgress[step.id]??'';
     progress.classList.toggle('is-score',!!step.beat);
     root.dataset.noviceGuideStep=step.id;panel.dataset.emphasis=emphasis(step);progress.textContent=label;progress.hidden=!label;title.textContent=step.title;body.textContent=step.body;
+    closeButton.textContent=step.closeLabel??'×';closeButton.setAttribute('aria-label',step.closeLabel??'收起引导');closeButton.title=step.closeLabel??'收起引导';
+    closeButton.classList.toggle('is-text',!!step.closeLabel);
     const message=[label,step.title,step.body].filter(Boolean).join('。');
     if(announcement.textContent!==message)announcement.textContent=message;
     if(!step.action&&document.activeElement===actionButton)closeButton.focus({preventScroll:true});
@@ -204,7 +208,7 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
   };
   const position=()=>{
     if(disposed)return;
-    const {highlights=[],avoid=[],anchor}=options.getGeometry(),bounds=safeViewport(),visibleHighlights=highlights.filter(valid);
+    const {highlights=[],keptCards=[],avoid=[],anchor}=options.getGeometry(),bounds=safeViewport(),visibleHighlights=highlights.filter(valid);
     const seat=anchor??visibleHighlights[0];
     const inline=options.getInlineHost?.();
     if(inline?.isConnected){if(root.parentElement!==inline)inline.prepend(root);root.classList.add('is-inline');}
@@ -226,6 +230,13 @@ export function mountNoviceGuideView(options:NoviceGuideOptions):NoviceGuideHand
       if(!ring){ring=document.createElement('div');ring.className='novice-guide-ring';ring.dataset.noviceGuideHighlight='';ringNodes.push(ring);rings.append(ring);}
       Object.assign(ring.style,{left:'0',top:'0',transform:`translate3d(${b.x}px,${b.y}px,0)`,width:b.width+'px',height:b.height+'px'});
     }
+    const kept=closed?[]:keptCards.filter(valid);
+    while(keepNodes.length>kept.length)keepNodes.pop()!.remove();
+    kept.forEach((b,index)=>{
+      let seal=keepNodes[index];
+      if(!seal){seal=document.createElement('span');seal.className='novice-guide-keep';seal.textContent='留';keepNodes.push(seal);rings.append(seal);}
+      seal.style.transform=`translate3d(${b.x+4}px,${b.y+b.height-25}px,0)`;
+    });
     const quantize=(b:Box)=>[Math.round(b.x/8),Math.round(b.y/8),Math.round(b.width/8),Math.round(b.height/8)];
     const positionKey=JSON.stringify([revision,closed,!!inline?.isConnected,bounds,avoid.map(quantize),visibleHighlights.map(quantize),anchor&&quantize(anchor)]);
     if(positionKey===lastPositionKey)return;

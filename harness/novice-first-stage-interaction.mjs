@@ -17,7 +17,7 @@ await mkdir(out,{recursive:true});
 const git=(...args)=>execFileSync('git',args,{cwd:root,encoding:'utf8'}).trim();
 function sourceFingerprint(){
   const hash=createHash('sha256'),paths=['src','public','index.html','vite.config.ts','package.json','package-lock.json','harness/novice-first-stage-interaction.mjs','harness/ui.mjs'];
-  hash.update(execFileSync('git',['diff','--binary','HEAD','--',...paths],{cwd:root}));
+  hash.update(execFileSync('git',['diff','--full-index','HEAD','--',...paths],{cwd:root}));
   const untracked=execFileSync('git',['ls-files','-z','--others','--exclude-standard','--',...paths],{cwd:root,encoding:'utf8'});
   for(const relative of untracked.split('\0').filter(Boolean)){hash.update(relative);hash.update(readFileSync(join(root,relative)));}
   return hash.digest('hex');
@@ -171,7 +171,7 @@ try {for(const spec of cases){
     }
 
     // A shorter, legal exchange remains possible at every step of the example.
-    await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='下一手，你来拿主意');
+    await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='留红桃，选杂牌');
     await capture('09-three-hearts');
     const intro=page.locator('[data-novice-guide-choice="flush-draw"]');if(spec.touch)await intro.tap();else await intro.click();
     await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='让同花色排在一起');await capture('09a-sort-instruction');
@@ -199,6 +199,7 @@ try {for(const spec of cases){
         return buttons.length&&buttons.every(el=>{try {const ids=JSON.parse(el.dataset.cardIds);return ids.length&&ids.every(id=>hand.includes(id));}catch{return false;}});
       });
     };
+    const alternatives=page.locator('[data-novice-guide-choice="flush-options"]');await alternatives.waitFor();if(spec.touch)await alternatives.tap();else await alternatives.click();
     await waitChoices();
     const afterExchange=await capture('12-real-refill');const hearts=current.handOrder.filter(id=>id.startsWith('hearts-')).length;
     assert.match(afterExchange.body,new RegExp(hearts+'张红桃'),'the lesson reports the real replacement outcome');

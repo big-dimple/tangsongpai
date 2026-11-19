@@ -49,8 +49,17 @@ export class HandDraftPanel {
     this.hide();
   }
   hide():void{this.parts.setVisible(false);this.view.setEnabled(this.clear,false);}
+  showExchange(title:Phaser.GameObjects.Text,hearts:number,selected:number,selectedHearts:number,ready:boolean,landingTop:number):void{
+    const kept=hearts-selectedHearts;
+    const amount=selectedHearts?`收回 ${selectedHearts} 张红桃`:selected?`待换 ${selected} 张 · 留住 ${kept} 张红桃`:`再来 ${5-kept} 张红桃就成花`;
+    this.show(title,{name:'红桃同花',roles:`留手 ${kept} / 5`,amount,landingTop,ready:ready&&selected>0});
+    const symbols=Array.from({length:5},(_,i)=>i<kept?'♥':'♡').join('  ');
+    this.base.setText(symbols).setFontSize(16).setColor('#a94232');
+    this.amount.setColor(selectedHearts?'#943b2b':PAPER_CSS.jade);
+  }
   show(title:Phaser.GameObjects.Text,draft:DraftReadout):void{
     const {name,roles,amount,forecast,landingTop,ready,rescueLabel}=draft;
+    this.base.setColor(PAPER_CSS.mutedInk);this.amount.setColor('#963e2d');
     const b=this.box,hit=this.clear.getData('buttonBounds') as Box;
     const pad=12,x=b.x+pad,width=b.width-2*pad;
     const titleWidth=Math.max(42,hit.x-x-4),wide=titleWidth>=180;

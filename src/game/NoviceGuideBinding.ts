@@ -109,6 +109,7 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
   };
   const makeGeometryKey=(value:NoviceGuideGeometry)=>JSON.stringify([
     (value.highlights??[]).map(b=>[b.x,b.y,b.width,b.height]),
+    (value.keptCards??[]).map(b=>[b.x,b.y,b.width,b.height]),
     (value.avoid??[]).map(b=>[b.x,b.y,b.width,b.height]),
     value.anchor,
   ]);
@@ -144,7 +145,7 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
     ...(current.details?{details:current.details}:{}),
     ...(current.choices?{choices:current.choices.map(choice=>({...choice,run:()=>{if(stillCurrent(run,current))options.onChoice?.(choice.id);}}))}:{}),
     ...(current.step==='replay'?{action:{label:'重新练习',run:()=>{if(stillCurrent(run,current))invoke(run,options.onReplay);}}}:{}),
-    ...(current.step==='complete'?{action:{label:'开始普通游戏',run:()=>{if(stillCurrent(run,current))invoke(run,options.onComplete);}}}:{}),
+    ...(current.step==='complete'?{closeLabel:run.state.phase==='run-lost'?undefined:'继续本局',action:{label:'开始普通游戏',run:()=>{if(stillCurrent(run,current))invoke(run,options.onComplete);}}}:{}),
   });
 
   const render=(forceGeometry=false)=>{
@@ -167,7 +168,7 @@ export function bindNoviceGuide(scene:Phaser.Scene,options:NoviceGuideBindingOpt
     // The saved hint already contains the score and goal. Keep it available
     // until the player's selection changes the prompt, rather than replacing
     // it with a timed sequence that can expire while the scene is obscured.
-    const currentKey=JSON.stringify([current.step,current.cue,current.beat,current.body,current.details,current.recommendedCardIds,current.offerIds,current.focus,current.choices,current.gesture,current.gestureCardIds]);
+    const currentKey=JSON.stringify([current.step,current.cue,current.beat,current.body,current.details,current.recommendedCardIds,current.keepCardIds,current.offerIds,current.focus,current.choices,current.gesture,current.gestureCardIds]);
     const hintChanged=shownHintKey!==currentKey;
     if(shownHint&&(shownHint.step!==current.step||shownHint.gesture!==current.gesture))clearPresented();
     const nextInlineHost=options.getInlineHost?.(),hostChanged=nextInlineHost!==inlineHost;inlineHost=nextInlineHost;

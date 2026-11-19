@@ -11,7 +11,8 @@ export function showCatalog(dialog:DetailDialog,run:R2RunState|undefined,current
  const showDetail=(entry:CatalogEntry)=>{
   if(!check())return;let stop=()=>{};
   const data=entry.sources.length?'公开记录：'+entry.sources.join('／')+'。上手来源仅表示实际记录有来源事件，不等于收益或当前存值。':'仅规则资料，不表示已获得。';
-  const element=dialog.open(entry.name+' · '+CATALOG_KINDS[entry.kind],entry.current+'\n\n'+data+'\n\n一般规则\n'+entry.rules,[{label:'返回查询',primary:true,run:()=>{if(check())showSearch();}}],{ability:entry.ability,portrait:entry.portrait,rarity:entry.rarity,...(entry.acquisition?{effectBody:entry.summary,summaryBody:entry.example,collapseRules:true,rulesLabel:'触发次数、代价与完整规则'}:{}),onClose:()=>stop()});stop=watch(element);
+  const body=[entry.current,data,...(entry.ability?[]:['一般规则\n'+entry.rules])].join('\n\n');
+  const element=dialog.open(entry.name+' · '+CATALOG_KINDS[entry.kind],body,[{label:'返回查询',primary:true,run:()=>{if(check())showSearch();}}],{ability:entry.ability,portrait:entry.portrait,rarity:entry.rarity,...(entry.acquisition?{effectBody:entry.summary,summaryBody:entry.example,collapseRules:true,rulesLabel:'触发次数、代价与完整规则'}:{}),onClose:()=>stop()});stop=watch(element);
   if(entry.acquisition){const section=document.createElement('section'),heading=document.createElement('h3');section.className='catalog-acquisition';heading.textContent='从哪里获得';section.append(heading);for(const paragraph of entry.acquisition.split('\n')){const text=document.createElement('p');text.className='dialog-body';text.style.marginBottom='12px';text.textContent=paragraph;section.append(text);}element.querySelector('.dialog-scroll')!.insertBefore(section,element.querySelector('.dialog-copy'));}
  };
  const showSearch=()=>{

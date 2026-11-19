@@ -54,15 +54,24 @@ export async function verifyProvenance(manifest, {root = process.cwd(), gitHisto
   assert.equal(new Set(manifest.assets.map(a => a.id)).size, manifest.assets.length, 'duplicate asset ID');
   const receipts = new Map(), originals = new Set(), runtimeFiles = new Set(), derivativeOnlyIds = [];
   const inventory=sourceInventory(root), verifySourceBytes=!!process.env.TANGSONGPAI_ASSETS_ROOT;
+  const receiptCheckout = ref => {
+    if (!ref.receiptRepository) return root;
+    assert.ok(process.env.TANGSONGPAI_ASSETS_ROOT, 'set TANGSONGPAI_ASSETS_ROOT to verify private Git history');
+    return process.env.TANGSONGPAI_ASSETS_ROOT;
+  };
   const readReceipt = ref => {
     assert.match(ref.receiptCommit, /^[a-f0-9]{40}$/, 'missing receipt commit');
-    const cacheKey = ref.sourceManifestPath + ':' + ref.receiptCommit;
+    if (ref.receiptRepository !== undefined) {
+      assert.equal(ref.receiptRepository, 'asset-archive', 'unknown receipt repository');
+      assert.equal(inventory.get(ref.sourceManifestPath)?.sha256, ref.sourceManifestSHA256, 'archived receipt SHA256');
+    }
+    const cacheKey = [ref.receiptRepository, ref.sourceManifestPath, ref.receiptCommit].join(':');
     let receipt = receipts.get(cacheKey);
     if (!receipt) {
       assert.ok(ref.sourceManifestPath.startsWith('art/sources/'), 'receipt outside source archive');
       receipt = readJSON(localPath(root, ref.sourceManifestPath));
       if (gitHistory) {
-        const committed = JSON.parse(execFileSync('git', ['show', ref.receiptCommit + ':' + ref.sourceManifestPath], {cwd: root, encoding: 'utf8', maxBuffer: 4 * 1024 * 1024}));
+        const committed = JSON.parse(execFileSync('git', ['show', ref.receiptCommit + ':' + ref.sourceManifestPath], {cwd: receiptCheckout(ref), encoding: 'utf8', maxBuffer: 4 * 1024 * 1024}));
         assert.equal(receiptHash(committed), receiptHash(receipt), ref.sourceManifestPath + ': receipt commit');
       }
       receipts.set(cacheKey, receipt);
@@ -97,7 +106,7 @@ export async function verifyProvenance(manifest, {root = process.cwd(), gitHisto
           const meta = await sharp(bytes).metadata();
           assert.deepEqual([meta.width, meta.height], [item.sourceWidth, item.sourceHeight], item.id + ': original dimensions');
         }
-        if (gitHistory) assert.equal(sha256(execFileSync('git', ['show', ref.receiptCommit + ':' + relative], {cwd: root, maxBuffer: 16 * 1024 * 1024})), item.sourceSHA256, item.id + ': committed original');
+        if (gitHistory) assert.equal(sha256(execFileSync('git', ['show', ref.receiptCommit + ':' + relative], {cwd: receiptCheckout(ref), maxBuffer: 16 * 1024 * 1024})), item.sourceSHA256, item.id + ': committed original');
         originals.add(relative);
       }
       sourceVerified++;

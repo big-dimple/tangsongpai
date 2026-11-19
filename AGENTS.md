@@ -51,6 +51,7 @@
 | 模式、难度、挑战、节目单 | `src/content/r2Modes.ts` |
 | 工具、道具、增强与版次 | `src/content/r2Tools.ts` |
 | 唐宋牌内容 | `src/content/r2-*.json`、`src/domain/r2PublishedContent.*` |
+| 唐宋牌题名、图鉴检索与首店试牌 | `src/game/tangsongCardNames.ts`、`src/game/Catalog.ts`、`src/game/PairPractice.ts` |
 | 存档与恢复 | `src/application/checkpoint.ts`、`src/application/SavedRun.ts`、`src/platform/IndexedDbSave.ts` |
 | 英雄身份与文案 | `src/game/HeroIdentity.ts`、`src/game/HeroText.ts`、`src/content/hero-text-spec.json` |
 | 扑克奇遇规则与事务 | `src/domain/r2PokerEncounter.ts`、`src/domain/r2PokerEncounterIdentity.ts` |

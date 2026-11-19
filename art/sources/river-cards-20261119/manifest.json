@@ -1,0 +1,69 @@
+{
+  "medium": "ChatGPT Images 2.6",
+  "encoding": {
+    "format": "webp",
+    "fit": "cover",
+    "position": "centre",
+    "effort": 6,
+    "quality": {
+      "thumbnail": 82,
+      "detail": 84
+    }
+  },
+  "assets": [
+    {
+      "id": "a11",
+      "name": "葫芦藏春",
+      "sourceFile": "a11-gourd.png",
+      "sourceWidth": 1122,
+      "sourceHeight": 1402,
+      "sourceBytes": 2639574,
+      "sourceSHA256": "fe1048f48ef416eb5b0b6a616bcaddb2d9b681476a99801a4909d1cbf5ac90f5",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/a11-gourd-1b3cf35ed1ce.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 3262,
+          "sha256": "1b3cf35ed1ceac7cbf7837b336a782b42468e88638b1409ca806c2340d8f6b5f"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/a11-gourd-b02232733972.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 55592,
+          "sha256": "b02232733972379195a6d4c03b216a44e613666c95a26b4f6e600df1fa9d7238"
+        }
+      ]
+    },
+    {
+      "id": "b02",
+      "name": "双鲤同游",
+      "sourceFile": "b02-twin-carp.png",
+      "sourceWidth": 1122,
+      "sourceHeight": 1402,
+      "sourceBytes": 3002990,
+      "sourceSHA256": "2ceb3910a14c83e5774155624c10b987e4101de5ad2eb4d5b293ae0923f5ff3d",
+      "outputs": [
+        {
+          "purpose": "thumbnail",
+          "path": "cards/b02.thumbnail.webp",
+          "width": 128,
+          "height": 160,
+          "bytes": 3832,
+          "sha256": "6e8d5e809b2ed5c557a25663bf5156def02ba29583d7f466c5101d4cad4ec293"
+        },
+        {
+          "purpose": "detail",
+          "path": "cards/b02.detail.webp",
+          "width": 615,
+          "height": 768,
+          "bytes": 70512,
+          "sha256": "c17a391aedfcb29035c444130dddeb461b2cbcc796376596712fe9e2e62a39e2"
+        }
+      ]
+    }
+  ]
+}

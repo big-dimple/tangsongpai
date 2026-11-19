@@ -297,19 +297,12 @@ async function scenario(spec){
       const trace=current.lastTrace;assert.ok(fractionsEqual(trace.accumulator.H,trace.accumulator.M,trace.finalScore),'opening displayed product is backed by exact saved score');
       const base=trace.events.find(e=>e.phase==='base'&&e.operation==='base'),ordinary=trace.events.filter(e=>e.phase==='onCardScore'&&e.sourceType==='card'&&e.sourceDefinitionId.startsWith('rank-')&&e.operation==='add-heat');
       assert.ok(base&&ordinary.length===trace.sets.activeScoringIds.length,'the saved opening score has a complete base and card-event chain');
-      await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='下一手，你来拿主意');
-      const discardView=await shot('05-three-hearts');assert.match(discardView.text,/3张红桃/);assert.match(discardView.text,/5张同花色/);assert.match(discardView.text,/落空/,'the next draw is not promised');
+      await page.waitForFunction(()=>document.querySelector('.novice-guide-title')?.textContent==='留红桃，选杂牌');
+      const discardView=await shot('05-three-hearts');assert.match(discardView.text,/3张红桃/);assert.match(discardView.text,/还差2张/);assert.match(discardView.text,/有机会/,'the next draw is not promised');
       const openingHearts=['hearts-10','hearts-6','hearts-3'];
       assert.deepEqual(sorted(current.handOrder.filter(id=>id.startsWith('hearts-'))),sorted(openingHearts));
-      const firstVisible=current.handOrder.indexOf(discardView.cards[0].id);
-      for(const id of openingHearts){
-        const card=discardView.cards.find(c=>c.id===id);
-        if(card)assert.ok(discardView.rings.some(r=>sameBox(r,card)),`visible ${id} is highlighted before sorting`);
-        else {
-          const nav=await point(page,'game',current.handOrder.indexOf(id)<firstVisible?'action/hand-previous':'action/hand-next');
-          assert.ok(nav.enabled&&discardView.rings.some(r=>nav.x>=r.x&&nav.x<=r.x+r.width&&nav.y>=r.y&&nav.y<=r.y+r.height),`the highlighted page arrow leads to ${id}`);
-        }
-      }
+      const lit=discardView.cards.filter(card=>discardView.rings.some(r=>sameBox(r,card)));assert.ok(lit.length&&lit.every(c=>!openingHearts.includes(c.id)),'every suggested tap selects a card to exchange');
+      assert.equal(await page.locator('.novice-guide-keep').count(),discardView.cards.filter(c=>openingHearts.includes(c.id)).length);
       if(spec.width===320&&!diagnostic){
         await page.waitForTimeout(10000);const lasting=await shot('05b-three-hearts-after-ten-seconds');
         assert.equal(lasting.title,discardView.title,'the player controls when to proceed');assert.equal(lasting.body,discardView.body,'the goal and caveat remain readable');
@@ -360,6 +353,7 @@ async function scenario(spec){
       const afterRefill=await shot('12-actual-refill'),actualHearts=current.handOrder.filter(id=>id.startsWith('hearts-'));
       assert.equal(actualHearts.length,3+Math.min(spec.discardCount,3),'fixed-seed refill produces the observed count');
       assert.match(afterRefill.body,new RegExp(actualHearts.length+'张红桃'),'the guidance reports the actual result');
+      await click(page.locator('[data-novice-guide-choice="flush-options"]'));await page.locator('[data-novice-guide-choice]:not([data-card-ids="[]"])').first().waitFor();
       await choose(actualHearts.slice(0,4));await page.waitForFunction(()=>window.__harness.game.scene.getScene('game').resultText.text.includes('高牌'));
       const four=await shot('13-four-hearts-high-card');assert.match(four.result??'',/高牌/);assert.match(four.text,/同花|同花色|同色/);assert.match(four.text,/差1张/);assert.match(four.text,/最高/);
       if(actualHearts.length>=5){

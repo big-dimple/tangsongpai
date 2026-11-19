@@ -2,7 +2,7 @@
   "schemaVersion": 2,
   "originalArtworkCount": 75,
   "runtimeFileCount": 147,
-  "runtimeBytes": 9701766,
+  "runtimeBytes": 9646280,
   "sourceCommit": "c618cee93089bb2e556f16567709b0ea23abbcb9",
   "assets": [
     {
@@ -1053,20 +1053,20 @@
       "category": "functional-card",
       "outputs": [
         {
+          "purpose": "thumbnail",
+          "path": "cards/b02.thumbnail.webp",
           "width": 128,
           "height": 160,
-          "bytes": 5126,
-          "sha256": "48f776f675669ce9799a3fea27968f4d6ed6dd97921816ee04b3d3b7d8b5d999",
-          "purpose": "thumbnail",
-          "path": "cards/b02.thumbnail.webp"
+          "bytes": 3832,
+          "sha256": "6e8d5e809b2ed5c557a25663bf5156def02ba29583d7f466c5101d4cad4ec293"
         },
         {
+          "purpose": "detail",
+          "path": "cards/b02.detail.webp",
           "width": 615,
           "height": 768,
-          "bytes": 69014,
-          "sha256": "edb103560a9f997e172b66c53ba5e2b41eab644b3d52b8c97c6171774092e173",
-          "purpose": "detail",
-          "path": "cards/b02.detail.webp"
+          "bytes": 70512,
+          "sha256": "c17a391aedfcb29035c444130dddeb461b2cbcc796376596712fe9e2e62a39e2"
         }
       ],
       "historicalSources": [
@@ -1074,12 +1074,20 @@
           "receiptCommit": "421dbf9f7a1a09ca81f275ad8c32eafac4b14db5",
           "sourceManifestPath": "art/sources/handdrawn-runtime-20261004-b6/manifest.json",
           "sourceManifestSHA256": "1475afe4928e9d6b092930a5b5a3b9628df26c0f9655b2da20e9780a6bd05581"
+        },
+        {
+          "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+          "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+          "outputsRoot": "public/assets/handdrawn-p08",
+          "outputsCommit": "604251857bb1997a7a67e3dccd6c17fec70f6c17"
         }
       ],
       "currentSource": {
-        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
-        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
-        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "receiptCommit": "ea1f2a2963ece5e5fda004dcdc6105a0244e1a21",
+        "receiptRepository": "asset-archive",
+        "sourceManifestPath": "art/sources/river-cards-20261119/manifest.json",
+        "sourceManifestSHA256": "8c32ec3458bf670d8e90938cb5c6764dc641f5a20932d04f07c09ef6b70be3a1",
         "status": "source-verified"
       }
     },
@@ -1621,20 +1629,20 @@
       "category": "functional-card",
       "outputs": [
         {
+          "purpose": "thumbnail",
+          "path": "cards/a11-gourd-1b3cf35ed1ce.thumbnail.webp",
           "width": 128,
           "height": 160,
-          "bytes": 6878,
-          "sha256": "3717b4202b0163feb8bdb8f2a81cd5d1dd3c094413501480c4453bb48c4acbdf",
-          "purpose": "thumbnail",
-          "path": "cards/a11-v3-3717b4202b01.thumbnail.webp"
+          "bytes": 3262,
+          "sha256": "1b3cf35ed1ceac7cbf7837b336a782b42468e88638b1409ca806c2340d8f6b5f"
         },
         {
+          "purpose": "detail",
+          "path": "cards/a11-gourd-b02232733972.detail.webp",
           "width": 615,
           "height": 768,
-          "bytes": 107666,
-          "sha256": "9a3c66b239fcdbee26aebeedeb9a86eccf6d6c294c3c566d02448f4003b4dbc9",
-          "purpose": "detail",
-          "path": "cards/a11-v3-9a3c66b239fc.detail.webp"
+          "bytes": 55592,
+          "sha256": "b02232733972379195a6d4c03b216a44e613666c95a26b4f6e600df1fa9d7238"
         }
       ],
       "historicalSources": [
@@ -1642,12 +1650,20 @@
           "receiptCommit": "cd11009db796c815c21de6ba165e3697632e7334",
           "sourceManifestPath": "art/sources/handdrawn-runtime-a11-fix-20261004/manifest.json",
           "sourceManifestSHA256": "11f1d97c84841fba5f65535a298e08f25b5ceb3d99282ee1669dfc50fedece21"
+        },
+        {
+          "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
+          "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
+          "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+          "outputsRoot": "public/assets/handdrawn-p08",
+          "outputsCommit": "604251857bb1997a7a67e3dccd6c17fec70f6c17"
         }
       ],
       "currentSource": {
-        "receiptCommit": "fddb7378112304ead60d67a676e73bb4a3fe2ec0",
-        "sourceManifestPath": "art/sources/handdrawn-runtime-20261017-half1/manifest.json",
-        "sourceManifestSHA256": "a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6",
+        "receiptCommit": "ea1f2a2963ece5e5fda004dcdc6105a0244e1a21",
+        "receiptRepository": "asset-archive",
+        "sourceManifestPath": "art/sources/river-cards-20261119/manifest.json",
+        "sourceManifestSHA256": "8c32ec3458bf670d8e90938cb5c6764dc641f5a20932d04f07c09ef6b70be3a1",
         "status": "source-verified"
       }
     },

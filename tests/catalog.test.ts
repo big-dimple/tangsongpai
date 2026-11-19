@@ -6,6 +6,12 @@ import {applyCommand,createRun} from '../src/domain/run';
 import {newRunIdentity} from '../src/game/RunLaunch';
 const query:CatalogQuery={name:'',kind:'',use:'',source:''};
 const one=(s:ReturnType<typeof growthPlan>|undefined,id:string)=>catalogFacts(s).entries.find(e=>e.id===id)!;
+it('finds repainted and retitled cards by their former names',()=>{
+ const entries=catalogFacts().entries;
+ for(const [old,name] of [['心有灵犀','双鲤同游'],['梅开二度','葫芦藏春'],['待时而发','压轴好戏']]){
+  const found=queryCatalog(entries,{...query,name:old});expect(found.map(e=>e.name)).toEqual([name]);
+ }
+});
 it('offers five public rule categories without creating a run or promising a collection ledger',()=>{
  const f=catalogFacts();expect(f.identity).toEqual(newRunIdentity('erxiang','group'));expect(f.label).toBe('当前新局规则资料');
  expect(new Set(f.entries.map(e=>e.kind))).toEqual(new Set(['joker','tool','enhancement','item','hand']));expect(f.entries.filter(e=>e.kind==='joker')).toHaveLength(72);expect(f.entries.filter(e=>e.kind==='hand')).toHaveLength(12);

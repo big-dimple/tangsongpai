@@ -103,9 +103,9 @@ const orderRule=(reverse?:boolean)=>reverse?'本关的整手效果从右到左�
 const orderExample='假设同一阶段有两张牌生效，一张加 1 倍率，一张把倍率乘 2。从 2 倍起，先加后乘是 6 倍，先乘后加是 5 倍。';
 export function noviceOwnedPractice(hint:NoviceGuideHint,rail:Rail):NoviceGuideHint {
  const single=rail.count===1;
- const body=single?(rail.finePointer?'在牌面按住鼠标左键不动':'手指按住牌面不动')+'，等牌浮起再松手。有两张就能拖动换位。':
+ const body=single?(rail.finePointer?'按住鼠标左键，牌浮起后松开。':'按住牌面，浮起后松手。'):
   (rail.finePointer?'在第 1 张按住鼠标左键不动，等牌浮起，再拖到第 2 张后松开。':'按住第 1 张不动，等牌浮起，再拖到第 2 张后松手。')+'同阶段先加倍率再乘，得分可能更高。';
- return {...hint,cue:rail.swipedBeforeLift?'先按住别滑':single?'长按这张唐宋牌':'试试调整顺序',body,beat:orderRule(rail.reverse),details:orderExample,
+ return {...hint,cue:rail.swipedBeforeLift?'先按住别滑':single?'长按这张唐宋牌':'试试调整顺序',body,beat:single?undefined:orderRule(rail.reverse),details:single?undefined:orderExample,
   focus:undefined,recommendedCardIds:[],choices:undefined,gesture:single?'hold':'hold-drag'};
 }
 export function noviceOwnedSaved(hint:NoviceGuideHint,rail:Rail):NoviceGuideHint {

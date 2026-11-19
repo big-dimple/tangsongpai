@@ -7,7 +7,7 @@ import type {NoviceGuideHint} from './NoviceGuide';
 const PREFIX='tangsongpai-novice-hand-interaction-v1:';
 export type FlushPlan='draw'|'score';
 export type HandSort='rank'|'suit';
-type Lesson={sortId?:string;sortHash?:string;sortMode?:HandSort;sweepId?:string;sweepHash?:string;flushPlan?:FlushPlan;flushSortedSeen?:boolean};
+type Lesson={sortId?:string;sortHash?:string;sortMode?:HandSort;sweepId?:string;sweepHash?:string;flushPlan?:FlushPlan};
 type Seat={visible:boolean;hit:{y:number}};
 
 /** Only trace uninterrupted cards in one visible row. Prefer the player's example. */
@@ -34,17 +34,16 @@ export function noviceSwipePath(hand:readonly PlayingCard[],seats:readonly Seat[
 }
 
 /** Offer a real table action. The underlying hand, choices and resource counts stay player-owned. */
-export function handControlHint(hint:NoviceGuideHint,options:{mode:HandSort;needsSort:boolean;path:readonly string[];coarse:boolean;heartCount?:number}):NoviceGuideHint {
- const flush=options.heartCount?`手里有${options.heartCount}张红桃。`:'';
+export function handControlHint(hint:NoviceGuideHint,options:{mode:HandSort;needsSort:boolean;path:readonly string[];coarse:boolean}):NoviceGuideHint {
  if(options.needsSort){
   const rank=options.mode==='rank';
-  return {...hint,cue:'先去理牌区',body:flush?flush+'点「花色」把它们排在一起。':rank?'点「点数」把对子排在一起。「花色」适合找同花。':'点「花色」把同花色排在一起。「点数」适合找对子。',
+  return {...hint,cue:'先去理牌区',body:rank?'点「点数」把对子排在一起。「花色」适合找同花。':'点「花色」把同花色排在一起。「点数」适合找对子。',
    recommendedCardIds:[],gesture:undefined,gestureCardIds:undefined,focus:rank?'sort-rank':'sort-suit'};
  }
  const path=options.path;
  if(path.length<2)return hint;
  const how=options.coarse?'沿亮线横滑连选，松手看预估。从已选牌起滑可连撤。':'按住鼠标左键沿亮线拖动，松开看预估。从已选牌起拖可连撤。';
- return {...hint,cue:'试试横滑选牌',body:flush+how,
+ return {...hint,cue:'试试横滑选牌',body:how,
   focus:undefined,recommendedCardIds:[path[0],path[path.length-1]],gesture:'sweep',gestureCardIds:[...path]};
 }
 
@@ -66,7 +65,6 @@ export class NoviceHandLesson {
     this.value.sweepId=data.sweepId;this.value.sweepHash=data.sweepHash;
    }else if(data.swept===true){this.value.sweepId=this.value.sortId;this.value.sweepHash=this.value.sortHash;}
    this.value.flushPlan=data.flushPlan==='score'?'score':data.flushPlan==='draw'||data.flushIntroSeen===true?'draw':undefined;
-   this.value.flushSortedSeen=data.flushSortedSeen===true;
   }catch{/* Optional storage can be unavailable. Keep the lesson playable in memory. */}
  }
  private save():void {this.revision++;try{localStorage.setItem(this.key,JSON.stringify(this.value));}catch{/* UI preferences must not block play. */}}
@@ -80,12 +78,10 @@ export class NoviceHandLesson {
  }
  swept(journal:readonly Command[]):boolean {return !!this.receipt(journal,this.value.sweepId,this.value.sweepHash);}
  flushPlan():FlushPlan|undefined {return this.value.flushPlan;}
- flushSortedSeen(journal:readonly Command[]):boolean {return !!this.sortMode(journal)&&this.value.flushSortedSeen===true;}
  chooseFlushPlan(plan:FlushPlan):void {this.value.flushPlan=plan;this.save();}
- recordSort(mode:HandSort,command:Command,journal:readonly Command[],flushDraw=false):void {
+ recordSort(mode:HandSort,command:Command):void {
   if(command.runId!==this.runId||command.action.type!=='ReorderHand')return;
-  const reviewed=flushDraw&&mode==='suit'||this.flushSortedSeen(journal);
-  this.value={...this.value,sortId:command.commandId,sortHash:stableHash(command),sortMode:mode,flushSortedSeen:reviewed};this.save();
+  this.value={...this.value,sortId:command.commandId,sortHash:stableHash(command),sortMode:mode};this.save();
  }
  recordSweep(update:HandSelectionUpdate,initialIds:readonly string[],journal:readonly Command[]):boolean {
   const command=journal.at(-1);

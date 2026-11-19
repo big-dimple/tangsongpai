@@ -9,9 +9,11 @@ const half1 = 'art/sources/handdrawn-runtime-20261017-half1/manifest.json';
 const half2 = 'art/sources/handdrawn-runtime-20261017-half2/manifest.json';
 const c06 = 'art/sources/qingchuyulan-art-20261017/manifest.json';
 const b05 = 'art/sources/fengmingchaoyang-art-20261017/manifest.json';
+const riverCards = 'art/sources/river-cards-20261119/manifest.json';
 const initialReceipt = readJSON('art/sources/handdrawn-runtime-20261004/manifest.json');
 const currentReceipts = [
-  [half1, 'fddb7378112304ead60d67a676e73bb4a3fe2ec0', 'a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6', 34],
+  [half1, 'fddb7378112304ead60d67a676e73bb4a3fe2ec0', 'a5a703a20c18ab3b9dca29b9a10cda15b50a22c37c7c804c07aaa8e09f8039b6', 32],
+  [riverCards, 'ea1f2a2963ece5e5fda004dcdc6105a0244e1a21', '8c32ec3458bf670d8e90938cb5c6764dc641f5a20932d04f07c09ef6b70be3a1', 2],
   [half2, 'c374c7aa31ec75f3a02b27b6d1bb0b6a5f8ea77e', '854b8f1d29a8aa511c7764c7f527eec8457c694d164c07f3a01f3920e73bb891', 36],
   [c06, '3897abbc80f71d760fa41a9a8330f9fb606e72ab', 'a248d6f72527d6e60c2ab9e01d1ede2b3eaf57ae6be562988c75d2a4ae62d863', 1],
   [b05, '70340cc590a22882948490e6276808b9d12cca70', '76459e0c50e2ba0763b7b5bdf81b71e00ca8de2c382406a28879983aed8d9e18', 1],
@@ -19,24 +21,27 @@ const currentReceipts = [
 
 it('verifies receipts and 147 outputs, reporting whether original bytes were checked', async () => {
   const strict=!!process.env.TANGSONGPAI_ASSETS_ROOT;
-  expect(await verifyProvenance(manifest)).toEqual({sourceReceiptsVerified:72, originalsRecorded:74, originalsVerified:strict?74:0, sourceBytesStatus:strict?'VERIFIED':'NOT_CHECKED',
+  expect(await verifyProvenance(manifest)).toEqual({sourceReceiptsVerified:72, originalsRecorded:76, originalsVerified:strict?76:0, sourceBytesStatus:strict?'VERIFIED':'NOT_CHECKED',
     derivativeOnlyIds:['j','q','k'],
-    runtimeFiles:147, runtimeBytes:9701766, receiptsVerified:16, gitHistory:false,
-    historicalGitOutputsVerified:0,historicalGitOutputsPending:4});
+    runtimeFiles:147, runtimeBytes:9646280, receiptsVerified:17, gitHistory:false,
+    historicalGitOutputsVerified:0,historicalGitOutputsPending:8});
 }, 30000);
 
 it.each(currentReceipts)('pins current receipt %s independently of its outputs', (file, commit, hash, count) => {
   expect(receiptHash(readJSON(file))).toBe(hash);
   const active = manifest.assets.filter(a => a.currentSource.sourceManifestPath === file);
   expect(active).toHaveLength(count);
-  for (const asset of active) expect(asset.currentSource).toEqual({receiptCommit:commit, sourceManifestPath:file, sourceManifestSHA256:hash, status:'source-verified'});
+  for (const asset of active) expect(asset.currentSource).toEqual({receiptCommit:commit, sourceManifestPath:file, sourceManifestSHA256:hash, status:'source-verified',...(file===riverCards?{receiptRepository:'asset-archive'}:{})});
 });
 
-it('distinguishes A11 v3 and the C06 override from their archived sources', () => {
-  const a11 = manifest.assets.find(a => a.id === 'a11'), blue = manifest.assets.find(a => a.id === 'c06');
-  expect(a11.currentSource.sourceManifestPath).toBe(half1);
+it('binds the new paintings while preserving their earlier receipts and the C06 override', () => {
+  const a11 = manifest.assets.find(a => a.id === 'a11'), fish=manifest.assets.find(a=>a.id==='b02'), blue = manifest.assets.find(a => a.id === 'c06');
+  for(const asset of [a11,fish]){
+    expect(asset.currentSource.sourceManifestPath).toBe(riverCards);
+    expect(asset.historicalSources.at(-1)).toMatchObject({sourceManifestPath:half1,outputsCommit:'604251857bb1997a7a67e3dccd6c17fec70f6c17'});
+  }
   expect(a11.historicalSources[0].sourceManifestPath).toBe('art/sources/handdrawn-runtime-a11-fix-20261004/manifest.json');
-  for (const output of a11.outputs) expect(output.path).toBe('cards/a11-v3-' + output.sha256.slice(0,12) + '.' + output.purpose + '.webp');
+  for (const output of a11.outputs) expect(output.path).toBe('cards/a11-gourd-' + output.sha256.slice(0,12) + '.' + output.purpose + '.webp');
   expect(blue.currentSource.sourceManifestPath).toBe(c06);
   expect(blue.historicalSources.map(s => s.sourceManifestPath)).toEqual(['art/sources/handdrawn-runtime-20261004-b9/manifest.json', half1]);
   const replacement = readJSON(c06), source='art/sources/qingchuyulan-art-20261017/' + replacement.sourceFilename;

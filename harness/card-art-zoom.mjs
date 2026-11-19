@@ -27,7 +27,7 @@ const geometry=page=>page.locator('.card-art-zoom-dialog').evaluate(d=>{
  const img=d.querySelector('.card-art-zoom-detail'),thumb=d.querySelector('.card-art-zoom-thumb');
  return {dialog:rect(d),close:rect(d.querySelector('.card-art-zoom-close')),image:rect(img),fit:getComputedStyle(img).objectFit,thumbFilter:getComputedStyle(thumb).filter,loaded:img.classList.contains('is-loaded'),natural:[img.naturalWidth,img.naturalHeight],focus:document.activeElement?.className};
 });
-async function catalog(page,name='梅开二度'){
+async function catalog(page,name=baseline?'梅开二度':'葫芦藏春'){
  await page.locator('.run-menu-toggle').click();await page.getByRole('button',{name:'图鉴查询',exact:true}).click();
  await page.getByRole('searchbox',{name:'按名字查找'}).fill(name);await page.getByRole('button',{name:'查看'+name,exact:true}).click();
  await page.locator('.dialog-card-art').waitFor();
@@ -47,7 +47,7 @@ try {
     row.geometry=await geometry(page);await page.screenshot({path:out+'/'+viewport.width+'-zoom-FAIL.png'});
    }else {
     // The actual native zoom button must activate with both Enter and Space.
-    const trigger=page.getByRole('button',{name:'放大鉴赏梅开二度',exact:true});await trigger.focus();await page.keyboard.press('Enter');
+    const trigger=page.getByRole('button',{name:'放大鉴赏葫芦藏春',exact:true});await trigger.focus();await page.keyboard.press('Enter');
     await page.waitForFunction(()=>document.querySelector('.card-art-zoom-detail')?.classList.contains('is-loaded'));
     row.geometry=await geometry(page);const g=row.geometry;
     assert.equal(g.fit,'contain');assert.equal(g.thumbFilter,'none');assert.ok(g.close.width>=44&&g.close.height>=44);assert.ok(g.close.x>=0&&g.close.y>=0&&g.close.right<=viewport.width&&g.close.bottom<=viewport.height);assert.ok(g.image.height>viewport.height-135);assert.ok(g.image.bottom<=viewport.height);
@@ -83,7 +83,7 @@ try {
    });
    try{
     await page.goto('http://127.0.0.1:5586/?harness=1');await waitScene(page,'title');await catalog(page);
-    await page.getByRole('button',{name:'放大鉴赏梅开二度',exact:true}).click();const zoom=page.locator('.card-art-zoom-dialog[open]');
+    await page.getByRole('button',{name:'放大鉴赏葫芦藏春',exact:true}).click();const zoom=page.locator('.card-art-zoom-dialog[open]');
     await zoom.getByRole('button',{name:'重试高清',exact:true}).waitFor({timeout:10000});
     row.fallback=await zoom.locator('.card-art-zoom-thumb').evaluate(i=>({natural:[i.naturalWidth,i.naturalHeight],visible:!i.hidden,filter:getComputedStyle(i).filter,fit:getComputedStyle(i).objectFit}));assert.deepEqual(row.fallback,{natural:[128,160],visible:true,filter:'none',fit:'contain'});
     await page.screenshot({path:out+'/390-'+failure+'-readable-fallback-PASS.png'});blocked=false;await zoom.getByRole('button',{name:'重试高清',exact:true}).click();await page.waitForFunction(()=>document.querySelector('.card-art-zoom-detail')?.classList.contains('is-loaded'));
@@ -106,10 +106,10 @@ try {
     });
     await page.waitForFunction(()=>window.__decodeRelease.length>0);await page.evaluate(async()=>{window.__holdDecode=false;window.__newZoom=(await import('/src/game/CardArtZoomModal.ts')).openCardArtZoom('a11');for(const release of window.__decodeRelease)release();});
     await page.waitForFunction(()=>document.querySelector('.card-art-zoom-detail')?.classList.contains('is-loaded'));
-    row.late=await page.evaluate(()=>({count:document.querySelectorAll('.card-art-zoom-dialog').length,oldConnected:window.__oldZoom.isConnected,title:document.querySelector('.card-art-zoom-title').textContent,lateDecoded:window.__lateDecode}));assert.equal(row.late.count,1);assert.equal(row.late.oldConnected,false);assert.equal(row.late.title,'梅开二度');assert.ok(row.late.lateDecoded>0);
-    await page.keyboard.press('Escape');await page.locator('.card-art-zoom-dialog').waitFor({state:'detached'});assert.equal(await page.getByRole('button',{name:'放大鉴赏梅开二度',exact:true}).evaluate(e=>e===document.activeElement),false,'direct component probe returns original detail close focus');
-    await page.evaluate(async()=>{const {DetailDialog}=await import('/src/game/DetailDialog.ts'),{jokerArtUrl,jokerArtPreviewUrl}=await import('/src/game/jokerArt.ts');window.__owner=new DetailDialog();window.__owner.open('测试','规则',[],{portrait:{url:jokerArtUrl('a11'),thumbnailUrl:jokerArtPreviewUrl('a11'),alt:'梅开二度',layout:'card'}});});
-    await page.getByRole('button',{name:'放大鉴赏梅开二度',exact:true}).last().click();await page.evaluate(()=>window.__owner.close());await page.locator('.card-art-zoom-dialog').waitFor({state:'detached'});assert.deepEqual(row.errors,[]);row.status='PASS';
+    row.late=await page.evaluate(()=>({count:document.querySelectorAll('.card-art-zoom-dialog').length,oldConnected:window.__oldZoom.isConnected,title:document.querySelector('.card-art-zoom-title').textContent,lateDecoded:window.__lateDecode}));assert.equal(row.late.count,1);assert.equal(row.late.oldConnected,false);assert.equal(row.late.title,'葫芦藏春');assert.ok(row.late.lateDecoded>0);
+    await page.keyboard.press('Escape');await page.locator('.card-art-zoom-dialog').waitFor({state:'detached'});assert.equal(await page.getByRole('button',{name:'放大鉴赏葫芦藏春',exact:true}).evaluate(e=>e===document.activeElement),false,'direct component probe returns original detail close focus');
+    await page.evaluate(async()=>{const {DetailDialog}=await import('/src/game/DetailDialog.ts'),{jokerArtUrl,jokerArtPreviewUrl}=await import('/src/game/jokerArt.ts');window.__owner=new DetailDialog();window.__owner.open('测试','规则',[],{portrait:{url:jokerArtUrl('a11'),thumbnailUrl:jokerArtPreviewUrl('a11'),alt:'葫芦藏春',layout:'card'}});});
+    await page.getByRole('button',{name:'放大鉴赏葫芦藏春',exact:true}).last().click();await page.evaluate(()=>window.__owner.close());await page.locator('.card-art-zoom-dialog').waitFor({state:'detached'});assert.deepEqual(row.errors,[]);row.status='PASS';
    }finally{await context.close();}
   }
   // Actual HTTP cache: old unversioned bytes remain immutable and reused while all current URLs bypass them.
@@ -122,7 +122,7 @@ try {
     const manifest=JSON.parse(await readFile('public/assets/handdrawn-p08/manifest.json','utf8'));
     row.current=await page.evaluate(async()=>{const {JOKER_ART}=await import('/src/game/jokerArt.ts'),rows=[];for(const a of JOKER_ART)for(const [purpose,path] of [['thumbnail',a.path],['detail',a.detailPath]]){const bytes=await(await fetch('/'+path)).arrayBuffer(),sha=await crypto.subtle.digest('SHA-256',bytes);rows.push({id:a.id,purpose,path,sha256:[...new Uint8Array(sha)].map(b=>b.toString(16).padStart(2,'0')).join('')});}return rows;});
     for(const r of row.current){const o=manifest.assets.find(a=>a.id===r.id).outputs.find(o=>o.purpose===r.purpose);assert.equal(r.sha256,o.sha256);assert.ok(r.path.endsWith('?v='+o.sha256));}
-    assert.equal(oldServed-start,144);await catalog(page);await page.getByRole('button',{name:'放大鉴赏梅开二度',exact:true}).click();await page.waitForFunction(()=>document.querySelector('.card-art-zoom-detail')?.classList.contains('is-loaded'));row.geometry=await geometry(page);await page.screenshot({path:out+'/1366-warm-cache-PASS.png'});assert.deepEqual(row.errors,[]);row.status='PASS';
+    assert.equal(oldServed-start,144);await catalog(page);await page.getByRole('button',{name:'放大鉴赏葫芦藏春',exact:true}).click();await page.waitForFunction(()=>document.querySelector('.card-art-zoom-detail')?.classList.contains('is-loaded'));row.geometry=await geometry(page);await page.screenshot({path:out+'/1366-warm-cache-PASS.png'});assert.deepEqual(row.errors,[]);row.status='PASS';
    }finally{await context.close();}
   }
   // Consume the actual production output without rebuilding it; exercise relative BASE_URL under a subpath.
@@ -131,8 +131,8 @@ try {
    const context=await browser.newContext({viewport:{width:390,height:844},hasTouch:true,reducedMotion:'reduce'}),page=await context.newPage(),row={productionSubpath:'/card-review/',build:JSON.parse(await readFile('dist/build-info.json','utf8')),errors:[],requests:[]};report.cases.push(row);
    page.on('pageerror',e=>row.errors.push(String(e)));page.on('request',r=>{if(r.url().includes('/handdrawn-p08/cards/'))row.requests.push(r.url());});
    try{
-    await page.goto('http://127.0.0.1:5587/card-review/');await page.locator('[data-ui="title/action/title-start"]').waitFor();await catalog(page);await page.getByRole('button',{name:'放大鉴赏梅开二度',exact:true}).tap();await page.waitForFunction(()=>document.querySelector('.card-art-zoom-detail')?.classList.contains('is-loaded'));row.geometry=await geometry(page);
-    assert.ok(row.requests.some(url=>url.includes('/card-review/assets/handdrawn-p08/cards/a11-v3-')&&url.includes('.detail.webp?v=')));assert.equal(row.geometry.fit,'contain');await page.screenshot({path:out+'/390-built-subpath-PASS.png'});await page.getByRole('button',{name:'关闭赏析',exact:true}).tap();await page.locator('.card-art-zoom-dialog').waitFor({state:'detached'});assert.deepEqual(row.errors,[]);row.status='PASS';
+    await page.goto('http://127.0.0.1:5587/card-review/');await page.locator('[data-ui="title/action/title-start"]').waitFor();await catalog(page);await page.getByRole('button',{name:'放大鉴赏葫芦藏春',exact:true}).tap();await page.waitForFunction(()=>document.querySelector('.card-art-zoom-detail')?.classList.contains('is-loaded'));row.geometry=await geometry(page);
+    assert.ok(row.requests.some(url=>url.includes('/card-review/assets/handdrawn-p08/cards/a11-gourd-')&&url.includes('.detail.webp?v=')));assert.equal(row.geometry.fit,'contain');await page.screenshot({path:out+'/390-built-subpath-PASS.png'});await page.getByRole('button',{name:'关闭赏析',exact:true}).tap();await page.locator('.card-art-zoom-dialog').waitFor({state:'detached'});assert.deepEqual(row.errors,[]);row.status='PASS';
    }finally{await context.close();await new Promise(resolve=>built.httpServer.close(resolve));}
   }
  }

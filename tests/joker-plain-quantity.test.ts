@@ -29,12 +29,14 @@ it('current a03 shelf/detail main agrees with its first active card rule and ret
 });
 
 it('per-card arithmetic applies only to matching effective scoring cards',()=>{
- for(const id of ['tiesuanpan','b02','b05','c02','c03']){
+ for(const id of ['tiesuanpan','b05','c02','c03']){
   const p=copy(id);expect(p.line).toContain('每张符合条件的有效计分牌');
   expect(p.tile).toContain('每张匹配牌');
   expect(p.line).not.toContain('每手一次');
  }
  expect(copy('tiesuanpan').line).toContain('J/Q/K/A计分');
+ expect(copy('b02').line).toBe('同一手打出相同点数 → 每张同点计分牌，倍率 +0.25');
+ expect(copy('b02').tile).toBe('同点计分牌\n每张倍率 +0.25');
  expect(copy('c02').line).toContain('♥/♦计分');
  expect(copy('b05').line).toContain('同打≥3张同点牌');
  expect(copy('a08').line).toContain('每张打出的计分牌');expect(copy('a08').tile).toContain('计分2/3/4/5点');

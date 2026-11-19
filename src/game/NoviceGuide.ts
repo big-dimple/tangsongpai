@@ -57,8 +57,8 @@ export interface NoviceGuideHint {
  gesture?:'sweep'|'hold'|'hold-drag';
  /** Explicit gesture path; unlike highlights this may contain intermediate cards. */
  gestureCardIds?:string[];
- /** The current hand really supports the optional three-heart example. */
- flushExample?:boolean;
+ /** Cards that stay in hand if the player follows the exchange. These never invite a tap. */
+ keepCardIds?:string[];
  fact?:NoviceGuideFact;
 }
 type Preferences={disabled:boolean;enrolled?:string;muted:boolean;skipped:NoviceGuideStep[]};
@@ -288,7 +288,10 @@ function shopPurchaseHint(s:R2RunState):Pick<NoviceGuideHint,'body'|'focus'|'off
  const rank=(id:string)=>easyIds.includes(id)?easyIds.indexOf(id):easyIds.length;
  const offers=s.shop.offers.filter(o=>!o.consumed&&!s.jokers.some(j=>j.definitionId===o.definitionId)&&r2PurchasePrice(s,o)<=s.gold&&novicePurchaseCanScore(s,o))
   .sort((a,b)=>rank(a.definitionId)-rank(b.definitionId));
- if(offers[0])return {body:`点「${cardDisplayName(offers[0].definitionId)}」查看效果和价格。也可以挑其他能参与计分的牌。`,offerIds:offers.map(o=>o.offerId)};
+ if(offers[0]){
+  const id=offers[0].definitionId,name=cardDisplayName(id);
+  return {body:id==='b02'?`点「${name}」，先试试一对和两对各加多少倍率，再决定买哪张。`:`点「${name}」查看效果和价格。也可以挑其他能参与计分的牌。`,offerIds:offers.map(o=>o.offerId)};
+ }
  const cost=s.shop.freeRerolls?0:r2PaidRerollPrice(s),minPrice=minimumRestockPrice(s);
  if(r2RunModeConfig(s).reroll.allowed&&minPrice!==undefined&&s.gold>=cost+minPrice)
   return {body:`本店没有合适的计分牌。可${cost?`花 ${cost} 金`:'免费'}换一批，也可以继续下一场。`,focus:'reroll'};
@@ -318,8 +321,8 @@ function deriveHint(s:R2RunState,journal?:readonly Command[]):NoviceGuideHint {
   ...(facts.event?{eventId:facts.event.eventId,finalScore:facts.payoff!.finalScore,contribution:noviceContributionPrefix(facts.event)+contribution(facts.payoffEvents!),briefContribution:noviceContributionPrefix(facts.event)+briefContribution(facts.payoffEvents!)}:{}),
   ...(facts.skill?{skillEventId:facts.skill.events.find(e=>e.reasonKey==='erxiang.handoff')?.eventId,
     skillContribution:fractionText(facts.skill.events.filter(e=>e.reasonKey==='erxiang.handoff').reduce((sum,e)=>{const before=Rational.fromJSON(e.before.M),after=Rational.fromJSON(e.after.M);return sum.add(after.add(new Rational(-before.n,before.d)));},new Rational(0n)).toJSON())}:{})};
- if(facts.skillPractice)return {step:'complete',cue:'首战教学完成',beat:cardDisplayName(facts.purchase!.definitionId)+' · '+fact.briefContribution,
-  body:`最后一手是你自己打的。${s.phase==='run-lost'?'这局已结束，可以自选英雄再开一局。':'带着这副牌继续，或自选英雄开始普通游戏。'}`,fact};
+ if(facts.skillPractice)return {step:'complete',cue:'首战教学完成',
+  body:s.phase==='run-lost'?'这局已结束，可以自选英雄再开一局。':'带上这副牌继续，或换位英雄开新局。',fact};
  if(s.phase==='run-lost')return {step:'replay',cue:'可以再练一次',body:'本局已结束，练习尚未完成。可以重新练习，或开始普通局。',fact};
  if(facts.event&&facts.skill){
   const boss=s.phase==='await-input'&&s.stage?.boss?.definitionId==='B01'?stageNotice(s):undefined;
@@ -344,12 +347,12 @@ function deriveHint(s:R2RunState,journal?:readonly Command[]):NoviceGuideHint {
  if(!openingDone&&!facts.discarded&&!facts.independent&&discardAvailable(s)){
   const available=s.handOrder.filter(id=>!s.stage?.disabledIds.includes(id));
   const hearts=available.filter(id=>s.deckInstances.find(card=>card.id===id)?.suit==='hearts');
-  const flushExample=hearts.length===3&&available.length===8;
-  const recommended=flushExample?hearts:[...available].sort((a,b)=>
+  const flushExample=(hearts.length===3||hearts.length===4)&&available.length===8;
+  const recommended=flushExample?available.filter(id=>!hearts.includes(id)):[...available].sort((a,b)=>
    (s.deckInstances.find(c=>c.id===a)?.rank??99)-(s.deckInstances.find(c=>c.id===b)?.rank??99)).slice(0,2);
   const total=fact.pairStageHeat&&fact.pairTarget?`累计${heatText(fact.pairStageHeat)}/${heatText(fact.pairTarget)}分；`:'';
   const beat=facts.pair!.rootId===s.lastTrace?.rootId?HAND_LABELS[facts.pair!.handType]+'入账 +'+heatText(facts.pair!.finalScore)+' 分':undefined;
-  return {step:'discard',cue:flushExample?'留住红桃 · 换牌可选':'试试换牌 · 可选',beat,body:flushExample?'手里有3张红桃；5张同花色可以组成同花。可留住红桃，点「弃牌」换其他牌，也可直接出牌。':'可选不想留的牌点「弃牌」换新牌，也可直接出牌。\n'+discardCostText(s)+'。',details:novicePairBreakdownCue(facts.pair!)+'\n'+total+discardCostText(s)+'。',recommendedCardIds:recommended,...(flushExample?{flushExample:true}:{}),fact};
+  return {step:'discard',cue:flushExample?'留红桃，选杂牌':'试试换牌 · 可选',beat,body:flushExample?`手里有${hearts.length}张红桃。选其他花色点「弃牌」，试着补齐五张红桃。`:'可选不想留的牌点「弃牌」换新牌，也可直接出牌。\n'+discardCostText(s)+'。',details:novicePairBreakdownCue(facts.pair!)+'\n'+total+discardCostText(s)+'。',recommendedCardIds:recommended,...(flushExample?{keepCardIds:hearts}:{}),fact};
  }
  if(!openingDone)return {step:'independent',cue:`累计 ${s.stage?.heat??'0'} / ${s.stage?.targetHeat??'目标'} 分`,body:'自己选1–5张牌出牌；也可参考牌型示例，想换牌时再用弃牌。',details:fact.pairScore?novicePairBreakdownCue(facts.pair!):undefined,fact};
  if(!facts.purchase){
@@ -385,10 +388,11 @@ export function liveNoviceGuide(hint:NoviceGuideHint,selectedIds:readonly string
  }
  if(hint.step==='discard'&&selected.size){
   if(!skill.canDiscard)return {...hint,cue:'可以继续出牌',body:'当前无法再换牌，点「出牌」继续。',recommendedCardIds:[],focus:'play'};
-  if(hint.flushExample){
-   const hearts=recommended.filter(id=>selected.has(id));
-   return hearts.length?{...hint,cue:'红桃先留在手里',body:'想尝试同花，可点已选红桃取消；也可直接出牌或换牌。',recommendedCardIds:hearts,focus:'play-or-discard'}:
-    {...hint,cue:'出牌或换牌，由你选择',body:`点「弃牌」换掉已选${selected.size}张，${discardCost}；也可直接出牌。`,recommendedCardIds:[],focus:'play-or-discard'};
+  if(hint.keepCardIds?.length){
+   const wrong=hint.keepCardIds.filter(id=>selected.has(id)),remaining=recommended.filter(id=>!selected.has(id));
+   if(wrong.length)return {...hint,cue:'红桃先留在手里',body:'再点升起的红桃，取消选中。',recommendedCardIds:wrong};
+   return remaining.length?{...hint,cue:'继续选待换的牌',body:`已选${selected.size}张待换，再选亮起的杂牌。`,recommendedCardIds:remaining}:
+    {...hint,cue:'选好了，试试换牌',body:`点「弃牌」换掉${selected.size}张，${discardCost}。`,recommendedCardIds:[],focus:'discard'};
   }
   const example=selected.size<=2&&[...selected].every(id=>recommended.includes(id));
   return {...hint,cue:example?'选好了，试试换牌':'出牌或换牌，由你选择',body:`点「弃牌」换掉已选${selected.size}张，${discardCost}；也可直接出牌。`,recommendedCardIds:[],focus:example?'discard':'play-or-discard'};
@@ -418,8 +422,9 @@ export function liveNoviceGuide(hint:NoviceGuideHint,selectedIds:readonly string
   if(skill.chosen)return {...hint,cue:'技能已选',body:'点「确认出牌」发动技能。',recommendedCardIds:[],focus:'play'};
   if(skill.available)return {...hint,cue:'牌点可转为倍率',body:'点刘娥技能，再选一张牌。',recommendedCardIds:[],focus:'hero'};
   if(!recommended.length){
-   if(selected.size)return {...hint,body:skill.canDiscard?`可直接出牌；想找适合技能的组合，也可弃掉已选牌换新牌，${discardCost}。`:'可先出牌，再从补回的牌中找适合技能的组合。',focus:skill.canDiscard?'discard':'play'};
-   return {...hint,body:skill.canDiscard?`技能需要对子或更高牌型。可自己选牌；想换牌时，选1–5张点「弃牌」，${discardCost}。`:'技能需要对子或更高牌型。当前无法换牌，可先自己选牌出牌。',focus:'hand'};
+   const cost=`消耗${skill.discardCost??1}次弃牌额度${skill.discardGoldCost?`和${skill.discardGoldCost}金币`:''}`;
+   if(selected.size)return {...hint,body:skill.canDiscard?`可直接出牌。弃牌找对子，${cost}。`:'先出牌，再从补牌中找对子。',focus:skill.canDiscard?'discard':'play'};
+   return {...hint,body:skill.canDiscard?`找一对试技能。选杂牌换新，${cost}。`:'先出一手，再找对子试技能。',focus:'hand'};
   }
  }
  return hint;

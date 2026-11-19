@@ -77,7 +77,7 @@ describe('guided first match from saved commands',()=>{
   await send(run,{type:'PlayHand',selectedIds:['hearts-5','clubs-5']});
   expect(guide(run)).toMatchObject({step:'discard',fact:{pairScore:'90'}});
   expect(guide(run)!.details).toContain('基础35+牌点5+5=45筹码；×2倍率=90分');expect(guide(run)!.body).toContain('弃牌');
-  expect(guide(run)!.cue).toContain('可选');expect(guide(run)!.body).toContain('直接出牌');
+  expect(guide(run)!.cue).toBe('留红桃，选杂牌');expect(guide(run)!.keepCardIds).toHaveLength(3);
   expect(guide(run)!.fact).toMatchObject({pairBaseHeat:'35',pairBaseMultiplier:'2',pairCardHeat:'10',pairCardHeats:['5','5'],pairStageHeat:'90',pairTarget:'400',pairRemaining:'310'});
   expect(guide(run)!.details).toContain('90/400');
   const incomplete=structuredClone(run.state.lastTrace!);incomplete.events.splice(1,1);
@@ -256,21 +256,19 @@ describe('guided first match from saved commands',()=>{
   await send(run,{type:'PlayHand',selectedIds:['hearts-5','clubs-5']});
   const hint=guide(run)!;
   expect(hint.step).toBe('discard');
-  expect(hint.recommendedCardIds).toEqual(expect.arrayContaining(['hearts-10','hearts-6','hearts-3']));
-  expect(hint.recommendedCardIds).toHaveLength(3);
+  const hearts=['hearts-10','hearts-6','hearts-3'];
+  expect(new Set(hint.keepCardIds)).toEqual(new Set(hearts));
+  const other=run.state.handOrder.filter(id=>!hearts.includes(id));
+  expect(new Set(hint.recommendedCardIds)).toEqual(new Set(other));
   const skill={available:false,chosen:false,enabled:true,canDiscard:true};
   const none=liveNoviceGuide(hint,[],skill);
-  expect(none.body).toContain('弃牌');expect(none.body).toContain('红桃');
-  expect(none.focus).not.toBe('discard');
-  expect(none.cue).toContain('可选');expect(none.details).toContain('不消耗出牌次数');expect(none.body).toContain('直接出牌');
-  expect(liveNoviceGuide(hint,['clubs-4'],skill).focus).toBe('play-or-discard');
-  expect(liveNoviceGuide(hint,['clubs-4','diamonds-4'],skill).focus).toBe('play-or-discard');
-  expect(liveNoviceGuide(hint,['hearts-10'],skill)).toMatchObject({cue:'红桃先留在手里',recommendedCardIds:['hearts-10']});
-  for(const ids of [['spades-14'],['clubs-4','spades-14'],['clubs-4','diamonds-4','spades-14']]){
+  expect(none.body).toMatch(/红桃.*弃牌/);expect(none.details).toContain('不消耗出牌次数');
+  const wrong=liveNoviceGuide(hint,hearts,skill);expect(wrong.recommendedCardIds).toEqual(hint.keepCardIds);expect(wrong.focus).toBeUndefined();
+  for(const ids of [other.slice(0,1),other.slice(0,2),other.slice(0,3)]){
    const choice=liveNoviceGuide(hint,ids,skill);
-   expect(choice.body).toContain('也可直接出牌');expect(choice.body).not.toContain('取消');
-   expect(choice.recommendedCardIds).toEqual([]);
+   expect(choice.focus).toBeUndefined();expect(choice.recommendedCardIds).toEqual(other.filter(id=>!ids.includes(id)));
   }
+  expect(liveNoviceGuide(hint,other,skill)).toMatchObject({recommendedCardIds:[],focus:'discard'});
   // Cancel is another live selection, not a saved step transition.
   expect(liveNoviceGuide(hint,[],skill)).toEqual(none);
   expect(guide(run)?.step).toBe('discard');

@@ -4,8 +4,8 @@ import {PAPER_CSS} from './theme';
 export type HandButtonSkin='sort'|'discard'|'play';
 export type HandActionKind='discard'|'play';
 /** Counts keep their active resource cue and use the existing disabled ink on disabled paper. */
-export function handActionCountColor(kind:HandActionKind,enabled:boolean,critical=false):string {
-  return enabled?(kind==='play'?PAPER_CSS.paperLight:critical?PAPER_CSS.red:PAPER_CSS.jade):PAPER_CSS.disabledInk;
+export function handActionCountColor(kind:HandActionKind,enabled:boolean,critical=false,primary=kind==='play'):string {
+  return enabled?(primary?PAPER_CSS.paperLight:critical?PAPER_CSS.red:PAPER_CSS.jade):PAPER_CSS.disabledInk;
 }
 /** Small ink diagrams: a card falls onto a flat pile, or a fan is sent forward. */
 export const HAND_ACTION_LINES={

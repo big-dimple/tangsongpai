@@ -4,7 +4,6 @@ export const JOKER_ART_FRAME_MS:Readonly<Record<string,number>>=Object.freeze({
   huimaqiang:160,
   b09:120,
   f10:220,
-  a11:160,
   f06:180,
   a06:140,
   e08:180,

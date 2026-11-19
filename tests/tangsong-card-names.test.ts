@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { TANGSONG_CARD_NAMES, cardDisplayName } from '../src/game/tangsongCardNames';
 
 describe('Tang-Song 72 Card Names', () => {
+  const currentNames:Record<string,string>={a11:'葫芦藏春',b02:'双鲤同游'};
   it('covers exactly 72 functional card IDs', () => {
     const keys = Object.keys(TANGSONG_CARD_NAMES);
     expect(keys).toHaveLength(72);
@@ -13,7 +14,7 @@ describe('Tang-Song 72 Card Names', () => {
     expect(half1.assets).toHaveLength(36);
     for (const card of half1.assets) {
       expect(TANGSONG_CARD_NAMES[card.id], `Mismatch for ID ${card.id}`).toBe(card.name);
-      expect(cardDisplayName(card.id)).toBe(card.id==='f12'?'待时而发':card.name);
+      expect(cardDisplayName(card.id)).toBe(currentNames[card.id]??card.name);
     }
   });
 
@@ -22,7 +23,7 @@ describe('Tang-Song 72 Card Names', () => {
     expect(half2.assets).toHaveLength(36);
     for (const card of half2.assets) {
       expect(TANGSONG_CARD_NAMES[card.id], `Mismatch for ID ${card.id}`).toBe(card.name);
-      expect(cardDisplayName(card.id)).toBe(card.id==='f12'?'待时而发':card.name);
+      expect(cardDisplayName(card.id)).toBe(currentNames[card.id]??card.name);
     }
   });
 

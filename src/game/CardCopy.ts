@@ -7,6 +7,8 @@ export interface CardAbilityCopy {
   playerCopy?:boolean;
   /** A self-contained two-line card; suppress auxiliary prose in details. */
   minimal?:boolean;
+  /** The definition used by this run's isolated, interactive pair example. */
+  pairPractice?:import('../content/r2Schema').R2JokerDefinition;
   plain?:import('./JokerPlainCopy').JokerPlainCopy;
   summary:string;compact:string;narrow:string;benefit:string;
   /** Actual ledger activity; absent without a ledger, except a known scoring ban. */

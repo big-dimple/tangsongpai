@@ -18,7 +18,7 @@ it('pins all 147 current runtime files and purpose paths independently of proven
     expect(handdrawnPath(asset.id, output.purpose)).toBe('assets/handdrawn-p08/' + output.path);
     count++; total += bytes.length;
   }
-  expect(count).toBe(147); expect(total).toBe(9701766); expect(manifest.runtimeBytes).toBe(total);
+  expect(count).toBe(147); expect(total).toBe(9646280); expect(manifest.runtimeBytes).toBe(total);
 });
 
 it('preserves six role mappings and independent rank-specific JQK faces', () => {

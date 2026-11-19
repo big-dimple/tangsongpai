@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "repository": "https://github.com/big-dimple/tangsongpai-assets",
-  "revision": "3a969819c8c6434d805aea45032a52dd74cec909",
+  "revision": "ea1f2a2963ece5e5fda004dcdc6105a0244e1a21",
   "sourceRoot": "art/sources",
   "inventory": "docs/assets/source-inventory.jsonl",
-  "inventorySHA256": "7588d0ab96e2dd9d750f0249f88dd9b6a2d309e900924aefc215b42b991269ff",
-  "fileCount": 542,
-  "totalBytes": 591072304
+  "inventorySHA256": "07423036a6615690a09a8df294465218ac520cb192f1fecbc6bc157e4c3ccc57",
+  "fileCount": 546,
+  "totalBytes": 600112688
 }

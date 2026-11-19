@@ -105,6 +105,9 @@ export function jokerPlainCopy(d:R2JokerDefinition,j:R2JokerInstance|undefined,c
  const legacyGrowth=hooks[0]?.operations[0].kind==='read-growth'&&hooks[1]?.condition.kind==='hand-type-in'&&hooks[1].condition.values.length===3&&hooks[1].condition.values.every(t=>['pair','two-pair','three-kind'].includes(t));
  if(!condition||!effect||legacyGrowth){fallback=true;condition=main;effect='';}
  if(noDiscard&&!fallback){condition='不弃牌';effect=effect?.replace(/^每次出牌，/,'');}
+ const pairHook=hooks[0],pairGain=pairHook?.operations[0];
+ const pairValue=d.id==='b02'&&pairHook?.phase==='onCardScore'&&pairHook.condition.kind==='paired-rank'&&pairHook.condition.minimum===2&&pairGain?.kind==='add-multiplier'?fractionText(pairGain.value):undefined;
+ if(pairValue){condition='同一手打出相同点数';effect='每张同点计分牌，倍率 +'+pairValue;}
  const line=rankHeatHook?main:effect?condition+' → '+effect:main.replaceAll('整手倍率','出牌倍率').replaceAll('整手热度','出牌热度');
  let status=state;
  const selected=ctx.facts;const firstCondition=hooks[0]?.condition;
@@ -199,6 +202,7 @@ export function jokerPlainCopy(d:R2JokerDefinition,j:R2JokerInstance|undefined,c
   tile=(held?'留手':'计分')+ranks.join('/')+'点\n每张+'+value+'热'+(held?'\n最多'+c.limit+'张':'');
  }
  const details=[...new Set([main,...limits,rules,...(events?[state]:[])].filter(Boolean))].join('\n');
+ if(pairValue)tile='同点计分牌\n每张倍率 +'+pairValue;
  const decision=!events?jokerGrowthDecisionCopy(d,j):undefined;
  if(decision)return {line:decision.line,tile:decision.tile,status:(ctx.scoringLimited?'当前计分暂停；':'')+decision.status,essential:decision.tip,details:details+'\n'+decision.tip,fallback:false,effectLine:decision.effect,timingLine:decision.timing,growthDecision:true};
  return {line,tile,status,essential:visibleLimits,details,fallback,...(!fallback?{effectLine,timingLine}:{}),...(fallback?{steps:jokerDetailSteps(d,line,visibleLimits,status,rules)}:{})};

@@ -43,3 +43,33 @@
  .detail-dialog.detail-dialog--art-background[open] .dialog-header h2 { font-size:20px; }
  .detail-dialog.detail-dialog--art-background.detail-dialog--illustrated[open] .dialog-scroll { width:52%;margin:16px 12px 16px auto; }
 }
+
+.detail-dialog.detail-dialog--pair-purchase.detail-dialog--art-background[open] {
+ width:min(960px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));
+ height:min(600px,calc(100dvh - var(--safe-top) - var(--safe-bottom) - 24px));
+ grid-template-columns:repeat(2,minmax(0,1fr));background:#f7efdf;border-color:#897950;
+ & > .dialog-backdrop-art {position:relative;inset:auto;z-index:0;grid-column:1;grid-row:1/-1;overflow:hidden}
+ & > .dialog-header {grid-column:2;grid-row:1;padding:16px 18px 10px;background:#f7efdf;border-bottom:1px solid #d4c8af}
+ & > .dialog-header h2 {font:600 clamp(23px,3vw,31px)/1.15 var(--font-serif,serif);letter-spacing:.08em}
+ & .dialog-art-original {border:1px solid #b4ac93;background:transparent}
+ & > .dialog-content {grid-column:2;grid-row:2;background:#f7efdf}
+ & > .dialog-content .dialog-scroll {width:100%;margin:0;padding:14px 18px 12px;background:none}
+ & .dialog-purchase-summary {background:transparent;padding:0;margin:10px 0 4px}
+ & > .dialog-actions {grid-column:2;grid-row:3;background:#eee4cd;border-top:1px solid #ccbea0}
+}
+@media(max-width:620px) {
+ .detail-dialog.detail-dialog--pair-purchase.detail-dialog--art-background[open] {
+  --picture-height:clamp(108px,23dvh,174px);
+  grid-template-columns:minmax(0,1fr);grid-template-rows:var(--picture-height) minmax(0,1fr) auto;
+  & > .dialog-backdrop-art {grid-column:1;grid-row:1;width:100%;height:100%}
+  & > .dialog-header {position:relative;grid-area:1/1;align-content:end;padding:9px 14px;color:#fff2ce;background:linear-gradient(85deg,#102c2df2 1%,#112c2b99 48%,#112c2b19 87%)}
+  & > .dialog-header h2 {color:#fff2ce;align-self:end}
+  & .dialog-header .dialog-eyebrow,& .dialog-header .shop-edition-tag {color:#f2e6c9}
+  & .dialog-art-original {color:#fff5dd;background:#102c2dbf;border-color:#b4a071}
+  & > .dialog-content,& > .dialog-actions {grid-column:1}
+  & > .dialog-content .dialog-scroll {padding:12px 14px}
+  & > .dialog-actions {display:flex;flex-flow:row wrap}
+  & > .dialog-actions .dialog-primary {flex:2 1 120px}
+  & > .dialog-actions .dialog-close {flex:1 1 58px}
+ }
+}

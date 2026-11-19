@@ -1,6 +1,5 @@
 /**
- * 《唐宋牌》全部 72 张卡牌标准展示名字典
- * 1:1 严格对齐 72 张手绘卡牌美术原画命名（A01-F12）
+ * 首版 72 张牌的原画题名。图鉴也用它们查找已换名的牌。
  */
 export const TANGSONG_CARD_NAMES: Readonly<Record<string, string>> = Object.freeze({
   // Group A (A01 - A12)
@@ -90,7 +89,7 @@ export const TANGSONG_CARD_NAMES: Readonly<Record<string, string>> = Object.free
 
 // Player-facing names only; definition names and IDs remain save and rules inputs.
 const PLAYER_NAME_OVERRIDES: Readonly<Record<string, string>> = Object.freeze({
-  f12: '待时而发', 'encore-paper': '重计纸',
+  a11: '葫芦藏春', b02: '双鲤同游', 'encore-paper': '重计纸',
   T02: '精简牌组', T15: '再计券', S03: '重演', S04: '同花改造',
   S07: '多彩转赠', S08: '清除特效', U02: '弃牌券', U03: '出牌许可'
 });
@@ -100,6 +99,13 @@ const PLAYER_NAME_OVERRIDES: Readonly<Record<string, string>> = Object.freeze({
  */
 export function cardDisplayName(definitionId: string, defaultName?: string): string {
   return definitionId==='T18'?'换货券':PLAYER_NAME_OVERRIDES[definitionId] ?? TANGSONG_CARD_NAMES[definitionId] ?? defaultName ?? definitionId;
+}
+
+/** Keep former display names searchable when a returning player opens the catalog. */
+export function formerCardName(id:string):string|undefined {
+  if(id==='f12')return '待时而发';
+  const original=TANGSONG_CARD_NAMES[id];
+  return original!==cardDisplayName(id)?original:undefined;
 }
 
 /** UI-only name projection; the original definition remains the rule/hash input. */

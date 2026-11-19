@@ -159,10 +159,8 @@
         "public/assets/handdrawn-p08/cards/a09.thumbnail.webp",
         "public/assets/handdrawn-p08/cards/a10.detail.webp",
         "public/assets/handdrawn-p08/cards/a10.thumbnail.webp",
-        "public/assets/handdrawn-p08/cards/a11-v3-3717b4202b01.thumbnail.webp",
-        "public/assets/handdrawn-p08/cards/a11-v3-9a3c66b239fc.detail.webp",
-        "public/assets/handdrawn-p08/cards/a11.frames.webp",
-        "public/assets/handdrawn-p08/cards/a11.preview.gif",
+        "public/assets/handdrawn-p08/cards/a11-gourd-1b3cf35ed1ce.thumbnail.webp",
+        "public/assets/handdrawn-p08/cards/a11-gourd-b02232733972.detail.webp",
         "public/assets/handdrawn-p08/cards/a12.detail.webp",
         "public/assets/handdrawn-p08/cards/a12.thumbnail.webp",
         "public/assets/handdrawn-p08/cards/b02.detail.webp",
@@ -440,10 +438,8 @@
         "public/assets/handdrawn-p08/cards/a09.thumbnail.webp",
         "public/assets/handdrawn-p08/cards/a10.detail.webp",
         "public/assets/handdrawn-p08/cards/a10.thumbnail.webp",
-        "public/assets/handdrawn-p08/cards/a11-v3-3717b4202b01.thumbnail.webp",
-        "public/assets/handdrawn-p08/cards/a11-v3-9a3c66b239fc.detail.webp",
-        "public/assets/handdrawn-p08/cards/a11.frames.webp",
-        "public/assets/handdrawn-p08/cards/a11.preview.gif",
+        "public/assets/handdrawn-p08/cards/a11-gourd-1b3cf35ed1ce.thumbnail.webp",
+        "public/assets/handdrawn-p08/cards/a11-gourd-b02232733972.detail.webp",
         "public/assets/handdrawn-p08/cards/a12.detail.webp",
         "public/assets/handdrawn-p08/cards/a12.thumbnail.webp",
         "public/assets/handdrawn-p08/cards/b02.detail.webp",
@@ -611,10 +607,8 @@
         "public/assets/handdrawn-p08/cards/a09.thumbnail.webp",
         "public/assets/handdrawn-p08/cards/a10.detail.webp",
         "public/assets/handdrawn-p08/cards/a10.thumbnail.webp",
-        "public/assets/handdrawn-p08/cards/a11-v3-3717b4202b01.thumbnail.webp",
-        "public/assets/handdrawn-p08/cards/a11-v3-9a3c66b239fc.detail.webp",
-        "public/assets/handdrawn-p08/cards/a11.frames.webp",
-        "public/assets/handdrawn-p08/cards/a11.preview.gif",
+        "public/assets/handdrawn-p08/cards/a11-gourd-1b3cf35ed1ce.thumbnail.webp",
+        "public/assets/handdrawn-p08/cards/a11-gourd-b02232733972.detail.webp",
         "public/assets/handdrawn-p08/cards/a12.detail.webp",
         "public/assets/handdrawn-p08/cards/a12.thumbnail.webp",
         "public/assets/handdrawn-p08/cards/b02.detail.webp",
@@ -778,10 +772,8 @@
         "public/assets/handdrawn-p08/cards/a09.thumbnail.webp",
         "public/assets/handdrawn-p08/cards/a10.detail.webp",
         "public/assets/handdrawn-p08/cards/a10.thumbnail.webp",
-        "public/assets/handdrawn-p08/cards/a11-v3-3717b4202b01.thumbnail.webp",
-        "public/assets/handdrawn-p08/cards/a11-v3-9a3c66b239fc.detail.webp",
-        "public/assets/handdrawn-p08/cards/a11.frames.webp",
-        "public/assets/handdrawn-p08/cards/a11.preview.gif",
+        "public/assets/handdrawn-p08/cards/a11-gourd-1b3cf35ed1ce.thumbnail.webp",
+        "public/assets/handdrawn-p08/cards/a11-gourd-b02232733972.detail.webp",
         "public/assets/handdrawn-p08/cards/a12.detail.webp",
         "public/assets/handdrawn-p08/cards/a12.thumbnail.webp",
         "public/assets/handdrawn-p08/cards/b02.detail.webp",
@@ -934,9 +926,9 @@
     "No new visual or rights approval. Decoded RGBA sizes are estimates, not measured GPU memory."
   ],
   "totals": {
-    "files": 459,
-    "bytes": 58744679,
-    "decodedRgbaBytes": 346272024,
+    "files": 456,
+    "bytes": 57351078,
+    "decodedRgbaBytes": 344308504,
     "groups": {
       "audio": {
         "count": 47,
@@ -959,14 +951,14 @@
         "decodedRgbaBytes": 0
       },
       "handdrawn-climax": {
-        "count": 54,
-        "bytes": 2826536,
-        "decodedRgbaBytes": 27136000
+        "count": 53,
+        "bytes": 2783303,
+        "decodedRgbaBytes": 26624000
       },
       "handdrawn-p08": {
-        "count": 164,
-        "bytes": 20867822,
-        "decodedRgbaBytes": 154718208
+        "count": 162,
+        "bytes": 19517454,
+        "decodedRgbaBytes": 153266688
       },
       "handdrawn-tools": {
         "count": 103,
@@ -1380,16 +1372,6 @@
       "path": "public/assets/handdrawn-climax/a10-900a84265965.webp",
       "bytes": 49528,
       "sha256": "900a84265965f73e61e08ac1f07ff4bf83b47743f65ee1e3adf372122b9ba35f",
-      "width": 320,
-      "height": 400,
-      "alpha": false,
-      "decodedRgbaBytes": 512000,
-      "format": "webp"
-    },
-    {
-      "path": "public/assets/handdrawn-climax/a11-7aa939fb1483.webp",
-      "bytes": 43248,
-      "sha256": "7aa939fb148308c64269df8e9ac712d73e43a360ebae9367a2f023c10f990e2f",
       "width": 320,
       "height": 400,
       "alpha": false,
@@ -1818,11 +1800,11 @@
     },
     {
       "path": "public/assets/handdrawn-climax/manifest.json",
-      "bytes": 50609,
-      "sha256": "157d5cb3eec73a6cc8e3e2a374ad147edcb003f204342fd610a13756f2c3f11c",
+      "bytes": 49029,
+      "sha256": "a8ebca522365257ea77bc2118646fc98c8b04bee18de76578fcc682ac7331eee",
       "textNormalization": "LF",
-      "canonicalBytes": 49014,
-      "canonicalSha256": "9c13f15c2c03f54ae690942e6ca03cd6b9ed530b07060b7617d2016f2cea73b8"
+      "canonicalBytes": 49029,
+      "canonicalSha256": "a8ebca522365257ea77bc2118646fc98c8b04bee18de76578fcc682ac7331eee"
     },
     {
       "path": "public/assets/handdrawn-climax/pengci-4bb00dc7ef13.webp",
@@ -2020,9 +2002,9 @@
       "format": "webp"
     },
     {
-      "path": "public/assets/handdrawn-p08/cards/a11-v3-3717b4202b01.thumbnail.webp",
-      "bytes": 6878,
-      "sha256": "3717b4202b0163feb8bdb8f2a81cd5d1dd3c094413501480c4453bb48c4acbdf",
+      "path": "public/assets/handdrawn-p08/cards/a11-gourd-1b3cf35ed1ce.thumbnail.webp",
+      "bytes": 3262,
+      "sha256": "1b3cf35ed1ceac7cbf7837b336a782b42468e88638b1409ca806c2340d8f6b5f",
       "width": 128,
       "height": 160,
       "alpha": false,
@@ -2030,29 +2012,14 @@
       "format": "webp"
     },
     {
-      "path": "public/assets/handdrawn-p08/cards/a11-v3-9a3c66b239fc.detail.webp",
-      "bytes": 107666,
-      "sha256": "9a3c66b239fcdbee26aebeedeb9a86eccf6d6c294c3c566d02448f4003b4dbc9",
+      "path": "public/assets/handdrawn-p08/cards/a11-gourd-b02232733972.detail.webp",
+      "bytes": 55592,
+      "sha256": "b02232733972379195a6d4c03b216a44e613666c95a26b4f6e600df1fa9d7238",
       "width": 615,
       "height": 768,
       "alpha": false,
       "decodedRgbaBytes": 1889280,
       "format": "webp"
-    },
-    {
-      "path": "public/assets/handdrawn-p08/cards/a11.frames.webp",
-      "bytes": 149106,
-      "sha256": "33c745ddb84fad9348b76685e3ee1cd183be1d91ccf1f06b97a5aa7aaa097c70",
-      "width": 1620,
-      "height": 224,
-      "alpha": false,
-      "decodedRgbaBytes": 1451520,
-      "format": "webp"
-    },
-    {
-      "path": "public/assets/handdrawn-p08/cards/a11.preview.gif",
-      "bytes": 1146677,
-      "sha256": "5ad2d0ab07467d5cd7604c26d9f815e4f1c826cd4771f1f9d9ac843231819f97"
     },
     {
       "path": "public/assets/handdrawn-p08/cards/a12.detail.webp",
@@ -2076,8 +2043,8 @@
     },
     {
       "path": "public/assets/handdrawn-p08/cards/b02.detail.webp",
-      "bytes": 69014,
-      "sha256": "edb103560a9f997e172b66c53ba5e2b41eab644b3d52b8c97c6171774092e173",
+      "bytes": 70512,
+      "sha256": "c17a391aedfcb29035c444130dddeb461b2cbcc796376596712fe9e2e62a39e2",
       "width": 615,
       "height": 768,
       "alpha": false,
@@ -2086,8 +2053,8 @@
     },
     {
       "path": "public/assets/handdrawn-p08/cards/b02.thumbnail.webp",
-      "bytes": 5126,
-      "sha256": "48f776f675669ce9799a3fea27968f4d6ed6dd97921816ee04b3d3b7d8b5d999",
+      "bytes": 3832,
+      "sha256": "6e8d5e809b2ed5c557a25663bf5156def02ba29583d7f466c5101d4cad4ec293",
       "width": 128,
       "height": 160,
       "alpha": false,
@@ -3436,11 +3403,11 @@
     },
     {
       "path": "public/assets/handdrawn-p08/manifest.json",
-      "bytes": 98404,
-      "sha256": "2d7142fece756fa53f7ffff8f3927902648331150b080bb2c60ca8aba986c02e",
+      "bytes": 96677,
+      "sha256": "8335afb614af0dc76b7e9cdc066130ac546d453a1d72ac46961e01de83435c35",
       "textNormalization": "LF",
-      "canonicalBytes": 95776,
-      "canonicalSha256": "da0989f5c4b17de91627122f6e4dccb666a44762b8ecd470677fbc5c0493feae"
+      "canonicalBytes": 96677,
+      "canonicalSha256": "8335afb614af0dc76b7e9cdc066130ac546d453a1d72ac46961e01de83435c35"
     },
     {
       "path": "public/assets/handdrawn-tools/item-u01-v3-02e7d633fc47.thumbnail.webp",

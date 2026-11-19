@@ -317,7 +317,7 @@ async function guidedMatch(test){
   assert.equal(offer.price,4);assert.ok(shopEntry.state.gold>=offer.price);
   await tapUI(page,'shop','offer/'+offer.offerId,touch);
   const dialog=page.locator('dialog[open]').last();await dialog.waitFor();
-  assert.match(await dialog.innerText(),/心有灵犀/);
+  assert.match(await dialog.innerText(),/双鲤同游/);
   await capture(test,'purchase-details');
   const buy=dialog.getByRole('button',{name:'购买 · 4 金',exact:true});
   if(touch)await buy.tap();else await buy.click();

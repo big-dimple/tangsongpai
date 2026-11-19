@@ -238,8 +238,8 @@ const base=`http://127.0.0.1:${port}/?harness=1&seed=p00-core-ui`;
     const touch=await context.newCDPSession(page);activePage=page;
     try{
       await page.goto(base);await waitScene(page,'title');await tapUI(page,'title','action/title-start',true);await waitScene(page,'game');
-      await page.getByText('先去理牌区',{exact:true}).waitFor();
-      const at=await point(page,'game','action/sort-rank');
+      await page.getByText('先找一对',{exact:true}).waitFor();
+      const at=await point(page,'game','card/clubs-5');
       await page.waitForFunction(({x,y})=>[...document.querySelectorAll('[data-novice-guide-highlight]')].some(el=>{
         const box=el.getBoundingClientRect();return x>=box.left&&x<=box.right&&y>=box.top&&y<=box.bottom;
       }),at);
