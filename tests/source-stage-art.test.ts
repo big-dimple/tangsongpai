@@ -11,8 +11,13 @@ it('same-ID complete stage variant is bounded and has no legacy/background/unkno
 });
 it('all 72 real stage files preserve their current same-ID source and exact decoded metadata within the unchanged budget',async()=>{
  const cards=HANDDRAWN_ART.filter(a=>a.category==='functional-card');expect(CLIMAX_SOURCE_ART.map(a=>a.id).sort()).toEqual(cards.map(a=>a.id).sort());
- // The complete b05 replacement exceeds 96KiB as detail, so it now needs its own bounded stage variant.
- expect(CLIMAX_SOURCE_ART.filter(a=>a.kind==='stage-derivative')).toHaveLength(53);expect(CLIMAX_SOURCE_ART.filter(a=>a.kind==='reuse-detail')).toHaveLength(19);
+ expect(cards).toHaveLength(72);
+ const needsDerivative=cards.filter(card=>{
+  const detail=card.outputs.find(o=>o.purpose==='detail')!;
+  return detail.bytes>CLIMAX_SOURCE_BYTES||Math.max(detail.width,detail.height)>768;
+ }).map(card=>card.id);
+ expect(CLIMAX_SOURCE_ART.filter(a=>a.kind==='stage-derivative').map(a=>a.id).sort()).toEqual([...needsDerivative].sort());
+ expect(CLIMAX_SOURCE_ART.filter(a=>a.kind==='reuse-detail').map(a=>a.id).sort()).toEqual(cards.map(card=>card.id).filter(id=>!needsDerivative.includes(id)).sort());
  for(const card of cards){
   const detail=card.outputs.find(o=>o.purpose==='detail')!,record=CLIMAX_SOURCE_ART.find(a=>a.id===card.id)!,asset=climaxSourceAsset(card.id)!;
   const bytes=readFileSync('public/'+record.path),metadata=await sharp(bytes).metadata();

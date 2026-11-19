@@ -1,7 +1,7 @@
 import {expect, it} from 'vitest';
 import fs from 'node:fs';
 import {P00_ASSETS} from '../src/game/theme';
-import {JOKER_ART} from '../src/game/jokerArt';
+import {JOKER_ART,jokerArtUrl} from '../src/game/jokerArt';
 import {COURT_ART} from '../src/game/HanddrawnArt';
 import {CHARACTER_ART} from '../src/game/CharacterArt';
 import {GOODS_ART, goodsArtUrl} from '../src/game/GoodsArt';
@@ -40,8 +40,12 @@ it('keeps every current card, tool, portrait, eye strip, head fallback and suppo
     expect(CHARACTER_ART.filter(a=>a.purpose===purpose).map(a=>a.id).sort(),purpose)
       .toEqual(['amo','azao','erxiang','laohuan','touye','xiemu']);
   }
-  // Eight music deliveries replace five baseline recordings; six transparent hero files are new.
-  const files=runtimeFiles();expect(files.size).toBe(cleanup.protected.runtimeFiles+gamefeel.assets.length+3+6);
+  // The pre-gourd protected total included 53 dedicated stage files, three extra music deliveries and six hero files.
+  const dedicated=CLIMAX_SOURCE_ART.filter(a=>a.kind==='stage-derivative').map(a=>'public/'+a.path);
+  const files=runtimeFiles();
+  expect([...files].filter(path=>path.startsWith('public/assets/handdrawn-climax/')).sort()).toEqual(dedicated.sort());
+  expect(files.size).toBe(cleanup.protected.runtimeFiles+gamefeel.assets.length+3+6-53+dedicated.length);
+  expect(climaxSourceAsset('a11')?.url).toBe(jokerArtUrl('a11'));
   for(const file of files){expect(fs.existsSync(file),file).toBe(true);expect(fs.statSync(file).size,file).toBeGreaterThan(0);}
 });
 
