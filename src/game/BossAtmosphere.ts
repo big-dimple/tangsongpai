@@ -1,6 +1,6 @@
 import type Phaser from 'phaser';
 import {detailArt,decodeArtImage} from './DetailArt';
-import {assetUrl} from './theme';
+import {assetUrl,UI_FONT} from './theme';
 import type {R2RunState} from '../domain/run';
 import type {Box} from './layout';
 import {cssViewport} from '../platform/Viewport';
@@ -82,7 +82,7 @@ class BossAtmosphere {
   const seen=announced.get(this.scene.game)??new Set<string>();announced.set(this.scene.game,seen);if(seen.has(key))return;
   const area=bossGhostArea(this.width,this.height,this.protected,this.options.ghostArea);if(!area)return;seen.add(key);
   const density=textDensity(this.scene);
-  this.announcement=this.scene.add.text(Math.round((area.x+8)*density)/density,Math.round((area.y+area.height/2)*density)/density,'BOSS 来袭',{fontSize:'16px',fontFamily:'"Microsoft YaHei",sans-serif',color:'#8b4035',resolution:density}).setOrigin(0,.5).setName('boss/arrival');this.layer.add(this.announcement);
+  this.announcement=this.scene.add.text(Math.round((area.x+8)*density)/density,Math.round((area.y+area.height/2)*density)/density,'BOSS 来袭',{fontSize:'16px',fontFamily:UI_FONT,color:'#8b4035',resolution:density}).setOrigin(0,.5).setName('boss/arrival');this.layer.add(this.announcement);
   this.announcementTimer=this.scene.time.delayedCall(2200,()=>{this.announcement?.destroy();this.announcement=undefined;this.announcementTimer=undefined;});
  }
  private readonly tick=(_time:number,delta:number)=>{

@@ -129,7 +129,7 @@ export function drawSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2Run
   if(scene.textures.exists(key))heroImage=addArt(key,box,'result-art/hero',run.characterId+'.selection');
   else if(scene.textures.exists(avatarKey(run.characterId)))heroImage=addArt(avatarKey(run.characterId),box,'result-art/hero',run.characterId+'.avatar');
   else fit(view,hero.x+hero.width/2,hero.y+10,getCharacter(run.characterId).name,18,hero.width,C.ink,'result-art/hero-fallback',true);
-  const name=fit(view,hero.x+hero.width/2,hero.y+artHeight+3,getCharacter(run.characterId).name,p.desktop?20:16,hero.width,C.ink,'result/hero-name',true).setFontFamily('Georgia, "Noto Serif SC", SimSun, serif').setFontStyle('bold');
+  const name=fit(view,hero.x+hero.width/2,hero.y+artHeight+3,getCharacter(run.characterId).name,p.desktop?20:16,hero.width,C.ink,'result/hero-name',true).setFontStyle('bold');
   let heroBottom=name.y+name.height;
   if(facts.hero){
    const skill=fit(view,hero.x+hero.width/2,name.y+name.height+2,facts.heroSkill??'',14,hero.width,C.red,'result/hero-skill',true).setFontStyle('bold');

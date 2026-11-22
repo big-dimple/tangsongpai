@@ -33,5 +33,5 @@ export function mountHeroTags(dialog:HTMLDialogElement,tags:readonly string[]):v
  const row=document.createElement('ul');row.className='hero-skill-tags';row.setAttribute('aria-label','技能条件与次数');
  for(const tag of tags){const item=document.createElement('li');item.textContent=tag;row.append(item);}
  const intro=dialog.querySelector('.dialog-intro');intro?.prepend(row);
- const style=document.createElement('style');style.textContent='.hero-skill-tags{display:flex;flex-wrap:wrap;gap:5px;list-style:none;padding:0;margin:0 0 10px}.hero-skill-tags li{font:600 13px/1.5 system-ui,sans-serif;color:#386d65;background:#e5eee5;border:1px solid #b8cabc;border-radius:5px;padding:3px 6px}';dialog.append(style);
+ const style=document.createElement('style');style.textContent='.hero-skill-tags{display:flex;flex-wrap:wrap;gap:5px;list-style:none;padding:0;margin:0 0 10px}.hero-skill-tags li{font:600 13px/1.5 var(--ui-font);color:#386d65;background:#e5eee5;border:1px solid #b8cabc;border-radius:3px;padding:3px 6px}';dialog.append(style);
 }

@@ -33,7 +33,7 @@ const css=`
 .hero-explanation .dialog-portrait-art{height:auto;width:100%;max-width:260px;align-self:start}
 .hero-explanation .dialog-portrait{max-height:42dvh}
 .hero-explanation .dialog-eyebrow{color:#386d65}
-.hero-explanation .hero-motto{margin:0 0 12px;color:#386d65;font:italic 16px/1.5 Georgia,"Noto Serif SC",serif}
+.hero-explanation .hero-motto{margin:0 0 12px;color:#386d65;font:italic 16px/1.5 var(--ui-font)}
 .hero-explanation .hero-fact{margin:0 0 12px;line-height:1.55;font-size:15px;color:#26313a;white-space:pre-line}
 .hero-explanation .hero-fact strong{display:block;color:#3f606b;font-size:14px;margin-bottom:3px}
 .hero-explanation .hero-example{margin-top:12px}

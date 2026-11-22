@@ -113,7 +113,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     const modeLabel=selectionModeName(this.modeConfig);
     const modeWidth=p.portrait?96:112,controlsRight=safe.right+12,menuWidth=l.width<=700?44:64,modeX=Math.min(p.x+p.w-modeWidth,l.width-controlsRight-menuWidth-8-modeWidth);
     const headingWidth=modeX-p.x-84;
-    if((!p.portrait||this.step==='route')&&headingWidth>=28){const heading=this.step==='hero'?'英雄登场':headingWidth<70?'点选路线':'点一条路线';this.singleLine(p.x+80,p.top+10,heading,p.short?20:p.portrait?16:28,SELECTION_INK.light,headingWidth,14,true).setColor(SELECTION_INK.light).setFontFamily('Georgia, "Noto Serif SC", SimSun, serif').setName(this.step==='route'?'opening/route-heading':'opening/hero-heading');}
+    if((!p.portrait||this.step==='route')&&headingWidth>=28){const heading=this.step==='hero'?'英雄登场':headingWidth<70?'点选路线':'点一条路线';this.singleLine(p.x+80,p.top+10,heading,p.short?20:p.portrait?16:28,SELECTION_INK.light,headingWidth,14,true).setColor(SELECTION_INK.light).setName(this.step==='route'?'opening/route-heading':'opening/hero-heading');}
     selectionQuietButton(v,{x:modeX,y:safe.top+12,width:modeWidth,height:44},'模式 · '+modeLabel,'action/select-mode',()=>this.selectMode(),!this.choosing);
     this.showHero(p,config.characterAbilityEnabled);
     if(this.step==='hero')CHARACTERS.forEach((character,i)=>{
@@ -189,7 +189,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     const ix=q.identity.x,iw=q.identity.width,iy=q.identity.y;
     let nameY=iy;
     if(!compact||q.identity.height>=150){const title=v.text(ix,iy,HERO_CAST[c.id].title,14,undefined,iw).setColor(SELECTION_INK.muted).setName('opening/title');nameY=title.y+title.height+8;}
-    const name=this.singleLine(ix,nameY,c.name,p.short?22:compact?28:48,SELECTION_INK.light,iw,20,true).setColor(SELECTION_INK.light).setFontFamily('Georgia, "Noto Serif SC", SimSun, serif').setName('opening/name');
+    const name=this.singleLine(ix,nameY,c.name,p.short?22:compact?28:48,SELECTION_INK.light,iw,20,true).setColor(SELECTION_INK.light).setName('opening/name');
     const smallIdentity=p.short||q.identity.height<150,quoteY=name.y+name.height+(smallIdentity?4:16);
     const quote=v.text(ix,quoteY,copy.taunt,smallIdentity?14:p.portrait?17:24,undefined,iw).setColor(SELECTION_INK.light).setName('opening/attitude');
     if(!compact)v.text(ix,quote.y+quote.height+24,facts.hook,17,undefined,iw).setColor(SELECTION_INK.muted).setName('opening/play-attitude');

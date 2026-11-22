@@ -1,5 +1,5 @@
 /* Later navigation keeps the current scene visible while its real resource gate runs. */
-#resource-preparation{box-sizing:border-box;position:fixed;inset:auto 16px 16px auto;margin:0;width:min(380px,calc(100vw - 32px));max-height:calc(100dvh - 32px);padding:20px;border:1px solid #c7b89d;border-radius:8px;background:#fff9ee;color:#26313a;box-shadow:0 6px 24px #26313a26;font:14px/1.5 "Microsoft YaHei","PingFang SC",sans-serif;overflow:auto}
+#resource-preparation{box-sizing:border-box;position:fixed;inset:auto 16px 16px auto;margin:0;width:min(380px,calc(100vw - 32px));max-height:calc(100dvh - 32px);padding:20px;border:1px solid #c7b89d;border-radius:8px;background:#fff9ee;color:#26313a;box-shadow:0 6px 24px #26313a26;font:14px/1.5 var(--ui-font);overflow:auto}
 #resource-preparation::backdrop{background:transparent}
 #resource-preparation h2{margin:0 0 12px;font-size:18px}
 #resource-preparation .preparation-progress-line{display:flex;justify-content:space-between;align-items:center;gap:12px;color:#3f606b}

@@ -1111,7 +1111,7 @@ export async function playQiyuAnimation(
     boxSizing: 'border-box',
     color: '#f8e8c8',
     background: 'radial-gradient(circle at 50% 38%,#6f4036 0%,#182f2c 72%)',
-    fontFamily: 'Georgia,"Noto Serif SC",serif',
+    fontFamily: 'var(--ui-font)',
     opacity: '0',
     transition: reduced ? 'none' : 'opacity 220ms ease',
   });

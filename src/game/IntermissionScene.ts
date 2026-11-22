@@ -163,7 +163,7 @@ export class IntermissionScene extends Phaser.Scene {
     const guidance=lost?failureGuidance(run):undefined;
     const title=capped?'本局暂止于此':skipped?'换一场，再对局':won?(run.mode==='tutorial'?'教学对局完成！':run.mode==='challenge'?'挑战完成！':'八章通关'):this.result.cleared?(identity.isBoss?'压轴过关 · '+identity.title:'本场获胜'):guidance?.title??'此局结束，再来一局';
     const titlePlate=p.pc?v.add(this.add.graphics().setName('result/title-plate')):undefined;
-    const titleText=v.text(p.x,p.top+(p.short?22:28),title,p.pc?(l.width<1500?40:48):p.short||p.portrait&&identity.isBoss?22:p.portrait?26:34,identity.isBoss&&this.result.cleared?PAPER_CSS.red:PAPER_CSS.ink,p.w).setName('result/title').setFontFamily('Georgia, "Noto Serif SC", SimSun, serif').setFontStyle('bold');
+    const titleText=v.text(p.x,p.top+(p.short?22:28),title,p.pc?(l.width<1500?40:48):p.short||p.portrait&&identity.isBoss?22:p.portrait?26:34,identity.isBoss&&this.result.cleared?PAPER_CSS.red:PAPER_CSS.ink,p.w).setName('result/title').setFontStyle('bold');
     if(p.pc||mobile){titleText.setWordWrapWidth(0);for(let size=mobile?26:l.width<1500?40:48;titleText.width>(p.pc?p.w-36:p.w)&&size>(mobile?18:24);)titleText.setFontSize(--size);}
     if(p.pc){
       titleText.setOrigin(.5,0).setX(p.x+p.w/2).setAlign('center').setColor(lost||skipped||capped?PAPER_CSS.jade:PAPER_CSS.red);

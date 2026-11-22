@@ -35,11 +35,11 @@ function style(host:HTMLElement):void {
   .opponent-dialog .opponent-identity {display:flex;align-items:center;gap:10px;margin:0 0 10px;color:${C.jade}}
   .opponent-dialog .opponent-seal {display:grid;place-items:center;border:2px solid currentColor;width:44px;height:44px;font:700 19px Georgia,serif;letter-spacing:2px}
   .opponent-dialog .opponent-identity span {font-size:13px;letter-spacing:2px}
-  .opponent-dialog .opponent-quote {font-family:Georgia,'Noto Serif SC',SimSun,serif;font-size:clamp(20px,3vw,28px);line-height:1.3}
+  .opponent-dialog .opponent-quote {font-family:var(--ui-font);font-size:clamp(20px,3vw,28px);line-height:1.3}
   .opponent-dialog .dialog-effect {border-left:3px solid ${C.red};padding-left:12px;font-weight:700}
   .opponent-dialog .dialog-purchase-summary {font-size:16px;font-weight:700}
   .opponent-beat {background:${C.paperLight};border-left-width:5px;gap:5px}
-  .opponent-beat strong {font-family:Georgia,'Noto Serif SC',SimSun,serif;font-size:clamp(19px,3vw,30px)}
+  .opponent-beat strong {font-family:var(--ui-font);font-size:clamp(19px,3vw,30px)}
   .opponent-beat p {font-weight:700;color:${C.jade}}
   .opponent-beat[data-kind='repeat'] p {color:${C.red}}
   .opponent-beat[data-kind='won'] {border-color:${C.brass}}

@@ -18,9 +18,9 @@ export function drawShopBackdrop(scene:Phaser.Scene,view:SceneView,p:ReturnType<
 export function shopSheet(scene:Phaser.Scene,view:SceneView,name:string,b:Box,color:number,raised=false,outlined=false):void {
   if(b.width<=0||b.height<=0)return;
   const g=scene.add.graphics().setName('shop-art/'+name).setData('bounds',{...b});
-  if(raised)g.fillStyle(T.ink,.065).fillRoundedRect(b.x,b.y+2,b.width,b.height,6);
-  g.fillStyle(color).fillRoundedRect(b.x,b.y,b.width,b.height,6);view.add(g);
-  if(outlined)view.add(scene.add.graphics().lineStyle(1,T.jade,.6).strokeRoundedRect(b.x+.5,b.y+.5,b.width-1,b.height-1,6).setName('shop-art/offer-edge').setData('bounds',{...b}));
+  if(raised)g.fillStyle(T.ink,.045).fillRoundedRect(b.x,b.y+2,b.width,b.height,3);
+  g.fillStyle(color).fillRoundedRect(b.x,b.y,b.width,b.height,3);view.add(g);
+  if(outlined)view.add(scene.add.graphics().lineStyle(1,T.divider,.75).strokeRoundedRect(b.x+.5,b.y+.5,b.width-1,b.height-1,3).setName('shop-art/offer-edge').setData('bounds',{...b}));
   if(scene.textures.exists('p00-paper')&&b.width>8&&b.height>8)view.add(scene.add.tileSprite(b.x+4,b.y+4,b.width-8,b.height-8,'p00-paper').setOrigin(0).setAlpha(.09).setName('shop-art/'+name+'-paper'));
 }
 
@@ -29,11 +29,11 @@ export function drawShopArt(scene:Phaser.Scene,view:SceneView,p:ReturnType<typeo
   if(pc){
     const g=scene.add.graphics().setName('shop-art/pc-frame');
     const panel=(b:Box,fill:number)=>{
-      g.fillStyle(T.ink,.1).fillRoundedRect(b.x,b.y+4,b.width,b.height,8)
-       .fillStyle(fill).fillRoundedRect(b.x,b.y,b.width,b.height,8)
-       .lineStyle(1,0xb7a484,.8).strokeRoundedRect(b.x+.5,b.y+.5,b.width-1,b.height-1,8);
+      g.fillStyle(T.ink,.055).fillRoundedRect(b.x,b.y+3,b.width,b.height,3)
+       .fillStyle(fill).fillRoundedRect(b.x,b.y,b.width,b.height,3)
+       .lineStyle(1,0xb7a484,.7).strokeRoundedRect(b.x+.5,b.y+.5,b.width-1,b.height-1,3);
     };
-    panel(pc.left,0xdccdba);panel(pc.ownedRail,0xf4eddb);panel(pc.shopPanel,0xd9c9a9);
+    panel(pc.left,0xe6dccb);panel(pc.ownedRail,0xf7f0e2);panel(pc.shopPanel,0xe5d9c1);
     g.lineStyle(1,0xb7a484,.7).lineBetween(pc.shopPanel.x+12,p.play.y-12,pc.shopPanel.x+pc.shopPanel.width-12,p.play.y-12);
     view.add(g);
   }else if(p.short){

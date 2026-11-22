@@ -275,7 +275,7 @@ const xml=(value:string)=>value.replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;
 const colors=PAPER_CSS;
 const star=(x:number,y:number,size=8)=>`<path d="M${x-size} ${y}Q${x} ${y-2} ${x} ${y-size}Q${x+2} ${y} ${x+size} ${y}Q${x} ${y+2} ${x} ${y+size}Q${x-2} ${y} ${x-size} ${y}Z" fill="${colors.paperLight}" stroke="${colors.brass}" stroke-width="1.2"/>`;
 const circle=(x:number,y:number,r:number)=>`<circle cx="${x}" cy="${y}" r="${r}"/>`;
-const text=(x:number,y:number,value:string,size=24,fill=colors.paperLight)=>`<text x="${x}" y="${y}" text-anchor="middle" font-family="Microsoft YaHei,PingFang SC,sans-serif" font-size="${size}" fill="${fill}" stroke="none">${xml(value)}</text>`;
+const text=(x:number,y:number,value:string,size=24,fill=colors.paperLight)=>`<text x="${x}" y="${y}" text-anchor="middle" font-family="Songti SC,Noto Serif CJK SC,SimSun,serif" font-size="${size}" fill="${fill}" stroke="none">${xml(value)}</text>`;
 const cardShape=(x:number,y:number,w=68,h=98)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="${colors.paperLight}" stroke="${colors.brass}" stroke-width="2.4"/><path d="M${x+9} ${y+22}h12m-12 7h8M${x+w-21} ${y+h-20}h12" opacity=".65"/>`;
 const arrow=(x:number,y:number,right=true)=>`<path d="M${x} ${y}h${right?40:-40}m${right?-12:12} -10l${right?12:-12} 10 ${right?-12:12} 10" fill="none" stroke="${colors.brass}" stroke-width="4" stroke-linejoin="round"/>`;
 function framedArt(id:string,name:string,family:string,body:string):string {

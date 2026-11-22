@@ -134,6 +134,7 @@ tools/          离线素材工具
 ### 画幅与交互
 
 - 首页、选将、选路、商店、牌桌及结算都按实际可用视口排版。`SceneView` 把浏览器四边安全区换算为画布坐标。菜单的标准／较大画面偏好保存在浏览器，自动模式参考浏览器默认字号，最高放大 1.2 倍。原生首页、加载页和详情随字号重排。
+- 场内画布和原生界面共用本地思源宋体中文字库，分数数字仍使用独立等宽字体。开场最多等待字库 2 秒，加载失败或超时使用系统字体，玩家仍可入局。画布中文自动换行尽量避免标点独占行；按钮、面板与牌桌边框沿用纸、墨、朱、金的视觉层级，触控命中区仍由原布局决定。
 - 加载页、首页和场内共用一幅 1440×960 的河市 WebP。HTML 优先请求，Phaser 复用已解码图像，分别裁切人物背景、集市招牌、落牌区和结算人物栏。群像演出限于首页画幅，封面牌与入口在演出期间可用。选路示例牌与路线教学共用同一组点数和花色。选牌时显示本手预计分和过关差额，空间充足时用实线绘制已入账与保底预估，点线绘制可能增加的区间。结算用已保存的累计、目标和可核验的末手分数绘制进度条。
 - 手机竖屏选将采用两行，商店货架可单独滚动，底部保留进桌操作。牌桌先分配手牌与操作区，再分配构筑栏和落牌区。320×568、上下安全区 44／34px 时，标准倍率保留至少 52px 牌宽、44px 构筑槽和 48px 落牌区。扩容手牌按剩余空间分两行或分页。`HandSeats` 同时生成可见牌、触摸命中区和翻页位置。
 - PC 选路把三个选项和确认键放在人物右侧。至少 1180×640 可用空间且主指针非粗指针时，牌桌启用 `PcTableLayout`。宽屏牌桌、商店和结算共用居中的 1600px 上限。计分与落牌并排，构筑、手牌、操作、演出和手柄焦点读取同一组坐标。较短横屏和平板另有对应布局。
@@ -141,7 +142,7 @@ tools/          离线素材工具
 - 「双鲤同游」的购买、持有详情和图鉴共用四张可点选的示例牌。`PairPractice` 将选牌与当前版本的单张唐宋牌送入 `scoreR2Hand`，从该牌的实际倍率事件标出受益牌。示例牌独立于本局手牌和随机状态。图鉴支持按改名前的牌名查找。
 - `IntermissionLayout`、`PcSettlementPresentation`、`MobileSettlementPresentation` 和 `IntermissionScroll` 共用安全区及滚动边界。成绩、实出组合、有效计分牌、末手入账和过场奖励均来自 `settlementFacts`。短屏压缩人物区域，长内容可滚动至后续操作。桌面暖纸切场不阻塞导航。
 - `PcActionKeyboard` 为画布动作提供同步的原生键盘焦点。`WholeActionSurface` 将选择卡片接到既有按钮。标准手柄方向键／左摇杆移动焦点，四个面键分别确认、返回、出牌、弃牌，LB／RB 调序或切栏，LT／RT 理牌，View 看详情，Start 开菜单，右摇杆滚动。方向可连发，提交动作每次按下执行一次。重新连接与后台恢复先回中立位置。
-- `node harness/pc-landscape.mjs` 使用实际点击或触控走新局、购买、出牌、结算和下一场。选路、结算变体和手柄专项分别见 `harness/route-choice.mjs`、`harness/fallback-settlement.mjs` 和 `npm run test:gamepad:browser`。浏览器模拟与真人真机体验分别记录。
+- `node harness/pc-landscape.mjs` 使用实际点击或触控走新局、购买、出牌、结算和下一场。选路、结算变体和手柄专项分别见 `harness/route-choice.mjs`、`harness/fallback-settlement.mjs` 和 `npm run test:gamepad:browser`。`node tests/ui-typography.browser.mjs` 检查字库正常、失败、慢加载和桌面／手机的选将、商店详情与牌坊交互，可用 `SMOKE_CHROMIUM_EXECUTABLE_PATH` 指定浏览器。浏览器模拟与真人真机体验分别记录。
 
 ### 演出与加载
 
@@ -154,6 +155,7 @@ tools/          离线素材工具
 ### 资产与来源
 
 - 封面题名和「开卷」印使用 Ma Shan Zheng，题签、入口标题和按钮使用思源宋体 CN Medium。横屏横题，手机竖屏竖题，极窄画幅回到横排。加载页与首页共用本地 WOFF2，群像卷轴也沿用题名字体。两个字库按封面用字裁切，许可证随文件保存在 `public/assets/fonts/cover/`。增改题字或题签时须同步核对字库覆盖。[题名字体原件](https://github.com/googlefonts/mashanzheng/tree/6bfdbe288f5935c6e9072cdd6ab1aa102a006aab/fonts/ttf) · [宋体原件](https://github.com/adobe-fonts/source-han-serif/tree/7889f11bf31170b5d092a083b357c8c8130f89e0/SubsetOTF/CN)
+- 场内 `public/assets/fonts/ui/song.woff2` 基于上述思源宋体 CN Medium，用 fontTools 4.68.0 保留 GB 2312 汉字、现有内容汉字、常用标点及拉丁字形，重新命名为 Tangsongpai Song UI；许可证位于同目录。新增非 GB 2312 用字时须核对字库，加载失败时由字体栈回退。
 - 正式运行资源位于 `public/assets/`，通过注册表和 `BASE_URL` 加载。六张透明立绘使用 `tangsong-pc-heroes/manifest.json` 的 `pc` 用途，按当前英雄加载。对应上限为 400,000 字节、896×1120 像素，按需载入的其他人物图上限为 128 KiB／600,000 像素。开场河市画为 1440×960 的共享 WebP，约 211 KiB。用 `node tools/build-pc-hero-art.mjs <原图目录>` 重建透明图及来源映射。英雄文案入口为 `src/content/hero-text-spec.json`。
 - 运行清单在 `docs/assets/inventory.json`。私有仓库 `big-dimple/tangsongpai-assets` 保存原始素材。`docs/assets/source-archive.json` 固定资产提交与清单摘要，`docs/assets/source-inventory.jsonl` 记录逐文件字节数和 SHA256。检出相应资产提交，设置 `TANGSONGPAI_ASSETS_ROOT` 后运行 `npm run test:source-archive`。新牌画的 `receiptRepository: "asset-archive"` 指向私库中的原件与清单提交，`node scripts/handdrawn-provenance.mjs --git-history` 可复核新旧图的提交记录。公开 CI 核对清单与运行资源，B05 原图解码需要私有原件。
 

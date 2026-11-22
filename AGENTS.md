@@ -40,6 +40,7 @@
 | --- | --- |
 | 开场、选将与选路 | `index.html`、`src/game/HomePage.ts`、`src/game/CharacterSelectScene.ts`、`src/game/OpeningRouteDemo.ts` |
 | 场景启动与河市画卷 | `src/main.ts`、`src/game/*Scene.ts`、`src/game/RiverScroll.ts` |
+| 场内中文字体、换行与共用框体 | `index.html`、`src/game/theme.ts`、`src/game/ChineseTextWrap.ts`、`src/game/SceneView.ts`、`src/style.css` |
 | PC/移动牌桌布局与装饰 | `src/game/PcLandscapeFrame.ts`、`src/game/PcTableLayout.ts`、`src/game/layout.ts`、`src/game/HandSeats.ts`、`src/game/ScoreTableLayout.ts`、`src/game/StageTableArt.ts` |
 | PC/手机商店布局与表现 | `src/game/ShopLayout.ts`、`src/game/ShopScene.ts`、`src/game/ShopArt.ts`、`src/game/ShopMobileOffers.ts`、`src/game/ShopMobileOffers.css` |
 | 透明人物资产（牌桌、商店、桌面/手机结算） | `src/game/PcHeroArt.ts`、`src/game/CharacterArt.ts`、`public/assets/tangsong-pc-heroes/manifest.json`、`tools/build-pc-hero-art.mjs` |

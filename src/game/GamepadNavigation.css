@@ -1,5 +1,5 @@
 .controller-focus-ring{position:fixed;box-sizing:border-box;z-index:200;pointer-events:none;border:3px solid #b8473a;border-radius:7px;box-shadow:0 0 0 2px #fff9ee;}
-.controller-hints{position:fixed;inset:auto 0 0;z-index:201;box-sizing:border-box;height:calc(var(--controller-bar-height,34px) + env(safe-area-inset-bottom,0px));padding:6px 10px env(safe-area-inset-bottom,0px);background:#fff9ee;color:#26313a;border-top:1px solid #c7b89d;font:12px/20px "Microsoft YaHei","PingFang SC",sans-serif;text-align:center;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.controller-hints{position:fixed;inset:auto 0 0;z-index:201;box-sizing:border-box;height:calc(var(--controller-bar-height,34px) + env(safe-area-inset-bottom,0px));padding:6px 10px env(safe-area-inset-bottom,0px);background:#fff9ee;color:#26313a;border-top:1px solid #c7b89d;font:12px/20px var(--ui-font);text-align:center;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .controller-focus-ring[hidden],.controller-hints[hidden]{display:none;}
 [data-controller-focus]{outline:3px solid #b8473a!important;outline-offset:2px;}
 body[data-controller-connected]{--controller-bar-height:34px;}

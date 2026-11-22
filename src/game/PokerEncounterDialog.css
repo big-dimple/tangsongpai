@@ -269,7 +269,7 @@
   border-radius: 4px;
   border: 1px solid #9e8f70;
   background: #fdf9f0;
-  font: 700 18px/1.2 Georgia, 'Noto Serif SC', SimSun, serif;
+  font: 700 18px/1.2 var(--ui-font);
   color: #1c3330;
   cursor: pointer;
   transition: background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
@@ -437,7 +437,7 @@
   border-radius: 4px;
   background: #b63f30;
   color: #fff3d6;
-  font: 700 14px/1 'Noto Serif SC', SimSun, serif;
+  font: 700 14px/1 var(--ui-font);
   transform: rotate(-6deg);
   box-shadow: 0 2px 6px rgba(182, 63, 48, 0.35);
 }

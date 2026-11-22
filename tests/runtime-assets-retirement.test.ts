@@ -12,7 +12,7 @@ import bgm from '../public/assets/audio/bgm/manifest.json';
 import gamefeel from '../public/assets/audio/gamefeel-rfc/sources.json';
 import cleanup from '../docs/production/evidence/runtime-asset-cleanup-2026-10-17/cleanup.json';
 
-const coverFonts=['assets/fonts/cover/title.woff2','assets/fonts/cover/text.woff2'];
+const uiFonts=['assets/fonts/cover/title.woff2','assets/fonts/cover/text.woff2','assets/fonts/ui/song.woff2'];
 
 function runtimeFiles():Set<string> {
   const files=new Set<string>();
@@ -32,7 +32,7 @@ function runtimeFiles():Set<string> {
   for(const sample of FOLEY_SAMPLES)add(sample.runtimePath);
   add('assets/audio/score-impact/cloth2.ogg');add(REWARD_COIN.image);
   add('assets/fonts/score/tangsongpai-score-numbers.woff');
-  coverFonts.forEach(add);
+  uiFonts.forEach(add);
   return files;
 }
 
@@ -47,7 +47,7 @@ it('keeps every current card, tool, portrait, eye strip, head fallback and suppo
   const dedicated=CLIMAX_SOURCE_ART.filter(a=>a.kind==='stage-derivative').map(a=>'public/'+a.path);
   const files=runtimeFiles();
   expect([...files].filter(path=>path.startsWith('public/assets/handdrawn-climax/')).sort()).toEqual(dedicated.sort());
-  expect(files.size).toBe(cleanup.protected.runtimeFiles+gamefeel.assets.length+3+6-53+dedicated.length+coverFonts.length);
+  expect(files.size).toBe(cleanup.protected.runtimeFiles+gamefeel.assets.length+3+6-53+dedicated.length+uiFonts.length);
   expect(climaxSourceAsset('a11')?.url).toBe(jokerArtUrl('a11'));
   for(const file of files){expect(fs.existsSync(file),file).toBe(true);expect(fs.statSync(file).size,file).toBeGreaterThan(0);}
 });

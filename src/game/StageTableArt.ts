@@ -53,20 +53,21 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
   // Layered lacquer surround, warm card trays and a quiet jade playing field.
   // Every painted surface follows existing hit geometry and has no input.
   g.fillStyle(0x253e40).fillRect(0,0,l.width,l.height);
-  g.fillStyle(0x172d30,.65).fillRoundedRect(frame.x-12,frame.y-12,frame.width+24,frame.height+24,18);
-  g.fillStyle(0xe9ddc7).fillRoundedRect(frame.x-8,frame.y-16,frame.width+16,frame.height+24,14);
-  g.lineStyle(2,0x9a8261,.8).strokeRoundedRect(frame.x-7,frame.y-15,frame.width+14,frame.height+22,13);
-  g.fillStyle(0xf7f0e4).fillRoundedRect(l.hud.x,l.hud.y,l.hud.width,frame.height,9);
-  g.lineStyle(1,0xc4b397).strokeRoundedRect(l.hud.x+.5,l.hud.y+.5,l.hud.width-1,frame.height-1,9);
-  g.fillStyle(0xe1d3bc).fillRoundedRect(build.x,build.y-4,build.width,build.height+8,9);
-  g.lineStyle(1,0xb4a083,.8).strokeRoundedRect(build.x+.5,build.y-3.5,build.width-1,build.height+7,9);
+  g.fillStyle(0x172d30,.65).fillRoundedRect(frame.x-12,frame.y-12,frame.width+24,frame.height+24,7);
+  g.fillStyle(0xe9ddc7).fillRoundedRect(frame.x-8,frame.y-16,frame.width+16,frame.height+24,5);
+  g.lineStyle(1,0x9a8261,.9).strokeRoundedRect(frame.x-7,frame.y-15,frame.width+14,frame.height+22,4);
+  g.lineStyle(1,0xfff9ee,.5).strokeRoundedRect(frame.x-4,frame.y-12,frame.width+8,frame.height+16,2);
+  g.fillStyle(0xf7f0e4).fillRoundedRect(l.hud.x,l.hud.y,l.hud.width,frame.height,3);
+  g.lineStyle(1,0xc4b397).strokeRoundedRect(l.hud.x+.5,l.hud.y+.5,l.hud.width-1,frame.height-1,3);
+  g.fillStyle(0xe8dcc8).fillRoundedRect(build.x,build.y-4,build.width,build.height+8,3);
+  g.lineStyle(1,0xb4a083,.65).strokeRoundedRect(build.x+.5,build.y-3.5,build.width-1,build.height+7,3);
   const stage=l.playedArea;
   playMat(g,stage);
-  g.fillStyle(0x26313a,.12).fillRoundedRect(l.scoreBoard.x,l.scoreBoard.y+3,l.scoreBoard.width,l.scoreBoard.height,9);
-  g.fillStyle(0xfff9ee).fillRoundedRect(l.scoreBoard.x,l.scoreBoard.y,l.scoreBoard.width,l.scoreBoard.height,9);
-  g.lineStyle(1,0xb4a083).strokeRoundedRect(l.scoreBoard.x+.5,l.scoreBoard.y+.5,l.scoreBoard.width-1,l.scoreBoard.height-1,9);
-  g.fillStyle(0xf6eee0).fillRoundedRect(main.x,l.hand.y-8,main.width,l.actions.y+l.actions.height-l.hand.y+16,9);
-  g.lineStyle(1,0xc4b397,.8).strokeRoundedRect(main.x+.5,l.hand.y-7.5,main.width-1,l.actions.y+l.actions.height-l.hand.y+15,9);
+  g.fillStyle(0x26313a,.06).fillRoundedRect(l.scoreBoard.x,l.scoreBoard.y+2,l.scoreBoard.width,l.scoreBoard.height,3);
+  g.fillStyle(0xfff9ee).fillRoundedRect(l.scoreBoard.x,l.scoreBoard.y,l.scoreBoard.width,l.scoreBoard.height,3);
+  g.lineStyle(1,0xb4a083,.75).strokeRoundedRect(l.scoreBoard.x+.5,l.scoreBoard.y+.5,l.scoreBoard.width-1,l.scoreBoard.height-1,3);
+  g.fillStyle(0xf6eee0).fillRoundedRect(main.x,l.hand.y-8,main.width,l.actions.y+l.actions.height-l.hand.y+16,3);
+  g.lineStyle(1,0xc4b397,.65).strokeRoundedRect(main.x+.5,l.hand.y-7.5,main.width-1,l.actions.y+l.actions.height-l.hand.y+15,3);
   g.lineStyle(3,T.red,.8).lineBetween(main.x+12,frame.y-9,main.x+64,frame.y-9);
   addPaper(g);
   drawRiverScroll(scene,view,{x:stage.x+7,y:stage.y+7,width:stage.width-14,height:stage.height-14},.6,.52);
@@ -84,10 +85,10 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
  }
  if(view.layout.mode==='portrait'){
   const l=view.layout,accent=scene.add.graphics().setName('table-art/mobile-arena').setData('bounds',plan.surface);
-  accent.fillStyle(T.paper,.96).fillRoundedRect(plan.surface.x,plan.surface.y,plan.surface.width,plan.surface.height,12);
+  accent.fillStyle(T.paper,.96).fillRoundedRect(plan.surface.x,plan.surface.y,plan.surface.width,plan.surface.height,3);
   accent.fillStyle(T.ink,.9).fillRect(plan.program.x,plan.program.y,plan.program.width,plan.program.height);
-  accent.fillStyle(T.jadeSoft,.5).fillRoundedRect(l.scoreBoard.x,l.scoreBoard.y,l.scoreBoard.width,l.scoreBoard.height,10);
-  accent.lineStyle(1,T.jade,.42).strokeRoundedRect(l.scoreBoard.x+.5,l.scoreBoard.y+.5,l.scoreBoard.width-1,l.scoreBoard.height-1,10);
+  accent.fillStyle(T.paperLight,.75).fillRoundedRect(l.scoreBoard.x,l.scoreBoard.y,l.scoreBoard.width,l.scoreBoard.height,3);
+  accent.lineStyle(1,T.divider,.7).strokeRoundedRect(l.scoreBoard.x+.5,l.scoreBoard.y+.5,l.scoreBoard.width-1,l.scoreBoard.height-1,3);
   const mat={...l.playedArea,height:Math.max(l.playedArea.height,l.heroAction.y-5-l.playedArea.y)};
   playMat(accent,mat);
   accent.fillStyle(T.paperLight,.99).fillRect(l.hand.x-4,l.hand.y-8,l.hand.width+8,l.actions.y-l.hand.y+8);

@@ -1,6 +1,7 @@
 import type Phaser from 'phaser';
 import type {Box} from './layout';
 import {cssViewport} from '../platform/Viewport';
+import {UI_FONT} from './theme';
 import {advanceEntryParticleField,createEntryParticleField,entryParticleVisible,paintEntryParticleBrush,ENTRY_PARTICLE_BUDGET,ENTRY_PARTICLE_SOURCE,type EntryParticleField} from './EntryDepthParticles';
 
 /** The same MIT projection drives a fixed pool of Phaser Images; no second engine or update loop. */
@@ -60,7 +61,7 @@ export class SelectionEntryParticles {
   const animated=this.running();this.activeKind=kind;
   if(!this.feedback){
    this.feedback=this.scene.add.graphics().setName('opening/choice-feedback');
-   this.seal=this.scene.add.text(0,0,'定',{fontFamily:'Georgia, "Noto Serif SC", SimSun, serif',fontSize:'26px',fontStyle:'bold',color:'#FFF0CF'}).setOrigin(.5).setVisible(false);
+   this.seal=this.scene.add.text(0,0,'定',{fontFamily:UI_FONT,fontSize:'26px',fontStyle:'bold',color:'#FFF0CF'}).setOrigin(.5).setVisible(false);
    this.root!.add([this.feedback,this.seal]);
   }
   const anchor=this.anchor??{x:0,y:0,width:1,height:1},viewport=cssViewport(this.scene),g=this.feedback,clock={progress:0},inkRibbon=kind==='switch'?createSelectionInkRibbon(anchor):undefined;

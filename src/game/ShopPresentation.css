@@ -34,7 +34,7 @@
 .detail-dialog.tool-detail .tool-preview { font-size:15px; }
 
 /* Shop actions share one quiet secondary treatment and one explicit confirm. */
-.detail-dialog:is(.shop-tool-purchase,.tool-detail,.shop-workshop,.shop-service-confirmation) .dialog-actions button { border:0;border-radius:8px;background:#e2e8e5;color:#203f3b;box-shadow:none;min-height:48px; }
+.detail-dialog:is(.shop-tool-purchase,.tool-detail,.shop-workshop,.shop-service-confirmation) .dialog-actions button { border:1px solid #b6aa91;border-radius:3px;background:#f9f3e7;color:#203f3b;box-shadow:none;min-height:48px; }
 .detail-dialog:is(.shop-tool-purchase,.tool-detail,.shop-workshop,.shop-service-confirmation) .dialog-actions .dialog-primary { background:#203f3b;color:#fff9ee; }
 .detail-dialog:is(.shop-tool-purchase,.tool-detail,.shop-workshop,.shop-service-confirmation) .dialog-actions button:disabled { background:#e7e5de;color:#595b59; }
 .detail-dialog.shop-tool-purchase[open] { width:min(640px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px)); }
@@ -43,10 +43,10 @@
 .shop-tool-later summary { min-height:44px;display:flex;align-items:center;cursor:pointer;color:#3f606b; }
 .shop-tool-later button { margin:0 0 12px;min-height:44px; }
 .detail-dialog.shop-workshop[open] { width:min(1000px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));height:fit-content;min-height:0;max-height:calc(100dvh - var(--safe-top) - var(--safe-bottom) - 24px); }
-.shop-workshop .dialog-header { background:#edf1e9; }
+.shop-workshop .dialog-header { background:#274740; }
 .shop-workshop .make-cards-quota { margin:8px 0 0; }
 .workshop-nav { display:flex;gap:8px;padding:4px 0 20px; }
-.workshop-nav button { flex:1;min-height:48px;border:0;border-radius:8px;background:#eee9df;color:#3f606b;box-shadow:none; }
+.workshop-nav button { flex:1;min-height:48px;border:0;border-radius:3px;background:#eee9df;color:#3f606b;box-shadow:none; }
 .workshop-nav button[aria-pressed=true] { background:#203f3b;color:#fff9ee; }
 .workshop-workspace h3 { margin:0 0 8px;color:#203f3b; }
 .workshop-description { margin:0 0 20px;color:#3f606b;line-height:1.6; }

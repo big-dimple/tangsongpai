@@ -128,10 +128,10 @@ export function drawPcSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2R
  bottom=Math.max(scoreBottom,bottom);
  if(ceremony){
   const y=b.y-12,leftHeight=scoreBottom-y+12,rightHeight=bottom-y+12;
-  paper.fillStyle(T.ink,.05).fillRoundedRect(b.x,y+3,b.width*.49,leftHeight,10).fillRoundedRect(b.x+b.width*.51,y+3,b.width*.49,rightHeight,10);
-  paper.fillStyle(T.paperLight,.78).fillRoundedRect(b.x,y,b.width*.49,leftHeight,10).fillRoundedRect(b.x+b.width*.51,y,b.width*.49,rightHeight,10);
-  paper.lineStyle(1,T.divider,.68).strokeRoundedRect(b.x+.5,y+.5,b.width*.49-1,leftHeight-1,10).strokeRoundedRect(b.x+b.width*.51+.5,y+.5,b.width*.49-1,rightHeight-1,10);
-  paper.fillStyle(lost||skipped?T.jade:T.red,.86).fillRect(b.x+18,y,52,3).fillRect(b.x+b.width*.51+18,y,52,3);
+  paper.fillStyle(T.ink,.035).fillRoundedRect(b.x,y+2,b.width*.49,leftHeight,3).fillRoundedRect(b.x+b.width*.51,y+2,b.width*.49,rightHeight,3);
+  paper.fillStyle(T.paperLight,.78).fillRoundedRect(b.x,y,b.width*.49,leftHeight,3).fillRoundedRect(b.x+b.width*.51,y,b.width*.49,rightHeight,3);
+  paper.lineStyle(1,T.divider,.68).strokeRoundedRect(b.x+.5,y+.5,b.width*.49-1,leftHeight-1,3).strokeRoundedRect(b.x+b.width*.51+.5,y+.5,b.width*.49-1,rightHeight-1,3);
+  paper.fillStyle(lost||skipped?T.jade:T.red,.8).fillRect(b.x+18,y,38,2).fillRect(b.x+b.width*.51+18,y,38,2);
  }
  return {facts,score,reward,rewardText,paint,hero,stage:b,reviewBookBand,receiptBottom:bottom};
 }

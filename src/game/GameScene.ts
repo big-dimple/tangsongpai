@@ -1065,7 +1065,7 @@ export class GameScene extends Phaser.Scene {
     this.handPrompt=undefined;
     if((l.pc||portrait)&&l.playedArea.height>=60&&this.run.mode!=='tutorial'){
       const mat=l.playedArea,x=mat.x+mat.width*(portrait?.34:.5);
-      this.handPrompt=v.text(x,mat.y+mat.height*.53,'从手牌选 1–5 张',portrait?15:20).setOrigin(.5).setColor('#f4e7cb').setFontFamily('Georgia, "Songti SC", SimSun, serif').setName('table/hand-prompt').setVisible(false);
+      this.handPrompt=v.text(x,mat.y+mat.height*.53,'从手牌选 1–5 张',portrait?15:20).setOrigin(.5).setColor('#f4e7cb').setName('table/hand-prompt').setVisible(false);
     }
     this.previousHandText=v.text(portrait?p.x+10:h.x+12,portrait?p.y+p.height-20:h.y+(short?301:510),'',14,portrait?'#eddfbf':C.brass,portrait?p.width-20:h.width-24).setVisible(false);
     this.handCountText=v.text(l.handLabel.x,l.handLabel.y,'',14,'#f0e6cb').setVisible(!portrait&&l.labelHeight>0);

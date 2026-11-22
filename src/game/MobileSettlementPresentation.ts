@@ -63,12 +63,12 @@ export function drawMobileSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run
   reviewBookBand.height=Math.max(24,receipt.height);
  }
  // Painted last on an earlier display object: panels stay behind every fact.
- paper.fillStyle(T.ink,.045).fillRoundedRect(textX-8,b.y+11,textWidth+8,headerHeight-13,10);
- paper.fillStyle(T.paperLight,.88).fillRoundedRect(textX-8,b.y+8,textWidth+8,headerHeight-16,10).lineStyle(1,T.divider,.7).strokeRoundedRect(textX-7.5,b.y+8.5,textWidth+7,headerHeight-17,10);
- paper.fillStyle(lost?T.jade:T.red,.82).fillRect(textX+4,b.y+8,42,3);
+ paper.fillStyle(T.ink,.035).fillRoundedRect(textX-8,b.y+10,textWidth+8,headerHeight-13,3);
+ paper.fillStyle(T.paperLight,.88).fillRoundedRect(textX-8,b.y+8,textWidth+8,headerHeight-16,3).lineStyle(1,T.divider,.7).strokeRoundedRect(textX-7.5,b.y+8.5,textWidth+7,headerHeight-17,3);
+ paper.fillStyle(lost?T.jade:T.red,.8).fillRect(textX+4,b.y+8,38,2);
  if(last){
   const y=handTop+4,height=contentBottom-handTop+4;
-  paper.fillStyle(T.paperLight,.72).fillRoundedRect(b.x,y,b.width,height,10).lineStyle(1,T.divider,.55).strokeRoundedRect(b.x+.5,y+.5,b.width-1,height-1,10);
+  paper.fillStyle(T.paperLight,.72).fillRoundedRect(b.x,y,b.width,height,3).lineStyle(1,T.divider,.55).strokeRoundedRect(b.x+.5,y+.5,b.width-1,height-1,3);
  }
  const height=(reviewBookBand?reviewBookBand.y+reviewBookBand.height:reward.y+reward.height)-b.y;
  return {facts,score,reward,rewardText,paint,hero,stage:{...b,height},reviewBookBand};

@@ -708,8 +708,8 @@ export class ShopScene extends Phaser.Scene {
     const g=pcShopOfferGeometry(tile,kind==='jokers'&&(o.edition??'none')!=='none',this.run.chapterDisabledJokerId===o.definitionId?2:1);
     if(!g){this.shopButton(tile,'查看 '+(d?.name??info!.name),'offer/'+o.offerId,()=>this.inspectOffer(o.offerId));return;}
     shopSheet(this,v,'offer',tile,PAPER_THEME.paperLight,true);
-    v.add(this.add.graphics().lineStyle(1,PAPER_THEME.divider,.9).strokeRoundedRect(tile.x,tile.y,tile.width,tile.height,8).setName('shop/offer-edge'));
-    if(this.selectedOfferId===o.offerId)v.add(this.add.graphics().lineStyle(1.5,0x42665d,1).strokeRoundedRect(tile.x+.75,tile.y+.75,tile.width-1.5,tile.height-1.5,6).setName('shop/offer-selected').setData('offerId',o.offerId));
+    v.add(this.add.graphics().lineStyle(1,PAPER_THEME.divider,.9).strokeRoundedRect(tile.x,tile.y,tile.width,tile.height,3).setName('shop/offer-edge'));
+    if(this.selectedOfferId===o.offerId)v.add(this.add.graphics().lineStyle(1.5,0x42665d,1).strokeRoundedRect(tile.x+.75,tile.y+.75,tile.width-1.5,tile.height-1.5,3).setName('shop/offer-selected').setData('offerId',o.offerId));
     let summary=d?this.shopJokerSummary(d.id):info!.summary;
     if(d&&!this.jokerCopy(d.id)?.minimal){const decision=shopOfferGuidance(this.run,o).decision;summary=shopOfferSynopsis(decision.now,decision.later);}
     const heroTradeoff=d?shopCandidateTradeoff(this.run,d.id):undefined;if(heroTradeoff)summary=heroTradeoff;
@@ -738,7 +738,7 @@ export class ShopScene extends Phaser.Scene {
     (purchase.getData('label') as Phaser.GameObjects.Text).setFontSize(tile.width>=400?19:16).setName('shop/offer-price').setData('offerId',o.offerId);
     purchase.setData('availability',o.consumed?'owned':reason?'unavailable':'available');
     const purchaseArt=purchase.getData('buttonArt') as Phaser.GameObjects.Container;
-    (purchaseArt.list[1] as Phaser.GameObjects.Graphics).clear().lineStyle(1,PAPER_THEME.jade,o.consumed?.3:.75).strokeRoundedRect(.5,.5,flow.price.width-1,flow.price.height-1,6);
+    (purchaseArt.list[1] as Phaser.GameObjects.Graphics).clear().lineStyle(1,PAPER_THEME.jade,o.consumed?.3:.75).strokeRoundedRect(.5,.5,flow.price.width-1,flow.price.height-1,3);
 
   }
   private get resultReduced():boolean{return gameSession().reducedMotion||window.matchMedia('(prefers-reduced-motion: reduce)').matches;}
@@ -778,10 +778,10 @@ export class ShopScene extends Phaser.Scene {
   }
   private shopButton(b:Box,label:string,name:string,action:()=>void,enabled=true,primary=false):Phaser.GameObjects.Rectangle {
     const button=this.view.button(b,label,name,action,enabled,primary);
-    if(!primary){const art=button.getData('buttonArt') as Phaser.GameObjects.Container;(art.list[0] as Phaser.GameObjects.Graphics).clear().fillStyle(0xfff9ee,1).fillRoundedRect(0,0,b.width,b.height,8);(art.list[1] as Phaser.GameObjects.Graphics).clear();}
+    if(!primary){const art=button.getData('buttonArt') as Phaser.GameObjects.Container;(art.list[0] as Phaser.GameObjects.Graphics).clear().fillStyle(0xfff9ee,1).fillRoundedRect(0,0,b.width,b.height,3);(art.list[1] as Phaser.GameObjects.Graphics).clear();}
     if(primary&&enabled){const art=button.getData('buttonArt') as Phaser.GameObjects.Container,tone=this.geometry().pc?PAPER_THEME.red:0x203f3b;
-      (art.list[0] as Phaser.GameObjects.Graphics).clear().fillStyle(tone,1).fillRoundedRect(0,0,b.width,b.height,6);
-      (art.list[1] as Phaser.GameObjects.Graphics).clear().lineStyle(1,tone,1).strokeRoundedRect(.5,.5,b.width-1,b.height-1,6);
+      (art.list[0] as Phaser.GameObjects.Graphics).clear().fillStyle(tone,1).fillRoundedRect(0,0,b.width,b.height,3);
+      (art.list[1] as Phaser.GameObjects.Graphics).clear().lineStyle(1,tone,1).strokeRoundedRect(.5,.5,b.width-1,b.height-1,3);
     }
     if(this.geometry().portrait&&!primary&&!['action/reroll','action/build'].includes(name)){const art=button.getData('buttonArt') as Phaser.GameObjects.Container;
       (art.list[0] as Phaser.GameObjects.Graphics).clear();(art.list[1] as Phaser.GameObjects.Graphics).clear();
@@ -799,7 +799,7 @@ export class ShopScene extends Phaser.Scene {
       const title=workshop&&pokerEncounterView(this.run)?.status==='offered'?(width<60?'奇遇':'奇遇·做牌'):width<60?{jokers:'唐宋牌',workshop:'自选',tools:'工具',items:'长期'}[category.id]:category.title;
       const button=this.shopButton({x:b.x+i*(width+gap),y:b.y,width,height:44},pc?title+' · '+count:title+'\n'+count,'action/shelf-'+category.id,()=>{if(this.busy)return;if(workshop){this.openWorkshop();return;}this.workshopSelected=false;this.shelfKind=category.id;this.shelfPage=0;this.selectedOfferId=undefined;this.audio.select();this.render();},!this.busy);
       const label=button.getData('label') as Phaser.GameObjects.Text;label.setFontSize(14).setAlign('center').setFontStyle(active?'bold':'normal').setColor(active?'#B8473A':'#3F606B');
-      if(pc){const art=button.getData('buttonArt') as Phaser.GameObjects.Container,face=art.list[0] as Phaser.GameObjects.Graphics;face.clear();if(p.pc)face.fillStyle(active?0xfff9ee:0xdad0bd).fillRoundedRect(1,2,width-2,40,5);label.setFontSize(16);}
+      if(pc){const art=button.getData('buttonArt') as Phaser.GameObjects.Container,face=art.list[0] as Phaser.GameObjects.Graphics;face.clear();if(p.pc)face.fillStyle(active?0xfff9ee:0xdad0bd).fillRoundedRect(1,2,width-2,40,3);label.setFontSize(16);}
       if(active)(button.getData('buttonArt') as Phaser.GameObjects.Container).add(this.add.graphics().lineStyle(2,0xb8473a).lineBetween(6,42,width-6,42));
     });
     if(pages>1)this.shopButton({x:b.x+b.width-44,y:b.y,width:44,height:44},`${this.shelfPage+1}/${pages} ›`,'action/shelf-page',()=>{if(this.busy)return;this.shelfPage=(this.shelfPage+1)%pages;this.selectedOfferId=undefined;this.audio.select();this.render();},!this.busy);
@@ -1436,7 +1436,7 @@ export class ShopScene extends Phaser.Scene {
     const owner=runController(this);
     if(this.run.mode==='tutorial'&&owner&&!owner.guidedOpeningSuppressed)recordNoviceOwnedLift(this.run,owner.journal,noviceGuide(this.run,owner.journal));
     const status=document.createElement('div');status.dataset.ownedDragStatus='';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
-    Object.assign(status.style,{position:'fixed',zIndex:'6',boxSizing:'border-box',padding:'3px 6px',border:'1px solid #a77b47',borderRadius:'6px',background:'#fff7e7',color:'#193940',font:'bold 14px/1.25 "Microsoft YaHei", "PingFang SC", system-ui, sans-serif',textAlign:'center',pointerEvents:'none'});
+    Object.assign(status.style,{position:'fixed',zIndex:'6',boxSizing:'border-box',padding:'3px 6px',border:'1px solid #a77b47',borderRadius:'3px',background:'#fff7e7',color:'#193940',font:'bold 14px/1.25 var(--ui-font)',textAlign:'center',pointerEvents:'none'});
     document.body.append(status);this.ownedDragStatus=status;this.syncOwnedDragStatus();
   }
   private previewOwned(x:number,y:number):void {this.ownedDrag?.preview(x,y);}

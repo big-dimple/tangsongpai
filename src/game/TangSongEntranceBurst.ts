@@ -20,8 +20,7 @@ import {Haptics} from '../haptics/Haptics';
  * fitted and centered, so text stays crisp and circles never stretch on phones.
  */
 
-const SERIF = '"Noto Serif SC","Noto Serif CJK SC","Source Han Serif SC","Songti SC","STSong",SimSun,Georgia,serif';
-const SANS = '"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif';
+const SERIF = '"Tangsongpai Song UI","Songti SC","Noto Serif CJK SC",SimSun,serif';
 
 const INK = '#26313a';
 const VERMILION = '#b8473a';
@@ -585,7 +584,7 @@ export function mountHeroEntranceBurst(
       fitFont(ctx, `${profile.name} · ${profile.title}`, 'bold', 28, SERIF, maxW, 16);
       ctx.fillText(`${profile.name} · ${profile.title}`, 0, medalY + medalR + 50);
       ctx.fillStyle = '#bfe3dc';
-      fitFont(ctx, subtitle, 'normal', Math.max(14, 14 / s.scale), SANS, maxW, 12 / s.scale);
+      fitFont(ctx, subtitle, 'normal', Math.max(14, 14 / s.scale), SERIF, maxW, 12 / s.scale);
       ctx.fillText(subtitle, 0, medalY + medalR + 80);
     } else {
       ctx.textAlign = 'left';
@@ -599,7 +598,7 @@ export function mountHeroEntranceBurst(
       fitFont(ctx, `${profile.name} · ${profile.title}`, 'bold', 30, SERIF, maxW, 16);
       ctx.fillText(`${profile.name} · ${profile.title}`, textLeft, 0);
       ctx.fillStyle = '#bfe3dc';
-      fitFont(ctx, subtitle, 'normal', 15, SANS, maxW, 10);
+      fitFont(ctx, subtitle, 'normal', 15, SERIF, maxW, 10);
       ctx.fillText(subtitle, textLeft, barHalfH * 0.52);
     }
     ctx.restore();
@@ -977,10 +976,10 @@ export function mountTangSongEnsembleBurst(
       fitFont(ctx, hero.profile.name, 'bold', 16, SERIF, cardW - 12, 11);
       ctx.fillText(hero.profile.name, mx, my + mr + 22);
       ctx.fillStyle = VERMILION;
-      fitFont(ctx, hero.profile.title, 'normal', 12, SANS, cardW - 12, 9);
+      fitFont(ctx, hero.profile.title, 'normal', 12, SERIF, cardW - 12, 9);
       ctx.fillText(hero.profile.title, mx, my + mr + 43);
       ctx.fillStyle = theme.muted;
-      fitFont(ctx, hero.profile.sceneTitle, 'normal', 10.5, SANS, cardW - 12, 8);
+      fitFont(ctx, hero.profile.sceneTitle, 'normal', 10.5, SERIF, cardW - 12, 8);
       ctx.fillText(hero.profile.sceneTitle, mx, my + mr + 63);
 
       // Staggered mini seal stamp.

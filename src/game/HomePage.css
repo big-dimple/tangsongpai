@@ -10,7 +10,7 @@
   overscroll-behavior: contain;
   color: var(--cream);
   background: var(--ink);
-  font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: var(--ui-font);
 }
 .title-home [hidden] { display: none !important; }
 .home-sheet { display: flex; flex-direction: column; min-height: 100%; container-type: inline-size; }

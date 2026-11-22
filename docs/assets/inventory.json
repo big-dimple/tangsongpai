@@ -926,8 +926,8 @@
     "No new visual or rights approval. Decoded RGBA sizes are estimates, not measured GPU memory."
   ],
   "totals": {
-    "files": 460,
-    "bytes": 57378085,
+    "files": 462,
+    "bytes": 58895824,
     "decodedRgbaBytes": 344308504,
     "groups": {
       "audio": {
@@ -946,8 +946,8 @@
         "decodedRgbaBytes": 262144
       },
       "fonts": {
-        "count": 7,
-        "bytes": 38085,
+        "count": 9,
+        "bytes": 1555824,
         "decodedRgbaBytes": 0
       },
       "handdrawn-climax": {
@@ -1323,6 +1323,19 @@
       "path": "public/assets/fonts/score/tangsongpai-score-numbers.woff",
       "bytes": 6220,
       "sha256": "00d2d147bbf43952107ea1386f9970c653a5887637ed932ca2f36cac2429a53a"
+    },
+    {
+      "path": "public/assets/fonts/ui/OFL.txt",
+      "bytes": 4559,
+      "sha256": "c606a29cd5c76629d6b02a0ad8fa636beeb4320a1f0ceba616c476ee83775aa3",
+      "textNormalization": "LF",
+      "canonicalBytes": 4463,
+      "canonicalSha256": "9ff5bb567e1b92c801fc1069e5fbf992ff8efccacb9db94e5959a5b3ba9bb903"
+    },
+    {
+      "path": "public/assets/fonts/ui/song.woff2",
+      "bytes": 1513276,
+      "sha256": "13a16e825789263806b583ea62a437da52ba36c456dae05914e509051f0f10f1"
     },
     {
       "path": "public/assets/handdrawn-climax/a03-e2071d0ffa97.webp",

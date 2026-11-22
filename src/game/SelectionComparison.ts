@@ -19,7 +19,7 @@ const css=`
 .selection-comparison .selection-hero .selection-hook{font-weight:bold}
 .selection-comparison .selection-hero strong{color:#3f606b;font-weight:normal}
 .selection-comparison .selection-hero footer{display:flex;gap:8px;margin-top:12px}
-.selection-comparison .selection-hero button{min-height:44px;flex:1;padding:8px 4px;border:1px solid #3f606b;border-radius:6px;background:#fff9ee;color:#3f606b;font:14px/1.4 "Microsoft YaHei","PingFang SC",sans-serif;cursor:pointer}
+.selection-comparison .selection-hero button{min-height:44px;flex:1;padding:8px 4px;border:1px solid #3f606b;border-radius:6px;background:#fff9ee;color:#3f606b;font:14px/1.4 var(--ui-font);cursor:pointer}
 .selection-comparison .selection-hero button:first-child{background:#3f606b;color:#fff9ee}
 .selection-comparison .selection-hero button:disabled{opacity:.55;cursor:default}
 .selection-comparison .selection-hero button:focus-visible{outline:3px solid #b8473a;outline-offset:2px}

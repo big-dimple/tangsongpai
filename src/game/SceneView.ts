@@ -8,6 +8,7 @@ import {modalBlocksCanvas,type ModalCanvasPress} from './DetailDialog';
 import {PAPER_THEME,PAPER_CSS,UI_FONT} from './theme';
 import {alignViewportCamera,cssViewport,viewportSafeInsets} from '../platform/Viewport';
 import {crispText} from './TextRaster';
+import {keepChinesePunctuation} from './ChineseTextWrap';
 import {drawHandActionGlyph,type HandButtonSkin} from './HandActionArt';
 import {attachHandSortVisual,isHandSortControl} from './HandSortButtonVisual';
 import {registerControllerScene,type ControllerTarget} from './ControllerScene';
@@ -138,7 +139,17 @@ export class SceneView {
   }
   text(x:number,y:number,value:string,size=14,color=PAPER_CSS.ink,wrap?:number):Phaser.GameObjects.Text {
     const rgb=parseInt(color.replace('#',''),16);if(color.startsWith('#')&&((rgb>>16&255)+(rgb>>8&255)+(rgb&255))/3>150)color=PAPER_CSS.ink;
-    return this.add(this.scene.add.text(Math.round(x),Math.round(y),value,{fontFamily:UI_FONT,fontSize:`${size}px`,color,resolution:Math.max(1,1/this.scene.scale.zoom),wordWrap:wrap?{width:wrap,useAdvancedWrap:true}:undefined}));
+    const wordWrap=wrap?{
+      width:wrap,
+      callback:(copy:string,text:Phaser.GameObjects.Text)=>{
+        const width=text.style.wordWrapWidth;
+        if(!width)return copy;
+        return keepChinesePunctuation(copy,
+          paragraph=>text.advancedWordWrap(paragraph,text.context,width),
+          line=>text.context.measureText(line).width+line.length*text.letterSpacing<=width);
+      },
+    }:undefined;
+    return this.add(this.scene.add.text(Math.round(x),Math.round(y),value,{fontFamily:UI_FONT,fontSize:`${size}px`,color,resolution:Math.max(1,1/this.scene.scale.zoom),wordWrap}));
   }
   rect(b:Box,color:number=PAPER_THEME.paper):Phaser.GameObjects.Rectangle {return this.add(this.scene.add.rectangle(b.x+b.width/2,b.y+b.height/2,b.width,b.height,color).setStrokeStyle(1,PAPER_THEME.jade,.65));}
   target(object:Phaser.GameObjects.Rectangle,name:string,actions:TouchActions):void {
@@ -158,7 +169,7 @@ export class SceneView {
     this.cancelInteraction();actions.tap();
   }
   button(b:Box,label:string,name:string,action:()=>void,enabled=true,primary=false,skin?:HandButtonSkin):Phaser.GameObjects.Rectangle {
-    const art=this.add(this.scene.add.container(b.x,b.y)),g=this.scene.add.graphics(),radius=6;
+    const art=this.add(this.scene.add.container(b.x,b.y)),g=this.scene.add.graphics(),radius=3;
     g.fillStyle(PAPER_THEME.ink,.08).fillRoundedRect(0,2,b.width,b.height,radius);
     g.fillStyle(primary?PAPER_THEME.red:PAPER_THEME.paperLight).fillRoundedRect(0,0,b.width,b.height,radius);
     const edge=this.scene.add.graphics();if(skin!=='sort')edge.lineStyle(skin?1.5:1,primary?PAPER_THEME.red:PAPER_THEME.jade,.9).strokeRoundedRect(.5,.5,b.width-1,b.height-1,radius);
@@ -166,7 +177,8 @@ export class SceneView {
     art.add([g,edge,glow]);
     const glyph=skin&&skin!=='sort'?this.scene.add.graphics().setPosition(6,(b.height-36)/2).setName('button/'+skin+'-glyph'):undefined;
     if(glyph)art.add(glyph);
-    const t=this.text(b.x+b.width/2,b.y+b.height/2-1,label,primary?22:15).setOrigin(.5).setFontStyle('bold').setColor(primary?PAPER_CSS.paperLight:PAPER_CSS.jade);
+    const t=this.text(b.x+b.width/2,b.y+b.height/2-1,label,primary?20:15).setOrigin(.5).setFontStyle('bold').setColor(primary?PAPER_CSS.paperLight:PAPER_CSS.jade);
+    if(!skin)for(let size=primary?20:15;t.width>b.width-14&&size>14;)t.setFontSize(--size);
     const r=this.rect(b).setFillStyle(0,0).setStrokeStyle();
     r.setData('label',t).setData('buttonArt',art).setData('buttonFace',g).setData('buttonEdge',edge).setData('buttonBounds',b).setData('buttonPrimary',primary).setData('buttonSkin',skin).setData('buttonGlyph',glyph);
     if(skin==='sort'&&isHandSortControl(name)){
@@ -198,9 +210,10 @@ export class SceneView {
     const face=object.getData('buttonFace') as Phaser.GameObjects.Graphics|undefined,b=object.getData('buttonBounds') as Box|undefined;
     const skin=object.getData('buttonSkin') as HandButtonSkin|undefined,glyph=object.getData('buttonGlyph') as Phaser.GameObjects.Graphics|undefined;
     const edge=object.getData('buttonEdge') as Phaser.GameObjects.Graphics|undefined;
-    if(object.getData('pcHandAction')&&edge&&b){edge.clear().lineStyle(1.5,enabled?(primary?PAPER_THEME.red:PAPER_THEME.jade):0x858b89,1).strokeRoundedRect(.75,.75,b.width-1.5,b.height-1.5,6);}
+    if(object.getData('pcHandAction')&&edge&&b){edge.clear().lineStyle(1.5,enabled?(primary?PAPER_THEME.red:PAPER_THEME.jade):0x858b89,1).strokeRoundedRect(.75,.75,b.width-1.5,b.height-1.5,3);}
     const sortRefresh=object.getData('sortVisualRefresh') as (()=>void)|undefined;
-    if(face&&b&&!sortRefresh){face.clear();if(skin!=='sort'){face.fillStyle(PAPER_THEME.ink,.08).fillRoundedRect(0,2,b.width,b.height,6);face.fillStyle(enabled?(primary?PAPER_THEME.red:PAPER_THEME.paperLight):PAPER_THEME.disabled).fillRoundedRect(0,0,b.width,b.height,6);
+    if(face&&b&&!sortRefresh){face.clear();if(skin!=='sort'){face.fillStyle(PAPER_THEME.ink,.08).fillRoundedRect(0,2,b.width,b.height,3);face.fillStyle(enabled?(primary?PAPER_THEME.red:PAPER_THEME.paperLight):PAPER_THEME.disabled).fillRoundedRect(0,0,b.width,b.height,3);
+      if(!skin&&b.width>=80&&b.height>=44)face.lineStyle(1,PAPER_THEME.paperLight,primary&&enabled?.48:.7).lineBetween(6,3,b.width-6,3);
       if(object.getData('pcHandAction')){face.lineStyle(1,PAPER_THEME.paperLight,enabled?.7:.45).beginPath().moveTo(7,3).lineTo(b.width-7,3).strokePath();face.lineStyle(2,primary&&enabled?0x792e27:PAPER_THEME.jade,enabled?.35:.2).beginPath().moveTo(7,b.height-3).lineTo(b.width-7,b.height-3).strokePath();}
     }}
     if(glyph&&skin&&skin!=='sort')drawHandActionGlyph(glyph,skin,enabled?(primary?PAPER_THEME.paperLight:PAPER_THEME.jade):PAPER_THEME.disabledInk);
