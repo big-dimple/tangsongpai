@@ -1,6 +1,7 @@
 import {qiyuHeroProfile, type QiyuHeroProfile} from '../domain/qiyuEvent';
 import type {CharacterId} from '../domain/characters';
 import {characterArt} from './CharacterArt';
+import {GAME_NAME} from './Brand';
 import {iridescenceColor} from './PolychromeCardIridescence';
 import {inkBurstFrame} from './InkBurst';
 import {AudioEngine} from '../audio/AudioEngine';
@@ -755,7 +756,6 @@ export function mountTangSongEnsembleBurst(
     text: INK,
     heading: INK,
     muted: '#5d6b6e',
-    sub: TEAL,
     lines: [INK, VERMILION, GOLD_DEEP],
     rings: [VERMILION, GOLD_DEEP, TEAL],
     droplet: 'rgba(38, 49, 58, 1)',
@@ -765,7 +765,6 @@ export function mountTangSongEnsembleBurst(
     medalFallback: '#e9dfcb',
     medalInk: INK,
     mountain: ['rgba(63, 96, 107, 0.16)', 'rgba(63, 96, 107, 0.05)'],
-    glow: 'rgba(184, 71, 58, 0.22)',
   };
 
   const heroes = ENSEMBLE_IDS.map(id => {
@@ -777,8 +776,6 @@ export function mountTangSongEnsembleBurst(
   const particles = buildParticles(64, [() => INK, () => VERMILION, () => GOLD_DEEP, () => TEAL]);
 
   const eyebrow = '一纸纳山河 · 落子会群英';
-  const heading = '唐宋牌';
-  const sub = '唐宋群英 · 牌局争锋';
   const centralSeal = '唐宋';
 
   const playAudio = options.playAudio ?? true;
@@ -938,14 +935,8 @@ export function mountTangSongEnsembleBurst(
     fitFont(ctx, eyebrow, 'normal', 13, SERIF, fullW - 120, 10);
     drawSpaced(ctx, eyebrow, 0, headerY, 4);
     ctx.fillStyle = theme.heading;
-    ctx.font = `bold ${portrait ? 54 : 46}px ${SERIF}`;
-    ctx.shadowColor = theme.glow;
-    ctx.shadowBlur = 14;
-    drawSpaced(ctx, heading, 0, headerY + (portrait ? 50 : 40), portrait ? 18 : 22);
-    ctx.shadowBlur = 0;
-    ctx.fillStyle = theme.sub;
-    fitFont(ctx, sub, 'normal', 13, SANS, fullW - 140, 10);
-    drawSpaced(ctx, sub, 0, headerY + (portrait ? 92 : 76), 3);
+    ctx.font = `${portrait ? 58 : 50}px "Tangsongpai Brush", ${SERIF}`;
+    drawSpaced(ctx, GAME_NAME, 0, headerY + (portrait ? 50 : 40), 4);
 
     // 4. Six hero plaques.
     const cols = portrait ? 3 : 6;

@@ -1,6 +1,7 @@
 import {SUIT_SYMBOL, type Suit} from '../cards/types';
 import {GAME_NAME} from './Brand';
 import {assetUrl} from './theme';
+import type {FirstPlayerStatus} from './TutorialEntry';
 import './HomePage.css';
 
 export interface HomePageModel {
@@ -10,10 +11,9 @@ export interface HomePageModel {
   canTutorial:boolean;
   notice:boolean;
   message?:string;
-  showTutorialSkip?:boolean;
   canSkipTutorial?:boolean;
   checkingHistory?:boolean;
-  firstPlayer?:boolean;
+  playerStatus:FirstPlayerStatus;
   reducedMotion?:boolean;
 }
 
@@ -29,6 +29,12 @@ const openingFaces = [
   {suit:'hearts', rank:5, name:'红桃'},
   {suit:'diamonds', rank:4, name:'方片'},
 ] as const;
+
+const entryCopy = {
+  first: {heading:'从一对牌起手', hint:'跟刘娥找两张点数相同的牌。', start:'新手首战'},
+  returning: {heading:'选一位英雄入局', hint:'挑选英雄与起手路线，去河市备牌。', start:'普通新局'},
+  unknown: {heading:'准备开局', hint:'初次开局可跟刘娥学出牌，也可直接选角。', start:'开始游戏'},
+};
 
 function element<K extends keyof HTMLElementTagNameMap>(tag:K,className:string,copy?:string):HTMLElementTagNameMap[K] {
   const el=document.createElement(tag);
@@ -70,7 +76,7 @@ export class HomePage {
   private readonly summary=element('p','home-save');
   private readonly hint=element('p','home-hint');
   private readonly notice=element('p','home-notice');
-  private readonly pickHint=element('figcaption','home-pick-hint','点一张牌，带入首战');
+  private readonly pickHint=element('figcaption','home-pick-hint','拿一张牌入局');
   private readonly picks:HTMLButtonElement[]=[];
   private readonly start:HTMLButtonElement;
   private readonly tutorial:HTMLButtonElement;
@@ -93,12 +99,10 @@ export class HomePage {
     const sound=element('div','home-sound');
     masthead.append(genre,sound);
     const brand=element('div','home-brand');
-    const title=element('h1','',GAME_NAME);
+    const title=element('h1','home-wordmark',GAME_NAME);
     const seal=element('span','load-seal','开卷');
     seal.setAttribute('aria-hidden','true');
-    const imprint=element('div','home-wordmark');
-    imprint.append(title,seal);
-    brand.append(imprint,element('p','home-chapters','八章 · 二十四场'));
+    brand.append(title,seal,element('p','home-chapters','八章 · 二十四场'));
     const deck=element('figure','home-deck');
     const fan=element('div','home-fan');
     for(const {suit,rank,name} of openingFaces){
@@ -120,7 +124,8 @@ export class HomePage {
     this.resume=action('title-continue','继续本局',actions.resume);
     this.start=action('title-start','开始新局',()=>actions.start());
     this.tutorial=action('tutorial-start','新手首战',actions.tutorial);
-    this.skip=action('skip-tutorial','跳过教程，直接选角',actions.skipTutorial);
+    this.skip=action('skip-tutorial','直接选角',actions.skipTutorial);
+    this.skip.setAttribute('aria-label','跳过教程，直接选角');
     const buttons=element('div','home-actions');
     buttons.append(this.resume,this.start,this.tutorial,this.skip);
     entry.append(copy,buttons);
@@ -130,13 +135,12 @@ export class HomePage {
   }
 
   update(model:HomePageModel):void {
+    const first=model.playerStatus==='first';
+    const entry=entryCopy[model.playerStatus];
     this.root.dataset.reducedMotion=String(!!model.reducedMotion);
-    this.heading.textContent=model.summary?'续上这局':model.firstPlayer?'从一对牌起手':'选一位英雄入局';
+    this.heading.textContent=model.summary?'续上这局':entry.heading;
     this.hint.hidden=!!model.summary;
-    this.hint.textContent=model.firstPlayer
-      ?'跟刘娥挑两张同点数的牌，看看能得几分。'
-      :'挑选英雄与起手路线，去河市备牌。';
-    if(model.checkingHistory)this.hint.textContent='正在准备牌桌，也可以直接选角。';
+    this.hint.textContent=model.checkingHistory?'正在准备牌桌，也可以直接选角。':entry.hint;
     this.summary.hidden=!model.summary;
     this.summary.replaceChildren(...(model.summary??[]).map(copy=>element('span','',copy)));
     this.notice.hidden=!model.notice;
@@ -144,18 +148,18 @@ export class HomePage {
     this.resume.hidden=!model.summary;
     this.resume.disabled=this.busy||!model.canContinue;
     this.resume.className='home-primary';
-    this.start.textContent=model.firstPlayer?'新手首战':'普通新局';
+    this.start.textContent=entry.start;
     this.start.disabled=this.busy||!model.canStart;
     this.start.className=model.summary?'home-secondary':'home-primary';
-    this.tutorial.hidden=!!model.firstPlayer;
+    this.tutorial.hidden=first;
     this.tutorial.disabled=this.busy||!model.canTutorial;
     this.tutorial.className='home-secondary';
-    this.skip.hidden=!model.showTutorialSkip;
+    this.skip.hidden=model.playerStatus==='returning';
     this.skip.disabled=this.busy||!model.canSkipTutorial;
     this.skip.className='home-secondary';
-    this.pickHint.hidden=!model.firstPlayer;
+    this.pickHint.hidden=!first;
     for(const pick of this.picks){
-      pick.hidden=!model.firstPlayer;
+      pick.hidden=!first;
       pick.disabled=this.busy||!model.canStart;
     }
   }

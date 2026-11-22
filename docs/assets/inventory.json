@@ -926,8 +926,8 @@
     "No new visual or rights approval. Decoded RGBA sizes are estimates, not measured GPU memory."
   ],
   "totals": {
-    "files": 456,
-    "bytes": 57351078,
+    "files": 460,
+    "bytes": 57378085,
     "decodedRgbaBytes": 344308504,
     "groups": {
       "audio": {
@@ -946,8 +946,8 @@
         "decodedRgbaBytes": 262144
       },
       "fonts": {
-        "count": 3,
-        "bytes": 11078,
+        "count": 7,
+        "bytes": 38085,
         "decodedRgbaBytes": 0
       },
       "handdrawn-climax": {
@@ -1276,6 +1276,32 @@
       "alpha": true,
       "decodedRgbaBytes": 262144,
       "format": "webp"
+    },
+    {
+      "path": "public/assets/fonts/cover/OFL-Brush.txt",
+      "bytes": 4396,
+      "sha256": "54107539e415cc21d97752b7b1738c3d152451863f65e2c4e51556d3ceab1ab9",
+      "textNormalization": "LF",
+      "canonicalBytes": 4396,
+      "canonicalSha256": "54107539e415cc21d97752b7b1738c3d152451863f65e2c4e51556d3ceab1ab9"
+    },
+    {
+      "path": "public/assets/fonts/cover/OFL-Song.txt",
+      "bytes": 4463,
+      "sha256": "9ff5bb567e1b92c801fc1069e5fbf992ff8efccacb9db94e5959a5b3ba9bb903",
+      "textNormalization": "LF",
+      "canonicalBytes": 4463,
+      "canonicalSha256": "9ff5bb567e1b92c801fc1069e5fbf992ff8efccacb9db94e5959a5b3ba9bb903"
+    },
+    {
+      "path": "public/assets/fonts/cover/text.woff2",
+      "bytes": 15096,
+      "sha256": "c9d94e996d5f07c22c191b3c78b412c5a3aecd1de0eced131c6d2a1917d68b39"
+    },
+    {
+      "path": "public/assets/fonts/cover/title.woff2",
+      "bytes": 3052,
+      "sha256": "b736c80ccebce554f3755fb6280b7f66d56a0549e403a7da4a7e4f9e77d99f6b"
     },
     {
       "path": "public/assets/fonts/score/OFL.txt",

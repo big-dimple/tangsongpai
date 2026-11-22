@@ -153,6 +153,7 @@ tools/          离线素材工具
 
 ### 资产与来源
 
+- 封面题名和「开卷」印使用 Ma Shan Zheng，题签、入口标题和按钮使用思源宋体 CN Medium。横屏横题，手机竖屏竖题，极窄画幅回到横排。加载页与首页共用本地 WOFF2，群像卷轴也沿用题名字体。两个字库按封面用字裁切，许可证随文件保存在 `public/assets/fonts/cover/`。增改题字或题签时须同步核对字库覆盖。[题名字体原件](https://github.com/googlefonts/mashanzheng/tree/6bfdbe288f5935c6e9072cdd6ab1aa102a006aab/fonts/ttf) · [宋体原件](https://github.com/adobe-fonts/source-han-serif/tree/7889f11bf31170b5d092a083b357c8c8130f89e0/SubsetOTF/CN)
 - 正式运行资源位于 `public/assets/`，通过注册表和 `BASE_URL` 加载。六张透明立绘使用 `tangsong-pc-heroes/manifest.json` 的 `pc` 用途，按当前英雄加载。对应上限为 400,000 字节、896×1120 像素，按需载入的其他人物图上限为 128 KiB／600,000 像素。开场河市画为 1440×960 的共享 WebP，约 211 KiB。用 `node tools/build-pc-hero-art.mjs <原图目录>` 重建透明图及来源映射。英雄文案入口为 `src/content/hero-text-spec.json`。
 - 运行清单在 `docs/assets/inventory.json`。私有仓库 `big-dimple/tangsongpai-assets` 保存原始素材。`docs/assets/source-archive.json` 固定资产提交与清单摘要，`docs/assets/source-inventory.jsonl` 记录逐文件字节数和 SHA256。检出相应资产提交，设置 `TANGSONGPAI_ASSETS_ROOT` 后运行 `npm run test:source-archive`。新牌画的 `receiptRepository: "asset-archive"` 指向私库中的原件与清单提交，`node scripts/handdrawn-provenance.mjs --git-history` 可复核新旧图的提交记录。公开 CI 核对清单与运行资源，B05 原图解码需要私有原件。
 

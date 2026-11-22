@@ -39,7 +39,20 @@ async function checkCoverPick(width,height,cardId,input) {
   };
   try {
     await page.goto(url+'/?harness=1');await waitScene(page,'title');
-    await use(page.locator('[data-ui="title/action/pick-'+cardId+'"]'));
+    const pick=page.locator('[data-ui="title/action/pick-'+cardId+'"]');
+    await pick.waitFor();
+    const cover=await page.locator('.title-home').evaluate(async el=>{
+      await document.fonts.ready;
+      return {
+        fonts:[...document.fonts].filter(face=>face.status==='loaded').map(face=>face.family),
+        titleMode:getComputedStyle(el.querySelector('h1')).writingMode,
+        bottom:el.querySelector('[data-ui="title/action/skip-tutorial"]').getBoundingClientRect().bottom,
+      };
+    });
+    for(const family of ['Tangsongpai Brush','Tangsongpai Song'])assert.ok(cover.fonts.includes(family),family);
+    assert.equal(cover.titleMode,width<height?'vertical-rl':'horizontal-tb');
+    assert.ok(cover.bottom<=height,'both first-time entry actions fit before scrolling');
+    await use(pick);
     await waitScene(page,'game');await page.locator('[data-novice-guide-step="pair"] .novice-guide-title').waitFor();
     const first=await saved(page);
     assert.deepEqual(await readSelection(),[cardId]);assert.equal(first.state.stage.heat,'0');assert.equal(first.state.stage.handsLeft,4);
@@ -72,7 +85,7 @@ try {
     const baseline=await saved(page);assert.ok(baseline);
     await page.reload();await waitScene(page,'title');await checkHome(page);
     assert.deepEqual(await saved(page),baseline);
-    await page.evaluate(()=>window.__harness.game.scene.getScene('title').home.update({summary:['文成公主','普通模式','第 9,007,199,254,740,991 章','金币 9,007,199,254,740,991'],canContinue:true,canStart:true,canTutorial:true,notice:true}));
+    await page.evaluate(()=>window.__harness.game.scene.getScene('title').home.update({playerStatus:'returning',summary:['文成公主','普通模式','第 9,007,199,254,740,991 章','金币 9,007,199,254,740,991'],canContinue:true,canStart:true,canTutorial:true,notice:true}));
     for(const zoom of [1.25,2]){
       await page.evaluate(z=>{
         document.documentElement.style.zoom=String(z);
