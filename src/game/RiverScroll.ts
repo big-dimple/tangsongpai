@@ -2,6 +2,7 @@ import type Phaser from 'phaser';
 import type {Box} from './layout';
 import type {SceneView} from './SceneView';
 import {whenTextureReady} from './LateTextureArt';
+import {asPaperSheet} from './PaperStock';
 
 const KEY='river-market';
 
@@ -18,7 +19,7 @@ export function drawRiverScroll(scene:Phaser.Scene,view:SceneView,box:Box,focusY
   if(box.width<=0||box.height<=0)return;
   const layer=view.add(scene.add.container(box.x,box.y).setName('art/river-scroll'));
   whenTextureReady(scene,layer,KEY,()=>{
-    const image=scene.add.image(0,0,KEY).setOrigin(0);
+    const image=asPaperSheet(scene.add.image(0,0,KEY).setOrigin(0));
     const scale=Math.max(box.width/image.width,box.height/image.height);
     const width=Math.min(image.width,Math.round(box.width/scale)),height=Math.min(image.height,Math.round(box.height/scale));
     const x=Math.floor((image.width-width)*.38),y=Math.round((image.height-height)*focusY);
