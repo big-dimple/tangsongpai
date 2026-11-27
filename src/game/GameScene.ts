@@ -63,6 +63,7 @@ import {savedHeroAttachment,retainedRefillImpact} from './HeroAttachmentFacts';
 import {drawStageTableArt,playedCaptionBox} from './StageTableArt';
 import {paperSceneStart} from './PaperFlow';
 import {cardShadow} from './PaperStock';
+import {ensureSealTexture,mountSealStamp,type SealStampHandle} from './SealStamp';
 import {bindNoviceGuide} from './NoviceGuideBinding';
 import {liveNoviceGuide,noviceFreeActions,noviceGuide,noviceGuideEnrolled,type NoviceGuideHint} from './NoviceGuide';
 import {firstStageOptions,openingDeal,openingDealHint,type OpeningDeal,type OpeningPlan,type FirstStageOption} from './NoviceFirstStage';
@@ -364,6 +365,7 @@ export class GameScene extends Phaser.Scene {
   private playAura?:Phaser.GameObjects.Graphics;
   private playAuraPulse?:Phaser.Tweens.Tween;
   private highMultiplierAuraDispose?:()=>void;
+  private stageSeal?:SealStampHandle;
   private displayedScoreProduct='0';
   private controlsLive=false;
   private waitingForStage=false;
@@ -516,6 +518,8 @@ export class GameScene extends Phaser.Scene {
     // Restoring an already-critical stage keeps the warning, without replaying its entrance highlight.
     this.lastPlayWarningTracker.seed(this.run);
     this.stage=getStage(this.run.stage.index,this.run.tourMode,this.run.difficulty,this.run)!;this.characterId=this.run.characterId;settings();this.audio.setScene(this.stage.index%3===2?'boss':'table');
+    // The stage seal is baked while the table is set up, never during a score presentation.
+    this.stageSeal=undefined;ensureSealTexture(this,this.stage.index%3===2?'finale':'clear');
     this.cameras.main.setBackgroundColor(C.paper);
     this.handInput=new HandSelectionInput(this,{
       cancelCanvas:()=>this.view.cancelInteraction(),
@@ -3244,7 +3248,7 @@ export class GameScene extends Phaser.Scene {
     this.playing=false;if(this.layoutRefreshPending)this.layoutRefreshPending=false;this.render();this.revealDrawnCards(presentation.hand.map(card=>card.id));
   }
 
-  fastForward():void {if(this.xinRefillSequence?.active)this.cardViews.filter(view=>view.dealing).forEach(view=>this.revealCard(view));this.heroPortraitMotion?.reset();this.giftDelivery?.cancel();this.targetAttachment?.clear();const presentation=this.presentation;if(!presentation){if(this.heroClimax||this.refillPresentation)this.effects.clear();return;}this.effects.clear();this.audio.cancelPresentation();this.cameras.main.resetFX();this.heatText.setScale(1);this.scoreTotal.setScale(1);this.completePresentation(presentation);}
+  fastForward():void {if(this.xinRefillSequence?.active)this.cardViews.filter(view=>view.dealing).forEach(view=>this.revealCard(view));this.heroPortraitMotion?.reset();this.giftDelivery?.cancel();this.targetAttachment?.clear();const presentation=this.presentation;if(!presentation){this.stageSeal?.settle();if(this.heroClimax||this.refillPresentation)this.effects.clear();return;}this.effects.clear();this.audio.cancelPresentation();this.cameras.main.resetFX();this.heatText.setScale(1);this.scoreTotal.setScale(1);this.completePresentation(presentation);}
   replayLastTrace():void {
     if(this.playing||!this.run.lastTrace)return;
     this.targetAttachment?.clear();
@@ -3268,7 +3272,8 @@ export class GameScene extends Phaser.Scene {
 
     if (cleared) {
       this.resultText.setText(`过关 · ${heatText(stageHeat)} 分`);
-
+      // The saved clear is signed inside the existing pause: one seal per stage, no later scene cut.
+      if(cueReward)this.pressStageSeal(completedIndex%3===2);
     } else {
       this.resultText.setText(
         `未过关 · 还差 ${heatText((BigInt(this.stage.targetHeat)>BigInt(stageHeat)?BigInt(this.stage.targetHeat)-BigInt(stageHeat):0n).toString())} 分`,
@@ -3288,6 +3293,17 @@ export class GameScene extends Phaser.Scene {
         ...(!cleared&&cueFailure?{failureCue:{runId:this.run.runId,commandSeq:this.run.commandSeq}}:{})
       } satisfies IntermissionResult);
     }});
+  }
+
+  /** Presentation only: reads what is already on screen; the result was saved before this runs. */
+  private pressStageSeal(finale:boolean):void {
+    this.stageSeal?.dispose();
+    const root=this.view?.root;if(!root?.active)return;
+    const texts=[this.resultText,this.breakdownText,this.scoreHeat,this.scoreMult,this.scoreTotal,...this.scoreLabels,...root.list.filter(o=>o.name.startsWith('score/formula-')) as Phaser.GameObjects.Text[]];
+    const keep=[...texts.filter(t=>t?.active&&t.visible&&t.alpha>.01&&t.text).map(t=>t.getBounds()),...[...this.settledCards.values()].filter(v=>v.container.active&&v.container.visible).map(v=>v.container.getBounds())]
+      .filter(b=>b.width>0&&b.height>0).map(b=>({x:b.x-3,y:b.y-3,width:b.width+6,height:b.height+6}));
+    this.stageSeal=mountSealStamp(this,root,{kind:finale?'finale':'clear',board:this.view.layout.scoreBoard,keep,viewport:cssViewport(this),reduced:()=>this.reducedMotion,
+      onLand:()=>this.audio.sealStamp(finale,gameSession().speed)});
   }
 
   private fitHudReadouts():void {

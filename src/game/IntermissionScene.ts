@@ -12,6 +12,7 @@ import {goodsArtKey} from './GoodsArtLoading';
 import {loadResultSourceArt} from './ResultStageArt';
 import {jokerArtPreviewUrl} from './jokerArt';
 import {paperSceneStart,qiyuSceneStart} from './PaperFlow';
+import {sealReach,staticSealStamp,SEAL_BEAT} from './SealStamp';
 import {bindNoviceGuide} from './NoviceGuideBinding';
 import {noviceGuide} from './NoviceGuide';
 import {needsGuidedPractice} from './GuidedTutorial';
@@ -169,6 +170,14 @@ export class IntermissionScene extends Phaser.Scene {
       titleText.setOrigin(.5,0).setX(p.x+p.w/2).setAlign('center').setColor(lost||skipped||capped?PAPER_CSS.jade:PAPER_CSS.red);
       const box=titleText.getBounds(),center=box.x+box.width/2,y=box.y+box.height+2,tone=lost||skipped||capped?T.jade:T.red;
       titlePlate!.lineStyle(2,tone,.55).lineBetween(center-42,y,center+42,y);
+    }
+    if(this.result.cleared&&!skipped&&!capped){
+      // The same seal that signed the table, already dry: an echo beside the title, not a second stamp.
+      const box=titleText.getBounds(),size=Math.max(p.pc?44:38,Math.min(p.pc?72:46,box.height*1.2)),reach=sealReach(size),room=p.x+p.w-box.right-10;
+      if(room>=reach*2){
+        const seal=staticSealStamp(this,identity.isBoss?'finale':'clear',{x:box.right+10+reach,y:box.centerY,size,angle:SEAL_BEAT.angle},{x:box.x,y:box.y,width:box.width,height:box.height});
+        if(seal){v.add(seal.bleed);v.add(seal.face);if(animateIn)this.tweens.add({targets:seal.bleed,alpha:{from:0,to:.55},duration:SEAL_BEAT.bleed});}
+      }
     }
     const paperHeight=this.drawResultHero(p.score,!!skipped,lost,animateIn);
     p=resultLayout(l.width,l.height,0,paperHeight,pc,l.safe.left,l.safe.right);
