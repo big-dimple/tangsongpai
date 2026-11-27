@@ -6,6 +6,7 @@ import {sampleBody,type SampleBody} from './sampleBody';
 import {musicSourcePath} from './MusicSourceFormats';
 import {performanceAudioFacts,type PerformanceAudioCue} from './PerformanceAudio';
 import {HIGH_MULTIPLIER_FIRE_SAMPLE} from './HighMultiplierFire';
+import {connectStageRoom,STAGE_ROOM,type StageRoom} from './stageRoom';
 import {awardForScore,chainRate,scoreStrikeRate,scoreStrikeStep,scoreStrikeOrdinal,scoreReboundInterval,scoreArrivalKind,MAX_RECORDED_RATE,EFFECT_VOICE_BUDGET,SCORE_VOICE_BUDGET,SCORE_GAIN_BUDGET,ACCENT_TAIL_FLOOR} from './mixPolicy';
 
 export type AudioBus = 'master' | 'music' | 'sfx' | 'ui';
@@ -57,6 +58,8 @@ export const OPENING_SOUND_NAMES = ['card-slide-1','chip-lay-1','impactWood_ligh
   'impactBell_heavy_003','cloth2','card-place-1','card-fan-1','impactWood_heavy_000',
   'card-shove-1','chips-stack-1'] as const;
 const OPENING_SOUND_TIMEOUT_MS=2500;
+/** The opening motif starts after both the confirm and the curtain attacks, inside the unrolling scroll. */
+export const OPENING_MOTIF_OFFSET=.12;
 const SCORE_SAMPLES=[HIGH_MULTIPLIER_FIRE_SAMPLE,...FOLEY_SAMPLES,
   {name:'cloth2',runtimePath:'assets/audio/score-impact/cloth2.ogg',sha256:scoreSources['cloth2.ogg'].sha256}];
 export type OpeningSoundProgress={loaded:number;total:number;status:'loading'|'ready'|'degraded'|'skipped'};
@@ -113,6 +116,9 @@ export class AudioEngine {
   private duckUntil = 0;
   private duckFloor=.35;
   private readonly failureCues = new WeakSet<FailureCue>();
+  private room?:StageRoom;
+  private roomQuiet=false;
+  private openingMotifPlayed=false;
 
   /** Retry a failed/interrupted unlock on a later gesture without resuming every ordinary click. */
   get needsGestureUnlock(): boolean {
@@ -137,6 +143,7 @@ export class AudioEngine {
     this.applyVolume('master');
     if (value) { this.stopScoreFire(); this.stopMusic(); this.stopVoices(); this.duckUntil = 0; this.applyVolume('music'); }
     else if (this.unlocked) void this.unlock();
+    this.syncRoom();
     this.musicStateChanged();
   }
   get musicAvailable(): boolean { return true; }
@@ -166,6 +173,7 @@ export class AudioEngine {
     } else if(bus==='sfx'&&this.unlocked&&!this.masterMuted&&!this.suspended&&!this.hidden()) {
       if(this.context&&this.context.state!=='closed')void this.loadScoreSamples();else void this.unlock();
     }
+    this.syncRoom();
     this.musicStateChanged();
   }
   getVolume(bus: AudioBus): number { return this.volumes[bus]; }
@@ -210,6 +218,7 @@ export class AudioEngine {
   /** Called by one app-level visibility listener, never by individual scene listeners. */
   setSuspended(value: boolean): void {
     this.suspended = value;
+    this.syncRoom();
     if (!value) { if ((this.unlocked||this.openingRequested)&&!this.musicGestureRequired)void this.enableAudio();this.musicStateChanged();return; }
     this.stopScoreFire();
     this.stopMusic();
@@ -226,6 +235,13 @@ export class AudioEngine {
   }
 
   private hidden(): boolean { return typeof document !== 'undefined' && document.hidden; }
+  /** A muted, silenced or backgrounded mix leaves no ring behind; the room reopens after any old tail has died. */
+  private syncRoom():void {
+    const context=this.context,quiet=this.masterMuted||this.suspended||this.volumes.master<=0||this.volumes.sfx<=0;
+    if(!context||!this.room||quiet===this.roomQuiet)return;
+    this.roomQuiet=quiet;
+    if(quiet)this.room.close(context.currentTime);else this.room.open(context.currentTime,STAGE_ROOM.reopenAfter);
+  }
   /** Constructing/decoding is separate from resuming: only a gesture unlocks sound. */
   private ensureContext():AudioContext|undefined {
     if(typeof window==='undefined')return;
@@ -260,6 +276,8 @@ export class AudioEngine {
         gains.master.connect(compressor);
         compressor.connect(ceiling);
         ceiling.connect(context.destination);
+        // Effects and UI share one small wooden room ahead of the limiter; music stays dry.
+        this.room=connectStageRoom(context,gains.sfx,gains.ui,gains.master);this.roomQuiet=false;
         this.gains = gains;
         for (const bus of Object.keys(gains) as AudioBus[]) this.applyVolume(bus);
       }
@@ -338,7 +356,11 @@ export class AudioEngine {
     for (const voice of this.voices) if (!bus || voice.bus === bus) this.release(voice);
   }
   /** Cancel a skipped scene's score tails while its table music keeps playing. */
-  cancelPresentation(): void { this.performanceEpoch++;this.stopScoreFire(); this.stopVoices('sfx'); this.duckUntil = 0; this.applyVolume('music'); }
+  cancelPresentation(): void {
+    this.performanceEpoch++;this.stopScoreFire(); this.stopVoices('sfx'); this.duckUntil = 0; this.applyVolume('music');
+    // A skipped score rings no longer in the room than on the dry bus.
+    if(this.context&&this.room&&!this.roomQuiet)this.room.open(this.context.currentTime,STAGE_ROOM.reopenAfter);
+  }
 
   private duckMusic(duration = .3,floor=.35): void {
     if (!this.canPlay('music')) return;
@@ -1004,6 +1026,17 @@ export class AudioEngine {
   reroll():void {this.cue('reroll','ui');}
   rareReveal():void {this.duckMusic(.4);this.cue('reveal');}
   success():void {this.duckMusic(.6);this.cue('success');}
+  /** The stage seal lands once: seal body and table, then the closing motif (shang to gong) as its ring. No bell. */
+  sealStamp(boss=false,speed:1|2|4=1):void {
+    if(!this.cue(boss?'sealBoss':'seal').length)return;
+    this.duckMusic(.6);
+    this.cue(boss?'motifCloseBoss':'motifCloseTable','sfx',1,0,1,undefined,speed===1?1:.5);
+  }
+  /** The opening motif, at most once per page load, after the confirm and curtain attacks. */
+  openingMotif():void {
+    if(this.openingMotifPlayed)return;
+    if(this.cue('motifOpen','sfx',1,OPENING_MOTIF_OFFSET).length)this.openingMotifPlayed=true;
+  }
   /** A transient committed ending, never a saved result being reopened. */
   failure(cue:FailureCue):void {
     if(!cue||this.failureCues.has(cue))return;this.failureCues.add(cue);if(!this.canPlay('sfx'))return;

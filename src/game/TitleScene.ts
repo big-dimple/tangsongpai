@@ -91,7 +91,7 @@ export class TitleScene extends Phaser.Scene {
     });
   }
   private ordinaryNew():void {
-    this.confirmTitle(()=>{this.audio.curtainOpen();paperSceneStart(this,'character-select',{seed:this.seed},true);});
+    this.confirmTitle(()=>{this.audio.curtainOpen();this.audio.openingMotif();paperSceneStart(this,'character-select',{seed:this.seed},true);});
   }
   private skipTutorial():void {
     if(this.leaving||this.launchingTutorial||gameSession().working)return;

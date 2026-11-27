@@ -20,6 +20,21 @@ const crystal=(duration:number,gain:number,delay=0,rate=.94)=>low({...layer(['im
 const drum=(duration:number,gain:number)=>low({...layer(['sfx-wardrum-mult-hit'],duration,gain),envelope:'body',attack:.003,hold:.22},900,220);
 const victoryBell=(duration:number,gain:number,delay=0,rate=.9)=>low({...layer(['sfx-temple-bell-victory'],duration,gain,delay,rate),attack:.005,hold:.18},2600,1300);
 const multiplierLayers=()=>[crystal(.075,.027),drum(.14,.028),crystal(.045,.009,.035,.84)];
+/** Recorded pitch of each pentatonic sample (gong C5 … yu A5); motif rates are derived from it. */
+export const PENTA_PITCH={'sfx-penta-1-gong':523.25,'sfx-penta-2-shang':587.33,'sfx-penta-3-jiao':659.25,'sfx-penta-4-zhi':783.99,'sfx-penta-5-yu':880} as const;
+/** Gong (tonic) of each scene's recording, so the motif sits in the music it is heard over. */
+export const MOTIF_GONG={menu:523.25,table:880,boss:1108.73} as const;
+const semitones=(n:number)=>2**(n/12);
+// One pentatonic tone at an exact pitch: the nearest recording, shifted as little as possible.
+const tone=(hz:number,duration:number,gain:number,delay:number):Layer=>{
+ const [sample,pitch]=(Object.entries(PENTA_PITCH) as [string,number][]).reduce((best,next)=>Math.abs(Math.log(hz/next[1]))<Math.abs(Math.log(hz/best[1]))?next:best);
+ return low({...layer([sample],duration,gain,delay,hz/pitch),attack:.003,hold:.3},3200,1500);
+};
+/** Opening: zhi–yu–gong–shang–jiao rising, landing on the upper gong. */
+const motifOpen=(gong:number)=>[-5,-3,0,2,4].map((step,i)=>tone(gong*semitones(step),.16,.012+i*.001,i*.07)).concat(tone(gong*2,.42,.02,.36));
+/** Closing: shang falls to gong over a gong one octave below. */
+const motifClose=(gong:number)=>[tone(gong*semitones(2),.16,.017,.09),tone(gong,.4,.02,.25),tone(gong/2,.44,.016,.25)];
+const sealBody=(rate:number,ring:number)=>[low({...layer(['impactWood_heavy_000'],.2*ring,.036,0,rate),attack:.001,hold:.4},2600,1300),body(.3*ring,.04,.012,Math.max(.66,rate*.78))];
 // One material palette. Priority: texture 0, gesture 1, source/transaction 2,
 // chain accent 3, committed award/ending 4. Recorded bodies only, no oscillators.
 export const FOLEY = {
@@ -79,6 +94,12 @@ export const FOLEY = {
  reveal:recipe([air(layer(['cards-pack-open-1'],.28,.025)),bell(.36,.024,.095),paper(.16,.011,.17)],.25,3,3),
  success:recipe([low({...layer(['impactWood_heavy_000'],.26,.034),attack:.003,hold:.3},1400,700),low(layer(['chips-collide-1'],.19,.022,.08),3000),bell(.44,.025,.18),bell(.29,.013,.31,1.15)],.6,4,4),
  failure:recipe([body(.40,.035,0,.70),air(layer(['card-shove-1'],.27,.022,.14,.8)),low(layer(places,.13,.012,.30,.72),1200)],.6,3,4),
+ // The stage seal: seal body on the table, no bell. Its ring is the closing motif below.
+ seal:recipe(sealBody(.92,1),.3,2,4),
+ sealBoss:recipe(sealBody(.84,1.3),.3,2,4),
+ motifOpen:recipe(motifOpen(MOTIF_GONG.menu),.3,6,2),
+ motifCloseTable:recipe(motifClose(MOTIF_GONG.table),.3,3,3),
+ motifCloseBoss:recipe(motifClose(MOTIF_GONG.boss),.3,3,3),
  rollHeat:recipe([paper(.13,.015)],0,1,0),
  rollMult:recipe([low(layer(['chips-stack-1'],.13,.014),2200)],0,1,0),
  rollTotal:recipe([low(layer(['chips-collide-1'],.14,.015),2400)],0,1,0),
