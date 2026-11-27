@@ -41,6 +41,7 @@
 | 开场、选将与选路 | `index.html`、`src/game/HomePage.ts`、`src/game/CharacterSelectScene.ts`、`src/game/OpeningRouteDemo.ts` |
 | 场景启动与河市画卷 | `src/main.ts`、`src/game/*Scene.ts`、`src/game/RiverScroll.ts` |
 | 场内中文字体、换行与共用框体 | `index.html`、`src/game/theme.ts`、`src/game/ChineseTextWrap.ts`、`src/game/SceneView.ts`、`src/style.css` |
+| 纸张材质、朱印落款与纸的转场 | `src/game/PaperStock.ts`、`src/game/SealStamp.ts`、`src/game/PaperTransition.ts` |
 | PC/移动牌桌布局与装饰 | `src/game/PcLandscapeFrame.ts`、`src/game/PcTableLayout.ts`、`src/game/layout.ts`、`src/game/HandSeats.ts`、`src/game/ScoreTableLayout.ts`、`src/game/StageTableArt.ts` |
 | PC/手机商店布局与表现 | `src/game/ShopLayout.ts`、`src/game/ShopScene.ts`、`src/game/ShopArt.ts`、`src/game/ShopMobileOffers.ts`、`src/game/ShopMobileOffers.css` |
 | 透明人物资产（牌桌、商店、桌面/手机结算） | `src/game/PcHeroArt.ts`、`src/game/CharacterArt.ts`、`public/assets/tangsong-pc-heroes/manifest.json`、`tools/build-pc-hero-art.mjs` |
@@ -57,7 +58,7 @@
 | 英雄身份与文案 | `src/game/HeroIdentity.ts`、`src/game/HeroText.ts`、`src/content/hero-text-spec.json` |
 | 扑克奇遇规则与事务 | `src/domain/r2PokerEncounter.ts`、`src/domain/r2PokerEncounterIdentity.ts` |
 | 奇遇演出 | `src/domain/qiyuEvent.ts`、`src/game/QiyuAnimationPresentation.ts` |
-| 音频与震动 | `src/audio/`、`src/haptics/` |
+| 音频与震动 | `src/audio/`（房间混响见 `stageRoom.ts`，配方与动机见 `foley.ts`）、`src/haptics/` |
 | 手柄输入与界面焦点 | `src/platform/GamepadInput.ts`、`src/game/GamepadNavigation.ts`、`src/game/ControllerScene.ts`、`src/game/SceneView.ts` |
 | 测试 | `tests/`、`harness/`、`package.json` |
 
