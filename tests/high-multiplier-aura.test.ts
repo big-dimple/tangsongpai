@@ -53,9 +53,9 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
     f.step(120);const early=painted(ink),earlyCount=ink.getData('visibleSegments'),earlyBuffer=[...ink.commandBuffer];
     f.step(280);const peak=painted(ink),peakCount=ink.getData('visibleSegments'),peakBuffer=[...ink.commandBuffer];
     expect(ink.getData('elapsed')).toBe(400);expect(earlyCount).toBeGreaterThan(0);expect(peakCount).toBeGreaterThan(earlyCount);
-    expect(peakBuffer).not.toEqual(earlyBuffer);expect(peak.map(p=>p.color)).toContain(0x793bc9);
-    expect(peak.map(p=>p.color)).toContain(0x7943c9);expect(peak.map(p=>p.color)).toContain(0xffeaff);
-    expect(new Set(peak.filter(p=>p.color===0x7943c9).map(p=>p.alpha.toFixed(3))).size).toBeGreaterThan(3);
+    expect(peakBuffer).not.toEqual(earlyBuffer);expect(peak.map(p=>p.color)).toContain(0x422f5e);
+    expect(peak.map(p=>p.color)).toContain(0x5b4186);expect(peak.map(p=>p.color)).toContain(0xd8b56a);
+    expect(new Set(peak.filter(p=>p.color===0x5b4186).map(p=>p.alpha.toFixed(3))).size).toBeGreaterThan(3);
     expect(peak.some(p=>p.points.length>20)).toBe(true);expect(early.every(p=>p.alpha>=0&&p.alpha<=1)).toBe(true);
     f.step(4000);expect(f.ink()).toBe(ink);expect(ink.getData('visibleSegments')).toBeGreaterThan(0);
     f.setEnding(true);f.step(0);f.step(350);const fading=painted(ink);expect(Math.max(...fading.map(p=>p.alpha))).toBeLessThan(Math.max(...peak.map(p=>p.alpha)));
@@ -66,7 +66,7 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
 
   it('curls individual flame tips over time, beyond opacity or common movement',()=>{
     const f=fixture();f.play();
-    const bodies=()=>painted(f.ink()!).filter(path=>path.color===0x7943c9);
+    const bodies=()=>painted(f.ink()!).filter(path=>path.color===0x5b4186);
     f.step(600);const before=bodies();f.step(400);const after=bodies();f.step(200);const later=bodies();
     expect(before.length).toBeGreaterThanOrEqual(9);expect(after).toHaveLength(before.length);expect(later).toHaveLength(before.length);
     const change=(first:Painted[],second:Painted[],index:number)=>{
@@ -81,7 +81,7 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
 
   it.each([[320,568],[390,844],[1280,720]])('starts across the bottom of the %sx%s score board', (width,height)=>{
     const f=fixture({width,height,density:1,renderer:2}),board=f.table.scoreBoard;f.play();f.step(600);
-    const bodies=painted(f.ink()!).filter(path=>path.color===0x7943c9);
+    const bodies=painted(f.ink()!).filter(path=>path.color===0x5b4186);
     expect(bodies.length).toBeGreaterThanOrEqual(9);
     for(const body of bodies){
       expect(Math.max(...body.points.map(point=>point.y))).toBeGreaterThan(board.y+board.height-10);
@@ -95,7 +95,7 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
 
   it.each([[320,568],[390,844],[1280,720]])('joins the fire along the bottom of the %sx%s board', (width,height)=>{
     const f=fixture({width,height,density:1,renderer:2}),board=f.table.scoreBoard;f.play();f.step(600);
-    const roots=painted(f.ink()!).filter(path=>path.color===0x7135ad).map(path=>({left:Math.min(...path.points.map(p=>p.x)),right:Math.max(...path.points.map(p=>p.x))})).sort((a,b)=>a.left-b.left);
+    const roots=painted(f.ink()!).filter(path=>path.color===0x3a2a55).map(path=>({left:Math.min(...path.points.map(p=>p.x)),right:Math.max(...path.points.map(p=>p.x))})).sort((a,b)=>a.left-b.left);
     expect(roots.length).toBeGreaterThan(10);
     expect(roots.at(-1)!.right-roots[0].left).toBeGreaterThan(board.width*.8);
     for(let i=1;i<roots.length;i++)expect(roots[i].left-roots[i-1].right).toBeLessThan(.02);
@@ -106,8 +106,8 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
   ])('keeps layered, complete flames inside the score panel and viewport on a %sx%s phone, renderer %s',(width,height,renderer)=>{
     const f=fixture({width,height,density:1,renderer}),board=f.table.scoreBoard;f.play();
     const sample=(delta:number)=>{
-      f.step(delta);const paths=painted(f.ink()!),bodies=paths.filter(path=>path.color===0x7943c9);
-      expect(bodies.length).toBeGreaterThanOrEqual(9);expect(paths.filter(path=>path.color===0xffeaff).length).toBeGreaterThanOrEqual(9);
+      f.step(delta);const paths=painted(f.ink()!),bodies=paths.filter(path=>path.color===0x5b4186);
+      expect(bodies.length).toBeGreaterThanOrEqual(9);expect(paths.filter(path=>path.color===0xd8b56a).length).toBeGreaterThanOrEqual(9);
       expect(paths.every(validPath)).toBe(true);
       for(const path of paths){
         expect(within(path.points,{x:6.5,y:6.5,width:width-13,height:height-13})).toBe(true);
@@ -127,7 +127,7 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
     const cx=board.x+board.width/2,cy=board.y+board.height/2,r=angle*Math.PI/180,c=Math.cos(r),s=Math.sin(r);
     f.root.setPosition(cx-(c*cx-s*cy),cy-(s*cx+c*cy)).setRotation(r);f.play();
     for(const delta of [600,400,400]){
-      f.step(delta);const m=f.root.getWorldTransformMatrix(),paths=painted(f.ink()!),bodies=paths.filter(p=>p.color===0x7943c9);
+      f.step(delta);const m=f.root.getWorldTransformMatrix(),paths=painted(f.ink()!),bodies=paths.filter(p=>p.color===0x5b4186);
       expect(bodies.length).toBeGreaterThanOrEqual(4);expect(paths.every(validPath)).toBe(true);
       for(const path of paths){
         expect(path.points.every(p=>p.y>=board.y+2.5-1e-6&&p.y<=board.y+board.height-2.5+1e-6)).toBe(true);
@@ -138,7 +138,7 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
 
   it('trims a flame at a tip guard without changing unrelated contours',()=>{
     const f=fixture({width:320,height:568,density:1,renderer:2});f.play();f.step(600);
-    const bodies=()=>painted(f.ink()!).filter(p=>p.color===0x7943c9),before=bodies();
+    const bodies=()=>painted(f.ink()!).filter(p=>p.color===0x5b4186),before=bodies();
     const tip=before[0].points.reduce((a,p)=>p.y<a.y?p:a),guard={x:tip.x-3,y:tip.y-3,width:6,height:6};
     const far=before.at(-1)!;f.setGuards([guard]);f.step(0);const all=painted(f.ink()!),after=bodies();
     expect(after.length).toBeGreaterThanOrEqual(2);expect(all.every(validPath)).toBe(true);
@@ -171,7 +171,7 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
     f.setGuards(guards);f.play();
     for(const delta of [400,450,450]){
       f.step(delta);
-      const root=painted(f.ink()!).filter(p=>p.color===0x7135ad&&Math.max(...p.points.map(q=>q.y))-Math.min(...p.points.map(q=>q.y))>=4);
+      const root=painted(f.ink()!).filter(p=>p.color===0x3a2a55&&Math.max(...p.points.map(q=>q.y))-Math.min(...p.points.map(q=>q.y))>=4);
       const occupied=root.filter(p=>p.points.some(q=>q.x>board.x+board.width*.3&&q.x<board.x+board.width*.7));
       expect(occupied.length).toBeGreaterThan(5);
       for(const p of root)for(const guard of guards)expect(separated(p.points,guard)).toBe(true);
@@ -183,7 +183,7 @@ describe('high-multiplier visual on actual Phaser Graphics',()=>{
     const hero:Box={x:40,y:150,width:160,height:380},source=f.text(board.x+10,board.y+4,'score').setName('score/source');
     f.root.add(source);f.opts.getHero=()=>hero;f.opts.getBackdropGuards=()=>[hero];f.play();f.step(600);
     const backdrop=f.root.list.find(o=>o.name==='score/high-multiplier-aura-backdrop') as Phaser.GameObjects.Graphics;
-    const shapes=painted(backdrop),roots=painted(f.ink()!).filter(path=>path.color===0x7135ad);
+    const shapes=painted(backdrop),roots=painted(f.ink()!).filter(path=>path.color===0x3a2a55);
     expect(f.ink()!.getData('heroSegments')).toBeGreaterThan(0);
     expect(Math.max(...roots.map(path=>Math.max(...path.points.map(p=>p.y))-Math.min(...path.points.map(p=>p.y))))).toBeGreaterThan(24);
     expect(shapes.some(path=>path.points.some(p=>p.x<hero.x||p.x>hero.x+hero.width||p.y>hero.y+hero.height))).toBe(true);
