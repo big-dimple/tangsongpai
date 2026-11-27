@@ -15,9 +15,9 @@ export const PAPER_BAKE_PIXELS=4_000_000;
 export const LAMP_LIMIT={desk:.12,paper:.03} as const;
 export type LampKind=keyof typeof LAMP_LIMIT;
 /** Fibre strength on a full page, a tray inside a page, and a small live sheet. */
-export const PAGE_GRAIN=.62,TRAY_GRAIN=.7,SHEET_GRAIN=.6;
+export const PAGE_GRAIN=.78,TRAY_GRAIN=.86,SHEET_GRAIN=.74;
 /** Warm umber, in the direction of the former hard offset shadows (down and slightly right). */
-export const PAPER_SHADOW={color:[52,34,18] as const,dx:1,dy:3};
+export const PAPER_SHADOW={color:[34,22,12] as const,dx:1,dy:3};
 
 const FIBER_INK=[141,122,92] as const,FIBER_LIGHT=[255,253,246] as const;
 const hex=(color:number)=>'#'+color.toString(16).padStart(6,'0');
@@ -91,19 +91,32 @@ export function paintPaperDither(c:Context,size:number,seed=0xd17):void {
 }
 
 const smooth=(t:number)=>{const x=Math.max(0,Math.min(1,t));return x*x*(3-2*x);};
-const LAMP_CENTRE_Y=.44,LAMP_INNER=.42;
+const LAMP_CENTRE_Y=.44,LAMP_INNER=.37;
 /** Darkening fraction at a normalised screen position. One lamp, slightly above centre. */
 export function lampShade(kind:LampKind,u:number,v:number):number {
   const dx=(u-.5)/.5,dy=v<LAMP_CENTRE_Y?(v-LAMP_CENTRE_Y)/LAMP_CENTRE_Y:(v-LAMP_CENTRE_Y)/(1-LAMP_CENTRE_Y);
   return LAMP_LIMIT[kind]*smooth((Math.hypot(dx,dy)/Math.SQRT2-LAMP_INNER)/(1-LAMP_INNER));
 }
-/** The same falloff as lampShade, as four quadrant gradients on the canvas. */
+/** Warm pool of one desk lamp plus four-quadrant edge vignette. */
 function paintLamp(c:Context,page:PaperPage,kind:LampKind):void {
-  const cx=page.width/2,cy=page.height*LAMP_CENTRE_Y,tone=kind==='desk'?[6,14,16]:[96,66,34];
+  const cx=page.width/2,cy=page.height*LAMP_CENTRE_Y;
+  // Warm centre pool first so the desk has a readable lamp gradient and paper stays balanced.
+  c.save();c.translate(cx,cy);c.scale(cx,Math.max(cy,page.height-cy));
+  if(kind==='desk'){
+    const pool=c.createRadialGradient(0,0,0,0,0,.95);
+    pool.addColorStop(0,'rgba(255,222,162,.11)');pool.addColorStop(.55,'rgba(255,218,152,.055)');pool.addColorStop(.95,'rgba(255,218,152,0)');
+    c.fillStyle=pool;
+  }else{
+    const pool=c.createRadialGradient(0,0,0,0,0,.72);
+    pool.addColorStop(0,'rgba(255,250,232,.045)');pool.addColorStop(.45,'rgba(255,248,226,.02)');pool.addColorStop(.72,'rgba(255,248,226,0)');
+    c.fillStyle=pool;
+  }
+  c.fillRect(-1,-1,2,2);c.restore();
+  const tone=kind==='desk'?[0,2,4]:[78,50,20],limit=kind==='desk'?.135:.068;
   for(const [sx,sy,h] of [[-1,-1,cy],[1,-1,cy],[-1,1,page.height-cy],[1,1,page.height-cy]] as const){
     c.save();c.translate(cx,cy);c.scale(sx*cx,sy*h);
     const g=c.createRadialGradient(0,0,LAMP_INNER*Math.SQRT2,0,0,Math.SQRT2);
-    for(let i=0;i<=6;i++)g.addColorStop(i/6,rgba(tone,LAMP_LIMIT[kind]*smooth(i/6)));
+    for(let i=0;i<=6;i++)g.addColorStop(i/6,rgba(tone,limit*smooth(i/6)));
     c.fillStyle=g;c.fillRect(0,0,1,1);c.restore();
   }
 }
@@ -123,7 +136,7 @@ function clipRegion(c:Context,page:PaperPage,area:PaperRegion|undefined,holes:re
 /** A soft shadow that only lands outside its own sheet; the sheet's paper is never tinted. */
 export function castPaperShadow(c:Context,page:PaperPage,sheet:PaperRegion,strength=1,spread=1,within?:PaperRegion):void {
   c.save();clipRegion(c,page,within,[sheet]);
-  c.shadowColor=rgba(PAPER_SHADOW.color,.3*strength);c.shadowBlur=11*spread;c.shadowOffsetX=PAPER_SHADOW.dx*spread;c.shadowOffsetY=PAPER_SHADOW.dy*spread;
+  c.shadowColor=rgba(PAPER_SHADOW.color,Math.min(.78,.42*strength));c.shadowBlur=13*spread;c.shadowOffsetX=PAPER_SHADOW.dx*spread;c.shadowOffsetY=PAPER_SHADOW.dy*spread;
   c.fillStyle='#000';c.beginPath();roundedPath(c,sheet.box,sheet.radius??0);c.fill();c.restore();
 }
 
@@ -292,7 +305,7 @@ export function ensureCardShadow(scene:Phaser.Scene):boolean {
   const texture=scene.textures.createCanvas(PAPER_SHADOW_KEY,CARD_SHADOW.width,CARD_SHADOW.height);if(!texture)return false;
   const c=texture.getContext(),x=(CARD_SHADOW.width-CARD_SHADOW.cardWidth)/2,y=(CARD_SHADOW.height-CARD_SHADOW.cardHeight)/2,far=4096;
   // Paint the card far outside the picture; only its offset shadow lands inside.
-  c.shadowColor=rgba(PAPER_SHADOW.color,.24);c.shadowBlur=8;c.shadowOffsetX=far+PAPER_SHADOW.dx*1.5;c.shadowOffsetY=PAPER_SHADOW.dy*1.5;
+  c.shadowColor=rgba(PAPER_SHADOW.color,.30);c.shadowBlur=9;c.shadowOffsetX=far+PAPER_SHADOW.dx*1.5;c.shadowOffsetY=PAPER_SHADOW.dy*1.5;
   c.fillStyle='#000';c.beginPath();roundedPath(c,{x:x-far,y,width:CARD_SHADOW.cardWidth,height:CARD_SHADOW.cardHeight},7);c.fill();
   texture.refresh();return true;
 }
