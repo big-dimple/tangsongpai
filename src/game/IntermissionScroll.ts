@@ -29,7 +29,8 @@ export function mountResultViewport(scene:Phaser.Scene,view:SceneView,content:Ph
   const canvas=scene.game.canvas,mask=view.add(scene.add.graphics().setVisible(false));
   mask.fillStyle(0xffffff).fillRect(0,top,view.layout.width,readingBottom-top);
   content.setMask(mask.createGeometryMask());
-  const hint=placement.overflow>0?view.text(bounds.x,bottom-18,'上下滑动查看结算',14,PAPER_CSS.jade,bounds.width).setName('result-scroll/hint'):undefined;
+  const hintLeft=Math.max(safe.left+12,bounds.x),hintRight=Math.min(width-safe.right-12,bounds.x+bounds.width),hintWidth=Math.max(120,hintRight-hintLeft);
+  const hint=placement.overflow>0?view.text(hintLeft+hintWidth/2,bottom-18,'上下滑动查看结算',14,PAPER_CSS.jade,hintWidth).setOrigin(.5,0).setName('result-scroll/hint'):undefined;
   const rail=placement.overflow>0?view.add(scene.add.graphics()).setName('result-scroll/rail'):undefined;
   let scroll=placement.scroll,drag:{id:number;y:number;offset:number;moving:boolean}|undefined;
   const update=(next:number)=>{

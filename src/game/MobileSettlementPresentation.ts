@@ -15,7 +15,7 @@ import {drawSettlementHand} from './SettlementHand';
 export const mobileResultViewport=(width:number,height:number)=>width<700&&height>width;
 /** A vertical result: hero/score masthead, full-width hand receipt, then destination and actions. */
 export function drawMobileSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2RunState,cleared:boolean,skipped:boolean,facts:ReturnType<typeof settlementFacts>,formulaOverride?:string,rewardLabel?:string){
- const lost=!cleared&&!skipped,usableHeight=view.layout.height-view.layout.safe.top-view.layout.safe.bottom,compact=usableHeight<700,headerHeight=compact?Math.max(120,Math.min(184,Math.round(usableHeight*.26))):216,textWidth=b.width*.56,textX=b.x+b.width-textWidth;
+ const lost=!cleared&&!skipped,usableHeight=view.layout.height-view.layout.safe.top-view.layout.safe.bottom,compact=usableHeight<720,headerHeight=compact?Math.max(118,Math.min(148,Math.round(usableHeight*.22))):174,textWidth=b.width*.56,textX=b.x+b.width-textWidth;
  const fit=(x:number,y:number,copy:string,size:number,width:number,color=C.ink,name='')=>{
   const t=view.text(x,y,copy,size,color).setName(name);for(let n=size;t.width>width&&n>14;)t.setFontSize(--n);
   if(t.width>width)t.setWordWrapWidth(width,true);return t;
@@ -34,6 +34,8 @@ export function drawMobileSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run
  const targetHeat=run.stage!.targetHeat;
  const formula=formulaOverride??(lost?'目标 '+heatText(targetHeat)+' · 差 '+heatText(stageScoreBands(facts.stageTotal,targetHeat).gap):skipped?'没有本场计分':'目标 '+heatText(targetHeat)+' · 已过关');
  const target=fit(textX,score.y+score.displayHeight+10,formula,14,textWidth-12,C.jade,'result/formula');
+ const blockHeight=target.y+target.height-tag.y,cardInner=headerHeight-16,shiftY=Math.max(0,Math.round((cardInner-blockHeight)/2)-10);
+ if(shiftY>0){tag.y+=shiftY;score.y+=shiftY;target.y+=shiftY;}
  const artBottom=b.y+headerHeight;
  let contentBottom=Math.max(artBottom,target.y+target.height);
  if(!skipped)contentBottom=drawScoreLedger(scene,view,b.x+5,contentBottom+8,b.width-10,facts.stageTotal,targetHeat,last?.finalScore);

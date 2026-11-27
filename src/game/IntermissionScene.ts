@@ -79,6 +79,10 @@ export class IntermissionScene extends Phaser.Scene {
   private releaseViewport?:()=>void;
   private resultScroll=0;
   private resultReceiptBottom=0;
+  private noviceGuideClosed=false;
+  private noviceGuideBottom=0;
+  private noviceGuideHandle?:import('./NoviceGuideBinding').NoviceGuideUnmount;
+  private headerGuard?:Box;
   private readonly rewardCue=new RewardCoinCue();
   private readonly reviewBookCue=new ReviewBookCue();
   private reviewBookMotion?:{dispose:()=>void};
@@ -106,9 +110,20 @@ export class IntermissionScene extends Phaser.Scene {
       if(loaded&&current())this.paintSourceArt?.();
     });
   }
+  private mobileMenuAvoid():Box {
+    const l=this.view.layout,fallback:Box={x:l.width-l.safe.right-64,y:0,width:64+l.safe.right,height:l.safe.top+62};
+    if(typeof document==='undefined')return fallback;
+    const toggle=document.querySelector<HTMLElement>('.run-menu-toggle'),canvas=this.game.canvas?.getBoundingClientRect?.();
+    if(!toggle||!canvas?.width||!canvas?.height)return fallback;
+    const r=toggle.getBoundingClientRect();
+    if(r.width<=0||r.height<=0)return fallback;
+    const sx=l.width/canvas.width,sy=l.height/canvas.height,x=Math.max(0,(r.left-canvas.left)*sx-8),bottom=Math.min(l.height,(r.bottom-canvas.top)*sy+8);
+    return {x,y:0,width:Math.max(0,l.width-x),height:Math.max(0,bottom)};
+  }
   create():void {
     warmNextSceneImages(this,'shop');
     this.lifecycle++;this.busy=false;this.notice='';this.firstRender=true;this.resultScroll=0;
+    this.noviceGuideClosed=false;this.noviceGuideBottom=0;this.noviceGuideHandle=undefined;this.headerGuard=undefined;
     const motion=typeof window==='undefined'?undefined:window.matchMedia('(prefers-reduced-motion: reduce)');
     const preference=()=>{if((gameSession().reducedMotion||motion?.matches)&&this.scene.isActive()){this.firstRender=false;this.render();}};
     const suspend=()=>{if(this.scene.isActive()){this.firstRender=false;this.audio.cancelPresentation();this.render();}};
@@ -117,7 +132,7 @@ export class IntermissionScene extends Phaser.Scene {
     motion?.addEventListener('change',preference);
     if(typeof window!=='undefined')window.addEventListener('blur',suspend);
     if(typeof document!=='undefined')document.addEventListener('visibilitychange',visibility);
-    const retire=()=>{if(typeof window!=='undefined'){window.removeEventListener('tangsongpai-presentation',preference);window.removeEventListener('blur',suspend);}if(typeof document!=='undefined')document.removeEventListener('visibilitychange',visibility);motion?.removeEventListener('change',preference);this.events.off('shutdown',retire);this.events.off('destroy',retire);this.releaseViewport?.();this.releaseViewport=undefined;this.lifecycle++;this.stopSourceArt();this.paintSourceArt=undefined;this.dialog.close();this.stopCelebration();};
+    const retire=()=>{if(typeof window!=='undefined'){window.removeEventListener('tangsongpai-presentation',preference);window.removeEventListener('blur',suspend);}if(typeof document!=='undefined')document.removeEventListener('visibilitychange',visibility);motion?.removeEventListener('change',preference);this.events.off('shutdown',retire);this.events.off('destroy',retire);this.releaseViewport?.();this.releaseViewport=undefined;this.noviceGuideHandle=undefined;this.lifecycle++;this.stopSourceArt();this.paintSourceArt=undefined;this.dialog.close();this.stopCelebration();};
     this.events.once('shutdown',retire);this.events.once('destroy',retire);
     const run=runController(this)?.state;if(!run?.stage){this.scene.start('character-select');return;}
     this.cameras.main.setBackgroundColor('#F3EADB');
@@ -131,13 +146,38 @@ export class IntermissionScene extends Phaser.Scene {
       }
     }
     this.view=new SceneView(this,()=>this.render());this.render();this.requestSourceArt();
-    const unmountNoviceGuide=bindNoviceGuide(this,{
+    const unmountNoviceGuide=this.noviceGuideHandle=bindNoviceGuide(this,{
       kind:'intermission',
       getGeometry:hint=>{
         const l=this.view.layout,canvas=this.game.canvas.getBoundingClientRect(),viewport=this.resultContent?.getData('viewport') as {top:number}|undefined;
         const reserve=hint.step==='complete'||hint.step==='replay'?128:86,top=viewport?.top??0;
-        const map=(box:import('./layout').Box)=>noviceGuideCanvasBox(box,canvas,l);
+        const map=(box:Box)=>noviceGuideCanvasBox(box,canvas,l);
+        if(mobileResultViewport(l.width,l.height)){
+          if(this.noviceGuideClosed&&this.headerGuard){
+            const below=Math.max(top,this.headerGuard.y+this.headerGuard.height+4);
+            return {avoid:[map(this.mobileMenuAvoid()),map(this.headerGuard),map({x:0,y:below,width:l.width,height:Math.max(0,l.height-below)})]};
+          }
+          return {avoid:[map(this.mobileMenuAvoid()),map({x:0,y:top,width:l.width,height:Math.max(0,l.height-top)})]};
+        }
         return {avoid:top>reserve?[map({x:0,y:0,width:l.width,height:top-reserve}),map({x:0,y:top,width:l.width,height:l.height-top})]:[]};
+      },
+      onPresented:presented=>{
+        const l=this.view.layout;if(!mobileResultViewport(l.width,l.height))return;
+        if(!presented){if(this.noviceGuideBottom>0){this.noviceGuideBottom=0;this.firstRender=false;this.render();}return;}
+        if(this.noviceGuideClosed)return;
+        const panel=document.querySelector<HTMLElement>('[data-novice-guide-panel]'),canvas=this.game.canvas?.getBoundingClientRect?.();
+        if(!panel||!canvas?.height)return;
+        const r=panel.getBoundingClientRect(),fullHeight=r.height+Math.max(0,panel.scrollHeight-panel.clientHeight);
+        const bottom=Math.min(Math.round(l.height*.32),Math.ceil((r.top+fullHeight-canvas.top)*l.height/canvas.height));
+        if(bottom>0&&Math.abs(bottom-this.noviceGuideBottom)>2){
+          this.noviceGuideBottom=bottom;this.firstRender=false;this.render();
+          requestAnimationFrame(()=>{if(this.sys.settings.active)this.noviceGuideHandle?.refresh();});
+        }
+      },
+      onVisibilityChange:closed=>{
+        if(this.noviceGuideClosed===closed)return;
+        this.noviceGuideClosed=closed;if(closed)this.noviceGuideBottom=0;
+        this.firstRender=false;this.render();
       },
       visible:()=>!this.busy&&!document.querySelector('dialog[open]'),
       onDetails:hint=>{if(hint.details)this.dialog.open('计分与规则',hint.details,[],{closeLabel:'返回练习'});},
@@ -166,19 +206,21 @@ export class IntermissionScene extends Phaser.Scene {
     const title=capped?'本局暂止于此':skipped?'换一场，再对局':won?(run.mode==='tutorial'?'教学对局完成！':run.mode==='challenge'?'挑战完成！':'八章通关'):this.result.cleared?(identity.isBoss?'压轴过关 · '+identity.title:'本场获胜'):guidance?.title??'此局结束，再来一局';
     const titlePlate=p.pc?v.add(this.add.graphics().setName('result/title-plate')):undefined;
     const titleText=v.text(p.x,p.top+(p.short?22:28),title,p.pc?(l.width<1500?40:48):p.short||p.portrait&&identity.isBoss?22:p.portrait?26:34,identity.isBoss&&this.result.cleared?PAPER_CSS.red:PAPER_CSS.ink,p.w).setName('result/title').setFontStyle('bold');
-    if(p.pc||mobile){titleText.setWordWrapWidth(0);for(let size=mobile?26:l.width<1500?40:48;titleText.width>(p.pc?p.w-36:p.w)&&size>(mobile?18:24);)titleText.setFontSize(--size);}
+    const mobileRightPad=mobile?60:0,titleMax=p.pc?p.w-36:Math.max(120,p.w-mobileRightPad);
+    if(p.pc||mobile){titleText.setWordWrapWidth(0);for(let size=mobile?26:l.width<1500?40:48;titleText.width>titleMax&&size>(mobile?18:24);)titleText.setFontSize(--size);}
     if(p.pc){
       titleText.setOrigin(.5,0).setX(p.x+p.w/2).setAlign('center').setColor(lost||skipped||capped?PAPER_CSS.jade:PAPER_CSS.red);
       const box=titleText.getBounds(),center=box.x+box.width/2,y=box.y+box.height+2,tone=lost||skipped||capped?T.jade:T.red;
       titlePlate!.lineStyle(2,tone,.55).lineBetween(center-42,y,center+42,y);
     }
+    let headerRight=titleText.x+titleText.width;
     if(this.result.cleared&&!skipped&&!capped){
       // The same seal that signed the table, already dry: an echo beside the title, not a second stamp.
-      const box=titleText.getBounds(),size=Math.max(p.pc?40:38,Math.min(p.pc?50:46,box.height*(p.pc?.95:1.2))),reach=sealReach(size),room=p.x+p.w-box.right-10;
+      const box=titleText.getBounds(),size=Math.max(p.pc?40:38,Math.min(p.pc?50:46,box.height*(p.pc?.95:1.2))),reach=sealReach(size),room=p.x+p.w-mobileRightPad-box.right-10;
       if(room>=reach*2){
         const y=p.pc?Math.min(box.centerY,p.score.y-reach-4):box.centerY;
         const seal=staticSealStamp(this,identity.isBoss?'finale':'clear',{x:box.right+10+reach,y,size,angle:SEAL_BEAT.angle},{x:box.x,y:box.y,width:box.width,height:box.height});
-        if(seal){v.add(seal.bleed);v.add(seal.face);if(animateIn)this.tweens.add({targets:seal.bleed,alpha:{from:0,to:.55},duration:SEAL_BEAT.bleed});}
+        if(seal){v.add(seal.bleed);v.add(seal.face);headerRight=Math.max(headerRight,box.right+10+reach*2);if(animateIn)this.tweens.add({targets:seal.bleed,alpha:{from:0,to:.55},duration:SEAL_BEAT.bleed});}
       }
     }
     const paperHeight=this.drawResultHero(p.score,!!skipped,lost,animateIn);
@@ -244,9 +286,13 @@ export class IntermissionScene extends Phaser.Scene {
     const discovery=this.ready&&!this.notice&&!lost&&!skipped?savedGrowthDiscovery(run):undefined,gift=this.ready&&!this.notice&&!lost&&!skipped?stageGiftReceipt(run):undefined;
     v.text(p.short||p.wide?p.next.x:p.x,p.noticeY,this.busy?'正在保存…':this.notice||(!this.ready?'当前进度未保存或只读，请查看菜单。':capped?'已达数值上限，进度已保存':won?run.mode==='standard'?'八章通关已保存，继续无尽由你决定。':'本模式结果已保存，可重试或返回选角。':nextStage?gift?'':discovery?.full||'':lost?rollback?'回到本场开始；右上角菜单可开始新局。':'缺少本场起点，无法重试；原进度保留，可在菜单开始新局。':''),14,this.notice?'#ffd0b1':'#3F606B',p.short||p.wide?p.next.width:p.w).setName(discovery&&!gift&&nextStage?'growth/discovery':'result/notice');
     content.add(v.root.list.slice(backgroundCount));v.add(content);
-    const safeTop=l.safe.top;
-    const hint=noviceGuide(run,runController(this)!.journal),reserve=hint?(hint.step==='complete'||hint.step==='replay'?128:86):0;
-    this.releaseViewport=mountResultViewport(this,v,content,Math.max(l.hud.y,safeTop+60)+reserve,l.height-bottom-16,this.resultScroll,offset=>{this.resultScroll=offset;});
+    const safeTop=l.safe.top,hint=noviceGuide(run,runController(this)!.journal),guideOpen=!!hint&&!this.noviceGuideClosed;
+    const minReserve=hint&&(hint.step==='complete'||hint.step==='replay')?92:70;
+    const viewportTop=mobile
+      ?(guideOpen?Math.max(safeTop+minReserve,this.noviceGuideBottom>0?this.noviceGuideBottom+6:0):safeTop+12)
+      :Math.max(l.hud.y,safeTop+60)+(guideOpen?(hint!.step==='complete'||hint!.step==='replay'?128:86):0);
+    this.headerGuard=mobile?{x:0,y:viewportTop,width:Math.min(l.width,Math.max(stageLabel.x+stageLabel.width,headerRight)+8),height:titleText.y+titleText.height+6}:undefined;
+    this.releaseViewport=mountResultViewport(this,v,content,viewportTop,l.height-bottom-16,this.resultScroll,offset=>{this.resultScroll=offset;});
     this.firstRender=false;if(pc||mobile)this.requestSourceArt();
   }
   private auxiliary(b:Box,label:string,name:string,action:()=>void,enabled=true):void {
