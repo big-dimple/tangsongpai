@@ -2,13 +2,15 @@ import {drawRiverScroll} from './RiverScroll';
 import Phaser from 'phaser';
 import type {Box} from './layout';
 import type {SceneView} from './SceneView';
+import {bakedPaper} from './PaperStock';
 
 export const SELECTION_INK={back:0x192d32,raised:0x2a4144,paper:0xf3eadb,line:0x9d9d83,light:'#F3EADB',muted:'#C3CABA'} as const;
 
 /** Selection owns its backdrop; shared materials keep their existing contract. */
 export function selectionStageBackground(scene:Phaser.Scene,v:SceneView,width:number,height:number):void {
- const g=v.add(scene.add.graphics());
- g.fillStyle(SELECTION_INK.back).fillRect(0,0,width,height);
+ // The night backdrop is lit by the same single lamp as the table; no fibres on a dark ground.
+ const lit=bakedPaper(scene,{slot:'selection',width,height,base:SELECTION_INK.back,lamp:'desk',grain:0});
+ if(lit)v.add(lit);else v.add(scene.add.graphics()).fillStyle(SELECTION_INK.back).fillRect(0,0,width,height);
  drawRiverScroll(scene,v,{x:0,y:0,width,height},.63,.14);
  const mount=v.add(scene.add.graphics());
  mount.fillStyle(0x142e2c,.68).fillRect(0,0,width,62);

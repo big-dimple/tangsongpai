@@ -28,3 +28,5 @@
  .shop-mobile-offer-heading { gap:2px; }
  .shop-mobile-offer-copy strong { font-size:16px; }
 }
+.shop-mobile-offer { background-image:var(--paper-grain,none);background-size:256px 256px; }
+@media (min-resolution:2dppx) { .shop-mobile-offer { background-size:128px 128px; } }

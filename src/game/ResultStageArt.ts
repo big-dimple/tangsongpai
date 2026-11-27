@@ -2,6 +2,7 @@ import type Phaser from 'phaser';
 import type {Box} from './layout';
 import type {SceneView} from './SceneView';
 import {PAPER_THEME as T} from './theme';
+import {paperGrainSprite,SHEET_GRAIN} from './PaperStock';
 import {selectionPortraitKey} from './portraits';
 import {jokerArtKey} from './jokerArt';
 import {animateJokerImage} from './JokerArtPlayback';
@@ -36,7 +37,7 @@ export function resultStagePaper(scene:Phaser.Scene,view:SceneView,b:Box,lost=fa
  const g=scene.add.graphics().setName('result-art/stage').setData('bounds',b);
  g.fillStyle(T.ink,.055).fillRoundedRect(b.x,b.y+3,b.width,b.height,10);
  g.fillStyle(lost?T.paperLight:T.jadeSoft).fillRoundedRect(b.x,b.y,b.width,b.height,10).lineStyle(1,T.jade,.3).strokeRoundedRect(b.x,b.y,b.width,b.height,10);view.add(g);
- if(scene.textures.exists('p00-paper'))view.add(scene.add.tileSprite(b.x+6,b.y+6,b.width-12,b.height-12,'p00-paper').setOrigin(0).setAlpha(.1).setName('result-art/paper'));
+ const grain=paperGrainSprite(scene,{x:b.x+6,y:b.y+6,width:b.width-12,height:b.height-12},SHEET_GRAIN);if(grain)view.add(grain.setName('result-art/paper'));
  const seam=scene.add.graphics().lineStyle(2,lost?T.brass:T.jade,.45).beginPath().moveTo(b.x+12,b.y+26).lineTo(b.x+12,b.y+12).lineTo(b.x+34,b.y+12).strokePath().setName('result-art/ink');view.add(seam);
 }
 export function resultStageSources(scene:Phaser.Scene,view:SceneView,b:Box,facts:ReturnType<typeof resultStageFacts>,short:boolean):{text:Box;art:Phaser.GameObjects.Image[]} {

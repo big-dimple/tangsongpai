@@ -60,7 +60,7 @@ export function qiyuSceneStart(scene:Phaser.Scene,key:string,data?:object,copy='
       fontSize:'clamp(22px,3.6vw,42px)',letterSpacing:'.18em',color:'#f8e8c8',
     });
     const sub=document.createElement('span');
-    sub.textContent='墨幕开场 · 七至九关真实验收机缘';
+    sub.textContent='墨幕徐开 · 机缘难得';
     Object.assign(sub.style,{
       fontSize:'13px',letterSpacing:'.14em',color:'#dfc594',
     });

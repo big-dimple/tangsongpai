@@ -62,6 +62,7 @@ import type {HeroAttachmentPhaseEvent} from './HeroAttachmentPhases';
 import {savedHeroAttachment,retainedRefillImpact} from './HeroAttachmentFacts';
 import {drawStageTableArt,playedCaptionBox} from './StageTableArt';
 import {paperSceneStart} from './PaperFlow';
+import {cardShadow} from './PaperStock';
 import {bindNoviceGuide} from './NoviceGuideBinding';
 import {liveNoviceGuide,noviceFreeActions,noviceGuide,noviceGuideEnrolled,type NoviceGuideHint} from './NoviceGuide';
 import {firstStageOptions,openingDeal,openingDealHint,type OpeningDeal,type OpeningPlan,type FirstStageOption} from './NoviceFirstStage';
@@ -994,7 +995,7 @@ export class GameScene extends Phaser.Scene {
     this.controlsLive=false;this.stopScoreFire();
     this.heroPortraitMotion?.destroy();this.heroPortraitMotion=undefined;this.heroPortrait=undefined;this.giftDelivery?.destroy();this.giftDelivery=undefined;
     const keyboardFocus=this.pcKeyboardActions?.focusedId();this.pcKeyboardActions?.destroy();this.pcKeyboardActions=undefined;
-    const v=this.view,l=v.layout;this.hoveredCardId=undefined;this.hoveredJokerId=undefined;this.jokerHoverPreview=undefined;v.clear();this.settlementChrome.clear();this.handNavigationButtons=[];v.paperBackground();if(l.mode==='portrait')warmPcHeroImage(this,this.characterId);drawStageTableArt(this,v,this.characterId,undefined,false);
+    const v=this.view,l=v.layout;this.hoveredCardId=undefined;this.hoveredJokerId=undefined;this.jokerHoverPreview=undefined;v.clear();this.settlementChrome.clear();this.handNavigationButtons=[];v.paperBackground(!!l.pc);if(l.mode==='portrait')warmPcHeroImage(this,this.characterId);drawStageTableArt(this,v,this.characterId,undefined,false);
     if(l.pc){
       v.text(l.pc.build.x+16,l.pc.build.y,'唐宋牌 · '+this.run.jokers.length+'/'+r2JokerCapacity(this.run),18,C.jade).setName('pc/section-build');
     }
@@ -1308,8 +1309,9 @@ export class GameScene extends Phaser.Scene {
   private roleCaption():string {const notice=stageNotice(this.run);return usesErxiangHandoff(this.run)?erxiangChoice(this.run).compact:usesTouyeWager(this.run)?touyeChoice(this.run).compact:usesLaohuanRefill(this.run)?this.pendingRefill?heroText('老幻·选补牌↗'):!r2RunModeConfig(this.run).characterAbilityEnabled?heroSkillName('laohuan')+'停用':laohuanRefillUsed(this.run)?heroSkillName('laohuan')+'已用':heroSkillName('laohuan'):usesXiemuBurn(this.run)?xiemuChoice(this.run).compact:usesAzaoCharge(this.run)?azaoChoice(this.run).compact:notice?.warning?notice.title:characterForRun(this.run).passiveName;}
   private cardPiece(card:PlayingCard,b:Box):CardView {
     const c=this.view.add(this.add.container(b.x+b.width/2,b.y+b.height/2)).setData('width',b.width).setData('height',b.height).setData('cardFace',true).setData('cardId',card.id);
-    const radius=Math.min(7,b.width*.09),shadow=this.add.graphics(),edgeGlow=this.add.graphics();
-    shadow.fillStyle(T.ink,.07).fillRoundedRect(-b.width/2+1,-b.height/2+3,b.width,b.height,radius);
+    const radius=Math.min(7,b.width*.09),edgeGlow=this.add.graphics();
+    // One shared soft picture replaces the per-card hard-edged fill: same direction, warm, no per-frame path.
+    const shadow=cardShadow(this,b.width,b.height)??this.add.graphics().fillStyle(T.ink,.07).fillRoundedRect(-b.width/2+1,-b.height/2+3,b.width,b.height,radius);
     edgeGlow.setName('card/feedback').lineStyle(3,T.focus,.9).strokeRoundedRect(-b.width/2-1,-b.height/2-1,b.width+2,b.height+2,radius).setAlpha(0);
     const bg=this.add.rectangle(0,0,b.width,b.height,T.paper).setStrokeStyle(1,T.brass);
     const face=this.view.material({x:-b.width/2+1,y:-b.height/2+1,width:b.width-2,height:b.height-2},0xfff8e8,0xe8d6b9,radius).setAlpha(.72).setData('heroInkPaper',true);

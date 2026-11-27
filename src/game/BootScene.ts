@@ -5,6 +5,7 @@ import {AudioEngine,type OpeningSoundProgress} from '../audio/AudioEngine';
 import {gameSession} from './session';
 import {P00_ASSETS,assetUrl} from './theme';
 import {prepareTitleEnsembleImages,type EnsemblePreparation} from './TangSongEntranceBurst';
+import {ensureCardShadow,publishPaperGrain} from './PaperStock';
 
 /** Prepare the paper, the visible title reveal and a small first-interaction sound set. */
 export class BootScene extends Phaser.Scene {
@@ -57,6 +58,8 @@ export class BootScene extends Phaser.Scene {
   create(): void {
     const generation=this.generation,loading=this.loading;
     registerRiverScroll(this.game,loading?.host.querySelector<HTMLImageElement>('.load-world img')??null);
+    // Paper stock is prepared while loading, never during a score presentation.
+    publishPaperGrain(this);ensureCardShadow(this);
     void gameSession().initialize().catch(error=>console.warn('[boot] 存档恢复将在后台重试',error));
     void (async()=>{
       await this.opening;

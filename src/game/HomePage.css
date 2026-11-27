@@ -270,3 +270,5 @@ html[data-text-size=large] .title-home :is(.home-hint, .home-save, .home-notice,
   .title-home *, .title-home *::after { transition: none !important; }
 }
 .title-home[data-reduced-motion=true] * { transition: none !important; }
+.home-entry { background-image: var(--paper-grain, none), linear-gradient(110deg, #faf4e8, #efe4cd); background-size: 256px 256px, auto; }
+@media (min-resolution: 2dppx) { .home-entry { background-size: 128px 128px, auto; } }

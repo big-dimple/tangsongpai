@@ -7,6 +7,7 @@ import {readableFractionText,heatText} from './scoreText';
 import {fitScoreLine} from './ScoreTextLayout';
 import {textDensity,crispText} from './TextRaster';
 import {PAPER_THEME as T,PAPER_CSS as C,SCORE_FONT,UI_FONT} from './theme';
+import {paperGrainSprite,SHEET_GRAIN} from './PaperStock';
 
 /** The saved final hand owns the existing played-card workplane, never another timer. */
 export function scoreLandingBox(layout:TableLayout):Box {
@@ -23,7 +24,7 @@ export function mountScoreLanding(scene:Phaser.Scene,parent:Phaser.GameObjects.C
  const paper=scene.add.graphics().fillStyle(T.ink,.09).fillRoundedRect(box.x,box.y+3,box.width,box.height,6)
   .fillStyle(T.paperLight).fillRoundedRect(box.x,box.y,box.width,box.height,6).lineStyle(1,T.brass,.55).strokeRoundedRect(box.x+.5,box.y+.5,box.width-1,box.height-1,6);
  group.add(paper);
- if(scene.textures.exists('p00-paper'))group.add(scene.add.tileSprite(box.x+4,box.y+4,box.width-8,box.height-8,'p00-paper').setOrigin(0).setAlpha(.18));
+ const grain=paperGrainSprite(scene,{x:box.x+4,y:box.y+4,width:box.width-8,height:box.height-8},SHEET_GRAIN);if(grain)group.add(grain);
  const compact=box.height<120,numberY=box.y+(compact?22:27),numberHeight=box.height-(compact?52:62);
  const label=scene.add.text(box.x+14,box.y+7,(replay?'回看 · ':'')+HAND_LABELS[trace.handType]+' · 本手得分',{fontFamily:UI_FONT,fontSize:'14px',color:C.mutedInk,resolution:textDensity(scene)}).setName('score/landing-label');crispText(label);
  const total=scene.add.text(0,0,heatText(trace.finalScore),{fontFamily:SCORE_FONT,fontSize:'54px',fontStyle:'bold',color}).setName('score/landing-total');

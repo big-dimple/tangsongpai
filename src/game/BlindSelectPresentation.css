@@ -231,3 +231,5 @@
   .blind-select-dialog > .dialog-actions { padding: 8px 20px; }
   .blind-select-dialog > .dialog-actions button { min-height: 44px; padding: 8px 12px; }
 }
+.blind-select-dialog { background-image: var(--paper-grain, none); background-size: 256px 256px; }
+@media (min-resolution: 2dppx) { .blind-select-dialog { background-size: 128px 128px; } }

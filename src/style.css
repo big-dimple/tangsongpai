@@ -944,3 +944,6 @@ button[aria-busy=true] { border-style:dashed; }
  .run-menu[data-input=click] .run-menu-caption,.run-menu[data-touch-capable=true] .run-menu-caption { display:inline;white-space:nowrap; }
  .run-menu[data-touch-capable=true] .run-menu-toggle.is-pinned { border-color:#B8473A; }
 }
+/* Paper stock: native paper shares the canvas fibre tile published once at boot (PaperStock.ts). Flat paper without it. */
+.detail-dialog { background-image:var(--paper-grain,none);background-size:256px 256px; }
+@media (min-resolution:2dppx) { .detail-dialog { background-size:128px 128px; } }

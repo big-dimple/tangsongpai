@@ -155,7 +155,7 @@ export class IntermissionScene extends Phaser.Scene {
     const nextStage=this.result.cleared&&run.phase==='stage-cleared'?nextStagePreview(run):undefined,skipped=run.phase==='run-lost'?null:run.stage?.skipResult,won=run.phase==='run-won',capped=this.result.cleared&&run.phase==='stage-cleared'&&!nextStage,lost=!this.result.cleared&&!skipped&&!won;
     const owner=runController(this)!,guidedPractice=!!nextStage&&needsGuidedPractice(owner),rollback=lost&&owner.rollbackAvailable;
     const animateIn=this.firstRender&&!gameSession().reducedMotion&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    this.releaseViewport?.();this.releaseViewport=undefined;this.stopCelebration();v.clear();this.paintSourceArt=undefined;v.paperBackground();if(pc)drawPcSettlementArt(this,v);const backgroundCount=v.root.length;
+    this.releaseViewport?.();this.releaseViewport=undefined;this.stopCelebration();v.clear();this.paintSourceArt=undefined;v.paperBackground(pc);if(pc)drawPcSettlementArt(this,v);const backgroundCount=v.root.length;
     const content=this.resultContent=this.add.container(0,0).setName('result/content');
     const identity=stageIdentity(stage.index,run.stage!.boss,run.tourMode,run.difficulty,run)!;
     const stageLabel=v.text(p.x,p.top,(run.tourMode==='endless'?'无尽 · ':'')+stage.name+' · '+character.name,14,identity.isBoss?PAPER_CSS.red:PAPER_CSS.jade,p.w-116).setName('stage-identity/result');

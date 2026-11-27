@@ -19,6 +19,7 @@ import {animateJokerImage} from './JokerArtPlayback';
 import {heatText,readableFractionText,readableScoreFormula} from './scoreText';
 import {failureSummary} from './FailureSummary';
 import {PAPER_THEME as T,PAPER_CSS as C,SCORE_FONT} from './theme';
+import {paperGrainSprite,SHEET_GRAIN} from './PaperStock';
 import type {SceneView} from './SceneView';
 import type {Box} from './layout';
 import {savedSkillName,strongestJokerFactor,settlementBeat} from './SettlementHighlights';
@@ -96,7 +97,7 @@ export function drawSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run:R2Run
  const lost=!cleared&&!skipped,p=settlementPlan(b,view.layout.height<500);
  const paper=scene.add.graphics().setName('result-art/stage').setData('bounds',b);
  view.add(paper);
- const paperTexture=scene.textures.exists('p00-paper')?view.add(scene.add.tileSprite(b.x+3,b.y+3,b.width-6,b.height-6,'p00-paper').setOrigin(0).setAlpha(.08)):undefined;
+ const grain=paperGrainSprite(scene,{x:b.x+3,y:b.y+3,width:b.width-6,height:b.height-6},SHEET_GRAIN),paperTexture=grain?view.add(grain):undefined;
  const main=p.score,compact=p.compact;
  const hand=skipped?'本场跳过':'本场总得分';
  const tag=fit(view,main.x,main.y,hand,14,main.width,C.jade,'result/hand');

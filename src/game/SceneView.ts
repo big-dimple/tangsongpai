@@ -13,6 +13,7 @@ import {drawHandActionGlyph,type HandButtonSkin} from './HandActionArt';
 import {attachHandSortVisual,isHandSortControl} from './HandSortButtonVisual';
 import {registerControllerScene,type ControllerTarget} from './ControllerScene';
 import type {PadAction} from '../platform/GamepadInput';
+import {bakedPaper,PAGE_GRAIN} from './PaperStock';
 
 type TouchActions={tap:()=>void;detail?:()=>void;focus?:()=>void;blur?:()=>void;drag?:(x:number,y:number)=>void;dragMove?:(x:number,y:number)=>void;swipe?:(dx:number,dy:number)=>void;cancel?:()=>void;press?:()=>void;release?:()=>void;enter?:()=>void;leave?:()=>void;holdToDrag?:boolean};
 // A repeated release can outlive its scene and hit a different action in the next view.
@@ -132,9 +133,12 @@ export class SceneView {
     }
     return this.add(this.scene.add.image(b.x,b.y,key).setOrigin(0).setDisplaySize(b.width,b.height));
   }
-  paperBackground():void {
+  /** `covered` pages sit wholly under their own table/settlement picture and stay a flat fill. */
+  paperBackground(covered=false):void {
     const {width,height}=this.layout;
-    this.add(this.scene.add.rectangle(0,0,width,height,PAPER_THEME.paper).setOrigin(0));
+    // One cached picture per layout: paper tone, fibres and the lamp. Redraws reuse it.
+    const page=covered?undefined:bakedPaper(this.scene,{slot:'page',width,height,base:PAPER_THEME.paper,lamp:'paper',grain:PAGE_GRAIN});
+    this.add(page??this.scene.add.rectangle(0,0,width,height,PAPER_THEME.paper).setOrigin(0));
     this.add(this.scene.add.graphics().lineStyle(1,PAPER_THEME.ink,.16).beginPath().moveTo(8,4).lineTo(width-8,4).strokePath());
   }
   text(x:number,y:number,value:string,size=14,color=PAPER_CSS.ink,wrap?:number):Phaser.GameObjects.Text {

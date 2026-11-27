@@ -8,6 +8,7 @@ import type {SceneView} from './SceneView';
 import {fitScoreLine} from './ScoreTextLayout';
 import {textDensity} from './TextRaster';
 import {PAPER_THEME as T,PAPER_CSS as C,UI_FONT} from './theme';
+import {paperGrainSprite,SHEET_GRAIN} from './PaperStock';
 
 /** Public, current-stage facts only. A selected type is a tell, never a score forecast. */
 export function opponentChallenge(run:R2RunState,selected?:R2HandType){
@@ -26,7 +27,7 @@ export function mountOpponentChallenge(scene:Phaser.Scene,view:SceneView,parent:
  const facts=opponentChallenge(run);if(!facts||area.width<180||area.height<62)return false;
  const compact=area.height<190,b={x:area.x+4,y:area.y+3,width:area.width-8,height:area.height-6},group=scene.add.container(0,0).setName('opponent/challenge').setData('facts',facts).setData('bounds',b);parent.add(group);
  const paper=scene.add.graphics().fillStyle(T.paperLight).fillRoundedRect(b.x,b.y,b.width,b.height,5).lineStyle(1,T.jade,.65).strokeRoundedRect(b.x+.5,b.y+.5,b.width-1,b.height-1,5);group.add(paper);
- if(scene.textures.exists('p00-paper'))group.add(scene.add.tileSprite(b.x+3,b.y+3,b.width-6,b.height-6,'p00-paper').setOrigin(0).setAlpha(.13));
+ const grain=paperGrainSprite(scene,{x:b.x+3,y:b.y+3,width:b.width-6,height:b.height-6},SHEET_GRAIN);if(grain)group.add(grain);
  const action={x:b.x+b.width-94,y:b.y+b.height-48,width:88,height:44},copyWidth=compact?b.width-108:b.width-24;
  const text=(name:string,copy:string,y:number,size:number,color:string,width=copyWidth)=>{const t=scene.add.text(0,0,copy,{fontFamily:UI_FONT,fontSize:size+'px',fontStyle:'bold',color,resolution:textDensity(scene)}).setName(name).setData('fullText',copy);group.add(t);fitScoreLine(t,{x:b.x+12,y,width,height:compact?20:28},size,true);return t;};
  text('opponent/name',compact?'回音墙 · 目标 '+heatText(facts.target):'回音墙 · 同行高手',b.y+(compact?3:10),compact?15:22,C.jade);

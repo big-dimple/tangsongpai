@@ -8,9 +8,9 @@ import {pcHeroKey,PC_HERO_COMPOSITION} from './PcHeroArt';
 import type {CharacterId} from './characters';
 import type {SceneView} from './SceneView';
 import {PAPER_THEME as T} from './theme';
+import {castPaperShadow,paintPaperGrain,paintPaperLamp,paperGrainSprite,rasterizePaper,SHEET_GRAIN,TRAY_GRAIN,type PaperPage} from './PaperStock';
 
 export interface StageTableArtPlan {surface:Box;program:Box;rack:Box;hand:Box;stage:Box;portrait?:Box}
-let paperSerial=0;
 const fit=(l:TableLayout,b:Box):Box=>{const x=Math.max(0,b.x),y=Math.max(0,b.y);return{x,y,width:Math.max(0,Math.min(l.width,b.x+b.width)-x),height:Math.max(0,Math.min(l.height,b.y+b.height)-y)};};
 /** Decoration follows final published rectangles. It never allocates seats or moves targets. */
 export function stageTableArtPlan(l:TableLayout):StageTableArtPlan {
@@ -40,13 +40,11 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
  };
  // Paper and trays are unchanged until SceneView rebuilds the layout. Rasterize
  // them once instead of triangulating their rounded paths on every game frame.
- const addPaper=(graphics:Phaser.GameObjects.Graphics)=>{
-  const {width,height}=view.layout,density=Math.min(2,1/scene.scale.zoom,4096/width,4096/height,Math.sqrt(4_000_000/(width*height)));
-  const key='table-paper/'+(++paperSerial);
-  // Canvas keeps the rounded edges antialiased, including WebGL1 devices.
-  graphics.setScale(density).generateTexture(key,Math.ceil(width*density),Math.ceil(height*density));
-  const paper=scene.add.image(0,0,key).setOrigin(0).setScale(1/density).setName(graphics.name).setData('bounds',graphics.getData('bounds'));
-  paper.once('destroy',()=>scene.textures.remove(key));graphics.destroy();view.add(paper);
+ // The same layout reuses its picture across redraws. Fibres, the lamp and soft
+ // contact shadows are painted into it once; nothing here runs per frame.
+ const addPaper=(graphics:Phaser.GameObjects.Graphics,signature:unknown,finish:(c:CanvasRenderingContext2D,page:PaperPage,density:number)=>void)=>{
+  const {width,height}=view.layout;
+  view.add(rasterizePaper(scene,graphics,{slot:'table',width,height,signature,finish})??graphics);
  };
  if(view.layout.pc){
   const l=view.layout,{frame,main,build}=l.pc!,g=scene.add.graphics().setName('table-art/pc-paper').setData('bounds',frame);
@@ -63,13 +61,20 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
   g.lineStyle(1,0xb4a083,.65).strokeRoundedRect(build.x+.5,build.y-3.5,build.width-1,build.height+7,3);
   const stage=l.playedArea;
   playMat(g,stage);
-  g.fillStyle(0x26313a,.06).fillRoundedRect(l.scoreBoard.x,l.scoreBoard.y+2,l.scoreBoard.width,l.scoreBoard.height,3);
   g.fillStyle(0xfff9ee).fillRoundedRect(l.scoreBoard.x,l.scoreBoard.y,l.scoreBoard.width,l.scoreBoard.height,3);
   g.lineStyle(1,0xb4a083,.75).strokeRoundedRect(l.scoreBoard.x+.5,l.scoreBoard.y+.5,l.scoreBoard.width-1,l.scoreBoard.height-1,3);
   g.fillStyle(0xf6eee0).fillRoundedRect(main.x,l.hand.y-8,main.width,l.actions.y+l.actions.height-l.hand.y+16,3);
   g.lineStyle(1,0xc4b397,.65).strokeRoundedRect(main.x+.5,l.hand.y-7.5,main.width-1,l.actions.y+l.actions.height-l.hand.y+15,3);
   g.lineStyle(3,T.red,.8).lineBetween(main.x+12,frame.y-9,main.x+64,frame.y-9);
-  addPaper(g);
+  const sheet={box:{x:frame.x-8,y:frame.y-16,width:frame.width+16,height:frame.height+24},radius:5},felt={box:stage,radius:7},score={box:l.scoreBoard,radius:3};
+  addPaper(g,['pc',l.width,l.height,frame,main,build,l.hud,stage,l.scoreBoard,l.hand,l.actions],(c,page,density)=>{
+   // One lamp over the desk: the lacquer falls away towards the corners, the paper stays true.
+   paintPaperLamp(scene,c,page,'desk',undefined,[sheet]);
+   castPaperShadow(c,page,sheet,1.25,1.7);
+   paintPaperGrain(scene,c,page,density,TRAY_GRAIN,sheet,[felt]);
+   paintPaperLamp(scene,c,page,'paper',sheet,[felt]);
+   castPaperShadow(c,page,score,.75,.7,sheet);
+  });
   drawRiverScroll(scene,view,{x:stage.x+7,y:stage.y+7,width:stage.width-14,height:stage.height-14},.6,.52);
   return;
  }
@@ -81,7 +86,8 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
   const inset=5,corner=Math.min(16,b.height/5);g.lineStyle(1,edge,.24);
   for(const [x,y,dx,dy] of [[b.x+inset,b.y+inset,1,1],[b.x+b.width-inset,b.y+b.height-inset,-1,-1]])g.beginPath().moveTo(x,y+dy*corner).lineTo(x,y).lineTo(x+dx*corner,y).strokePath();
   view.add(g);
-  if(scene.textures.exists('p00-paper'))view.add(scene.add.tileSprite(b.x+4,b.y+4,b.width-8,b.height-8,'p00-paper').setOrigin(0).setAlpha(color===T.jadeSoft ? .08 : .18).setName('table-art/'+name+'-paper'));
+  const grain=paperGrainSprite(scene,{x:b.x+4,y:b.y+4,width:b.width-8,height:b.height-8},color===T.jadeSoft?SHEET_GRAIN*.6:SHEET_GRAIN);
+  if(grain)view.add(grain.setName('table-art/'+name+'-paper'));
  }
  if(view.layout.mode==='portrait'){
   const l=view.layout,accent=scene.add.graphics().setName('table-art/mobile-arena').setData('bounds',plan.surface);
@@ -94,7 +100,12 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
   accent.fillStyle(T.paperLight,.99).fillRect(l.hand.x-4,l.hand.y-8,l.hand.width+8,l.actions.y-l.hand.y+8);
   accent.lineStyle(2,T.ink,.16).lineBetween(l.hand.x,l.hand.y-8,l.hand.x+l.hand.width,l.hand.y-8);
   accent.lineStyle(2,T.red,.48).lineBetween(l.actions.x,l.actions.y+l.actions.height,l.actions.x+l.actions.width,l.actions.y+l.actions.height);
-  addPaper(accent);
+  const felt={box:mat,radius:7},ledger={box:plan.program},score={box:l.scoreBoard,radius:3};
+  addPaper(accent,['portrait',l.width,l.height,plan.surface,plan.program,l.scoreBoard,mat,l.hand,l.actions],(c,page,density)=>{
+   // Only the painted trays take fibres; the felt and the ink header keep their own surface.
+   paintPaperGrain(scene,c,page,density,TRAY_GRAIN,undefined,[felt,ledger]);
+   castPaperShadow(c,page,score,.7,.6,{box:plan.surface,radius:3});
+  });
   drawRiverScroll(scene,view,{x:mat.x+6,y:mat.y+6,width:mat.width-12,height:mat.height-12},.62,.41);
   // The supplied full-frame hero art is part of the table's atmosphere on
   // phones too. It sits behind the landing lane with a soft alpha so sleeves,

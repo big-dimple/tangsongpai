@@ -4,6 +4,7 @@ import type {Box} from './layout';
 import type {SceneView} from './SceneView';
 import type {shopLayout} from './ShopLayout';
 import {PAPER_THEME as T} from './theme';
+import {castPaperShadow,paintPaperGrain,paperGrainSprite,rasterizePaper,SHEET_GRAIN,TRAY_GRAIN} from './PaperStock';
 
 /** Crop the riverfront along the shop sign. Product art and quotes have their own paper. */
 export function drawShopBackdrop(scene:Phaser.Scene,view:SceneView,p:ReturnType<typeof shopLayout>):void {
@@ -21,7 +22,8 @@ export function shopSheet(scene:Phaser.Scene,view:SceneView,name:string,b:Box,co
   if(raised)g.fillStyle(T.ink,.045).fillRoundedRect(b.x,b.y+2,b.width,b.height,3);
   g.fillStyle(color).fillRoundedRect(b.x,b.y,b.width,b.height,3);view.add(g);
   if(outlined)view.add(scene.add.graphics().lineStyle(1,T.divider,.75).strokeRoundedRect(b.x+.5,b.y+.5,b.width-1,b.height-1,3).setName('shop-art/offer-edge').setData('bounds',{...b}));
-  if(scene.textures.exists('p00-paper')&&b.width>8&&b.height>8)view.add(scene.add.tileSprite(b.x+4,b.y+4,b.width-8,b.height-8,'p00-paper').setOrigin(0).setAlpha(.09).setName('shop-art/'+name+'-paper'));
+  const grain=b.width>8&&b.height>8?paperGrainSprite(scene,{x:b.x+4,y:b.y+4,width:b.width-8,height:b.height-8},SHEET_GRAIN):undefined;
+  if(grain)view.add(grain.setName('shop-art/'+name+'-paper'));
 }
 
 export function drawShopArt(scene:Phaser.Scene,view:SceneView,p:ReturnType<typeof shopLayout>):void {
@@ -29,13 +31,16 @@ export function drawShopArt(scene:Phaser.Scene,view:SceneView,p:ReturnType<typeo
   if(pc){
     const g=scene.add.graphics().setName('shop-art/pc-frame');
     const panel=(b:Box,fill:number)=>{
-      g.fillStyle(T.ink,.055).fillRoundedRect(b.x,b.y+3,b.width,b.height,3)
-       .fillStyle(fill).fillRoundedRect(b.x,b.y,b.width,b.height,3)
+      g.fillStyle(fill).fillRoundedRect(b.x,b.y,b.width,b.height,3)
        .lineStyle(1,0xb7a484,.7).strokeRoundedRect(b.x+.5,b.y+.5,b.width-1,b.height-1,3);
     };
     panel(pc.left,0xe6dccb);panel(pc.ownedRail,0xf7f0e2);panel(pc.shopPanel,0xe5d9c1);
     g.lineStyle(1,0xb7a484,.7).lineBetween(pc.shopPanel.x+12,p.play.y-12,pc.shopPanel.x+pc.shopPanel.width-12,p.play.y-12);
-    view.add(g);
+    const {width,height}=view.layout,panels=[pc.left,pc.ownedRail,pc.shopPanel].map(box=>({box,radius:3}));
+    // The three trays are static: one cached picture carries their fibres and soft shadows.
+    view.add(rasterizePaper(scene,g,{slot:'shop-frame',width,height,sheet:true,signature:['shop-pc',pc.left,pc.ownedRail,pc.shopPanel,p.play.y],finish:(c,page,density)=>{
+      for(const tray of panels){castPaperShadow(c,page,tray,.8,.8);paintPaperGrain(scene,c,page,density,TRAY_GRAIN,tray);}
+    }})??g);
   }else if(p.short){
     shopSheet(scene,view,'stock',{x:p.tabs.x-4,y:p.tabs.y-4,width:p.tabs.width+8,height:Math.max(...p.shelf.map(b=>b.y+b.height))+6-p.tabs.y},T.paperLight);
     shopSheet(scene,view,'entry',{x:p.play.x-4,y:p.play.y-4,width:p.play.width+8,height:p.play.height+8},T.jadeSoft);
