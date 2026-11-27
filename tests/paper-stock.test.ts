@@ -1,5 +1,5 @@
 import {describe,expect,it,vi} from 'vitest';
-import {LAMP_LIMIT,PAPER_BAKE_PIXELS,PAPER_FIBER_KEY,PAPER_SHADOW,asPaperSheet,bakedPaper,cardShadow,lampShade,paperBakeDensity,paperFibreMeanShift,paperFibrePlan,
+import {INK_SEEP_LIMIT,LAMP_LIMIT,PAPER_BAKE_PIXELS,PAPER_FIBER_KEY,PAPER_SHADOW,asPaperSheet,bakedPaper,cardShadow,inkSeepPlan,lampShade,paperBakeDensity,paperFibreMeanShift,paperFibrePlan,
   paperGrainScale,paperGrainSprite,paperRandom,rasterizePaper} from '../src/game/PaperStock';
 import {PAPER_THEME} from '../src/game/theme';
 
@@ -98,6 +98,17 @@ describe('paper stock',()=>{
     expect(c.generateTexture).toHaveBeenCalledOnce();expect(finish).toHaveBeenCalledTimes(2);
     // A raster standing in for a plain Graphics stays invisible to the art/print guards.
     expect((rasterizePaper(f.scene,graphics(),{slot:'frame',width:10,height:10,signature:1,sheet:true}) as any).type).toBe('PaperSheet');
+  });
+  it('seeps finale ink in from the rim only: ragged, bounded and deterministic',()=>{
+    const page={width:1920,height:1080},blots=inkSeepPlan(page);
+    expect(inkSeepPlan(page)).toEqual(blots);expect(blots.length).toBeGreaterThan(40);
+    for(const b of blots){
+      expect(b.x===0||b.y===0||b.x===page.width||b.y===page.height).toBe(true);
+      expect(b.alpha).toBeLessThanOrEqual(INK_SEEP_LIMIT);expect(b.alpha).toBeGreaterThan(0);
+      // The ink front stops well short of the middle of the page.
+      expect(b.radius).toBeLessThan(Math.min(page.width,page.height)*.3);
+    }
+    expect(new Set(blots.map(b=>Math.round(b.radius))).size).toBeGreaterThan(10);
   });
   it('keeps static sheets out of the print and art guards',()=>{
     const f=fakeScene(1/3),sprite=paperGrainSprite(f.scene,{x:4,y:4,width:90,height:40},.3) as any;

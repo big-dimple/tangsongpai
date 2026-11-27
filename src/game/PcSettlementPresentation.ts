@@ -149,26 +149,3 @@ export function mountPcSettlementMotion(scene:Phaser.Scene,score:Phaser.GameObje
  scene.events.on('update',update);scene.events.once('shutdown',dispose);update();return {dispose};
 }
 
-let releasePcCut:(()=>void)|undefined;
-/** Non-blocking paper bridge across scene.start. It owns no game state or input. */
-export function beginPcSettlementCut(scene:Phaser.Scene,reduced:boolean):()=>void {
- releasePcCut?.();
- if(reduced||typeof document==='undefined'||typeof window==='undefined'||!pcResultViewport(scene.scale.width,scene.scale.height))return ()=>{};
- const preference=window.matchMedia('(prefers-reduced-motion: reduce)');
- if(preference.matches||document.hidden)return ()=>{};
- const veil=document.createElement('div');veil.setAttribute('aria-hidden','true');veil.dataset.pcSettlementCut='';
- Object.assign(veil.style,{position:'fixed',inset:'0',pointerEvents:'none',background:C.paper,opacity:'0',zIndex:'1000'});
- document.body.append(veil);
- let disposed=false,animation:Animation|undefined,timer:ReturnType<typeof setTimeout>|undefined;
- const dispose=()=>{if(disposed)return;disposed=true;if(timer!==undefined)clearTimeout(timer);animation?.cancel();veil.remove();window.removeEventListener('blur',dispose);window.removeEventListener('pagehide',dispose);window.removeEventListener('resize',dispose);window.removeEventListener('pointerdown',dispose,true);window.removeEventListener('keydown',dispose,true);window.removeEventListener('tangsongpai-presentation',dispose);document.removeEventListener('visibilitychange',visibility);preference.removeEventListener('change',changed);scene.events.off('destroy',dispose);if(releasePcCut===dispose)releasePcCut=undefined;};
- const visibility=()=>{if(document.hidden)dispose();},changed=()=>{if(preference.matches)dispose();};
- releasePcCut=dispose;window.addEventListener('blur',dispose);window.addEventListener('pagehide',dispose);window.addEventListener('resize',dispose);window.addEventListener('pointerdown',dispose,true);window.addEventListener('keydown',dispose,true);window.addEventListener('tangsongpai-presentation',dispose);document.addEventListener('visibilitychange',visibility);preference.addEventListener('change',changed);scene.events.once('destroy',dispose);
- // Scene shutdown deliberately does not cancel the bridge: it spans that boundary.
- // A hard bound also covers failed navigation or an interrupted browser animation.
- timer=setTimeout(dispose,800);
- if(typeof veil.animate==='function'){
-  animation=veil.animate([{opacity:0},{opacity:.72,offset:.24},{opacity:0}],{duration:650,easing:'ease-out'});
-  animation.onfinish=dispose;animation.oncancel=()=>{if(!disposed)dispose();};
- }else dispose();
- return dispose;
-}

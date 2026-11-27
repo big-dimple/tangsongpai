@@ -1,6 +1,7 @@
 import {GAME_NAME} from './Brand';
 import {warmOpeningImages} from './StageImageWarmup';
 import {paperSceneStart} from './PaperFlow';
+import {beginPaperTransition} from './PaperTransition';
 import Phaser from 'phaser';
 import {AudioEngine} from '../audio/AudioEngine';
 import {gameSession} from './session';
@@ -91,7 +92,7 @@ export class TitleScene extends Phaser.Scene {
     });
   }
   private ordinaryNew():void {
-    this.confirmTitle(()=>{this.audio.curtainOpen();this.audio.openingMotif();paperSceneStart(this,'character-select',{seed:this.seed},true);});
+    this.confirmTitle(()=>{this.audio.curtainOpen();this.audio.openingMotif();beginPaperTransition(this,'unroll');paperSceneStart(this,'character-select',{seed:this.seed},true);});
   }
   private skipTutorial():void {
     if(this.leaving||this.launchingTutorial||gameSession().working)return;

@@ -2,7 +2,7 @@ import {stageScoreBands} from './StageScoreMeter';
 import {usesErxiangGroup} from '../domain/r2ErxiangHandoff';
 import {usesLaohuanFind,laohuanFindGroups} from '../domain/r2LaohuanFind';
 import {pcHeroKey,PC_HERO_COMPOSITION} from './PcHeroArt';
-import {beginPcSettlementCut} from './PcSettlementPresentation';
+import {beginPaperTransition} from './PaperTransition';
 import {previewR2Hand,type ScorePreview} from '../domain/scoreR2';
 import {HandDraftPanel,handForecastCopy} from './HandDraftPanel';
 import {usesBossSuitRescue,bossSuitRescueQualified,bossSuitRescueActive,bossSuitDisabledCards} from '../domain/r2BossSuitRescue';
@@ -999,7 +999,7 @@ export class GameScene extends Phaser.Scene {
     this.controlsLive=false;this.stopScoreFire();
     this.heroPortraitMotion?.destroy();this.heroPortraitMotion=undefined;this.heroPortrait=undefined;this.giftDelivery?.destroy();this.giftDelivery=undefined;
     const keyboardFocus=this.pcKeyboardActions?.focusedId();this.pcKeyboardActions?.destroy();this.pcKeyboardActions=undefined;
-    const v=this.view,l=v.layout;this.hoveredCardId=undefined;this.hoveredJokerId=undefined;this.jokerHoverPreview=undefined;v.clear();this.settlementChrome.clear();this.handNavigationButtons=[];v.paperBackground(!!l.pc);if(l.mode==='portrait')warmPcHeroImage(this,this.characterId);drawStageTableArt(this,v,this.characterId,undefined,false);
+    const v=this.view,l=v.layout;this.hoveredCardId=undefined;this.hoveredJokerId=undefined;this.jokerHoverPreview=undefined;v.clear();this.settlementChrome.clear();this.handNavigationButtons=[];v.paperBackground(!!l.pc);if(l.mode==='portrait')warmPcHeroImage(this,this.characterId);drawStageTableArt(this,v,this.characterId,undefined,false,this.stage?.index%3===2);
     if(l.pc){
       v.text(l.pc.build.x+16,l.pc.build.y,'唐宋牌 · '+this.run.jokers.length+'/'+r2JokerCapacity(this.run),18,C.jade).setName('pc/section-build');
     }
@@ -3282,7 +3282,7 @@ export class GameScene extends Phaser.Scene {
 
     this.tweens.add({targets:{t:0},t:1,duration:1000,onComplete:() => {
       if(lifecycle!==this.lifecycle||!this.scene.isActive())return;
-      if(this.view.layout.pc)beginPcSettlementCut(this,gameSession().reducedMotion);
+      beginPaperTransition(this,'roll');
       paperSceneStart(this,'intermission', {
         cleared,
         stageIndex: completedIndex,

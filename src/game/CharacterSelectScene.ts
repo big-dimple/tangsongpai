@@ -6,6 +6,7 @@ import {warmOpeningImages,warmHeroImage} from './StageImageWarmup';
 import {showHeroExplanation} from './HeroExplanation';
 import {showHeroPortrait} from './HeroPortraitDialog';
 import {paperSceneStart} from './PaperFlow';
+import {beginPaperTransition} from './PaperTransition';
 import {inkSettlingEase} from './inkwaveSpring';
 import {characterForNewRun} from './CharacterRunCopy';
 import {HERO_OPENING,OPENING_ROUTES} from './HeroOpeningCopy';
@@ -329,7 +330,7 @@ export class CharacterSelectScene extends Phaser.Scene {
       this.audio.titleConfirm();
       showOpeningRuleBriefing(this.dialog,controller.state,()=>{
         if(lifecycle!==this.lifecycle||!this.scene.isActive())return;
-        this.audio.curtainOpen();paperSceneStart(this,'shop',undefined,true);
+        this.audio.curtainOpen();beginPaperTransition(this,'page');paperSceneStart(this,'shop',undefined,true);
       });
       return true;
     }finally {if(lifecycle===this.lifecycle&&this.scene.isActive()){this.confirming=false;this.choosing=false;this.render();}}

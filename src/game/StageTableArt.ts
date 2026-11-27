@@ -8,7 +8,7 @@ import {pcHeroKey,PC_HERO_COMPOSITION} from './PcHeroArt';
 import type {CharacterId} from './characters';
 import type {SceneView} from './SceneView';
 import {PAPER_THEME as T} from './theme';
-import {castPaperShadow,paintPaperGrain,paintPaperLamp,paperGrainSprite,rasterizePaper,SHEET_GRAIN,TRAY_GRAIN,type PaperPage} from './PaperStock';
+import {castPaperShadow,paintInkSeep,paintPaperGrain,paintPaperLamp,paperGrainSprite,rasterizePaper,SHEET_GRAIN,TRAY_GRAIN,type PaperPage} from './PaperStock';
 
 export interface StageTableArtPlan {surface:Box;program:Box;rack:Box;hand:Box;stage:Box;portrait?:Box}
 const fit=(l:TableLayout,b:Box):Box=>{const x=Math.max(0,b.x),y=Math.max(0,b.y);return{x,y,width:Math.max(0,Math.min(l.width,b.x+b.width)-x),height:Math.max(0,Math.min(l.height,b.y+b.height)-y)};};
@@ -28,7 +28,7 @@ export function stageTableArtPlan(l:TableLayout):StageTableArtPlan {
  return plan;
 }
 /** Existing paper/character art; an optional hero entry owns only its portrait bounds. */
-export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:CharacterId,inspectHero?:()=>void,legacyPortrait=true):void {
+export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:CharacterId,inspectHero?:()=>void,legacyPortrait=true,finale=false):void {
  const plan=stageTableArtPlan(view.layout);
  const playMat=(g:Phaser.GameObjects.Graphics,b:Box)=>{
   g.fillStyle(0x224940).fillRoundedRect(b.x,b.y,b.width,b.height,7);
@@ -67,9 +67,11 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
   g.lineStyle(1,0xc4b397,.65).strokeRoundedRect(main.x+.5,l.hand.y-7.5,main.width-1,l.actions.y+l.actions.height-l.hand.y+15,3);
   g.lineStyle(3,T.red,.8).lineBetween(main.x+12,frame.y-9,main.x+64,frame.y-9);
   const sheet={box:{x:frame.x-8,y:frame.y-16,width:frame.width+16,height:frame.height+24},radius:5},felt={box:stage,radius:7},score={box:l.scoreBoard,radius:3};
-  addPaper(g,['pc',l.width,l.height,frame,main,build,l.hud,stage,l.scoreBoard,l.hand,l.actions],(c,page,density)=>{
+  addPaper(g,['pc',finale,l.width,l.height,frame,main,build,l.hud,stage,l.scoreBoard,l.hand,l.actions],(c,page,density)=>{
    // One lamp over the desk: the lacquer falls away towards the corners, the paper stays true.
    paintPaperLamp(scene,c,page,'desk',undefined,[sheet]);
+   // A finale table is the same desk with ink seeped in from its edges: static and quiet.
+   if(finale)paintInkSeep(c,page,[sheet]);
    castPaperShadow(c,page,sheet,1.25,1.7);
    paintPaperGrain(scene,c,page,density,TRAY_GRAIN,sheet,[felt]);
    paintPaperLamp(scene,c,page,'paper',sheet,[felt]);

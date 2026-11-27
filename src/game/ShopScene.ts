@@ -30,6 +30,7 @@ import {inventoryFeedback} from './InventoryFeedback';
 import {showSavedToolResult} from './SavedToolResult';
 import {transactionGrowthChange} from './SavedGrowthChange';
 import {paperSceneStart} from './PaperFlow';
+import {beginPaperTransition} from './PaperTransition';
 import {bindNoviceGuide} from './NoviceGuideBinding';
 import {mountNoviceGestureDemo,type NoviceGestureDemoHandle} from './NoviceGestureDemo';
 import {noviceGuide,type NoviceGuideHint} from './NoviceGuide';
@@ -1569,9 +1570,9 @@ export class ShopScene extends Phaser.Scene {
         if(previous.shop!.rerollCount!==this.run.shop!.rerollCount){this.selectedOfferId=undefined;this.audio.reroll();this.pendingRerollFlip=this.shelfKind!=='items';}
       }
       else if(action.type==='DestroyLongTermItem'&&!result.duplicate){this.audio.select();this.notice=`已销毁 ${itemInfo(action.definitionId).name} · 本局道具 ${this.run.longTermItems.length}/${R2_LIMITS.longTermSlots}`;}
-      if(action.type==='LeaveShop'){this.audio.select();const entry={...(carriedTool?{carriedTool}:{}),...(bossRulesSeen(this.run)?{preparedBossOwner:runController(this)}:{})};paperSceneStart(this,'game',Object.keys(entry).length?entry:undefined);}
+      if(action.type==='LeaveShop'){this.audio.select();const entry={...(carriedTool?{carriedTool}:{}),...(bossRulesSeen(this.run)?{preparedBossOwner:runController(this)}:{})};beginPaperTransition(this,this.run.stageIndex%3===2?'ink':'unroll');paperSceneStart(this,'game',Object.keys(entry).length?entry:undefined);}
       else if(action.type==='SkipStage'){
-        const s=this.run.stage!;paperSceneStart(this,'intermission',{cleared:true,stageIndex:s.index,stageHeat:s.heat,handsLeft:s.handsLeft,goldEarned:s.goldEarned} satisfies IntermissionResult);
+        const s=this.run.stage!;beginPaperTransition(this,'page');paperSceneStart(this,'intermission',{cleared:true,stageIndex:s.index,stageHeat:s.heat,handsLeft:s.handsLeft,goldEarned:s.goldEarned} satisfies IntermissionResult);
       }
       if(action.type==='UseConsumable'&&!result.duplicate&&owner&&this.dialog.active(owner)){showSavedToolResult(this.dialog,previous,this.run,action,this.resultReduced);if(owner.classList.contains('make-cards-tool'))this.continueMakeCards();}
       return true;

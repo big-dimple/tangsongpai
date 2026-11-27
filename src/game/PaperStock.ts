@@ -176,6 +176,30 @@ export function paintPaperLamp(scene:Phaser.Scene,c:Context,page:PaperPage,kind:
   c.restore();
 }
 
+/** Blots of ink along the page edges, strongest at the rim and gone well before the sheet. */
+export interface InkBlot {x:number;y:number;radius:number;alpha:number}
+export const INK_SEEP_LIMIT=.34;
+export function inkSeepPlan(page:PaperPage,seed=0x1a4b):InkBlot[] {
+  const random=paperRandom(seed),blots:InkBlot[]=[],reach=Math.max(60,Math.min(page.width,page.height)*.2);
+  const perimeter=2*(page.width+page.height),count=Math.round(perimeter/90);
+  for(let i=0;i<count;i++){
+    // Walk the rim with uneven steps so the ink front is ragged, never a ruled band.
+    const at=(i+random()*.9)/count*perimeter,radius=reach*(.55+random()*.75),alpha=INK_SEEP_LIMIT*(.45+random()*.55);
+    const [x,y]=at<page.width?[at,0]:at<page.width+page.height?[page.width,at-page.width]:at<2*page.width+page.height?[at-page.width-page.height,page.height]:[0,at-2*page.width-page.height];
+    blots.push({x,y,radius,alpha});
+  }
+  return blots;
+}
+export function paintInkSeep(c:Context,page:PaperPage,holes:readonly PaperRegion[]=[]):void {
+  c.save();clipRegion(c,page,undefined,holes);c.globalCompositeOperation='source-atop';
+  for(const blot of inkSeepPlan(page)){
+    const g=c.createRadialGradient(blot.x,blot.y,0,blot.x,blot.y,blot.radius);
+    g.addColorStop(0,rgba([8,14,16],blot.alpha));g.addColorStop(.55,rgba([8,14,16],blot.alpha*.5));g.addColorStop(1,rgba([8,14,16],0));
+    c.fillStyle=g;c.fillRect(blot.x-blot.radius,blot.y-blot.radius,blot.radius*2,blot.radius*2);
+  }
+  c.restore();
+}
+
 export function paperBakeDensity(width:number,height:number,zoom:number):number {
   return Math.max(.25,Math.min(2,1/zoom,4096/width,4096/height,Math.sqrt(PAPER_BAKE_PIXELS/(width*height))));
 }

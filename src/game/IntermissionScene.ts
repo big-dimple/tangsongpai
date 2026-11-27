@@ -13,6 +13,7 @@ import {loadResultSourceArt} from './ResultStageArt';
 import {jokerArtPreviewUrl} from './jokerArt';
 import {paperSceneStart,qiyuSceneStart} from './PaperFlow';
 import {sealReach,staticSealStamp,SEAL_BEAT} from './SealStamp';
+import {beginPaperTransition} from './PaperTransition';
 import {bindNoviceGuide} from './NoviceGuideBinding';
 import {noviceGuide} from './NoviceGuide';
 import {needsGuidedPractice} from './GuidedTutorial';
@@ -335,7 +336,7 @@ export class IntermissionScene extends Phaser.Scene {
     // Phaser queues the switch; retire this view before async finally can repaint a new run.
     this.lifecycle++;this.stopSourceArt();this.rewardEffects.clear();this.dialog.close();this.audio.select();
     if(destination==='shop'&&data&&'pokerEncounterEntryId' in data)qiyuSceneStart(this,destination,data,'奇遇 · 纸上流彩');
-    else paperSceneStart(this,destination,data);
+    else {beginPaperTransition(this,'page');paperSceneStart(this,destination,data);}
   }
   private confirmEndless():void {
     const controller=runController(this);if(!this.ready||!controller)return;
