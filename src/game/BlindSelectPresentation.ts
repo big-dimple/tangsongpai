@@ -10,6 +10,7 @@ import {characterArt} from './CharacterArt';
 import {DetailDialog} from './DetailDialog';
 import {dispatchRun, runController} from './runAdapter';
 import {paperSceneStart} from './PaperFlow';
+import {beginPaperTransition} from './PaperTransition';
 import {gameSession} from './session';
 import type {IntermissionResult} from './IntermissionScene';
 import './BlindSelectPresentation.css';
@@ -104,6 +105,7 @@ export function presentStageSelection(dialog: DetailDialog, run: R2RunState, sce
         if (runController(scene) !== owner || !scene.scene.isActive() || !result.state.stage?.skipResult) return;
         const stage = result.state.stage;
         dialog.close(d);
+        beginPaperTransition(scene, 'page');
         paperSceneStart(scene, 'intermission', {
           cleared: true, stageIndex: stage.index, stageHeat: stage.heat,
           handsLeft: stage.handsLeft, goldEarned: stage.goldEarned,

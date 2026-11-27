@@ -44,7 +44,7 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
  // contact shadows are painted into it once; nothing here runs per frame.
  const addPaper=(graphics:Phaser.GameObjects.Graphics,signature:unknown,finish:(c:CanvasRenderingContext2D,page:PaperPage,density:number)=>void)=>{
   const {width,height}=view.layout;
-  view.add(rasterizePaper(scene,graphics,{slot:'table',width,height,signature,finish})??graphics);
+  view.add(rasterizePaper(scene,graphics,{slot:'table',width,height,signature,finish,sheet:true})??graphics);
  };
  if(view.layout.pc){
   const l=view.layout,{frame,main,build}=l.pc!,g=scene.add.graphics().setName('table-art/pc-paper').setData('bounds',frame);

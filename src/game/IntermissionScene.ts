@@ -174,9 +174,10 @@ export class IntermissionScene extends Phaser.Scene {
     }
     if(this.result.cleared&&!skipped&&!capped){
       // The same seal that signed the table, already dry: an echo beside the title, not a second stamp.
-      const box=titleText.getBounds(),size=Math.max(p.pc?44:38,Math.min(p.pc?72:46,box.height*1.2)),reach=sealReach(size),room=p.x+p.w-box.right-10;
+      const box=titleText.getBounds(),size=Math.max(p.pc?40:38,Math.min(p.pc?50:46,box.height*(p.pc?.95:1.2))),reach=sealReach(size),room=p.x+p.w-box.right-10;
       if(room>=reach*2){
-        const seal=staticSealStamp(this,identity.isBoss?'finale':'clear',{x:box.right+10+reach,y:box.centerY,size,angle:SEAL_BEAT.angle},{x:box.x,y:box.y,width:box.width,height:box.height});
+        const y=p.pc?Math.min(box.centerY,p.score.y-reach-4):box.centerY;
+        const seal=staticSealStamp(this,identity.isBoss?'finale':'clear',{x:box.right+10+reach,y,size,angle:SEAL_BEAT.angle},{x:box.x,y:box.y,width:box.width,height:box.height});
         if(seal){v.add(seal.bleed);v.add(seal.face);if(animateIn)this.tweens.add({targets:seal.bleed,alpha:{from:0,to:.55},duration:SEAL_BEAT.bleed});}
       }
     }

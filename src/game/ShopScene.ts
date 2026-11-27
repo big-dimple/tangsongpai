@@ -279,7 +279,7 @@ export class ShopScene extends Phaser.Scene {
         try{
           const result=await dispatchRun(this,{type:'LeaveShop'},owner.state.commandSeq);
           if(this.lifecycle!==lifecycle||!this.scene.isActive()||runController(this)!==owner)return;
-          if(result.ok&&result.state.phase==='stage-ready'){paperSceneStart(this,'game');return;}
+          if(result.ok&&result.state.phase==='stage-ready'){beginPaperTransition(this,'unroll');paperSceneStart(this,'game');return;}
           this.notice='进度尚未保存，请在菜单重试保存。';
         }catch{this.notice='暂时无法继续，请在菜单重试。';}
         pending=false;if(this.lifecycle===lifecycle&&this.scene.isActive())render();
