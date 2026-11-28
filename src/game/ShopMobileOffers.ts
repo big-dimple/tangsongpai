@@ -45,7 +45,7 @@ export function mountShopMobileOffers(host:HTMLElement,rows:readonly MobileShopO
   copy.append(price);
   if(row.reason&&!row.consumed){const reason=document.createElement('span');reason.className='shop-mobile-offer-reason';reason.textContent=row.reason;copy.append(reason);}
   main.append(copy);article.append(main);cleanups.push(mountForgetTechniqueAttentionElement(main,row.definitionId));
-  if(cardArtSource(row.definitionId)){const view=document.createElement('button');view.type='button';view.className='shop-mobile-offer-zoom';view.textContent='看原图';view.title='看原图';view.setAttribute('aria-label','放大鉴赏'+row.name);view.setAttribute('aria-haspopup','dialog');view.onclick=()=>{if(disposed||!active())return;view.focus({preventScroll:true});zoom=openCardArtZoom(row.definitionId,row.name);};article.append(view);}
+  if(cardArtSource(row.definitionId)){const view=document.createElement('button');view.type='button';view.className='shop-mobile-offer-zoom';view.textContent='看原图';view.title='看原图';view.setAttribute('aria-label','放大鉴赏'+row.name);view.setAttribute('aria-haspopup','dialog');view.setAttribute('data-controller-skip','');view.onclick=()=>{if(disposed||!active())return;view.focus({preventScroll:true});zoom=openCardArtZoom(row.definitionId,row.name);};article.append(view);}
   host.append(article);
  }
  for(const [image,value]of demand)if(observer)observer.observe(image);else void upgrade(image,value.row,value.main);

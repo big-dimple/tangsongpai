@@ -72,15 +72,19 @@ export function installGamepadNavigation(game:Phaser.Game):()=>void {
     modal=[...document.querySelectorAll<HTMLDialogElement>('dialog[open]')].at(-1);
     scene=[...game.scene.getScenes(true)].reverse().find(candidate=>controllerScene(candidate));
     const provider=scene?controllerScene(scene):undefined;
-    const nextContext=modal??scene??game;
-    if(context!==nextContext){clearFocus();context=nextContext;focusId=remembered.get(context);}
+    const nextContext=modal??scene??game,contextChanged=context!==nextContext;
+    if(contextChanged){clearFocus();context=nextContext;focusId=remembered.get(context);}
     const parent=modal??document.body;
     if(ring.parentElement!==parent)parent.append(ring);
     if(glyphLayer.parentElement!==parent)parent.append(glyphLayer);
     if(cardPill.parentElement!==parent)parent.append(cardPill);
     const root=modal??document.body;
+    const shopCardModal=!!modal&&['purchase','sale','held'].includes(modal.dataset.shopContext??'');
     const controls=[...root.querySelectorAll<HTMLElement>(selector)].filter(element=>visibleControllerControl(element)&&
-      (modal||!element.closest('dialog,.run-menu,.hand-input-surface,.shop-owned-input'))&&!element.hasAttribute('data-pc-keyboard-action')&&element!==game.canvas);
+      (modal||!element.closest('dialog,.run-menu,.hand-input-surface,.shop-owned-input'))&&
+      !element.hasAttribute('data-pc-keyboard-action')&&!element.hasAttribute('data-controller-skip')&&
+      !(shopCardModal&&(element.matches('.dialog-art-original,.dialog-card-zoom-trigger')||!!element.closest('.card-rules')))&&
+      element!==game.canvas);
     const native=controls.map((element):Target=>{
       let identity=nativeIdentities.get(element);if(!identity){identity=`dom/${++nativeOrdinal}/${element.getAttribute('aria-label')??element.textContent?.trim().slice(0,80)??element.tagName}`;nativeIdentities.set(element,identity);}
       const r=element.getBoundingClientRect(),id=element.dataset.ui??identity;
@@ -95,8 +99,26 @@ export function installGamepadNavigation(game:Phaser.Game):()=>void {
     targets=[...canvas,...native];
     // A saved hand's animation temporarily disables its targets. Keep the hand focus until it settles.
     if((modal||!provider?.busy?.())&&!targets.some(target=>target.id===focusId)){
-      const nativeFocus=native.find(target=>target.element===document.activeElement);
-      focusId=(nativeFocus??targets.find(target=>target.id.startsWith('card/'))??targets.find(target=>target.id.startsWith('character/'))??targets.find(target=>target.primary)??targets[0])?.id;
+      if(modal){
+        const initial=targets.find(target=>target.primary)
+          ||(modal.dataset.shopContext==='held'?targets.find(target=>target.element?.textContent?.trim()==='出售'):undefined)
+          ||targets.find(target=>!target.element?.classList.contains('dialog-close'))
+          ||targets[0];
+        focusId=initial?.id;
+        if(active&&initial){
+          clearFocus();
+          if(initial.element){focusedElement=initial.element;focusedElement.setAttribute('data-controller-focus','');}
+          initial.focus?.();
+        }
+      }else{
+        const nativeFocus=native.find(target=>target.element===document.activeElement);
+        focusId=(nativeFocus??targets.find(target=>target.id.startsWith('card/'))??targets.find(target=>target.id.startsWith('character/'))??targets.find(target=>target.id.startsWith('offer/')||target.id.startsWith('shop/offer/'))??targets.find(target=>target.primary)??targets[0])?.id;
+        if(contextChanged&&active&&focusId){
+          const initial=targets.find(target=>target.id===focusId);
+          if(initial?.element){focusedElement=initial.element;focusedElement.setAttribute('data-controller-focus','');initial.focus?.();}
+          else if(initial){game.canvas.focus({preventScroll:true});initial.focus?.();}
+        }
+      }
     }
     if(context&&focusId)remembered.set(context,focusId);
   };
@@ -119,8 +141,13 @@ export function installGamepadNavigation(game:Phaser.Game):()=>void {
     };
     const firstVisible=(root:ParentNode,sel:string)=>[...root.querySelectorAll<HTMLElement>(sel)].find(visibleDomBox);
     if(modal){
-      pushDom(firstVisible(modal,'.dialog-primary'),'confirm',labels.confirm,'tr');
-      pushDom(firstVisible(modal,'.dialog-close'),'back',labels.back,'tr');
+      const closeEl=firstVisible(modal,'.dialog-close');
+      const focusedEl=active?targets.find(candidate=>candidate.id===focusId)?.element:undefined;
+      const confirmEl=focusedEl&&focusedEl!==closeEl&&!focusedEl.classList.contains('dialog-close')
+        ?focusedEl
+        :firstVisible(modal,'.dialog-primary');
+      pushDom(confirmEl,'confirm',labels.confirm,'tr');
+      pushDom(closeEl,'back',labels.back,'tr');
       return list;
     }
     pushDom(firstVisible(document,'.run-menu-toggle'),'menu',labels.menuShort,'tl');
@@ -137,6 +164,17 @@ export function installGamepadNavigation(game:Phaser.Game):()=>void {
       pushAnchor(anchors.find(a=>a.id==='action/shelf-items'),'shoulder',labels.rb,'tr');
       pushAnchor(anchors.find(a=>a.id==='action/reroll'),'discard',labels.discard,'tl');
       pushAnchor(anchors.find(a=>a.id==='action/start-stage'),'play',labels.play,'tr');
+      if(focusId?.startsWith('offer/')){
+        const buyAnchor=anchors.find(a=>a.id==='action/buy-offer/'+focusId!.slice(6));
+        if(buyAnchor)pushAnchor(buyAnchor,'confirm',labels.confirm,'tr');
+        else{
+          const focusedOffer=targets.find(candidate=>candidate.id===focusId&&!candidate.element);
+          if(focusedOffer)list.push({role:'confirm',text:labels.confirm,...place(focusedOffer.box,'tr'),dim:false});
+        }
+      }else if(focusId?.startsWith('shop/offer/')){
+        const focusedEl=targets.find(candidate=>candidate.id===focusId)?.element;
+        pushDom(focusedEl,'confirm',labels.confirm,'tr');
+      }
     }else if(key==='character-select'){
       pushAnchor(anchors.find(a=>a.id==='action/cancel-character'),'back',labels.back,'tl');
       pushAnchor(anchors.find(a=>a.id==='action/confirm-character'),'play',labels.play,'tr');
@@ -249,6 +287,10 @@ export function installGamepadNavigation(game:Phaser.Game):()=>void {
     if(modal){
       if(action==='back'){back();return;}
       if(action==='confirm')focus(target),target?.activate();
+      else if(action==='detail'){
+        const rules=modal.querySelector<HTMLDetailsElement>('.card-rules');
+        if(rules){rules.open=!rules.open;if(rules.open)rules.scrollIntoView({block:'nearest',behavior:'instant'});}
+      }
       else if(action==='previous'||action==='next'){
         const index=targets.findIndex(candidate=>candidate.id===focusId);
         if(targets.length){focus(targets[(index+(action==='previous'?-1:1)+targets.length)%targets.length]);playFocusTick(previousFocus);}

@@ -103,7 +103,7 @@ export class SceneView {
     const result:ControllerTarget[]=[];
     for(const [object,actions]of this.gestures){
       const target=object as Phaser.GameObjects.Rectangle;
-      if(!target.active||!target.visible||!target.input?.enabled)continue;
+      if(!target.active||!target.visible||!target.input?.enabled||target.getData('controllerSkip'))continue;
       let hidden=false;for(let parent=target.parentContainer;parent;parent=parent.parentContainer)if(!parent.visible||!parent.active){hidden=true;break;}
       if(hidden)continue;
       const bounds=target.getBounds();

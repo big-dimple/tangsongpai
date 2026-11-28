@@ -24,7 +24,7 @@ export function mountWorkshopGoals(host:HTMLElement,run:R2RunState,view:MakeCard
   };
   const zoom=(row:typeof choices[number])=>{
     if(!cardArtSource(row.id))return;
-    const b=document.createElement('button');b.type='button';b.className='workshop-art-zoom';b.textContent='看原图';b.title='看原图';b.setAttribute('aria-label','放大鉴赏'+row.info.name);b.setAttribute('aria-haspopup','dialog');b.onclick=()=>{b.focus({preventScroll:true});opened=openCardArtZoom(row.id,row.info.name);};return b;
+    const b=document.createElement('button');b.type='button';b.className='workshop-art-zoom';b.textContent='看原图';b.title='看原图';b.setAttribute('aria-label','放大鉴赏'+row.info.name);b.setAttribute('aria-haspopup','dialog');b.setAttribute('data-controller-skip','');b.onclick=()=>{b.focus({preventScroll:true});opened=openCardArtZoom(row.id,row.info.name);};return b;
   };
   const render=()=>{
     opened?.close();workspace.replaceChildren();

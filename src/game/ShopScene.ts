@@ -529,7 +529,7 @@ export class ShopScene extends Phaser.Scene {
       this.markBuildOffer(o,'jokers',b);
       const tile=stockExtra||stackedGuidance?{...copy.tile,height:Math.max(copy.tile.height,priceY+priceText.height+4-copy.tile.y)}:copy.tile,hover=this.hoverCard(first,tile,o.definitionId,o.offerId),r=v.rect(tile).setFillStyle(0,0).setStrokeStyle().setData('selected',selected);
       mountPolychromeCardIridescence(this,hover.art,{...artBox,x:artBox.x-hover.art.x,y:artBox.y-hover.art.y},o.edition);
-      this.offerArts.push(hover.art);v.target(r,`offer/${o.offerId}`,{tap:()=>this.selectOffer(o.offerId),detail:()=>this.inspectOffer(o.offerId),...hover});
+      this.offerArts.push(hover.art);v.target(r,`offer/${o.offerId}`,{tap:()=>this.selectOffer(o.offerId),detail:()=>this.inspectOffer(o.offerId),...hover});if(o.consumed)r.setData('controllerSkip',true);
 
     });
     if(!offers.length&&!this.workshopSelected&&!p.portrait)v.text(p.shelf[0].x,p.shelf[0].y,this.shelfKind==='items'?'本店暂无可购道具；换牌会保留此货架。':'本货架暂无商品，可换一批或进入牌桌。',14,AC.mist,p.w);
@@ -741,8 +741,9 @@ export class ShopScene extends Phaser.Scene {
     const artBox={...g.art,x:g.art.x-hover.art.x,y:g.art.y-hover.art.y};
     if(d)mountPolychromeCardIridescence(this,hover.art,artBox,o.edition);
     else if(kind==='tools')mountForgetTechniqueAttention(this,hover.art,artBox,o.definitionId);
-    this.pcOfferBoxes.set(o.offerId,tile);this.offerArts.push(hover.art);v.target(hit,'offer/'+o.offerId,{tap:()=>this.selectOffer(o.offerId),detail:()=>this.inspectOffer(o.offerId),...hover});
+    this.pcOfferBoxes.set(o.offerId,tile);this.offerArts.push(hover.art);v.target(hit,'offer/'+o.offerId,{tap:()=>this.selectOffer(o.offerId),detail:()=>this.inspectOffer(o.offerId),...hover});if(o.consumed)hit.setData('controllerSkip',true);
     const purchase=this.shopButton(flow.price,o.consumed?'已收入':reason?`查看 · ${price} 金`:`购买 · ${price} 金`,'action/buy-offer/'+o.offerId,()=>this.inspectOffer(o.offerId),!o.consumed&&!this.busy);
+    purchase.setData('controllerSkip',true);
     (purchase.getData('label') as Phaser.GameObjects.Text).setFontSize(tile.width>=400?19:16).setColor(o.consumed?AC.disabledInk:reason?AC.mist:AC.goldBright).setName('shop/offer-price').setData('offerId',o.offerId);
     purchase.setData('availability',o.consumed?'owned':reason?'unavailable':'available');
     const purchaseArt=purchase.getData('buttonArt') as Phaser.GameObjects.Container;
@@ -1106,7 +1107,7 @@ export class ShopScene extends Phaser.Scene {
     v.text(copyX,copy.priceY,o.consumed?'已收入':r2PurchasePrice(this.run,o)+' 金',16,priceInk).setFontStyle('bold').setName('shop/offer-price').setData('offerId',o.offerId);
     const tile=copy.tile,hover=this.hoverCard(first,tile),r=v.rect(tile).setFillStyle(0,0).setStrokeStyle().setData('selected',selected);this.offerArts.push(hover.art);
     if(isTool)mountForgetTechniqueAttention(this,hover.art,{x:b.x+5-hover.art.x,y:b.y+5-hover.art.y,width:b.width-10,height:artHeight},o.definitionId);
-    v.target(r,'offer/'+o.offerId,{tap:()=>this.inspectOffer(o.offerId),detail:()=>this.inspectOffer(o.offerId),...hover});
+    v.target(r,'offer/'+o.offerId,{tap:()=>this.inspectOffer(o.offerId),detail:()=>this.inspectOffer(o.offerId),...hover});if(o.consumed)r.setData('controllerSkip',true);
   }
 
   private hoverCard(first:number,b:Box,definitionId?:string,offerId?:string):{enter:()=>void;leave:()=>void;art:Phaser.GameObjects.Container} {

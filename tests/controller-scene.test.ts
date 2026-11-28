@@ -12,7 +12,7 @@ function setup(){
   const events=new EventEmitter(),scene={events,input:Object.assign(new EventEmitter(),{enabled:true}),game:{canvas:new EventTarget()},scale:new EventEmitter(),add:{container:()=>({setName(){return this;}})}} as unknown as Phaser.Scene;
   const view=new SceneView(scene,()=>{}),tap=vi.fn();
   const object=Object.assign(new EventEmitter(),{active:true,visible:true,name:'',input:{enabled:true},parentContainer:undefined as {active:boolean;visible:boolean}|undefined,
-    setName(name:string){this.name=name;return this;},setInteractive(){return this;},getData:()=>false,getBounds:()=>({x:20,y:40,width:120,height:44})});
+    setName(name:string){this.name=name;return this;},setInteractive(){return this;},getData:(_key:string)=>false as boolean,getBounds:()=>({x:20,y:40,width:120,height:44})});
   view.target(object as unknown as Phaser.GameObjects.Rectangle,'action/play',{tap});
   return {scene,events,view,object,tap};
 }
@@ -32,6 +32,12 @@ it('activates explicit or primary enabled scene targets via helpers',()=>{
   expect(view.activateControllerTarget('action/play')).toBe(true);expect(tap).toHaveBeenCalledOnce();
   object.input.enabled=false;expect(view.activateControllerTarget('action/play')).toBe(false);expect(tap).toHaveBeenCalledOnce();
   expect(view.activatePrimaryControllerTarget()).toBe(false);
+});
+it('omits controllerSkip targets from controller focus while preserving their anchor box',()=>{
+  const {scene,object}=setup(),provider=controllerScene(scene)!;
+  object.getData=(key:string)=>key==='controllerSkip';
+  expect(provider.targets()).toEqual([]);
+  expect(provider.anchors?.()).toEqual([{id:'action/play',box:{x:20,y:40,width:120,height:44},enabled:true,primary:false}]);
 });
 it('routes scene semantics and unregisters them on shutdown',()=>{
   const {scene,view,events}=setup();view.controllerAction=action=>action==='back';
