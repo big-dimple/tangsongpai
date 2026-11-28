@@ -12,41 +12,29 @@ try {
   for(const test of [
     {name:'loaded',width:1366,height:768},
     {name:'loaded-phone',width:390,height:844},
-    {name:'blocked',width:320,height:568},
-    {name:'slow',width:390,height:844},
+    {name:'small-phone',width:320,height:568},
   ]){
     const touch=test.width<700;
     const page=await browser.newPage({viewport:{width:test.width,height:test.height},hasTouch:touch,reducedMotion:'reduce'});
-    let release;
-    const gate=new Promise(resolve=>{release=resolve;});
     try {
-      const errors=[];
+      const errors=[],songRequests=[];
       page.on('pageerror',error=>errors.push(error.message));
-      if(test.name==='blocked'||test.name==='slow')await page.route('**/assets/fonts/ui/song.woff2',async route=>{
-        if(test.name==='blocked')await route.abort('failed');
-        else {await gate;await route.continue().catch(()=>{});}
-      });
+      page.on('request',req=>{if(req.url().includes('assets/fonts/ui/song.woff2'))songRequests.push(req.url());});
       const start=Date.now();
       await page.goto(url,{waitUntil:'domcontentloaded'});
       await waitScene(page,'title');
-      assert.ok(Date.now()-start<10000,'optional font cannot block the title');
-      if(test.name.startsWith('loaded')){
-        const face=await page.evaluate(()=>[...document.fonts].find(font=>font.family==='Tangsongpai Song UI')?.status);
-        assert.equal(face,'loaded','canvas text receives the local font before its first layout');
-      }
+      assert.ok(Date.now()-start<10000,'font setup cannot block the title');
+      assert.deepEqual(songRequests,[],'removed 1.5MB UI Songti font must never be requested');
       await openSelector(page,touch);
       await tapUI(page,'character-select','character/erxiang',touch);
-      if(test.name==='slow'){
-        release();
-        await page.evaluate(()=>document.fonts.ready);
-      }
       const view=await page.evaluate(()=>{
         const scene=window.__harness.game.scene.getScene('character-select');
         const text=scene.view.root.list.find(item=>item.name==='opening/name');
         const bounds=text.getBounds();
         return {font:text.style.fontFamily,bounds:{x:bounds.x,width:bounds.width}};
       });
-      assert.match(view.font,/Tangsongpai Song UI/);
+      assert.match(view.font,/PingFang SC|Microsoft YaHei|sans-serif/);
+      assert.doesNotMatch(view.font,/Tangsongpai Song UI/);
       assert.ok(view.bounds.x>=0&&view.bounds.x+view.bounds.width<=test.width+1,'hero name fits the visible area');
       if(test.name.startsWith('loaded')){
         for(const id of ['amo','touye','laohuan','erxiang','azao','xiemu']){
@@ -96,7 +84,6 @@ try {
       assert.deepEqual(errors,[]);
       console.log('PASS typography',test.name,test.width+'x'+test.height);
     } finally {
-      release();
       await page.close();
     }
   }

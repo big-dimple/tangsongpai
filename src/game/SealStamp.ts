@@ -1,6 +1,5 @@
 import type Phaser from 'phaser';
 import type {Box} from './layout';
-import {UI_FONT} from './theme';
 import {asPaperSheet,paperRandom} from './PaperStock';
 
 /**
@@ -17,6 +16,7 @@ export type SealKind='clear'|'finale';
 /** Reading order of a seal: right column first, top to bottom. */
 export const SEAL_TEXT:Record<SealKind,readonly string[]>={clear:['过','关'],finale:['压','轴','过','关']};
 const FRAME=256,FACE=208,INK='#b63f30',PAPER='#fbf1dc';
+const SEAL_FONT='"Tangsongpai Song","Songti SC","Noto Serif CJK SC","STKaiti","KaiTi",SimSun,serif';
 const key=(kind:SealKind)=>'seal-stamp/'+kind;
 const clamp=(v:number,lo=0,hi=1)=>Math.max(lo,Math.min(hi,v));
 
@@ -71,10 +71,10 @@ function paintFace(c:Context,kind:SealKind,ox:number,seed:number):void {
   c.fillStyle=PAPER;c.textAlign='center';c.textBaseline='middle';
   const text=SEAL_TEXT[kind],inner=FACE*.8,cx=x+FACE/2,cy=y+FACE/2;
   if(kind==='clear'){
-    c.font=`500 ${Math.round(inner*.47)}px ${UI_FONT}`;
+    c.font=`500 ${Math.round(inner*.47)}px ${SEAL_FONT}`;
     text.forEach((glyph,i)=>c.fillText(glyph,cx,cy+(i-.5)*inner*.48+inner*.015));
   }else{
-    c.font=`500 ${Math.round(inner*.4)}px ${UI_FONT}`;c.fillRect(cx-FACE*.008,y+FACE*.11,FACE*.016,FACE*.78);c.fillRect(x+FACE*.11,cy-FACE*.008,FACE*.78,FACE*.016);
+    c.font=`500 ${Math.round(inner*.4)}px ${SEAL_FONT}`;c.fillRect(cx-FACE*.008,y+FACE*.11,FACE*.016,FACE*.78);c.fillRect(x+FACE*.11,cy-FACE*.008,FACE*.78,FACE*.016);
     // Right column first: 压 轴 | 过 关.
     text.forEach((glyph,i)=>c.fillText(glyph,cx+(i<2?1:-1)*inner*.245,cy+(i%2?1:-1)*inner*.245+inner*.012));
   }

@@ -926,8 +926,8 @@
     "No new visual or rights approval. Decoded RGBA sizes are estimates, not measured GPU memory."
   ],
   "totals": {
-    "files": 462,
-    "bytes": 58895824,
+    "files": 460,
+    "bytes": 57378085,
     "decodedRgbaBytes": 344308504,
     "groups": {
       "audio": {
@@ -946,8 +946,8 @@
         "decodedRgbaBytes": 262144
       },
       "fonts": {
-        "count": 9,
-        "bytes": 1555824,
+        "count": 7,
+        "bytes": 38085,
         "decodedRgbaBytes": 0
       },
       "handdrawn-climax": {
@@ -1279,16 +1279,16 @@
     },
     {
       "path": "public/assets/fonts/cover/OFL-Brush.txt",
-      "bytes": 4396,
-      "sha256": "54107539e415cc21d97752b7b1738c3d152451863f65e2c4e51556d3ceab1ab9",
+      "bytes": 4489,
+      "sha256": "488c3e0073a76eac8c639d2a47433b07225614adf3d448b725e972f185046cfb",
       "textNormalization": "LF",
       "canonicalBytes": 4396,
       "canonicalSha256": "54107539e415cc21d97752b7b1738c3d152451863f65e2c4e51556d3ceab1ab9"
     },
     {
       "path": "public/assets/fonts/cover/OFL-Song.txt",
-      "bytes": 4463,
-      "sha256": "9ff5bb567e1b92c801fc1069e5fbf992ff8efccacb9db94e5959a5b3ba9bb903",
+      "bytes": 4559,
+      "sha256": "c606a29cd5c76629d6b02a0ad8fa636beeb4320a1f0ceba616c476ee83775aa3",
       "textNormalization": "LF",
       "canonicalBytes": 4463,
       "canonicalSha256": "9ff5bb567e1b92c801fc1069e5fbf992ff8efccacb9db94e5959a5b3ba9bb903"
@@ -1323,19 +1323,6 @@
       "path": "public/assets/fonts/score/tangsongpai-score-numbers.woff",
       "bytes": 6220,
       "sha256": "00d2d147bbf43952107ea1386f9970c653a5887637ed932ca2f36cac2429a53a"
-    },
-    {
-      "path": "public/assets/fonts/ui/OFL.txt",
-      "bytes": 4559,
-      "sha256": "c606a29cd5c76629d6b02a0ad8fa636beeb4320a1f0ceba616c476ee83775aa3",
-      "textNormalization": "LF",
-      "canonicalBytes": 4463,
-      "canonicalSha256": "9ff5bb567e1b92c801fc1069e5fbf992ff8efccacb9db94e5959a5b3ba9bb903"
-    },
-    {
-      "path": "public/assets/fonts/ui/song.woff2",
-      "bytes": 1513276,
-      "sha256": "13a16e825789263806b583ea62a437da52ba36c456dae05914e509051f0f10f1"
     },
     {
       "path": "public/assets/handdrawn-climax/a03-e2071d0ffa97.webp",
@@ -1839,8 +1826,8 @@
     },
     {
       "path": "public/assets/handdrawn-climax/manifest.json",
-      "bytes": 49029,
-      "sha256": "a8ebca522365257ea77bc2118646fc98c8b04bee18de76578fcc682ac7331eee",
+      "bytes": 50624,
+      "sha256": "0069a43022c2cf5b3a63a44c8874bed433df1deccf9b0420e545b12ebc02c5b8",
       "textNormalization": "LF",
       "canonicalBytes": 49029,
       "canonicalSha256": "a8ebca522365257ea77bc2118646fc98c8b04bee18de76578fcc682ac7331eee"
@@ -3442,8 +3429,8 @@
     },
     {
       "path": "public/assets/handdrawn-p08/manifest.json",
-      "bytes": 96677,
-      "sha256": "8335afb614af0dc76b7e9cdc066130ac546d453a1d72ac46961e01de83435c35",
+      "bytes": 99321,
+      "sha256": "93be320fc6a1112dcebf31b3075941665a06e1fd479f98caed63a6321aa46ce0",
       "textNormalization": "LF",
       "canonicalBytes": 96677,
       "canonicalSha256": "8335afb614af0dc76b7e9cdc066130ac546d453a1d72ac46961e01de83435c35"

@@ -2,6 +2,7 @@ import {qiyuHeroProfile, type QiyuHeroProfile} from '../domain/qiyuEvent';
 import type {CharacterId} from '../domain/characters';
 import {characterArt} from './CharacterArt';
 import {GAME_NAME} from './Brand';
+import {UI_FONT} from './theme';
 import {iridescenceColor} from './PolychromeCardIridescence';
 import {inkBurstFrame} from './InkBurst';
 import {AudioEngine} from '../audio/AudioEngine';
@@ -20,7 +21,7 @@ import {Haptics} from '../haptics/Haptics';
  * fitted and centered, so text stays crisp and circles never stretch on phones.
  */
 
-const SERIF = '"Tangsongpai Song UI","Songti SC","Noto Serif CJK SC",SimSun,serif';
+const SERIF = UI_FONT;
 
 const INK = '#26313a';
 const VERMILION = '#b8473a';

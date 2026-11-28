@@ -12,7 +12,7 @@ import bgm from '../public/assets/audio/bgm/manifest.json';
 import gamefeel from '../public/assets/audio/gamefeel-rfc/sources.json';
 import cleanup from '../docs/production/evidence/runtime-asset-cleanup-2026-10-17/cleanup.json';
 
-const uiFonts=['assets/fonts/cover/title.woff2','assets/fonts/cover/text.woff2','assets/fonts/ui/song.woff2'];
+const uiFonts=['assets/fonts/cover/title.woff2','assets/fonts/cover/text.woff2'];
 
 function runtimeFiles():Set<string> {
   const files=new Set<string>();

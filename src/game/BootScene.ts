@@ -42,12 +42,7 @@ export class BootScene extends Phaser.Scene {
     const images=loading.host.dataset.loadMotion==='reduce'
       ?Promise.resolve().then(()=>{portraits={loaded:0,total:0,failed:0,status:'ready'};refresh();})
       :prepareTitleEnsembleImages(p=>{portraits=p;refresh();});
-    // Phaser measures text when it creates the scene. Give the local typeface a
-    // short head start so its first layout uses the same metrics as the dialogs.
-    const font=document.fonts
-      ?Promise.race([document.fonts.load('16px "Tangsongpai Song UI"','唐宋牌筹备').catch(()=>[]),new Promise(resolve=>setTimeout(resolve,2000))])
-      :Promise.resolve();
-    this.opening=Promise.all([audio,images,font]).then(()=>undefined);
+    this.opening=Promise.all([audio,images]).then(()=>undefined);
     refresh();
     // File-local settings are required: Phaser's image defaults override loader.timeout with 0.
     const svgXHR:Phaser.Types.Loader.XHRSettingsObject={responseType:'text',timeout:5000};

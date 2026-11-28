@@ -22,7 +22,7 @@ export const PAPER_CSS = Object.fromEntries(
 ) as { readonly [K in keyof typeof PAPER_THEME]: string };
 
 export const SCORE_FONT = '"Tangsongpai Score", "Arial Narrow", "Roboto Condensed", sans-serif';
-export const UI_FONT = '"Tangsongpai Song UI", "Songti SC", "Noto Serif CJK SC", SimSun, serif';
+export const UI_FONT = '"PingFang SC", "Hiragino Sans GB", "HarmonyOS Sans SC", "MiSans", "Noto Sans SC", "Microsoft YaHei", sans-serif';
 
 /** Small procedural borders, not generated character pictures; no gradients or baked text. */
 const inkSvg=(body:string)=>'data:image/svg+xml;base64,'+btoa(`<svg xmlns="http://www.w3.org/2000/svg" width="240" height="336" viewBox="0 0 240 336">${body}</svg>`);
