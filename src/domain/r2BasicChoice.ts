@@ -2,7 +2,7 @@ import {r2RunModeConfig} from '../content/r2Modes';
 import type {R2RunState} from './r2Run';
 import {isR2BasicChoice,isR2CoreBuild,r2BasicChoiceIds,r2BasicChoiceBasePrice} from './r2GroupUpgrade';
 import {R2_HAND_TYPES} from './evaluateR2';
-import {r2PracticeBasePrice} from './r2Practice';
+import {r2PracticeBasePriceFor} from './r2Practice';
 import {stableHash} from './hash';
 import {usesPokerEncounter,pokerPurchaseReceipt} from './r2PokerEncounter';
 const practiceReceipts=new Map<string,boolean>();
@@ -30,10 +30,10 @@ export function validR2BasicChoice(state:R2RunState):boolean {
  if(poker){const p=choice.purchase;return !!p&&Object.keys(p).sort().join(',')==='commandId,definitionId,paidPrice,seq'&&p.definitionId==='poker-polychrome'&&p.paidPrice===18&&p.commandId===poker.commandId&&p.seq===poker.seq&&shop.purchases>=1&&purchased.length===0&&encounter?.status==='purchased';}
  const p=choice.purchase;if(p===null)return purchased.length===0;
  if(p.handType!==undefined){
-  if(!isR2CoreBuild(state)||p.definitionId!=='T01'||Object.keys(p).sort().join(',')!=='commandId,definitionId,handType,levelBefore,paidPrice,seq'||!R2_HAND_TYPES.includes(p.handType)||!Number.isSafeInteger(p.levelBefore)||p.levelBefore<1||p.levelBefore>=30||!Number.isSafeInteger(p.paidPrice)||p.paidPrice<1||p.paidPrice>r2PracticeBasePrice(p.levelBefore)||shop.purchases<1||purchased.length!==1)return false;
+  if(!isR2CoreBuild(state)||p.definitionId!=='T01'||Object.keys(p).sort().join(',')!=='commandId,definitionId,handType,levelBefore,paidPrice,seq'||!R2_HAND_TYPES.includes(p.handType)||!Number.isSafeInteger(p.levelBefore)||p.levelBefore<1||p.levelBefore>=30||!Number.isSafeInteger(p.paidPrice)||p.paidPrice<1||p.paidPrice>r2PracticeBasePriceFor(p.levelBefore,state)||shop.purchases<1||purchased.length!==1)return false;
   const r=purchased[0];return r.seq===p.seq&&r.commandId===p.commandId&&r.fingerprint===stableHash({runId:state.runId,commandId:p.commandId,expectedSeq:p.seq-1,action:{type:'PracticeHand',handType:p.handType,expectedLevel:p.levelBefore,shopSeq:choice.shopSeq}});
  }
- if(!p||Object.keys(p).sort().join(',')!=='commandId,definitionId,paidPrice,seq'||!r2BasicChoiceIds(state).includes(p.definitionId)||!(Number.isInteger(p.paidPrice)&&p.paidPrice>=1&&p.paidPrice<=r2BasicChoiceBasePrice(p.definitionId))||shop.purchases<1||purchased.length!==1)return false;
+ if(!p||Object.keys(p).sort().join(',')!=='commandId,definitionId,paidPrice,seq'||!r2BasicChoiceIds(state).includes(p.definitionId)||!(Number.isInteger(p.paidPrice)&&p.paidPrice>=1&&p.paidPrice<=r2BasicChoiceBasePrice(p.definitionId,state))||shop.purchases<1||purchased.length!==1)return false;
  const receipt=purchased[0];if(receipt.seq!==p.seq||receipt.commandId!==p.commandId||receipt.fingerprint!==stableHash({runId:state.runId,commandId:p.commandId,expectedSeq:p.seq-1,action:{type:'BuyBasicTool',definitionId:p.definitionId,shopSeq:choice.shopSeq}}))return false;
  const item=state.consumables.find(c=>c.instanceId===`${state.runId}/tool/${p.commandId}`);
  return !item||item.definitionId===p.definitionId;

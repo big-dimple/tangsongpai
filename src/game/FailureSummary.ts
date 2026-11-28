@@ -3,7 +3,7 @@ import {HAND_LABELS} from '../content/handLabels';
 import {heatText} from './scoreText';
 import {stageOutcome} from './stageOutcome';
 import {isR2BasicChoice,isR2CoreBuild,isR2SuitChoice,r2BasicChoiceBasePrice,R2_CORE_BUILD_CONTRACT,R2_BASIC_TOOL_IDS,R2_SUIT_DYE_IDS} from '../domain/r2GroupUpgrade';
-import {r2PracticeBasePrice} from '../domain/r2Practice';
+import {r2PracticeBasePriceFor} from '../domain/r2Practice';
 import {savedBossImpact} from './SavedBossImpact';
 
 /** Explain only committed terminal facts, never infer a strategy or replay a score. */
@@ -27,8 +27,8 @@ const routeSteps={
 /** Eligibility and base prices describe the next shop's rules, never an offer against terminal cash. */
 export function failureShopOptions(run:R2RunState):string {
   const parts:string[]=[];
-  if(isR2CoreBuild(run))parts.push(`筹备店升级只选已发现且未${R2_CORE_BUILD_CONTRACT.practice.maximumLevel}级的牌型；Lv.1原价${r2PracticeBasePrice(1)}金，之后按等级报价，确认后当场升一级。`);
-  if(isR2BasicChoice(run))parts.push(`基础改牌原价${r2BasicChoiceBasePrice(R2_BASIC_TOOL_IDS[0])}金`+(isR2SuitChoice(run)?`、染色原价${r2BasicChoiceBasePrice(R2_SUIT_DYE_IDS[0])}金`:'')+(isR2CoreBuild(run)?'；升级与改牌/染色共用每店一次。':'；基础自选每店一次。'));
+  if(isR2CoreBuild(run))parts.push(`筹备店升级只选已发现且未${R2_CORE_BUILD_CONTRACT.practice.maximumLevel}级的牌型；Lv.1原价${r2PracticeBasePriceFor(1,run)}金，之后按等级报价，确认后当场升一级。`);
+  if(isR2BasicChoice(run))parts.push(`基础改牌原价${r2BasicChoiceBasePrice(R2_BASIC_TOOL_IDS[0],run)}金`+(isR2SuitChoice(run)?`、染色原价${r2BasicChoiceBasePrice(R2_SUIT_DYE_IDS[0],run)}金`:'')+(isR2CoreBuild(run)?'；升级与改牌/染色共用每店一次。':'；基础自选每店一次。'));
   return parts.join('\n')+(parts.length?'\n实付、现货同名入口、可用目标与库存容量以当店确认页为准；买不起或没有合适目标时可以留钱。':'下一局到筹备店查看实际现货、价格和可用目标；没有合适选择时可以留钱。');
 }
 

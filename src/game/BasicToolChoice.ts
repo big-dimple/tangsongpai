@@ -9,14 +9,14 @@ import {toolInfo} from './r2ToolInfo';
 /** A UI seat only; never inserted into authoritative offers or used as a BuyOffer target. */
 export function basicChoiceSeat(s:R2RunState):R2Offer|undefined {
  if(!isR2BasicChoice(s)||!s.shop?.basicChoice)return;
- return {offerId:`basic-choice/${s.shop.basicChoice.shopSeq}`,definitionId:'T02',price:2,consumed:!!s.shop.basicChoice.purchase};
+ return {offerId:`basic-choice/${s.shop.basicChoice.shopSeq}`,definitionId:'T02',price:r2BasicChoiceBasePrice('T02',s),consumed:!!s.shop.basicChoice.purchase};
 }
 export const isBasicChoiceSeat=(o:R2Offer)=>/^basic-choice\/[1-9]\d*$/.test(o.offerId);
 export function basicChoiceRows(s:R2RunState){
  const seat=basicChoiceSeat(s);if(!seat)return [];
  const eligible=r2BasicChoicePool(s),legal=r2ToolAcquisitionPool(s);
  return r2BasicChoiceIds(s).map(id=>{
-  const price=r2PurchasePrice(s,{...seat,definitionId:id,price:r2BasicChoiceBasePrice(id)});
+  const price=r2PurchasePrice(s,{...seat,definitionId:id,price:r2BasicChoiceBasePrice(id,s)});
   const info=toolInfo(id,s),duplicate=isR2VoiceChoice(s)&&id==='T13'?undefined:s.shop!.toolOffers.find(o=>o.definitionId===id);
   const tool=getR2Tool(id),target=tool.target,count=target.kind==='cards'?(target.minimum===target.maximum?String(target.maximum):`${target.minimum}–${target.maximum}`):'';
   const purpose=tool.operation.kind==='set-suit'?`选${count}张改花色，点数保留`:tool.operation.kind==='delete-cards'?`永久删除${count}张牌`:tool.operation.kind==='shift-rank'?`选${count}张牌，点数${tool.operation.delta>0?'+':'−'}${Math.abs(tool.operation.delta)}`:`选${count}张牌，${info.summary.replace(/^选中牌每次计分/,'计分时')}`;

@@ -1,5 +1,7 @@
 import {heroText} from './HeroIdentity';
 import {R2_MODE_CATALOG,r2RunModeConfig,type R2ModeSelection,type R2ModeId,type R2Difficulty,type R2ChallengeId} from '../content/r2Modes';
+import {r2InitialGold,r2RerollBounds} from '../domain/r2Shop';
+import {newRunIdentity} from './RunLaunch';
 import {r2DifficultyUnlocked,r2ModeUnlocked} from '../domain/r2Progress';
 import {readRunProgress} from '../platform/RunProgress';
 import {DetailDialog} from './DetailDialog';
@@ -100,14 +102,17 @@ export class ModeSelectDialog {
       progressLine.textContent=current.ok?(cleared.length?`标准八章首通：${cleared.join('、')}。角色与全部72张唐宋牌始终可用。`:
         '普通八章首通后解锁进阶与挑战，随后逐档解锁；六位角色与72张唐宋牌始终可用。'):
         '解锁记录读取失败，普通模式与教程仍可新开；现有模式存档可继续。';
+      const tightIdentity=selected.mode==='standard'?newRunIdentity('erxiang','group'):undefined;
+      const openingGold=tightIdentity?r2InitialGold(config,tightIdentity):config.initialGold;
+      const reroll=tightIdentity?r2RerollBounds(config,tightIdentity):{start:config.reroll.start,cap:config.reroll.cap};
       const rules=selected.mode==='challenge'?heroText(R2_MODE_CATALOG.challenges.find(row=>row.id===selected.challengeId)!.description):
-        selected.mode==='tutorial'?heroText('固定刘娥，从首战重练；可随时跳过，节目单关闭。'):`${DIFFICULTY_NAMES[selected.difficulty]} · ${['标准目标，6金开局，每场可弃牌3次。','目标比普通高20%，开局资源不变。','目标比普通高20%，每场弃牌减少为2次。','目标比普通高20%，每场弃牌2次，4金开局，刷新起价3金。'][selected.difficulty]}`;
-      const resources=[['手牌',config.baseHandSize+' 张'],['每场出牌',config.baseHands+' 次'],['每场弃牌',config.baseDiscards+' 次'],['开局金币',config.initialGold+' 金'],['唐宋牌',config.jokerSlots+' 槽'],['基础利息上限',config.baseInterestCap+' 金']];
+        selected.mode==='tutorial'?heroText('固定刘娥，从首战重练；可随时跳过，节目单关闭。'):`${DIFFICULTY_NAMES[selected.difficulty]} · ${['标准曲线（8章压轴 4.8 万），5金开局，暖场起底3金，换货4金起。','中后期目标大幅拉高（8章压轴 6.8 万），5金开局，暖场基础赏金0金。','高阶曲线（8章压轴 9.2 万），每场弃牌减为2次，4金开局，暖场基础赏金0金。','极限曲线（8章压轴 12.8 万），每场弃牌2次，4金开局，暖场0金，换货5金起。'][selected.difficulty]}`;
+      const resources=[['手牌',config.baseHandSize+' 张'],['每场出牌',config.baseHands+' 次'],['每场弃牌',config.baseDiscards+' 次'],['开局金币',openingGold+' 金'],['唐宋牌',config.jokerSlots+' 槽'],['基础利息上限',config.baseInterestCap+' 金']];
       stats.replaceChildren(...resources.map(([key,value])=>{
         const cell=document.createElement('div'),term=document.createElement('dt'),amount=document.createElement('dd');
         term.textContent=key;amount.textContent=value;cell.append(term,amount);return cell;
       }));
-      const refreshCost=config.reroll.allowed?'换货 '+config.reroll.start+'–'+config.reroll.cap+' 金。':'本模式关闭换货。';
+      const refreshCost=config.reroll.allowed?'换货 '+reroll.start+'–'+reroll.cap+' 金。':'本模式关闭换货。';
       body.textContent=[rules,refreshCost+(config.programsEnabled?'章节节目单开启，可自选。':'章节节目单关闭。'),'继续此模式会读取上次保存的种子与进度。'].join('\n');
       chooseAction.disabled=busy||!r2ModeUnlocked(progress,selected);resumeAction.disabled=busy||gameSession().working||!!gameSession().pendingRun;
       buttons[0].textContent=selected.mode==='tutorial'?'重玩教程':options.chooseLabel??'进入选角';

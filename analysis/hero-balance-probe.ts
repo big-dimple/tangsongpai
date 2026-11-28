@@ -3,6 +3,7 @@ import {createRun,applyCommand,type R2RunState,type Action,type Command} from '.
 import {assertR2Invariants,r2CreateJoker,r2ScoreContext,makeR2Shop} from '../src/domain/r2Run';
 import {newRunIdentity} from '../src/game/RunLaunch';
 import {r2ChapterBossIds,lockR2ChapterTargets} from '../src/domain/r2Chapter';
+import {isR2TightBalance} from '../src/domain/r2GroupUpgrade';
 import {R2_HAND_TYPES} from '../src/domain/evaluateR2';
 import {r2JokerDefinitionsFor} from '../src/domain/r2ContentProfiles';
 import {previewR2Hand,type ScoreInput} from '../src/domain/scoreR2';
@@ -24,7 +25,7 @@ function fixture(hero:Hero,stage:typeof stages[number],seed:string){
  if(stage.index)s.jokers[1].growth={heat:{n:'40',d:'1'}};
  const clears=stage.index/3;s.routeGrowth={clears,G:clears,S:0,F:0,settlements:Array.from({length:clears},(_,i)=>({stageIndex:3*i+2,families:['G']}))};
  const previous:string[]=[];for(let c=1;c<s.chapter;c++)previous.push(r2ChapterBossIds(c)!.find(id=>!previous.includes(id))!);const boss=r2ChapterBossIds(s.chapter)!.find(id=>!previous.includes(id))!;
- s.seenBossIds=[...previous,boss];s.boss={definitionId:boss,disabledSuit:boss==='B03'?'hearts':null};s.chapterTargetPlan=lockR2ChapterTargets(s.chapter,s.tourMode,s.difficulty,s.boss);
+ s.seenBossIds=[...previous,boss];s.boss={definitionId:boss,disabledSuit:boss==='B03'?'hearts':null};s.chapterTargetPlan=lockR2ChapterTargets(s.chapter,s.tourMode,s.difficulty,s.boss,isR2TightBalance(s));
  const entry:Command={runId:s.runId,commandId:s.runId+'/planted-shop',expectedSeq:s.commandSeq,action:{type:'OpenShop'}};makeR2Shop(s,true);s.commandSeq++;s.receipts.push({commandId:entry.commandId,seq:s.commandSeq,fingerprint:stableHash(entry)});assertR2Invariants(s);
  return send(send(s,{type:'LeaveShop'}),{type:'EnterStage'});
 }

@@ -16,7 +16,7 @@ describe('玩家能看懂当前英雄的规则与代价',()=>{
   const c=characterForNewRun('laohuan');expect(c.detailRules).toContain('至少2张刚换来的同点牌参与计分');expect(c.detailRules).toContain('2／3／4张及以上分别×2／×3／×4，每场一次');expect(c.detailRules).toContain('下一次成功出牌后，之前换来的牌不再符合条件');expect(heroSignature('laohuan').beats[2].result).toContain('两张都计分，可选×2');expect(heroPlaySample('laohuan').result).toContain('×2');
  });
  it('花蕊说明每档金额、次数、资格和扣钱后的余额',()=>{
-  const c=characterForNewRun('xiemu');for(const part of ['每场一次','两对及以上','2／4／6／8金','×1.5／2／3／4','先扣钱','扣钱后的余额'])expect(c.detailRules).toContain(part);
+  const c=characterForNewRun('xiemu');for(const part of ['每场一次','两对及以上','4／8／12／16金','×1.5／2／3／4','先扣钱','扣钱后的余额'])expect(c.detailRules).toContain(part);
  });
  it('刘娥说明同点牌逐次转换、可能减分及每场次数',()=>{
   const c=characterForNewRun('erxiang');for(const part of ['每场2次','两张8首次计分时','各把8点热度改加8倍率','牌再次计分时也会转移','可能降低得分'])expect(c.detailRules).toContain(part);expect(heroPlaySample('erxiang').after.label).toContain('两张8都计分');

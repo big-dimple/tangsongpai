@@ -26,7 +26,7 @@ export function frequencyAnalysis(){
     const ordinary=scoreR2Hand(common);
     if(hero==='amo'){const active=scoreR2Hand({...common,amoExile:{use:true,beforeUsed:false}});others.push({hero,ordinary:ordinary.finalScore,active:active.finalScore,cost:'discard actual remainder K, once per stage'});}
     if(hero==='touye')others.push({hero,ordinary:ordinary.finalScore,active:'conditional target/new-core x2 or failure x0.85, no invented hit rate',cost:'normal discard quota; next hand only'});
-    if(hero==='xiemu')for(const cost of [2,4,6,8] as const){if(name==='pair'){others.push({hero,cost,active:'unqualified'});continue;}if(gold<cost){others.push({hero,cost,active:'insufficient-gold'});continue;}const active=scoreR2Hand({...common,gold:gold-cost,xiemuBurn:{cost,goldBefore:gold,beforeUsed:false}});others.push({hero,cost,ordinary:ordinary.finalScore,active:active.finalScore,goldAfter:gold-cost});}
+    if(hero==='xiemu')for(const cost of [4,8,12,16] as const){if(name==='pair'){others.push({hero,cost,active:'unqualified'});continue;}if(gold<cost){others.push({hero,cost,active:'insufficient-gold'});continue;}const active=scoreR2Hand({...common,gold:gold-cost,xiemuBurn:{cost,goldBefore:gold,beforeUsed:false}});others.push({hero,cost,ordinary:ordinary.finalScore,active:active.finalScore,goldAfter:gold-cost});}
     if(hero==='azao'&&name!=='pair')for(const charge of [1,2,3] as const){const active=scoreR2Hand({...common,azaoCharge:{before:{charge,previousQualifiedType:'two-pair'},release:true}});others.push({hero,charge,ordinary:ordinary.finalScore,active:active.finalScore,cost:'actual previously accumulated layers; release consumes them'});}
    }
    const stageIndex=band==='early'?2:band==='middle'?11:23;

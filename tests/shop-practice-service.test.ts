@@ -6,7 +6,7 @@ import {shopPracticeServices,shopPracticeConfirmation,shopPracticeQuota,shopPrac
 
 function fixture():R2RunState {
   const s=createRun({rulesVersion:'r2',runId:'practice-ui',seed:'practice-ui',characterId:'laohuan',r2Identity:newRunIdentity('laohuan','group'),openingRoute:'group'});
-  s.gold=30;s.handLevels={'high-card':1,pair:4,'three-kind':30};return s;
+  s.gold=40;s.handLevels={'high-card':1,pair:4,'three-kind':30};return s;
 }
 describe('shop service adapter consumes authoritative quotes and saved receipts',()=>{
   it('exposes discovered uncapped types and passes each original quote to confirmation and command',()=>{

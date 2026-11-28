@@ -32,7 +32,7 @@ it('offers a 4-gold shared choice independently of same-name stock; purchase, us
  expect(purchasePaymentFacts(s,n,{offerId:'basic-choice/'+s.shop!.basicChoice!.shopSeq,definitionId:'T13',price:4,consumed:false})).toMatchObject({original:4,paid:4});
  expect(applyCommand(n,c)).toMatchObject({ok:true,duplicate:true});expect(applyCommand(n,cmd(n,buy(n)))).toMatchObject({ok:false,code:'basic-choice-consumed'});round(n);
  const ids=n.deckInstances.slice(0,2).map(card=>card.id),used=send(n,{type:'UseConsumable',instanceId:n.consumables[0].instanceId,targetIds:ids});expect(used.deckInstances.filter(card=>ids.includes(card.id)).every(card=>card.enhancement==='voice-paper')).toBe(true);round(used);
- const refreshed=send(used,{type:'RerollShop'});expect(refreshed.shop!.basicChoice!.purchase).toEqual(n.shop!.basicChoice!.purchase);round(refreshed);
+ used.gold=4;const refreshed=send(used,{type:'RerollShop'});expect(refreshed.shop!.basicChoice!.purchase).toEqual(n.shop!.basicChoice!.purchase);round(refreshed);
  const next=send(send(refreshed,{type:'SkipStage'}),{type:'OpenShop'});expect(next.shop!.basicChoice!.purchase).toBeNull();round(next);
 });
 it('rejects unavailable balance, capacity, invalid targets and Q10 without consuming resources',()=>{

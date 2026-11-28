@@ -4,7 +4,7 @@ import {r2BossPlanValid,r2StageSpec,type R2BossPlan} from './r2Chapter';
 import {dynamicEndlessAdvanceAnchor,dynamicEndlessInitialAnchor,dynamicEndlessStageTarget} from './r2DynamicEndless';
 import {captureDynamicScore} from './r2DynamicEndlessCapture';
 import {dynamicReceiptOutcome,dynamicReceiptParts,verifyDynamicClearChain,verifyDynamicHandEvidence,type DynamicHandEvidence,type DynamicStageSample,type DynamicEvidenceReceipt} from './r2DynamicEndlessEvidence';
-import {isR2BoundedClear,isR2CoreBuild,isR2DynamicEndless,isR2BossRelief} from './r2GroupUpgrade';
+import {isR2BoundedClear,isR2CoreBuild,isR2DynamicEndless,isR2BossRelief,isR2TightBalance} from './r2GroupUpgrade';
 import {stableHash} from './hash';
 
 export interface DynamicDeckSnapshot {live:number;disabled:number}
@@ -14,7 +14,7 @@ export interface DynamicEndlessRuntime {
  status:'armed'|'pending'|'active';anchor:string|null;bootstrap:DynamicStageSample|null;previousNormal:DynamicStageSample|null;
  hands:DynamicHandEvidence[];frontier:DynamicStageRecord|null;records:DynamicStageRecord[];
 }
-const base=(s:R2RunState,index:number)=>{const spec=r2StageSpec(index,'endless',s.difficulty,isR2BoundedClear(s),isR2CoreBuild(s));if(!spec)throw Error('numeric-length-limit');return spec.targetHeat;};
+const base=(s:R2RunState,index:number)=>{const spec=r2StageSpec(index,'endless',s.difficulty,isR2BoundedClear(s),isR2CoreBuild(s),isR2TightBalance(s));if(!spec)throw Error('numeric-length-limit');return spec.targetHeat;};
 const allDisabled=(r:Pick<DynamicStageRecord,'boss'|'deck'>)=>r.boss.definitionId==='B03'&&r.deck.live>0&&r.deck.live===r.deck.disabled;
 const lockHash=(r:DynamicStageRecord)=>stableHash({index:r.index,target:r.target,boss:r.boss,deck:r.deck,lock:r.lock,anchorBefore:r.anchorBefore});
 export function dynamicTarget(state:{dynamicEndless?:DynamicEndlessRuntime},index:number):string|undefined {

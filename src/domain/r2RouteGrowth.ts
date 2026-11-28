@@ -20,6 +20,7 @@ export const R2_ROUTE_GROWTH_RULE=Object.freeze({
   stageProof:'bounded-main-card-and-rule-snapshots-bound-to-receipts-after-latest-stage-entry',
 });
 export const R2_BOUNDED_ROUTE_RULE=Object.freeze({...R2_ROUTE_GROWTH_RULE,cap:{n:'4',d:'1'},capScope:'max-once-among-actual-hand-families-tie-G-S-F'});
+export const R2_TIGHT_ROUTE_RULE=Object.freeze({...R2_BOUNDED_ROUTE_RULE,rates:Object.freeze({G:{n:'6',d:'5'},S:{n:'6',d:'5'},F:{n:'6',d:'5'}}),cap:Object.freeze({n:'5',d:'2'})});
 export interface R2RouteProgress {clears:number;G:number;S:number;F:number}
 export interface R2RouteSettlement {stageIndex:number;families:R2RouteFamily[]}
 export interface R2RouteHistory extends R2RouteProgress {settlements:R2RouteSettlement[]}
@@ -55,17 +56,25 @@ const factors=Object.fromEntries(R2_ROUTE_FAMILIES.map(f=>{
   while(values.at(-1)!.compare(cap)<0){const next=values.at(-1)!.multiply(rate);values.push(next.compare(cap)>=0?cap:next);}
   return [f,Object.freeze(values)];
 })) as Record<R2RouteFamily,readonly Rational[]>;
-export function r2RouteFactor(family:R2RouteFamily,clears:number,boundedClear=false):Rational {
+const tightCap=Rational.fromJSON(R2_TIGHT_ROUTE_RULE.cap);
+const tightRate=Rational.fromJSON(R2_TIGHT_ROUTE_RULE.rates.G);
+const tightFactors:readonly Rational[]=(()=>{
+  const values=[new Rational(1n)];
+  while(values.at(-1)!.compare(tightCap)<0){const next=values.at(-1)!.multiply(tightRate);values.push(next.compare(tightCap)>=0?tightCap:next);}
+  return Object.freeze(values);
+})();
+export function r2RouteFactor(family:R2RouteFamily,clears:number,boundedClear=false,tightBalance=false):Rational {
   if(!R2_ROUTE_FAMILIES.includes(family)||!natural(clears))throw Error('invalid-route-growth-count');
-  const values=factors[family],exponent=Math.max(clears-R2_ROUTE_GROWTH_RULE.graceClears,0);
+  const values=tightBalance?tightFactors:factors[family],exponent=Math.max(clears-R2_ROUTE_GROWTH_RULE.graceClears,0);
   const value=values[Math.min(exponent,values.length-1)];
+  if(tightBalance)return value;
   return boundedClear&&value.compare(new Rational(4n))>0?new Rational(4n):value;
 }
-export function r2RouteGrowthTrace(before:R2RouteProgress,type:R2HandType,boundedClear=false):R2RouteGrowthTrace {
+export function r2RouteGrowthTrace(before:R2RouteProgress,type:R2HandType,boundedClear=false,tightBalance=false):R2RouteGrowthTrace {
   if(!validR2RouteProgress(before))throw Error('invalid-route-growth-snapshot');
   let families=r2RouteFamilies(type);
-  if(boundedClear&&families.length)families=[families.reduce((best,f)=>r2RouteFactor(f,before[f],true).compare(r2RouteFactor(best,before[best],true))>0?f:best)];
-  return {before:structuredClone(before),factors:Object.fromEntries(families.map(f=>[f,r2RouteFactor(f,before[f],boundedClear).toJSON()]))};
+  if((boundedClear||tightBalance)&&families.length)families=[families.reduce((best,f)=>r2RouteFactor(f,before[f],true,tightBalance).compare(r2RouteFactor(best,before[best],true,tightBalance))>0?f:best)];
+  return {before:structuredClone(before),factors:Object.fromEntries(families.map(f=>[f,r2RouteFactor(f,before[f],boundedClear,tightBalance).toJSON()]))};
 }
 export function recordR2RouteHand(stage:R2RouteStage,type:R2HandType,source:R2RouteHandSource):void {
   if(evaluateR2Hand(source.cards,source.rules).type!==type)throw Error('invalid-route-main-source');

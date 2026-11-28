@@ -1,4 +1,4 @@
-import {isR2CoreBuild} from '../../src/domain/r2GroupUpgrade';
+import {isR2CoreBuild,isR2TightBalance} from '../../src/domain/r2GroupUpgrade';
 import {lockR2ChapterTargets} from '../../src/domain/r2Chapter';
 import type {R2RunState} from '../../src/domain/run';
 
@@ -7,7 +7,7 @@ import type {R2RunState} from '../../src/domain/run';
  * Production commands and corrupted-import checks never call this helper.
  */
 export function completeControlledRouteHistory(state:R2RunState):void {
-  if(isR2CoreBuild(state))state.chapterTargetPlan=lockR2ChapterTargets(state.chapter,state.tourMode,state.difficulty,state.boss);
+  if(isR2CoreBuild(state))state.chapterTargetPlan=lockR2ChapterTargets(state.chapter,state.tourMode,state.difficulty,state.boss,isR2TightBalance(state));
   const history=state.routeGrowth;if(!history)return;
   if(state.phase!=='stage-ready'||state.stage!==null)throw Error('controlled-history-requires-unentered-stage');
   for(let index=2;index<state.stageIndex;index+=3){

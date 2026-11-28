@@ -21,6 +21,8 @@ export interface HighMultiplierAuraOptions {
   reduced:()=>boolean;
   /** Current presentation speed; the default is normal speed. */
   speed?:()=>1|2|4;
+  /** Flame tier: 1 = single-hand clear (>= targetHeat), 2 = 2x overkill climax. */
+  tier?:1|2;
   /** Optional owner check for view replacement or a changed score presentation. */
   isCurrent?:()=>boolean;
   /** The scoring owner requests a short fade only after the last score event. */
@@ -114,7 +116,8 @@ function shown(root:Phaser.GameObjects.Container):boolean {
 export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplierAuraOptions):()=>void {
   const {root,signal}=options;
   if(signal.aborted||options.reduced()||!shown(root)||(typeof document!=='undefined'&&document.hidden)||options.isCurrent?.()===false)return noop;
-  const ink=scene.add.graphics().setName('score/high-multiplier-aura').setData('eventId',options.eventId).setData('elapsed',0).setData('visibleSegments',0);
+  const tier:1|2=options.tier===2?2:1;
+  const ink=scene.add.graphics().setName('score/high-multiplier-aura').setData('eventId',options.eventId).setData('tier',tier).setData('elapsed',0).setData('visibleSegments',0);
   root.add(ink);
   const anchor=root.list.find(object=>object.name==='score/source'||object.name.startsWith('score/formula-')||['score/heat','score/multiplier','score/total'].includes(object.name));
   const backdrop=anchor&&options.getBackdropGuards?scene.add.graphics().setName('score/high-multiplier-aura-backdrop'):undefined;
@@ -199,7 +202,7 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
     const rootLeft=board.x+4*size,rootRight=board.x+board.width-4*size;
     const rootBottom=board.y+board.height-Math.max(EDGE/minimum,3.5*size);
     const desktop=!!options.getHero;
-    let backdropVisible=false,heroVisible=0;const bodyScale=desktop?1.45:1;
+    let backdropVisible=false,heroVisible=0;const bodyScale=(desktop?1.45:1)*(tier===2?1.25:1);
     if(backdrop?.active){
       let backdropGuards:readonly Box[]|undefined;
       try{backdropGuards=options.getBackdropGuards?.();}catch{backdropGuards=undefined;}
@@ -219,7 +222,7 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
         });
         const layer=[...contour,{x:rootRight,y:rootBottom},{x:rootLeft,y:rootBottom}];
         const inner=layer.map(p=>({x:p.x,y:p.y+(rootBottom-p.y)*.5}));
-        for(const [points,color,alpha] of [[layer,0x7656b0,desktop?.32:.24],[inner,0xa482df,desktop?.26:.18]] as const){
+        for(const [points,color,alpha] of [[layer,tier===2?0x845bd0:0x7656b0,(desktop?.32:.24)*(tier===2?1.22:1)],[inner,tier===2?0xc49eff:0xa482df,(desktop?.26:.18)*(tier===2?1.22:1)]] as const){
           const bounded=clipSheet(points,boardSafe),wp=bounded.map(world),box=bbox(wp);
           for(const area of behind.areas){
             const open=intersect(fit,area);if(!open||!overlaps(box,open))continue;
@@ -294,9 +297,9 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
     for(const flame of FLAMES){
       const age=elapsed-flame.delay;if(age<=0)continue;
       const alpha=smooth(age/180)*fade;if(alpha<=.005)continue;
-      const grow=.12+.88*smooth(age/340),phase=age/470+flame.phase;
+      const grow=.12+.88*smooth(age/340),phase=age/(tier===2?400:470)+flame.phase;
       const x=board.x+board.width*flame.position,foot=base+flame.baseOffset*size;
-      const h=flame.height*size*grow*(.92+.08*Math.sin(phase*.8+flame.phase));
+      const h=flame.height*size*grow*(tier===2?1.22:1)*(.92+.08*Math.sin(phase*.8+flame.phase));
       const w=flame.width*size,pulse=.86+.14*(.5+.5*Math.sin(phase+flame.phase));
       let sheets:Point[][]|undefined,shift=0;
       // Fit a whole tongue in the gaps around live text. The roots already
@@ -321,7 +324,7 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
         if(sheets)break;
       }
       if(!sheets)continue;
-      const colors=[0x422f5e,0x5b4186,0xc6a6f5,0xd8b56a],opacities=[.28,.82,.88,.98];
+      const colors=tier===2?[0x4b2b78,0x7648b8,0xd8b2ff,0xffdf7a]:[0x422f5e,0x5b4186,0xc6a6f5,0xd8b56a],opacities=[.28,.82,.88,.98];
       for(let i=0;i<sheets.length;i++)ink.fillStyle(colors[i],alpha*opacities[i]*pulse).fillPoints(sheets[i].map(p=>({x:p.x+shift,y:p.y})),true);
       placed.push(x+shift);visible++;
     }

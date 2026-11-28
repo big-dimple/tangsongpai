@@ -13,7 +13,7 @@ import type {BuildFocus} from '../../src/game/BuildDirectionPreferences';
 import type {PlayingCard} from '../../src/cards/types';
 import {exactScore} from '../scoring-calibration/model';
 import {r2ChapterBossIds,lockR2ChapterTargets} from '../../src/domain/r2Chapter';
-import {r2TargetedValueBase} from '../../src/domain/r2GroupUpgrade';
+import {isR2TightBalance,r2TargetedValueBase} from '../../src/domain/r2GroupUpgrade';
 
 export const BASE_SHA='4d2ff4ca8487f2f00b55516822d1a28ac3c1751f';
 export function command(s:R2RunState,action:Action){return applyCommand(s,{runId:s.runId,commandId:s.runId+'/contract/'+(s.commandSeq+1),expectedSeq:s.commandSeq,action});}
@@ -34,7 +34,7 @@ export function fixture(route:BuildFocus='group',chapter=1,preTargetedValue=fals
  }
  s.boss={definitionId:s.seenBossIds.at(-1)! as R2RunState['boss']['definitionId'],disabledSuit:s.seenBossIds.at(-1)==='B03'?'spades':null};
  s.shop!.visitIndex=s.stageIndex;
- s.chapterTargetPlan=lockR2ChapterTargets(s.chapter,s.tourMode,s.difficulty,s.boss);
+ s.chapterTargetPlan=lockR2ChapterTargets(s.chapter,s.tourMode,s.difficulty,s.boss,isR2TightBalance(s));
  assertRunInvariants(s);return s;
 }
 export function held(s:R2RunState,ids:string[]){s.jokers=ids.map((id,i)=>r2CreateJoker(id,'held/'+i,r2Price(id,'none',s),'none',s));assertRunInvariants(s);return s;}
@@ -94,7 +94,7 @@ function lifetimeWindows(){
 export function makeReport(){
  const early=fixture(),late=fixture('group',8),f=stock(early,'f06'),fl=stock(late,'f06');
  const fresh=held(fixture(),['f06']),used=structuredClone(fresh);used.jokers[0].counters={handsScored:3};
- const sealed=fixture('group',8);sealed.stageIndex=23;sealed.shop!.visitIndex=23;sealed.boss={definitionId:'B16',disabledSuit:null};sealed.seenBossIds[7]='B16';sealed.chapterTargetPlan=lockR2ChapterTargets(8,sealed.tourMode,sealed.difficulty,sealed.boss);assertRunInvariants(sealed);
+ const sealed=fixture('group',8);sealed.stageIndex=23;sealed.shop!.visitIndex=23;sealed.boss={definitionId:'B16',disabledSuit:null};sealed.seenBossIds[7]='B16';sealed.chapterTargetPlan=lockR2ChapterTargets(8,sealed.tourMode,sealed.difficulty,sealed.boss,isR2TightBalance(sealed));assertRunInvariants(sealed);
  const lifetime={early:rating(early,f,'group'),late:rating(late,fl,'group'),suppressedRating:rating(sealed,stock(sealed,'f06'),'group'),fresh:sequence(fresh,'group',5),usedThree:sequence(used,'group',2),suppressed:sequence(fresh,'group',5,{boss:{definitionId:'B16',disabledSuit:null}})};
  const growth=(['group','straight','flush'] as const).map(route=>{
   const id=route==='group'?'b03':route==='straight'?'c04':'c06',s=fixture(route,8),o=stock(s,id),newState=send(s,{type:'BuyOffer',offerId:o.offerId});

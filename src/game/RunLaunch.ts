@@ -1,6 +1,6 @@
 import {withBossSuitRescueIdentity} from '../domain/r2BossSuitRescue';
 import {withPokerEncounterIdentity} from '../domain/r2PokerEncounter';
-import {withFreshRestockIdentity,withBossReliefIdentity,withVoiceChoiceIdentity,withPurchaseValueIdentity,withTargetedValueIdentity,withDynamicEndlessIdentity,withLaohuanFindIdentity,withXiemuRevisionIdentity,withTouyeScalingIdentity,withErxiangGroupIdentity,withJokerValueIdentity,r2WithHouseJoker,R2_HERO_FREQUENCY_VERSION,R2_HERO_FREQUENCY_HASH} from '../domain/r2GroupUpgrade';
+import {withTightBalanceIdentity,withFreshRestockIdentity,withBossReliefIdentity,withVoiceChoiceIdentity,withPurchaseValueIdentity,withTargetedValueIdentity,withDynamicEndlessIdentity,withLaohuanFindIdentity,withXiemuRevisionIdentity,withTouyeScalingIdentity,withErxiangGroupIdentity,withJokerValueIdentity,r2WithHouseJoker,R2_HERO_FREQUENCY_VERSION,R2_HERO_FREQUENCY_HASH} from '../domain/r2GroupUpgrade';
 import {R2_AMO_KING_VERSION,R2_AMO_KING_HASH,R2_XIEMU_FREQUENT_VERSION,R2_XIEMU_FREQUENT_HASH,R2_S04_FINISH_VERSION,R2_S04_FINISH_HASH} from '../domain/r2GroupUpgrade';
 import type {CharacterId} from '../domain/characters';
 import type {R2RunState} from '../domain/r2Run';
@@ -30,7 +30,7 @@ export function newRunIdentity(id:CharacterId,route?:R2OpeningRoute){
   const base=withPokerEncounterIdentity(withBossSuitRescueIdentity(originalNewRunIdentity(id,route)));
   const heroProfiles={erxiang:withErxiangGroupIdentity,laohuan:withLaohuanFindIdentity,xiemu:withXiemuRevisionIdentity,touye:withTouyeScalingIdentity,amo:undefined,azao:undefined};
   let identity=heroProfiles[id]?.(base)??base;
-  for(const extend of [withJokerValueIdentity,withDynamicEndlessIdentity,withTargetedValueIdentity,withPurchaseValueIdentity,withVoiceChoiceIdentity,withBossReliefIdentity,withFreshRestockIdentity]){
+  for(const extend of [withJokerValueIdentity,withDynamicEndlessIdentity,withTargetedValueIdentity,withPurchaseValueIdentity,withVoiceChoiceIdentity,withBossReliefIdentity,withFreshRestockIdentity,withTightBalanceIdentity]){
     identity=extend(identity);
   }
   return identity;

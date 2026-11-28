@@ -16,8 +16,8 @@ it('the saved one-layer gain is history, while stage end and next entry really r
  expect(f.entered.stage!.azaoCharge!.charge).toBe(0);expect(heroStageContinuity(f.entered)).toBeUndefined();
 });
 it('burn history keeps the paid 12→4 while the shop decision reads current saved money',()=>{
- const f=heroStageFixture('xiemu'),c=heroStageContinuity(f.shop)!;expect(c.last).toContain('已付8金，12→4');expect(c.last).toContain('实际×4');expect(c.decision).toContain('当前'+f.shop.gold+'金');expect(c.decision).toContain('未到账');expect(f.cleared.stage!.xiemuBurnUsed).toBe(true);expect(f.entered.stage!.xiemuBurnUsed).toBe(false);
- const changed=structuredClone(f.shop);changed.gold=1;const next=heroStageContinuity(changed)!;expect(next.last).toBe(c.last);expect(next.decision).toContain('还差1金');
+ const f=heroStageFixture('xiemu'),c=heroStageContinuity(f.shop)!;expect(c.last).toContain('已付8金，12→4');expect(c.last).toContain('实际×2');expect(c.decision).toContain('当前'+f.shop.gold+'金');expect(c.decision).toContain('未到账');expect(f.cleared.stage!.xiemuBurnUsed).toBe(true);expect(f.entered.stage!.xiemuBurnUsed).toBe(false);
+ const changed=structuredClone(f.shop);changed.gold=3;const next=heroStageContinuity(changed)!;expect(next.last).toBe(c.last);expect(next.decision).toContain('还差1金');
 });
 it('old-stage quiet is not the next ordinary stage restriction, and actual upcoming quiet exempts trick',()=>{
  const f=heroStageFixture('azao'),s=structuredClone(f.shop);s.stage!.boss={definitionId:'B08',disabledSuit:null};expect(heroStageContinuity(s)!.next).not.toContain('停用');s.stageIndex=2;s.boss={definitionId:'B08',disabledSuit:null};expect(heroStageContinuity(s)!.next).toContain('静场');

@@ -1,6 +1,8 @@
 import type Phaser from 'phaser';
 import type {R2RunState} from '../domain/r2Run';
 import {getR2Stage, r2ConsumableCapacity} from '../domain/r2Run';
+import {isR2TightBalance} from '../domain/r2GroupUpgrade';
+import {r2StageClearBaseGold} from '../domain/r2Shop';
 import {R2_BOSSES} from '../domain/r2Chapter';
 import {SUIT_SYMBOL} from '../cards/types';
 import {SKIP_ITEM_LABELS} from './ConsumableDialog';
@@ -179,7 +181,11 @@ export function presentStageSelection(dialog: DetailDialog, run: R2RunState, sce
         if(lock?.boss.definitionId==='B03'&&lock.deck.live>0&&lock.deck.live===lock.deck.disabled)rule.append(element('p','blind-boss-response','目标已考虑锁定时全部有效牌属于受限花色；筹备后目标不变。'));
         info.append(rule);
       }
-      info.append(element('p', 'blind-clear-reward', '过关 · 结算奖金 + 利息'));
+      const baseReward=r2StageClearBaseGold(run,index);
+      const rewardLine=isR2TightBalance(run)&&run.mode==='standard'
+        ?(baseReward===0?'过关 · 暖场无基础赏金（仅余手 + 利息）':`过关 · 基础 ${baseReward} 金 + 余手 + 利息`)
+        :'过关 · 结算奖金 + 利息';
+      info.append(element('p', 'blind-clear-reward', rewardLine));
       if (!bossStage) {
         info.append(element('p', 'blind-skip-reward', '跳场 · ' + skipRewards[index]));
         if (active) info.append(element('p', 'blind-skip-cost', '代价 · 放弃本场结算奖金、利息与过关效果'));

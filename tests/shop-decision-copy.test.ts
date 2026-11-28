@@ -20,10 +20,10 @@ it('normalizes the actual growth offer before any narrow canvas wrapping or cach
  expect(summary).toContain('筹码+已存值');expect(wrapped.replaceAll('\n','')).not.toContain('热度');expect(s).toEqual(before);
 });
 it('the photographed choices state new growth, actual cost and conditions without turning the starter into a ranking',()=>{
- const s=shop();s.gold=6;s.shop!.offers=[{offerId:'a11',definitionId:'a11',price:11,edition:'foil',consumed:false},{offerId:'e06',definitionId:'e06',price:6,consumed:false},{offerId:'c06',definitionId:'c06',price:6,consumed:false}];
+ const s=shop();s.gold=5;s.shop!.offers=[{offerId:'a11',definitionId:'a11',price:11,edition:'foil',consumed:false},{offerId:'e06',definitionId:'e06',price:6,consumed:false},{offerId:'c06',definitionId:'c06',price:5,consumed:false}];
  const before=structuredClone(s),growth=shopOfferGuidance(s,s.shop!.offers[2]),sale=shopOfferGuidance(s,s.shop!.offers[1]);
  expect(growth.label).toBe('选购依据');expect(growth.decision).toMatchObject({now:'打出同花牌型后，攒+0.5倍率，下次出牌起任意牌型都能用。',transaction:'购后0金'});
- expect(sale.decision).toMatchObject({now:'新购倍率+0',later:'成功卖牌后+0.5，下次出牌生效'});expect(sale.stars).toBe(3);expect(shopOfferGuidance(s,s.shop!.offers[0]).operation).toBe('差5金');expect(s).toEqual(before);
+ expect(sale.decision).toMatchObject({now:'新购倍率+0',later:'成功卖牌后+0.5，下次出牌生效'});expect(sale.stars).toBe(3);expect(shopOfferGuidance(s,s.shop!.offers[0]).operation).toBe('差6金');expect(s).toEqual(before);
  const bought=applyCommand(s,{runId:s.runId,commandId:'buy-c06',expectedSeq:s.commandSeq,action:{type:'BuyOffer',offerId:'c06'}});expect(bought.ok).toBe(true);if(!bought.ok)return;
  const next=shopOfferGuidance(bought.state,bought.state.shop!.offers[1]);expect(next.operation).toBe('差6金');expect(next.stars).toBe(3);expect(next.decision.transaction).toBe('还差6金');
 });

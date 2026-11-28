@@ -20,7 +20,7 @@ it.each(['group','straight','flush'] as const)('%s authored before/after matches
  s=send(s,{type:'UseConsumable',instanceId:instance.instanceId,targetIds:sample.before.marked.map(i=>ids[i])});
  const after=ids.map(id=>s.deckInstances.find(c=>c.id===id)!);
  expect(after.map(c=>c.rank)).toEqual(sample.after.cards.map(v=>rank(v.slice(0,-1))));expect(after.map(c=>c.suit)).toEqual(sample.after.cards.map(v=>suits[v.slice(-1)]));
- expect(s.gold).toBe(focus==='flush'?2:4);
+ expect(s.gold).toBe(focus==='flush'?1:2);
  expect(s.jokers).toEqual([]);expect(s.routeStarter?.instanceId).toBeNull();
 });
 it('wager example marks five discards from eight and keeps both outcomes and post-wager restrictions',()=>{

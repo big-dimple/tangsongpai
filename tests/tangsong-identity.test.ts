@@ -20,7 +20,7 @@ it('keeps the current skills and real costs while changing their displayed owner
  expect(characterForNewRun('laohuan').passiveDescription).toContain('再次弃牌或下一次成功出牌后，之前换来的牌不再符合条件');
  expect(characterForNewRun('erxiang').passiveDescription).toContain('每次计分');
  expect(characterForNewRun('azao').passiveDescription).toContain('1／2／3层');
- expect(characterForNewRun('xiemu').passiveDescription).toContain('2／4／6／8金');
+ expect(characterForNewRun('xiemu').passiveDescription).toContain('4／8／12／16金');
  for(const c of CHARACTERS)expect(characterForNewRun(c.id).name).toBe(c.name);
  expect(heroText('二响 · 交棒已兑现')).toBe('刘娥 · 交棒已兑现');
  expect(heroText('谢幕·燃金↗')).toBe('花蕊夫人·燃金↗');expect(heroText('逐个谢幕 · 已封禁')).toBe('逐个谢幕 · 已封禁');

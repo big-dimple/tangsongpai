@@ -33,7 +33,7 @@ describe('failure guidance reads real saved terminal facts',()=>{
  });
  it('reads current eligibility and base prices, leaving actual payment to the next shop; old identities get no new service',()=>{
   const {after}=failureRetryFixture('hands');const text=failureShopOptions(after);
-  expect(text).toContain(`未${R2_CORE_BUILD_CONTRACT.practice.maximumLevel}级`);expect(text).toContain(`Lv.1原价${r2PracticeBasePrice(1)}金`);expect(text).toContain('基础改牌原价2金、染色原价4金');expect(text).toContain('共用每店一次');expect(text).toContain('实付');expect(text).toContain('留钱');
+  expect(text).toContain(`未${R2_CORE_BUILD_CONTRACT.practice.maximumLevel}级`);expect(text).toContain(`Lv.1原价${r2PracticeBasePrice(1)}金`);expect(text).toContain('基础改牌原价3金、染色原价4金');expect(text).toContain('共用每店一次');expect(text).toContain('实付');expect(text).toContain('留钱');
   const old={...after,contentVersion:R2_BASIC_CHOICE_VERSION,contentHash:R2_BASIC_CHOICE_HASH};expect(failureShopOptions(old)).not.toMatch(/升级只选|染色原价/);
  });
  it('never installs failure advice on a live or successful run and tolerates missing stage history',()=>{

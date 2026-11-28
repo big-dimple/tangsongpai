@@ -1,7 +1,7 @@
 import {prepareBossSuitRescueAction} from '../../src/domain/r2BossSuitRescue';
 import {applyCommand,createRun,type Action,type Command,type R2RunState} from '../../src/domain/run';
 import {newRunIdentity} from '../../src/game/RunLaunch';
-import {r2HouseProfile} from '../../src/domain/r2GroupUpgrade';
+import {isR2TightBalance,r2HouseProfile} from '../../src/domain/r2GroupUpgrade';
 import {lockR2ChapterTargets,type R2BossPlan} from '../../src/domain/r2Chapter';
 
 export function rescueStep(state:R2RunState,action:Action){
@@ -13,7 +13,7 @@ export function b03RescueFixture(options:{mixed?:boolean;legacy?:boolean;boss?:R
   const identity=newRunIdentity('azao'),base=options.legacy?r2HouseProfile(identity)!.rescueBase!:identity;
   let state=createRun({seed:'b03-rescue-test',runId:'fixture/b03-rescue',characterId:'azao',rulesVersion:'r2',r2Identity:base,openingRoute:'flush',modeConfig:{mode:'standard',difficulty:0,challengeId:null,programsEnabled:false}});
   const leave=rescueStep(state,{type:'LeaveShop'});state=leave.state;
-  state.stageIndex=2;state.boss=options.boss??{definitionId:'B03',disabledSuit:'hearts'};state.seenBossIds=[state.boss.definitionId];state.chapterTargetPlan=lockR2ChapterTargets(1,state.tourMode,state.difficulty,state.boss);
+  state.stageIndex=2;state.boss=options.boss??{definitionId:'B03',disabledSuit:'hearts'};state.seenBossIds=[state.boss.definitionId];state.chapterTargetPlan=lockR2ChapterTargets(1,state.tourMode,state.difficulty,state.boss,isR2TightBalance(state));
   state.deckInstances=state.deckInstances.map((c,i)=>({...c,suit:options.mixed&&i===0?'spades':'hearts'}));state.gold=options.gold??6;
   const enter=rescueStep(state,{type:'EnterStage'});if(options.specials){const c=enter.state.deckInstances.find(c=>c.id===enter.state.handOrder[0])!;c.enhancement='heat-paper';c.edition='foil';}return {state:enter.state,journal:[leave.command,enter.command],ready:state,readyJournal:[leave.command]};
 }

@@ -1,6 +1,7 @@
 import {playerText} from './Brand';
 import {R2_MODE_CATALOG} from '../content/r2Modes';
 import type {Action,R2RunState} from '../domain/run';
+import {r2ProgramGoldAmount} from '../domain/r2Shop';
 import {HAND_LABELS} from '../content/handLabels';
 import {DetailDialog} from './DetailDialog';
 import {cardDisplayName} from './tangsongCardNames';
@@ -25,10 +26,11 @@ export function programPreparationFacts(state:R2RunState):string {
   const challenge=R2_MODE_CATALOG.challenges.find(row=>row.id===state.challengeId);
   return [challenge?'挑战 · '+challenge.name+'：'+playerText(challenge.description):'',state.chapterDisabledJokerId?'本章封角 · 「'+cardDisplayName(state.chapterDisabledJokerId)+'」计分与版次停用；其他效果按条件执行。':''].filter(Boolean).join('\n');
 }
-function programDescription(id:string):string {
+function programDescription(id:string,state?:Pick<R2RunState,'mode'|'contentVersion'|'contentHash'>):string {
+  const gold=state?r2ProgramGoldAmount(state,4):4;
   switch(id){
-    case 'PG01':return '本章打出3种不同牌型，压轴过关额外获得4金。';
-    case 'PG02':return '本章同一牌型打出3次，压轴过关额外获得4金。';
+    case 'PG01':return `本章打出3种不同牌型，压轴过关额外获得${gold}金。`;
+    case 'PG02':return `本章同一牌型打出3次，压轴过关额外获得${gold}金。`;
     case 'PG03':return '压轴赢手的过关奖励发放前持有至少15金，随机升级本章用过的一种牌型。满级牌型不参与。';
     case 'PG04':return '本章任一场用最后一次出牌过关；压轴过关后，下一家商店可免费换牌一次。离店未用即失效。';
     default:throw Error('unknown-program');
@@ -43,7 +45,7 @@ export function showPrograms(dialog:DetailDialog,state:R2RunState,ready:boolean,
   const prefix='第 '+state.chapter+' 章 · '+programStatus(state)+(facts?'\n'+facts:'')+'\n\n';
   if(!program.choiceMade){
     const canChoose=ready&&['shop','stage-ready'].includes(state.phase);
-    const body=prefix+program.offerIds.map(id=>definitions.find(row=>row.id===id)!.name+'\n'+programDescription(id)).join('\n\n')+'\n\n'+(canChoose?'任选一份，也可不接；首次进场后封口。接下后只能放弃。':'当前不能选择节目单；首次进场后封口。');
+    const body=prefix+program.offerIds.map(id=>definitions.find(row=>row.id===id)!.name+'\n'+programDescription(id,state)).join('\n\n')+'\n\n'+(canChoose?'任选一份，也可不接；首次进场后封口。接下后只能放弃。':'当前不能选择节目单；首次进场后封口。');
     let busy=false;
     const failed=()=>{const note=modal.querySelector<HTMLElement>('.dialog-status');if(note){note.textContent='选择未完成，请返回查看当前状态；保存暂停可在菜单重试。';note.hidden=false;}};
     const choose=async(programId:typeof program.selectedId)=>{
@@ -56,7 +58,7 @@ export function showPrograms(dialog:DetailDialog,state:R2RunState,ready:boolean,
       run:()=>choose(id)}));
     const modal=dialog.open('本章节目单',body,[...actions,{label:'本章不接',disabled:!canChoose,run:()=>choose(null)},...extra],{closeLabel:'暂不选择'});return;
   }
-  const condition=program.selectedId?programDescription(program.selectedId):'正常对局即可，本章不追节目单目标。';
+  const condition=program.selectedId?programDescription(program.selectedId,state):'正常对局即可，本章不追节目单目标。';
   const body=prefix+condition+'\n\n本章实际出牌：'+usage+'\n当前金币：'+state.gold+'\n最后机会过关：'+(program.lastOpportunityClear?'已达成':'未达成')+'\n\n跳场不计入条件；暖场、正场达成时不会提前发奖。';
   dialog.open('本章节目单',body,[...(program.selectedId&&!program.abandoned&&!program.claimed?[{
     label:'放弃本章节目单',disabled:!ready||['run-won','run-lost'].includes(state.phase),run:()=>{

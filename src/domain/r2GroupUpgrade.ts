@@ -1,8 +1,8 @@
 import {withBossSuitRescueIdentity} from './r2BossSuitRescueIdentity';
 import {withPokerEncounterIdentity} from './r2PokerEncounterIdentity';
 import {R2_ROUTE_GROWTH_JOKERS,R2_HOUSE_JOKERS,R2_VALUE_JOKERS,R2_TARGETED_VALUE_JOKERS,R2_PURCHASE_VALUE_JOKERS} from '../content/r2RouteGrowthJokers';
-import {R2_BOUNDED_TARGET_CONTRACT,R2_CORE_BUILD_TARGET_CONTRACT} from './r2Chapter';
-import {R2_BOUNDED_ROUTE_RULE,R2_ROUTE_GROWTH_RULE} from './r2RouteGrowth';
+import {R2_BOUNDED_TARGET_CONTRACT,R2_CORE_BUILD_TARGET_CONTRACT,R2_TIGHT_BALANCE_TARGETS} from './r2Chapter';
+import {R2_BOUNDED_ROUTE_RULE,R2_ROUTE_GROWTH_RULE,R2_TIGHT_ROUTE_RULE} from './r2RouteGrowth';
 import {TOUYE_ACCEPTED} from './r2TouyeTargets';
 import {R2_COMBO_GROWTH_HASH,isR2ComboGrowth} from './r2ComboGrowth';
 import {R2_GROUP_UPGRADE_JOKERS} from '../content/r2GroupUpgradeJokers';
@@ -93,6 +93,7 @@ const RESCUE_HOUSE_PROFILES=ORIGINAL_HOUSE_PROFILES.map(p=>Object.freeze({...p,.
 const POKER_HOUSE_PROFILES=RESCUE_HOUSE_PROFILES.map(p=>Object.freeze({...p,...withPokerEncounterIdentity(p),pokerBase:Object.freeze({contentVersion:p.contentVersion,contentHash:p.contentHash})}));
 export function withLaohuanFindIdentity(base:{contentVersion:string;contentHash:string}) {return {contentVersion:base.contentVersion+'-laohuan-find-v1',contentHash:stableHash({inherits:base.contentHash,laohuanFind:'retained-batch-next-play-maximum-rank-2-3-4-late-v1'})};}
 export const R2_XIEMU_REVISION_TIERS=Object.freeze([{cost:2,multiplier:1.5},{cost:4,multiplier:2},{cost:6,multiplier:3},{cost:8,multiplier:4}] as const);
+export const R2_XIEMU_TIGHT_TIERS=Object.freeze([{cost:4,multiplier:1.5},{cost:8,multiplier:2},{cost:12,multiplier:3},{cost:16,multiplier:4}] as const);
 export function withXiemuRevisionIdentity(base:{contentVersion:string;contentHash:string}) {return {contentVersion:base.contentVersion+'-xiemu-revision-v1',contentHash:stableHash({inherits:base.contentHash,tiers:R2_XIEMU_REVISION_TIERS,payment:'before-score',interest:'unchanged',uses:1})};}
 const XIEMU_REVISION_PROFILE=POKER_HOUSE_PROFILES.filter(p=>p.base.contentVersion===R2_XIEMU_FREQUENT_VERSION).map(p=>Object.freeze({...p,...withXiemuRevisionIdentity(p)}));
 export function withTouyeScalingIdentity(base:{contentVersion:string;contentHash:string}) {return {contentVersion:base.contentVersion+'-touye-scaling-v1',contentHash:stableHash({inherits:base.contentHash,success:'1-new-2-2-new-3-3plus-new-4',failure:'0.85',ordinary:'1.15',proof:'existing-new-core'})};}
@@ -119,8 +120,16 @@ const PURCHASE_VALUE_PROFILES=TARGETED_VALUE_PROFILES.map(p=>Object.freeze({...p
 const VOICE_CHOICE_PROFILES=PURCHASE_VALUE_PROFILES.map(p=>Object.freeze({...p,contentVersion:p.contentVersion+'-voice-choice-v1',contentHash:stableHash({inherits:p.contentHash,tool:'T13',price:4,quota:'shared-basic-choice',duplicate:'independent-of-random-shelf',legacy:'no-migration'}),voiceBase:Object.freeze({contentVersion:p.contentVersion,contentHash:p.contentHash})}));
 const BOSS_RELIEF_PROFILES=VOICE_CHOICE_PROFILES.map(p=>Object.freeze({...p,contentVersion:p.contentVersion+'-boss-relief-v1',contentHash:stableHash({inherits:p.contentHash,policy:'dynamic-endless-v2-b06-b15-b16-50pct-static-floor'}),reliefBase:Object.freeze({contentVersion:p.contentVersion,contentHash:p.contentHash})}));
 const RESTOCK_PROFILES=BOSS_RELIEF_PROFILES.map(p=>Object.freeze({...p,contentVersion:p.contentVersion+'-restock-v1',contentHash:stableHash({inherits:p.contentHash,starter:'first-standard-shop-ordinary-selected-route-at-most-initial-purse',reroll:'paid-standard-new-definitions-first-affordable-ordinary-at-real-price-v1'}),restockBase:Object.freeze({contentVersion:p.contentVersion,contentHash:p.contentHash})}));
-const RELIEF_FAMILY=Object.freeze([...BOSS_RELIEF_PROFILES,...RESTOCK_PROFILES]);
-export const isR2FreshRestock=(s:{contentVersion?:unknown;contentHash?:unknown})=>RESTOCK_PROFILES.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
+const TIGHT_BALANCE_PROFILES=RESTOCK_PROFILES.map(p=>Object.freeze({...p,contentVersion:p.contentVersion+'-tight-balance-v1',contentHash:stableHash({inherits:p.contentHash,targets:R2_TIGHT_BALANCE_TARGETS,route:R2_TIGHT_ROUTE_RULE,xiemuTiers:R2_XIEMU_TIGHT_TIERS,economy:{initGold:[5,5,4,4],clearD0:[3,4,5],clearHigh:[0,4,5],reroll:[4,4,4,5],basicTool:3,practiceStep:2,programGold:3}}),tightBase:Object.freeze({contentVersion:p.contentVersion,contentHash:p.contentHash})}));
+const RELIEF_FAMILY=Object.freeze([...BOSS_RELIEF_PROFILES,...RESTOCK_PROFILES,...TIGHT_BALANCE_PROFILES]);
+export const isR2TightBalance=(s:{contentVersion?:unknown;contentHash?:unknown})=>TIGHT_BALANCE_PROFILES.some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
+export const r2TightBalanceBase=(s:{contentVersion?:unknown;contentHash?:unknown})=>TIGHT_BALANCE_PROFILES.find(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash)?.tightBase??s;
+export function withTightBalanceIdentity(base:{contentVersion:string;contentHash:string}){
+ const profile=TIGHT_BALANCE_PROFILES.find(p=>p.tightBase.contentVersion===base.contentVersion&&p.tightBase.contentHash===base.contentHash);
+ if(!profile)throw Error('unsupported-tight-balance-base');
+ return {contentVersion:profile.contentVersion,contentHash:profile.contentHash};
+}
+export const isR2FreshRestock=(s:{contentVersion?:unknown;contentHash?:unknown})=>[...RESTOCK_PROFILES,...TIGHT_BALANCE_PROFILES].some(p=>p.contentVersion===s.contentVersion&&p.contentHash===s.contentHash);
 export function withFreshRestockIdentity(base:{contentVersion:string;contentHash:string}){
  const profile=RESTOCK_PROFILES.find(p=>p.restockBase.contentVersion===base.contentVersion&&p.restockBase.contentHash===base.contentHash);
  if(!profile)throw Error('unsupported-restock-base');
@@ -185,7 +194,7 @@ export function isR2TouyeNewCore(identity:{contentVersion?:unknown;contentHash?:
 export function isR2RouteGrowth(identity:{contentVersion?:unknown;contentHash?:unknown}):boolean{return identity.contentVersion===R2_ROUTE_GROWTH_VERSION&&identity.contentHash===R2_ROUTE_GROWTH_HASH||isR2TouyeNewCore(identity);}
 export function isR2SuitChoice(identity:{contentVersion?:unknown;contentHash?:unknown}):boolean{return identity.contentVersion===R2_SUIT_CHOICE_VERSION&&identity.contentHash===R2_SUIT_CHOICE_HASH||isR2RouteGrowth(identity);}
 export const r2BasicChoiceIds=(identity:{contentVersion?:unknown;contentHash?:unknown})=>isR2VoiceChoice(identity)?[...R2_SUIT_CHOICE_IDS,'T13']:isR2SuitChoice(identity)?R2_SUIT_CHOICE_IDS:R2_BASIC_TOOL_IDS;
-export const r2BasicChoiceBasePrice=(id:string)=>R2_SUIT_DYE_IDS.includes(id)||id==='T13'?4:2;
+export const r2BasicChoiceBasePrice=(id:string,identity?:{contentVersion?:unknown;contentHash?:unknown})=>R2_SUIT_DYE_IDS.includes(id)||id==='T13'?4:(identity&&isR2TightBalance(identity)?3:2);
 export function isR2BasicChoice(identity:{contentVersion?:unknown;contentHash?:unknown}):boolean{return identity.contentVersion===R2_BASIC_CHOICE_VERSION&&identity.contentHash===R2_BASIC_CHOICE_HASH||isR2SuitChoice(identity);}
 export function isR2ErxiangHandoff(identity:{contentVersion?:unknown;contentHash?:unknown}):boolean{return identity.contentVersion===R2_ERXIANG_HANDOFF_VERSION&&identity.contentHash===R2_ERXIANG_HANDOFF_HASH||isR2BasicChoice(identity);}
 export function isR2ToolSupply(identity:{contentVersion?:unknown;contentHash?:unknown}):boolean{return identity.contentVersion===R2_TOOL_SUPPLY_VERSION&&identity.contentHash===R2_TOOL_SUPPLY_HASH||isR2ErxiangHandoff(identity);}

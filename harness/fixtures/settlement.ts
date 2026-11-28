@@ -1,4 +1,4 @@
-import {isR2CoreBuild,r2HouseProfile} from '../../src/domain/r2GroupUpgrade';
+import {isR2CoreBuild,isR2TightBalance,r2HouseProfile} from '../../src/domain/r2GroupUpgrade';
 import {lockR2ChapterTargets} from '../../src/domain/r2Chapter';
 import {createRun,type R2RunState} from '../../src/domain/run';
 import {R2_ROUTE_GROWTH_VERSION,R2_ROUTE_GROWTH_HASH} from '../../src/domain/r2GroupUpgrade';
@@ -30,7 +30,7 @@ export function settlementReady(kind:'ordinary'|'chain'|'million'|'billion'|'lon
  state.jokers=ids.map((id,index)=>r2CreateJoker(id,'controlled/settlement/source/'+index,8,'none',state));
  state.jokers[0].growth.heat={n:'100',d:'1'};
  if(kind==='long'){state.jokers[3].growth.coefficient={n:'1000000',d:'1'};}
- if(isR2CoreBuild(state))state.chapterTargetPlan=lockR2ChapterTargets(state.chapter,state.tourMode,state.difficulty,state.boss);
+ if(isR2CoreBuild(state))state.chapterTargetPlan=lockR2ChapterTargets(state.chapter,state.tourMode,state.difficulty,state.boss,isR2TightBalance(state));
  state=energySend(state,{type:'EnterStage'});
  if(kind==='boss-loss'){
   const stageEntry=state;

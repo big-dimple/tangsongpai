@@ -46,6 +46,7 @@ export interface ScoreInput {
   /** Required for the exact C2 content profile; never inferred from Joker ownership. */
   routeGrowth?:R2RouteProgress;
   boundedClear?:true;
+  tightBalance?:true;
   /** Only the new saved identity opts into moving explicit active multipliers. */
   activeMultTiming?:'after-route-growth';
   erxiangHandoff?:ErxiangHandoffIntent;
@@ -162,6 +163,7 @@ function resolveScore(input: PublicScoreInput, policy: ResolvePolicy): ScoreTrac
   if(input.activeMultTiming!==undefined&&(input.activeMultTiming!=='after-route-growth'||!routeProfile||!['touye','xiemu','azao','laohuan','neutral'].includes(input.characterId)))throw Error('invalid-active-mult-timing');
   if(routeProfile?!validR2RouteProgress(input.routeGrowth):input.routeGrowth!==undefined)throw Error('invalid-route-growth-snapshot');
   if(input.boundedClear!==undefined&&(input.boundedClear!==true||!routeProfile))throw Error('invalid-bounded-clear-profile');
+  if(input.tightBalance!==undefined&&(input.tightBalance!==true||!routeProfile))throw Error('invalid-tight-balance-profile');
   const errors = validateR2Content(input.definitions,routeProfile?'route-growth-v1':'published');
   if (errors.length) throw new Error(`invalid-content: ${errors.join('; ')}`);
   const needsStageContext=input.jokers.some(joker=>input.definitions.find(definition=>definition.id===joker.definitionId)?.hooks
@@ -219,7 +221,7 @@ function resolveScore(input: PublicScoreInput, policy: ResolvePolicy): ScoreTrac
   if(input.xiemuFrequent!==undefined&&(input.xiemuFrequent!==true||!['xiemu','neutral'].includes(input.characterId)))throw Error('invalid-xiemu-frequent');
   if(input.heroBalance!==undefined&&(input.heroBalance!==true||!['amo','xiemu','neutral'].includes(input.characterId)))throw Error('invalid-hero-balance');
   if(input.xiemuBurn&&input.characterId!=='xiemu'&&input.characterId!=='neutral')throw Error('invalid-xiemu-character');
-  const xiemuBurn=input.xiemuBurn?xiemuBurnStep(evaluated.type,input.xiemuBurn,input.characterId==='xiemu'&&input.boss?.definitionId!=='B08',input.heroBalance,input.xiemuFrequent,input.xiemuRevised):undefined;
+  const xiemuBurn=input.xiemuBurn?xiemuBurnStep(evaluated.type,input.xiemuBurn,input.characterId==='xiemu'&&input.boss?.definitionId!=='B08',input.heroBalance,input.xiemuFrequent,input.xiemuRevised,input.tightBalance):undefined;
   if(xiemuBurn&&xiemuBurn.goldAfter!==input.gold)throw Error('invalid-xiemu-payment');
   if(input.azaoCharge&&input.characterId!=='azao'&&input.characterId!=='neutral')throw Error('invalid-azao-character');
   const azaoCharge=input.azaoCharge?azaoChargeStep(evaluated.type,input.azaoCharge,input.characterId==='azao'&&input.boss?.definitionId!=='B08'):undefined;
@@ -436,7 +438,7 @@ function resolveScore(input: PublicScoreInput, policy: ResolvePolicy): ScoreTrac
     case 'xiemu': if(xiemuBurn){if(xiemuBurn.multiplier)activeChar(xiemuBurn.multiplier===1.5?new Rational(3n,2n):new Rational(BigInt(xiemuBurn.multiplier)));}else if (input.handsBeforePlay === 1) char('multiply-multiplier', new Rational(2n)); break;
   }
   hook('jokerScore');
-  const routeGrowth=routeProfile?r2RouteGrowthTrace(input.routeGrowth!,evaluated.type,input.boundedClear):undefined;
+  const routeGrowth=routeProfile?r2RouteGrowthTrace(input.routeGrowth!,evaluated.type,input.boundedClear,input.tightBalance):undefined;
   if(routeGrowth)for(const family of r2RouteFamilies(evaluated.type).filter(f=>routeGrowth.factors[f]!==undefined)){
     const value=Rational.fromJSON(routeGrowth.factors[family]!);
     emit('routeGrowth',{sourceType:'rule',sourceDefinitionId:'route-growth',sourceInstanceId:input.runId},'route-factor',value,()=>{M=M.multiply(value);},{kind:'hand-type-in',values:R2_ROUTE_HAND_TYPES[family]},undefined,0,undefined,{reasonKey:`route-growth.${family}.factor`,routeFamily:family,resourceBefore:routeGrowth.before[family],resourceAfter:routeGrowth.before[family]});

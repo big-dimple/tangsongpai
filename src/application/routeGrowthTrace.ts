@@ -8,11 +8,11 @@ import {R2_BASE_SCORES,r2ScoringDisabledJokerIds} from '../domain/scoreR2';
 import type {R2JokerDefinition} from '../content/r2Schema';
 
 /** C2-only closure. A clear changes the run ledger, never the hand's source snapshot. */
-export function assertRouteGrowthTrace(t:ScoreTrace,history:R2RouteHistory,stage:NonNullable<R2RunState['stage']>,runId:string,successful:boolean,definitions:readonly R2JokerDefinition[],activeMultTiming=false,boundedClear=false,exileMultiplier:3|4=4):void {
+export function assertRouteGrowthTrace(t:ScoreTrace,history:R2RouteHistory,stage:NonNullable<R2RunState['stage']>,runId:string,successful:boolean,definitions:readonly R2JokerDefinition[],activeMultTiming=false,boundedClear=false,exileMultiplier:3|4=4,tightBalance=false):void {
   const fail=():never=>{throw Error('invalid-save-route-growth-trace');};
   const expected=r2RouteSnapshot(history),eligible=stage.routeGrowth!.eligible;
   if(successful){expected.clears--;for(const f of eligible)expected[f]--;}
-  if(stableHash(t.routeGrowth)!==stableHash(r2RouteGrowthTrace(expected,t.handType,boundedClear)))fail();
+  if(stableHash(t.routeGrowth)!==stableHash(r2RouteGrowthTrace(expected,t.handType,boundedClear,tightBalance)))fail();
   const families=R2_ROUTE_FAMILIES.filter(f=>t.routeGrowth!.factors[f]!==undefined),route=t.events.filter(e=>e.sourceDefinitionId==='route-growth');
   const reads=route.filter(e=>e.operation==='route-factor'),clears=route.filter(e=>e.operation==='route-clear'),awards=route.filter(e=>e.operation==='route-clear-family');
   if(reads.length!==families.length||clears.length!==(successful?1:0)||awards.length!==(successful?eligible.length:0)||route.length!==reads.length+clears.length+awards.length)fail();

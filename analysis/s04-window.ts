@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {createRun,applyCommand,type R2RunState,type Action,type Command} from '../src/domain/run';
 import {assertR2Invariants,r2CreateJoker,r2ScoreContext,makeR2Shop} from '../src/domain/r2Run';
 import {newRunIdentity} from '../src/game/RunLaunch';
-import {R2_BOUNDED_CLEAR_VERSION,R2_BOUNDED_CLEAR_HASH} from '../src/domain/r2GroupUpgrade';
+import {isR2TightBalance,R2_BOUNDED_CLEAR_VERSION,R2_BOUNDED_CLEAR_HASH} from '../src/domain/r2GroupUpgrade';
 import {r2ChapterBossIds,lockR2ChapterTargets,r2StageSpec,type R2BossId} from '../src/domain/r2Chapter';
 import {r2HandLimit} from '../src/domain/r2Resources';
 import {r2ToolAcquisitionPool,r2PurchasePrice} from '../src/domain/r2Shop';
@@ -37,7 +37,7 @@ export function fixture(route:Route,index:number,seed:string,boss:R2BossId='B03'
  const previous:string[]=[];
  for(let chapter=1;chapter<s.chapter;chapter++)previous.push(r2ChapterBossIds(chapter)!.find(id=>id!==boss&&!previous.includes(id))!);
  s.seenBossIds=[...previous,boss];s.boss={definitionId:boss,disabledSuit:boss==='B03'?'hearts':null};
- s.chapterTargetPlan=lockR2ChapterTargets(s.chapter,s.tourMode,s.difficulty,s.boss);
+ s.chapterTargetPlan=lockR2ChapterTargets(s.chapter,s.tourMode,s.difficulty,s.boss,isR2TightBalance(s));
  // makeR2Shop normally runs inside OpenShop, whose commit supplies this receipt.
  // This entire entry is a planted fixture, so bind its synthetic shop entry explicitly.
  const entry:Command={runId:s.runId,commandId:s.runId+'/planted-shop',expectedSeq:s.commandSeq,action:{type:'OpenShop'}};

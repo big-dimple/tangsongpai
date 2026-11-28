@@ -13,7 +13,7 @@ export function pokerStep(state:R2RunState,action:Action){
 export function pokerEncounterStart(){
  const state=createRun({seed:'poker-encounter-contract-fixed',runId:'fixture/poker-encounter',characterId:'laohuan',rulesVersion:'r2',r2Identity:newRunIdentity('laohuan','group'),openingRoute:'group',modeConfig:{mode:'standard',difficulty:0,challengeId:null,programsEnabled:false}});
  state.jokers=['b10','b03','a11','b06','e11'].map((id,i)=>{const j=r2CreateJoker(id,'controlled/'+i,8,'polychrome',state);if(id==='b10')j.growth.heat={n:'100',d:'1'};if(id==='b03')j.growth.multiplier={n:'3',d:'1'};if(id==='e11')j.growth.coefficient={n:'2',d:'1'};return j;});
- state.handLevels={pair:4,'two-pair':4,'three-kind':4,straight:4,flush:4,'full-house':5,'high-card':4};state.gold=64;return state;
+ state.handLevels={pair:4,'two-pair':8,'three-kind':8,straight:8,flush:8,'full-house':10,'high-card':4};state.gold=64;return state;
 }
 export function pokerPublicAction(s:R2RunState):Action {
  return s.phase==='shop'?{type:'LeaveShop'}:s.phase==='stage-ready'?{type:'EnterStage'}:s.phase==='stage-cleared'?{type:'OpenShop'}:choose(publicView(s)).action;

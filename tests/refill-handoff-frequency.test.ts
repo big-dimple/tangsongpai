@@ -9,9 +9,10 @@ import {SELECTION_PRESENTATION} from '../src/game/SelectionPresentation';
 import {SavedRun,type SaveSlots,type SaveStore} from '../src/application/SavedRun';
 const mode={mode:'standard' as const,difficulty:0 as const,challengeId:null,programsEnabled:false};
 const command=(s:R2RunState,action:Action):Command=>({runId:s.runId,commandId:'frequency/'+s.commandSeq,expectedSeq:s.commandSeq,action});
-function ready(id:'laohuan'|'erxiang',disabled=false,difficulty:0|1|2|3=0){
+function ready(id:'laohuan'|'erxiang',disabled=false,difficulty:0|1|2|3=0,skip=0){
  let state=createRun({rulesVersion:'r2',seed:disabled?'challenge/q01/0':'frequency',runId:'frequency/'+id,characterId:id,r2Identity:newRunIdentity(id,'group'),openingRoute:'group',modeConfig:disabled?{...mode,mode:'challenge',challengeId:'Q01'}:{...mode,difficulty}});const journal:Command[]=[];
  const send=(action:Action)=>{const c=command(state,action),r=applyCommand(state,c);if(!r.ok)throw Error(r.code);state=r.state;journal.push(c);const saved=readCheckpoint(makeCheckpoint(state,journal));expect(saved.ok).toBe(true);return r;};
+ for(let i=0;i<skip;i++){send({type:'SkipStage'});send({type:'OpenShop'});}
  send({type:'LeaveShop'});send({type:'EnterStage'});
  return {get state(){return state;},set state(s:R2RunState){state=s;},journal,send};
 }
@@ -30,7 +31,7 @@ it('a short Xin draw stack keeps all actual available cards without inventing tw
 it('disabled Xin ordinary discard remains ordinary; explicit activation is rejected',()=>{
  const f=ready('laohuan',true),ids=f.state.handOrder.slice(0,1);expect(applyCommand(f.state,command(f.state,{type:'DiscardHand',selectedIds:ids,laohuanTrick:true}))).toMatchObject({ok:false,code:'laohuan-disabled'});f.send({type:'DiscardHand',selectedIds:ids});expect(f.state.pendingRefill).toBeNull();expect(f.state.stage!.laohuanTrickUsed).toBe(false);
 });
-function lowPairs(){const f=ready('erxiang',false,3),ids=['spades-2','hearts-2','clubs-2','diamonds-2','spades-3','hearts-3','clubs-7','diamonds-9'];f.state={...f.state,handOrder:ids,drawPile:f.state.deckInstances.map(c=>c.id).filter(id=>!ids.includes(id))};return f;}
+function lowPairs(){const f=ready('erxiang',false,3,1),ids=['spades-2','hearts-2','clubs-2','diamonds-2','spades-3','hearts-3','clubs-7','diamonds-9'];f.state={...f.state,handOrder:ids,drawPile:f.state.deckInstances.map(c=>c.id).filter(id=>!ids.includes(id))};return f;}
 it('Liu uses exactly two actual successful plays, remains additive and rejects a third atomically',()=>{
  const f=lowPairs();expect(erxiangChoice(f.state).remaining).toBe(2);
  for(const [index,ids] of [['spades-2','hearts-2'],['clubs-2','diamonds-2']].entries()){const rank=2;f.send({type:'PlayHand',selectedIds:ids,erxiangTargetId:ids[0]});expect(f.state.stage!.erxiangHandoffUses).toBe(index+1);expect(erxiangChoice(f.state).remaining).toBe(1-index);expect(f.state.lastTrace!.events.filter(e=>e.reasonKey==='erxiang.handoff')).toMatchObject(ids.map(targetCardId=>({operation:'add-multiplier',targetCardId,value:{n:String(rank),d:'1'}})));}
@@ -45,5 +46,5 @@ it('Liu quota survives saved retry and forged counters cannot disagree with the 
  const bad=structuredClone(f.state);bad.stage!.erxiangHandoffUses=2;bad.stage!.erxiangHandoffUsed=true;expect(()=>makeCheckpoint(bad,f.journal)).toThrow('invalid-save-erxiang-count');
 });
 it('current selection and details show repeatable Xin and two-use Liu without changing the other four',()=>{
- expect(characterForNewRun('laohuan').detailRules).toContain('每次正常弃牌');expect(characterForNewRun('laohuan').skillTags).not.toContain('每场1次');expect(SELECTION_PRESENTATION.laohuan.cost).toContain('再次弃牌或下一手出牌后失效');expect(characterForNewRun('erxiang').skillTags).toContain('每场2次');expect(SELECTION_PRESENTATION.erxiang.cost).toContain('每场2次');expect(characterForNewRun('amo').quickEffect).toContain('×3');expect(characterForNewRun('xiemu').quickEffect).toContain('2／4／6／8');
+ expect(characterForNewRun('laohuan').detailRules).toContain('每次正常弃牌');expect(characterForNewRun('laohuan').skillTags).not.toContain('每场1次');expect(SELECTION_PRESENTATION.laohuan.cost).toContain('再次弃牌或下一手出牌后失效');expect(characterForNewRun('erxiang').skillTags).toContain('每场2次');expect(SELECTION_PRESENTATION.erxiang.cost).toContain('每场2次');expect(characterForNewRun('amo').quickEffect).toContain('×3');expect(characterForNewRun('xiemu').quickEffect).toContain('4／8／12／16');
 });

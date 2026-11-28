@@ -1555,7 +1555,7 @@ export class ShopScene extends Phaser.Scene {
         if(buyBox&&landSlot)this.pendingPurchaseFlight={from:buyBox,to:landSlot,name};
       }else if(action.type==='BuyBasicTool'&&!result.duplicate){
         this.audio.purchase();
-        this.lastPurchaseReceipt=shopPurchaseReceipt(previous,this.run,'tools',{offerId:'basic-choice/'+action.shopSeq,definitionId:action.definitionId,price:r2BasicChoiceBasePrice(action.definitionId),consumed:false});
+        this.lastPurchaseReceipt=shopPurchaseReceipt(previous,this.run,'tools',{offerId:'basic-choice/'+action.shopSeq,definitionId:action.definitionId,price:r2BasicChoiceBasePrice(action.definitionId,previous),consumed:false});
         this.notice='基础选择已入道具箱，尚未使用 · 刷新不重开';
       }else if(action.type==='BuyPokerPolychrome'&&!result.duplicate){
         this.audio.purchase();this.notice=`多彩已赋予 · 金币 ${oldGold} → ${this.run.gold} · 计分时倍率×1.5`;

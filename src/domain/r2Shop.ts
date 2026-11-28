@@ -1,11 +1,11 @@
-import {r2HouseProfile,isR2BoundedClear,isR2CoreBuild,isR2FreshRestock,R2_ROUTE_STARTERS,type R2OpeningRoute} from './r2GroupUpgrade';
+import {r2HouseProfile,isR2BoundedClear,isR2CoreBuild,isR2FreshRestock,isR2TightBalance,R2_ROUTE_STARTERS,type R2OpeningRoute} from './r2GroupUpgrade';
 import {isR2VoiceChoice,isR2ToolSupply,isR2BasicChoice,isR2SuitChoice,r2BasicChoiceIds,R2_BASIC_TOOL_IDS} from './r2GroupUpgrade';
 import {r2JokerDefinitionsForContext,type R2ContentIdentity} from './r2ContentProfiles';
 import {R2_JOKERS,readR2Modifiers,supportsR2Joker,type R2JokerDefinition,type R2JokerInstance} from '../content/r2Schema';
 import {R2_EDITIONS,R2_LONG_TERM_ITEMS,R2_TOOLS,R2_TOOL_CATALOG,type R2Edition,type R2ToolDefinition} from '../content/r2Tools';
 import type {SeededRng} from '../core/SeededRng';
 import type {R2RunState} from './r2Run';
-import {r2RunModeConfig,R2_MODE_CATALOG,type R2ModeSelection} from '../content/r2Modes';
+import {r2RunModeConfig,R2_MODE_CATALOG,type R2ModeConfig,type R2ModeSelection} from '../content/r2Modes';
 import {r2ConsumableCapacity,r2HandLimit,r2HandsBudget,r2ItemAmount,r2JokerCapacity} from './r2Resources';
 import {r2ItemSupported,r2ToolAllowed} from './r2ToolRuntime';
 import {r2StageSpec} from './r2Chapter';
@@ -20,12 +20,18 @@ export function getR2Joker(id:string,identity:R2ContentIdentity={}):R2JokerDefin
   const definition=r2JokerDefinitionsForContext(identity).find(d=>d.id===id);if(!definition)throw new Error(`unknown-joker: ${id}`);return definition;
 }
 export const r2Price=(id:string,edition:R2Edition='none',identity:R2ContentIdentity={}):number=>R2_ECONOMY.prices[getR2Joker(id,identity).rarity]+(id==='a11'&&r2HouseProfile(identity)?1:0)+R2_EDITIONS.find(row=>row.id===edition)!.priceDelta;
+export const r2InitialGold=(config:Pick<R2ModeConfig,'mode'|'difficulty'|'initialGold'>,identity:R2ContentIdentity):number=>config.mode==='standard'&&isR2TightBalance(identity)?([5,5,4,4] as const)[config.difficulty]:config.initialGold;
+export const r2StageClearBaseGold=(state:R2ContentIdentity&{mode?:unknown;difficulty?:unknown},stageInChapter:number):number=>state.mode==='standard'&&isR2TightBalance(state)?((Number(state.difficulty)>=1?[0,4,5]:[3,4,5]) as readonly number[])[stageInChapter]:[4,5,7][stageInChapter];
+export const r2ProgramGoldAmount=(state:R2ContentIdentity&{mode?:unknown},baseAmount:number):number=>state.mode==='standard'&&isR2TightBalance(state)?Math.min(baseAmount,3):baseAmount;
+export const r2RerollBounds=(config:Pick<R2ModeConfig,'mode'|'difficulty'|'reroll'>,identity:R2ContentIdentity):{start:number;cap:number}=>config.mode==='standard'&&isR2TightBalance(identity)?(config.difficulty===3?{start:5,cap:13}:{start:4,cap:12}):{start:config.reroll.start,cap:config.reroll.cap};
 /** The first shelf's ordinary chosen starter is the one price anchored to the opening purse. */
 export function r2ShelfPrice(id:string,edition:R2Edition|undefined,state:R2ContentIdentity&{mode?:unknown;difficulty?:unknown;openingRoute?:unknown},visit:number,rerolls:number):number {
  const normal=r2Price(id,edition,state);
  if(visit!==0||rerolls!==0||(edition??'none')!=='none'||state.mode!=='standard'||!isR2FreshRestock(state))return normal;
  if(typeof state.openingRoute!=='string'||!Object.hasOwn(R2_ROUTE_STARTERS,state.openingRoute)||R2_ROUTE_STARTERS[state.openingRoute as R2OpeningRoute]!==id)return normal;
- return Math.min(normal,R2_MODE_CATALOG.difficulties.find(d=>d.id===state.difficulty)?.initialGold??normal);
+ const diff=R2_MODE_CATALOG.difficulties.find(d=>d.id===state.difficulty);
+ const initialGold=diff?r2InitialGold({mode:'standard',difficulty:diff.id,initialGold:diff.initialGold},state):normal;
+ return Math.min(normal,initialGold);
 }
 export const r2ToolPrice=(id:string,identity:R2ContentIdentity={}):number=>isR2ToolSupply(identity)&&R2_BASIC_TOOL_IDS.includes(id)?2:R2_TOOLS.find(row=>row.id===id)!.price;
 export const r2ToolShelfCapacity=(identity:R2ContentIdentity):number=>isR2ToolSupply(identity)?2:1;
@@ -34,8 +40,8 @@ export const r2PurchaseDiscount=(state:PurchaseContext):number=>(state.purchaseC
 export const r2PurchasePrice=(state:PurchaseContext,offer:R2Offer):number=>Math.max(1,offer.price-r2PurchaseDiscount(state));
 export const salePrice=(paidPrice:number):number=>Math.max(1,Math.floor(paidPrice/2));
 export const rerollPrice=(count:number):number=>Math.min(R2_ECONOMY.rerollCap,R2_ECONOMY.rerollStart+count);
-export function r2PaidRerollPrice(state:R2ModeSelection&Pick<R2RunState,'shop'|'longTermItems'>):number {
-  const {start,cap}=r2RunModeConfig(state).reroll;
+export function r2PaidRerollPrice(state:R2ModeSelection&R2ContentIdentity&Pick<R2RunState,'shop'|'longTermItems'>):number {
+  const {start,cap}=r2RerollBounds(r2RunModeConfig(state),state);
   return Math.max(1,Math.min(cap,start+state.shop!.rerollCount)-R2_LONG_TERM_ITEMS.reduce((sum,item)=>sum+(state.longTermItems.includes(item.id)&&item.operation.kind==='paid-reroll-discount'?item.operation.amount:0),0));
 }
 export const r2Pool=(owned:readonly string[],excluded:readonly string[]=[],identity:R2ContentIdentity={}):R2JokerDefinition[]=>r2JokerDefinitionsForContext(identity).filter(d=>!owned.includes(d.id)&&!excluded.includes(d.id)&&supportsR2Joker(d));
@@ -91,7 +97,7 @@ export function paidRestockOffers(state:R2RunState,rng:SeededRng,pool:readonly R
 export function r2ToolAcquisitionPool(state:R2RunState):R2ToolDefinition[] {
   const live=state.deckInstances.filter(card=>!state.destroyedIds.includes(card.id)),limits=R2_TOOL_CATALOG.limits;
   const floor=state.longTermItems.includes('U08')?limits.minimalDeckFloor:limits.deckDeletionFloor;
-  const config=r2RunModeConfig(state),discovered=Object.values(state.handLevels),nextStage=!!r2StageSpec(state.stageIndex,state.tourMode,state.difficulty,isR2BoundedClear(state),isR2CoreBuild(state));
+  const config=r2RunModeConfig(state),discovered=Object.values(state.handLevels),nextStage=!!r2StageSpec(state.stageIndex,state.tourMode,state.difficulty,isR2BoundedClear(state),isR2CoreBuild(state),isR2TightBalance(state));
   return R2_TOOLS.filter(tool=>{
     if(!r2ToolAllowed(state,tool.id)||!tool.shopWeight)return false;
     const op=tool.operation;
@@ -139,7 +145,8 @@ export function drawR2BasicTool(rng:SeededRng,pool:readonly R2ToolDefinition[],e
  return eligible.length?pick(rng,eligible,tool=>tool.shopWeight).id:undefined;
 }
 export function r2BasicToolShelfStatus(state:R2RunState):string|undefined {
- if(isR2BasicChoice(state)&&state.shop)return state.shop.basicChoice?.purchase?'基础改牌已售罄 · 刷新不重开，下一店恢复':isR2SuitChoice(state)?isR2VoiceChoice(state)?'改牌2金／染色或留声纸4金 · 共选1件 · 每店一次':'改牌2金／染色4金 · 共选1件 · 每店一次':'基础改牌 · 自选1件 · 每店一次，标价2金';
+ const basicPrice=isR2TightBalance(state)?3:2;
+ if(isR2BasicChoice(state)&&state.shop)return state.shop.basicChoice?.purchase?'基础改牌已售罄 · 刷新不重开，下一店恢复':isR2SuitChoice(state)?isR2VoiceChoice(state)?`改牌${basicPrice}金／染色或留声纸4金 · 共选1件 · 每店一次`:`改牌${basicPrice}金／染色4金 · 共选1件 · 每店一次`:`基础改牌 · 自选1件 · 每店一次，标价${basicPrice}金`;
  if(!isR2ToolSupply(state)||!state.shop)return;
  const basic=state.shop.toolOffers.find(offer=>offer.offerId.endsWith('/tool/1'));
  return basic?basic.consumed?'基础改牌已售罄 · 本店不补货':'基础改牌 2 金 · 买后不补货':state.shop.toolOffers.some(offer=>R2_BASIC_TOOL_IDS.includes(offer.definitionId))?'无其他合法且不同的基础工具；保留现有货品':'当前没有合法基础改牌工具；该位缺货';

@@ -3,7 +3,7 @@ import {createRun,applyCommand,assertRunInvariants,type R2RunState,type Action} 
 import {newRunIdentity} from '../../src/game/RunLaunch';
 import {r2CreateJoker} from '../../src/domain/r2Run';
 import {r2Price} from '../../src/domain/r2Shop';
-import {r2HouseProfile} from '../../src/domain/r2GroupUpgrade';
+import {isR2TightBalance,r2HouseProfile} from '../../src/domain/r2GroupUpgrade';
 
 /** Controlled projection of root's visible five-slot counterexample, not its
  * natural save or acquisition history. No root/PR152 snapshot is rewritten. */
@@ -18,7 +18,7 @@ export function holographicRecommendationFixture(challenge=false){
  s.routeGrowth={clears:8,G:8,S:0,F:0,settlements:Array.from({length:8},(_,stageIndex)=>({stageIndex,families:['G']}))};s.handLevels.pair=1;
  if(challenge)s.chapterDisabledJokerId='b07';
  s.shop!.offers=[{offerId:'public/e08',definitionId:'e08',price:r2Price('e08','none',s),edition:'none',consumed:false}];
- s.chapterTargetPlan=lockR2ChapterTargets(s.chapter,s.tourMode,s.difficulty,s.boss);
+ s.chapterTargetPlan=lockR2ChapterTargets(s.chapter,s.tourMode,s.difficulty,s.boss,isR2TightBalance(s));
  assertRunInvariants(s);return s;
 }
 export function holographicSend(s:R2RunState,action:Action){

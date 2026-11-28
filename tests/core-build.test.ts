@@ -47,7 +47,8 @@ describe('core build paid growth and public chapter lock',()=>{
    const multiplier=[1n,3n,2n][i],stageDen=i===1?2n:1n,difficulty=d===0?{n:1n,d:1n}:{n:6n,d:5n};
    const n=warm*multiplier*difficulty.n,q=den*stageDen*difficulty.d;expect(spec.targetHeat).toBe(((n+q-1n)/q).toString());
   }
-  expect([27,28,29].map(i=>getR2Stage(i,'endless',0,newRunIdentity('amo'))!.targetHeat)).toEqual(['37316','55974','74632']);
+  expect([27,28,29].map(i=>getR2Stage(i,'endless',0,newRunIdentity('amo'))!.targetHeat)).toEqual(['43740','65610','87480']);
+  expect([27,28,29].map(i=>getR2Stage(i,'endless',0,{contentVersion:R2_S04_FINISH_VERSION,contentHash:R2_S04_FINISH_HASH})!.targetHeat)).toEqual(['37316','55974','74632']);
  });
  it('quotes the locked paid service and executes it immediately without inventory or RNG',()=>{
   const s=coreC10(),before=stableHash(s),q=r2PracticeQuotes(s).find(q=>q.handType==='straight')!;
@@ -109,7 +110,7 @@ describe('core build paid growth and public chapter lock',()=>{
   s.jokers=[{...r2CreateJoker(id,id,4,undefined,s),growth:{...r2CreateJoker(id,id,4,undefined,s).growth,...grown}}];
   const hand=activeCards([...ranks],2,type==='flush'),score=(state:R2RunState,jokers=state.jokers)=>scoreR2Hand({...activeScoreInput(hand,jokers),definitions:r2JokerDefinitionsFor(state),handLevels:state.handLevels,...r2ScoreContext(state,hand,hand.map(c=>c.id))});
   const weak=score(s,[]),before=score(s),n=send(s,practice(s,type)),after=score(n);
-  expect(n.gold).toBe(2);expect(n.handLevels[type]).toBe(2);expect(BigInt(before.finalScore)).toBeGreaterThan(BigInt(weak.finalScore));expect(BigInt(after.finalScore)).toBeGreaterThan(BigInt(before.finalScore));expect(n.routeGrowth).toEqual(s.routeGrowth);round(n);
+  expect(n.gold).toBe(1);expect(n.handLevels[type]).toBe(2);expect(BigInt(before.finalScore)).toBeGreaterThan(BigInt(weak.finalScore));expect(BigInt(after.finalScore)).toBeGreaterThan(BigInt(before.finalScore));expect(n.routeGrowth).toEqual(s.routeGrowth);round(n);
  });
  it('historical S04 Amo assist and current Erxiang handoff keep their own qualifications',()=>{
   const main=['spades-9','hearts-9','clubs-13','diamonds-13'],side=['spades-12','hearts-12'];
@@ -126,7 +127,7 @@ describe('core build paid growth and public chapter lock',()=>{
  });
  it('Xiemu pays before balance hooks, while Azao charges only on qualified real hands',()=>{
   let x=start('xiemu');x.gold=20;x.jokers=[r2CreateJoker('e08','cash-source',8,undefined,x)];x=boundedArrange(send(send(x,{type:'LeaveShop'}),{type:'EnterStage'}),['hearts-8','spades-8','clubs-8','hearts-9','spades-9']);
-  const burnt=send(x,{type:'PlayHand',selectedIds:x.handOrder.slice(0,5),xiemuBurn:8});expect(burnt.lastTrace!.xiemuBurn).toMatchObject({cost:8,goldBefore:20,goldAfter:12,multiplier:4});expect(burnt.lastTrace!.events.some(e=>e.sourceDefinitionId==='e08')).toBe(false);expect(burnt.stage!.xiemuBurnUsed).toBe(true);round(burnt);
+  const burnt=send(x,{type:'PlayHand',selectedIds:x.handOrder.slice(0,5),xiemuBurn:16});expect(burnt.lastTrace!.xiemuBurn).toMatchObject({cost:16,goldBefore:20,goldAfter:4,multiplier:4});expect(burnt.lastTrace!.events.some(e=>e.sourceDefinitionId==='e08')).toBe(false);expect(burnt.stage!.xiemuBurnUsed).toBe(true);round(burnt);
   let a=boundedArrange(send(send(start('azao'),{type:'LeaveShop'}),{type:'EnterStage'}),['hearts-2','spades-2','clubs-3','diamonds-3']);a=send(a,{type:'PlayHand',selectedIds:['hearts-2','spades-2','clubs-3','diamonds-3']});expect(a.stage!.azaoCharge!.charge).toBe(1);round(a);
   a=boundedArrange(a,['hearts-4','spades-4']);const low=send(a,{type:'PlayHand',selectedIds:['hearts-4','spades-4']});expect(low.stage!.azaoCharge!.charge).toBe(0);round(low);
  });

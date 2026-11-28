@@ -9,7 +9,7 @@ import {makeCheckpoint,readCheckpoint} from '../src/application/checkpoint';
 import {R2_HOUSE_PROFILES} from '../src/domain/r2GroupUpgrade';
 describe('r2 shelves and public policy',()=>{
   it('offers a budgeted D3 flush opener only on the first shelf; preserves old saves and real payment',()=>{
-    const current=newRunIdentity('erxiang','flush'),old=R2_HOUSE_PROFILES.find(p=>p.contentVersion===current.contentVersion.replace(/-restock-v1$/,''))!;
+    const current=newRunIdentity('erxiang','flush'),old=R2_HOUSE_PROFILES.find(p=>p.contentVersion===current.contentVersion.split('-restock-v1')[0])!;
     const options={rulesVersion:'r2' as const,characterId:'erxiang' as const,openingRoute:'flush' as const,seed:'workshop-1',runId:'discount',modeConfig:{mode:'standard' as const,difficulty:3 as const,challengeId:null,programsEnabled:false}};
     const run=createRun({...options,r2Identity:current}),offer=run.shop!.offers.find(o=>o.definitionId==='c06')!;
     expect(offer.price).toBe(4);expect(r2Price('c06','none',run)).toBe(6);expect(r2ShelfPrice('c06','none',run,0,1)).toBe(6);
@@ -23,6 +23,7 @@ describe('r2 shelves and public policy',()=>{
   it('paid refreshes offer fresh legal definitions and cover the remaining ordinary budget',()=>{
     for(let i=0;i<24;i++){
       const run=createRun({rulesVersion:'r2',characterId:'erxiang',seed:'workshop-'+i,runId:'budget',openingRoute:'group',r2Identity:newRunIdentity('erxiang','group')});
+      run.gold=8;
       const cmd={runId:run.runId,commandId:'refresh',expectedSeq:run.commandSeq,action:{type:'RerollShop' as const}};
       const result=applyCommand(run,cmd);if(!result.ok)throw Error(result.code);
       const fresh=result.state,ids=fresh.shop!.offers.map(o=>o.definitionId);

@@ -13,6 +13,7 @@ import {toolInfo} from '../src/game/r2ToolInfo';
 import {s04IssueText,s04QualificationText} from '../src/game/S04Qualification';
 import {makeCheckpoint,readCheckpoint} from '../src/application/checkpoint';
 import {r2TargetPolicyFor} from '../src/domain/r2TargetPolicy';
+import {R2_CORE_BUILD_TARGET_CONTRACT,R2_TIGHT_BALANCE_TARGET_CONTRACT} from '../src/domain/r2Chapter';
 import {r2CreateJoker} from '../src/domain/r2Run';
 import {CHARACTER_IDS} from '../src/domain/characters';
 const listed=(s:R2RunState)=>r2ToolAcquisitionPool(s).some(t=>t.id==='S04');
@@ -30,7 +31,7 @@ describe('approved S04 50% experimental profile',()=>{
   const s=createRun({rulesVersion:'r2',runId:'s04-launch/'+hero,seed:'s04-launch',characterId:hero,openingRoute:'group',r2Identity:newRunIdentity(hero)});
   expect(isR2CoreBuild(s)).toBe(true);expect(listed(s)).toBe(false);round(s);
   const old=fixture({old:true});expect(old.contentHash).toBe(R2_CORE_BUILD_HASH);expect(launchIdentity('laohuan',{kind:'retry',run:old})).toEqual({contentVersion:R2_CORE_BUILD_VERSION,contentHash:R2_CORE_BUILD_HASH});
-  expect(r2TargetPolicyFor(s)).toEqual(r2TargetPolicyFor(old));
+  expect(r2TargetPolicyFor(s)).toEqual(R2_TIGHT_BALANCE_TARGET_CONTRACT);expect(r2TargetPolicyFor(old)).toEqual(R2_CORE_BUILD_TARGET_CONTRACT);
  });
  it.each([[3,26,false,'s04-chapter-gated'],[6,25,false,'s04-suit-density'],[6,26,true,undefined]] as const)('index%s hearts%s has matching supply, buy, use and public status', (index,hearts,legal,issue)=>{
   const s=fixture({index,hearts});expect(listed(s)).toBe(legal);expect(r2S04Issue(s,'hearts')).toBe(issue);
@@ -79,7 +80,7 @@ describe('approved S04 50% experimental profile',()=>{
  it('does not replace existing stock/RNG on a crossing dye, and a paid refresh preserves spent service quota',()=>{
   let s=fixture({hearts:25,stock:false});s.shop!.toolOffers=[];s=send(s,{type:'BuyBasicTool',definitionId:'T03',shopSeq:s.shop!.basicChoice!.shopSeq});const b=structuredClone(s),id=s.consumables.at(-1)!.instanceId;
   s=send(s,{type:'UseConsumable',instanceId:id,targetIds:[s.deckInstances.find(c=>c.suit!=='hearts')!.id]});expect(listed(s)).toBe(true);expect(s.shop).toEqual(b.shop);expect(s.rng).toEqual(b.rng);
-  const cost=r2PaidRerollPrice(s),quota=structuredClone(s.shop!.basicChoice),gold=s.gold;s=send(s,{type:'RerollShop'});expect(s.gold).toBe(gold-cost);expect(cost).toBe(2);expect(s.shop!.basicChoice).toEqual(quota);round(s);
+  const cost=r2PaidRerollPrice(s),quota=structuredClone(s.shop!.basicChoice),gold=s.gold;s=send(s,{type:'RerollShop'});expect(s.gold).toBe(gold-cost);expect(cost).toBe(4);expect(s.shop!.basicChoice).toEqual(quota);round(s);
  });
  it('keeps the prior core S04 acquisition/use and description, even after new-profile cache reads',()=>{
   const old=held(fixture({old:true,index:0,hearts:13}));expect(listed(old)).toBe(true);const oldInfo=toolInfo('S04',old);expect(toolInfo('S04',fixture()).summary).toContain('50%');expect(toolInfo('S04',old)).toEqual(oldInfo);expect(oldInfo.summary).not.toContain('50%');expect(s04QualificationText(old)).toBeUndefined();

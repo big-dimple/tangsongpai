@@ -55,7 +55,7 @@ describe('normal new-game policy and exact retry creation',()=>{
   expect(amo.passiveDescription).toContain('仅当次、本关一次');expect(amo.passiveDescription).toContain('本次出牌最终得分 ×3');
   expect(characterForNewRun('azao').passiveDescription).toContain('重复合格牌也可释放');
   expect(characterForNewRun('xiemu').passiveName).toBe('赏赐');
-  expect(characterForNewRun('xiemu').passiveDescription).toContain('付2／4／6／8金');
+  expect(characterForNewRun('xiemu').passiveDescription).toContain('付4／8／12／16金');
   expect(getCharacter('xiemu').passiveDescription).toContain('最后可用出牌');
   expect(characterForNewRun('laohuan').passiveDescription).toContain('多看最多2张');
   expect(characterForNewRun('touye').passiveDescription).toContain('手里已有目标牌型也可押');

@@ -16,6 +16,7 @@ async function setup(){
   vi.stubGlobal('document',doc);vi.stubGlobal('window',win);vi.stubGlobal('navigator',{vibrate,userActivation:{hasBeenActive:true}});
   vi.stubGlobal('localStorage',{getItem:()=>null,setItem:vi.fn()});
   const initial=createRun({seed:'haptic-shop',runId:'haptic-shop',characterId:'laohuan',rulesVersion:'r2',r2Identity:newRunIdentity('laohuan','group'),openingRoute:'group'});
+  initial.gold=10;
   const first=applyCommand(initial,{runId:initial.runId,commandId:'fixture-first-purchase',expectedSeq:initial.commandSeq,action:{type:'BuyOffer',offerId:initial.shop!.offers[0].offerId}});expect(first.ok).toBe(true);if(!first.ok)throw Error(first.code);
   const state=first.state;
   state.gold=100;state.jokers=['b03','b08'].map((id,i)=>r2CreateJoker(id,'held/'+i,8,'none',state));

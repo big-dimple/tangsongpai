@@ -2,7 +2,7 @@ import {createRun,applyCommand,type R2RunState,type Action} from '../../src/doma
 import {newRunIdentity} from '../../src/game/RunLaunch';
 import {lockR2ChapterTargets} from '../../src/domain/r2Chapter';
 import {assertR2Invariants} from '../../src/domain/r2Run';
-import {r2HouseProfile} from '../../src/domain/r2GroupUpgrade';
+import {isR2TightBalance,r2HouseProfile} from '../../src/domain/r2GroupUpgrade';
 
 export function b05Send(state:R2RunState,action:Action):R2RunState {
   const result=applyCommand(state,{runId:state.runId,commandId:state.runId+'/command/'+(state.commandSeq+1),expectedSeq:state.commandSeq,action});
@@ -16,7 +16,7 @@ export function b05Entrance():R2RunState {
   state=b05Send(state,{type:'LeaveShop'});
   Object.assign(state,{shop:null,chapter:3,stageIndex:8,boss:{definitionId:'B05',disabledSuit:null},seenBossIds:['B01','B02','B05'],longTermItems:['U01'],totalHeat:'0'});
   state.routeGrowth={clears:8,G:0,S:0,F:0,settlements:Array.from({length:8},(_,stageIndex)=>({stageIndex,families:[]}))};
-  state.chapterTargetPlan=lockR2ChapterTargets(3,state.tourMode,state.difficulty,state.boss);
+  state.chapterTargetPlan=lockR2ChapterTargets(3,state.tourMode,state.difficulty,state.boss,isR2TightBalance(state));
   assertR2Invariants(state);return state;
 }
 export function b05Arrange(input:R2RunState,ids:string[]):R2RunState {

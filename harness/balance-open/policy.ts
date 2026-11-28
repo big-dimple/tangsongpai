@@ -9,6 +9,7 @@ import {r2JokerCapacity} from '../../src/domain/r2Resources';
 import {ordinaryCardPoints} from '../../src/domain/r2ErxiangHandoff';
 import {touyeSnapshotToken} from '../../src/domain/r2TouyeWager';
 import {AMO_ASSIST_TYPES} from '../../src/domain/r2QualifiedHands';
+import {xiemuTiersFor} from '../../src/domain/r2XiemuBurn';
 
 export const POLICY_VERSION='open-group-v1';
 type PublicScoreInput=Parameters<typeof previewR2Hand>[0];
@@ -70,7 +71,7 @@ export function allPlays(view:View):Choice[]{
       if(stage.azaoCharge!.charge===3||stage.handsLeft===1||release.score>=remaining)rows.push(release);
     }
     if(view.characterId==='xiemu'&&!stage.xiemuBurnUsed&&qualified(base.type)){
-      for(const cost of [3,6,10] as const)if(view.gold>=cost)rows.push(estimate(view,{...action,xiemuBurn:cost}));
+      for(const {cost} of xiemuTiersFor(view))if(view.gold>=cost)rows.push(estimate(view,{...action,xiemuBurn:cost}));
     }
   }
   return rows;
@@ -106,7 +107,7 @@ export function choose(view:View):{action:Action;reason:string;publicEstimate?:s
   if(view.phase==='stage-ready')return {action:{type:'EnterStage'},reason:'enter-next-stage'};
   if(view.phase==='stage-cleared')return {action:{type:'OpenShop'},reason:'open-earned-shop'};
   if(view.phase==='shop'){
-    const reserve=view.characterId==='xiemu'?3:0;
+    const reserve=view.characterId==='xiemu'?xiemuTiersFor(view)[0].cost:0;
     const priority=['b10','b03','mantangcai','b06','b08','tiesuanpan','huimaqiang','pengci'];
     if(view.visitPurchases===0&&view.jokers.length<r2JokerCapacity(view)){
       const offer=priority.map(id=>view.offers.find(o=>o.definitionId===id&&o.price<=view.gold-reserve&&!view.jokers.some(j=>j.definitionId===id))).find(Boolean);

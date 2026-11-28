@@ -6,7 +6,7 @@ import {drawR2Boss,lockR2ChapterTargets} from '../src/domain/r2Chapter';
 import {SeededRng} from '../src/core/SeededRng';
 import {getR2Stage} from '../src/domain/r2Run';
 import {dynamicEndlessAdvanceAnchor,dynamicEndlessStageTarget} from '../src/domain/r2DynamicEndless';
-import {r2DynamicEndlessBase} from '../src/domain/r2GroupUpgrade';
+import {isR2TightBalance,r2DynamicEndlessBase} from '../src/domain/r2GroupUpgrade';
 import {stableHash} from '../src/domain/hash';
 import {SavedRun,type SaveSlots,type SaveStore} from '../src/application/SavedRun';
 
@@ -16,7 +16,7 @@ function nearWin(legacy=false){
  let s:R2RunState|undefined;
  for(let i=0;i<20;i++){const newest=newRunIdentity('azao','group'),identity=legacy?r2DynamicEndlessBase(newest) as {contentVersion:string;contentHash:string}:newest;const x=createRun({rulesVersion:'r2',runId:'dynamic-runtime',seed:'dynamic-runtime-'+i,characterId:'azao',openingRoute:'group',r2Identity:identity,modeConfig:{mode:'standard',difficulty:0,challengeId:null,programsEnabled:false}});if(x.pokerEncounter!.nextAt>7){s=x;break;}}
  if(!s)throw Error('seed');s=send(s,{type:'LeaveShop'}).state;
- s.chapter=8;s.stageIndex=23;s.totalHeat='1000';s.boss={definitionId:'B12',disabledSuit:null};s.seenBossIds=['B01','B02','B05','B06','B07','B08','B13','B12'];s.chapterTargetPlan=lockR2ChapterTargets(8,'normal',0,s.boss);
+ s.chapter=8;s.stageIndex=23;s.totalHeat='1000';s.boss={definitionId:'B12',disabledSuit:null};s.seenBossIds=['B01','B02','B05','B06','B07','B08','B13','B12'];s.chapterTargetPlan=lockR2ChapterTargets(8,'normal',0,s.boss,isR2TightBalance(s));
  s.routeGrowth={clears:7,G:0,S:0,F:0,settlements:[2,5,8,11,14,17,20].map(stageIndex=>({stageIndex,families:[]}))};
  s.deckInstances=Array.from({length:20},(_,i)=>({id:`dynamic/card/${i}`,rank:14 as const,suit:'hearts' as const,enhancement:'encore-paper' as const,edition:'polychrome' as const}));s.drawPile=s.deckInstances.map(c=>c.id);s.handLevels={'flush-five':30};return send(s,{type:'EnterStage'}).state;
 }
