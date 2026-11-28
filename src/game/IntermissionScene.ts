@@ -145,7 +145,12 @@ export class IntermissionScene extends Phaser.Scene {
         if(run.phase==='run-lost'&&run.outcome?.reason!=='abandoned'&&cue?.runId===run.runId&&cue.commandSeq===run.commandSeq)this.audio.failure(cue);
       }
     }
-    this.view=new SceneView(this,()=>this.render());this.render();this.requestSourceArt();
+    this.view=new SceneView(this,()=>this.render());
+    this.view.controllerAction=action=>{
+      if(action==='play')return this.view.activatePrimaryControllerTarget();
+      return false;
+    };
+    this.render();this.requestSourceArt();
     const unmountNoviceGuide=this.noviceGuideHandle=bindNoviceGuide(this,{
       kind:'intermission',
       getGeometry:hint=>{

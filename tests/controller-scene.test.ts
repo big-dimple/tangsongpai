@@ -22,10 +22,16 @@ it('registers full hit geometry and invokes the same guarded action once',()=>{
 });
 it('omits disabled, hidden, destroyed and covered-parent scene targets',()=>{
   const {scene,object}=setup(),provider=controllerScene(scene)!;
-  object.input.enabled=false;expect(provider.targets()).toEqual([]);object.input.enabled=true;
-  object.visible=false;expect(provider.targets()).toEqual([]);object.visible=true;
+  object.input.enabled=false;expect(provider.targets()).toEqual([]);expect(provider.anchors?.()).toEqual([{id:'action/play',box:{x:20,y:40,width:120,height:44},enabled:false,primary:false}]);object.input.enabled=true;
+  object.visible=false;expect(provider.targets()).toEqual([]);expect(provider.anchors?.()).toEqual([]);object.visible=true;
   object.active=false;expect(provider.targets()).toEqual([]);object.active=true;
   object.parentContainer={active:true,visible:false};expect(provider.targets()).toEqual([]);
+});
+it('activates explicit or primary enabled scene targets via helpers',()=>{
+  const {view,object,tap}=setup();
+  expect(view.activateControllerTarget('action/play')).toBe(true);expect(tap).toHaveBeenCalledOnce();
+  object.input.enabled=false;expect(view.activateControllerTarget('action/play')).toBe(false);expect(tap).toHaveBeenCalledOnce();
+  expect(view.activatePrimaryControllerTarget()).toBe(false);
 });
 it('routes scene semantics and unregisters them on shutdown',()=>{
   const {scene,view,events}=setup();view.controllerAction=action=>action==='back';

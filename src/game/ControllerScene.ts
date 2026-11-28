@@ -5,8 +5,16 @@ import type {FocusTarget} from './ControllerFocus';
 export interface ControllerTarget extends FocusTarget {
   activate:()=>void;detail?:()=>void;focus?:()=>void;blur?:()=>void;primary?:boolean;
 }
+export interface ControllerAnchor {
+  id:string;box:FocusTarget['box'];enabled:boolean;primary?:boolean;
+}
+export interface ControllerSceneState {
+  selectedCount?:number;selectedIds?:ReadonlySet<string>;
+}
 export interface ControllerScene {
   targets:()=>ControllerTarget[];
+  anchors?:()=>ControllerAnchor[];
+  state?:()=>ControllerSceneState;
   action?:(action:PadAction,targetId:string|undefined)=>boolean|string;
   scroll?:(delta:number)=>void;
   busy?:()=>boolean;

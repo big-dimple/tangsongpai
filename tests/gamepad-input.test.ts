@@ -36,6 +36,8 @@ describe('controller input edges and navigation',()=>{
     expect(input.sample({...pad([2]),connected:false},40)).toBeUndefined();expect(input.sample(pad([2]),60)).toBeUndefined();
   });
   it('labels Sony and Xbox controls by their actual face positions',()=>{
-    expect(controllerButtonLabels('DualSense Wireless Controller').confirm).toBe('×');expect(controllerButtonLabels('Xbox').play).toBe('X');
+    expect(controllerButtonLabels('DualSense Wireless Controller')).toMatchObject({style:'ps',confirm:'×',back:'○',play:'□',discard:'△',lb:'L1',rb:'R1',lt:'L2',rt:'R2',detailShort:'Share',menuShort:'OPT'});
+    expect(controllerButtonLabels('Xbox')).toMatchObject({style:'xbox',confirm:'A',back:'B',play:'X',discard:'Y',lb:'LB',rb:'RB',lt:'LT',rt:'RT',menuShort:'≡'});
+    expect(controllerButtonLabels('Nintendo Switch Pro Controller')).toMatchObject({style:'nintendo',confirm:'B',back:'A',play:'Y',discard:'X',lb:'L',rb:'R',lt:'ZL',rt:'ZR',menuShort:'+'});
   });
 });

@@ -574,6 +574,7 @@ export class GameScene extends Phaser.Scene {
     this.registry.set('runMenuActions',this.menuActions);
     window.addEventListener('keydown',this.keyboard);
     this.view.controllerBusy=()=>!this.ready||!!this.presentation||!!this.xinRefillSequence?.active;
+    this.view.controllerState=()=>({selectedCount:this.selectedIds.size,selectedIds:this.selectedIds});
     this.view.controllerAction=(action,targetId)=>{
       if(this.presentation||this.xinRefillSequence?.active){if(action==='confirm'||action==='back'||action==='play')this.fastForward();return true;}
       if(!this.ready)return true;
@@ -582,7 +583,7 @@ export class GameScene extends Phaser.Scene {
         this.focusIndex=(Math.max(0,index)+(action==='left'?this.hand.length-1:1))%this.hand.length;
         this.showFocusedCard();return 'card/'+this.hand[this.focusIndex].id;
       }
-      if(action==='back')return this.clearHandDraft();
+      if(action==='back'){this.clearHandDraft();return true;}
       if((action==='previous'||action==='next')&&this.ready){
         const delta=action==='previous'?-1:1;
         if(targetId?.startsWith('card/')){void this.moveHandCard(targetId.slice(5),delta);return true;}

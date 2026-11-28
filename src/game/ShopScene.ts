@@ -298,6 +298,8 @@ export class ShopScene extends Phaser.Scene {
     const ownedLesson=!owner.guidedOpeningSuppressed&&noviceOwnedLesson(run,owner.journal,noviceGuide(run,owner.journal));
     if(ownedLesson)this.ownedCollapsed=!ownedLesson.expanded;
     this.view.controllerAction=(action,targetId)=>{
+      if(action==='play'){if(!this.ready)return true;return this.view.activateControllerTarget('action/start-stage');}
+      if(action==='discard'){if(!this.ready)return true;return this.view.activateControllerTarget('action/reroll');}
       if(action!=='previous'&&action!=='next')return false;
       if(!this.ready)return true;
       if(targetId?.startsWith('joker/')){
@@ -305,8 +307,13 @@ export class ShopScene extends Phaser.Scene {
         if(from>=0&&to>=0&&to<this.run.jokers.length)void this.reorder(from,to,this.run.commandSeq);
         return true;
       }
-      const kinds=['jokers','tools','items'] as const,index=kinds.indexOf(this.shelfKind);
-      this.workshopSelected=false;this.shelfKind=kinds[(index+(action==='previous'?2:1))%3];this.shelfPage=0;this.selectedOfferId=undefined;this.render();return true;
+      const tabs=['jokers','tools','workshop','items'] as const;
+      const current=this.workshopSelected?'workshop':this.shelfKind;
+      const next=tabs[(tabs.indexOf(current)+(action==='previous'?3:1))%4];
+      this.audio.select();
+      if(next==='workshop'){this.openWorkshop();}
+      else{this.workshopSelected=false;this.shelfKind=next;this.shelfPage=0;this.selectedOfferId=undefined;this.render();}
+      return true;
     };
     const clearPreview=()=>this.clearSynergyHighlights(),outside=(event:PointerEvent)=>{if(event.target!==this.game.canvas)clearPreview();},visibility=()=>{if(document.hidden)clearPreview();};
     const otherTarget=(_pointer:Phaser.Input.Pointer,over:Phaser.GameObjects.GameObject[])=>{if(!over.some(o=>o.name==='offer/'+this.synergyOfferId||o.name==='shop/selected-details'))clearPreview();};

@@ -123,3 +123,16 @@ it('the visible control preserves off on reload and explains lack of API without
   vi.stubGlobal('navigator',{});f.doc.dispatchEvent(new Event('pointerup'));expect(input.disabled).toBe(true);expect(hint.textContent).toContain('不提供振动能力');
   remove();expect(input.onchange).toBe(null);expect(parent.children.every(e=>e.remove.mock.calls.length===1)).toBe(true);
 });
+
+it('drives dual-rumble on active gamepads even without navigator.vibrate and resets cleanly',()=>{
+  const f=setup();
+  const playEffect=vi.fn(()=>Promise.resolve('complete')),reset=vi.fn(()=>Promise.resolve());
+  Object.assign(f.doc,{body:{hasAttribute:(name:string)=>name==='data-controller-active'}});
+  vi.stubGlobal('navigator',{getGamepads:()=>[{connected:true,mapping:'standard',vibrationActuator:{playEffect,reset}}]});
+  const scope=f.engine.createScope();
+  scope.selectionChanged(true);expect(playEffect).not.toHaveBeenCalled();
+  scope.saved('purchase','pad/1');
+  expect(playEffect).toHaveBeenCalledWith('dual-rumble',{startDelay:0,duration:42,weakMagnitude:.32,strongMagnitude:.14});
+  f.win.dispatchEvent(new Event('blur'));
+  expect(reset).toHaveBeenCalledOnce();
+});

@@ -10,9 +10,9 @@ const buttons:readonly [number,PadAction][]=[
 ];
 const down=(pad:PadSnapshot,index:number)=>!!pad.buttons[index]?.pressed||(pad.buttons[index]?.value??0)>.55;
 export function controllerButtonLabels(id:string){
-  if(/dualsense|dualshock|playstation|sony|054c/i.test(id))return {confirm:'×',back:'○',play:'□',discard:'△',shoulders:'L1/R1',triggers:'L2/R2',detail:'Share/Create',menu:'Options'};
-  if(/nintendo|pro controller|joy-con|057e/i.test(id))return {confirm:'B',back:'A',play:'Y',discard:'X',shoulders:'L/R',triggers:'ZL/ZR',detail:'−',menu:'+'};
-  return {confirm:'A',back:'B',play:'X',discard:'Y',shoulders:'LB/RB',triggers:'LT/RT',detail:'View',menu:'≡'};
+  if(/dualsense|dualshock|playstation|sony|054c/i.test(id))return {style:'ps' as const,confirm:'×',back:'○',play:'□',discard:'△',shoulders:'L1/R1',lb:'L1',rb:'R1',triggers:'L2/R2',lt:'L2',rt:'R2',detail:'Share/Create',detailShort:'Share',menu:'Options',menuShort:'OPT'};
+  if(/nintendo|pro controller|joy-con|057e/i.test(id))return {style:'nintendo' as const,confirm:'B',back:'A',play:'Y',discard:'X',shoulders:'L/R',lb:'L',rb:'R',triggers:'ZL/ZR',lt:'ZL',rt:'ZR',detail:'−',detailShort:'−',menu:'+',menuShort:'+'};
+  return {style:'xbox' as const,confirm:'A',back:'B',play:'X',discard:'Y',shoulders:'LB/RB',lb:'LB',rb:'RB',triggers:'LT/RT',lt:'LT',rt:'RT',detail:'View',detailShort:'View',menu:'≡',menuShort:'≡'};
 }
 
 /** Standard browser mapping. Only navigation repeats; reconnect/focus requires neutral controls. */

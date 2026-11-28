@@ -20,6 +20,10 @@ export interface HapticScope {
   cancel():void;
 }
 type Cue='selection'|'pickup'|'placement'|'purchase'|'multiplier'|'settlement';
+interface DualRumbleActuator {
+  playEffect?:(type:'dual-rumble',params:{startDelay:number;duration:number;weakMagnitude:number;strongMagnitude:number})=>Promise<unknown>;
+  reset?:()=>Promise<unknown>;
+}
 const CUES:Record<Cue,{pattern:number[];priority:number;quiet:number}>={
   selection:{pattern:[6],priority:1,quiet:90},
   pickup:{pattern:[12],priority:1,quiet:90},
@@ -27,6 +31,12 @@ const CUES:Record<Cue,{pattern:number[];priority:number;quiet:number}>={
   purchase:{pattern:[12,30,18],priority:2,quiet:180},
   multiplier:{pattern:[22],priority:3,quiet:600},
   settlement:{pattern:[28,45,36],priority:4,quiet:850},
+};
+const RUMBLE:Partial<Record<Cue,{duration:number;weak:number;strong:number;priority:number;quiet:number}>>={
+  placement:{duration:24,weak:.22,strong:.06,priority:2,quiet:180},
+  purchase:{duration:42,weak:.32,strong:.14,priority:2,quiet:180},
+  multiplier:{duration:55,weak:.42,strong:.22,priority:3,quiet:600},
+  settlement:{duration:95,weak:.55,strong:.42,priority:4,quiet:850},
 };
 
 /** One app-scoped Vibration API owner. No timers, backlog or catch-up vibration.
@@ -42,7 +52,9 @@ export class Haptics {
   private disposed=false;
   private epoch=0;
   private active?:{owner:object;until:number;priority:number;quietUntil:number};
+  private rumbleActive?:{owner:object;until:number;priority:number;quietUntil:number};
   private multiplierAt=-Infinity;
+  private rumbleMultiplierAt=-Infinity;
   private savedReceipts=new Set<string>();
   private listeners=new Set<(state:HapticState)=>void>();
   private readonly doc=typeof document==='undefined'?undefined:document;
@@ -86,7 +98,7 @@ export class Haptics {
     const cancel=()=>{
       if(canceled)return;canceled=true;signal?.removeEventListener('abort',cancel);
       // A stale interaction must not stop a newer owner's critical beat.
-      if(this.active?.owner===owner)this.halt();
+      if(this.active?.owner===owner||this.rumbleActive?.owner===owner)this.halt();
     };
     const scope:HapticScope={
       selectionChanged:touch=>{if(touch&&live()&&!settled)this.request('selection',owner);},
@@ -110,23 +122,58 @@ export class Haptics {
     return scope;
   }
   private request(cue:Cue,owner:object):boolean {
-    if(this.disposed||this.getState().availability!=='ready')return false;
+    const rumbled=this.rumbleGamepad(cue,owner);
+    if(this.disposed||this.getState().availability!=='ready')return rumbled;
     const now=performance.now(),next=CUES[cue],active=this.active;
     // A leading beat represents its burst. Drop the rest; never play a delayed tail.
-    if(active&&now<active.quietUntil&&next.priority<=active.priority)return false;
-    if(active&&now<active.until&&next.priority<=active.priority)return false;
-    if(cue==='multiplier'&&now-this.multiplierAt<600)return false;
+    if(active&&now<active.quietUntil&&next.priority<=active.priority)return rumbled;
+    if(active&&now<active.until&&next.priority<=active.priority)return rumbled;
+    if(cue==='multiplier'&&now-this.multiplierAt<600)return rumbled;
     try{
       // A true return means only that the browser accepted the request.
-      if(!navigator.vibrate([...next.pattern]))return false;
+      if(!navigator.vibrate([...next.pattern]))return rumbled;
       this.active={owner,until:now+next.pattern.reduce((a,b)=>a+b,0),priority:next.priority,quietUntil:now+next.quiet};
       if(cue==='multiplier')this.multiplierAt=now;
       return true;
+    }catch{return rumbled;}
+  }
+  private rumbleGamepad(cue:Cue,owner:object):boolean {
+    if(this.disposed||!this.enabled||this.doc?.visibilityState!=='visible'||!this.doc?.body?.hasAttribute?.('data-controller-active'))return false;
+    const spec=RUMBLE[cue];if(!spec)return false;
+    const now=performance.now(),active=this.rumbleActive;
+    if(active&&now<active.quietUntil&&spec.priority<=active.priority)return false;
+    if(active&&now<active.until&&spec.priority<=active.priority)return false;
+    if(cue==='multiplier'&&now-this.rumbleMultiplierAt<600)return false;
+    const nav=typeof navigator==='undefined'?undefined:navigator;
+    if(typeof nav?.getGamepads!=='function')return false;
+    let triggered=false;
+    try{
+      for(const pad of nav.getGamepads()??[]){
+        if(!pad?.connected||pad.mapping!=='standard')continue;
+        const actuator=(pad as Gamepad&{vibrationActuator?:DualRumbleActuator}).vibrationActuator;
+        if(typeof actuator?.playEffect!=='function')continue;
+        void Promise.resolve(actuator.playEffect('dual-rumble',{startDelay:0,duration:spec.duration,weakMagnitude:spec.weak,strongMagnitude:spec.strong})).catch(()=>{});
+        triggered=true;
+      }
     }catch{return false;}
+    if(!triggered)return false;
+    this.rumbleActive={owner,until:now+spec.duration,priority:spec.priority,quietUntil:now+spec.quiet};
+    if(cue==='multiplier')this.rumbleMultiplierAt=now;
+    return true;
   }
   private halt():void {
     const active=this.active;this.active=undefined;
     if(active)try{navigator.vibrate(0);}catch{/* Optional hardware must not interrupt the game. */}
+    const rumble=this.rumbleActive;this.rumbleActive=undefined;
+    if(rumble){
+      try{
+        for(const pad of navigator?.getGamepads?.()??[]){
+          if(!pad?.connected||pad.mapping!=='standard')continue;
+          const actuator=(pad as Gamepad&{vibrationActuator?:DualRumbleActuator}).vibrationActuator;
+          if(typeof actuator?.reset==='function')void Promise.resolve(actuator.reset()).catch(()=>{});
+        }
+      }catch{/* Optional hardware must not interrupt the game. */}
+    }
   }
   /** Invalidate all old scopes as well as stopping the currently requested pattern. */
   stop():void {this.epoch++;this.halt();}

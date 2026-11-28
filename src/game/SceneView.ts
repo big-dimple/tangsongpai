@@ -11,7 +11,7 @@ import {crispText} from './TextRaster';
 import {keepChinesePunctuation} from './ChineseTextWrap';
 import {drawHandActionGlyph,type HandButtonSkin} from './HandActionArt';
 import {attachHandSortVisual,isHandSortControl} from './HandSortButtonVisual';
-import {registerControllerScene,type ControllerTarget} from './ControllerScene';
+import {registerControllerScene,type ControllerAnchor,type ControllerSceneState,type ControllerTarget} from './ControllerScene';
 import type {PadAction} from '../platform/GamepadInput';
 import {bakedAtelierBackdrop} from './AtelierArt';
 
@@ -23,6 +23,7 @@ export class SceneView {
   controllerAction?:(action:PadAction,targetId:string|undefined)=>boolean|string;
   controllerScroll?:(delta:number)=>void;
   controllerBusy?:()=>boolean;
+  controllerState?:()=>ControllerSceneState;
   private gestures=new Map<Phaser.GameObjects.GameObject,TouchActions>();
   private intent=new PointerIntent();
   private pressed?:{object:Phaser.GameObjects.GameObject;actions:TouchActions;id:number;held:boolean;touch:boolean;x:number;y:number;dragging:boolean;at:number;downTime:number};
@@ -87,7 +88,7 @@ export class SceneView {
   constructor(private readonly scene:Phaser.Scene,private readonly redraw:()=>void,private readonly handWindow?:()=>HandWindow){
     alignViewportCamera(scene);
     this.root=scene.add.container(0,0).setName('view');
-    const stopController=registerControllerScene(scene,{targets:()=>this.controllerTargets(),action:(action,id)=>this.controllerAction?.(action,id)??false,scroll:delta=>this.controllerScroll?.(delta),busy:()=>this.controllerBusy?.()??false});
+    const stopController=registerControllerScene(scene,{targets:()=>this.controllerTargets(),anchors:()=>this.controllerAnchors(),state:()=>this.controllerState?.()??{},action:(action,id)=>this.controllerAction?.(action,id)??false,scroll:delta=>this.controllerScroll?.(delta),busy:()=>this.controllerBusy?.()??false});
     scene.events.once('shutdown',stopController);
     scene.input.on('pointerdown',this.down);scene.input.on('pointermove',this.move);scene.input.on('pointerup',this.up);scene.input.on('pointerupoutside',this.cancel);
     scene.game.canvas.addEventListener('pointercancel',this.cancel);scene.scale.on('resize',this.resize);
@@ -112,6 +113,29 @@ export class SceneView {
         detail:actions.detail,blur:actions.blur,focus:()=>{actions.focus?.();for(let parent=target.parentContainer;parent;parent=parent.parentContainer){const reveal=parent.getData('controllerReveal') as ((box:Box)=>void)|undefined;reveal?.(target.getBounds());}}});
     }
     return result;
+  }
+  private controllerAnchors():ControllerAnchor[] {
+    const result:ControllerAnchor[]=[];
+    for(const [object] of this.gestures){
+      const target=object as Phaser.GameObjects.Rectangle;
+      if(!target.active||!target.visible)continue;
+      let hidden=false;for(let parent=target.parentContainer;parent;parent=parent.parentContainer)if(!parent.visible||!parent.active){hidden=true;break;}
+      if(hidden)continue;
+      const bounds=target.getBounds();
+      if(bounds.width<=0||bounds.height<=0)continue;
+      result.push({id:target.name,box:{x:bounds.x,y:bounds.y,width:bounds.width,height:bounds.height},enabled:this.scene.input.enabled&&!!target.input?.enabled,primary:!!target.getData('buttonPrimary')});
+    }
+    return result;
+  }
+  activateControllerTarget(id:string):boolean {
+    const target=this.controllerTargets().find(candidate=>candidate.id===id);
+    if(!target)return false;
+    target.activate();return true;
+  }
+  activatePrimaryControllerTarget():boolean {
+    const target=this.controllerTargets().find(candidate=>candidate.primary);
+    if(!target)return false;
+    target.activate();return true;
   }
   get layout():TableLayout {
     const viewport=cssViewport(this.scene),insets=viewportSafeInsets(),bounds=this.scene.scale.canvasBounds;

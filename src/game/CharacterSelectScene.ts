@@ -75,7 +75,8 @@ export class CharacterSelectScene extends Phaser.Scene {
     this.view=new SceneView(this,()=>this.render());
     this.view.controllerAction=action=>{
       if(action==='back'){void this.cancelChoice();return true;}
-      if(this.choosing){if(action==='confirm'&&this.confirming)this.entryParticles?.skipConfirm();return true;}
+      if(this.choosing){if((action==='confirm'||action==='play')&&this.confirming)this.entryParticles?.skipConfirm();return true;}
+      if(action==='play')return this.view.activateControllerTarget('action/confirm-character');
       return false;
     };
     this.entryParticles=new SelectionEntryParticles(this,()=>this.reducedMotion(),()=>this.audio.sourceCue('character'));

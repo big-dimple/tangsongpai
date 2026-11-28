@@ -1,19 +1,40 @@
-.controller-focus-ring{position:fixed;box-sizing:border-box;z-index:200;pointer-events:none;border:3px solid #b8473a;border-radius:7px;box-shadow:0 0 0 2px #fff9ee;}
-.controller-hints{position:fixed;inset:auto 0 0;z-index:201;box-sizing:border-box;height:calc(var(--controller-bar-height,34px) + env(safe-area-inset-bottom,0px));padding:6px 10px env(safe-area-inset-bottom,0px);background:#fff9ee;color:#26313a;border-top:1px solid #c7b89d;font:12px/20px var(--ui-font);text-align:center;pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.controller-focus-ring[hidden],.controller-hints[hidden]{display:none;}
-[data-controller-focus]{outline:3px solid #b8473a!important;outline-offset:2px;}
-body[data-controller-connected]{--controller-bar-height:34px;}
-body[data-controller-connected] #app{height:calc(100dvh - var(--controller-bar-height) - env(safe-area-inset-bottom,0px));}
-body[data-controller-connected] .title-home{bottom:calc(var(--controller-bar-height) + env(safe-area-inset-bottom,0px));}
-body[data-controller-connected] .detail-dialog[open]{max-height:calc(100dvh - var(--safe-top) - var(--safe-bottom) - var(--controller-bar-height) - 30px);}
-body[data-controller-connected] .run-menu-panel{max-height:calc(100dvh - var(--safe-top) - var(--safe-bottom) - var(--controller-bar-height) - 82px);}
+.controller-focus-ring{position:fixed;box-sizing:border-box;z-index:200;pointer-events:none;border:2.5px solid #f5deb0;border-radius:8px;box-shadow:0 0 0 2px rgba(9,22,26,.92),0 0 14px rgba(240,211,148,.45);transition:left 75ms cubic-bezier(.22,1,.36,1),top 75ms cubic-bezier(.22,1,.36,1),width 75ms cubic-bezier(.22,1,.36,1),height 75ms cubic-bezier(.22,1,.36,1);}
+.controller-focus-ring.is-snap{transition:none;}
+.controller-focus-ring[hidden],.controller-glyph-layer[hidden],.controller-card-pill[hidden]{display:none;}
+[data-controller-focus]{outline:2.5px solid #f5deb0!important;outline-offset:2px;box-shadow:0 0 0 4px rgba(9,22,26,.82),0 0 14px rgba(240,211,148,.35);}
 body[data-controller-active] canvas{outline:0;}
-@media(max-width:900px){body[data-controller-connected]{--controller-bar-height:54px;}.controller-hints{white-space:normal;font-size:11px;}}
-/* At the minimum-height PC table, keep its 640px canvas and use the empty top rail. */
-@media (min-width:1180px) and (min-height:640px) and (max-height:850px){
- body[data-controller-connected][data-pc-table-active] #app{height:100dvh;}
- body[data-controller-connected][data-pc-table-active] > .controller-hints{inset:var(--safe-top) calc(96px + var(--safe-right)) auto var(--safe-left);z-index:40;height:34px;padding:6px 10px;}
-}
 .whole-action-surface:has(button:not(:disabled)){cursor:pointer;}
-.whole-action-surface:has(button:not(:disabled)):hover{border-color:#3f606b;background-color:#e2e8e5;}
-.whole-action-surface:focus-within{outline:2px solid #3f606b;outline-offset:2px;}
+.whole-action-surface:has(button:not(:disabled)):hover{border-color:#c9a86a;background-color:rgba(31,66,74,.78);}
+.whole-action-surface:focus-within{outline:2px solid #e5c98a;outline-offset:2px;}
+
+.controller-glyph-layer{position:fixed;inset:0;z-index:202;pointer-events:none;overflow:hidden;}
+.controller-badge{position:fixed;transform:translate(-50%,-50%);box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;border-radius:999px;font:700 10.5px/1 var(--ui-font);letter-spacing:.02em;white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,.62),0 0 0 1.5px rgba(8,20,24,.9);text-shadow:0 1px 1px rgba(0,0,0,.45);user-select:none;}
+.controller-badge.is-inline{position:static;transform:none;min-width:17px;height:17px;padding:0 4px;font-size:9.5px;box-shadow:0 1px 3px rgba(0,0,0,.45);}
+.controller-badge[data-role="shoulder"],.controller-badge[data-role="trigger"],.controller-badge[data-role="menu"],.controller-badge[data-role="detail"]{border-radius:5px;min-width:24px;height:18px;padding:0 5px;background:#162b31;color:#f4e4c2;border:1px solid rgba(229,201,138,.72);}
+.controller-badge.is-inline[data-role="shoulder"],.controller-badge.is-inline[data-role="detail"]{min-width:20px;height:16px;padding:0 4px;}
+.controller-badge.is-dim{opacity:.42;filter:saturate(.45);}
+
+[data-pad-style="xbox"] .controller-badge[data-role="confirm"]{background:#2b8252;color:#f6fff9;border:1px solid #8de0b0;}
+[data-pad-style="xbox"] .controller-badge[data-role="back"]{background:#b73b33;color:#fff6f2;border:1px solid #f2a29a;}
+[data-pad-style="xbox"] .controller-badge[data-role="play"]{background:#286db0;color:#f2f8ff;border:1px solid #8ec4f5;}
+[data-pad-style="xbox"] .controller-badge[data-role="discard"]{background:#ba7f1b;color:#fffaf0;border:1px solid #f4d082;}
+
+[data-pad-style="ps"] .controller-badge[data-role="confirm"],[data-pad-style="ps"] .controller-badge[data-role="back"],[data-pad-style="ps"] .controller-badge[data-role="play"],[data-pad-style="ps"] .controller-badge[data-role="discard"]{background:#1b262d;border-width:1.5px;border-style:solid;}
+[data-pad-style="ps"] .controller-badge[data-role="confirm"]{color:#82baff;border-color:#6ea9f2;}
+[data-pad-style="ps"] .controller-badge[data-role="back"]{color:#f48c84;border-color:#e27770;}
+[data-pad-style="ps"] .controller-badge[data-role="play"]{color:#e89cc8;border-color:#d685b4;}
+[data-pad-style="ps"] .controller-badge[data-role="discard"]{color:#79daa8;border-color:#65c694;}
+
+[data-pad-style="nintendo"] .controller-badge[data-role="confirm"],[data-pad-style="nintendo"] .controller-badge[data-role="back"],[data-pad-style="nintendo"] .controller-badge[data-role="play"],[data-pad-style="nintendo"] .controller-badge[data-role="discard"]{background:#222c30;color:#f4ebd8;border:1px solid #dfc07c;}
+
+.controller-card-pill{position:fixed;z-index:203;pointer-events:none;transform:translate(-50%,-100%);display:inline-flex;align-items:center;gap:7px;padding:3px 9px;border-radius:999px;background:rgba(10,25,30,.93);border:1px solid rgba(229,201,138,.58);box-shadow:0 4px 14px rgba(0,0,0,.52);color:#f1e9d6;font:600 11px/1.2 var(--ui-font);white-space:nowrap;}
+.controller-card-pill-item{display:inline-flex;align-items:center;gap:3px;}
+
+@media (max-width:600px){
+  .controller-badge:not(.is-inline){min-width:18px;height:18px;font-size:9.5px;padding:0 4px;}
+  .controller-badge:not(.is-inline)[data-role="shoulder"],.controller-badge:not(.is-inline)[data-role="trigger"],.controller-badge:not(.is-inline)[data-role="menu"]{min-width:21px;height:16px;padding:0 4px;}
+  .controller-card-pill{font-size:10px;padding:2px 7px;gap:5px;}
+}
+@media (prefers-reduced-motion:reduce){
+  .controller-focus-ring,.controller-card-pill{transition:none;}
+}
