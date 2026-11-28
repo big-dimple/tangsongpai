@@ -18,9 +18,10 @@ it('does not replace a failed start with a confirmation dialog or retry it',asyn
  session.run={state:{phase:'shop'}};const scene=selection();scene.choose.mockResolvedValue(false);await confirm.call(scene as unknown as CharacterSelectScene);
  expect(scene.choose).toHaveBeenCalledOnce();expect(scene.dialog.open).not.toHaveBeenCalled();
 });
-it('hero confirmation still advances to route selection before starting',async()=>{
- const scene={...selection(),step:'hero',notice:'old notice',render:vi.fn(),audio:{select:vi.fn()}};
- await confirm.call(scene as unknown as CharacterSelectScene);expect(scene.step).toBe('route');expect(scene.notice).toBe('');expect(scene.render).toHaveBeenCalledOnce();expect(scene.choose).not.toHaveBeenCalled();
+it('hero confirmation assigns a default route and starts directly without a second step',async()=>{
+ const scene={...selection(),step:'hero',selectedRoute:undefined,notice:'old notice',render:vi.fn(),audio:{select:vi.fn()}};
+ await confirm.call(scene as unknown as CharacterSelectScene);
+ expect(scene.step).toBe('hero');expect(BUILD_FOCUS).toContain(scene.selectedRoute);expect(scene.choose).toHaveBeenCalledOnce();
 });
 it.each([false,true])('repeated confirmation while starting never calls choose again: presentation=%s',async confirming=>{
  const scene={...selection(),choosing:true,confirming,entryParticles:{skipConfirm:vi.fn()}};

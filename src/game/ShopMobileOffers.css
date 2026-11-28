@@ -1,23 +1,23 @@
 .shop-mobile-offers { position:fixed;z-index:3;overflow:auto;overscroll-behavior:contain;touch-action:pan-y;box-sizing:border-box;padding:8px 10px;color:#f6efe0;font:15px/1.5 var(--ui-font);scrollbar-width:thin;scroll-padding-block:12px; }
-.shop-mobile-offer { position:relative;padding:0 0 6px;margin:0 0 8px;border:1px solid rgba(216,180,108,0.42);border-radius:6px;background:linear-gradient(155deg,#18373e,#11292f);box-shadow:0 4px 12px rgba(4,10,13,0.34),inset 0 1px 0 rgba(245,222,176,0.14);overflow:hidden; }
+.shop-mobile-offer { position:relative;padding:0 0 6px;margin:0 0 8px;border:1px solid rgba(216,180,108,0.42);border-radius:6px;background:linear-gradient(155deg,#221b26,#17121b);box-shadow:0 4px 12px rgba(6,4,10,0.36),inset 0 1px 0 rgba(245,222,176,0.14);overflow:hidden; }
 .shop-mobile-offer:last-child { margin-bottom:0; }
 .shop-mobile-offer-main { display:grid;grid-template-columns:clamp(104px,35vw,150px) minmax(0,1fr);gap:14px;align-items:start;width:100%;min-height:44px;padding:12px 12px 4px;border:0;border-radius:0;background:transparent;box-shadow:none;text-align:left;color:inherit;font:inherit;touch-action:pan-y; }
 .shop-mobile-offer-main:hover { box-shadow:none;transform:none; }
-@media (hover:hover) { .shop-mobile-offer-main:hover { background:rgba(36,78,86,0.55); } }
-.shop-mobile-offer-main:active { background:rgba(30,66,74,0.75); }
+@media (hover:hover) { .shop-mobile-offer-main:hover { background:rgba(48,37,56,0.55); } }
+.shop-mobile-offer-main:active { background:rgba(40,30,48,0.75); }
 .shop-mobile-offer-main:focus-visible { outline:3px solid #f5deb0;outline-offset:-3px; }
 .shop-mobile-offer-main:disabled { opacity:.55; }
-.shop-mobile-offer-art { display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:contain;padding:4px;box-sizing:border-box;border:1px solid #d8b46c;border-radius:4px;background:#0d1f24;box-shadow:inset 0 0 0 2px rgba(216,180,108,0.22); }
+.shop-mobile-offer-art { display:block;width:100%;height:auto;aspect-ratio:4/5;object-fit:contain;padding:4px;box-sizing:border-box;border:1px solid #d8b46c;border-radius:4px;background:#130f16;box-shadow:inset 0 0 0 2px rgba(216,180,108,0.22); }
 .shop-mobile-offer-art[hidden] { display:none; }
 .shop-mobile-offer-copy { display:flex;flex-direction:column;gap:7px;min-width:0;padding-top:2px; }
 .shop-mobile-offer-heading { display:flex;flex-direction:column;gap:5px;min-height:44px;padding-inline-end:44px; }
 .shop-mobile-offer-copy strong { color:#fff5dd;font:400 18px/1.3 var(--display-font);letter-spacing:.03em; }
-.shop-mobile-offer-identity { color:#9ebdb5;font-size:13px;letter-spacing:.04em; }
-.shop-mobile-offer-summary { display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;color:#d6e7e1;font-size:14px;white-space:pre-line; }
+.shop-mobile-offer-identity { color:#c2b5a8;font-size:13px;letter-spacing:.04em; }
+.shop-mobile-offer-summary { display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;color:#dfd6c8;font-size:14px;white-space:pre-line; }
 .shop-mobile-offer-extra { color:#e2a8f5;font-size:14px; }
 .shop-mobile-offer-price { display:flex;align-items:baseline;flex-wrap:wrap;gap:3px 12px;margin-top:2px;padding-top:6px;border-top:1px solid rgba(216,180,108,0.28);color:#f4cf7a;font-size:17px;font-weight:700;font-variant-numeric:tabular-nums; }
-.shop-mobile-offer-price small {color:#8ed1c0;font-size:13px;font-weight:500;}
-.shop-mobile-offer[data-state=owned] .shop-mobile-offer-price {color:#8ea6a0;}
+.shop-mobile-offer-price small {color:#e4b86a;font-size:13px;font-weight:500;}
+.shop-mobile-offer[data-state=owned] .shop-mobile-offer-price {color:#9b8f87;}
 .shop-mobile-offer-reason { margin-top:1px;padding:5px 8px;border-left:3px solid #e06b5c;background:rgba(184,66,52,0.22);font-size:13px;color:#ffb4a6; }
 .shop-mobile-offer-zoom { position:absolute;inset-block-start:8px;inset-inline-end:2px;display:block;height:44px;width:44px;min-height:44px;min-width:44px;margin:0;padding:0;border:0;background:transparent;color:#e2c78e;box-shadow:none;font-size:14px;text-decoration:underline;text-underline-offset:4px; }
 .shop-mobile-offer-main.without-art { grid-template-columns:minmax(0,1fr); }
@@ -28,4 +28,4 @@
  .shop-mobile-offer-heading { gap:2px; }
  .shop-mobile-offer-copy strong { font-size:16px; }
 }
-.shop-mobile-offer { background-image:linear-gradient(155deg,#18373e,#11292f);background-size:auto; }
+.shop-mobile-offer { background-image:linear-gradient(155deg,#221b26,#17121b);background-size:auto; }

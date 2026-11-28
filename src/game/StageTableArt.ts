@@ -28,11 +28,11 @@ export function stageTableArtPlan(l:TableLayout):StageTableArtPlan {
  if(l.mode==='desktop'&&imageHeight>=112)plan.portrait={x:l.hud.x+(l.hud.width-100)/2,y:imageTop,width:100,height:imageHeight};
  return plan;
 }
-/** Twilight celadon-lacquer desk, lantern-lit hero niche, jade river playmat and ivory card contrasts. */
+/** Rosewood-obsidian lacquer desk, lantern-lit hero niche, warm velvet playmat and ivory card contrasts. */
 export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:CharacterId,inspectHero?:()=>void,legacyPortrait=true,finale=false):void {
  const plan=stageTableArtPlan(view.layout);
  const playMat=(g:Phaser.GameObjects.Graphics,b:Box)=>{
-  g.fillStyle(0x143832).fillRoundedRect(b.x,b.y,b.width,b.height,7);
+  g.fillStyle(0x21171c).fillRoundedRect(b.x,b.y,b.width,b.height,7);
   g.lineStyle(1,0xd8b46c,.72).strokeRoundedRect(b.x+.5,b.y+.5,b.width-1,b.height-1,7);
   const inset=6,arm=Math.max(5,Math.min(20,b.height*.16));
   for(const [x,y,dx,dy] of [[b.x+inset,b.y+inset,1,1],[b.x+b.width-inset,b.y+inset,-1,1],[b.x+inset,b.y+b.height-inset,1,-1],[b.x+b.width-inset,b.y+b.height-inset,-1,-1]]){
@@ -60,15 +60,15 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
   const buildBox:Box={x:build.x,y:build.y-4,width:build.width,height:build.height+8};
   const handTray:Box={x:main.x,y:l.hand.y-8,width:main.width,height:l.actions.y+l.actions.height-l.hand.y+16};
   const heroSlot=l.pc!.heroPortrait;
-  addLacquer(g,['pc-atelier',finale,l.width,l.height,frame,main,build,l.hud,stage,l.scoreBoard,l.hand,l.actions],(c,page)=>{
+  addLacquer(g,['pc-rosewood-atelier',finale,l.width,l.height,frame,main,build,l.hud,stage,l.scoreBoard,l.hand,l.actions],(c,page)=>{
    paintAtelierBackdrop(c,page,{finale,holes:[{box:outerBox,radius:6}]});
    paintLacquerPanel(c,outerBox,6,'panel',{corners:true,shadow:true});
    paintLacquerPanel(c,hudBox,4,'inset',{shadow:false,accentBar:'gold'});
    if(heroSlot)paintLanternHalo(c,heroSlot.x+heroSlot.width*.5,heroSlot.y+heroSlot.height*.44,heroSlot.width*.46,heroSlot.height*.38,.95);
    paintLacquerPanel(c,buildBox,4,'inset',{shadow:false});
-   // Preserve clean felt river playmat inside outer lacquer surround
+   // Preserve clean warm rosewood-velvet playmat inside outer lacquer surround
    c.save();
-   c.fillStyle='#143832';
+   c.fillStyle='#21171c';
    c.beginPath();c.roundRect(stage.x,stage.y,stage.width,stage.height,7);c.fill();
    c.strokeStyle='rgba(216,180,108,0.72)';c.lineWidth=1;c.stroke();
    c.restore();
@@ -84,7 +84,7 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
  function sheet(name:string,b:Box,color:number,edge:number,shadow=false):void {
   if(b.width<=0||b.height<=0)return;
   const g=scene.add.graphics().setName('table-art/'+name).setData('bounds',{...b});
-  if(shadow)g.fillStyle(0x040b0e,.42).fillRoundedRect(b.x,b.y+3,b.width,b.height,8);
+  if(shadow)g.fillStyle(0x06040a,.46).fillRoundedRect(b.x,b.y+3,b.width,b.height,8);
   g.fillStyle(color,.96).fillRoundedRect(b.x,b.y,b.width,b.height,8).lineStyle(1,edge,.52).strokeRoundedRect(b.x+.5,b.y+.5,b.width-1,b.height-1,8);
   const inset=5,corner=Math.min(16,b.height/5);g.lineStyle(1,0xf5deb0,.32);
   for(const [x,y,dx,dy] of [[b.x+inset,b.y+inset,1,1],[b.x+b.width-inset,b.y+b.height-inset,-1,-1]])g.beginPath().moveTo(x,y+dy*corner).lineTo(x,y).lineTo(x+dx*corner,y).strokePath();
@@ -93,25 +93,25 @@ export function drawStageTableArt(scene:Phaser.Scene,view:SceneView,characterId:
  if(view.layout.mode==='portrait'){
   const l=view.layout,accent=scene.add.graphics().setName('table-art/mobile-arena').setData('bounds',plan.surface);
   accent.fillStyle(A.lacquer,.98).fillRoundedRect(plan.surface.x,plan.surface.y,plan.surface.width,plan.surface.height,4);
-  accent.fillStyle(0x143137,.98).fillRect(plan.program.x,plan.program.y,plan.program.width,plan.program.height);
+  accent.fillStyle(0x1b1520,.98).fillRect(plan.program.x,plan.program.y,plan.program.width,plan.program.height);
   accent.fillStyle(A.panel,.96).fillRoundedRect(l.scoreBoard.x,l.scoreBoard.y,l.scoreBoard.width,l.scoreBoard.height,4);
   const mat={...l.playedArea,height:Math.max(l.playedArea.height,l.heroAction.y-5-l.playedArea.y)};
   playMat(accent,mat);
   const handTray:Box={x:l.hand.x-4,y:l.hand.y-8,width:l.hand.width+8,height:l.actions.y+l.actions.height-l.hand.y+12};
   accent.fillStyle(A.panelInset,.98).fillRect(handTray.x,handTray.y,handTray.width,handTray.height);
   const matBox=mat,scoreBox=l.scoreBoard;
-  addLacquer(accent,['portrait-atelier',finale,l.width,l.height,plan.surface,plan.program,scoreBox,matBox,l.hand,l.actions],(c,page)=>{
+  addLacquer(accent,['portrait-rosewood-atelier',finale,l.width,l.height,plan.surface,plan.program,scoreBox,matBox,l.hand,l.actions],(c,page)=>{
    paintAtelierBackdrop(c,page,{finale});
    paintLacquerPanel(c,plan.surface,4,'panel',{shadow:true});
    c.save();
-   c.fillStyle='#133036';
+   c.fillStyle='#1b1520';
    c.fillRect(plan.program.x,plan.program.y,plan.program.width,plan.program.height);
    c.strokeStyle='rgba(216,180,108,0.48)';c.lineWidth=1;
    c.beginPath();c.moveTo(plan.program.x,plan.program.y+plan.program.height-.5);c.lineTo(plan.program.x+plan.program.width,plan.program.y+plan.program.height-.5);c.stroke();
    c.restore();
    paintLacquerPanel(c,scoreBox,4,'score',{shadow:true,accentBar:'gold'});
    c.save();
-   c.fillStyle='#143832';
+   c.fillStyle='#21171c';
    c.beginPath();c.roundRect(matBox.x,matBox.y,matBox.width,matBox.height,7);c.fill();
    c.strokeStyle='rgba(216,180,108,0.68)';c.lineWidth=1;c.stroke();
    c.restore();

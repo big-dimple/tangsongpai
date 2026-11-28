@@ -2,7 +2,8 @@ import {afterEach,beforeEach,describe,expect,it,vi} from 'vitest';
 
 const session=vi.hoisted(()=>({reducedMotion:false,speed:1 as 1|2|4}));
 vi.mock('../src/game/session',()=>({gameSession:()=>session}));
-import {PAPER_TRANSITION,beginPaperTransition,paperTransitionAllowed,paperTransitionPlan} from '../src/game/PaperTransition';
+import {PAPER_TRANSITION,beginPaperTransition,paperTransitionAllowed,paperTransitionPlan,transitionShaderKind} from '../src/game/PaperTransition';
+import {PHYSICAL_SHADERS,PHYSICAL_TRANSITION_DURATIONS_MS,physicalTransitionDurationMs,solveHomography} from '../src/game/CinematicTransitions';
 
 type Listener=(event?:unknown)=>void;
 function emitter(){
@@ -14,7 +15,7 @@ function emitter(){
     count:()=>[...listeners.values()].reduce((n,set)=>n+set.size,0)};
 }
 function element(animate=true){
-  const node:any={style:{},dataset:{},children:[] as any[],attributes:{} as Record<string,string>,removed:false,animations:[] as any[]};
+  const node:any={style:{},dataset:{},children:[] as any[],attributes:{} as Record<string,string>,removed:false,animations:[] as any[],getContext:()=>null};
   node.setAttribute=(k:string,v:string)=>{node.attributes[k]=v;};node.append=(...items:any[])=>{node.children.push(...items);};node.remove=()=>{node.removed=true;};
   if(animate)node.animate=vi.fn((frames:unknown,options:unknown)=>{const a:any={frames,options,cancelled:false,cancel(){a.cancelled=true;a.oncancel?.();}};node.animations.push(a);return a;});
   return node;
@@ -30,7 +31,16 @@ beforeEach(()=>{session.reducedMotion=false;session.speed=1;vi.useFakeTimers();}
 afterEach(()=>{vi.useRealTimers();vi.unstubAllGlobals();});
 
 describe('paper transitions',()=>{
-  it('covers within 90ms and is gone within 360ms; faster presentation shortens it',()=>{
+  it('maps each cut to one of the four physical GLSL transitions and scales duration cleanly by speed',()=>{
+    expect(transitionShaderKind('unroll')).toBe('tear');
+    expect(transitionShaderKind('page')).toBe('flaps');
+    expect(transitionShaderKind('roll')).toBe('wash');
+    expect(transitionShaderKind('ink')).toBe('slam');
+    for(const shader of ['tear','flaps','wash','slam'] as const){
+      expect(physicalTransitionDurationMs(shader,1)).toBe(PHYSICAL_TRANSITION_DURATIONS_MS[shader]);
+      expect(physicalTransitionDurationMs(shader,2)).toBeLessThan(physicalTransitionDurationMs(shader,1));
+      expect(physicalTransitionDurationMs(shader,4)).toBeLessThanOrEqual(physicalTransitionDurationMs(shader,2));
+    }
     expect(PAPER_TRANSITION.total).toBeLessThanOrEqual(PAPER_TRANSITION.limit);expect(PAPER_TRANSITION.limit).toBe(360);expect(PAPER_TRANSITION.cover+PAPER_TRANSITION.leave).toBe(PAPER_TRANSITION.total);
     for(const kind of ['unroll','roll','page','ink'] as const){
       const plan=paperTransitionPlan(kind);expect(plan.duration).toBe(PAPER_TRANSITION.total);
@@ -38,14 +48,27 @@ describe('paper transitions',()=>{
       expect(paperTransitionPlan(kind,2).duration).toBe(175);expect(paperTransitionPlan(kind,4).duration).toBe(88);
     }
   });
+  it('ships valid GLSL ES 3.00 shaders and solves inverse projective homographies',()=>{
+    expect(PHYSICAL_SHADERS.tear.vert).toContain('#version 300 es');
+    expect(PHYSICAL_SHADERS.tear.frag).toContain('tearFine');
+    expect(PHYSICAL_SHADERS.flaps.tileVert).toContain('gl_InstanceID');
+    expect(PHYSICAL_SHADERS.wash.compFrag).toContain('worley');
+    expect(PHYSICAL_SHADERS.slam.frag).toContain('paperTone');
+    const id=solveHomography([[-1,1],[1,1],[1,-1],[-1,-1]]);
+    expect(id).not.toBeNull();
+    // Clip corner tl=(-1, 1) -> UV (0, 1)
+    const u=id![0]*(-1)+id![3]*(1)+id![6];
+    const v=id![1]*(-1)+id![4]*(1)+id![7];
+    const z=id![2]*(-1)+id![5]*(1)+id![8];
+    expect(u/z).toBeCloseTo(0,5);expect(v/z).toBeCloseTo(1,5);
+    expect(solveHomography([[0,0],[0,0],[0,0],[0,0]])).toBeNull();
+  });
   it('gives each cut its own physical motion',()=>{
     const unroll=paperTransitionPlan('unroll'),roll=paperTransitionPlan('roll'),page=paperTransitionPlan('page'),ink=paperTransitionPlan('ink');
-    // The scroll opens to the right and closes back to the left; each has its rod on the moving edge.
-    expect(String(unroll.sheet.at(-1)!.transform)).toContain('translateX(101%)');expect(unroll.rod).toBe('left');
-    expect(String(roll.sheet.at(-1)!.transform)).toContain('translateX(-101%)');expect(roll.rod).toBe('right');
-    expect(String(page.sheet.at(-1)!.transform)).toContain('rotateY');expect(page.origin).toBe('0 50%');expect(page.rod).toBe('none');
-    // Ink never fully covers the page and leaves by fading, not by sliding.
-    expect(ink.ink).toBe(true);expect(Math.max(...ink.sheet.map(f=>Number(f.opacity)))).toBeLessThan(1);expect(ink.sheet.at(-1)!.opacity).toBe(0);
+    expect(String(unroll.sheet.at(-1)!.transform)).toContain('translateX(101%)');expect(unroll.rod).toBe('left');expect(unroll.shader).toBe('tear');
+    expect(String(roll.sheet.at(-1)!.transform)).toContain('translateX(-101%)');expect(roll.rod).toBe('right');expect(roll.shader).toBe('wash');
+    expect(String(page.sheet.at(-1)!.transform)).toContain('rotateY');expect(page.origin).toBe('0 50%');expect(page.rod).toBe('none');expect(page.shader).toBe('flaps');
+    expect(ink.ink).toBe(true);expect(Math.max(...ink.sheet.map(f=>Number(f.opacity)))).toBeLessThan(1);expect(ink.sheet.at(-1)!.opacity).toBe(0);expect(ink.shader).toBe('slam');
     for(const plan of [unroll,roll,page])expect(plan.sheet[1]).toMatchObject({opacity:1});
   });
   it('keeps the plain cut for reduced motion, the Canvas renderer, a hidden tab and missing animation support',()=>{
@@ -58,7 +81,7 @@ describe('paper transitions',()=>{
   });
   it('lays one inert layer over the page and removes every listener when the sheet has left',()=>{
     const w=world();beginPaperTransition(w.scene,'unroll');const layer=w.layer(),sheet=layer.children[0],animation=sheet.animations[0];
-    expect(layer.style).toMatchObject({position:'fixed',pointerEvents:'none',zIndex:'1000'});expect(layer.attributes['aria-hidden']).toBe('true');expect(layer.dataset.paperTransition).toBe('unroll');
+    expect(layer.style).toMatchObject({position:'fixed',pointerEvents:'none',zIndex:'1000'});expect(layer.attributes['aria-hidden']).toBe('true');expect(layer.dataset.paperTransition).toBe('unroll');expect(layer.dataset.transitionShader).toBe('tear');
     expect(animation.options).toMatchObject({duration:PAPER_TRANSITION.total});expect(sheet.children).toHaveLength(1);
     expect(w.win.count()).toBeGreaterThan(0);
     animation.onfinish();expect(layer.removed).toBe(true);expect(w.win.count()+w.doc.count()+w.media.count()+w.game.count()).toBe(0);

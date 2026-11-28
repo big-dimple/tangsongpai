@@ -14,6 +14,7 @@ import {installOpeningAudio} from './audio/OpeningAudio';
 import {installViewport,viewportMetrics} from './platform/Viewport';
 import {prefersCanvasRenderer} from './platform/Renderer';
 import {installGamepadNavigation} from './game/GamepadNavigation';
+import {warmCinematicTransitions} from './game/CinematicTransitions';
 
 const viewport=viewportMetrics();
 
@@ -22,14 +23,14 @@ const config: Phaser.Types.Core.GameConfig = {
   parent: 'app',
   width: Math.ceil(viewport.width*viewport.density),
   height: Math.ceil(viewport.height*viewport.density),
-  backgroundColor: '#F3EADB',
+  backgroundColor: '#100d13',
   scene: [BootScene, TitleScene, CharacterSelectScene, GameScene, IntermissionScene, ShopScene],
   scale: {
     mode: Phaser.Scale.NONE,
     zoom: 1/viewport.density,
     autoRound: true,
   },
-  render: { antialias: true, pixelArt: false },
+  render: { antialias: true, pixelArt: false, preserveDrawingBuffer: true },
   audio: {noAudio:true}, // AudioEngine owns the application context; Phaser's unused manager must not block boot.
   callbacks: {postBoot:installViewport},
 };
@@ -42,6 +43,7 @@ document.title=GAME_NAME;document.querySelector('meta[name=description]')?.setAt
 game.canvas.setAttribute('aria-label',GAME_NAME+'牌桌，方向键聚焦手牌，空格选牌，Enter 查看详情');
 installRunMenu(game);
 installGamepadNavigation(game);
+game.events.once('ready',()=>warmCinematicTransitions(game));
 const audio=AudioEngine.shared;
 const stopOpeningAudio=installOpeningAudio(audio);
 const suspendAudio=()=>audio.setSuspended(document.hidden);

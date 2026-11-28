@@ -258,7 +258,7 @@ async function tabs(){
     await second.goto(base);await waitScene(second,'title');await second.waitForFunction(()=>window.__harness.game.registry.get('runController')?.status==='readonly');const before=await slots(first);
     await tapUI(second,'title','action/title-start');await waitScene(second,'character-select');
     // A real new-run attempt cannot replace the other page's live checkpoint.
-    await tapUI(second,'character-select','character/amo');await tapUI(second,'character-select','action/confirm-character');await tapUI(second,'character-select','route/group');await tapUI(second,'character-select','action/confirm-character');
+    await tapUI(second,'character-select','character/amo');await tapUI(second,'character-select','action/confirm-character');
     await second.waitForFunction(()=>{const s=window.__harness.game.scene.getScene('character-select');return !s.choosing&&/另一页/.test(s.notice);});assert.deepEqual(await slots(second),before);
     await menu(second);await second.getByText(/游戏已在另一页打开/).waitFor();assert.equal((await read(second)).status,'readonly');
     await second.locator('.run-menu-resume').click();await waitScene(second,'shop');await second.waitForFunction(()=>window.__harness.game.registry.get('runController').status==='idle');await buy(second);

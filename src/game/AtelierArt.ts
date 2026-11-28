@@ -40,20 +40,20 @@ export function paintLacquerPanel(
   c.save();
   if(options?.shadow!==false&&variant!=='inset'){
     c.save();
-    c.shadowColor='rgba(4,10,13,0.48)';
+    c.shadowColor='rgba(6,4,10,0.52)';
     c.shadowBlur=variant==='raised'?14:10;
     c.shadowOffsetX=0;
     c.shadowOffsetY=variant==='raised'?4:2;
     roundedPath(c,box,radius);
-    c.fillStyle='#0a171c';
+    c.fillStyle='#0d0a10';
     c.fill();
     c.restore();
   }
   const palette={
-    panel:{top:'#18363d',mid:'#122a30',bot:'#0e2126',edge:'rgba(216,180,108,0.46)',hi:'rgba(245,222,176,0.14)'},
-    raised:{top:'#20454d',mid:'#17353c',bot:'#122a30',edge:'rgba(226,192,122,0.58)',hi:'rgba(245,222,176,0.20)'},
-    inset:{top:'#0c1e23',mid:'#0f242a',bot:'#0b1a1f',edge:'rgba(200,164,98,0.32)',hi:'rgba(154,208,196,0.08)'},
-    score:{top:'#153238',mid:'#10262c',bot:'#0b1c21',edge:'rgba(216,180,108,0.54)',hi:'rgba(245,222,176,0.18)'},
+    panel:{top:'#221a26',mid:'#19141d',bot:'#130f16',edge:'rgba(216,180,108,0.46)',hi:'rgba(245,222,176,0.14)'},
+    raised:{top:'#2d2232',mid:'#221a26',bot:'#19141d',edge:'rgba(226,192,122,0.58)',hi:'rgba(245,222,176,0.20)'},
+    inset:{top:'#120e15',mid:'#16111a',bot:'#100c13',edge:'rgba(200,164,98,0.32)',hi:'rgba(232,196,132,0.08)'},
+    score:{top:'#201824',mid:'#17121b',bot:'#120e15',edge:'rgba(216,180,108,0.54)',hi:'rgba(245,222,176,0.18)'},
   }[variant];
   const grad=c.createLinearGradient(box.x,box.y,box.x,box.y+box.height);
   grad.addColorStop(0,palette.top);
@@ -105,10 +105,10 @@ export function paintLanternHalo(c:Context,cx:number,cy:number,rx:number,ry:numb
   c.translate(cx,cy);
   c.scale(1,ry/rx);
   const g=c.createRadialGradient(0,0,0,0,0,rx);
-  g.addColorStop(0,`rgba(246,206,134,${.18*alpha})`);
-  g.addColorStop(.45,`rgba(196,158,92,${.09*alpha})`);
-  g.addColorStop(.78,`rgba(107,194,180,${.04*alpha})`);
-  g.addColorStop(1,'rgba(16,38,44,0)');
+  g.addColorStop(0,`rgba(246,206,134,${.20*alpha})`);
+  g.addColorStop(.45,`rgba(206,154,96,${.10*alpha})`);
+  g.addColorStop(.78,`rgba(184,82,66,${.045*alpha})`);
+  g.addColorStop(1,'rgba(22,17,26,0)');
   c.fillStyle=g;
   c.beginPath();c.arc(0,0,rx,0,Math.PI*2);c.fill();
   c.strokeStyle=`rgba(216,180,108,${.28*alpha})`;
@@ -117,7 +117,7 @@ export function paintLanternHalo(c:Context,cx:number,cy:number,rx:number,ry:numb
   c.restore();
 }
 
-/** Deep twilight celadon lacquer backdrop with subtle warm lantern pool, corner vignette & silk weave. */
+/** Deep rosewood-obsidian lacquer backdrop with warm lantern pool, corner vignette & silk weave. */
 export function paintAtelierBackdrop(
   c:Context,
   page:{width:number;height:number},
@@ -127,15 +127,15 @@ export function paintAtelierBackdrop(
   if(width<=0||height<=0)return;
   c.save();
   const base=c.createLinearGradient(0,0,0,height);
-  base.addColorStop(0,'#0c1e24');
-  base.addColorStop(.45,'#132b32');
-  base.addColorStop(1,'#0a181c');
+  base.addColorStop(0,'#110d15');
+  base.addColorStop(.45,'#19141d');
+  base.addColorStop(1,'#0e0b11');
   c.fillStyle=base;
   c.fillRect(0,0,width,height);
 
   // Subtle diagonal silk sheen
   const random=paperRandom(0xa7e1);
-  c.fillStyle='rgba(255,246,220,0.012)';
+  c.fillStyle='rgba(255,244,224,0.014)';
   for(let i=0;i<60;i++){
     const x=random()*width,y=random()*height,w=24+random()*90;
     c.fillRect(x,y,w,1);
@@ -144,17 +144,17 @@ export function paintAtelierBackdrop(
   // Warm lantern pool slightly above center
   const cx=width*.5,cy=height*.42,r=Math.max(width,height)*.72;
   const pool=c.createRadialGradient(cx,cy,0,cx,cy,r);
-  pool.addColorStop(0,'rgba(242,202,130,0.095)');
-  pool.addColorStop(.45,'rgba(110,180,168,0.045)');
-  pool.addColorStop(1,'rgba(10,24,28,0)');
+  pool.addColorStop(0,'rgba(242,202,130,0.10)');
+  pool.addColorStop(.45,'rgba(176,102,82,0.045)');
+  pool.addColorStop(1,'rgba(16,12,19,0)');
   c.fillStyle=pool;
   c.fillRect(0,0,width,height);
 
   // Corner vignette
   const vig=c.createRadialGradient(cx,cy,Math.min(width,height)*.26,cx,cy,Math.hypot(width,height)*.62);
-  vig.addColorStop(0,'rgba(4,10,13,0)');
-  vig.addColorStop(.65,'rgba(4,10,13,0.18)');
-  vig.addColorStop(1,'rgba(3,8,11,0.44)');
+  vig.addColorStop(0,'rgba(6,4,10,0)');
+  vig.addColorStop(.65,'rgba(6,4,10,0.20)');
+  vig.addColorStop(1,'rgba(5,3,8,0.48)');
   c.fillStyle=vig;
   c.fillRect(0,0,width,height);
 

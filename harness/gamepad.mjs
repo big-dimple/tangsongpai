@@ -51,8 +51,6 @@ try{
     assert.equal(await page.evaluate(()=>window.__harness.game.scene.getScene('character-select').selectedId),undefined,'held title confirmation cannot also choose a hero');
     await navigate(page,target=>target.id==='character/amo');await press(page,'confirm');
     await navigate(page,target=>target.id==='action/confirm-character');await press(page,'confirm');
-    await navigate(page,target=>target.id==='route/group');await press(page,'confirm');
-    await navigate(page,target=>target.id==='action/confirm-character');await press(page,'confirm');
     await page.locator('.opening-rule-briefing[open]').waitFor();await navigate(page,target=>target.primary);await press(page,'confirm');
     await page.waitForFunction(()=>window.__harness.game.scene.isActive('shop'));
     const shop=await read(page);await navigate(page,target=>target.id.includes('offer/'));await press(page,'confirm');

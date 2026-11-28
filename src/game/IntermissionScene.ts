@@ -135,7 +135,7 @@ export class IntermissionScene extends Phaser.Scene {
     const retire=()=>{if(typeof window!=='undefined'){window.removeEventListener('tangsongpai-presentation',preference);window.removeEventListener('blur',suspend);}if(typeof document!=='undefined')document.removeEventListener('visibilitychange',visibility);motion?.removeEventListener('change',preference);this.events.off('shutdown',retire);this.events.off('destroy',retire);this.releaseViewport?.();this.releaseViewport=undefined;this.noviceGuideHandle=undefined;this.lifecycle++;this.stopSourceArt();this.paintSourceArt=undefined;this.dialog.close();this.stopCelebration();};
     this.events.once('shutdown',retire);this.events.once('destroy',retire);
     const run=runController(this)?.state;if(!run?.stage){this.scene.start('character-select');return;}
-    this.cameras.main.setBackgroundColor('#0c1e24');
+    this.cameras.main.setBackgroundColor('#100d13');
     const skipped=run.phase==='run-lost'?false:!!run.stage.skipResult;this.audio.setScene(run.stage.index%3===2?'boss':'table');
     this.audio.preloadSceneMusic(run.phase==='run-lost'?'menu':'shop');
     if(!skipped){

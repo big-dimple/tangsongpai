@@ -85,12 +85,14 @@ export async function openSelector(page,touch=false){
   }
   await waitScene(page,'character-select');
 }
-/** Follow the production hero → route → joint confirmation, including old-save prompts. */
+/** Confirm selected hero (direct start in 1 step, or follow route if the route view is open). */
 export async function confirmHeroRoute(page,touch=false,focus='group'){
   const hero=page.locator('dialog.hero-explanation[open]');if(await hero.count()){const close=hero.getByRole('button',{name:'回到选角',exact:true});if(touch)await close.tap();else await close.click();}
-  if(await page.evaluate(()=>window.__harness.game.scene.getScene('character-select').step==='hero'))await tapUI(page,'character-select','action/confirm-character',touch);
-  await tapUI(page,'character-select','route/'+focus,touch);
   await tapUI(page,'character-select','action/confirm-character',touch);
+  if(await page.evaluate(()=>window.__harness.game.scene.isActive('character-select')&&window.__harness.game.scene.getScene('character-select').step==='route')){
+    await tapUI(page,'character-select','route/'+focus,touch);
+    await tapUI(page,'character-select','action/confirm-character',touch);
+  }
 }
 /** The saved new run pauses at the poker examples before its first shop. */
 export async function enterOpeningShop(page,touch=false){

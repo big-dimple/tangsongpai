@@ -1365,7 +1365,7 @@ export class GameScene extends Phaser.Scene {
       // Reviewed J/Q/K are independent full illustrations; indices/suits remain programmatic.
       const key=courtArtKey(card.rank);
       const fw=Math.min(b.width*.62,b.width-2*(label.width+edge+4)),fh=b.height*.6,fy=b.height*.02,frame=this.add.graphics();
-      frame.fillStyle(0x163238,1).fillRoundedRect(-fw/2,fy-fh/2,fw,fh,4);
+      frame.fillStyle(0x211a25,1).fillRoundedRect(-fw/2,fy-fh/2,fw,fh,4);
       frame.lineStyle(1,0xc8a462,1).strokeRoundedRect(-fw/2,fy-fh/2,fw,fh,4);
       frame.lineStyle(1,0xf5deb0,.45).strokeRoundedRect(-fw/2+3,fy-fh/2+3,fw-6,fh-6,3);
       faceArt.push(frame);
@@ -1524,7 +1524,7 @@ export class GameScene extends Phaser.Scene {
     const width=Math.min(410,l.preview.width),height=Math.min(234,l.tools.y-top-10);if(width<250||height<160)return;
     const x=Phaser.Math.Clamp(slot.x+slot.width/2-width/2,l.preview.x,l.preview.x+l.preview.width-width),d=this.jokerDefinition(j.definitionId);
     const panel=this.view.add(this.add.container(x,top));this.jokerHoverPreview=panel;
-    const g=this.add.graphics().fillStyle(0x040b0e,.72).fillRoundedRect(3,7,width,height,9).fillStyle(0x163238).fillRoundedRect(0,0,width,height,9).lineStyle(1,0xd8b46c).strokeRoundedRect(0,0,width,height,9);
+    const g=this.add.graphics().fillStyle(0x06040a,.74).fillRoundedRect(3,7,width,height,9).fillStyle(0x211a25).fillRoundedRect(0,0,width,height,9).lineStyle(1,0xd8b46c).strokeRoundedRect(0,0,width,height,9);
     const size=Math.min(168,height-24,width*.44),key=jokerArtKey(j.definitionId);panel.add(g);
     if(key&&this.textures.exists(key)){
       const image=animateJokerImage(this,this.add.image(12+size/2,12+size/2,key));image.setScale(Math.min(size/image.width,size/image.height));panel.add(image);
@@ -1535,9 +1535,9 @@ export class GameScene extends Phaser.Scene {
     panel.add(this.add.text(tx,14,d.name,{...style,fontFamily:DISPLAY_FONT,fontSize:'20px',color:'#FFF5DD'}));
     const copy=this.jokerAbility(j,this.selectionPreview());
     panel.add(this.add.text(tx,46,copy?.compact??this.jokerValue(j),{...style,fontSize:'20px',fontStyle:'bold',color:'#F4CF7A'}));
-    const summary=this.add.text(tx,80,copy?.plain?.line??copy?.summary??d.description,{...style,fontSize:'14px',color:'#D5E5DF'}).setLineSpacing(3).setName('joker/hover-purpose'),full=summary.text;
+    const summary=this.add.text(tx,80,copy?.plain?.line??copy?.summary??d.description,{...style,fontSize:'14px',color:'#DFD6C8'}).setLineSpacing(3).setName('joker/hover-purpose'),full=summary.text;
     if(summary.height>height-118||summary.width>tw)summary.setText('条件与效果\n点击查看');summary.setData('fullText',full).setData('availableWidth',tw).setData('availableHeight',height-118);panel.add(summary);
-    panel.add(this.add.text(tx,height-30,'点击看完整卡面',{...style,fontSize:'14px',color:'#98C4B9'}));
+    panel.add(this.add.text(tx,height-30,'点击看完整卡面',{...style,fontSize:'14px',color:'#C8BDB2'}));
     this.view.root.bringToTop(panel);panel.once('destroy',()=>this.tweens.killTweensOf(panel));
     if(!this.reducedMotion){panel.setAlpha(0).setY(top+5);this.tweens.add({targets:panel,alpha:1,y:top,duration:130,ease:'Sine.easeOut'});}
   }

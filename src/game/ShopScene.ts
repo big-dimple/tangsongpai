@@ -672,7 +672,7 @@ export class ShopScene extends Phaser.Scene {
     const art=button.getData('buttonArt') as Phaser.GameObjects.Container,face=art.list[0] as Phaser.GameObjects.Graphics,edge=art.list[1] as Phaser.GameObjects.Graphics;
     const label=button.getData('label') as Phaser.GameObjects.Text;
     label.setFontFamily(DISPLAY_FONT).setFontStyle('normal').setFontSize(18).setColor(enabled?'#fff7e6':AC.disabledInk);
-    const paint=(tone:number)=>{face.clear().fillStyle(tone).fillRoundedRect(0,0,b.width,b.height,4);edge.clear().lineStyle(1,enabled?A.gold:0x3c5256).strokeRoundedRect(.5,.5,b.width-1,b.height-1,4);button.setData('shopEntryTone',tone);};
+    const paint=(tone:number)=>{face.clear().fillStyle(tone).fillRoundedRect(0,0,b.width,b.height,4);edge.clear().lineStyle(1,enabled?A.gold:0x4a3d4f).strokeRoundedRect(.5,.5,b.width-1,b.height-1,4);button.setData('shopEntryTone',tone);};
     if(!enabled){paint(A.disabledBg);return;}
     paint(A.cinnabar);
     button.on('pointerover',(pointer:Phaser.Input.Pointer)=>paint(pointer.isDown?0x942e24:A.cinnabarHi));button.on('pointerout',()=>paint(A.cinnabar));
@@ -724,7 +724,7 @@ export class ShopScene extends Phaser.Scene {
     if(d)this.drawJokerPicture(d.id,g.art);else this.drawGoodsArt(o.definitionId,info!.artUrl,g.art,1,info!.fallbackArtUrl);
     const name=v.displayText(g.title.x,g.title.y,d?.name??info!.name,tile.width>=400?25:21,AC.ivory).setName('shop/offer-name').setData('offerId',o.offerId);this.ellipsis(name,g.title.width);
     if(g.identity)v.text(g.identity.x,g.identity.y,d?shopIdentityText(d.rarity,o.edition):kind==='tools'?'买后收入背包 · 使用后消耗':'本局持续生效',14,AC.mist,g.identity.width).setName('shop/offer-identity').setData('offerId',o.offerId);
-    const purpose=v.text(g.summary.x,g.summary.y,'',tile.width>=400?19:16,'#d8e8e2').setName('shop/offer-purpose').setData('offerId',o.offerId);
+    const purpose=v.text(g.summary.x,g.summary.y,'',tile.width>=400?19:16,'#dfd6c8').setName('shop/offer-purpose').setData('offerId',o.offerId);
     const lineHeight=tile.width>=400?28:24,maxLines=Math.max(2,Math.floor(g.summary.height/lineHeight));
     const wrapped=shopSummaryWrap(summary,g.summary.width,copy=>{purpose.setText(copy);return purpose.width;},maxLines);
     purpose.setText(wrapped).setLineSpacing(tile.width>=400?3:2).setData('fullText',summary);
@@ -769,7 +769,7 @@ export class ShopScene extends Phaser.Scene {
     // even when reduced motion is enabled or the player never opens the receipt.
     const unavailable=/金币不足|差\s*\d|售罄|不可购买|槽位已满|消耗品库存已满|长期道具已满/.test(result.text);
     const saved=/已购|已保存|已入|已售|已赋予|已更新|已用|库存已满转\s*\+\s*\d+\s*金/.test(result.text);
-    const fill=unavailable?0x3d2224:saved?0x1a3f38:A.panelRaised;
+    const fill=unavailable?0x3d2224:saved?0x2b241d:A.panelRaised;
     const edge=unavailable?A.cinnabarHi:saved?A.celadon:A.gold;
     this.resultPlate=this.add.graphics().fillStyle(fill,1).fillRoundedRect(b.x,b.y,b.width,b.height,4).lineStyle(1,edge,.82).strokeRoundedRect(b.x+.5,b.y+.5,b.width-1,b.height-1,4).setAlpha(result.alpha).setName('shop/result-plate').setData('bounds',b).setData('status',unavailable?'unavailable':saved?'saved':'info');
     // Use the shared text constructor; detach only the feedback from full-table
@@ -1184,14 +1184,14 @@ export class ShopScene extends Phaser.Scene {
     image.snapshot(snapshot=>{if(snapshot instanceof HTMLImageElement)this.dialog.attachCardArt(dialog,snapshot.src,this.jokerDefinition(definitionId).name+'机制示意卡面','mechanism');image.destroy();});
   }
   private drawSlot(b:Box,occupied:boolean,_rarity:JokerRarity='common'):void {
-    const v=this.view;v.add(this.add.graphics().fillStyle(0x040b0e,.32).fillRoundedRect(b.x+1,b.y+3,b.width,b.height,5));
+    const v=this.view;v.add(this.add.graphics().fillStyle(0x06040a,.38).fillRoundedRect(b.x+1,b.y+3,b.width,b.height,5));
     v.add(this.add.graphics().fillStyle(occupied?A.panelRaised:A.panelInset,.96).fillRoundedRect(b.x,b.y,b.width,b.height,5).lineStyle(occupied?1.5:1,occupied?A.gold:A.goldSoft,occupied?.65:.35).strokeRoundedRect(b.x+.5,b.y+.5,b.width-1,b.height-1,5));
     if(!occupied&&this.textures.exists('p00-card-back'))v.add(this.add.image(b.x+b.width/2,b.y+b.height/2,'p00-card-back').setDisplaySize(b.width-6,b.height-6).setAlpha(.22));
   }
   private offerPricePlate(o:R2Offer,b:Box):string {
     const reason=o.consumed?'':this.purchaseReason(o,true),unavailable=!!reason;
     const state=o.consumed?'owned':!unavailable?'available':/差\s*\d+金|金币不足|差\s*\d+/.test(reason)?'insufficient':/槽位已满|库存已满|道具已满|种道具已满/.test(reason)?'full':/同名|已持有|已装备/.test(reason)?'duplicate':'unavailable';
-    const tone=state==='available'?0x1a3f3a:state==='insufficient'?0x362b19:state==='duplicate'?0x1c2b30:state==='owned'?0x14262b:0x3d2224;
+    const tone=state==='available'?0x2c221d:state==='insufficient'?0x362819:state==='duplicate'?0x251e28:state==='owned'?0x1c1620:0x3d2224;
     if(!this.geometry().portrait)this.view.add(this.add.graphics().fillStyle(tone,.95).fillRoundedRect(b.x,b.y,b.width,b.height,3).lineStyle(1,state==='available'?A.celadon:state==='insufficient'?A.gold:A.goldSoft,.4).strokeRoundedRect(b.x+.5,b.y+.5,b.width-1,b.height-1,3).setName('shop/price-plate').setData('offerId',o.offerId).setData('availability',state));
     return state==='available'?AC.goldBright:state==='insufficient'?'#f5cb75':state==='duplicate'||state==='owned'?AC.mist:AC.cinnabarSoft;
   }
@@ -1231,7 +1231,7 @@ export class ShopScene extends Phaser.Scene {
   }
   private drawOfferCard(b:Box,selected:boolean):Phaser.GameObjects.Graphics {
     const frame=this.view.add(this.add.graphics());
-    if(selected)frame.fillStyle(0x6d998c,.12).fillRoundedRect(b.x-3,b.y-3,b.width+6,b.height+6,7);
+    if(selected)frame.fillStyle(0xd8b46c,.12).fillRoundedRect(b.x-3,b.y-3,b.width+6,b.height+6,7);
     return frame;
   }
 
@@ -1263,7 +1263,7 @@ export class ShopScene extends Phaser.Scene {
     return v.text(b.x,b.y,note,14,g.purchaseConditionLosses.length?AC.cinnabarSoft:AC.celadon,b.width).setName('shop/offer-operation').setData('offerId',o.offerId);
   }
   private markBuildOffer(o:R2Offer,kind:ShelfKind,b:Box):void {
-    if(this.selectedOfferId===o.offerId)this.view.add(this.add.graphics().fillStyle(0x6d998c,.10).fillRoundedRect(b.x-3,b.y-3,b.width+6,b.height+6,7).setName('shop/offer-selected').setData('offerId',o.offerId));
+    if(this.selectedOfferId===o.offerId)this.view.add(this.add.graphics().fillStyle(0xd8b46c,.10).fillRoundedRect(b.x-3,b.y-3,b.width+6,b.height+6,7).setName('shop/offer-selected').setData('offerId',o.offerId));
   }
   private inspectJourney(heroFocus=false,all=false):void {
     showBuildJourney(this.dialog,this.run,{ready:this.ready,practice:(q,all=false)=>this.confirmPractice(q,{all,handType:q.handType,scrollTop:this.dialog.current?.querySelector('.dialog-scroll')?.scrollTop??0}),basicTool:id=>{const row=id?basicChoiceRows(this.run).find(r=>r.id===id):undefined;if(!row||row.reason){this.inspectBasicChoice();return;}this.confirmBasicChoice(row.id,this.run.commandSeq,this.run.shop!.basicChoice!.shopSeq);},onFocus:()=>this.render(),chapter:()=>this.inspectChapter(),manage:()=>this.inspectBuild(),source:id=>this.inspectJoker(id),compare:(o,j)=>this.inspectJoker(j,o),tools:()=>showConsumables(this.dialog,this.run,this.ready,(a,seq)=>this.send(a,seq)),tool:id=>showConsumables(this.dialog,this.run,this.ready,(a,seq)=>this.send(a,seq),id),deck:()=>this.inspectDeck(),offers:(id,kind)=>{this.shelfKind=kind;this.inspectOffer(id);},continueLabel:'保留金币进入牌桌',continue:()=>{this.dialog.close();void this.send({type:'LeaveShop'});}},false,all);
@@ -1445,7 +1445,7 @@ export class ShopScene extends Phaser.Scene {
     const owner=runController(this);
     if(this.run.mode==='tutorial'&&owner&&!owner.guidedOpeningSuppressed)recordNoviceOwnedLift(this.run,owner.journal,noviceGuide(this.run,owner.journal));
     const status=document.createElement('div');status.dataset.ownedDragStatus='';status.setAttribute('role','status');status.setAttribute('aria-live','polite');
-    Object.assign(status.style,{position:'fixed',zIndex:'6',boxSizing:'border-box',padding:'3px 6px',border:'1px solid #d8b46c',borderRadius:'4px',background:'#163036',color:'#f6efe0',font:'bold 14px/1.25 var(--ui-font)',textAlign:'center',pointerEvents:'none'});
+    Object.assign(status.style,{position:'fixed',zIndex:'6',boxSizing:'border-box',padding:'3px 6px',border:'1px solid #d8b46c',borderRadius:'4px',background:'#211a25',color:'#f6efe0',font:'bold 14px/1.25 var(--ui-font)',textAlign:'center',pointerEvents:'none'});
     document.body.append(status);this.ownedDragStatus=status;this.syncOwnedDragStatus();
   }
   private previewOwned(x:number,y:number):void {this.ownedDrag?.preview(x,y);}
@@ -1462,9 +1462,9 @@ export class ShopScene extends Phaser.Scene {
   private flyPurchase(from:Box,to:Box,name:string):void {
     const cx=from.x+from.width/2,cy=from.y+from.height/2,card=this.add.container(cx,cy).setDepth(60);
     const g=this.add.graphics();
-    g.fillStyle(0x040b0e,.4).fillRoundedRect(-49,-63,98,126,7);
+    g.fillStyle(0x06040a,.46).fillRoundedRect(-49,-63,98,126,7);
     g.fillStyle(A.panelRaised).fillRoundedRect(-50,-66,100,132,7);
-    g.fillStyle(0x1f494f).fillRoundedRect(-50,-66,100,30,{tl:7,tr:7,bl:0,br:0});
+    g.fillStyle(0x312536).fillRoundedRect(-50,-66,100,30,{tl:7,tr:7,bl:0,br:0});
     g.lineStyle(2,A.gold).strokeRoundedRect(-50,-66,100,132,7);
     card.add([g,this.add.text(0,-51,name,{fontFamily:DISPLAY_FONT,fontSize:'15px',fontStyle:'bold',color:AC.goldBright,resolution:Math.min(window.devicePixelRatio||1,3)}).setOrigin(.5),this.add.text(0,8,'✓',{fontFamily:UI_FONT,fontSize:'34px',fontStyle:'bold',color:AC.celadon,resolution:Math.min(window.devicePixelRatio||1,3)}).setOrigin(.5)]);
     const tx=to.x+to.width/2,ty=to.y+to.height/2,mx=(cx+tx)/2,my=Math.min(cy,ty)-80,flight={t:0};
@@ -1578,7 +1578,7 @@ export class ShopScene extends Phaser.Scene {
         if(previous.shop!.rerollCount!==this.run.shop!.rerollCount){this.selectedOfferId=undefined;this.audio.reroll();this.pendingRerollFlip=this.shelfKind!=='items';}
       }
       else if(action.type==='DestroyLongTermItem'&&!result.duplicate){this.audio.select();this.notice=`已销毁 ${itemInfo(action.definitionId).name} · 本局道具 ${this.run.longTermItems.length}/${R2_LIMITS.longTermSlots}`;}
-      if(action.type==='LeaveShop'){this.audio.select();const entry={...(carriedTool?{carriedTool}:{}),...(bossRulesSeen(this.run)?{preparedBossOwner:runController(this)}:{})};beginPaperTransition(this,this.run.stageIndex%3===2?'ink':'unroll');paperSceneStart(this,'game',Object.keys(entry).length?entry:undefined);}
+      if(action.type==='LeaveShop'){this.audio.select();const entry={...(carriedTool?{carriedTool}:{}),...(bossRulesSeen(this.run)?{preparedBossOwner:runController(this)}:{})};beginPaperTransition(this,this.run.stageIndex%3===2?'ink':'page');paperSceneStart(this,'game',Object.keys(entry).length?entry:undefined);}
       else if(action.type==='SkipStage'){
         const s=this.run.stage!;beginPaperTransition(this,'page');paperSceneStart(this,'intermission',{cleared:true,stageIndex:s.index,stageHeat:s.heat,handsLeft:s.handsLeft,goldEarned:s.goldEarned} satisfies IntermissionResult);
       }

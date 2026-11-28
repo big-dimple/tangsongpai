@@ -9,19 +9,19 @@
   border: 1px solid rgba(216, 180, 108, .55);
   border-radius: 6px;
   overflow: clip;
-  background: linear-gradient(160deg, #1b2232, #0f1b22);
-  box-shadow: 0 24px 68px rgba(3, 9, 12, .75), inset 0 1px 0 rgba(245, 222, 176, .16);
+  background: linear-gradient(160deg, #271b26, #140f17);
+  box-shadow: 0 24px 68px rgba(6, 4, 10, .78), inset 0 1px 0 rgba(245, 222, 176, .16);
   color: #f6efe0;
   animation: boss-preparation-arrive .18s ease-out;
 }
-.boss-preparation-dialog::backdrop { background: rgba(5, 13, 16, .78); }
+.boss-preparation-dialog::backdrop { background: rgba(9, 6, 12, .80); }
 .boss-preparation-dialog > .dialog-header {
   display: flex;
   flex-direction: column-reverse;
   gap: 10px;
   padding: 18px 26px;
   flex: 0 0 auto;
-  background: #141925;
+  background: #1a121b;
   border: 0;
   box-shadow: inset 0 -2px 0 rgba(216, 180, 108, .48);
 }
@@ -47,7 +47,7 @@
   transform: rotate(-7deg);
 }
 .boss-preparation-dialog .boss-preparation-challenge { min-width: 0; }
-.boss-preparation-dialog .boss-preparation-target { display: flex; align-items: baseline; flex-wrap: wrap; gap: 18px; margin: 0; color: #b8cdc6; font-size: 14px; }
+.boss-preparation-dialog .boss-preparation-target { display: flex; align-items: baseline; flex-wrap: wrap; gap: 18px; margin: 0; color: #c8bdb2; font-size: 14px; }
 .boss-preparation-dialog .boss-preparation-target strong { color: #ffe6a8; font: bold 36px/1.15 var(--cover-serif); overflow-wrap: anywhere; }
 .boss-preparation-dialog .boss-preparation-rule,
 .boss-preparation-dialog .boss-preparation-advice { grid-column: 1 / -1; min-width: 0; padding-top: 12px; border-top: 1px solid rgba(216, 180, 108, .28); }
@@ -55,10 +55,10 @@
 .boss-preparation-dialog .boss-preparation-rule p,
 .boss-preparation-dialog .boss-preparation-advice p { margin: 0; font-size: 16px; line-height: 1.65; color: #f6efe0; }
 .boss-preparation-dialog .boss-preparation-suit { margin-top: 8px!important; color: #ff9e8e!important; font-weight: 700; }
-.boss-preparation-dialog > .dialog-actions { display: flex; flex: 0 0 auto; flex-wrap: nowrap; align-items: center; gap: 14px; padding: 12px 26px; background: #0d1d22; border-top: 1px solid rgba(216, 180, 108, .38); box-shadow: none; }
+.boss-preparation-dialog > .dialog-actions { display: flex; flex: 0 0 auto; flex-wrap: nowrap; align-items: center; gap: 14px; padding: 12px 26px; background: #141018; border-top: 1px solid rgba(216, 180, 108, .38); box-shadow: none; }
 .boss-preparation-dialog > .dialog-actions button { min-height: 48px; padding: 10px 18px; font-size: 15px; border-radius: 5px; box-shadow: none; }
-.boss-preparation-dialog > .dialog-actions .dialog-primary { flex: 1 1 auto; background: linear-gradient(180deg, #c54a3b, #9d362a); color: #fffaf0; border-color: #e2be79; letter-spacing: .08em; }
-.boss-preparation-dialog > .dialog-actions .dialog-close { flex: 0 0 auto; min-width: 88px; background: rgba(22, 50, 56, .75); border-color: rgba(216, 180, 108, .35); color: #d6e7e1; }
+.boss-preparation-dialog > .dialog-actions .dialog-primary { flex: 1 1 auto; background: linear-gradient(180deg, #c54a3b, #963024); color: #fffaf0; border-color: #e2be79; letter-spacing: .08em; }
+.boss-preparation-dialog > .dialog-actions .dialog-close { flex: 0 0 auto; min-width: 88px; background: rgba(36, 28, 40, .8); border-color: rgba(216, 180, 108, .35); color: #dfd6c8; }
 .boss-preparation-dialog button:focus-visible { outline: 3px solid #f2cf84; outline-offset: 2px; }
 @keyframes boss-preparation-arrive { from {opacity: .65;} to {opacity: 1;} }
 @media (max-width: 560px) {

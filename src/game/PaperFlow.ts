@@ -34,7 +34,7 @@ export function qiyuSceneStart(scene:Phaser.Scene,key:string,data?:object,copy='
     Object.assign(overlay.style,{
       position:'fixed',inset:'0',zIndex:'10001',display:'grid',placeItems:'center',
       pointerEvents:'none',overflow:'hidden',
-      background:'radial-gradient(circle at 50% 44%,rgba(138,62,48,.88) 0%,rgba(20,45,43,.94) 68%)',
+      background:'radial-gradient(circle at 50% 44%,rgba(166,54,42,.86) 0%,rgba(24,18,28,.95) 68%)',
       borderTop:'3px solid rgba(216,179,106,.75)',borderBottom:'3px solid rgba(216,179,106,.75)',
       opacity:reduced?'0':'0.96',
       transition:reduced?'none':'opacity 360ms cubic-bezier(.22,1,.36,1), transform 360ms cubic-bezier(.22,1,.36,1)',
@@ -43,7 +43,7 @@ export function qiyuSceneStart(scene:Phaser.Scene,key:string,data?:object,copy='
     Object.assign(scroll.style,{
       display:'grid',gap:'8px',justifyItems:'center',padding:'18px 34px',
       border:'1px solid rgba(240,199,122,.72)',borderRadius:'6px',
-      background:'linear-gradient(135deg,rgba(24,47,44,.96),rgba(69,36,34,.94))',
+      background:'linear-gradient(135deg,rgba(36,26,38,.96),rgba(69,32,32,.94))',
       boxShadow:'0 16px 48px rgba(0,0,0,.45), inset 0 0 0 2px rgba(248,232,200,.22)',
       color:'#f8e8c8',fontFamily:'var(--ui-font)',textAlign:'center',
     });

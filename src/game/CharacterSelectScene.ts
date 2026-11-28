@@ -39,6 +39,7 @@ import {ENTRY_HERO_TINTS} from './EntryDepthParticles';
 import {mountHeroEntranceBurst, resetHeroEntranceForNewRun} from './TangSongEntranceBurst';
 
 interface SelectionOptions {freshSeed?:boolean;seed?:string;characterId?:CharacterId;modeConfig?:R2ModeSelection}
+const DEFAULT_HERO_ROUTE:Record<CharacterId,BuildFocus>={amo:'group',touye:'group',laohuan:'straight',erxiang:'group',azao:'flush',xiemu:'group'};
 /** The selector reserves its action row before sizing cards; it never borrows table space. */
 
 export class CharacterSelectScene extends Phaser.Scene {
@@ -71,7 +72,7 @@ export class CharacterSelectScene extends Phaser.Scene {
   }
   create():void {
     this.choosing=false;this.confirming=false;this.notice='';this.animateChoice=false;this.lifecycle++;
-    this.cameras.main.setBackgroundColor('#192D32');this.audio.setScene('menu');
+    this.cameras.main.setBackgroundColor('#100d13');this.audio.setScene('menu');
     this.view=new SceneView(this,()=>this.render());
     this.view.controllerAction=action=>{
       if(action==='back'){void this.cancelChoice();return true;}
@@ -158,7 +159,7 @@ export class CharacterSelectScene extends Phaser.Scene {
           label.setScale(Math.min(1,(cardW-2)/label.width,(cardH-2)/label.height));
         });
       }
-      if(!compact&&b.height>=80)v.text(b.x+13,b.y+b.height-23,copy.play,14,'#B8CDC6',b.width-26).setName('opening/route-play');
+      if(!compact&&b.height>=80)v.text(b.x+13,b.y+b.height-23,copy.play,14,'#C8BDB2',b.width-26).setName('opening/route-play');
       if(!compact)this.singleLine(b.x+b.width-10,b.y+9,selected?'已选':'选择',14,selected?'#FFE29A':'#D8B46C',68).setOrigin(1,0).setName('opening/route-action');
       else if(b.height>=82)this.singleLine(b.x+b.width/2,b.y+b.height-21,selected?'已选':'选择',14,selected?'#FFE29A':'#D8B46C',b.width-6).setOrigin(.5,0).setName('opening/route-action');
       const wrap=this.wrapCard(first,b),hit=v.rect(b).setFillStyle(0,0).setStrokeStyle().setData('selected',selected);
@@ -168,9 +169,9 @@ export class CharacterSelectScene extends Phaser.Scene {
     const existing=gameSession().run,canReturn=!!existing&&!['run-won','run-lost'].includes(existing.state.phase);
     selectionQuietButton(v,p.cancel,this.step==='route'?'← 返回':this.modeConfig.mode==='tutorial'?'跳过':this.selectedId?'取消':'← '+(canReturn?'本局':'返回'),'action/cancel-character',()=>void this.cancelChoice(),!this.choosing);
     selectionQuietButton(v,p.details,'比一比','action/character-details',()=>this.compareHeroes(),!this.choosing);
-    const confirm=this.step==='hero'?(p.short?'选路线':'选路线 →'):this.selectedRoute?(p.short?'开始':'开始对局'):'先选路线';
+    const confirm=this.step==='hero'?(this.selectedId?(p.short?'开始':'开始对局'):'先选人物'):this.selectedRoute?(p.short?'开始':'开始对局'):'先选路线';
     const confirmButton=v.button(p.confirm,this.confirming?'直接入场 →':this.choosing?'正在开始…':confirm,'action/confirm-character',()=>void this.confirmChoice(),this.confirming||!this.choosing&&!!this.selectedId&&(this.step==='hero'||!!this.selectedRoute),true);
-    const status=this.step==='route'?(this.selectedRoute?'已选'+OPENING_ROUTES[this.selectedRoute].title+' · 可改选':'点一条路线，再点开始对局'):this.selectedId?getCharacter(this.selectedId).name+(this.modeConfig.mode==='tutorial'?' · 教程固定角色':' · 下一步选路线'):'点一位英雄，决定谁来对局。';
+    const status=this.step==='route'?(this.selectedRoute?'已选'+OPENING_ROUTES[this.selectedRoute].title+' · 可改选':'点一条路线，再点开始对局'):this.selectedId?getCharacter(this.selectedId).name+(this.modeConfig.mode==='tutorial'?' · 教程固定角色':' · 点开始对局立即入场'):'点一位英雄，决定谁来对局。';
     const noticeX=this.step==='route'&&p.confirm.x>p.hero.x+p.hero.width?p.details.x:p.x;
     const noticeWidth=p.x+p.w-noticeX;
     v.text(noticeX+noticeWidth/2,p.noticeY,this.notice||(this.confirming?'已选定 · '+getCharacter(this.selectedId!).name+' · 可直接入场':status),14,undefined,noticeWidth).setColor(this.notice?'#ECA79A':SELECTION_INK.muted).setOrigin(.5,0).setName('opening/status');
@@ -181,7 +182,7 @@ export class CharacterSelectScene extends Phaser.Scene {
     if(c.portrait){
       const artWidth=Math.min(q.art.width,q.art.height*1122/1402),artHeight=artWidth*1402/1122,artX=q.art.x+(q.art.width-artWidth)/2,artY=q.art.y+(q.art.height-artHeight)/2;
       this.entryArt={x:artX,y:artY,width:artWidth,height:artHeight};
-      v.add(this.add.graphics().fillStyle(0x040b0e,.52).fillRect(artX+6,artY+8,artWidth,artHeight).lineStyle(1,0xd8b46c,.65).strokeRect(artX-1,artY-1,artWidth+2,artHeight+2).lineStyle(1,0xf5deb0,.18).strokeRect(artX-4,artY-4,artWidth+8,artHeight+8));
+      v.add(this.add.graphics().fillStyle(0x06040a,.54).fillRect(artX+6,artY+8,artWidth,artHeight).lineStyle(1,0xd8b46c,.65).strokeRect(artX-1,artY-1,artWidth+2,artHeight+2).lineStyle(1,0xf5deb0,.18).strokeRect(artX-4,artY-4,artWidth+8,artHeight+8));
       this.queueHeroPortrait(c.id);this.drawPortrait(c.id,q.art,true);
       const artHit=v.rect(q.art).setFillStyle(0,0).setStrokeStyle();
       v.target(artHit,'opening/portrait-full',{tap:()=>this.inspectPortrait(c.id),detail:()=>this.inspectPortrait(c.id)});
@@ -201,18 +202,18 @@ export class CharacterSelectScene extends Phaser.Scene {
     const effect=v.text(x,skill.y+skill.height+5,route?route.method:abilityEnabled?c.quickEffect:'此挑战关闭角色能力',compact?14:18,'#F6EFE0',w).setName('opening/skill-hook');
     let next=effect.y+effect.height+6;
     if(route){
-      const payoff=v.text(x,next,route.payoff,compact?14:18,'#78D1BF',w).setName('opening/route-payoff');next=payoff.y+payoff.height+5;
+      const payoff=v.text(x,next,route.payoff,compact?14:18,'#E4B86A',w).setName('opening/route-payoff');next=payoff.y+payoff.height+5;
     }else if(abilityEnabled&&c.skillTags.length){
       const visibleTags=compact&&b.height<300?c.skillTags.slice(0,2):c.skillTags;
-      const tags=v.text(x,next,visibleTags.join(' · '),14,'#9FD0C4',w).setName('opening/skill-conditions');next=tags.y+tags.height+(compact?4:16);
+      const tags=v.text(x,next,visibleTags.join(' · '),14,'#E4BE72',w).setName('opening/skill-conditions');next=tags.y+tags.height+(compact?4:16);
     }
     if(!compact&&abilityEnabled&&!route){
-      const when=v.text(x,next,'出手 · '+facts.when,16,'#9FD0C4',w).setName('opening/when');
+      const when=v.text(x,next,'出手 · '+facts.when,16,'#E4BE72',w).setName('opening/when');
       const cost=v.text(x,when.y+when.height+18,'取舍 · '+facts.cost,16,'#E7DDD0',w).setName('opening/cost');next=cost.y+cost.height;
     }
     const demo={...q.demo,y:Math.min(q.demo.y,next+(compact?8:20))},half=(demo.width-8)/2;
     const panel={x:q.copy.x-8,y:q.copy.y-8,width:q.copy.width+16,height:demo.y+demo.height-q.copy.y+8};
-    paper.fillStyle(0x040b0e,.46).fillRoundedRect(panel.x+4,panel.y+5,panel.width,panel.height,5).fillStyle(SELECTION_INK.paper,.94).fillRoundedRect(panel.x,panel.y,panel.width,panel.height,5).lineStyle(1,0xf5deb0,.16).lineBetween(panel.x+6,panel.y+1.5,panel.x+panel.width-6,panel.y+1.5).lineStyle(1,0xc9a562,.62).strokeRoundedRect(panel.x+.5,panel.y+.5,panel.width-1,panel.height-1,5);
+    paper.fillStyle(0x06040a,.48).fillRoundedRect(panel.x+4,panel.y+5,panel.width,panel.height,5).fillStyle(SELECTION_INK.paper,.94).fillRoundedRect(panel.x,panel.y,panel.width,panel.height,5).lineStyle(1,0xf5deb0,.16).lineBetween(panel.x+6,panel.y+1.5,panel.x+panel.width-6,panel.y+1.5).lineStyle(1,0xc9a562,.62).strokeRoundedRect(panel.x+.5,panel.y+.5,panel.width-1,panel.height-1,5);
     selectionQuietButton(v,{...demo,width:half},'故事 · 技能','opening/hero-details',()=>this.inspect(c.id),!this.choosing,false);
     selectionQuietButton(v,{...demo,x:demo.x+half+8,width:half},this.step==='hero'?'技能例子':this.selectedRoute?'路线例子':'先选路线','action/opening-sample',()=>{this.audio.select();showSelectionSample(this.dialog,c.name+' · '+(this.step==='hero'?'技能例子':'路线例子'),this.step==='hero'?heroPlaySample(c.id):routePlaySample(this.selectedRoute!,c.id));},!this.choosing&&(this.step==='hero'?abilityEnabled:!!this.selectedRoute),false);
     if(this.animateChoice&&!this.reducedMotion()){
@@ -250,7 +251,7 @@ export class CharacterSelectScene extends Phaser.Scene {
       }
     }
     v.add(art);
-    const glow=this.add.graphics().lineStyle(3,0x3f606b,.92).strokeRoundedRect(-b.width/2-1,-b.height/2-1,b.width+2,b.height+2,8).setAlpha(0);art.add(glow);
+    const glow=this.add.graphics().lineStyle(3,0xd8b46c,.92).strokeRoundedRect(-b.width/2-1,-b.height/2-1,b.width+2,b.height+2,8).setAlpha(0);art.add(glow);
     const reduced=()=>gameSession().reducedMotion||window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const leave=()=>{if(!art.active)return;this.tweens.killTweensOf(art);glow.setAlpha(0);if(reduced())art.setPosition(cx,cy).setScale(1);else this.tweens.add({targets:art,x:cx,y:cy,scaleX:1,scaleY:1,duration:120,ease:'Sine.easeOut'});};
     art.once('destroy',()=>this.tweens.killTweensOf(art));
@@ -313,8 +314,8 @@ export class CharacterSelectScene extends Phaser.Scene {
   private async confirmChoice():Promise<void> {
     if(this.choosing){if(this.confirming)this.entryParticles?.skipConfirm();return;}
     if(!this.selectedId)return;
-    if(this.step==='hero'){this.heroBurstDispose?.();this.heroBurstDispose=undefined;this.step='route';this.notice='';this.audio.select();this.render();return;}
-    if(!this.selectedRoute)return;
+    this.heroBurstDispose?.();this.heroBurstDispose=undefined;
+    this.selectedRoute=this.selectedRoute??DEFAULT_HERO_ROUTE[this.selectedId];
     await this.choose();
   }
   private async choose():Promise<boolean> {

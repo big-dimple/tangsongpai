@@ -7,20 +7,20 @@ import {ATELIER_THEME as A} from './theme';
 import {rasterizePaper} from './PaperStock';
 import {paintAtelierBackdrop,paintLacquerPanel} from './AtelierArt';
 
-/** Twilight riverfront along the shop signboard. Lacquer trays sit below. */
+/** Moonlight riverfront along the rosewood shop signboard. Lacquer trays sit below. */
 export function drawShopBackdrop(scene:Phaser.Scene,view:SceneView,p:ReturnType<typeof shopLayout>):void {
  const width=view.layout.width;
  if(!p.pc&&!p.portrait)view.add(scene.add.rectangle(0,0,width,view.layout.height,A.lacquer).setOrigin(0).setName('shop-art/backdrop'));
  const y=p.pc?0:Math.max(0,p.top-8),bottom=p.top+(p.pc?54:p.portrait?48+(p.headerRows-1)*44:42);
- view.add(scene.add.graphics().fillStyle(0x10282e).fillRect(0,y,width,bottom-y).lineStyle(1.5,A.gold,.72).lineBetween(0,bottom,width,bottom).setName(p.pc?'shop-art/pc-header':'shop-art/ink-header'));
+ view.add(scene.add.graphics().fillStyle(0x16111a).fillRect(0,y,width,bottom-y).lineStyle(1.5,A.gold,.72).lineBetween(0,bottom,width,bottom).setName(p.pc?'shop-art/pc-header':'shop-art/ink-header'));
  drawRiverScroll(scene,view,{x:0,y,width,height:bottom-y-1},.68,.36);
 }
 
-/** Deep celadon-lacquer sheets follow published shop rectangles; decoration owns no input. */
+/** Rosewood-obsidian lacquer sheets follow published shop rectangles; decoration owns no input. */
 export function shopSheet(scene:Phaser.Scene,view:SceneView,name:string,b:Box,color:number,raised=false,outlined=false):void {
   if(b.width<=0||b.height<=0)return;
   const g=scene.add.graphics().setName('shop-art/'+name).setData('bounds',{...b});
-  if(raised)g.fillStyle(0x040b0e,.42).fillRoundedRect(b.x,b.y+3,b.width,b.height,4);
+  if(raised)g.fillStyle(0x06040a,.46).fillRoundedRect(b.x,b.y+3,b.width,b.height,4);
   g.fillStyle(color,.96).fillRoundedRect(b.x,b.y,b.width,b.height,4);view.add(g);
   if(outlined)view.add(scene.add.graphics().lineStyle(1,A.goldSoft,.62).strokeRoundedRect(b.x+.5,b.y+.5,b.width-1,b.height-1,4).setName('shop-art/offer-edge').setData('bounds',{...b}));
 }
