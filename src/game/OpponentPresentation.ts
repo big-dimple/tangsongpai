@@ -6,44 +6,44 @@ import {HAND_LABELS} from '../content/handLabels';
 import {DetailDialog} from './DetailDialog';
 import {B05_OPPONENT,type OpponentCue,type OpponentChoice} from './OpponentFacts';
 import {heatText} from './scoreText';
-import {PAPER_CSS as C,UI_FONT} from './theme';
+import {ATELIER_CSS as C,UI_FONT} from './theme';
 import {cssViewport} from '../platform/Viewport';
 
-/** Scoped paper/ink UI. Portrait and eye art can be supplied independently; no borrowed player face. */
+/** Scoped twilight lacquer UI. Portrait and eye art can be supplied independently; no borrowed player face. */
 function style(host:HTMLElement):void {
   const sheet=document.createElement('style');sheet.textContent=`
-  .detail-dialog.opponent-dialog[open] {border-color:${C.jade};width:min(650px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));height:auto;top:calc(50% + (var(--safe-top) - var(--safe-bottom)) / 2);bottom:auto;transform:translateY(-50%)}
+  .detail-dialog.opponent-dialog[open] {border-color:rgba(216,180,108,.55);width:min(650px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));height:auto;top:calc(50% + (var(--safe-top) - var(--safe-bottom)) / 2);bottom:auto;transform:translateY(-50%)}
   .opponent-dialog .dialog-content {overflow:auto}
   .opponent-dialog .dialog-scroll {height:auto;overflow:visible}
-  .opponent-dialog .dialog-eyebrow {display:block;color:${C.jade}}
+  .opponent-dialog .dialog-eyebrow {display:block;color:${C.mist}}
   .opponent-dialog .dialog-effect {font-size:17px;color:${C.ink};white-space:pre-line}
-  .opponent-dialog .dialog-purchase-summary {color:${C.jade};font-size:15px}
-  .opponent-dialog .opponent-quote {font-size:21px;font-weight:700;color:${C.jade};margin:0 0 12px}
+  .opponent-dialog .dialog-purchase-summary {color:${C.goldBright};font-size:15px}
+  .opponent-dialog .opponent-quote {font-size:21px;font-weight:700;color:${C.goldBright};margin:0 0 12px}
   .opponent-dialog .opponent-options {display:grid;gap:10px;margin:12px 0}
-  .opponent-dialog .opponent-option {border:1px solid ${C.divider};padding:10px;border-radius:6px;background:${C.paperLight}}
-  .opponent-dialog .opponent-option p {font-size:14px;line-height:1.6;white-space:pre-line;margin:8px 0 0}
+  .opponent-dialog .opponent-option {border:1px solid rgba(216,180,108,.4);padding:10px;border-radius:6px;background:${C.panel}}
+  .opponent-dialog .opponent-option p {font-size:14px;line-height:1.6;white-space:pre-line;margin:8px 0 0;color:${C.mist}}
   .opponent-dialog .opponent-option button {min-height:44px;width:100%;font-weight:700}
-  .opponent-beat {box-sizing:border-box;position:fixed;z-index:12;pointer-events:none;background:${C.paperLight};color:${C.ink};border:1px solid ${C.jade};border-left:5px solid ${C.jade};padding:10px 14px;font-family:${UI_FONT};display:flex;flex-direction:column;justify-content:center;gap:7px;overflow:hidden}
-  .opponent-beat[data-kind="repeat"] {border-color:${C.red}}
-  .opponent-beat small {font-size:14px;color:${C.mutedInk}}
-  .opponent-beat strong {font-size:21px;line-height:1.25}
+  .opponent-beat {box-sizing:border-box;position:fixed;z-index:12;pointer-events:none;background:${C.panel};color:${C.ink};border:1px solid rgba(216,180,108,.5);border-left:5px solid ${C.gold};padding:10px 14px;font-family:${UI_FONT};display:flex;flex-direction:column;justify-content:center;gap:7px;overflow:hidden}
+  .opponent-beat[data-kind="repeat"] {border-color:${C.cinnabarSoft}}
+  .opponent-beat small {font-size:14px;color:${C.mist}}
+  .opponent-beat strong {font-size:21px;line-height:1.25;color:${C.goldBright}}
   .opponent-beat p {font-size:15px;line-height:1.35;margin:0}
   .opponent-beat[data-compact="true"] {padding:2px 10px;gap:2px;justify-content:flex-end}
   .opponent-beat[data-compact="true"] small {line-height:1.25}
   .opponent-beat[data-compact="true"] strong {font-size:18px}
   .opponent-beat > small,.opponent-beat > strong,.opponent-beat > p {flex-shrink:0}
-  .opponent-dialog .opponent-identity {display:flex;align-items:center;gap:10px;margin:0 0 10px;color:${C.jade}}
-  .opponent-dialog .opponent-seal {display:grid;place-items:center;border:2px solid currentColor;width:44px;height:44px;font:700 19px Georgia,serif;letter-spacing:2px}
+  .opponent-dialog .opponent-identity {display:flex;align-items:center;gap:10px;margin:0 0 10px;color:${C.goldBright}}
+  .opponent-dialog .opponent-seal {display:grid;place-items:center;border:2px solid currentColor;width:44px;height:44px;font:700 19px var(--display-font);letter-spacing:2px}
   .opponent-dialog .opponent-identity span {font-size:13px;letter-spacing:2px}
-  .opponent-dialog .opponent-quote {font-family:var(--ui-font);font-size:clamp(20px,3vw,28px);line-height:1.3}
-  .opponent-dialog .dialog-effect {border-left:3px solid ${C.red};padding-left:12px;font-weight:700}
+  .opponent-dialog .opponent-quote {font-family:var(--display-font);font-size:clamp(20px,3vw,28px);line-height:1.3}
+  .opponent-dialog .dialog-effect {border-left:3px solid ${C.cinnabarHi};padding-left:12px;font-weight:700}
   .opponent-dialog .dialog-purchase-summary {font-size:16px;font-weight:700}
-  .opponent-beat {background:${C.paperLight};border-left-width:5px;gap:5px}
-  .opponent-beat strong {font-family:var(--ui-font);font-size:clamp(19px,3vw,30px)}
-  .opponent-beat p {font-weight:700;color:${C.jade}}
-  .opponent-beat[data-kind='repeat'] p {color:${C.red}}
-  .opponent-beat[data-kind='won'] {border-color:${C.brass}}
-  .opponent-beat .opponent-receipt {align-self:flex-start;border:1px solid currentColor;padding:2px 6px;font-size:12px;letter-spacing:1px;color:${C.jade}}
+  .opponent-beat {background:${C.panel};border-left-width:5px;gap:5px}
+  .opponent-beat strong {font-family:var(--display-font);font-size:clamp(19px,3vw,30px)}
+  .opponent-beat p {font-weight:700;color:${C.celadon}}
+  .opponent-beat[data-kind='repeat'] p {color:${C.cinnabarSoft}}
+  .opponent-beat[data-kind='won'] {border-color:${C.gold}}
+  .opponent-beat .opponent-receipt {align-self:flex-start;border:1px solid currentColor;padding:2px 6px;font-size:12px;letter-spacing:1px;color:${C.goldBright}}
   .opponent-beat[data-compact='true'] .opponent-receipt {display:none}
   @media(min-width:700px) {.opponent-dialog .opponent-options {grid-template-columns:1fr 1fr}}
   @media(max-height:620px) {.opponent-dialog .opponent-quote {font-size:18px;margin-bottom:6px}.opponent-dialog .opponent-options {gap:6px;margin:6px 0}.opponent-dialog .opponent-option {padding:7px}}

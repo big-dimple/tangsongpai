@@ -6,7 +6,7 @@ import {GameScene} from '../src/game/GameScene';
 import {dispatchRun} from '../src/game/runAdapter';
 import {applyCommand,type Action,type R2RunState} from '../src/domain/run';
 import {newRunIdentity} from '../src/game/RunLaunch';
-import {PAPER_CSS} from '../src/game/theme';
+import {ATELIER_CSS} from '../src/game/theme';
 import {CHARACTER_IDS} from '../src/domain/characters';
 import {heroStageFixture} from '../harness/fixtures/hero-stage-continuity';
 import {heroAbilityCue} from '../src/game/HeroAbilityCue';
@@ -27,7 +27,7 @@ function setup(run:R2RunState,ids:string[]){
 }
 function expectQuiet(s:any,state:string,status:string){
  expect(s.roleFrame.getData('abilityState')).toBe(state);expect(s.roleFrame.getData('abilityOpportunity')).toBe(false);expect(s.roleFrame.getData('abilityAvailable')).toBe(false);
- expect(s.heroActionButton.input.enabled).toBe(false);expect(s.heroActionButton.getData('skillStatus').text).toBe(status);expect(s.heroActionButton.getData('skillStatus').color).toBe(PAPER_CSS.mutedInk);
+ expect(s.heroActionButton.input.enabled).toBe(false);expect(s.heroActionButton.getData('skillStatus').text).toBe(status);expect(s.heroActionButton.getData('skillStatus').color).toBe(ATELIER_CSS.mist);
 }
 
 it('keeps the real discard saving/effect interval quiet, then shows its saved target through next-hand selection',async()=>{

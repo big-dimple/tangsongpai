@@ -219,7 +219,7 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
         });
         const layer=[...contour,{x:rootRight,y:rootBottom},{x:rootLeft,y:rootBottom}];
         const inner=layer.map(p=>({x:p.x,y:p.y+(rootBottom-p.y)*.5}));
-        for(const [points,color,alpha] of [[layer,0x574082,desktop?.24:.17],[inner,0x8468a8,desktop?.18:.12]] as const){
+        for(const [points,color,alpha] of [[layer,0x7656b0,desktop?.32:.24],[inner,0xa482df,desktop?.26:.18]] as const){
           const bounded=clipSheet(points,boardSafe),wp=bounded.map(world),box=bbox(wp);
           for(const area of behind.areas){
             const open=intersect(fit,area);if(!open||!overlaps(box,open))continue;
@@ -252,7 +252,7 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
           for(const side of [-1,1])for(let i=0;i<3;i++){
             const x=side<0?hero.x-8:hero.x+hero.width+8,foot=hero.y+hero.height*(.94-i*.18),height=hero.height*(.22-i*.025),width=24+i*3,phase=elapsed/610+i*1.7+side;
             const sheets=[flameSheet(x,foot,width*1.3,height*1.04,phase,side*8,1+i),flameSheet(x,foot-.4,width,height,phase,side*8,1+i),flameSheet(x,foot-.7,width*.52,height*.67,phase,side*6,1+i)];
-            for(const [index,color,alpha] of [[0,0x3a2a55,.28],[1,0x5d4389,.42],[2,0x8769ab,.34]] as const)paint(sheets[index],color,alpha);
+            for(const [index,color,alpha] of [[0,0x3a2a55,.32],[1,0x5d4389,.48],[2,0xb591eb,.44]] as const)paint(sheets[index],color,alpha);
           }
         }
       }
@@ -287,7 +287,7 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
       const points=[...Array.from({length:5},(_,j)=>{const x=x0+(x1-x0)*j/4;return{x,y:rootTop(x)};}),{x:x1,y:rootBottom},{x:x0,y:rootBottom}];
       painted=paintSafe(points,0x3a2a55,.48*rootAlpha,rootBottom-2*size)||painted;
       const inner=points.map(p=>({x:p.x,y:p.y+(rootBottom-p.y)*.50}));
-      painted=paintSafe(inner,0x8769ab,.38*rootAlpha,rootBottom-2*size)||painted;
+      painted=paintSafe(inner,0xa482df,.48*rootAlpha,rootBottom-2*size)||painted;
       if(painted)rootVisible++;
     }
     let visible=0;const placed:number[]=[];
@@ -321,7 +321,7 @@ export function mountHighMultiplierAura(scene:Phaser.Scene,options:HighMultiplie
         if(sheets)break;
       }
       if(!sheets)continue;
-      const colors=[0x422f5e,0x5b4186,0x8a6cae,0xd8b56a],opacities=[.24,.78,.82,.95];
+      const colors=[0x422f5e,0x5b4186,0xc6a6f5,0xd8b56a],opacities=[.28,.82,.88,.98];
       for(let i=0;i<sheets.length;i++)ink.fillStyle(colors[i],alpha*opacities[i]*pulse).fillPoints(sheets[i].map(p=>({x:p.x+shift,y:p.y})),true);
       placed.push(x+shift);visible++;
     }

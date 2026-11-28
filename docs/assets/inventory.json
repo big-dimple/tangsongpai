@@ -926,8 +926,8 @@
     "No new visual or rights approval. Decoded RGBA sizes are estimates, not measured GPU memory."
   ],
   "totals": {
-    "files": 460,
-    "bytes": 57378085,
+    "files": 463,
+    "bytes": 57859393,
     "decodedRgbaBytes": 344308504,
     "groups": {
       "audio": {
@@ -946,8 +946,8 @@
         "decodedRgbaBytes": 262144
       },
       "fonts": {
-        "count": 7,
-        "bytes": 38085,
+        "count": 10,
+        "bytes": 519393,
         "decodedRgbaBytes": 0
       },
       "handdrawn-climax": {
@@ -1323,6 +1323,21 @@
       "path": "public/assets/fonts/score/tangsongpai-score-numbers.woff",
       "bytes": 6220,
       "sha256": "00d2d147bbf43952107ea1386f9970c653a5887637ed932ca2f36cac2429a53a"
+    },
+    {
+      "path": "public/assets/fonts/ui/cormorant-500.woff2",
+      "bytes": 13316,
+      "sha256": "d5396f581afb92e578aacfa836f2fdcfd54bee2a9e86531dcd7ad2f7dba2e5ba"
+    },
+    {
+      "path": "public/assets/fonts/ui/xiaowei-2.woff2",
+      "bytes": 255308,
+      "sha256": "49dd811a3e2d4adb59e30a4edf26b6720f5ba502bc234ddad80592ecb997d578"
+    },
+    {
+      "path": "public/assets/fonts/ui/xiaowei.woff2",
+      "bytes": 212684,
+      "sha256": "240928a9ba3068993c8bdedaa7be6268b45f75d401bff19cd6dc4c6067ca3a68"
     },
     {
       "path": "public/assets/handdrawn-climax/a03-e2071d0ffa97.webp",

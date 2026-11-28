@@ -4,12 +4,12 @@ import {tableScoreCells,tableScoreCaption,tableScoreLabelY} from './ScoreTableLa
 import {fitScoreLine,scorePulseFrame} from './ScoreTextLayout';
 import {crispText,prepareTextScale,textDensity} from './TextRaster';
 import {SCORE_CHANNEL} from './ScoreTableMotion';
-import {SCORE_FONT,PAPER_CSS as C} from './theme';
+import {SCORE_FONT,ATELIER_CSS as A} from './theme';
 
 export function mountTableScoreMarks(scene:Phaser.Scene,root:Phaser.GameObjects.Container,board:Box):void {
  const cells=tableScoreCells(board);
  for(const [i,mark] of ['×','='].entries()){
-  const a=cells[i],b=cells[i+1],text=scene.add.text((a.x+a.width+b.x)/2,a.y+a.height/2,mark,{fontFamily:SCORE_FONT,fontSize:'24px',color:C.mutedInk,resolution:textDensity(scene)}).setOrigin(.5).setName('score/formula-'+i);root.add(text);crispText(text);
+  const a=cells[i],b=cells[i+1],text=scene.add.text((a.x+a.width+b.x)/2,a.y+a.height/2,mark,{fontFamily:SCORE_FONT,fontSize:'24px',color:A.gold,resolution:textDensity(scene)}).setOrigin(.5).setName('score/formula-'+i);root.add(text);crispText(text);
  }
 }
 

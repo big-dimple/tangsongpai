@@ -33,6 +33,7 @@ try {
         const bounds=text.getBounds();
         return {font:text.style.fontFamily,bounds:{x:bounds.x,width:bounds.width}};
       });
+      assert.match(view.font,/Tangsongpai XiaoWei/);
       assert.match(view.font,/PingFang SC|Microsoft YaHei|sans-serif/);
       assert.doesNotMatch(view.font,/Tangsongpai Song UI/);
       assert.ok(view.bounds.x>=0&&view.bounds.x+view.bounds.width<=test.width+1,'hero name fits the visible area');

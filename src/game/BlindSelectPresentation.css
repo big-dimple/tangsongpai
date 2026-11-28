@@ -1,8 +1,8 @@
-/* Chapter entrance owns its paper stage; shared detail/confirmation shells stay untouched. */
+/* Chapter entrance owns its twilight lacquer stage; shared detail/confirmation shells follow the dark atelier palette. */
 .detail-dialog.blind-select-dialog[open] {
-  --blind-ink: #293b3c;
-  --blind-muted: #5e655e;
-  --blind-paper: #eee5d3;
+  --blind-ink: #f6efe0;
+  --blind-muted: #b8cdc6;
+  --blind-paper: linear-gradient(162deg, #163238, #0c1e24);
   width: min(1100px, calc(100vw - var(--safe-left, 0px) - var(--safe-right, 0px) - 32px));
   height: auto;
   max-height: calc(100dvh - var(--safe-top, 0px) - var(--safe-bottom, 0px) - 32px);
@@ -10,16 +10,16 @@
   bottom: auto;
   transform: translateY(-50%);
   padding: 0;
-  border: 1px solid #7c7c68;
-  border-radius: 3px 10px 3px 5px;
+  border: 1px solid rgba(216, 180, 108, .55);
+  border-radius: 6px;
   background: var(--blind-paper);
   color: var(--blind-ink);
-  box-shadow: 0 24px 64px #172c334d, inset 0 0 0 4px #fcf4e2;
+  box-shadow: 0 28px 72px rgba(3, 9, 12, .74), inset 0 1px 0 rgba(245, 222, 176, .18);
   line-height: 1.5;
   animation: none;
   overflow: clip;
 }
-.blind-select-dialog::backdrop { background: #26383a99; }
+.blind-select-dialog::backdrop { background: rgba(5, 13, 16, .78); }
 .blind-select-dialog > .dialog-header {
   display: flex;
   align-items: baseline;
@@ -34,12 +34,12 @@
 .blind-select-dialog .dialog-header::after { display: none; }
 .blind-select-dialog > .dialog-header h2 {
   margin: 0;
-  color: var(--blind-ink);
-  font-size: 24px;
+  color: #ffeec7;
+  font: 600 26px/1.25 var(--display-font);
   letter-spacing: .08em;
   text-shadow: none;
 }
-.blind-select-dialog .blind-wallet { margin-left: auto; font-size: 14px; color: var(--blind-muted); }
+.blind-select-dialog .blind-wallet { margin-left: auto; font-size: 14px; color: #f2cf84; }
 .blind-select-dialog > .dialog-content {
   display: block;
   min-height: 0;
@@ -51,12 +51,12 @@
 .blind-select-dialog .dialog-copy { overflow: visible; display: block; padding: 0; }
 .blind-select-dialog .dialog-body:empty,
 .blind-select-dialog .dialog-status:empty { display: none; }
-.blind-select-dialog .blind-itinerary{display:flex;gap:0;border-block:1px solid #bdac8b;margin:0 0 12px}
-.blind-select-dialog .blind-stop{position:relative;flex:1;min-height:44px;padding:6px 4px;border:0;border-radius:0;background:transparent;color:#475b4d;font:600 15px/1.4 var(--ui-font);cursor:pointer}
-.blind-select-dialog .blind-stop + .blind-stop{border-inline-start:1px solid #c9baa0}
-.blind-select-dialog .blind-stop[data-state=current]{background:#294c40;color:#fff5d8;box-shadow:inset 0 -3px #c79b62}
-.blind-select-dialog .blind-stop[data-state=past]::before{content:"✓ ";color:#3f6051}
-.blind-select-dialog .blind-card:focus-visible,.blind-select-dialog .blind-stop:focus-visible{outline:2px solid #923b2d;outline-offset:-2px}
+.blind-select-dialog .blind-itinerary{display:flex;gap:0;border-block:1px solid rgba(216,180,108,.38);margin:0 0 12px}
+.blind-select-dialog .blind-stop{position:relative;flex:1;min-height:44px;padding:6px 4px;border:0;border-radius:0;background:transparent;color:#b8cdc6;font:600 15px/1.4 var(--ui-font);cursor:pointer}
+.blind-select-dialog .blind-stop + .blind-stop{border-inline-start:1px solid rgba(216,180,108,.28)}
+.blind-select-dialog .blind-stop[data-state=current]{background:rgba(216,180,108,.18);color:#fff2cf;box-shadow:inset 0 -3px #d8b46c}
+.blind-select-dialog .blind-stop[data-state=past]::before{content:"✓ ";color:#6bc2b4}
+.blind-select-dialog .blind-card:focus-visible,.blind-select-dialog .blind-stop:focus-visible{outline:2px solid #f2cf84;outline-offset:-2px}
 .blind-select-dialog .blind-confrontation {
   display: grid;
   grid-template-columns: minmax(0, 1.65fr) minmax(270px, 1fr);
@@ -69,11 +69,11 @@
   grid-column: 2;
   min-width: 0;
   padding: 16px 18px;
-  background: #f8f2e6;
-  box-shadow: 2px 3px 0 #beb79f70, 0 6px 12px #293b3c0c;
-  border: 0;
-  border-top: 1px solid #a6a58f;
-  border-radius: 2px 4px 3px 1px;
+  background: linear-gradient(180deg, #163239, #10252b);
+  box-shadow: 0 8px 18px rgba(4, 10, 13, .42);
+  border: 1px solid rgba(216, 180, 108, .35);
+  border-top: 2px solid rgba(216, 180, 108, .55);
+  border-radius: 5px;
 }
 .blind-select-dialog .blind-stage-heading { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
 .blind-select-dialog .blind-stage-number {
@@ -81,28 +81,28 @@
   place-items: center;
   flex: 0 0 40px;
   height: 43px;
-  color: #65573f;
-  border: 1px solid #b7aa8c;
+  color: #f5deb0;
+  border: 1px solid rgba(216, 180, 108, .55);
   border-radius: 47% 44% 48% 43%;
-  font: 24px var(--ui-font);
+  font: 24px var(--display-font);
   transform: rotate(-5deg);
 }
 .blind-select-dialog .blind-stage-state { margin: 0 0 2px; color: var(--blind-muted); font-size: 12px; letter-spacing: .1em; }
-.blind-select-dialog .blind-card-title { margin: 0; color: var(--blind-ink); font: bold 24px/1.2 var(--ui-font); letter-spacing: .08em; }
-.blind-select-dialog .blind-boss-label { display: block; margin-top: 4px; color: #765141; font-size: 12px; }
+.blind-select-dialog .blind-card-title { margin: 0; color: #ffeec7; font: bold 24px/1.2 var(--display-font); letter-spacing: .08em; }
+.blind-select-dialog .blind-boss-label { display: block; margin-top: 4px; color: #e98272; font-size: 12px; }
 .blind-select-dialog .blind-target { display: flex; gap: 14px; align-items: baseline; margin: 0 0 8px; }
 .blind-select-dialog .blind-target-label { font-size: 14px; color: var(--blind-muted); }
-.blind-select-dialog .blind-target-value { font: bold 26px/1.2 var(--ui-font); color: var(--blind-ink); overflow-wrap: anywhere; }
+.blind-select-dialog .blind-target-value { font: bold 26px/1.2 var(--cover-serif); color: #fff2cf; overflow-wrap: anywhere; }
 .blind-select-dialog .blind-clear-reward,
-.blind-select-dialog .blind-skip-reward { margin: 5px 0 0; font-size: 14px; color: #4f584e; }
-.blind-select-dialog .blind-skip-cost { margin: 10px 0 0; font-size: 13px; color: #6e5540; }
-.blind-select-dialog .blind-boss-rule { margin: 8px 0 0; font-size: 14px; line-height: 1.55; font-weight: 600; }
-.blind-select-dialog .blind-boss-response { margin: 8px 0 12px; color: #5d655c; font-size: 13px; line-height: 1.5; }
-.blind-select-dialog .blind-card.is-boss:not(.is-active) { background: #e1e3d6; border-top-color: #45584f; }
-.blind-select-dialog .is-boss .blind-stage-number { border-color: #8a6a50; color: #80503c; }
-.blind-select-dialog .is-cleared { background: #e9e4d8; box-shadow: none; }
-.blind-select-dialog .is-cleared .blind-stage-state { color: #486653; }
-.blind-select-dialog .is-cleared .blind-stage-number { color: #486653; border-color: #98a58c; }
+.blind-select-dialog .blind-skip-reward { margin: 5px 0 0; font-size: 14px; color: #cfe0da; }
+.blind-select-dialog .blind-skip-cost { margin: 10px 0 0; font-size: 13px; color: #e5b77c; }
+.blind-select-dialog .blind-boss-rule { margin: 8px 0 0; font-size: 14px; line-height: 1.55; font-weight: 600; color: #f6efe0; }
+.blind-select-dialog .blind-boss-response { margin: 8px 0 12px; color: #b8cdc6; font-size: 13px; line-height: 1.5; }
+.blind-select-dialog .blind-card.is-boss:not(.is-active) { background: linear-gradient(180deg, #252236, #191828); border-top-color: #c96452; }
+.blind-select-dialog .is-boss .blind-stage-number { border-color: #d97a68; color: #ffbfa6; }
+.blind-select-dialog .is-cleared { background: #0d1f24; box-shadow: none; opacity: .88; }
+.blind-select-dialog .is-cleared .blind-stage-state { color: #6bc2b4; }
+.blind-select-dialog .is-cleared .blind-stage-number { color: #6bc2b4; border-color: rgba(107, 194, 180, .55); }
 .blind-select-dialog .blind-card.is-active {
   grid-column: 1;
   grid-row: 1 / span 2;
@@ -112,9 +112,9 @@
   gap: 12px 18px;
   padding: 24px 22px 0;
   min-height: 400px;
-  border: 0;
-  background: radial-gradient(ellipse at 24% 86%, #bac8b875, transparent 60%), linear-gradient(116deg, #e7e4d1, #fff8e9 69%);
-  box-shadow: 3px 5px 0 #a29f8166, 0 10px 18px #293b3c1a;
+  border: 1px solid rgba(216, 180, 108, .58);
+  background: radial-gradient(ellipse at 24% 72%, rgba(242, 202, 130, .14), transparent 58%), linear-gradient(125deg, #1b3d45, #0f252b 74%);
+  box-shadow: 0 16px 34px rgba(3, 9, 12, .52), inset 0 1px 0 rgba(245, 222, 176, .18);
 }
 .blind-select-dialog .is-active::before {
   content: '';
@@ -123,48 +123,48 @@
   right: 0;
   top: 0;
   height: 5px;
-  background: #354f4b;
+  background: #d8b46c;
   clip-path: polygon(0 0, 100% 10%, 98% 74%, 74% 58%, 35% 100%, 0 62%);
 }
 .blind-select-dialog .is-active > .blind-stage-heading { grid-column: 1 / -1; margin: 0; align-items: center; }
-.blind-select-dialog .is-active .blind-stage-number { flex-basis: 49px; height: 52px; font-size: 30px; border-color: #5b7162; color: #354f4b; }
-.blind-select-dialog .is-active .blind-stage-state { color: #3c6054; font-weight: 700; }
+.blind-select-dialog .is-active .blind-stage-number { flex-basis: 49px; height: 52px; font-size: 30px; border-color: rgba(216, 180, 108, .65); color: #ffeec7; }
+.blind-select-dialog .is-active .blind-stage-state { color: #6bc2b4; font-weight: 700; }
 .blind-select-dialog .is-active .blind-card-title { font-size: clamp(30px, 3.7vw, 44px); letter-spacing: .13em; }
 .blind-select-dialog .blind-hero { position: relative; grid-column: 1; grid-row: 2; margin: 0; min-width: 0; align-self: end; }
-.blind-select-dialog .blind-hero-image { display: block; width: 100%; height: 320px; object-fit: cover; object-position: center top; mix-blend-mode: multiply; mask-image: linear-gradient(#000 80%, transparent); }
-.blind-select-dialog .blind-hero-name { position: absolute; left: 8px; bottom: 10px; padding: 2px 8px; color: #384a40; background: #f4eddbed; font-size: 13px; letter-spacing: .08em; }
+.blind-select-dialog .blind-hero-image { display: block; width: 100%; height: 320px; object-fit: cover; object-position: center top; mix-blend-mode: normal; mask-image: linear-gradient(#000 80%, transparent); }
+.blind-select-dialog .blind-hero-name { position: absolute; left: 8px; bottom: 10px; padding: 2px 8px; color: #ffeec7; background: rgba(13, 32, 38, .86); border: 1px solid rgba(216, 180, 108, .42); border-radius: 3px; font-size: 13px; letter-spacing: .08em; }
 .blind-select-dialog .blind-hero.art-unavailable .blind-hero-image { visibility: hidden; }
 .blind-select-dialog .blind-stage-info { min-width: 0; }
 .blind-select-dialog .is-active > .blind-stage-info { grid-column: 2; grid-row: 2; align-self: center; padding: 12px 0 28px; }
 .blind-select-dialog .is-active .blind-target { display: block; margin-bottom: 20px; }
 .blind-select-dialog .is-active .blind-target-label { display: block; margin-bottom: 5px; }
-.blind-select-dialog .is-active .blind-target-value { display: block; font-size: clamp(38px, 5vw, 58px); letter-spacing: -.04em; }
-.blind-select-dialog .is-active.is-boss { background: radial-gradient(ellipse at 18% 85%, #c7c3ac8c, transparent 60%), linear-gradient(110deg, #d8daca, #f7f1e1 75%); }
-.blind-select-dialog .is-active.is-boss::before { background: #875441; }
-.blind-select-dialog .is-active .blind-boss-declaration { margin: 16px 0; padding-left: 12px; border-left: 2px solid #8b5b45; }
+.blind-select-dialog .is-active .blind-target-value { display: block; font-size: clamp(38px, 5vw, 58px); letter-spacing: -.04em; color: #ffe6a8; }
+.blind-select-dialog .is-active.is-boss { background: radial-gradient(ellipse at 18% 85%, rgba(201, 100, 82, .22), transparent 60%), linear-gradient(125deg, #2b2135, #141925 75%); }
+.blind-select-dialog .is-active.is-boss::before { background: #d6614d; }
+.blind-select-dialog .is-active .blind-boss-declaration { margin: 16px 0; padding-left: 12px; border-left: 2px solid #d6614d; }
 .blind-select-dialog .is-active .blind-boss-rule { font-size: 16px; }
-.blind-select-dialog .blind-operation-status { margin: 12px 0 0; padding: 10px 0; color: #80503c; font-size: 14px; }
+.blind-select-dialog .blind-operation-status { margin: 12px 0 0; padding: 10px 0; color: #f2a190; font-size: 14px; }
 .blind-select-dialog .blind-operation-status[hidden] { display: none; }
-.blind-select-dialog .blind-skip-confirm { grid-column: 1 / -1; padding: 14px 0; border-top: 1px solid #a5a58c; }
+.blind-select-dialog .blind-skip-confirm { grid-column: 1 / -1; padding: 14px 0; border-top: 1px solid rgba(216, 180, 108, .35); }
 .blind-select-dialog .blind-skip-confirm[hidden] { display: none; }
 .blind-select-dialog .blind-skip-confirm p { margin: 5px 0 10px; font-size: 14px; }
-.blind-select-dialog .blind-skip-cancel { min-height: 44px; padding: 8px 16px; background: transparent; border: 1px solid #8e927f; color: #435749; }
+.blind-select-dialog .blind-skip-cancel { min-height: 44px; padding: 8px 16px; background: rgba(19, 43, 50, .85); border: 1px solid rgba(216, 180, 108, .48); color: #f6efe0; }
 .blind-select-dialog > .dialog-actions {
   display: flex;
   flex-wrap: nowrap;
   gap: 12px;
   align-items: center;
   padding: 14px 28px;
-  background: #e5ddc8;
-  border-top: 1px solid #b2ae98;
+  background: #0d2026;
+  border-top: 1px solid rgba(216, 180, 108, .42);
   box-shadow: none;
 }
-.blind-select-dialog > .dialog-actions button { min-height: 48px; border-radius: 3px; font-size: 15px; box-shadow: none; }
-.blind-select-dialog > .dialog-actions .dialog-primary { flex: 1 1 50%; color: #fff7e4; background: #354f4b; border: 1px solid #354f4b; font-size: 17px; letter-spacing: .1em; }
-.blind-select-dialog > .dialog-actions .blind-skip-action { flex: 0 1 160px; border: 1px solid #8e927f; color: #435749; background: #f1ead9; }
-.blind-select-dialog > .dialog-actions .dialog-close { flex: 0 0 auto; min-width: 88px; border-color: transparent; color: #5e655e; background: transparent; }
-.blind-select-dialog button:hover:not(:disabled) { filter: none; background-color: #d5ddcc; color: #293b3c; }
-.blind-select-dialog button:focus-visible { outline: 3px solid #9c6145; outline-offset: 3px; }
+.blind-select-dialog > .dialog-actions button { min-height: 48px; border-radius: 5px; font-size: 15px; box-shadow: none; }
+.blind-select-dialog > .dialog-actions .dialog-primary { flex: 1 1 50%; color: #fffaf0; background: linear-gradient(180deg, #c54a3b, #9d362a); border: 1px solid #e2be79; font-size: 17px; letter-spacing: .1em; }
+.blind-select-dialog > .dialog-actions .blind-skip-action { flex: 0 1 160px; border: 1px solid rgba(216, 180, 108, .48); color: #ffeec7; background: #16333a; }
+.blind-select-dialog > .dialog-actions .dialog-close { flex: 0 0 auto; min-width: 88px; border-color: rgba(216, 180, 108, .28); color: #b8cdc6; background: transparent; }
+.blind-select-dialog button:hover:not(:disabled) { filter: brightness(1.08); }
+.blind-select-dialog button:focus-visible { outline: 3px solid #f2cf84; outline-offset: 3px; }
 .blind-select-dialog button:disabled { opacity: .55; cursor: not-allowed; }
 
 @media (max-width: 700px) and (orientation: portrait) {
@@ -231,5 +231,4 @@
   .blind-select-dialog > .dialog-actions { padding: 8px 20px; }
   .blind-select-dialog > .dialog-actions button { min-height: 44px; padding: 8px 12px; }
 }
-.blind-select-dialog { background-image: var(--paper-grain, none); background-size: 256px 256px; }
-@media (min-resolution: 2dppx) { .blind-select-dialog { background-size: 128px 128px; } }
+.blind-select-dialog { background-image: none; }

@@ -42,7 +42,10 @@ export class BootScene extends Phaser.Scene {
     const images=loading.host.dataset.loadMotion==='reduce'
       ?Promise.resolve().then(()=>{portraits={loaded:0,total:0,failed:0,status:'ready'};refresh();})
       :prepareTitleEnsembleImages(p=>{portraits=p;refresh();});
-    this.opening=Promise.all([audio,images]).then(()=>undefined);
+    const warmupDisplayFont=typeof document!=='undefined'&&document.fonts?.load
+      ?Promise.race([document.fonts.load('400 24px "Tangsongpai XiaoWei"').catch(()=>[]),new Promise<void>(resolve=>setTimeout(resolve,350))])
+      :Promise.resolve();
+    this.opening=Promise.all([audio,images,warmupDisplayFont]).then(()=>undefined);
     refresh();
     // File-local settings are required: Phaser's image defaults override loader.timeout with 0.
     const svgXHR:Phaser.Types.Loader.XHRSettingsObject={responseType:'text',timeout:5000};

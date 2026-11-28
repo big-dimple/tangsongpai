@@ -1,7 +1,7 @@
 import type Phaser from 'phaser';
 import type {Box} from './layout';
 import {crispText} from './TextRaster';
-import {PAPER_THEME} from './theme';
+import {ATELIER_THEME} from './theme';
 
 interface Parts {
  art:Phaser.GameObjects.Container;face:Phaser.GameObjects.Graphics;edge:Phaser.GameObjects.Graphics;
@@ -28,9 +28,9 @@ export function attachHandSortVisual(scene:Phaser.Scene,button:Phaser.GameObject
   stop();alignLabel();const lift=hovered&&!pressed&&!reduced?2:0;
   face.clear();edge.clear();
   if(enabled&&(hovered||pressed)){
-   if(hovered&&!pressed)face.fillStyle(PAPER_THEME.ink,.07).fillRoundedRect(2,3,b.width-4,b.height-4,5);
-   face.fillStyle(PAPER_THEME.paperLight,pressed?.65:.92).fillRoundedRect(1,1,b.width-2,b.height-2,5);
-   edge.lineStyle(1,PAPER_THEME.jade,pressed?.35:.18).strokeRoundedRect(1.5,1.5,b.width-3,b.height-3,5);
+   if(hovered&&!pressed)face.fillStyle(ATELIER_THEME.void,.35).fillRoundedRect(2,3,b.width-4,b.height-4,5);
+   face.fillStyle(ATELIER_THEME.panelRaised,pressed?.72:.95).fillRoundedRect(1,1,b.width-2,b.height-2,5);
+   edge.lineStyle(1,ATELIER_THEME.gold,pressed?.85:.62).strokeRoundedRect(1.5,1.5,b.width-3,b.height-3,5);
   }
   art.setScale(1);label.setScale(1);
   const settle=()=>crispText(label);

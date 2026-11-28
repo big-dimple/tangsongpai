@@ -1,13 +1,13 @@
 .detail-dialog.shop-joker-purchase .dialog-header,
-.detail-dialog.shop-joker-held .dialog-header { background:#203f3b;border-color:#80978d; }
+.detail-dialog.shop-joker-held .dialog-header { background:#0b1e23;border-color:rgba(216,180,108,0.42); }
 .detail-dialog.shop-joker-purchase .dialog-header h2,
-.detail-dialog.shop-joker-held .dialog-header h2 { color:#f7f1df; }
+.detail-dialog.shop-joker-held .dialog-header h2 { color:#fff4da; }
 .detail-dialog.shop-joker-purchase .dialog-eyebrow,
-.detail-dialog.shop-joker-held .dialog-eyebrow { color:#d6dfd5; }
-.detail-dialog.shop-joker-purchase .dialog-actions .dialog-primary { background:#203f3b;border-color:#203f3b; }
-.detail-dialog .shop-offer-value { padding:10px 12px;background:#edf1e9;border-left:2px solid #80978d;border-radius:2px; }
-.detail-dialog .shop-value-heading { color:#203f3b;font-weight:700; }
-.detail-dialog .shop-offer-value p { line-height:1.6; }
+.detail-dialog.shop-joker-held .dialog-eyebrow { color:#b8cdc6; }
+.detail-dialog.shop-joker-purchase .dialog-actions .dialog-primary { background:#b84234;border-color:#d8b46c;color:#fff7e6; }
+.detail-dialog .shop-offer-value { padding:10px 12px;background:#163238;border-left:2px solid #d8b46c;border-radius:3px;color:#f6efe0; }
+.detail-dialog .shop-value-heading { color:#f5deb0;font-weight:700; }
+.detail-dialog .shop-offer-value p { line-height:1.6;color:#d6e7e1; }
 
 /* Rarity is a persistent outside-art identity, including narrow touch screens. */
 .detail-dialog:is(.shop-joker-purchase,.shop-joker-held) .dialog-header .shop-card-tags { display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:8px 0 0; }
@@ -19,44 +19,44 @@
 
 /* A target is one quiet selectable card. Nested filters do not need separate frames. */
 .detail-dialog.tool-detail .tool-target-group { border:0;padding:0;margin:12px 0 18px;background:transparent; }
-.detail-dialog.tool-detail .tool-target-group legend { padding:0 0 8px;font-size:16px; }
-.detail-dialog.tool-detail .tool-scope-note { border:0;padding:8px;background:#edf1e9;border-radius:6px; }
+.detail-dialog.tool-detail .tool-target-group legend { padding:0 0 8px;font-size:16px;color:#f5deb0; }
+.detail-dialog.tool-detail .tool-scope-note { border:0;padding:8px;background:#17353c;border-radius:6px;color:#d6e7e1; }
 .detail-dialog.tool-detail .tool-target-sort button,
-.detail-dialog.tool-detail .tool-target-directory select { border:0;background:#e2e8e5;box-shadow:none;min-height:44px; }
+.detail-dialog.tool-detail .tool-target-directory select { border:1px solid rgba(216,180,108,0.42);background:#163238;color:#f6efe0;box-shadow:none;min-height:44px; }
 .detail-dialog.tool-detail .tool-choice-grid { grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px;padding:0; }
 .detail-dialog.tool-detail .tool-card-option,
-.detail-dialog.tool-detail .tool-card-option.is-selected { padding:10px 8px;border:0;background:#f8f6ee;box-shadow:none;min-height:110px;align-items:center;text-align:center; }
-.detail-dialog.tool-detail .tool-card-option.is-selected { background:#e2e8e5;box-shadow:inset 0 0 0 2px #3f606b; }
-.detail-dialog.tool-detail .tool-card-option strong { font-size:23px;line-height:1.2;padding-right:16px; }
+.detail-dialog.tool-detail .tool-card-option.is-selected { padding:10px 8px;border:1px solid rgba(216,180,108,0.34);background:#153137;color:#f6efe0;box-shadow:none;min-height:110px;align-items:center;text-align:center; }
+.detail-dialog.tool-detail .tool-card-option.is-selected { background:#1e444b;border-color:#e5be72;box-shadow:inset 0 0 0 2px #e5be72; }
+.detail-dialog.tool-detail .tool-card-option strong { font-size:23px;line-height:1.2;padding-right:16px;color:#fff5dd; }
 .detail-dialog.tool-detail .tool-target-art { width:64px;height:80px;object-fit:contain; }
-.detail-dialog.tool-detail .tool-card-option small { font-size:12px;line-height:1.4; }
-.detail-dialog.tool-detail .tool-selection-dock { border:0;background:#edf1e9; }
-.detail-dialog.tool-detail .tool-preview { font-size:15px; }
+.detail-dialog.tool-detail .tool-card-option small { font-size:12px;line-height:1.4;color:#b8cdc6; }
+.detail-dialog.tool-detail .tool-selection-dock { border:0;background:#122a30; }
+.detail-dialog.tool-detail .tool-preview { font-size:15px;color:#f6efe0; }
 
-/* Shop actions share one quiet secondary treatment and one explicit confirm. */
-.detail-dialog:is(.shop-tool-purchase,.tool-detail,.shop-workshop,.shop-service-confirmation) .dialog-actions button { border:1px solid #b6aa91;border-radius:3px;background:#f9f3e7;color:#203f3b;box-shadow:none;min-height:48px; }
-.detail-dialog:is(.shop-tool-purchase,.tool-detail,.shop-workshop,.shop-service-confirmation) .dialog-actions .dialog-primary { background:#203f3b;color:#fff9ee; }
-.detail-dialog:is(.shop-tool-purchase,.tool-detail,.shop-workshop,.shop-service-confirmation) .dialog-actions button:disabled { background:#e7e5de;color:#595b59; }
+/* Shop actions share dark lacquer buttons and cinnabar primary confirm. */
+.detail-dialog:is(.shop-tool-purchase,.tool-detail,.shop-workshop,.shop-service-confirmation) .dialog-actions button { border:1px solid rgba(216,180,108,0.48);border-radius:4px;background:#17353b;color:#f6efe0;box-shadow:none;min-height:48px; }
+.detail-dialog:is(.shop-tool-purchase,.tool-detail,.shop-workshop,.shop-service-confirmation) .dialog-actions .dialog-primary { background:#b84234;border-color:#d8b46c;color:#fff7e6; }
+.detail-dialog:is(.shop-tool-purchase,.tool-detail,.shop-workshop,.shop-service-confirmation) .dialog-actions button:disabled { background:#13262b;color:#6a807e;border-color:#384e52; }
 .detail-dialog.shop-tool-purchase[open] { width:min(640px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px)); }
 .detail-dialog.shop-tool-purchase .dialog-card-art { flex-basis:128px;width:128px;padding:0;border:0;box-shadow:none;background:transparent; }
-.shop-tool-later { margin-top:12px;padding:0 12px;background:#edf1e9;border-radius:8px; }
-.shop-tool-later summary { min-height:44px;display:flex;align-items:center;cursor:pointer;color:#3f606b; }
+.shop-tool-later { margin-top:12px;padding:0 12px;background:#163238;border:1px solid rgba(216,180,108,0.3);border-radius:8px; }
+.shop-tool-later summary { min-height:44px;display:flex;align-items:center;cursor:pointer;color:#f5deb0; }
 .shop-tool-later button { margin:0 0 12px;min-height:44px; }
 .detail-dialog.shop-workshop[open] { width:min(1000px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));height:fit-content;min-height:0;max-height:calc(100dvh - var(--safe-top) - var(--safe-bottom) - 24px); }
-.shop-workshop .dialog-header { background:#274740; }
-.shop-workshop .make-cards-quota { margin:8px 0 0; }
+.shop-workshop .dialog-header { background:#0b1e23; }
+.shop-workshop .make-cards-quota { margin:8px 0 0;color:#b8cdc6; }
 .workshop-nav { display:flex;gap:8px;padding:4px 0 20px; }
-.workshop-nav button { flex:1;min-height:48px;border:0;border-radius:3px;background:#eee9df;color:#3f606b;box-shadow:none; }
-.workshop-nav button[aria-pressed=true] { background:#203f3b;color:#fff9ee; }
-.workshop-workspace h3 { margin:0 0 8px;color:#203f3b; }
-.workshop-description { margin:0 0 20px;color:#3f606b;line-height:1.6; }
+.workshop-nav button { flex:1;min-height:48px;border:1px solid rgba(216,180,108,0.34);border-radius:4px;background:#142e34;color:#b8cdc6;box-shadow:none; }
+.workshop-nav button[aria-pressed=true] { background:#1f474e;border-color:#d8b46c;color:#fff5dd; }
+.workshop-workspace h3 { margin:0 0 8px;color:#fff5dd; }
+.workshop-description { margin:0 0 20px;color:#b8cdc6;line-height:1.6; }
 .shop-workshop .make-cards-grid { display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:16px; }
-.shop-workshop .make-cards-tile { display:grid;grid-template-rows:160px 1fr;align-items:start;justify-items:center;gap:12px;padding:12px;border:0;border-radius:10px;background:#fff9ee;box-shadow:none;text-align:left; }
+.shop-workshop .make-cards-tile { display:grid;grid-template-rows:160px 1fr;align-items:start;justify-items:center;gap:12px;padding:12px;border:1px solid rgba(216,180,108,0.35);border-radius:10px;background:#17353b;color:#f6efe0;box-shadow:none;text-align:left; }
 .shop-workshop .make-cards-tile img { width:128px;height:160px;object-fit:contain; }
 .shop-workshop .make-cards-tile>span { width:100%;display:grid;grid-template-rows:22px minmax(44px,auto) auto;gap:8px; }
-.shop-workshop .make-cards-tile:hover:not(:disabled),.shop-workshop .shop-service-card:hover:not(:disabled) { background:#edf1e9;transform:translateY(-2px);box-shadow:0 6px 20px #203f3b12; }
-.shop-workshop .shop-service-card { display:grid;gap:12px;align-content:start;min-height:160px;padding:20px;border:0;border-radius:10px;background:#fff9ee;color:#203f3b;text-align:left;box-shadow:none; }
-.shop-workshop .make-cards-tile:disabled { opacity:1;background:#f0eee7;color:#656c65; }
+.shop-workshop .make-cards-tile:hover:not(:disabled),.shop-workshop .shop-service-card:hover:not(:disabled) { background:#20474f;border-color:#d8b46c;transform:translateY(-2px);box-shadow:0 6px 20px rgba(4,10,13,0.42); }
+.shop-workshop .shop-service-card { display:grid;gap:12px;align-content:start;min-height:160px;padding:20px;border:1px solid rgba(216,180,108,0.35);border-radius:10px;background:#17353b;color:#f6efe0;text-align:left;box-shadow:none; }
+.shop-workshop .make-cards-tile:disabled { opacity:1;background:#112428;color:#6a807e;border-color:rgba(142,166,160,0.2); }
 .detail-dialog.tool-targetless[open] { width:min(600px,calc(100vw - var(--safe-left) - var(--safe-right) - 24px));height:fit-content;max-height:calc(100dvh - var(--safe-top) - var(--safe-bottom) - 24px);display:flex; }
 .tool-targetless .tool-workspace { display:flex;flex-direction:column;flex:0 1 auto;overflow:auto;max-height:60dvh; }
 .tool-targetless .tool-direct-summary { display:flex;align-items:center;gap:20px;padding:16px; }

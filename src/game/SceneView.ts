@@ -5,7 +5,7 @@ import {layout,type Box,type TableLayout,type HandWindow} from './layout';
 import {PointerIntent} from './PointerIntent';
 import {pointerReleaseTime,releasePointerIntent} from './PointerReleaseTime';
 import {modalBlocksCanvas,type ModalCanvasPress} from './DetailDialog';
-import {PAPER_THEME,PAPER_CSS,UI_FONT} from './theme';
+import {PAPER_THEME,PAPER_CSS,UI_FONT,DISPLAY_FONT,ATELIER_THEME,ATELIER_CSS} from './theme';
 import {alignViewportCamera,cssViewport,viewportSafeInsets} from '../platform/Viewport';
 import {crispText} from './TextRaster';
 import {keepChinesePunctuation} from './ChineseTextWrap';
@@ -13,7 +13,7 @@ import {drawHandActionGlyph,type HandButtonSkin} from './HandActionArt';
 import {attachHandSortVisual,isHandSortControl} from './HandSortButtonVisual';
 import {registerControllerScene,type ControllerTarget} from './ControllerScene';
 import type {PadAction} from '../platform/GamepadInput';
-import {bakedPaper,PAGE_GRAIN} from './PaperStock';
+import {bakedAtelierBackdrop} from './AtelierArt';
 
 type TouchActions={tap:()=>void;detail?:()=>void;focus?:()=>void;blur?:()=>void;drag?:(x:number,y:number)=>void;dragMove?:(x:number,y:number)=>void;swipe?:(dx:number,dy:number)=>void;cancel?:()=>void;press?:()=>void;release?:()=>void;enter?:()=>void;leave?:()=>void;holdToDrag?:boolean};
 // A repeated release can outlive its scene and hit a different action in the next view.
@@ -92,7 +92,10 @@ export class SceneView {
     scene.input.on('pointerdown',this.down);scene.input.on('pointermove',this.move);scene.input.on('pointerup',this.up);scene.input.on('pointerupoutside',this.cancel);
     scene.game.canvas.addEventListener('pointercancel',this.cancel);scene.scale.on('resize',this.resize);
     window.addEventListener('pointerdown',this.contactDown,true);window.addEventListener('pointerup',this.contactEnd,true);window.addEventListener('pointercancel',this.contactEnd,true);window.addEventListener('blur',this.contactBlur);document.addEventListener('visibilitychange',this.visibility);
-    scene.events.once('shutdown',()=>{this.cancel();scene.input.off('pointerdown',this.down);scene.input.off('pointermove',this.move);scene.input.off('pointerup',this.up);scene.input.off('pointerupoutside',this.cancel);scene.game.canvas.removeEventListener('pointercancel',this.cancel);scene.scale.off('resize',this.resize);this.gestures.clear();window.removeEventListener('pointerdown',this.contactDown,true);window.removeEventListener('pointerup',this.contactEnd,true);window.removeEventListener('pointercancel',this.contactEnd,true);window.removeEventListener('blur',this.contactBlur);document.removeEventListener('visibilitychange',this.visibility);this.contacts.clear();this.presses.clear();});
+    let fontRedrawn=false;
+    const onFontsDone=()=>{if(!fontRedrawn&&this.scene.scene.isActive()){fontRedrawn=true;this.redraw();}};
+    if(typeof document!=='undefined'&&document.fonts?.addEventListener)document.fonts.addEventListener('loadingdone',onFontsDone);
+    scene.events.once('shutdown',()=>{this.cancel();scene.input.off('pointerdown',this.down);scene.input.off('pointermove',this.move);scene.input.off('pointerup',this.up);scene.input.off('pointerupoutside',this.cancel);scene.game.canvas.removeEventListener('pointercancel',this.cancel);scene.scale.off('resize',this.resize);this.gestures.clear();window.removeEventListener('pointerdown',this.contactDown,true);window.removeEventListener('pointerup',this.contactEnd,true);window.removeEventListener('pointercancel',this.contactEnd,true);window.removeEventListener('blur',this.contactBlur);document.removeEventListener('visibilitychange',this.visibility);if(typeof document!=='undefined'&&document.fonts?.removeEventListener)document.fonts.removeEventListener('loadingdone',onFontsDone);this.contacts.clear();this.presses.clear();});
   }
   private controllerTargets():ControllerTarget[] {
     if(!this.scene.input.enabled)return [];
@@ -136,14 +139,13 @@ export class SceneView {
   /** `covered` pages sit wholly under their own table/settlement picture and stay a flat fill. */
   paperBackground(covered=false):void {
     const {width,height}=this.layout;
-    // One cached picture per layout: paper tone, fibres and the lamp. Redraws reuse it.
-    const page=covered?undefined:bakedPaper(this.scene,{slot:'page',width,height,base:PAPER_THEME.paper,lamp:'paper',grain:PAGE_GRAIN});
-    this.add(page??this.scene.add.rectangle(0,0,width,height,PAPER_THEME.paper).setOrigin(0));
-    this.add(this.scene.add.graphics().lineStyle(1,PAPER_THEME.ink,.16).beginPath().moveTo(8,4).lineTo(width-8,4).strokePath());
+    // One cached picture per layout: deep celadon lacquer, warm lantern pool and soft corner falloff.
+    const page=covered?undefined:bakedAtelierBackdrop(this.scene,'page',width,height);
+    this.add(page??this.scene.add.rectangle(0,0,width,height,ATELIER_THEME.lacquer).setOrigin(0));
+    this.add(this.scene.add.graphics().lineStyle(1,ATELIER_THEME.gold,.32).beginPath().moveTo(8,4).lineTo(width-8,4).strokePath());
   }
-  text(x:number,y:number,value:string,size=14,color=PAPER_CSS.ink,wrap?:number):Phaser.GameObjects.Text {
-    const rgb=parseInt(color.replace('#',''),16);if(color.startsWith('#')&&((rgb>>16&255)+(rgb>>8&255)+(rgb&255))/3>150)color=PAPER_CSS.ink;
-    const wordWrap=wrap?{
+  private buildWrap(wrap?:number) {
+    return wrap?{
       width:wrap,
       callback:(copy:string,text:Phaser.GameObjects.Text)=>{
         const width=text.style.wordWrapWidth;
@@ -153,9 +155,14 @@ export class SceneView {
           line=>text.context.measureText(line).width+line.length*text.letterSpacing<=width);
       },
     }:undefined;
-    return this.add(this.scene.add.text(Math.round(x),Math.round(y),value,{fontFamily:UI_FONT,fontSize:`${size}px`,color,resolution:Math.max(1,1/this.scene.scale.zoom),wordWrap}));
   }
-  rect(b:Box,color:number=PAPER_THEME.paper):Phaser.GameObjects.Rectangle {return this.add(this.scene.add.rectangle(b.x+b.width/2,b.y+b.height/2,b.width,b.height,color).setStrokeStyle(1,PAPER_THEME.jade,.65));}
+  text(x:number,y:number,value:string,size=14,color=ATELIER_CSS.ivory,wrap?:number):Phaser.GameObjects.Text {
+    return this.add(this.scene.add.text(Math.round(x),Math.round(y),value,{fontFamily:UI_FONT,fontSize:`${size}px`,color,resolution:Math.max(1,1/this.scene.scale.zoom),wordWrap:this.buildWrap(wrap)}));
+  }
+  displayText(x:number,y:number,value:string,size=18,color=ATELIER_CSS.ivory,wrap?:number):Phaser.GameObjects.Text {
+    return this.add(this.scene.add.text(Math.round(x),Math.round(y),value,{fontFamily:DISPLAY_FONT,fontSize:`${size}px`,color,resolution:Math.max(1,1/this.scene.scale.zoom),wordWrap:this.buildWrap(wrap)}));
+  }
+  rect(b:Box,color:number=ATELIER_THEME.panel):Phaser.GameObjects.Rectangle {return this.add(this.scene.add.rectangle(b.x+b.width/2,b.y+b.height/2,b.width,b.height,color).setStrokeStyle(1,ATELIER_THEME.gold,.55));}
   target(object:Phaser.GameObjects.Rectangle,name:string,actions:TouchActions):void {
     object.setName(name).setInteractive({useHandCursor:true});this.gestures.set(object,actions);
     if(actions.enter){
@@ -173,15 +180,16 @@ export class SceneView {
     this.cancelInteraction();actions.tap();
   }
   button(b:Box,label:string,name:string,action:()=>void,enabled=true,primary=false,skin?:HandButtonSkin):Phaser.GameObjects.Rectangle {
-    const art=this.add(this.scene.add.container(b.x,b.y)),g=this.scene.add.graphics(),radius=3;
-    g.fillStyle(PAPER_THEME.ink,.08).fillRoundedRect(0,2,b.width,b.height,radius);
-    g.fillStyle(primary?PAPER_THEME.red:PAPER_THEME.paperLight).fillRoundedRect(0,0,b.width,b.height,radius);
-    const edge=this.scene.add.graphics();if(skin!=='sort')edge.lineStyle(skin?1.5:1,primary?PAPER_THEME.red:PAPER_THEME.jade,.9).strokeRoundedRect(.5,.5,b.width-1,b.height-1,radius);
-    const glow=this.scene.add.graphics().lineStyle(2,PAPER_THEME.jade,.75).strokeRoundedRect(1,1,b.width-2,b.height-2,radius).setAlpha(0);
+    const art=this.add(this.scene.add.container(b.x,b.y)),g=this.scene.add.graphics(),radius=4;
+    g.fillStyle(0x040b0e,.42).fillRoundedRect(0,2,b.width,b.height,radius);
+    g.fillStyle(primary?ATELIER_THEME.cinnabar:ATELIER_THEME.panelRaised).fillRoundedRect(0,0,b.width,b.height,radius);
+    const edge=this.scene.add.graphics();if(skin!=='sort')edge.lineStyle(skin?1.5:1,primary?ATELIER_THEME.gold:ATELIER_THEME.goldSoft,primary?.82:.72).strokeRoundedRect(.5,.5,b.width-1,b.height-1,radius);
+    const glow=this.scene.add.graphics().lineStyle(2,ATELIER_THEME.goldBright,.85).strokeRoundedRect(1,1,b.width-2,b.height-2,radius).setAlpha(0);
     art.add([g,edge,glow]);
     const glyph=skin&&skin!=='sort'?this.scene.add.graphics().setPosition(6,(b.height-36)/2).setName('button/'+skin+'-glyph'):undefined;
     if(glyph)art.add(glyph);
-    const t=this.text(b.x+b.width/2,b.y+b.height/2-1,label,primary?20:15).setOrigin(.5).setFontStyle('bold').setColor(primary?PAPER_CSS.paperLight:PAPER_CSS.jade);
+    const t=this.text(b.x+b.width/2,b.y+b.height/2-1,label,primary?20:15,primary?'#fff7e6':ATELIER_CSS.ivory).setOrigin(.5);
+    if(primary){t.setFontFamily(DISPLAY_FONT).setFontStyle('normal');}else{t.setFontStyle('600');}
     if(!skin)for(let size=primary?20:15;t.width>b.width-14&&size>14;)t.setFontSize(--size);
     const r=this.rect(b).setFillStyle(0,0).setStrokeStyle();
     r.setData('label',t).setData('buttonArt',art).setData('buttonFace',g).setData('buttonEdge',edge).setData('buttonBounds',b).setData('buttonPrimary',primary).setData('buttonSkin',skin).setData('buttonGlyph',glyph);
@@ -194,7 +202,7 @@ export class SceneView {
     const stop=()=>{this.scene.tweens.killTweensOf([art,t]);if(countPress){countPress.remove();countPress=undefined;const n=count();if(n){n.setScale(1);n.y=Number(n.getData('restY'));crispText(n);}}};
     const rest=()=>{stop();art.setScale(1).setPosition(b.x,b.y);t.setScale(1);t.y=Number(t.getData('restY')??b.y+b.height/2-1);crispText(t);glow.setAlpha(0);};
     const press=()=>{
-      stop();glow.setAlpha(.6);
+      stop();glow.setAlpha(.65);
       if(gameSession().reducedMotion||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
       this.scene.tweens.add({targets:art,scaleX:.955,scaleY:.955,x:b.x+b.width*.045/2,y:b.y+b.height*.045/2,duration:80,ease:'Quad.Out'});
       this.scene.tweens.add({targets:t,scaleX:.955,scaleY:.955,y:Number(t.getData('restY')??b.y+b.height/2-1)+1,duration:80,ease:'Quad.Out'});
@@ -202,25 +210,25 @@ export class SceneView {
     };
     r.once('destroy',stop);
     this.target(r,name,{tap:()=>{AudioEngine.shared.select();action();},press,release:rest,cancel:rest});
-    r.on('pointerover',()=>{if(r.input?.enabled)glow.setAlpha(.8);});r.on('pointerout',rest);
+    r.on('pointerover',()=>{if(r.input?.enabled)glow.setAlpha(.85);});r.on('pointerout',rest);
     this.setEnabled(r,enabled);return r;
   }
   setEnabled(object:Phaser.GameObjects.Rectangle,enabled:boolean):void {
     if(!enabled&&this.pressed?.object===object)this.cancel();
     object.input!.enabled=enabled;object.setAlpha(1);
     const primary=!!object.getData('buttonPrimary'),label=object.getData('label') as Phaser.GameObjects.Text|undefined;
-    label?.setAlpha(1).setColor(enabled?(primary?PAPER_CSS.paperLight:PAPER_CSS.jade):PAPER_CSS.disabledInk);
+    label?.setAlpha(1).setColor(enabled?(primary?'#fff7e6':ATELIER_CSS.ivory):ATELIER_CSS.disabledInk);
     const art=object.getData('buttonArt') as Phaser.GameObjects.Container|undefined;art?.setAlpha(1);
     const face=object.getData('buttonFace') as Phaser.GameObjects.Graphics|undefined,b=object.getData('buttonBounds') as Box|undefined;
     const skin=object.getData('buttonSkin') as HandButtonSkin|undefined,glyph=object.getData('buttonGlyph') as Phaser.GameObjects.Graphics|undefined;
     const edge=object.getData('buttonEdge') as Phaser.GameObjects.Graphics|undefined;
-    if(object.getData('pcHandAction')&&edge&&b){edge.clear().lineStyle(1.5,enabled?(primary?PAPER_THEME.red:PAPER_THEME.jade):0x858b89,1).strokeRoundedRect(.75,.75,b.width-1.5,b.height-1.5,3);}
+    if(object.getData('pcHandAction')&&edge&&b){edge.clear().lineStyle(1.5,enabled?(primary?ATELIER_THEME.gold:ATELIER_THEME.goldSoft):0x3c5256,enabled?.85:.6).strokeRoundedRect(.75,.75,b.width-1.5,b.height-1.5,4);}
     const sortRefresh=object.getData('sortVisualRefresh') as (()=>void)|undefined;
-    if(face&&b&&!sortRefresh){face.clear();if(skin!=='sort'){face.fillStyle(PAPER_THEME.ink,.08).fillRoundedRect(0,2,b.width,b.height,3);face.fillStyle(enabled?(primary?PAPER_THEME.red:PAPER_THEME.paperLight):PAPER_THEME.disabled).fillRoundedRect(0,0,b.width,b.height,3);
-      if(!skin&&b.width>=80&&b.height>=44)face.lineStyle(1,PAPER_THEME.paperLight,primary&&enabled?.48:.7).lineBetween(6,3,b.width-6,3);
-      if(object.getData('pcHandAction')){face.lineStyle(1,PAPER_THEME.paperLight,enabled?.7:.45).beginPath().moveTo(7,3).lineTo(b.width-7,3).strokePath();face.lineStyle(2,primary&&enabled?0x792e27:PAPER_THEME.jade,enabled?.35:.2).beginPath().moveTo(7,b.height-3).lineTo(b.width-7,b.height-3).strokePath();}
+    if(face&&b&&!sortRefresh){face.clear();if(skin!=='sort'){face.fillStyle(0x040b0e,.42).fillRoundedRect(0,2,b.width,b.height,4);face.fillStyle(enabled?(primary?ATELIER_THEME.cinnabar:ATELIER_THEME.panelRaised):ATELIER_THEME.disabledBg).fillRoundedRect(0,0,b.width,b.height,4);
+      if(!skin&&b.width>=80&&b.height>=44)face.lineStyle(1,primary?ATELIER_THEME.goldBright:ATELIER_THEME.celadon,enabled?(primary?.38:.22):.08).lineBetween(6,2,b.width-6,2);
+      if(object.getData('pcHandAction')){face.lineStyle(1,primary?ATELIER_THEME.goldBright:ATELIER_THEME.celadon,enabled?.45:.15).beginPath().moveTo(7,2).lineTo(b.width-7,2).strokePath();face.lineStyle(2,primary&&enabled?0x681b14:ATELIER_THEME.void,enabled?.55:.28).beginPath().moveTo(7,b.height-2).lineTo(b.width-7,b.height-2).strokePath();}
     }}
-    if(glyph&&skin&&skin!=='sort')drawHandActionGlyph(glyph,skin,enabled?(primary?PAPER_THEME.paperLight:PAPER_THEME.jade):PAPER_THEME.disabledInk);
+    if(glyph&&skin&&skin!=='sort')drawHandActionGlyph(glyph,skin,enabled?(primary?ATELIER_THEME.ivory:ATELIER_THEME.mist):ATELIER_THEME.disabledInk);
     sortRefresh?.();
   }
 }

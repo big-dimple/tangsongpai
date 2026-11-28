@@ -1,17 +1,13 @@
 import type Phaser from 'phaser';
 import {gameSession} from './session';
-import {PAPER_CSS} from './theme';
 
 /**
- * Paper transitions: a sheet covers the cut and is then unrolled, rolled up or turned away;
- * ink seeps in from the edges before a finale. Presentation only. Navigation is never
- * delayed (the caller starts the next scene as before), the layer takes no input, any
- * key, press, blur or resize removes it, and reduced motion or the Canvas renderer keep
- * the plain cut with no layer at all.
+ * Transitions: a lacquer-silk curtain covers the cut and is then unrolled, rolled up or turned away;
+ * ink seeps in from the edges before a finale. Presentation only. Navigation is never delayed.
  */
 export type PaperTransitionKind='unroll'|'roll'|'page'|'ink';
 export const PAPER_TRANSITION={cover:90,leave:260,total:350,limit:360,hardStop:800,zIndex:1000} as const;
-const INK='#182a2e';
+const INK='#081519';
 
 export interface PaperTransitionPlan {duration:number;sheet:Keyframe[];origin:string;ink:boolean;rod:'left'|'right'|'none'}
 /** Pure description of one transition at a presentation speed; tests and the DOM share it. */
@@ -52,12 +48,12 @@ export function beginPaperTransition(scene:Phaser.Scene,kind:PaperTransitionKind
   Object.assign(sheet.style,{position:'absolute',inset:'0',opacity:'0',transformOrigin:plan.origin,willChange:'transform,opacity',
     background:plan.ink
       ?`radial-gradient(ellipse farthest-corner at 50% 44%,${INK}00 26%,${INK}d9 62%,${INK} 100%)`
-      :`var(--paper-grain,none) 0 0/256px 256px,${PAPER_CSS.paper}`});
+      :'radial-gradient(ellipse at 50% 42%,rgba(242,202,130,0.08),transparent 65%),linear-gradient(110deg,#0f262c,#17363d 55%,#0d2126)'});
   if(plan.rod!=='none'){
-    // The scroll's rod and the shade it casts on the sheet it is rolling over.
+    // The scroll's antique-gold rod and the shade it casts across the lacquer curtain.
     const rod=document.createElement('div'),edge=plan.rod==='left'?'left':'right';
     Object.assign(rod.style,{position:'absolute',top:'0',bottom:'0',width:'22px',[edge]:'0',
-      background:`linear-gradient(${plan.rod==='left'?90:270}deg,#6d5636,#b7996b 38%,#8a6f49 70%,#3a2a1800)`,boxShadow:`${plan.rod==='left'?'-':''}10px 0 18px #2a1c0c40`});
+      background:`linear-gradient(${plan.rod==='left'?90:270}deg,#5b411d,#e0bc74 40%,#987136 72%,#0a181c00)`,boxShadow:`${plan.rod==='left'?'-':''}12px 0 22px #030b0e75`});
     sheet.append(rod);
   }
   layer.append(sheet);document.body.append(layer);

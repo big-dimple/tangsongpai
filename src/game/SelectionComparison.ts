@@ -9,18 +9,18 @@ import {SELECTION_PRESENTATION} from './SelectionPresentation';
 const css=`
 .selection-comparison .dialog-content{display:block}
 .selection-comparison .selection-roster{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
-.selection-comparison .selection-hero{padding:12px;background:#fff9ee;border:1px solid #c7b89d;border-radius:6px;color:#26313a}
-.selection-comparison .selection-hero[data-selected=true]{border:2px solid #3f606b;padding:11px;background:#e2e8e5}
+.selection-comparison .selection-hero{padding:12px;background:#142f36;border:1px solid rgba(216,180,108,.42);border-radius:6px;color:#f6efe0}
+.selection-comparison .selection-hero[data-selected=true]{border:2px solid #d8b46c;padding:11px;background:#1b3e46}
 .selection-comparison .selection-heading{display:grid;grid-template-columns:54px minmax(0,1fr);gap:10px;align-items:center}
 .selection-comparison .selection-heading img{width:54px;height:68px;object-fit:contain}
-.selection-comparison .selection-heading h3{margin:0;font-size:20px}
-.selection-comparison .selection-heading span{display:block;font-size:14px;color:#3f606b;margin-top:4px}
-.selection-comparison .selection-hero p{font-size:14px;line-height:1.55;margin:10px 0;white-space:normal}
-.selection-comparison .selection-hero .selection-hook{font-weight:bold}
-.selection-comparison .selection-hero strong{color:#3f606b;font-weight:normal}
+.selection-comparison .selection-heading h3{margin:0;font:600 20px/1.25 var(--display-font);color:#ffeec7}
+.selection-comparison .selection-heading span{display:block;font-size:14px;color:#b8cdc6;margin-top:4px}
+.selection-comparison .selection-hero p{font-size:14px;line-height:1.55;margin:10px 0;white-space:normal;color:#e4ece8}
+.selection-comparison .selection-hero .selection-hook{font-weight:bold;color:#ffe6a8}
+.selection-comparison .selection-hero strong{color:#f2cf84;font-weight:normal}
 .selection-comparison .selection-hero footer{display:flex;gap:8px;margin-top:12px}
-.selection-comparison .selection-hero button{min-height:44px;flex:1;padding:8px 4px;border:1px solid #3f606b;border-radius:6px;background:#fff9ee;color:#3f606b;font:14px/1.4 var(--ui-font);cursor:pointer}
-.selection-comparison .selection-hero button:first-child{background:#3f606b;color:#fff9ee}
+.selection-comparison .selection-hero button{min-height:44px;flex:1;padding:8px 4px;border:1px solid rgba(216,180,108,.45);border-radius:6px;background:#18373e;color:#f6efe0;font:14px/1.4 var(--ui-font);cursor:pointer}
+.selection-comparison .selection-hero button:first-child{background:#b84234;border-color:#e2be79;color:#fff9ee}
 .selection-comparison .selection-hero button:disabled{opacity:.55;cursor:default}
 .selection-comparison .selection-hero button:focus-visible{outline:3px solid #b8473a;outline-offset:2px}
 @media(max-width:850px){.selection-comparison .selection-roster{grid-template-columns:repeat(2,minmax(0,1fr))}}

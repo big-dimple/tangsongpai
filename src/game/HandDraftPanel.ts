@@ -4,7 +4,7 @@ import type {Box} from './layout';
 import type {SceneView} from './SceneView';
 import {fitScoreLine} from './ScoreTextLayout';
 import {heatText,readableFractionText} from './scoreText';
-import {PAPER_CSS, PAPER_THEME} from './theme';
+import {ATELIER_CSS as A,ATELIER_THEME as T} from './theme';
 
 export function handForecastCopy(preview:Pick<ScorePreview,'scoreRange'|'breakdown'>,total:string,target:string){
   const low=BigInt(preview.scoreRange.minimum),high=BigInt(preview.scoreRange.maximum);
@@ -39,9 +39,9 @@ export class HandDraftPanel {
   constructor(private readonly view:SceneView,private readonly box:Box,bossControl:boolean,onClear:()=>void){
     const first=view.root.length,x=box.x+box.width-(bossControl?210:62);
     this.clear=view.button({x,y:box.y+1,width:54,height:44},'撤选','action/clear-hand',onClear,false);
-    this.amount=view.text(0,0,'',24,'#963e2d').setFontStyle('bold').setName('selection/forecast');
-    this.base=view.text(0,0,'',14,PAPER_CSS.mutedInk).setName('selection/base');
-    this.outcome=view.text(0,0,'',14,PAPER_CSS.jade).setName('selection/projected-gap');
+    this.amount=view.text(0,0,'',24,'#ffc278').setFontStyle('bold').setName('selection/forecast');
+    this.base=view.text(0,0,'',14,A.mist).setName('selection/base');
+    this.outcome=view.text(0,0,'',14,A.celadon).setName('selection/projected-gap');
     this.track=view.add(view.root.scene.add.graphics().setName('selection/goal-projection'));
     const children=view.root.list.slice(first);
     this.parts=view.add(view.root.scene.add.container().setName('selection/draft-panel'));
@@ -54,12 +54,12 @@ export class HandDraftPanel {
     const amount=selectedHearts?`收回 ${selectedHearts} 张红桃`:selected?`待换 ${selected} 张 · 留住 ${kept} 张红桃`:`再来 ${5-kept} 张红桃就成花`;
     this.show(title,{name:'红桃同花',roles:`留手 ${kept} / 5`,amount,landingTop,ready:ready&&selected>0});
     const symbols=Array.from({length:5},(_,i)=>i<kept?'♥':'♡').join('  ');
-    this.base.setText(symbols).setFontSize(16).setColor('#a94232');
-    this.amount.setColor(selectedHearts?'#943b2b':PAPER_CSS.jade);
+    this.base.setText(symbols).setFontSize(16).setColor('#ff8e7b');
+    this.amount.setColor(selectedHearts?'#ff9d88':A.celadon);
   }
   show(title:Phaser.GameObjects.Text,draft:DraftReadout):void{
     const {name,roles,amount,forecast,landingTop,ready,rescueLabel}=draft;
-    this.base.setColor(PAPER_CSS.mutedInk);this.amount.setColor('#963e2d');
+    this.base.setColor(A.mist);this.amount.setColor('#ffc278');
     const b=this.box,hit=this.clear.getData('buttonBounds') as Box;
     const pad=12,x=b.x+pad,width=b.width-2*pad;
     const titleWidth=Math.max(42,hit.x-x-4),wide=titleWidth>=180;
@@ -83,15 +83,15 @@ export class HandDraftPanel {
     if(!roomy||!forecast)return;
     line(this.outcome,forecast.result,height-30,width,17,14,true);
     const y=b.y+height-10,{banked,minimum,maximum}=forecast.projection;
-    this.track.fillStyle(0xd7cdba).fillRect(x,y,width,4);
-    if(banked>0)this.track.fillStyle(PAPER_THEME.jade).fillRect(x,y,width*banked,4);
-    if(minimum>banked)this.track.fillStyle(0xa44837).fillRect(x+width*banked,y,width*(minimum-banked),4);
+    this.track.fillStyle(0x223e44).fillRect(x,y,width,4);
+    if(banked>0)this.track.fillStyle(0x59b8a5).fillRect(x,y,width*banked,4);
+    if(minimum>banked)this.track.fillStyle(0xde5c49).fillRect(x+width*banked,y,width*(minimum-banked),4);
     if(maximum>minimum){
       // Only the possible gain is dotted. It is never added to the banked HUD.
       for(let left=x+width*minimum;left<x+width*maximum;left+=5){
-        this.track.fillStyle(0xa44837).fillRect(left,y,Math.min(2,x+width*maximum-left),4);
+        this.track.fillStyle(0xde5c49).fillRect(left,y,Math.min(2,x+width*maximum-left),4);
       }
     }
-    this.track.lineStyle(1,0x665330).lineBetween(x+width,y-2,x+width,y+6);
+    this.track.lineStyle(1,T.goldBright).lineBetween(x+width,y-2,x+width,y+6);
   }
 }

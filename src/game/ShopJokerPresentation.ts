@@ -20,10 +20,10 @@ export function styleShopMobileOfferInk(host:HTMLElement,selectedId?:string):voi
   for(const article of host.querySelectorAll<HTMLElement>('.shop-mobile-offer')){
     const main=article.querySelector<HTMLButtonElement>('.shop-mobile-offer-main'),name=article.querySelector<HTMLElement>('strong'),price=article.querySelector<HTMLElement>('.shop-mobile-offer-price');
     const selected=article.dataset.offerId===selectedId;
-    if(main){main.style.outline=selected?'2px solid #42665d':'';main.style.outlineOffset='-2px';main.setAttribute('aria-current',selected?'true':'false');}
-    if(name)name.style.color='#203f3b';
+    if(main){main.style.outline=selected?'2px solid #d8b46c':'';main.style.outlineOffset='-2px';main.setAttribute('aria-current',selected?'true':'false');}
+    if(name)name.style.color='#fff5dd';
     // Red marks a blocked purchase; ordinary prices share the entry button's ink.
-    if(price){const blocked=!!article.querySelector('.shop-mobile-offer-reason');price.style.color=main?.disabled?'#736b5e':blocked?'#9b352c':'#203f3b';}
+    if(price){const blocked=!!article.querySelector('.shop-mobile-offer-reason');price.style.color=main?.disabled?'#8ea6a0':blocked?'#ff9e8e':'#f4cf7a';}
   }
 }
 

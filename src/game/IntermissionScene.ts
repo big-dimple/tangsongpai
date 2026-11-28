@@ -59,7 +59,7 @@ import {SceneView} from './SceneView';
 import {DetailDialog} from './DetailDialog';
 import {SKIP_ITEM_LABELS} from './ConsumableDialog';
 import type {Box} from './layout';
-import {assetUrl,PAPER_CSS,PAPER_THEME as T} from './theme';
+import {assetUrl,ATELIER_CSS as AC,ATELIER_THEME as AT} from './theme';
 import {resultLayout} from './IntermissionLayout';
 import {drawPcSettlementArt} from './PcSettlementArt';
 import {mountResultViewport} from './IntermissionScroll';
@@ -135,7 +135,7 @@ export class IntermissionScene extends Phaser.Scene {
     const retire=()=>{if(typeof window!=='undefined'){window.removeEventListener('tangsongpai-presentation',preference);window.removeEventListener('blur',suspend);}if(typeof document!=='undefined')document.removeEventListener('visibilitychange',visibility);motion?.removeEventListener('change',preference);this.events.off('shutdown',retire);this.events.off('destroy',retire);this.releaseViewport?.();this.releaseViewport=undefined;this.noviceGuideHandle=undefined;this.lifecycle++;this.stopSourceArt();this.paintSourceArt=undefined;this.dialog.close();this.stopCelebration();};
     this.events.once('shutdown',retire);this.events.once('destroy',retire);
     const run=runController(this)?.state;if(!run?.stage){this.scene.start('character-select');return;}
-    this.cameras.main.setBackgroundColor('#F3EADB');
+    this.cameras.main.setBackgroundColor('#0c1e24');
     const skipped=run.phase==='run-lost'?false:!!run.stage.skipResult;this.audio.setScene(run.stage.index%3===2?'boss':'table');
     this.audio.preloadSceneMusic(run.phase==='run-lost'?'menu':'shop');
     if(!skipped){
@@ -200,18 +200,18 @@ export class IntermissionScene extends Phaser.Scene {
     this.releaseViewport?.();this.releaseViewport=undefined;this.stopCelebration();v.clear();this.paintSourceArt=undefined;v.paperBackground(pc);if(pc)drawPcSettlementArt(this,v);const backgroundCount=v.root.length;
     const content=this.resultContent=this.add.container(0,0).setName('result/content');
     const identity=stageIdentity(stage.index,run.stage!.boss,run.tourMode,run.difficulty,run)!;
-    const stageLabel=v.text(p.x,p.top,(run.tourMode==='endless'?'无尽 · ':'')+stage.name+' · '+character.name,14,identity.isBoss?PAPER_CSS.red:PAPER_CSS.jade,p.w-116).setName('stage-identity/result');
+    const stageLabel=v.text(p.x,p.top,(run.tourMode==='endless'?'无尽 · ':'')+stage.name+' · '+character.name,14,identity.isBoss?AC.cinnabarSoft:AC.mist,p.w-116).setName('stage-identity/result');
     if(p.pc)stageLabel.setOrigin(.5,0).setX(p.x+p.w/2);
     const guidance=lost?failureGuidance(run):undefined;
     const title=capped?'本局暂止于此':skipped?'换一场，再对局':won?(run.mode==='tutorial'?'教学对局完成！':run.mode==='challenge'?'挑战完成！':'八章通关'):this.result.cleared?(identity.isBoss?'压轴过关 · '+identity.title:'本场获胜'):guidance?.title??'此局结束，再来一局';
     const titlePlate=p.pc?v.add(this.add.graphics().setName('result/title-plate')):undefined;
-    const titleText=v.text(p.x,p.top+(p.short?22:28),title,p.pc?(l.width<1500?40:48):p.short||p.portrait&&identity.isBoss?22:p.portrait?26:34,identity.isBoss&&this.result.cleared?PAPER_CSS.red:PAPER_CSS.ink,p.w).setName('result/title').setFontStyle('bold');
+    const titleText=v.displayText(p.x,p.top+(p.short?22:28),title,p.pc?(l.width<1500?40:48):p.short||p.portrait&&identity.isBoss?22:p.portrait?26:34,identity.isBoss&&this.result.cleared?'#ffbfa6':AC.goldBright,p.w).setName('result/title').setFontStyle('bold');
     const mobileRightPad=mobile?60:0,titleMax=p.pc?p.w-36:Math.max(120,p.w-mobileRightPad);
     if(p.pc||mobile){titleText.setWordWrapWidth(0);for(let size=mobile?26:l.width<1500?40:48;titleText.width>titleMax&&size>(mobile?18:24);)titleText.setFontSize(--size);}
     if(p.pc){
-      titleText.setOrigin(.5,0).setX(p.x+p.w/2).setAlign('center').setColor(lost||skipped||capped?PAPER_CSS.jade:PAPER_CSS.red);
-      const box=titleText.getBounds(),center=box.x+box.width/2,y=box.y+box.height+2,tone=lost||skipped||capped?T.jade:T.red;
-      titlePlate!.lineStyle(2,tone,.55).lineBetween(center-42,y,center+42,y);
+      titleText.setOrigin(.5,0).setX(p.x+p.w/2).setAlign('center').setColor(lost||skipped||capped?AC.celadon:AC.goldBright);
+      const box=titleText.getBounds(),center=box.x+box.width/2,y=box.y+box.height+2,tone=lost||skipped||capped?AT.celadon:AT.gold;
+      titlePlate!.lineStyle(2,tone,.65).lineBetween(center-42,y,center+42,y);
     }
     let headerRight=titleText.x+titleText.width;
     if(this.result.cleared&&!skipped&&!capped){
@@ -256,10 +256,10 @@ export class IntermissionScene extends Phaser.Scene {
       const prompt=run.outcome?.reason==='abandoned'?'主动结束，可以重新选择':run.outcome?.reason==='no-legal-cards'?'先查牌组，再准备开局':'先看末手，再选下一步';
       this.auxiliary({...n,height:52},'再战建议 ›\n'+prompt,'action/failure-guidance',()=>this.inspectFailure(),!this.busy);nextBottom=n.y+52;
     }else {
-      v.add(this.add.graphics().lineStyle(1,T.divider,.75).beginPath().moveTo(p.next.x,n.y-2).lineTo(p.next.x+p.next.width,n.y-2).strokePath());
-      const nextHeading=v.text(n.x,n.y+2,heading,p.pc?22:p.portrait&&p.tight?16:18,PAPER_CSS.ink,n.width).setFontStyle('bold').setName('result/next-heading');
+      v.add(this.add.graphics().lineStyle(1,AT.goldSoft,.45).beginPath().moveTo(p.next.x,n.y-2).lineTo(p.next.x+p.next.width,n.y-2).strokePath());
+      const nextHeading=v.displayText(n.x,n.y+2,heading,p.pc?22:p.portrait&&p.tight?16:18,AC.ink,n.width).setFontStyle('bold').setName('result/next-heading');
       const bodyY=nextHeading.y+nextHeading.height+3;
-      const nextBody=v.text(n.x,bodyY,body,p.pc?18:14,PAPER_CSS.jade,n.width).setLineSpacing(1).setName('result/next-body');nextBottom=nextBody.y+nextBody.height;
+      const nextBody=v.text(n.x,bodyY,body,p.pc?18:14,AC.mist,n.width).setLineSpacing(1).setName('result/next-body');nextBottom=nextBody.y+nextBody.height;
       if(mobile&&nextBottom>n.y+n.height){
         nextBody.setText(nextStage&&!guidedPractice?`${nextStage.name} · 目标 ${heatText(nextStage.targetHeat)}`:body.split('\n')[0]);nextBottom=nextBody.y+nextBody.height;
         nextHeading.setText(heading+' ›');const hit=v.rect({...n,height:Math.max(44,nextBottom-n.y)}).setFillStyle(0,0).setStrokeStyle();v.target(hit,'action/result-next-details',{tap:()=>this.dialog.open(heading,body,[],{closeLabel:'返回结算'})});
@@ -284,7 +284,7 @@ export class IntermissionScene extends Phaser.Scene {
     }
     this.auxiliary(p.right,won||lost?'对局回顾':'回看上手','action/last-hand',()=>{if(won||lost)this.inspectFinale();else this.inspectLastHand();},!this.busy&&(won||lost||!!trace));
     const discovery=this.ready&&!this.notice&&!lost&&!skipped?savedGrowthDiscovery(run):undefined,gift=this.ready&&!this.notice&&!lost&&!skipped?stageGiftReceipt(run):undefined;
-    v.text(p.short||p.wide?p.next.x:p.x,p.noticeY,this.busy?'正在保存…':this.notice||(!this.ready?'当前进度未保存或只读，请查看菜单。':capped?'已达数值上限，进度已保存':won?run.mode==='standard'?'八章通关已保存，继续无尽由你决定。':'本模式结果已保存，可重试或返回选角。':nextStage?gift?'':discovery?.full||'':lost?rollback?'回到本场开始；右上角菜单可开始新局。':'缺少本场起点，无法重试；原进度保留，可在菜单开始新局。':''),14,this.notice?'#ffd0b1':'#3F606B',p.short||p.wide?p.next.width:p.w).setName(discovery&&!gift&&nextStage?'growth/discovery':'result/notice');
+    v.text(p.short||p.wide?p.next.x:p.x,p.noticeY,this.busy?'正在保存…':this.notice||(!this.ready?'当前进度未保存或只读，请查看菜单。':capped?'已达数值上限，进度已保存':won?run.mode==='standard'?'八章通关已保存，继续无尽由你决定。':'本模式结果已保存，可重试或返回选角。':nextStage?gift?'':discovery?.full||'':lost?rollback?'回到本场开始；右上角菜单可开始新局。':'缺少本场起点，无法重试；原进度保留，可在菜单开始新局。':''),14,this.notice?'#ffd0b1':AC.mist,p.short||p.wide?p.next.width:p.w).setName(discovery&&!gift&&nextStage?'growth/discovery':'result/notice');
     content.add(v.root.list.slice(backgroundCount));v.add(content);
     const safeTop=l.safe.top,hint=noviceGuide(run,runController(this)!.journal),guideOpen=!!hint&&!this.noviceGuideClosed;
     const minReserve=hint&&(hint.step==='complete'||hint.step==='replay')?92:70;
@@ -296,7 +296,7 @@ export class IntermissionScene extends Phaser.Scene {
     this.firstRender=false;if(pc||mobile)this.requestSourceArt();
   }
   private auxiliary(b:Box,label:string,name:string,action:()=>void,enabled=true):void {
-    const v=this.view,text=v.text(b.x+b.width/2,b.y+b.height/2,label,pcResultViewport(v.layout.width,v.layout.height,v.layout.safe)?18:14,enabled?PAPER_CSS.jade:PAPER_CSS.disabledInk,b.width-4).setOrigin(.5);
+    const v=this.view,text=v.text(b.x+b.width/2,b.y+b.height/2,label,pcResultViewport(v.layout.width,v.layout.height,v.layout.safe)?18:14,enabled?AC.goldBright:AC.disabledInk,b.width-4).setOrigin(.5);
     const hit=v.rect(b).setFillStyle(0,0).setStrokeStyle().setData('label',text);
     v.target(hit,name,{tap:()=>{if(enabled){this.audio.select();action();}}});
     if(!enabled)hit.disableInteractive();
@@ -328,7 +328,7 @@ export class IntermissionScene extends Phaser.Scene {
     if(animate&&reviewBookCue&&presentation.reviewBookBand)this.reviewBookMotion=mountReviewBookMotion(this,v.root,presentation.reviewBookBand);
     if(this.result.cleared&&!skipped){
       const band=presentation.reward,center=band.x+band.width/2;
-      v.add(this.add.graphics().lineStyle(1,T.divider,.7).beginPath().moveTo(band.x,band.y-5).lineTo(band.x+band.width,band.y-5).strokePath());
+      v.add(this.add.graphics().lineStyle(1,AT.goldSoft,.48).beginPath().moveTo(band.x,band.y-5).lineTo(band.x+band.width,band.y-5).strokePath());
       const reward=presentation.rewardText!;
       const cue=this.firstRender&&this.rewardCue.claim(run,this.result),size=band.height<30?24:32,diameter=size*.7,gap=6;
       const x=center-(reward.width+diameter+gap)/2+diameter/2,coinY=reward.y+reward.height/2-size*.04;

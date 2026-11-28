@@ -1,7 +1,7 @@
-.shop-inline-workshop { position:fixed;z-index:3;box-sizing:border-box;padding:14px 22px 10px;overflow:auto;overscroll-behavior:contain;touch-action:pan-y;color:#26313a;font:15px/1.5 var(--ui-font); }
+.shop-inline-workshop { position:fixed;z-index:3;box-sizing:border-box;padding:14px 22px 10px;overflow:auto;overscroll-behavior:contain;touch-action:pan-y;color:#f6efe0;font:15px/1.5 var(--ui-font); }
 .shop-inline-workshop .workshop-route-root { margin-bottom:24px; }
 .shop-inline-workshop .workshop-goal-nav { max-width:720px;margin:0 auto 20px;gap:18px; }
-.shop-inline-workshop .workshop-goal-nav button { min-height:76px;font-size:17px;background:#e6ebe4; }
+.shop-inline-workshop .workshop-goal-nav button { min-height:76px;font-size:17px;background:#163339;color:#f6efe0; }
 .shop-inline-workshop .workshop-goal-workspace { max-width:760px;margin:auto; }
 .shop-inline-workshop .workshop-route-hint { margin:0;padding:10px 0; }
 .shop-inline-workshop .workshop-goal-workspace h3 { font-size:18px; }

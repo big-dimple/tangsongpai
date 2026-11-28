@@ -1,7 +1,7 @@
 import type Phaser from 'phaser';
 import type {Box,LayoutMode} from './layout';
 import type {SceneView} from './SceneView';
-import {PAPER_CSS,PAPER_THEME} from './theme';
+import {ATELIER_CSS,ATELIER_THEME} from './theme';
 import {crispText} from './TextRaster';
 
 const SORT_TITLE_HEIGHT=14;
@@ -21,12 +21,12 @@ export function handActionControls(actions:Box,mode:LayoutMode,bottomLimit?:numb
 
 export function renderHandSortGroup(scene:Phaser.Scene,view:SceneView,tools:Box,pc=false):void {
  const title=handSortTitleBox(tools),g=scene.add.graphics();
- g.fillStyle(PAPER_THEME.jadeSoft).fillRoundedRect(tools.x,tools.y,tools.width,tools.height,6).lineStyle(1,PAPER_THEME.jade,.9).strokeRoundedRect(tools.x+.5,tools.y+.5,tools.width-1,tools.height-1,6);
- if(pc){g.lineStyle(1,PAPER_THEME.paperLight,.9).beginPath().moveTo(tools.x+6,tools.y+2).lineTo(tools.x+tools.width-6,tools.y+2).strokePath();g.lineStyle(2,PAPER_THEME.jade,.25).beginPath().moveTo(tools.x+6,tools.y+tools.height-3).lineTo(tools.x+tools.width-6,tools.y+tools.height-3).strokePath();}
- g.lineStyle(1,PAPER_THEME.jade,.2);
+ g.fillStyle(ATELIER_THEME.panel).fillRoundedRect(tools.x,tools.y,tools.width,tools.height,6).lineStyle(1,ATELIER_THEME.goldSoft,.75).strokeRoundedRect(tools.x+.5,tools.y+.5,tools.width-1,tools.height-1,6);
+ if(pc){g.lineStyle(1,ATELIER_THEME.goldBright,.24).beginPath().moveTo(tools.x+6,tools.y+2).lineTo(tools.x+tools.width-6,tools.y+2).strokePath();g.lineStyle(2,ATELIER_THEME.void,.5).beginPath().moveTo(tools.x+6,tools.y+tools.height-3).lineTo(tools.x+tools.width-6,tools.y+tools.height-3).strokePath();}
+ g.lineStyle(1,ATELIER_THEME.gold,.26);
  for(const index of [1,2]){const x=Math.round(tools.x+tools.width*index/3)+.5;g.beginPath().moveTo(x,tools.y+SORT_TITLE_HEIGHT+13).lineTo(x,tools.y+tools.height-13).strokePath();}
  view.add(g.setName('action/sort-group').setData('bounds',tools));
- const caption=view.text(title.x+title.width/2,title.y+title.height/2,'理牌',11,PAPER_CSS.mutedInk).setOrigin(.5).setName('action/sort-title');crispText(caption);
+ const caption=view.text(title.x+title.width/2,title.y+title.height/2,'理牌',11,ATELIER_CSS.mist).setOrigin(.5).setName('action/sort-title');crispText(caption);
 }
 
 export type HandAiButtonState='ready'|'working'|'paused'|'unavailable';

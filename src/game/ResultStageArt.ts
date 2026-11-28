@@ -1,7 +1,7 @@
 import type Phaser from 'phaser';
 import type {Box} from './layout';
 import type {SceneView} from './SceneView';
-import {PAPER_THEME as T} from './theme';
+import {ATELIER_THEME as T} from './theme';
 import {paperGrainSprite,SHEET_GRAIN} from './PaperStock';
 import {selectionPortraitKey} from './portraits';
 import {jokerArtKey} from './jokerArt';
@@ -35,10 +35,10 @@ export async function loadResultSourceArt(scene:Phaser.Scene,key:string,url:stri
 /** Sparse paper stage and existing contained source art; decorative layers never own input. */
 export function resultStagePaper(scene:Phaser.Scene,view:SceneView,b:Box,lost=false):void {
  const g=scene.add.graphics().setName('result-art/stage').setData('bounds',b);
- g.fillStyle(T.ink,.055).fillRoundedRect(b.x,b.y+3,b.width,b.height,10);
- g.fillStyle(lost?T.paperLight:T.jadeSoft).fillRoundedRect(b.x,b.y,b.width,b.height,10).lineStyle(1,T.jade,.3).strokeRoundedRect(b.x,b.y,b.width,b.height,10);view.add(g);
- const grain=paperGrainSprite(scene,{x:b.x+6,y:b.y+6,width:b.width-12,height:b.height-12},SHEET_GRAIN);if(grain)view.add(grain.setName('result-art/paper'));
- const seam=scene.add.graphics().lineStyle(2,lost?T.brass:T.jade,.45).beginPath().moveTo(b.x+12,b.y+26).lineTo(b.x+12,b.y+12).lineTo(b.x+34,b.y+12).strokePath().setName('result-art/ink');view.add(seam);
+ g.fillStyle(0x040b0e,.35).fillRoundedRect(b.x,b.y+3,b.width,b.height,10);
+ g.fillStyle(lost?T.panel:0x153238).fillRoundedRect(b.x,b.y,b.width,b.height,10).lineStyle(1,T.goldSoft,.48).strokeRoundedRect(b.x,b.y,b.width,b.height,10);view.add(g);
+ const grain=paperGrainSprite(scene,{x:b.x+6,y:b.y+6,width:b.width-12,height:b.height-12},SHEET_GRAIN);if(grain)view.add(grain.setName('result-art/paper').setAlpha(.28));
+ const seam=scene.add.graphics().lineStyle(2,lost?T.gold:T.celadon,.6).beginPath().moveTo(b.x+12,b.y+26).lineTo(b.x+12,b.y+12).lineTo(b.x+34,b.y+12).strokePath().setName('result-art/ink');view.add(seam);
 }
 export function resultStageSources(scene:Phaser.Scene,view:SceneView,b:Box,facts:ReturnType<typeof resultStageFacts>,short:boolean):{text:Box;art:Phaser.GameObjects.Image[]} {
  const small=b.height<200,side=small&&!short&&b.width>=230,art:Phaser.GameObjects.Image[]=[];
@@ -58,11 +58,11 @@ export function resultStageSources(scene:Phaser.Scene,view:SceneView,b:Box,facts
    const cols=b.width<160&&height>=110?3:Math.max(1,cards.length),rows=Math.ceil(cards.length/cols),labelHeight=22;
    const cardHeight=Math.min(72,(height-labelHeight-(rows-1)*6)/Math.max(1,rows)),cardWidth=Math.min(cardHeight*.72,(b.width-(cols-1)*4)/cols);
    const total=cols*cardWidth+(cols-1)*4,left=b.x+(b.width-total)/2;
-   const label=view.text(b.x+b.width/2,b.y,height<110?'本手落牌':HAND_LABELS[facts.trace.handType]+' · 留影',14,'#3F606B',b.width).setOrigin(.5,0).setName('result-art/hand-fallback');
+   const label=view.text(b.x+b.width/2,b.y,height<110?'本手落牌':HAND_LABELS[facts.trace.handType]+' · 留影',14,'#d8c290',b.width).setOrigin(.5,0).setName('result-art/hand-fallback');
    for(const [i,card] of cards.entries()){
      const row=Math.floor(i/cols),rowCount=Math.min(cols,cards.length-row*cols),x=left+(cols-rowCount)*(cardWidth+4)/2+i%cols*(cardWidth+4),y=b.y+labelHeight+row*(cardHeight+6);
-     view.material({x,y,width:cardWidth,height:cardHeight},T.paperLight,T.paperLight,3).setName('result-art/played-card').setData('cardId',card.id);
-     view.add(scene.add.graphics().lineStyle(1,T.divider).strokeRoundedRect(x,y,cardWidth,cardHeight,3));
+     view.material({x,y,width:cardWidth,height:cardHeight},0xfcf6e8,0xfcf6e8,3).setName('result-art/played-card').setData('cardId',card.id);
+     view.add(scene.add.graphics().lineStyle(1,0xb8a37c).strokeRoundedRect(x,y,cardWidth,cardHeight,3));
      const color=card.suit==='hearts'||card.suit==='diamonds'?'#B8473A':'#26313A';
      view.text(x+cardWidth/2,y+2,rankLabel(card.rank),16,color).setOrigin(.5,0).setFontStyle('bold');
      view.text(x+cardWidth/2,y+cardHeight-2,SUIT_SYMBOL[card.suit],18,color).setOrigin(.5,1);

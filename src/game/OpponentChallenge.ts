@@ -7,7 +7,7 @@ import type {Box} from './layout';
 import type {SceneView} from './SceneView';
 import {fitScoreLine} from './ScoreTextLayout';
 import {textDensity} from './TextRaster';
-import {PAPER_THEME as T,PAPER_CSS as C,UI_FONT} from './theme';
+import {ATELIER_THEME as T,ATELIER_CSS as C,DISPLAY_FONT,UI_FONT} from './theme';
 import {paperGrainSprite,SHEET_GRAIN} from './PaperStock';
 
 /** Public, current-stage facts only. A selected type is a tell, never a score forecast. */
@@ -26,15 +26,15 @@ export function opponentChallenge(run:R2RunState,selected?:R2HandType){
 export function mountOpponentChallenge(scene:Phaser.Scene,view:SceneView,parent:Phaser.GameObjects.Container,area:Box,run:R2RunState,open:()=>void):boolean {
  const facts=opponentChallenge(run);if(!facts||area.width<180||area.height<62)return false;
  const compact=area.height<190,b={x:area.x+4,y:area.y+3,width:area.width-8,height:area.height-6},group=scene.add.container(0,0).setName('opponent/challenge').setData('facts',facts).setData('bounds',b);parent.add(group);
- const paper=scene.add.graphics().fillStyle(T.paperLight).fillRoundedRect(b.x,b.y,b.width,b.height,5).lineStyle(1,T.jade,.65).strokeRoundedRect(b.x+.5,b.y+.5,b.width-1,b.height-1,5);group.add(paper);
- const grain=paperGrainSprite(scene,{x:b.x+3,y:b.y+3,width:b.width-6,height:b.height-6},SHEET_GRAIN);if(grain)group.add(grain);
+ const paper=scene.add.graphics().fillStyle(0x040b0e,.42).fillRoundedRect(b.x,b.y+2,b.width,b.height,5).fillStyle(T.panel,.96).fillRoundedRect(b.x,b.y,b.width,b.height,5).lineStyle(1,T.gold,.55).strokeRoundedRect(b.x+.5,b.y+.5,b.width-1,b.height-1,5);group.add(paper);
+ const grain=paperGrainSprite(scene,{x:b.x+3,y:b.y+3,width:b.width-6,height:b.height-6},SHEET_GRAIN);if(grain)group.add(grain.setAlpha(.12));
  const action={x:b.x+b.width-94,y:b.y+b.height-48,width:88,height:44},copyWidth=compact?b.width-108:b.width-24;
- const text=(name:string,copy:string,y:number,size:number,color:string,width=copyWidth)=>{const t=scene.add.text(0,0,copy,{fontFamily:UI_FONT,fontSize:size+'px',fontStyle:'bold',color,resolution:textDensity(scene)}).setName(name).setData('fullText',copy);group.add(t);fitScoreLine(t,{x:b.x+12,y,width,height:compact?20:28},size,true);return t;};
- text('opponent/name',compact?'回音墙 · 目标 '+heatText(facts.target):'回音墙 · 同行高手',b.y+(compact?3:10),compact?15:22,C.jade);
- text('opponent/challenge-rule',facts.badge+(compact&&b.height<90?' · 余'+facts.handsLeft+'手':''),b.y+(compact?25:46),compact?14:20,facts.previous?C.red:C.jade);
- if(!compact){text('opponent/challenge-quote','“'+facts.quote+'”',b.y+80,20,C.ink);text('opponent/challenge-scope',facts.rule+' · 其余热度照常',b.y+116,14,C.mutedInk);}
+ const text=(name:string,copy:string,y:number,size:number,color:string,width=copyWidth,display=false)=>{const t=scene.add.text(0,0,copy,{fontFamily:display?DISPLAY_FONT:UI_FONT,fontSize:size+'px',fontStyle:'bold',color,resolution:textDensity(scene)}).setName(name).setData('fullText',copy);group.add(t);fitScoreLine(t,{x:b.x+12,y,width,height:compact?20:28},size,true);return t;};
+ text('opponent/name',compact?'回音墙 · 目标 '+heatText(facts.target):'回音墙 · 同行高手',b.y+(compact?3:10),compact?15:22,C.goldBright,copyWidth,true);
+ text('opponent/challenge-rule',facts.badge+(compact&&b.height<90?' · 余'+facts.handsLeft+'手':''),b.y+(compact?25:46),compact?14:20,facts.previous?C.cinnabarSoft:C.celadon);
+ if(!compact){text('opponent/challenge-quote','“'+facts.quote+'”',b.y+80,20,C.ink,copyWidth,true);text('opponent/challenge-scope',facts.rule+' · 其余热度照常',b.y+116,14,C.mist);}
  const pressureY=compact?b.y+b.height-21:b.y+b.height-35;
- if(!compact||b.height>=90)text('opponent/challenge-pressure',compact?'目标 '+heatText(facts.target)+' · 余'+facts.handsLeft+'手':facts.pressure,pressureY,14,C.ink,b.width-112);
+ if(!compact||b.height>=90)text('opponent/challenge-pressure',compact?'目标 '+heatText(facts.target)+' · 余'+facts.handsLeft+'手':facts.pressure,pressureY,14,C.goldBright,b.width-112);
  const first=view.root.length,button=view.button(action,'看招 / 应对','opponent/choices',open,true);const objects=view.root.list.slice(first);for(const object of objects)group.add(object);(button.getData('label') as Phaser.GameObjects.Text).setFontSize(13);
  return true;
 }

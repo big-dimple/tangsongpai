@@ -9,7 +9,7 @@ import type {Box} from './layout';
 import type {settlementFacts} from './SettlementPresentation';
 import {pcHeroKey} from './PcHeroArt';
 import {heatText} from './scoreText';
-import {PAPER_THEME as T,PAPER_CSS as C,SCORE_FONT} from './theme';
+import {ATELIER_THEME as T,ATELIER_CSS as C,DISPLAY_FONT,SCORE_FONT} from './theme';
 import {drawSettlementHand} from './SettlementHand';
 
 export const mobileResultViewport=(width:number,height:number)=>width<700&&height>width;
@@ -24,16 +24,16 @@ export function drawMobileSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run
  // The masthead carries only the result. The played hand gets its own full-width
  // receipt below, rather than competing with the number in a narrow right rail.
  const heroPanel={x:b.x,y:b.y+8,width:textX-b.x-10,height:headerHeight-4};
- paper.fillStyle(0x21473d).fillRect(heroPanel.x,heroPanel.y,heroPanel.width,heroPanel.height);
+ paper.fillStyle(0x0d2126).fillRoundedRect(heroPanel.x,heroPanel.y,heroPanel.width,heroPanel.height,4).lineStyle(1,T.goldSoft,.45).strokeRoundedRect(heroPanel.x+.5,heroPanel.y+.5,heroPanel.width-1,heroPanel.height-1,4);
  drawRiverScroll(scene,view,heroPanel,.73,.35);
- const tag=fit(textX,b.y+18,skipped?'本场跳过':'本场总得分',14,textWidth-12,C.jade,'result/hand');
- const score=fit(textX,tag.y+tag.height+8,heatText(facts.stageTotal),compact?38:50,textWidth-12,lost?C.ink:facts.tier>=2?C.red:C.ink,'result/score').setFontFamily(SCORE_FONT).setFontStyle('bold').setData('exactScore',facts.stageTotal).setData('mobilePoster',true);
+ const tag=fit(textX,b.y+18,skipped?'本场跳过':'本场总得分',14,textWidth-12,C.mist,'result/hand');
+ const score=fit(textX,tag.y+tag.height+8,heatText(facts.stageTotal),compact?38:50,textWidth-12,lost?C.mist:facts.tier>=2?C.goldBright:C.ink,'result/score').setFontFamily(SCORE_FONT).setFontStyle('bold').setData('exactScore',facts.stageTotal).setData('mobilePoster',true);
  if(score.width>textWidth-12)score.setScale((textWidth-12)/score.width);
  const previousStage=run.outcome?.reason==='abandoned'&&run.outcome.stageIndex!==run.stage!.index;
  const last=skipped||previousStage?null:stageOutcome(run.stage!,run.lastTrace).last;
  const targetHeat=run.stage!.targetHeat;
  const formula=formulaOverride??(lost?'目标 '+heatText(targetHeat)+' · 差 '+heatText(stageScoreBands(facts.stageTotal,targetHeat).gap):skipped?'没有本场计分':'目标 '+heatText(targetHeat)+' · 已过关');
- const target=fit(textX,score.y+score.displayHeight+10,formula,14,textWidth-12,C.jade,'result/formula');
+ const target=fit(textX,score.y+score.displayHeight+10,formula,14,textWidth-12,C.mist,'result/formula');
  const blockHeight=target.y+target.height-tag.y,cardInner=headerHeight-16,shiftY=Math.max(0,Math.round((cardInner-blockHeight)/2)-10);
  if(shiftY>0){tag.y+=shiftY;score.y+=shiftY;target.y+=shiftY;}
  const artBottom=b.y+headerHeight;
@@ -41,10 +41,10 @@ export function drawMobileSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run
  if(!skipped)contentBottom=drawScoreLedger(scene,view,b.x+5,contentBottom+8,b.width-10,facts.stageTotal,targetHeat,last?.finalScore);
  const handTop=contentBottom;
  if(last){
-  const hand=fit(b.x+5,handTop+9,(lost?'末手牌型 · ':'致胜牌型 · ')+HAND_LABELS[last.handType],16,b.width,C.ink,'result/hand-type').setFontStyle('bold');
-  const combo=drawSettlementHand(view,last,b.x+5,hand.y+hand.height+6,b.width-10,14);
+  const hand=fit(b.x+5,handTop+9,(lost?'末手牌型 · ':'致胜牌型 · ')+HAND_LABELS[last.handType],16,b.width,C.goldBright,'result/hand-type').setFontFamily(DISPLAY_FONT).setFontStyle('bold');
+  const combo=drawSettlementHand(view,last,b.x+5,hand.y+hand.height+6,b.width-10,14,true);
   contentBottom=combo.bottom;
-  if(facts.scoreExplanation){const explanation=fit(b.x+5,combo.bottom+5,'得分解释 · '+facts.scoreExplanation,14,b.width-10,C.jade,'result/score-explanation');contentBottom=explanation.y+explanation.height;}
+  if(facts.scoreExplanation){const explanation=fit(b.x+5,combo.bottom+5,'得分解释 · '+facts.scoreExplanation,14,b.width-10,C.mist,'result/score-explanation');contentBottom=explanation.y+explanation.height;}
  }
  const artLayer=view.add(scene.add.container(0,0).setName('result-art/source-layer'));
  const paint=()=>{
@@ -56,21 +56,21 @@ export function drawMobileSettlement(scene:Phaser.Scene,view:SceneView,b:Box,run
   hero.setData('bounds',{x:hero.x-hero.displayWidth/2,y:hero.y-hero.displayHeight/2,width:hero.displayWidth,height:hero.displayHeight});artLayer.add(hero);return hero;
  };
  const hero=paint(),reward={x:b.x,y:contentBottom+10,width:b.width,height:36};
- const rewardText=fit(reward.x+reward.width/2,reward.y+4,cleared&&!skipped?rewardLabel??'本场奖励已保存':skipped?'换场所得见下方记录':'成绩已记录',16,reward.width-44,C.ink,'result/reward').setOrigin(.5,0).setFontStyle('bold');
+ const rewardText=fit(reward.x+reward.width/2,reward.y+4,cleared&&!skipped?rewardLabel??'本场奖励已保存':skipped?'换场所得见下方记录':'成绩已记录',16,reward.width-44,C.goldBright,'result/reward').setOrigin(.5,0).setFontStyle('bold');
  reward.height=Math.max(36,rewardText.height+8);
  let reviewBookBand:Box|undefined;
  if(facts.reviewBook){
   reviewBookBand={x:b.x,y:reward.y+reward.height+6,width:b.width,height:24};
-  const receipt=fit(reviewBookBand.x,reviewBookBand.y,facts.reviewBook.label,14,reviewBookBand.width,C.jade,'result/review-book').setData('sourceEventId',facts.reviewBook.eventId).setData('clearId',facts.reviewBook.clearId);
+  const receipt=fit(reviewBookBand.x,reviewBookBand.y,facts.reviewBook.label,14,reviewBookBand.width,C.mist,'result/review-book').setData('sourceEventId',facts.reviewBook.eventId).setData('clearId',facts.reviewBook.clearId);
   reviewBookBand.height=Math.max(24,receipt.height);
  }
  // Painted last on an earlier display object: panels stay behind every fact.
- paper.fillStyle(T.ink,.035).fillRoundedRect(textX-8,b.y+10,textWidth+8,headerHeight-13,3);
- paper.fillStyle(T.paperLight,.88).fillRoundedRect(textX-8,b.y+8,textWidth+8,headerHeight-16,3).lineStyle(1,T.divider,.7).strokeRoundedRect(textX-7.5,b.y+8.5,textWidth+7,headerHeight-17,3);
- paper.fillStyle(lost?T.jade:T.red,.8).fillRect(textX+4,b.y+8,38,2);
+ paper.fillStyle(0x040b0e,.35).fillRoundedRect(textX-8,b.y+10,textWidth+8,headerHeight-13,4);
+ paper.fillStyle(T.panel,.92).fillRoundedRect(textX-8,b.y+8,textWidth+8,headerHeight-16,4).lineStyle(1,T.goldSoft,.5).strokeRoundedRect(textX-7.5,b.y+8.5,textWidth+7,headerHeight-17,4);
+ paper.fillStyle(lost?T.celadon:T.cinnabar,.88).fillRect(textX+4,b.y+8,38,2);
  if(last){
   const y=handTop+4,height=contentBottom-handTop+4;
-  paper.fillStyle(T.paperLight,.72).fillRoundedRect(b.x,y,b.width,height,3).lineStyle(1,T.divider,.55).strokeRoundedRect(b.x+.5,y+.5,b.width-1,height-1,3);
+  paper.fillStyle(T.panelRaised,.88).fillRoundedRect(b.x,y,b.width,height,4).lineStyle(1,T.goldSoft,.45).strokeRoundedRect(b.x+.5,y+.5,b.width-1,height-1,4);
  }
  const height=(reviewBookBand?reviewBookBand.y+reviewBookBand.height:reward.y+reward.height)-b.y;
  return {facts,score,reward,rewardText,paint,hero,stage:{...b,height},reviewBookBand};

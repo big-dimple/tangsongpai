@@ -4,7 +4,7 @@ import type Phaser from 'phaser';
 import type {SceneView} from './SceneView';
 import {modalBlocksCanvas} from './DetailDialog';
 import {resultPlacement} from './IntermissionLayout';
-import {PAPER_CSS,PAPER_THEME} from './theme';
+import {ATELIER_CSS,ATELIER_THEME} from './theme';
 import type {Box} from './layout';
 
 function measuredContent(content:Phaser.GameObjects.Container,pc:boolean):Box {
@@ -30,14 +30,14 @@ export function mountResultViewport(scene:Phaser.Scene,view:SceneView,content:Ph
   mask.fillStyle(0xffffff).fillRect(0,top,view.layout.width,readingBottom-top);
   content.setMask(mask.createGeometryMask());
   const hintLeft=Math.max(safe.left+12,bounds.x),hintRight=Math.min(width-safe.right-12,bounds.x+bounds.width),hintWidth=Math.max(120,hintRight-hintLeft);
-  const hint=placement.overflow>0?view.text(hintLeft+hintWidth/2,bottom-18,'上下滑动查看结算',14,PAPER_CSS.jade,hintWidth).setOrigin(.5,0).setName('result-scroll/hint'):undefined;
+  const hint=placement.overflow>0?view.text(hintLeft+hintWidth/2,bottom-18,'上下滑动查看结算',14,ATELIER_CSS.gold,hintWidth).setOrigin(.5,0).setName('result-scroll/hint'):undefined;
   const rail=placement.overflow>0?view.add(scene.add.graphics()).setName('result-scroll/rail'):undefined;
   let scroll=placement.scroll,drag:{id:number;y:number;offset:number;moving:boolean}|undefined;
   const update=(next:number)=>{
     const p=resultPlacement(top,readingBottom,bounds,next,anchorTop);scroll=p.scroll;content.y=p.y;remember(scroll);
     content.setData('viewport',{top,bottom:readingBottom,contentTop:bounds.y,contentHeight:bounds.height,overflow:p.overflow,scroll});
     if(hint)hint.setText(scroll>=p.overflow-1?'已到末尾 · 可继续':'上下滑动查看结算');
-    if(rail){const h=readingBottom-top,thumb=Math.max(32,h*h/bounds.height);rail.clear().fillStyle(PAPER_THEME.jade,.35).fillRoundedRect(Math.min(view.layout.width-5,bounds.x+bounds.width+5),top+(h-thumb)*scroll/p.overflow,3,thumb,1.5);}
+    if(rail){const h=readingBottom-top,thumb=Math.max(32,h*h/bounds.height);rail.clear().fillStyle(ATELIER_THEME.gold,.45).fillRoundedRect(Math.min(view.layout.width-5,bounds.x+bounds.width+5),top+(h-thumb)*scroll/p.overflow,3,thumb,1.5);}
   };
   update(scroll);
   const controllerScroll=(delta:number)=>update(scroll+delta);
